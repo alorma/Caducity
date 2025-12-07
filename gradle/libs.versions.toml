@@ -2,12 +2,13 @@
 # Compose
 compose = "1.9.1"
 composeHotReload = "1.0.0"
+compose-material3-expressive = "1.10.0-alpha04"
 
 # Kotlin
 kotlin = "2.2.20"
 
 # Android
-agp = "8.13.1"
+agp = "8.5.0"
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
@@ -16,6 +17,7 @@ androidx-activity = "1.11.0"
 
 [libraries]
 androidx-activitycompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+compose-material3-expressive = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "compose-material3-expressive" }
 
 
 [plugins]
