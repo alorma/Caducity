@@ -16,12 +16,14 @@ androidx-activity = "1.11.0"
 
 # Navigation
 navigation3 = "1.0.0-alpha06"
+adaptive-navigation3 = "1.3.0-alpha02"
 
 
 [libraries]
 androidx-activitycompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 compose-material3-expressive = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "compose-material3-expressive" }
 androidx-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
+compose-material3-adaptive-navigation3 = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation3", version.ref = "adaptive-navigation3" }
 
 
 [plugins]
