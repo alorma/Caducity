@@ -1,0 +1,75 @@
+name: Main
+
+on:
+  push:
+    branches:
+      - main
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  checks: write
+  statuses: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        config: [
+          { target: android, os: ubuntu-latest, tasks: assembleDebug  },
+          { target: js, os: ubuntu-latest, tasks: jsBrowserDistribution },
+          { target: wasm, os: ubuntu-latest, tasks: wasmJsBrowserDistribution },
+        ]
+    runs-on: ${{ matrix.config.os }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: adopt
+          java-version: 17
+
+      - name: Build ${{ matrix.config.target }} - Main
+        continue-on-error: false
+        run: ./gradlew :composeApp:${{ matrix.config.tasks }}
+
+  # Deployment job
+  deploy:
+    name: Deploy to Github pages
+    if: ${{ success() }}
+    needs: [ build ]
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: adopt
+          java-version: 17
+
+      - name: Build sample JS - Main
+        run: ./gradlew :composeApp:wasmJsBrowserDistribution
+
+      - name: Copy webApp to dist
+        run: cp -r composeApp/build/dist/wasmJs/productionExecutable deployment/
+
+      - name: Upload your page as github pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: deployment/
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
