@@ -36,7 +36,7 @@ fun App() {
             },
             label = { Text(text = "Dashboard") },
             onClick = {
-              topLevelBackStack.add(TopLevelRoute.Dashboard)
+              topLevelBackStack.addTopLevel(TopLevelRoute.Dashboard)
             },
           )
           NavigationBarItem(
