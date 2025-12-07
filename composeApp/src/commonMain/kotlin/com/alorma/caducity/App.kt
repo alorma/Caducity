@@ -38,10 +38,11 @@ fun App() {
                         } == true,
                         onClick = {
                             navController.navigate(Screen.Dashboard) {
-                                popUpTo(Screen.Dashboard) {
-                                    inclusive = true
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
                                 }
                                 launchSingleTop = true
+                                restoreState = true
                             }
                         }
                     )
@@ -53,7 +54,11 @@ fun App() {
                         } == true,
                         onClick = {
                             navController.navigate(Screen.Settings) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
                                 launchSingleTop = true
+                                restoreState = true
                             }
                         }
                     )
