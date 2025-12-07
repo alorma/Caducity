@@ -1,9 +1,6 @@
 package com.alorma.caducity
 
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
@@ -18,6 +15,7 @@ import androidx.navigation3.ui.compose.rememberNavController
 import androidx.window.core.layout.WindowWidthSizeClass
 import com.alorma.caducity.navigation.NavGraph
 import com.alorma.caducity.navigation.Screen
+import com.alorma.caducity.ui.icons.AppIcons
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -35,16 +33,16 @@ fun App() {
             WindowWidthSizeClass.EXPANDED -> NavigationSuiteType.NavigationDrawer
             else -> NavigationSuiteType.NavigationBar
         }
-        
+
         NavigationSuiteScaffold(
             modifier = Modifier.safeDrawingPadding(),
             layoutType = customNavSuiteType,
             navigationSuiteItems = {
                 item(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Dashboard") },
+                    icon = { Icon(AppIcons.Home, contentDescription = "Dashboard") },
                     label = { Text("Dashboard") },
-                    selected = currentDestination?.hierarchy?.any { 
-                        it.hasRoute(Screen.Dashboard::class) 
+                    selected = currentDestination?.hierarchy?.any {
+                        it.hasRoute(Screen.Dashboard::class)
                     } == true,
                     onClick = {
                         navController.navigate(Screen.Dashboard) {
@@ -57,10 +55,10 @@ fun App() {
                     }
                 )
                 item(
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
+                    icon = { Icon(AppIcons.Settings, contentDescription = "Settings") },
                     label = { Text("Settings") },
-                    selected = currentDestination?.hierarchy?.any { 
-                        it.hasRoute(Screen.Settings::class) 
+                    selected = currentDestination?.hierarchy?.any {
+                        it.hasRoute(Screen.Settings::class)
                     } == true,
                     onClick = {
                         navController.navigate(Screen.Settings) {
