@@ -49,6 +49,8 @@ kotlin {
             implementation(libs.compose.material3.expressive)
             implementation(libs.androidx.navigation3.ui)
             implementation(libs.compose.material3.adaptive.navigation3)
+            implementation(libs.compose.settings.ui.tiles)
+            implementation(libs.compose.settings.ui.tiles.extended)
         }
         androidMain.dependencies {
             implementation(compose.preview)

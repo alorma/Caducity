@@ -8,7 +8,7 @@ compose-material3-expressive = "1.10.0-alpha04"
 kotlin = "2.2.20"
 
 # Android
-agp = "8.7.3"
+agp = "8.5.0"
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
@@ -18,12 +18,17 @@ androidx-activity = "1.11.0"
 navigation3 = "1.0.0-alpha06"
 adaptive-navigation3 = "1.3.0-alpha02"
 
+# Compose Settings
+compose-settings = "2.0.0"
+
 
 [libraries]
 androidx-activitycompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 compose-material3-expressive = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "compose-material3-expressive" }
 androidx-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 compose-material3-adaptive-navigation3 = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation3", version.ref = "adaptive-navigation3" }
+compose-settings-ui-tiles = { module = "com.github.alorma.compose-settings:ui-tiles", version.ref = "compose-settings" }
+compose-settings-ui-tiles-extended = { module = "com.github.alorma.compose-settings:ui-tiles-extended", version.ref = "compose-settings" }
 
 
 [plugins]
