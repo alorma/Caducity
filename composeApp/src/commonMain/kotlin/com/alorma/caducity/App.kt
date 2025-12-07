@@ -9,10 +9,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
@@ -24,34 +21,35 @@ import com.alorma.caducity.ui.icons.AppIcons
 fun App() {
   MaterialTheme {
     val topLevelBackStack = remember { mutableListOf<TopLevelRoute>(TopLevelRoute.Dashboard) }
-    var selectedRoute by remember { mutableStateOf<TopLevelRoute>(TopLevelRoute.Dashboard) }
 
     Scaffold(
       modifier = Modifier.fillMaxSize().safeDrawingPadding(),
       bottomBar = {
         NavigationBar {
           NavigationBarItem(
-            selected = selectedRoute == TopLevelRoute.Dashboard,
-            icon = { Icon(AppIcons.Dashboard, contentDescription = "Dashboard") },
+            selected = topLevelBackStack.first() == TopLevelRoute.Dashboard,
+            icon = {
+              Icon(
+                imageVector = AppIcons.Dashboard,
+                contentDescription = "Dashboard",
+              )
+            },
             label = { Text(text = "Dashboard") },
             onClick = {
-              if (selectedRoute != TopLevelRoute.Dashboard) {
-                topLevelBackStack.clear()
-                topLevelBackStack.add(TopLevelRoute.Dashboard)
-                selectedRoute = TopLevelRoute.Dashboard
-              }
+              topLevelBackStack.add(TopLevelRoute.Dashboard)
             },
           )
           NavigationBarItem(
-            selected = selectedRoute == TopLevelRoute.Settings,
-            icon = { Icon(AppIcons.Settings, contentDescription = "Settings") },
+            selected = topLevelBackStack.first() == TopLevelRoute.Settings,
+            icon = {
+              Icon(
+                imageVector = AppIcons.Settings,
+                contentDescription = "Settings",
+              )
+            },
             label = { Text(text = "Settings") },
             onClick = {
-              if (selectedRoute != TopLevelRoute.Settings) {
-                topLevelBackStack.clear()
-                topLevelBackStack.add(TopLevelRoute.Settings)
-                selectedRoute = TopLevelRoute.Settings
-              }
+              topLevelBackStack.add(TopLevelRoute.Settings)
             },
           )
         }
