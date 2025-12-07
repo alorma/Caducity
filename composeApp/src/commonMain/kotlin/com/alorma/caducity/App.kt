@@ -20,14 +20,14 @@ import com.alorma.caducity.ui.icons.AppIcons
 @Composable
 fun App() {
   MaterialTheme {
-    val topLevelBackStack = remember { mutableListOf<TopLevelRoute>(TopLevelRoute.Dashboard) }
+    val topLevelBackStack = remember { TopLevelBackStack<TopLevelRoute>(TopLevelRoute.Dashboard) }
 
     Scaffold(
       modifier = Modifier.fillMaxSize().safeDrawingPadding(),
       bottomBar = {
         NavigationBar {
           NavigationBarItem(
-            selected = topLevelBackStack.first() == TopLevelRoute.Dashboard,
+            selected = topLevelBackStack.topLevelKey == TopLevelRoute.Dashboard,
             icon = {
               Icon(
                 imageVector = AppIcons.Dashboard,
@@ -40,7 +40,7 @@ fun App() {
             },
           )
           NavigationBarItem(
-            selected = topLevelBackStack.first() == TopLevelRoute.Settings,
+            selected = topLevelBackStack.topLevelKey == TopLevelRoute.Settings,
             icon = {
               Icon(
                 imageVector = AppIcons.Settings,
@@ -56,7 +56,7 @@ fun App() {
       },
     ) {
       NavDisplay(
-        backStack = topLevelBackStack,
+        backStack = topLevelBackStack.backStack,
         onBack = { topLevelBackStack.removeLast() },
         entryProvider = entryProvider {
           entry<TopLevelRoute.Dashboard> { DashboardScreen() }
