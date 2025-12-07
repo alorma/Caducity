@@ -53,6 +53,7 @@ kotlin {
       implementation(libs.androidx.material3.adaptive)
       implementation(libs.androidx.material3.adaptive.nav3)
       implementation(libs.kotlinx.serialization.json)
+      implementation(libs.alorma.settings.ui.tiles)
     }
     androidMain.dependencies {
       implementation(libs.androidx.activitycompose)
