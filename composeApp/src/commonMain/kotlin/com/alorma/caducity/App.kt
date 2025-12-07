@@ -11,10 +11,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.NavDestination.Companion.hasRoute
+import androidx.navigation3.NavDestination.Companion.hierarchy
+import androidx.navigation3.ui.compose.currentBackStackEntryAsState
+import androidx.navigation3.ui.compose.rememberNavController
 import com.alorma.caducity.navigation.NavGraph
 import com.alorma.caducity.navigation.Screen
 import org.jetbrains.compose.ui.tooling.preview.Preview

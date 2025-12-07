@@ -4,7 +4,7 @@ This document describes the navigation implementation in the Caducity app.
 
 ## Overview
 
-The app uses **Jetpack Compose Navigation 3 Multiplatform** with type-safe navigation using Kotlin Serialization.
+The app uses **Navigation 3 UI for Compose Multiplatform** with type-safe navigation using Kotlin Serialization.
 
 ## Navigation Architecture
 
@@ -74,8 +74,8 @@ The following dependencies have been added:
 
 ```kotlin
 // In gradle/libs.versions.toml
-navigation-compose = "2.8.0-alpha10"
-androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
+navigation3 = "3.0.0-alpha05"
+androidx-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
 
 // Plugins
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
