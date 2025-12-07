@@ -1,0 +1,40 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+# Sets permissions for pull request checks
+permissions:
+  contents: read
+  checks: write
+  statuses: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        config: [
+          { target: android, os: ubuntu-latest, tasks: assembleDebug  },
+          { target: js, os: ubuntu-latest, tasks: jsBrowserDistribution },
+          { target: wasm, os: ubuntu-latest, tasks: wasmJsBrowserDistribution },
+        ]
+    runs-on: ${{ matrix.config.os }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: adopt
+          java-version: 17
+
+      - name: Build ${{ matrix.config.target }} - PR
+        continue-on-error: false
+        run: ./gradlew :composeApp:${{ matrix.config.tasks }}
