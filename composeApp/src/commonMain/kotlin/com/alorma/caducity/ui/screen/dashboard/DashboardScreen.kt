@@ -150,22 +150,13 @@ private fun DashboardCompactCard(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val containerColor = when (sectionType) {
-    SectionType.EXPIRED -> MaterialTheme.colorScheme.error
-    SectionType.EXPIRING_SOON -> MaterialTheme.colorScheme.tertiaryContainer
-    SectionType.FRESH -> MaterialTheme.colorScheme.primaryContainer
-  }
-
-  val contentColor = when (sectionType) {
-    SectionType.EXPIRED -> MaterialTheme.colorScheme.onError
-    SectionType.EXPIRING_SOON -> MaterialTheme.colorScheme.onTertiaryContainer
-    SectionType.FRESH -> MaterialTheme.colorScheme.onPrimaryContainer
-  }
+  val sectionColors = DashboardSectionColors.getSectionColors(sectionType)
 
   Surface(
     modifier = modifier.fillMaxWidth(),
     shape = MaterialTheme.shapes.medium,
-    color = containerColor,
+    color = sectionColors.container,
+    contentColor = sectionColors.onContainer,
   ) {
     Column(
       modifier = Modifier
@@ -178,12 +169,10 @@ private fun DashboardCompactCard(
       Text(
         text = title,
         style = MaterialTheme.typography.titleMedium,
-        color = contentColor,
       )
       Text(
         text = value,
         style = MaterialTheme.typography.displayMedium,
-        color = contentColor,
       )
     }
   }
@@ -197,22 +186,13 @@ private fun DashboardExpandedCard(
   products: List<ProductUiModel>,
   onCollapse: () -> Unit,
 ) {
-  val containerColor = when (sectionType) {
-    SectionType.EXPIRED -> MaterialTheme.colorScheme.errorContainer
-    SectionType.EXPIRING_SOON -> MaterialTheme.colorScheme.tertiaryContainer
-    SectionType.FRESH -> MaterialTheme.colorScheme.primaryContainer
-  }
-
-  val contentColor = when (sectionType) {
-    SectionType.EXPIRED -> MaterialTheme.colorScheme.onErrorContainer
-    SectionType.EXPIRING_SOON -> MaterialTheme.colorScheme.onTertiaryContainer
-    SectionType.FRESH -> MaterialTheme.colorScheme.onPrimaryContainer
-  }
+  val sectionColors = DashboardSectionColors.getSectionColors(sectionType)
 
   Surface(
     modifier = Modifier.fillMaxWidth(),
     shape = MaterialTheme.shapes.medium,
-    color = containerColor,
+    color = sectionColors.container,
+    contentColor = sectionColors.onContainer,
   ) {
     Column(
       modifier = Modifier.fillMaxWidth(),
@@ -231,19 +211,16 @@ private fun DashboardExpandedCard(
           Text(
             text = title,
             style = MaterialTheme.typography.titleLarge,
-            color = contentColor,
           )
           Text(
             text = "$value items",
             style = MaterialTheme.typography.bodyMedium,
-            color = contentColor.copy(alpha = 0.8f),
           )
         }
 
         Icon(
           imageVector = AppIcons.ArrowUp,
           contentDescription = "Collapse",
-          tint = contentColor,
         )
       }
 
