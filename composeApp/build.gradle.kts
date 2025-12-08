@@ -54,9 +54,16 @@ kotlin {
       implementation(libs.androidx.material3.adaptive.nav3)
       implementation(libs.kotlinx.serialization.json)
       implementation(libs.alorma.settings.ui.tiles)
+
+      // Koin
+      implementation(project.dependencies.platform(libs.koin.bom))
+      implementation(libs.koin.core)
+      implementation(libs.koin.compose)
+      implementation(libs.koin.compose.viewmodel)
     }
     androidMain.dependencies {
       implementation(libs.androidx.activitycompose)
+      implementation(libs.koin.android)
     }
   }
 }
