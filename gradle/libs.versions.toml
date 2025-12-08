@@ -20,6 +20,7 @@ material3 = "1.10.0-alpha05"
 
 kotlinx-serialization = "1.9.0"
 uiTiles = "2.16.0"
+koin = "4.1.1"
 
 [libraries]
 androidx-activitycompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
@@ -37,6 +38,12 @@ compose-material3 = { module = "org.jetbrains.compose.material3:material3", vers
 
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 alorma-settings-ui-tiles = { module = "com.github.alorma.compose-settings:ui-tiles", version.ref = "uiTiles" }
+
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-compose = { module = "io.insert-koin:koin-compose" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

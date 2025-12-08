@@ -23,44 +23,53 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.dashboard.DashboardScreen
+import com.alorma.caducity.di.appModule
+import com.alorma.caducity.di.platformModule
 import com.alorma.caducity.settings.SettingsScreen
 import com.alorma.caducity.ui.adaptive.isWidthCompact
 import com.alorma.caducity.ui.icons.AppIcons
 import com.alorma.caducity.ui.theme.AppTheme
+import org.koin.compose.KoinApplication
 
 @Composable
 fun App() {
-  AppTheme {
-    val topLevelBackStack = remember { TopLevelBackStack<TopLevelRoute>(TopLevelRoute.Dashboard) }
+  KoinApplication(
+    application = {
+      modules(appModule, platformModule)
+    }
+  ) {
+    AppTheme {
+      val topLevelBackStack = remember { TopLevelBackStack<TopLevelRoute>(TopLevelRoute.Dashboard) }
 
-    val isCompact = isWidthCompact()
+      val isCompact = isWidthCompact()
 
-    val content: @Composable (PaddingValues) -> Unit = @Composable { paddingValues ->
-      Box(
-        modifier = Modifier.padding(paddingValues),
-      ) {
-        NavDisplay(
-          modifier = Modifier.fillMaxSize(),
-          backStack = topLevelBackStack.backStack,
-          onBack = { topLevelBackStack.removeLast() },
-          entryProvider = entryProvider {
-            entry<TopLevelRoute.Dashboard> { DashboardScreen() }
-            entry<TopLevelRoute.Settings> { SettingsScreen() }
-          },
+      val content: @Composable (PaddingValues) -> Unit = @Composable { paddingValues ->
+        Box(
+          modifier = Modifier.padding(paddingValues),
+        ) {
+          NavDisplay(
+            modifier = Modifier.fillMaxSize(),
+            backStack = topLevelBackStack.backStack,
+            onBack = { topLevelBackStack.removeLast() },
+            entryProvider = entryProvider {
+              entry<TopLevelRoute.Dashboard> { DashboardScreen() }
+              entry<TopLevelRoute.Settings> { SettingsScreen() }
+            },
+          )
+        }
+      }
+
+      if (isCompact) {
+        CompactContent(
+          topLevelBackStack = topLevelBackStack,
+          content = content,
+        )
+      } else {
+        ExpandedContent(
+          topLevelBackStack = topLevelBackStack,
+          content = content,
         )
       }
-    }
-
-    if (isCompact) {
-      CompactContent(
-        topLevelBackStack = topLevelBackStack,
-        content = content,
-      )
-    } else {
-      ExpandedContent(
-        topLevelBackStack = topLevelBackStack,
-        content = content,
-      )
     }
   }
 }
