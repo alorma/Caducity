@@ -3,9 +3,11 @@ package com.alorma.caducity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingToolbarDefaults
@@ -99,7 +101,10 @@ private fun CompactContent(
       content(paddingValues)
 
       VerticalFloatingToolbar(
-        modifier = Modifier.align(Alignment.BottomEnd).offset(x = -ScreenOffset),
+        modifier = Modifier
+          .align(Alignment.BottomEnd)
+          .offset(x = -ScreenOffset)
+          .padding(bottom = 24.dp, end = 24.dp),
         expanded = true,
         floatingActionButton = {
           FloatingToolbarDefaults.VibrantFloatingActionButton(
