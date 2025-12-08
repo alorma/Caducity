@@ -21,9 +21,9 @@ fun AppTheme(
   }
 
   val defaultColorScheme = if (darkTheme) {
-    darkScheme
+    platformDarkColorScheme()
   } else {
-    lightScheme
+    platformLightColorScheme()
   }
 
   val colorScheme: ColorScheme = if (themePreferences.useDynamicColors) {

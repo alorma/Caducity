@@ -10,7 +10,7 @@ Caducity is a Kotlin Multiplatform grocery expiration tracker application built 
 
 - **Language**: Kotlin 2.2.21
 - **UI Framework**: Jetpack Compose Multiplatform (v1.10.0-rc01) with Material 3 Expressive API
-- **Target Platforms**: Android (minSdk 24), Desktop (JVM 11), JS (browser), WebAssembly
+- **Target Platforms**: Android (minSdk 34), Desktop (JVM 11), JS (browser), WebAssembly
 - **Architecture**: MVI/MVVM with Compose state management
 - **Navigation**: Jetpack Navigation 3 (alpha06)
 - **Dependency Injection**: Koin 4.1.1

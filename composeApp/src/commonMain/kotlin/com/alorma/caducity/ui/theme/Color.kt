@@ -297,7 +297,7 @@ val darkScheme = darkColorScheme(
   surfaceContainerHighest = surfaceContainerHighestDark,
 )
 
-private val mediumContrastLightColorScheme = lightColorScheme(
+val mediumContrastLightColorScheme = lightColorScheme(
   primary = primaryLightMediumContrast,
   onPrimary = onPrimaryLightMediumContrast,
   primaryContainer = primaryContainerLightMediumContrast,
@@ -335,7 +335,7 @@ private val mediumContrastLightColorScheme = lightColorScheme(
   surfaceContainerHighest = surfaceContainerHighestLightMediumContrast,
 )
 
-private val highContrastLightColorScheme = lightColorScheme(
+val highContrastLightColorScheme = lightColorScheme(
   primary = primaryLightHighContrast,
   onPrimary = onPrimaryLightHighContrast,
   primaryContainer = primaryContainerLightHighContrast,
@@ -373,7 +373,7 @@ private val highContrastLightColorScheme = lightColorScheme(
   surfaceContainerHighest = surfaceContainerHighestLightHighContrast,
 )
 
-private val mediumContrastDarkColorScheme = darkColorScheme(
+val mediumContrastDarkColorScheme = darkColorScheme(
   primary = primaryDarkMediumContrast,
   onPrimary = onPrimaryDarkMediumContrast,
   primaryContainer = primaryContainerDarkMediumContrast,
@@ -411,7 +411,7 @@ private val mediumContrastDarkColorScheme = darkColorScheme(
   surfaceContainerHighest = surfaceContainerHighestDarkMediumContrast,
 )
 
-private val highContrastDarkColorScheme = darkColorScheme(
+val highContrastDarkColorScheme = darkColorScheme(
   primary = primaryDarkHighContrast,
   onPrimary = onPrimaryDarkHighContrast,
   primaryContainer = primaryContainerDarkHighContrast,
