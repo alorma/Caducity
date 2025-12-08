@@ -48,6 +48,12 @@ kotlin {
     binaries.executable()
   }
 
+  jvm("desktop") {
+    compilerOptions {
+      jvmTarget.set(JvmTarget.JVM_11)
+    }
+  }
+
   sourceSets {
     commonMain.dependencies {
       implementation(compose.runtime)
@@ -81,6 +87,30 @@ kotlin {
     androidMain.dependencies {
       implementation(libs.androidx.activitycompose)
       implementation(libs.koin.android)
+    }
+    val desktopMain by getting {
+      dependencies {
+        implementation(compose.desktop.currentOs)
+      }
+    }
+  }
+}
+
+compose.desktop {
+  application {
+    mainClass = "com.alorma.caducity.MainKt"
+    nativeDistributions {
+      targetFormats(
+        org.jetbrains.compose.desktop.application.dsl.TargetFormat.Dmg,
+        org.jetbrains.compose.desktop.application.dsl.TargetFormat.Msi,
+        org.jetbrains.compose.desktop.application.dsl.TargetFormat.Deb
+      )
+      packageName = "Caducity"
+      packageVersion = "1.0.0"
+
+      macOS {
+        bundleID = "com.alorma.caducity"
+      }
     }
   }
 }
