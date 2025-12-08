@@ -22,7 +22,7 @@ class ThemePreferences(private val settings: Settings) {
     return savedValue?.let { 
       try {
         ThemeMode.valueOf(it)
-      } catch (e: IllegalArgumentException) {
+      } catch (_: IllegalArgumentException) {
         ThemeMode.SYSTEM
       }
     } ?: ThemeMode.SYSTEM
@@ -32,12 +32,12 @@ class ThemePreferences(private val settings: Settings) {
     return settings.getBoolean(KEY_USE_DYNAMIC_COLORS, supportsDynamicColors())
   }
 
-  fun setThemeMode(mode: ThemeMode) {
+  fun setThemeModeState(mode: ThemeMode) {
     themeMode = mode
     settings.putString(KEY_THEME_MODE, mode.name)
   }
 
-  fun setUseDynamicColors(enabled: Boolean) {
+  fun setDynamicColorsEnabled(enabled: Boolean) {
     useDynamicColors = enabled
     settings.putBoolean(KEY_USE_DYNAMIC_COLORS, enabled)
   }
