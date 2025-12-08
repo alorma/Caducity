@@ -25,9 +25,7 @@ jobs:
           { target: android, os: ubuntu-latest, tasks: assembleDebug  },
           { target: js, os: ubuntu-latest, tasks: jsBrowserDistribution },
           { target: wasm, os: ubuntu-latest, tasks: wasmJsBrowserDistribution },
-          { target: desktop-linux, os: ubuntu-latest, tasks: packageDistributionForCurrentOS },
-          { target: desktop-macos, os: macos-latest, tasks: packageDistributionForCurrentOS },
-          { target: desktop-windows, os: windows-latest, tasks: packageDistributionForCurrentOS },
+          { target: desktop, os: ubuntu-latest, tasks: packageDistributionForCurrentOS },
         ]
     runs-on: ${{ matrix.config.os }}
     steps:
