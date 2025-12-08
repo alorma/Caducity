@@ -14,6 +14,8 @@ plugins {
 kotlin {
   sourceSets.all {
     languageSettings.optIn("kotlin.time.ExperimentalTime")
+    languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3Api")
+    languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")
   }
 
   androidTarget {

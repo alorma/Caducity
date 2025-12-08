@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,9 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LoadingIndicator
+import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -35,16 +38,13 @@ import com.alorma.caducity.ui.icons.AppIcons
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
   viewModel: DashboardViewModel = koinViewModel()
 ) {
   val showDialog = remember { mutableStateOf(false) }
 
-  val dashboardState by viewModel.state.collectAsStateWithLifecycle(
-    initialValue = DashboardState.Loading,
-  )
+  val dashboardState by viewModel.state.collectAsStateWithLifecycle()
 
   val isCompact = isWidthCompact()
 
@@ -75,7 +75,18 @@ fun DashboardScreen(
 
       when (val state = dashboardState) {
         is DashboardState.Loading -> {
-          Text(text = "Loading...")
+          Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+          ) {
+            LoadingIndicator(
+              color = MaterialTheme.colorScheme.secondary,
+              polygons = listOf(
+                MaterialShapes.Cookie4Sided,
+                MaterialShapes.Cookie6Sided,
+              ),
+            )
+          }
         }
 
         is DashboardState.Success -> {
@@ -133,11 +144,12 @@ private fun DashboardCard(
       Text(
         text = title,
         style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = MaterialTheme.colorScheme.onSurface,
       )
       Text(
         text = value,
         style = MaterialTheme.typography.displaySmall,
+        color = MaterialTheme.colorScheme.onSurface,
       )
     }
   }
