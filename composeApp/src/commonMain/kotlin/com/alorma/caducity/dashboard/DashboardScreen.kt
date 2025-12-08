@@ -74,20 +74,12 @@ fun DashboardScreen(
         }
 
         is DashboardState.Success -> {
-          DashboardCard(
-            title = "Total Items",
-            value = dashboardState.totalItems.toString(),
-          )
-
-          DashboardCard(
-            title = "Active",
-            value = dashboardState.activeItems.toString(),
-          )
-
-          DashboardCard(
-            title = "Expired",
-            value = dashboardState.expiredItems.toString(),
-          )
+          dashboardState.sections.forEach { section ->
+            DashboardCard(
+              title = section.title,
+              value = section.itemCount.toString(),
+            )
+          }
         }
       }
     }

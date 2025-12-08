@@ -1,12 +1,16 @@
 package com.alorma.caducity.data.model
 
-import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
-@Serializable
 data class Product(
   val id: String,
   val name: String,
   val description: String,
-  val expirationDate: Long, // Timestamp in milliseconds
-  val isExpired: Boolean = false,
+)
+
+data class ProductInstance(
+  val id: String,
+  val productId: String,
+  val expirationDate: Instant,
+  val purchaseDate: Instant,
 )
