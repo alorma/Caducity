@@ -16,9 +16,9 @@ Caducity is a Kotlin Multiplatform application designed to help users track thei
 ## 🏗️ Architecture Overview
 
 ### Technology Stack
-- **Platform**: Kotlin Multiplatform (Android, JS, WASM)
+- **Platform**: Kotlin Multiplatform (Android, iOS - Room support; JS, WASM - in-memory/local storage fallback)
 - **UI Framework**: Jetpack Compose Multiplatform
-- **Database**: SQLDelight (recommended for KMP)
+- **Database**: Room (for Android/iOS with KMP support)
 - **Navigation**: Jetpack Navigation 3 (already in use)
 - **Architecture Pattern**: MVI/MVVM (using Compose's state management, no ViewModel dependency)
 
@@ -27,8 +27,8 @@ Caducity is a Kotlin Multiplatform application designed to help users track thei
 composeApp/src/
 ├── commonMain/kotlin/com/alorma/caducity/
 │   ├── data/
-│   │   ├── database/         # SQLDelight database definitions
-│   │   ├── model/           # Data models
+│   │   ├── database/         # Room database definitions & DAOs
+│   │   ├── entity/          # Room entity classes
 │   │   └── repository/      # Repository implementations
 │   ├── domain/
 │   │   ├── model/           # Domain models
@@ -46,7 +46,7 @@ composeApp/src/
 
 ---
 
-## 🗄️ Database Schema (SQLDelight)
+## 🗄️ Database Schema (Room)
 
 ### Entity Relationship Diagram
 ```
@@ -66,30 +66,49 @@ composeApp/src/
                             └──────────────────────┘
 ```
 
-### Table Definitions
+### Entity Definitions
 
-#### 1. **Product Table**
+#### 1. **Product Entity**
 Stores information about product types (e.g., "Milk", "Eggs")
 
-```sql
-CREATE TABLE Product (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    category TEXT NOT NULL,
-    defaultShelfLifeDays INTEGER,
-    barcode TEXT,
-    imageUrl TEXT,
-    createdAt INTEGER NOT NULL,
-    updatedAt INTEGER NOT NULL
-);
-
-CREATE INDEX idx_product_name ON Product(name);
-CREATE INDEX idx_product_category ON Product(category);
-CREATE INDEX idx_product_barcode ON Product(barcode);
+```kotlin
+@Entity(
+    tableName = "products",
+    indices = [
+        Index(value = ["name"]),
+        Index(value = ["category"]),
+        Index(value = ["barcode"])
+    ]
+)
+data class ProductEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    
+    @ColumnInfo(name = "name")
+    val name: String,
+    
+    @ColumnInfo(name = "category")
+    val category: String,
+    
+    @ColumnInfo(name = "default_shelf_life_days")
+    val defaultShelfLifeDays: Int? = null,
+    
+    @ColumnInfo(name = "barcode")
+    val barcode: String? = null,
+    
+    @ColumnInfo(name = "image_url")
+    val imageUrl: String? = null,
+    
+    @ColumnInfo(name = "created_at")
+    val createdAt: Long,
+    
+    @ColumnInfo(name = "updated_at")
+    val updatedAt: Long
+)
 ```
 
 **Fields:**
-- `id`: Unique identifier
+- `id`: Unique identifier (auto-generated)
 - `name`: Product name (e.g., "Whole Milk")
 - `category`: Product category (e.g., "Dairy", "Vegetables", "Meat")
 - `defaultShelfLifeDays`: Typical shelf life in days (optional)
@@ -98,32 +117,62 @@ CREATE INDEX idx_product_barcode ON Product(barcode);
 - `createdAt`: Unix timestamp of creation
 - `updatedAt`: Unix timestamp of last update
 
-#### 2. **ProductInstance Table**
+#### 2. **ProductInstance Entity**
 Stores individual purchases of products with specific expiration dates
 
-```sql
-CREATE TABLE ProductInstance (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    productId INTEGER NOT NULL,
-    expirationDate INTEGER NOT NULL,
-    purchaseDate INTEGER NOT NULL,
-    quantity INTEGER NOT NULL DEFAULT 1,
-    status TEXT NOT NULL DEFAULT 'active',
-    location TEXT,
-    notes TEXT,
-    createdAt INTEGER NOT NULL,
-    updatedAt INTEGER NOT NULL,
-    FOREIGN KEY (productId) REFERENCES Product(id) ON DELETE CASCADE
-);
-
-CREATE INDEX idx_instance_product ON ProductInstance(productId);
-CREATE INDEX idx_instance_expiration ON ProductInstance(expirationDate);
-CREATE INDEX idx_instance_status ON ProductInstance(status);
+```kotlin
+@Entity(
+    tableName = "product_instances",
+    foreignKeys = [
+        ForeignKey(
+            entity = ProductEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["product_id"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index(value = ["product_id"]),
+        Index(value = ["expiration_date"]),
+        Index(value = ["status"])
+    ]
+)
+data class ProductInstanceEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    
+    @ColumnInfo(name = "product_id")
+    val productId: Long,
+    
+    @ColumnInfo(name = "expiration_date")
+    val expirationDate: Long,
+    
+    @ColumnInfo(name = "purchase_date")
+    val purchaseDate: Long,
+    
+    @ColumnInfo(name = "quantity")
+    val quantity: Int = 1,
+    
+    @ColumnInfo(name = "status")
+    val status: String = "active",
+    
+    @ColumnInfo(name = "location")
+    val location: String? = null,
+    
+    @ColumnInfo(name = "notes")
+    val notes: String? = null,
+    
+    @ColumnInfo(name = "created_at")
+    val createdAt: Long,
+    
+    @ColumnInfo(name = "updated_at")
+    val updatedAt: Long
+)
 ```
 
 **Fields:**
-- `id`: Unique identifier
-- `productId`: Reference to Product table
+- `id`: Unique identifier (auto-generated)
+- `productId`: Reference to Product entity (with CASCADE delete)
 - `expirationDate`: Unix timestamp of expiration
 - `purchaseDate`: Unix timestamp of purchase
 - `quantity`: Number of units (default: 1)
@@ -169,6 +218,84 @@ enum class InstanceStatus(val displayName: String) {
     CONSUMED("Consumed"),
     EXPIRED("Expired"),
     DISCARDED("Discarded")
+}
+```
+
+### DAO Interfaces
+
+#### ProductDao
+```kotlin
+@Dao
+interface ProductDao {
+    @Query("SELECT * FROM products")
+    fun getAllProducts(): Flow<List<ProductEntity>>
+    
+    @Query("SELECT * FROM products WHERE id = :productId")
+    suspend fun getProductById(productId: Long): ProductEntity?
+    
+    @Query("SELECT * FROM products WHERE category = :category")
+    fun getProductsByCategory(category: String): Flow<List<ProductEntity>>
+    
+    @Query("SELECT * FROM products WHERE name LIKE '%' || :query || '%'")
+    fun searchProducts(query: String): Flow<List<ProductEntity>>
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertProduct(product: ProductEntity): Long
+    
+    @Update
+    suspend fun updateProduct(product: ProductEntity)
+    
+    @Delete
+    suspend fun deleteProduct(product: ProductEntity)
+}
+```
+
+#### ProductInstanceDao
+```kotlin
+@Dao
+interface ProductInstanceDao {
+    @Query("SELECT * FROM product_instances")
+    fun getAllInstances(): Flow<List<ProductInstanceEntity>>
+    
+    @Query("SELECT * FROM product_instances WHERE id = :instanceId")
+    suspend fun getInstanceById(instanceId: Long): ProductInstanceEntity?
+    
+    @Query("SELECT * FROM product_instances WHERE product_id = :productId")
+    fun getInstancesByProduct(productId: Long): Flow<List<ProductInstanceEntity>>
+    
+    @Query("SELECT * FROM product_instances WHERE status = :status")
+    fun getInstancesByStatus(status: String): Flow<List<ProductInstanceEntity>>
+    
+    @Query("SELECT * FROM product_instances WHERE expiration_date BETWEEN :startDate AND :endDate")
+    fun getInstancesExpiringBetween(startDate: Long, endDate: Long): Flow<List<ProductInstanceEntity>>
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertInstance(instance: ProductInstanceEntity): Long
+    
+    @Update
+    suspend fun updateInstance(instance: ProductInstanceEntity)
+    
+    @Delete
+    suspend fun deleteInstance(instance: ProductInstanceEntity)
+    
+    @Query("DELETE FROM product_instances WHERE product_id = :productId")
+    suspend fun deleteInstancesByProduct(productId: Long)
+}
+```
+
+### Room Database
+```kotlin
+@Database(
+    entities = [
+        ProductEntity::class,
+        ProductInstanceEntity::class
+    ],
+    version = 1,
+    exportSchema = true
+)
+abstract class CaducityDatabase : RoomDatabase() {
+    abstract fun productDao(): ProductDao
+    abstract fun productInstanceDao(): ProductInstanceDao
 }
 ```
 
@@ -388,9 +515,10 @@ data class ProductWithInstances(
 - [x] Create this document
 
 ### 📦 Phase 1: Core Data Layer
-- [ ] Add SQLDelight dependency
-- [ ] Create database schema files
-- [ ] Generate database classes
+- [ ] Add Room dependency
+- [ ] Create entity classes (ProductEntity, ProductInstanceEntity)
+- [ ] Create DAO interfaces (ProductDao, ProductInstanceDao)
+- [ ] Create RoomDatabase class
 - [ ] Implement repository pattern
 - [ ] Create domain models
 - [ ] Write basic unit tests
@@ -455,20 +583,26 @@ data class ProductWithInstances(
 ### Required
 ```toml
 [versions]
-sqldelight = "2.0.1"
+room = "2.7.0-alpha12"
+ksp = "2.2.21-1.0.29"
 kotlinx-datetime = "0.6.0"
 
 [libraries]
-sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
-sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
-sqldelight-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
-sqldelight-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
-sqldelight-js = { module = "app.cash.sqldelight:sqljs-driver", version.ref = "sqldelight" }
+# Room for KMP
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+
+# kotlinx-datetime for multiplatform date handling
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 [plugins]
-sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
+# KSP plugin for Room annotation processing
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+androidx-room = { id = "androidx.room", version.ref = "room" }
 ```
+
+**Note**: Room KMP support is currently in alpha and supports Android and iOS. For JS/WASM targets, consider implementing a simple in-memory or IndexedDB-based storage solution as a fallback.
 
 ### Optional (Future Phases)
 - Image loading library (Coil for Compose)
@@ -497,9 +631,10 @@ sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 ## 📝 Notes & Considerations
 
 ### Data Persistence
-- SQLDelight provides type-safe SQL for KMP
-- Supports Android, iOS, JS, and Native targets
-- Uses platform-specific drivers
+- Room provides type-safe database access for KMP
+- Current support: Android and iOS (alpha)
+- For JS/WASM: Consider IndexedDB or localStorage fallback
+- KSP (Kotlin Symbol Processing) for compile-time annotation processing
 
 ### Date Handling
 - Use `kotlinx-datetime` for cross-platform date operations
@@ -525,11 +660,13 @@ sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
 ## 🔗 References
 
-- [SQLDelight Documentation](https://cashapp.github.io/sqldelight/)
+- [Room Documentation](https://developer.android.com/training/data-storage/room)
+- [Room KMP](https://developer.android.com/kotlin/multiplatform/room)
 - [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html)
 - [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/)
 - [Material 3 Guidelines](https://m3.material.io/)
 - [kotlinx-datetime](https://github.com/Kotlin/kotlinx-datetime)
+- [KSP (Kotlin Symbol Processing)](https://kotlinlang.org/docs/ksp-overview.html)
 
 ---
 
