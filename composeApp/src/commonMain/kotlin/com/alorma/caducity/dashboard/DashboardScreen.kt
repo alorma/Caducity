@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.window.core.layout.WindowSizeClass
+import com.alorma.caducity.ui.adaptive.isWidthCompact
 import com.alorma.caducity.ui.icons.Add
 import com.alorma.caducity.ui.icons.AppIcons
 
@@ -38,14 +38,8 @@ import com.alorma.caducity.ui.icons.AppIcons
 @Composable
 fun DashboardScreen() {
   var showDialog by remember { mutableStateOf(false) }
-  
-  val windowAdaptiveInfo = currentWindowAdaptiveInfo(
-    supportLargeAndXLargeWidth = true,
-  )
 
-  val isCompact = !windowAdaptiveInfo.windowSizeClass.isWidthAtLeastBreakpoint(
-    WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
-  )
+  val isCompact = isWidthCompact()
 
   Scaffold(
     modifier = Modifier.fillMaxSize(),

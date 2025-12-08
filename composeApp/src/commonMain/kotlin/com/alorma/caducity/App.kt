@@ -16,16 +16,15 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import androidx.window.core.layout.WindowSizeClass
 import com.alorma.caducity.dashboard.DashboardScreen
 import com.alorma.caducity.settings.SettingsScreen
+import com.alorma.caducity.ui.adaptive.isWidthCompact
 import com.alorma.caducity.ui.icons.AppIcons
 import com.alorma.caducity.ui.theme.AppTheme
 
@@ -34,13 +33,7 @@ fun App() {
   AppTheme {
     val topLevelBackStack = remember { TopLevelBackStack<TopLevelRoute>(TopLevelRoute.Dashboard) }
 
-    val windowAdaptativeInfo = currentWindowAdaptiveInfo(
-      supportLargeAndXLargeWidth = true,
-    )
-
-    val isWide = windowAdaptativeInfo.windowSizeClass.isWidthAtLeastBreakpoint(
-      WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
-    )
+    val isCompact = isWidthCompact()
 
     val content: @Composable (PaddingValues) -> Unit = @Composable { paddingValues ->
       Box(
@@ -58,13 +51,13 @@ fun App() {
       }
     }
 
-    if (isWide) {
-      ExpandedContent(
+    if (isCompact) {
+      CompactContent(
         topLevelBackStack = topLevelBackStack,
         content = content,
       )
     } else {
-      CompactContent(
+      ExpandedContent(
         topLevelBackStack = topLevelBackStack,
         content = content,
       )
