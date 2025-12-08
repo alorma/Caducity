@@ -1,17 +1,21 @@
 package com.alorma.caducity.data.datasource
 
 import com.alorma.caducity.data.model.Product
+import com.alorma.caducity.data.model.ProductInstance
 import com.alorma.caducity.time.clock.AppClock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlin.time.Instant
 import kotlin.time.Duration.Companion.days
 
 class FakeProductDataSource(
   private val appClock: AppClock
 ) : ProductDataSource {
   private val _products = MutableStateFlow(generateFakeProducts())
+  private val _productInstances = MutableStateFlow(generateFakeProductInstances())
 
   override fun getAllProducts(): Flow<List<Product>> = _products.asStateFlow()
 
@@ -37,9 +41,37 @@ class FakeProductDataSource(
     }
   }
 
-  private fun generateFakeProducts(): List<Product> {
-    val now = appClock.now()
+  override fun getAllProductInstances(): Flow<List<ProductInstance>> =
+    _productInstances.asStateFlow()
 
+  override fun getProductInstancesByProductId(productId: String): Flow<List<ProductInstance>> =
+    _productInstances.map { instances ->
+      instances.filter { it.productId == productId }
+    }
+
+  override suspend fun getProductInstanceById(id: String): ProductInstance? {
+    return _productInstances.value.find { it.id == id }
+  }
+
+  override suspend fun insertProductInstance(instance: ProductInstance) {
+    _productInstances.update { currentList ->
+      currentList + instance
+    }
+  }
+
+  override suspend fun deleteProductInstance(id: String) {
+    _productInstances.update { currentList ->
+      currentList.filterNot { it.id == id }
+    }
+  }
+
+  override suspend fun updateProductInstance(instance: ProductInstance) {
+    _productInstances.update { currentList ->
+      currentList.map { if (it.id == instance.id) instance else it }
+    }
+  }
+
+  private fun generateFakeProducts(): List<Product> {
     val allProducts = listOf(
       "Milk" to "Fresh whole milk",
       "Bread" to "Whole wheat bread",
@@ -77,23 +109,49 @@ class FakeProductDataSource(
     val selectedProducts = allProducts.shuffled().take((15..25).random())
 
     return selectedProducts.mapIndexed { index, (name, description) ->
-      // Random expiration: 60% future (active), 40% past (expired)
-      val isExpired = kotlin.random.Random.nextFloat() < 0.4f
-      val daysOffset = if (isExpired) {
-        // Expired: 1-10 days ago
-        -(1..10).random()
-      } else {
-        // Active: 1-30 days in the future
-        (1..30).random()
-      }
-
       Product(
         id = (index + 1).toString(),
         name = name,
         description = description,
-        expirationDate = (now + daysOffset.days).toEpochMilliseconds(),
-        isExpired = isExpired
       )
     }
+  }
+
+  private fun generateFakeProductInstances(): List<ProductInstance> {
+    val now = appClock.now()
+    val products = _products.value
+    val instances = mutableListOf<ProductInstance>()
+    var instanceId = 1
+
+    // Generate 1-4 instances per product
+    products.forEach { product ->
+      val instanceCount = (1..4).random()
+      repeat(instanceCount) {
+        // Random expiration: 60% future (active), 40% past (expired)
+        val isExpired = kotlin.random.Random.nextFloat() < 0.4f
+        val daysOffset = if (isExpired) {
+          // Expired: 1-10 days ago
+          -(1..10).random()
+        } else {
+          // Active: 1-30 days in the future
+          (1..30).random()
+        }
+
+        // Purchase date is 30-60 days before expiration
+        val purchaseDaysBeforeExpiration = (30..60).random()
+
+        instances.add(
+          ProductInstance(
+            id = instanceId.toString(),
+            productId = product.id,
+            expirationDate = Instant.fromEpochMilliseconds((now + daysOffset.days).toEpochMilliseconds()),
+            purchaseDate = Instant.fromEpochMilliseconds((now + daysOffset.days - purchaseDaysBeforeExpiration.days).toEpochMilliseconds()),
+          )
+        )
+        instanceId++
+      }
+    }
+
+    return instances
   }
 }
