@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         config: [
-          { target: android, os: ubuntu-latest, tasks: assembleDebug  },
+          { target: android, os: ubuntu-latest, tasks: assembleDebug },
           { target: js, os: ubuntu-latest, tasks: jsBrowserDistribution },
           { target: wasm, os: ubuntu-latest, tasks: wasmJsBrowserDistribution },
         ]
