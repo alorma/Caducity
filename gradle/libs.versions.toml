@@ -9,7 +9,7 @@ kotlin = "2.2.21"
 # Android
 agp = "8.13.1"
 android-compileSdk = "36"
-android-minSdk = "24"
+android-minSdk = "34"
 android-targetSdk = "36"
 androidx-activity = "1.12.1"
 
