@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.settings.ThemeSelectionDialog
 import com.alorma.caducity.ui.theme.ThemeMode
 import com.alorma.caducity.ui.theme.ThemePreferences
+import com.alorma.caducity.ui.theme.supportsDynamicColors
 import com.alorma.compose.settings.ui.SettingsGroup
 import com.alorma.compose.settings.ui.SettingsMenuLink
 import com.alorma.compose.settings.ui.SettingsSegmented
@@ -35,7 +36,7 @@ fun SettingsScreen() {
       SettingsSegmented(
         title = { Text(text = "Theme") },
         selectedItem = themePreferences.themeMode,
-        subtitle = { 
+        subtitle = {
           Text(text = when (themePreferences.themeMode) {
             ThemeMode.LIGHT -> "Light"
             ThemeMode.DARK -> "Dark"
@@ -53,12 +54,14 @@ fun SettingsScreen() {
         },
         onItemSelected = { themePreferences.setThemeMode(it) },
       )
-      SettingsSwitch(
-        title = { Text(text = "Dynamic Colors") },
-        subtitle = { Text(text = "Use Material You dynamic colors") },
-        state = themePreferences.useDynamicColors,
-        onCheckedChange = { themePreferences.setUseDynamicColors(it) },
-      )
+      if (supportsDynamicColors()) {
+        SettingsSwitch(
+          title = { Text(text = "Dynamic Colors") },
+          subtitle = { Text(text = "Use Material You dynamic colors") },
+          state = themePreferences.useDynamicColors,
+          onCheckedChange = { themePreferences.setUseDynamicColors(it) },
+        )
+      }
     }
 
     SettingsGroup(

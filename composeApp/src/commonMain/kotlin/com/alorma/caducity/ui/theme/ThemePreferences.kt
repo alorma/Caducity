@@ -29,7 +29,7 @@ class ThemePreferences(private val settings: Settings) {
   }
 
   private fun loadUseDynamicColors(): Boolean {
-    return settings.getBoolean(KEY_USE_DYNAMIC_COLORS, false)
+    return settings.getBoolean(KEY_USE_DYNAMIC_COLORS, supportsDynamicColors())
   }
 
   fun setThemeMode(mode: ThemeMode) {
