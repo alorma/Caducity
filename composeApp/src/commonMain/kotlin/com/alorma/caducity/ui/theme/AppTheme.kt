@@ -19,9 +19,10 @@ fun AppTheme(
     ThemeMode.SYSTEM -> systemInDarkTheme
   }
 
-  val colorScheme: ColorScheme = when {
-    darkTheme -> darkColorScheme()
-    else -> lightColorScheme()
+  val colorScheme: ColorScheme = if (themePreferences.useDynamicColors) {
+    dynamicColorScheme(darkTheme) ?: if (darkTheme) darkColorScheme() else lightColorScheme()
+  } else {
+    if (darkTheme) darkColorScheme() else lightColorScheme()
   }
 
   MaterialTheme(
