@@ -11,15 +11,18 @@ class DashboardMapper {
     return listOf(
       DashboardSection(
         title = Res.string.dashboard_section_expired,
-        itemCount = dashboardProducts.expired.size
+        itemCount = dashboardProducts.expired.size,
+        products = dashboardProducts.expired
       ),
       DashboardSection(
         title = Res.string.dashboard_section_expiring_soon,
-        itemCount = dashboardProducts.expiringSoon.size
+        itemCount = dashboardProducts.expiringSoon.size,
+        products = dashboardProducts.expiringSoon
       ),
       DashboardSection(
         title = Res.string.dashboard_section_fresh,
-        itemCount = dashboardProducts.fresh.size
+        itemCount = dashboardProducts.fresh.size,
+        products = dashboardProducts.fresh
       )
     )
   }
