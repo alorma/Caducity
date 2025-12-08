@@ -31,9 +31,7 @@ import com.alorma.caducity.ui.icons.AppIcons
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
 import com.alorma.caducity.ui.screen.settings.SettingsScreen
 import com.alorma.caducity.ui.theme.AppTheme
-import com.alorma.caducity.ui.theme.ThemePreferences
 import org.koin.compose.KoinApplication
-import org.koin.compose.koinInject
 
 @Composable
 fun App() {
@@ -42,8 +40,7 @@ fun App() {
       modules(appModule, platformModule)
     }
   ) {
-    val themePreferences = koinInject<ThemePreferences>()
-    AppTheme(themePreferences = themePreferences) {
+    AppTheme {
       val topLevelBackStack = remember { TopLevelBackStack<TopLevelRoute>(TopLevelRoute.Dashboard) }
 
       val isCompact = isWidthCompact()
