@@ -66,6 +66,7 @@ kotlin {
       implementation(libs.kotlinx.serialization.json)
       implementation(libs.kotlinx.datetime)
       implementation(libs.alorma.settings.ui.tiles)
+      implementation(libs.alorma.settings.ui.tiles.extended)
 
       // Koin
       implementation(project.dependencies.platform(libs.koin.bom))

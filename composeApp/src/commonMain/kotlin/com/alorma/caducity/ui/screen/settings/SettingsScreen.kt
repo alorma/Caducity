@@ -16,6 +16,7 @@ import com.alorma.caducity.ui.theme.ThemeMode
 import com.alorma.caducity.ui.theme.ThemePreferences
 import com.alorma.compose.settings.ui.SettingsGroup
 import com.alorma.compose.settings.ui.SettingsMenuLink
+import com.alorma.compose.settings.ui.SettingsSegmented
 import com.alorma.compose.settings.ui.SettingsSwitch
 import org.koin.compose.koinInject
 
@@ -31,16 +32,26 @@ fun SettingsScreen() {
     SettingsGroup(
       title = { Text(text = "Appearance") },
     ) {
-      SettingsMenuLink(
+      SettingsSegmented(
         title = { Text(text = "Theme") },
+        selectedItem = themePreferences.themeMode,
         subtitle = { 
           Text(text = when (themePreferences.themeMode) {
             ThemeMode.LIGHT -> "Light"
             ThemeMode.DARK -> "Dark"
             ThemeMode.SYSTEM -> "System default"
-          })
+          }
+          )
         },
-        onClick = { showThemeDialog = true },
+        items = ThemeMode.entries,
+        itemTitleMap = { themeMode ->
+          when (themeMode) {
+            ThemeMode.LIGHT -> "Light"
+            ThemeMode.DARK -> "Dark"
+            ThemeMode.SYSTEM -> "System default"
+          }
+        },
+        onItemSelected = { themePreferences.setThemeMode(it) },
       )
       SettingsSwitch(
         title = { Text(text = "Dynamic Colors") },
