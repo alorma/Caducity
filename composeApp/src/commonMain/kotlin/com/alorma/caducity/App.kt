@@ -22,10 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import com.alorma.caducity.dashboard.DashboardScreen
+import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
 import com.alorma.caducity.di.appModule
 import com.alorma.caducity.di.platformModule
-import com.alorma.caducity.settings.SettingsScreen
+import com.alorma.caducity.ui.screen.settings.SettingsScreen
 import com.alorma.caducity.ui.adaptive.isWidthCompact
 import com.alorma.caducity.ui.icons.AppIcons
 import com.alorma.caducity.ui.theme.AppTheme

@@ -1,4 +1,4 @@
-package com.alorma.caducity.dashboard
+package com.alorma.caducity.ui.screen.dashboard
 
 sealed class DashboardState {
   data object Loading : DashboardState()
