@@ -4,13 +4,14 @@ import android.content.Context
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.SharedPreferencesSettings
 
-private lateinit var appContext: Context
+private var appContext: Context? = null
 
 fun initializeSettings(context: Context) {
   appContext = context.applicationContext
 }
 
 actual fun createSettings(): Settings {
-  val sharedPreferences = appContext.getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+  val context = appContext ?: error("Settings must be initialized by calling initializeSettings(context) before use")
+  val sharedPreferences = context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)
   return SharedPreferencesSettings(sharedPreferences)
 }
