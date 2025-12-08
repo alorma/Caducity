@@ -2,7 +2,6 @@ package com.alorma.caducity.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
@@ -21,10 +20,16 @@ fun AppTheme(
     ThemeMode.SYSTEM -> systemInDarkTheme
   }
 
-  val colorScheme: ColorScheme = if (themePreferences.useDynamicColors) {
-    dynamicColorScheme(darkTheme) ?: if (darkTheme) AppDarkColorScheme else AppLightColorScheme
+  val defaultColorScheme = if (darkTheme) {
+    AppDarkColorScheme
   } else {
-    if (darkTheme) AppDarkColorScheme else AppLightColorScheme
+    AppLightColorScheme
+  }
+
+  val colorScheme: ColorScheme = if (themePreferences.useDynamicColors) {
+    dynamicColorScheme(darkTheme) ?: defaultColorScheme
+  } else {
+    defaultColorScheme
   }
 
   MaterialExpressiveTheme(
