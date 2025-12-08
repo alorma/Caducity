@@ -40,175 +40,60 @@ class FakeProductDataSource(
   private fun generateFakeProducts(): List<Product> {
     val now = appClock.now()
 
-    return listOf(
-      Product(
-        id = "1",
-        name = "Milk",
-        description = "Fresh whole milk",
-        expirationDate = (now + 2.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "2",
-        name = "Bread",
-        description = "Whole wheat bread",
-        expirationDate = (now + 5.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "3",
-        name = "Cheese",
-        description = "Cheddar cheese block",
-        expirationDate = (now + 14.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "4",
-        name = "Yogurt",
-        description = "Greek yogurt",
-        expirationDate = (now + 7.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "5",
-        name = "Eggs",
-        description = "Free range eggs (12 pack)",
-        expirationDate = (now + 10.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "6",
-        name = "Tomatoes",
-        description = "Fresh organic tomatoes",
-        expirationDate = (now + 3.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "7",
-        name = "Chicken Breast",
-        description = "Boneless skinless chicken breast",
-        expirationDate = (now + 4.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "8",
-        name = "Orange Juice",
-        description = "Freshly squeezed orange juice",
-        expirationDate = (now + 6.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "9",
-        name = "Lettuce",
-        description = "Romaine lettuce",
-        expirationDate = (now + 4.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "10",
-        name = "Butter",
-        description = "Unsalted butter",
-        expirationDate = (now + 21.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "11",
-        name = "Ham",
-        description = "Sliced deli ham",
-        expirationDate = (now - 2.days).toEpochMilliseconds(),
-        isExpired = true
-      ),
-      Product(
-        id = "12",
-        name = "Sour Cream",
-        description = "Low fat sour cream",
-        expirationDate = (now - 5.days).toEpochMilliseconds(),
-        isExpired = true
-      ),
-      Product(
-        id = "13",
-        name = "Strawberries",
-        description = "Fresh strawberries",
-        expirationDate = (now - 1.days).toEpochMilliseconds(),
-        isExpired = true
-      ),
-      Product(
-        id = "14",
-        name = "Mayonnaise",
-        description = "Classic mayonnaise",
-        expirationDate = (now - 3.days).toEpochMilliseconds(),
-        isExpired = true
-      ),
-      Product(
-        id = "15",
-        name = "Carrots",
-        description = "Baby carrots",
-        expirationDate = (now - 7.days).toEpochMilliseconds(),
-        isExpired = true
-      ),
-      Product(
-        id = "16",
-        name = "Ground Beef",
-        description = "Lean ground beef",
-        expirationDate = (now - 4.days).toEpochMilliseconds(),
-        isExpired = true
-      ),
-      Product(
-        id = "17",
-        name = "Pasta",
-        description = "Whole grain pasta",
-        expirationDate = (now + 180.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "18",
-        name = "Rice",
-        description = "Basmati rice",
-        expirationDate = (now + 365.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "19",
-        name = "Apples",
-        description = "Granny smith apples",
-        expirationDate = (now + 12.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "20",
-        name = "Bananas",
-        description = "Ripe bananas",
-        expirationDate = (now + 3.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "21",
-        name = "Salmon Fillet",
-        description = "Fresh Atlantic salmon",
-        expirationDate = (now + 2.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "22",
-        name = "Cream Cheese",
-        description = "Philadelphia cream cheese",
-        expirationDate = (now + 20.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "23",
-        name = "Spinach",
-        description = "Baby spinach leaves",
-        expirationDate = (now + 5.days).toEpochMilliseconds(),
-        isExpired = false
-      ),
-      Product(
-        id = "24",
-        name = "Mushrooms",
-        description = "White button mushrooms",
-        expirationDate = (now + 4.days).toEpochMilliseconds(),
-        isExpired = false
-      )
+    val allProducts = listOf(
+      "Milk" to "Fresh whole milk",
+      "Bread" to "Whole wheat bread",
+      "Cheese" to "Cheddar cheese block",
+      "Yogurt" to "Greek yogurt",
+      "Eggs" to "Free range eggs (12 pack)",
+      "Tomatoes" to "Fresh organic tomatoes",
+      "Chicken Breast" to "Boneless skinless chicken breast",
+      "Orange Juice" to "Freshly squeezed orange juice",
+      "Lettuce" to "Romaine lettuce",
+      "Butter" to "Unsalted butter",
+      "Ham" to "Sliced deli ham",
+      "Sour Cream" to "Low fat sour cream",
+      "Strawberries" to "Fresh strawberries",
+      "Mayonnaise" to "Classic mayonnaise",
+      "Carrots" to "Baby carrots",
+      "Ground Beef" to "Lean ground beef",
+      "Pasta" to "Whole grain pasta",
+      "Rice" to "Basmati rice",
+      "Apples" to "Granny smith apples",
+      "Bananas" to "Ripe bananas",
+      "Salmon Fillet" to "Fresh Atlantic salmon",
+      "Cream Cheese" to "Philadelphia cream cheese",
+      "Spinach" to "Baby spinach leaves",
+      "Mushrooms" to "White button mushrooms",
+      "Avocados" to "Ripe avocados",
+      "Turkey Slices" to "Deli turkey slices",
+      "Cottage Cheese" to "Low fat cottage cheese",
+      "Bell Peppers" to "Mixed bell peppers",
+      "Broccoli" to "Fresh broccoli florets",
+      "Bacon" to "Hickory smoked bacon"
     )
+
+    // Randomly select 15-25 products
+    val selectedProducts = allProducts.shuffled().take((15..25).random())
+
+    return selectedProducts.mapIndexed { index, (name, description) ->
+      // Random expiration: 60% future (active), 40% past (expired)
+      val isExpired = kotlin.random.Random.nextFloat() < 0.4f
+      val daysOffset = if (isExpired) {
+        // Expired: 1-10 days ago
+        -(1..10).random()
+      } else {
+        // Active: 1-30 days in the future
+        (1..30).random()
+      }
+
+      Product(
+        id = (index + 1).toString(),
+        name = name,
+        description = description,
+        expirationDate = (now + daysOffset.days).toEpochMilliseconds(),
+        isExpired = isExpired
+      )
+    }
   }
 }
