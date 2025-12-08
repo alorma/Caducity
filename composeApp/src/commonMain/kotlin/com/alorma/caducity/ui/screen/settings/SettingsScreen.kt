@@ -1,4 +1,4 @@
-package com.alorma.caducity.settings
+package com.alorma.caducity.ui.screen.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
