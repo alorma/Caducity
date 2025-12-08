@@ -1,0 +1,210 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+Caducity is a Kotlin Multiplatform grocery expiration tracker application built with Compose Multiplatform. The app helps users track their groceries and avoid food waste by monitoring expiration dates across multiple platforms (Android, JS, WebAssembly).
+
+## Technology Stack
+
+- **Language**: Kotlin 2.2.21
+- **UI Framework**: Jetpack Compose Multiplatform (v1.10.0-rc01) with Material 3 Expressive API
+- **Target Platforms**: Android (minSdk 24), JS (browser), WebAssembly
+- **Architecture**: MVI/MVVM with Compose state management
+- **Navigation**: Jetpack Navigation 3 (alpha06)
+- **Dependency Injection**: Koin 4.1.1
+- **Build System**: Gradle with Kotlin DSL
+- **Database**: Room (Android only, currently in planning phase)
+- **Date/Time**: kotlinx-datetime 0.7.1
+
+## Build Commands
+
+### Development Build
+```bash
+# Clean build
+./gradlew clean build
+
+# Build specific platforms
+./gradlew assembleDebug              # Android debug build
+./gradlew assembleRelease            # Android release build
+./gradlew jsBrowserDevelopmentRun    # Run JS dev server (http://localhost:8080)
+./gradlew wasmJsBrowserDevelopmentRun # Run WASM dev server
+```
+
+### Testing
+```bash
+# Run all tests
+./gradlew allTests
+
+# Android tests
+./gradlew connectedDebugAndroidTest  # Requires connected device/emulator
+./gradlew testDebugUnitTest          # Unit tests only
+
+# JS/WASM tests
+./gradlew jsTest
+./gradlew wasmJsTest
+```
+
+### Compose Hot Reload
+```bash
+# Hot reload is configured but requires running application
+./gradlew reload
+```
+
+### Installation
+```bash
+# Install Android app
+./gradlew installDebug    # Debug variant
+./gradlew installRelease  # Release variant
+./gradlew uninstallAll    # Uninstall all variants
+```
+
+### Web Distribution
+```bash
+# Build browser distributions
+./gradlew jsBrowserDistribution
+./gradlew wasmJsBrowserDistribution
+./gradlew composeCompatibilityBrowserDistribution  # Combined JS/WASM with fallback
+```
+
+## Architecture
+
+### Project Structure
+```
+composeApp/src/
+├── commonMain/kotlin/com/alorma/caducity/
+│   ├── data/              # Data layer
+│   │   ├── datasource/    # Abstract data source interfaces
+│   │   ├── entity/        # Data entities
+│   │   ├── model/         # Data models
+│   │   └── mapper/        # Entity-to-Model mappers
+│   ├── domain/            # Business logic
+│   │   ├── model/         # Domain models
+│   │   └── usecase/       # Use cases
+│   ├── ui/                # UI layer
+│   │   ├── screen/        # Feature screens (dashboard, settings)
+│   │   ├── theme/         # Theming (Material 3 with dynamic colors)
+│   │   ├── icons/         # Custom icons
+│   │   └── adaptive/      # Adaptive/responsive utilities
+│   ├── di/                # Dependency injection modules
+│   ├── time/              # Time/clock abstraction
+│   ├── App.kt             # Main app entry point with navigation
+│   └── TopLevelBackStack.kt/TopLevelRoute.kt  # Navigation setup
+├── androidMain/kotlin/com/alorma/caducity/
+│   ├── MainActivity.kt
+│   └── data/datasource/   # Android-specific implementations (Room)
+└── webMain/kotlin/com/alorma/caducity/
+    ├── main.kt
+    └── data/datasource/   # Web-specific implementations (FakeDataSource)
+```
+
+### Multiplatform Architecture
+
+**Common Code (commonMain)**:
+- Defines all shared UI, business logic, and data abstractions
+- Uses `expect` declarations for platform-specific implementations
+- All Compose UI is shared across platforms
+
+**Platform-Specific Code**:
+- **Android** (`androidMain`): Room database implementation for persistence
+- **Web** (`webMain`): Currently uses FakeProductDataSource; Room not supported yet
+
+**Dependency Injection Pattern**:
+- `appModule` (common): ViewModels, use cases, shared services
+- `platformModule` (expect/actual): Platform-specific implementations (e.g., ProductDataSource)
+- Both modules are combined in `App.kt` via Koin
+
+### Navigation System
+
+Uses Jetpack Navigation 3 with a custom `TopLevelBackStack` implementation:
+- Type-safe navigation with sealed `TopLevelRoute` classes
+- Adaptive UI: NavigationBar (compact) vs NavigationRail (expanded)
+- Window size class detection for responsive layouts
+- ViewModel scoping via `rememberViewModelStoreNavEntryDecorator()`
+- State preservation via `rememberSaveableStateHolderNavEntryDecorator()`
+
+### Theming
+
+Material 3 Expressive API with:
+- Dynamic color support (platform-dependent via `expect/actual`)
+- Dark mode toggle with system default option
+- Theme preferences persisted via custom `ThemePreferences` class
+- Uses compose-settings library for settings UI tiles
+
+## Key Patterns and Conventions
+
+### Data Flow
+1. **ViewModel** collects data from **UseCase**
+2. **UseCase** calls **DataSource** (via platform module)
+3. **DataSource** returns domain **Model** (mapped from **Entity**)
+4. **ViewModel** maps to **UiModel** for screens
+5. **Screen** observes `StateFlow<UiState>` from ViewModel
+
+### Opt-In Requirements
+The following experimental APIs are enabled project-wide:
+- `kotlin.time.ExperimentalTime`
+- `androidx.compose.material3.ExperimentalMaterial3Api`
+- `androidx.compose.material3.ExperimentalMaterial3ExpressiveApi`
+
+### Date/Time Handling
+- Use `kotlinx-datetime` for all date/time operations
+- Store timestamps as `Long` (Unix epoch milliseconds)
+- Convert to `LocalDate`/`LocalDateTime` for display
+- Use `AppClock` abstraction (injectable) for testable time operations
+
+### Dependency Injection
+- Register ViewModels with `viewModelOf(::ClassName)`
+- Register singletons with `singleOf(::ClassName)` or `single { }`
+- Use `bind` to map implementations to interfaces in platform modules
+- Always inject dependencies via constructor
+
+## Current Implementation Status
+
+**Completed**:
+- Basic app scaffold with navigation
+- Dashboard screen with ViewModel
+- Settings screen with theme selection
+- Adaptive UI for different screen sizes
+- Platform-specific data source abstraction
+- DI setup with Koin
+
+**In Progress (see IMPLEMENTATION_PLAN.md)**:
+- Room database integration (Android only)
+- Product and ProductInstance entities
+- Full CRUD operations for products
+- Dashboard statistics and data display
+
+**Platform-Specific Data Sources**:
+- Android: `RoomProductDataSource` (Room database)
+- Web: `FakeProductDataSource` (in-memory mock data)
+
+## Development Notes
+
+### Adding New Screens
+1. Create screen composable in `ui/screen/<feature>/`
+2. Add corresponding ViewModel in same package
+3. Define route in `TopLevelRoute.kt`
+4. Register in `App.kt` `entryProvider` block
+5. Add navigation item to `CompactContent`/`ExpandedContent`
+
+### Adding Platform-Specific Code
+1. Define `expect` declaration in `commonMain`
+2. Provide `actual` implementations in `androidMain` and `webMain`
+3. Common pattern: expect val/fun in DI modules or utility classes
+
+### Version Catalog (libs.versions.toml)
+All dependencies are centralized in `gradle/libs.versions.toml`:
+- Access via `libs.plugins.*` or `libs.*` in build files
+- Update versions in `[versions]` section only
+- Use `alias()` to reference in build.gradle.kts
+
+### Java Version
+- Source/target: Java 11
+- Ensure JDK 11+ is configured in IDE
+
+## Important References
+
+- Detailed implementation plan: `IMPLEMENTATION_PLAN.md`
+- Compose hot reload is enabled via plugin
+- All build configurations use Kotlin DSL (`.gradle.kts`)

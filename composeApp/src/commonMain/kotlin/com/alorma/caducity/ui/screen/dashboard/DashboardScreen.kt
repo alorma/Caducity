@@ -11,14 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularWavyProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,8 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.ui.adaptive.isWidthCompact
-import com.alorma.caducity.ui.icons.Add
-import com.alorma.caducity.ui.icons.AppIcons
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -48,54 +42,39 @@ fun DashboardScreen(
 
   val isCompact = isWidthCompact()
 
-  Scaffold(
-    modifier = Modifier.fillMaxSize(),
-    floatingActionButton = {
-      FloatingActionButton(
-        onClick = { showDialog.value = true },
-      ) {
-        Icon(
-          imageVector = AppIcons.Add,
-          contentDescription = "Create Product",
-        )
-      }
-    },
-  ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues)
-        .padding(16.dp),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-      Text(
-        text = "Dashboard",
-        style = MaterialTheme.typography.headlineMedium,
-      )
+  Column(
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    Text(
+      text = "Dashboard",
+      style = MaterialTheme.typography.headlineMedium,
+    )
 
-      when (val state = dashboardState) {
-        is DashboardState.Loading -> {
-          Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-          ) {
-            LoadingIndicator(
-              color = MaterialTheme.colorScheme.secondary,
-              polygons = listOf(
-                MaterialShapes.Cookie4Sided,
-                MaterialShapes.Cookie6Sided,
-              ),
-            )
-          }
+    when (val state = dashboardState) {
+      is DashboardState.Loading -> {
+        Box(
+          modifier = Modifier.fillMaxSize(),
+          contentAlignment = Alignment.Center,
+        ) {
+          LoadingIndicator(
+            color = MaterialTheme.colorScheme.secondary,
+            polygons = listOf(
+              MaterialShapes.Cookie4Sided,
+              MaterialShapes.Cookie6Sided,
+            ),
+          )
         }
+      }
 
-        is DashboardState.Success -> {
-          state.sections.forEach { section ->
-            DashboardCard(
-              title = stringResource(section.title),
-              value = section.itemCount.toString(),
-            )
-          }
+      is DashboardState.Success -> {
+        state.sections.forEach { section ->
+          DashboardCard(
+            title = stringResource(section.title),
+            value = section.itemCount.toString(),
+          )
         }
       }
     }
