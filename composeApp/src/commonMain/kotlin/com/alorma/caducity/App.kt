@@ -27,10 +27,11 @@ import androidx.window.core.layout.WindowSizeClass
 import com.alorma.caducity.dashboard.DashboardScreen
 import com.alorma.caducity.settings.SettingsScreen
 import com.alorma.caducity.ui.icons.AppIcons
+import com.alorma.caducity.ui.theme.AppTheme
 
 @Composable
 fun App() {
-  MaterialTheme {
+  AppTheme {
     val topLevelBackStack = remember { TopLevelBackStack<TopLevelRoute>(TopLevelRoute.Dashboard) }
 
     val windowAdaptativeInfo = currentWindowAdaptiveInfo(
