@@ -67,6 +67,7 @@ kotlin {
 
       implementation(libs.kotlinx.serialization.json)
       implementation(libs.kotlinx.datetime)
+      implementation(libs.multiplatform.settings)
       implementation(libs.alorma.settings.ui.tiles)
       implementation(libs.alorma.settings.ui.tiles.extended)
 
