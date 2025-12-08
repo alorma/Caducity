@@ -22,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,11 +31,15 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.adaptive.isWidthCompact
 import com.alorma.caducity.ui.icons.Add
 import com.alorma.caducity.ui.icons.AppIcons
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen() {
+fun DashboardScreen(
+  viewModel: DashboardViewModel = koinViewModel()
+) {
   val showDialog = remember { mutableStateOf(false) }
+  val state = viewModel.state.collectAsState()
 
   val isCompact = isWidthCompact()
 
@@ -63,20 +68,28 @@ fun DashboardScreen() {
         style = MaterialTheme.typography.headlineMedium,
       )
 
-      DashboardCard(
-        title = "Total Items",
-        value = "24",
-      )
+      when (val dashboardState = state.value) {
+        is DashboardState.Loading -> {
+          Text(text = "Loading...")
+        }
 
-      DashboardCard(
-        title = "Active",
-        value = "18",
-      )
+        is DashboardState.Success -> {
+          DashboardCard(
+            title = "Total Items",
+            value = dashboardState.totalItems.toString(),
+          )
 
-      DashboardCard(
-        title = "Expired",
-        value = "6",
-      )
+          DashboardCard(
+            title = "Active",
+            value = dashboardState.activeItems.toString(),
+          )
+
+          DashboardCard(
+            title = "Expired",
+            value = dashboardState.expiredItems.toString(),
+          )
+        }
+      }
     }
   }
 
