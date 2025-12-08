@@ -41,7 +41,7 @@ internal class BottomSheetScene<T : Any>(
  * This strategy should always be added before any non-overlay scene strategies.
  */
 @OptIn(ExperimentalMaterial3Api::class)
-class BottomSheetSceneStrategy<T : NavKey> : SceneStrategy<T> {
+class BottomSheetSceneStrategy<T : Any> : SceneStrategy<T> {
 
     override fun SceneStrategyScope<T>.calculateScene(entries: List<NavEntry<T>>): Scene<T>? {
         val lastEntry = entries.lastOrNull()
