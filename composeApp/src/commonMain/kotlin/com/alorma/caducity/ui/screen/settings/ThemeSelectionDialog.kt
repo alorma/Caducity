@@ -37,7 +37,7 @@ fun ThemeSelectionDialog(
           onClick = { onThemeSelected(ThemeMode.DARK) },
         )
         ThemeOption(
-          text = "System default",
+          text = "System",
           selected = currentTheme == ThemeMode.SYSTEM,
           onClick = { onThemeSelected(ThemeMode.SYSTEM) },
         )

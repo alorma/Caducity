@@ -1,10 +1,12 @@
 package com.alorma.caducity.domain.usecase
 
 import com.alorma.caducity.data.datasource.ProductDataSource
+import com.alorma.caducity.data.model.ProductInstance
 import com.alorma.caducity.domain.model.DashboardProducts
+import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.time.clock.AppClock
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 
@@ -16,29 +18,40 @@ class ObtainDashboardProductsUseCase(
 
   fun obtainProducts(): Flow<DashboardProducts> {
     println("Load products")
-    return productDataSource.getAllProductInstances()
-      .map { instances ->
+    return combine(
+      productDataSource.getAllProducts(),
+      productDataSource.getAllProductInstances()
+    ) { products, instances ->
+      println(instances)
 
-        println(instances)
+      val now = appClock.now()
+      val soonThreshold = now + soonExpiringThreshold
 
-        val now = appClock.now()
-        val soonThreshold = now + soonExpiringThreshold
+      // Group instances by expiration status
+      val expired = instances.filter { it.expirationDate <= now }
+      val expiringSoon =
+        instances.filter { it.expirationDate > now && it.expirationDate <= soonThreshold }
+      val fresh = instances.filter { it.expirationDate > soonThreshold }
 
-        val expired = instances.filter {
-          it.expirationDate <= now
-        }
-        val expiringSoon = instances.filter {
-          it.expirationDate > now && it.expirationDate <= soonThreshold
-        }
-        val fresh = instances.filter {
-          it.expirationDate > soonThreshold
-        }
-
-        DashboardProducts(
-          expired = expired,
-          expiringSoon = expiringSoon,
-          fresh = fresh,
-        )
+      // Group instances by product
+      fun groupByProduct(instances: List<ProductInstance>): List<ProductWithInstances> {
+        return instances.groupBy { it.productId }
+          .mapNotNull { (productId, productInstances) ->
+            val product = products.find { it.id == productId }
+            product?.let {
+              ProductWithInstances(
+                product = it,
+                instances = productInstances
+              )
+            }
+          }
       }
+
+      DashboardProducts(
+        expired = groupByProduct(expired),
+        expiringSoon = groupByProduct(expiringSoon),
+        fresh = groupByProduct(fresh),
+      )
+    }
   }
 }
