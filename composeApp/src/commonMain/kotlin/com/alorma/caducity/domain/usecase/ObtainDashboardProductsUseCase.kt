@@ -11,8 +11,9 @@ import kotlin.time.Duration.Companion.days
 class ObtainDashboardProductsUseCase(
   private val productDataSource: ProductDataSource,
   private val appClock: AppClock,
-  private val soonExpiringThreshold: Duration = 7.days
 ) {
+  private val soonExpiringThreshold: Duration = 7.days
+
   fun obtainProducts(): Flow<DashboardProducts> {
     println("Load products")
     return productDataSource.getAllProductInstances()

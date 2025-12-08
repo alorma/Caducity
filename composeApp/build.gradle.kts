@@ -48,15 +48,21 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
-      implementation(libs.compose.runtime)
-      implementation(libs.compose.ui)
-      implementation(libs.compose.foundation)
+      implementation(compose.runtime)
+      implementation(compose.ui)
+      implementation(compose.foundation)
+      implementation(compose.components.resources)
+      implementation(compose.components.uiToolingPreview)
+
       implementation(libs.compose.material3)
-      implementation(libs.compose.ui.tooling.preview)
-      implementation(libs.compose.components.resources)
+
       implementation(libs.androidx.nav3.ui)
+      implementation(libs.androidx.nav3.viewModel)
       implementation(libs.androidx.material3.adaptive)
       implementation(libs.androidx.material3.adaptive.nav3)
+
+      implementation(libs.lifecycle.runtime.compose)
+
       implementation(libs.kotlinx.serialization.json)
       implementation(libs.kotlinx.datetime)
       implementation(libs.alorma.settings.ui.tiles)
