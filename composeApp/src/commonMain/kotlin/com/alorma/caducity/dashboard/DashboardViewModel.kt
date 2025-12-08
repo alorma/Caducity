@@ -11,13 +11,17 @@ import kotlinx.coroutines.flow.stateIn
 
 class DashboardViewModel(
   productDataSource: ProductDataSource,
-  private val appClock: AppClock
+  private val appClock: AppClock,
+  private val dashboardMapper: DashboardMapper
 ) : ViewModel() {
 
   val state: StateFlow<DashboardState> = productDataSource
     .getAllProductInstances()
     .map { instances ->
-      val sections = instances.toDashboardSections(now = appClock.now())
+      val sections = dashboardMapper.mapToDashboardSections(
+        instances = instances,
+        now = appClock.now()
+      )
       DashboardState.Success(sections = sections)
     }
     .stateIn(
