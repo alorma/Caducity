@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -40,11 +43,10 @@ import org.koin.compose.viewmodel.koinViewModel
 fun DashboardScreen(
   viewModel: DashboardViewModel = koinViewModel()
 ) {
-  val showDialog = remember { mutableStateOf(false) }
-
   val dashboardState by viewModel.state.collectAsStateWithLifecycle()
-
+  var expandedSectionIndex by remember { mutableStateOf<Int?>(null) }
   val isCompact = isWidthCompact()
+  val columnsPerRow = if (isCompact) 2 else 3
 
   Column(
     modifier = Modifier
@@ -74,12 +76,65 @@ fun DashboardScreen(
       }
 
       is DashboardState.Success -> {
-        state.sections.forEach { section ->
-          DashboardCard(
-            title = stringResource(section.title),
-            value = section.itemCount.toString(),
-            products = section.products,
-          )
+        DashboardGrid(
+          sections = state.sections,
+          expandedSectionIndex = expandedSectionIndex,
+          columnsPerRow = columnsPerRow,
+          onSectionClick = { index ->
+            expandedSectionIndex = if (expandedSectionIndex == index) null else index
+          }
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun DashboardGrid(
+  sections: List<DashboardSection>,
+  expandedSectionIndex: Int?,
+  columnsPerRow: Int,
+  onSectionClick: (Int) -> Unit,
+) {
+  LazyVerticalGrid(
+    columns = GridCells.Fixed(columnsPerRow),
+    horizontalArrangement = Arrangement.spacedBy(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    sections.forEachIndexed { index, section ->
+      val isExpanded = expandedSectionIndex == index
+
+      if (isExpanded) {
+        // Full-width expanded card spans all columns
+        item(span = { GridItemSpan(columnsPerRow) }) {
+          AnimatedVisibility(
+            visible = true,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+          ) {
+            DashboardExpandedCard(
+              title = stringResource(section.title),
+              value = section.itemCount.toString(),
+              products = section.products,
+              onCollapse = { onSectionClick(index) }
+            )
+          }
+        }
+      } else {
+        // Compact card in grid
+        item {
+          AnimatedVisibility(
+            visible = true,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+          ) {
+            DashboardCompactCard(
+              title = stringResource(section.title),
+              value = section.itemCount.toString(),
+              onClick = { onSectionClick(index) },
+              modifier = Modifier
+            )
+          }
         }
       }
     }
@@ -87,13 +142,45 @@ fun DashboardScreen(
 }
 
 @Composable
-private fun DashboardCard(
+private fun DashboardCompactCard(
+  title: String,
+  value: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Card(
+    modifier = modifier
+      .fillMaxWidth()
+      .clickable(onClick = onClick),
+  ) {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurface,
+      )
+      Text(
+        text = value,
+        style = MaterialTheme.typography.displayMedium,
+        color = MaterialTheme.colorScheme.primary,
+      )
+    }
+  }
+}
+
+@Composable
+private fun DashboardExpandedCard(
   title: String,
   value: String,
   products: List<ProductUiModel>,
+  onCollapse: () -> Unit,
 ) {
-  var isExpanded by remember { mutableStateOf(false) }
-
   Card(
     modifier = Modifier.fillMaxWidth(),
   ) {
@@ -103,7 +190,7 @@ private fun DashboardCard(
       Row(
         modifier = Modifier
           .fillMaxWidth()
-          .clickable { isExpanded = !isExpanded }
+          .clickable(onClick = onCollapse)
           .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -113,45 +200,37 @@ private fun DashboardCard(
         ) {
           Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface,
           )
           Text(
-            text = value,
-            style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.onSurface,
+            text = "$value items",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
 
         Icon(
-          imageVector = if (isExpanded) AppIcons.ArrowUp else AppIcons.ArrowDown,
-          contentDescription = if (isExpanded) "Collapse" else "Expand",
+          imageVector = AppIcons.ArrowUp,
+          contentDescription = "Collapse",
           tint = MaterialTheme.colorScheme.onSurface,
         )
       }
 
-      AnimatedVisibility(
-        visible = isExpanded,
-        enter = expandVertically() + fadeIn(),
-        exit = shrinkVertically() + fadeOut(),
-      ) {
-        Column {
-          HorizontalDivider()
+      HorizontalDivider()
 
-          if (products.isEmpty()) {
-            Text(
-              text = "No products in this category",
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.padding(16.dp),
-            )
-          } else {
-            products.forEach { product ->
-              ProductCard(product = product)
-              if (product != products.last()) {
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
-              }
-            }
+      if (products.isEmpty()) {
+        Text(
+          text = "No products in this category",
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.padding(16.dp),
+        )
+      } else {
+        products.forEach { product ->
+          ProductCard(product = product)
+          if (product != products.last()) {
+            HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
           }
         }
       }
