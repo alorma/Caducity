@@ -29,13 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.alorma.caducity.data.model.ProductInstance
 import com.alorma.caducity.ui.adaptive.isWidthCompact
 import com.alorma.caducity.ui.icons.AppIcons
 import com.alorma.caducity.ui.icons.ArrowDown
 import com.alorma.caducity.ui.icons.ArrowUp
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -93,7 +90,7 @@ fun DashboardScreen(
 private fun DashboardCard(
   title: String,
   value: String,
-  products: List<ProductInstance>,
+  products: List<ProductUiModel>,
 ) {
   var isExpanded by remember { mutableStateOf(false) }
 
@@ -150,7 +147,7 @@ private fun DashboardCard(
             )
           } else {
             products.forEach { product ->
-              ProductItem(product = product)
+              ProductCard(product = product)
               if (product != products.last()) {
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
               }
@@ -163,42 +160,71 @@ private fun DashboardCard(
 }
 
 @Composable
-private fun ProductItem(
-  product: ProductInstance,
+private fun ProductCard(
+  product: ProductUiModel,
 ) {
-  val expirationDate = product.expirationDate.toLocalDateTime(TimeZone.currentSystemDefault())
-  val purchaseDate = product.purchaseDate.toLocalDateTime(TimeZone.currentSystemDefault())
-
   Column(
     modifier = Modifier
       .fillMaxWidth()
       .padding(16.dp),
-    verticalArrangement = Arrangement.spacedBy(4.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     Text(
-      text = "Product ID: ${product.productId}",
-      style = MaterialTheme.typography.bodyLarge,
+      text = product.name,
+      style = MaterialTheme.typography.titleMedium,
       color = MaterialTheme.colorScheme.onSurface,
     )
+    if (product.description.isNotEmpty()) {
+      Text(
+        text = product.description,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    }
+
     Text(
-      text = "Instance ID: ${product.id}",
-      style = MaterialTheme.typography.bodyMedium,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      text = "${product.instances.size} instance${if (product.instances.size != 1) "s" else ""}",
+      style = MaterialTheme.typography.labelMedium,
+      color = MaterialTheme.colorScheme.secondary,
     )
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.SpaceBetween,
+
+    Column(
+      modifier = Modifier.padding(start = 16.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      product.instances.forEach { instance ->
+        ProductInstanceItem(instance = instance)
+      }
+    }
+  }
+}
+
+@Composable
+private fun ProductInstanceItem(
+  instance: ProductInstanceUiModel,
+) {
+  Row(
+    modifier = Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.SpaceBetween,
+  ) {
+    Column(
+      verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
       Text(
-        text = "Purchased: ${purchaseDate.date}",
+        text = "ID: ${instance.id.take(8)}...",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
       Text(
-        text = "Expires: ${expirationDate.date}",
+        text = "Purchased: ${instance.purchaseDate}",
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
     }
+    Text(
+      text = "Expires: ${instance.expirationDate}",
+      style = MaterialTheme.typography.bodySmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
   }
 }

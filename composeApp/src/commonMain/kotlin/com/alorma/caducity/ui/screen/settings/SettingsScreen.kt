@@ -34,20 +34,12 @@ fun SettingsScreen() {
       SettingsSegmented(
         title = { Text(text = "Theme") },
         selectedItem = themePreferences.themeMode,
-        subtitle = {
-          Text(text = when (themePreferences.themeMode) {
-            ThemeMode.LIGHT -> "Light"
-            ThemeMode.DARK -> "Dark"
-            ThemeMode.SYSTEM -> "System default"
-          }
-          )
-        },
         items = ThemeMode.entries,
         itemTitleMap = { themeMode ->
           when (themeMode) {
             ThemeMode.LIGHT -> "Light"
             ThemeMode.DARK -> "Dark"
-            ThemeMode.SYSTEM -> "System default"
+            ThemeMode.SYSTEM -> "System"
           }
         },
         onItemSelected = { themePreferences.setThemeModeState(it) },
@@ -55,7 +47,6 @@ fun SettingsScreen() {
       if (supportsDynamicColors()) {
         SettingsSwitch(
           title = { Text(text = "Dynamic Colors") },
-          subtitle = { Text(text = "Use Material You dynamic colors") },
           state = themePreferences.useDynamicColors,
           onCheckedChange = { themePreferences.setDynamicColorsEnabled(it) },
         )
@@ -67,7 +58,6 @@ fun SettingsScreen() {
     ) {
       SettingsSwitch(
         title = { Text(text = "Enable Notifications") },
-        subtitle = { Text(text = "Receive push notifications") },
         state = notificationsEnabled,
         onCheckedChange = { notificationsEnabled = it },
       )
