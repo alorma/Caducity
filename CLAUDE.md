@@ -4,13 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Caducity is a Kotlin Multiplatform grocery expiration tracker application built with Compose Multiplatform. The app helps users track their groceries and avoid food waste by monitoring expiration dates across multiple platforms (Android, JS, WebAssembly).
+Caducity is a Kotlin Multiplatform grocery expiration tracker application built with Compose Multiplatform. The app helps users track their groceries and avoid food waste by monitoring expiration dates across multiple platforms (Android, Desktop, JS, WebAssembly).
 
 ## Technology Stack
 
 - **Language**: Kotlin 2.2.21
 - **UI Framework**: Jetpack Compose Multiplatform (v1.10.0-rc01) with Material 3 Expressive API
-- **Target Platforms**: Android (minSdk 24), JS (browser), WebAssembly
+- **Target Platforms**: Android (minSdk 24), Desktop (JVM 11), JS (browser), WebAssembly
 - **Architecture**: MVI/MVVM with Compose state management
 - **Navigation**: Jetpack Navigation 3 (alpha06)
 - **Dependency Injection**: Koin 4.1.1
@@ -28,6 +28,7 @@ Caducity is a Kotlin Multiplatform grocery expiration tracker application built 
 # Build specific platforms
 ./gradlew assembleDebug              # Android debug build
 ./gradlew assembleRelease            # Android release build
+./gradlew :composeApp:run            # Run desktop app
 ./gradlew jsBrowserDevelopmentRun    # Run JS dev server (http://localhost:8080)
 ./gradlew wasmJsBrowserDevelopmentRun # Run WASM dev server
 ```
@@ -60,9 +61,13 @@ Caducity is a Kotlin Multiplatform grocery expiration tracker application built 
 ./gradlew uninstallAll    # Uninstall all variants
 ```
 
-### Web Distribution
+### Distribution
 ```bash
-# Build browser distributions
+# Desktop distribution
+./gradlew :composeApp:packageDistributionForCurrentOS  # Create native package (DMG/MSI/DEB)
+./gradlew :composeApp:createDistributable              # Create distributable app bundle
+
+# Browser distributions
 ./gradlew jsBrowserDistribution
 ./gradlew wasmJsBrowserDistribution
 ./gradlew composeCompatibilityBrowserDistribution  # Combined JS/WASM with fallback
@@ -94,9 +99,16 @@ composeApp/src/
 ├── androidMain/kotlin/com/alorma/caducity/
 │   ├── MainActivity.kt
 │   └── data/datasource/   # Android-specific implementations (Room)
+├── desktopMain/kotlin/com/alorma/caducity/
+│   ├── main.kt
+│   ├── di/                # Desktop platform module
+│   ├── data/datasource/   # Desktop-specific implementations (FakeDataSource)
+│   └── ui/theme/          # Desktop theme implementations
 └── webMain/kotlin/com/alorma/caducity/
     ├── main.kt
-    └── data/datasource/   # Web-specific implementations (FakeDataSource)
+    ├── di/                # Web platform module
+    ├── data/datasource/   # Web-specific implementations (FakeDataSource)
+    └── ui/theme/          # Web theme implementations
 ```
 
 ### Multiplatform Architecture
@@ -108,7 +120,8 @@ composeApp/src/
 
 **Platform-Specific Code**:
 - **Android** (`androidMain`): Room database implementation for persistence
-- **Web** (`webMain`): Currently uses FakeProductDataSource; Room not supported yet
+- **Desktop** (`desktopMain`): Uses FakeProductDataSource (in-memory mock data)
+- **Web** (`webMain`): Uses FakeProductDataSource (in-memory mock data); Room not supported yet
 
 **Dependency Injection Pattern**:
 - `appModule` (common): ViewModels, use cases, shared services
@@ -177,6 +190,7 @@ The following experimental APIs are enabled project-wide:
 
 **Platform-Specific Data Sources**:
 - Android: `RoomProductDataSource` (Room database)
+- Desktop: `FakeProductDataSource` (in-memory mock data)
 - Web: `FakeProductDataSource` (in-memory mock data)
 
 ## Development Notes
@@ -190,7 +204,7 @@ The following experimental APIs are enabled project-wide:
 
 ### Adding Platform-Specific Code
 1. Define `expect` declaration in `commonMain`
-2. Provide `actual` implementations in `androidMain` and `webMain`
+2. Provide `actual` implementations in `androidMain`, `desktopMain`, and `webMain`
 3. Common pattern: expect val/fun in DI modules or utility classes
 
 ### Version Catalog (libs.versions.toml)
