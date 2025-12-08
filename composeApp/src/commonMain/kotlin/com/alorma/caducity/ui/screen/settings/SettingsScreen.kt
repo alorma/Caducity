@@ -11,14 +11,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.alorma.caducity.ui.theme.ThemeMode
+import com.alorma.caducity.ui.theme.ThemePreferences
 import com.alorma.compose.settings.ui.SettingsGroup
+import com.alorma.compose.settings.ui.SettingsMenuLink
 import com.alorma.compose.settings.ui.SettingsSwitch
+import org.koin.compose.koinInject
 
 @Composable
 fun SettingsScreen() {
-  var darkModeEnabled by remember { mutableStateOf(false) }
-  var dynamicColorsEnabled by remember { mutableStateOf(false) }
+  val themePreferences = koinInject<ThemePreferences>()
   var notificationsEnabled by remember { mutableStateOf(true) }
+  var showThemeDialog by remember { mutableStateOf(false) }
 
   Column(
     modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -26,17 +30,22 @@ fun SettingsScreen() {
     SettingsGroup(
       title = { Text(text = "Appearance") },
     ) {
-      SettingsSwitch(
-        title = { Text(text = "Dark Mode") },
-        subtitle = { Text(text = "Use dark theme") },
-        state = darkModeEnabled,
-        onCheckedChange = { darkModeEnabled = it },
+      SettingsMenuLink(
+        title = { Text(text = "Theme") },
+        subtitle = { 
+          Text(text = when (themePreferences.themeMode) {
+            ThemeMode.LIGHT -> "Light"
+            ThemeMode.DARK -> "Dark"
+            ThemeMode.SYSTEM -> "System default"
+          })
+        },
+        onClick = { showThemeDialog = true },
       )
       SettingsSwitch(
         title = { Text(text = "Dynamic Colors") },
         subtitle = { Text(text = "Use Material You dynamic colors") },
-        state = dynamicColorsEnabled,
-        onCheckedChange = { dynamicColorsEnabled = it },
+        state = themePreferences.useDynamicColors,
+        onCheckedChange = { themePreferences.setUseDynamicColors(it) },
       )
     }
 
@@ -50,5 +59,16 @@ fun SettingsScreen() {
         onCheckedChange = { notificationsEnabled = it },
       )
     }
+  }
+
+  if (showThemeDialog) {
+    ThemeSelectionDialog(
+      currentTheme = themePreferences.themeMode,
+      onThemeSelected = { mode ->
+        themePreferences.setThemeMode(mode)
+        showThemeDialog = false
+      },
+      onDismiss = { showThemeDialog = false },
+    )
   }
 }

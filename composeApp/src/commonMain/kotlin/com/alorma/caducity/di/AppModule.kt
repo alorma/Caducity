@@ -1,5 +1,6 @@
 package com.alorma.caducity.di
 
+import com.alorma.caducity.ui.theme.ThemePreferences
 import com.alorma.caducity.ui.screen.dashboard.DashboardMapper
 import com.alorma.caducity.ui.screen.dashboard.DashboardViewModel
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
@@ -10,6 +11,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val appModule = module {
+  single { ThemePreferences() }
   single<AppClock> { KotlinAppClock() }
   singleOf(::ObtainDashboardProductsUseCase)
   singleOf(::DashboardMapper)
