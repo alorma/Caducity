@@ -3,11 +3,9 @@ package com.alorma.caducity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingToolbarDefaults
@@ -20,13 +18,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalFloatingToolbar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -38,6 +34,7 @@ import com.alorma.caducity.ui.adaptive.isWidthCompact
 import com.alorma.caducity.ui.icons.Add
 import com.alorma.caducity.ui.icons.AppIcons
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
+import com.alorma.caducity.ui.screen.product.create.CreateProductDialogContent
 import com.alorma.caducity.ui.screen.settings.SettingsScreen
 import com.alorma.caducity.ui.theme.AppTheme
 import org.koin.compose.KoinApplication
@@ -51,6 +48,8 @@ fun App() {
   ) {
     AppTheme {
       val topLevelBackStack = remember { TopLevelBackStack<TopLevelRoute>(TopLevelRoute.Dashboard) }
+      val bottomSheetStrategy = remember { BottomSheetSceneStrategy<TopLevelRoute>() }
+
 
       val isCompact = isWidthCompact()
 
@@ -66,22 +65,35 @@ fun App() {
               rememberSaveableStateHolderNavEntryDecorator(),
               rememberViewModelStoreNavEntryDecorator(),
             ),
+            sceneStrategy = bottomSheetStrategy,
             entryProvider = entryProvider {
               entry<TopLevelRoute.Dashboard> { DashboardScreen() }
               entry<TopLevelRoute.Settings> { SettingsScreen() }
+              entry<TopLevelRoute.CreateProduct>(
+                metadata = BottomSheetSceneStrategy.bottomSheet(),
+              ) {
+                CreateProductDialogContent()
+              }
             },
           )
         }
       }
 
+
+      val topLevelRoutes = listOf(
+        TopLevelRoute.Dashboard,
+        TopLevelRoute.Settings,
+      )
       if (isCompact) {
         CompactContent(
           topLevelBackStack = topLevelBackStack,
+          topLevelRoutes = topLevelRoutes,
           content = content,
         )
       } else {
         ExpandedContent(
           topLevelBackStack = topLevelBackStack,
+          topLevelRoutes = topLevelRoutes,
           content = content,
         )
       }
@@ -92,6 +104,7 @@ fun App() {
 @Composable
 private fun CompactContent(
   topLevelBackStack: TopLevelBackStack<TopLevelRoute>,
+  topLevelRoutes: List<TopLevelRoute>,
   content: @Composable (PaddingValues) -> Unit,
 ) {
   Scaffold(
@@ -108,7 +121,7 @@ private fun CompactContent(
         expanded = true,
         floatingActionButton = {
           FloatingToolbarDefaults.VibrantFloatingActionButton(
-            onClick = { }
+            onClick = { topLevelBackStack.add(TopLevelRoute.CreateProduct) }
           ) {
             Icon(imageVector = AppIcons.Add, contentDescription = null)
           }
@@ -120,43 +133,18 @@ private fun CompactContent(
           exitDirection = FloatingToolbarExitDirection.End,
         ),
         content = {
-          val topLevelRoutes = listOf(
-            TopLevelRoute.Dashboard,
-            TopLevelRoute.Settings,
-          )
-
-          val icon: @Composable (TopLevelRoute) -> ImageVector = { route ->
-            when (route) {
-              TopLevelRoute.Dashboard -> AppIcons.Dashboard
-              TopLevelRoute.Settings -> AppIcons.Settings
-            }
-          }
-
-          val contentDescription: @Composable (TopLevelRoute) -> String = { route ->
-            when (route) {
-              TopLevelRoute.Dashboard -> "Dashboard"
-              TopLevelRoute.Settings -> "Settings"
-            }
-          }
-
           topLevelRoutes.forEach { route ->
             if (topLevelBackStack.topLevelKey == route) {
               FilledIconButton(
                 onClick = { topLevelBackStack.addTopLevel(route) },
               ) {
-                Icon(
-                  imageVector = icon(route),
-                  contentDescription = contentDescription(route),
-                )
+                route.Icon()
               }
             } else {
               IconButton(
                 onClick = { topLevelBackStack.addTopLevel(route) },
               ) {
-                Icon(
-                  imageVector = icon(route),
-                  contentDescription = contentDescription(route),
-                )
+                route.Icon()
               }
             }
           }
@@ -169,6 +157,7 @@ private fun CompactContent(
 @Composable
 private fun ExpandedContent(
   topLevelBackStack: TopLevelBackStack<TopLevelRoute>,
+  topLevelRoutes: List<TopLevelRoute>,
   content: @Composable (PaddingValues) -> Unit,
 ) {
   Scaffold(
@@ -187,38 +176,21 @@ private fun ExpandedContent(
               containerColor = MaterialTheme.colorScheme.tertiaryContainer,
               contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
             ),
-            onClick = { }
+            onClick = { topLevelBackStack.add(TopLevelRoute.CreateProduct) }
           ) {
             Icon(imageVector = AppIcons.Add, contentDescription = null)
           }
         },
       ) {
-        NavigationRailItem(
-          selected = topLevelBackStack.topLevelKey == TopLevelRoute.Dashboard,
-          icon = {
-            Icon(
-              imageVector = AppIcons.Dashboard,
-              contentDescription = "Dashboard",
-            )
-          },
-          label = { Text(text = "Dashboard") },
-          onClick = {
-            topLevelBackStack.addTopLevel(TopLevelRoute.Dashboard)
-          },
-        )
-        NavigationRailItem(
-          selected = topLevelBackStack.topLevelKey == TopLevelRoute.Settings,
-          icon = {
-            Icon(
-              imageVector = AppIcons.Settings,
-              contentDescription = "Settings",
-            )
-          },
-          label = { Text(text = "Settings") },
-          onClick = {
-            topLevelBackStack.addTopLevel(TopLevelRoute.Settings)
-          },
-        )
+
+        topLevelRoutes.forEach { route ->
+          NavigationRailItem(
+            selected = topLevelBackStack.topLevelKey == route,
+            icon = { route.Icon() },
+            label = { route.Label() },
+            onClick = { topLevelBackStack.addTopLevel(route) },
+          )
+        }
       }
       content(paddingValues)
     }
