@@ -20,7 +20,7 @@ Caducity is a Kotlin Multiplatform application designed to help users track thei
 - **UI Framework**: Jetpack Compose Multiplatform
 - **Database**: SQLDelight (recommended for KMP)
 - **Navigation**: Jetpack Navigation 3 (already in use)
-- **Architecture Pattern**: MVVM (Model-View-ViewModel)
+- **Architecture Pattern**: MVI/MVVM (using Compose's state management, no ViewModel dependency)
 
 ### Project Structure
 ```
@@ -206,6 +206,7 @@ data class ProductInstance(
 )
 
 // Domain/ProductWithInstances.kt
+// Note: Import kotlinx.datetime.Clock for multiplatform time operations
 data class ProductWithInstances(
     val product: Product,
     val instances: List<ProductInstance>
@@ -219,7 +220,9 @@ data class ProductWithInstances(
             .minOfOrNull { it.expirationDate }
     
     val hasExpired: Boolean
-        get() = nearestExpirationDate?.let { it < System.currentTimeMillis() } ?: false
+        get() = nearestExpirationDate?.let { 
+            it < Clock.System.now().toEpochMilliseconds() 
+        } ?: false
 }
 ```
 
@@ -460,7 +463,7 @@ sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sq
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
-sqldelight-js = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqldelight" }
+sqldelight-js = { module = "app.cash.sqldelight:sqljs-driver", version.ref = "sqldelight" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 [plugins]
