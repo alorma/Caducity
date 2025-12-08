@@ -7,6 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import kotlinx.browser.window
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.coroutineScope
 
 @Composable
 actual fun isSystemInDarkTheme(): Boolean {
@@ -22,6 +24,15 @@ actual fun isSystemInDarkTheme(): Boolean {
       isDark = event.matches as Boolean
     }
     mediaQuery.addEventListener("change", listener)
+    
+    // Cleanup: Remove listener when composable is disposed
+    kotlinx.coroutines.coroutineScope {
+      try {
+        kotlinx.coroutines.awaitCancellation()
+      } finally {
+        mediaQuery.removeEventListener("change", listener)
+      }
+    }
   }
   
   return isDark
