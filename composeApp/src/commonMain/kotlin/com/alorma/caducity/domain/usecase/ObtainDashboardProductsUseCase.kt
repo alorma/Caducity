@@ -14,8 +14,12 @@ class ObtainDashboardProductsUseCase(
   private val soonExpiringThreshold: Duration = 7.days
 ) {
   fun obtainProducts(): Flow<DashboardProducts> {
+    println("Load products")
     return productDataSource.getAllProductInstances()
       .map { instances ->
+
+        println(instances)
+
         val now = appClock.now()
         val soonThreshold = now + soonExpiringThreshold
 
