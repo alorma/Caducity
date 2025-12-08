@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.adaptive.isWidthCompact
 import com.alorma.caducity.ui.icons.Add
 import com.alorma.caducity.ui.icons.AppIcons
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,7 +77,7 @@ fun DashboardScreen(
         is DashboardState.Success -> {
           dashboardState.sections.forEach { section ->
             DashboardCard(
-              title = section.title,
+              title = stringResource(section.title),
               value = section.itemCount.toString(),
             )
           }
