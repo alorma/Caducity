@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.delayEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 class DashboardViewModel(
@@ -20,7 +21,7 @@ class DashboardViewModel(
 
   val state: StateFlow<DashboardState> = obtainDashboardProductsUseCase
     .obtainProducts()
-    .onEach { delay(3.seconds) }
+    .onEach { delay(5.milliseconds) }
     .map { dashboardProducts ->
       val sections = dashboardMapper.mapToDashboardSections(dashboardProducts)
       DashboardState.Success(sections = sections)
