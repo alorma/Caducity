@@ -206,7 +206,7 @@ data class ProductInstance(
 )
 
 // Domain/ProductWithInstances.kt
-// Note: Import kotlinx.datetime.Clock for multiplatform time operations
+// Note: import kotlinx.datetime.Clock
 data class ProductWithInstances(
     val product: Product,
     val instances: List<ProductInstance>
