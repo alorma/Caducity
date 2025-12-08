@@ -37,7 +37,7 @@ fun App() {
 
     val content: @Composable (PaddingValues) -> Unit = @Composable { paddingValues ->
       Box(
-        modifier = Modifier,
+        modifier = Modifier.padding(paddingValues),
       ) {
         NavDisplay(
           modifier = Modifier.fillMaxSize(),
