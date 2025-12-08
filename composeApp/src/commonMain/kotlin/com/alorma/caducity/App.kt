@@ -116,8 +116,7 @@ private fun CompactContent(
       VerticalFloatingToolbar(
         modifier = Modifier
           .align(Alignment.BottomEnd)
-          .offset(x = -ScreenOffset)
-          .padding(bottom = 24.dp, end = 24.dp),
+          .offset(x = -ScreenOffset),
         expanded = true,
         floatingActionButton = {
           FloatingToolbarDefaults.VibrantFloatingActionButton(

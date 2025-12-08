@@ -9,15 +9,17 @@ import androidx.core.content.getSystemService
 
 /**
  * Android platform color schemes.
- * Uses the base light and dark schemes from Color.kt
+ * Uses contrast-aware schemes based on system settings (Android 14+)
  */
 @Composable
 actual fun platformLightColorScheme(): ColorScheme {
-  return lightScheme
+  return selectSchemeForContrast(isDark = false)
 }
 
 @Composable
-actual fun platformDarkColorScheme(): ColorScheme = darkScheme
+actual fun platformDarkColorScheme(): ColorScheme {
+  return selectSchemeForContrast(isDark = true)
+}
 
 @Composable
 fun selectSchemeForContrast(isDark: Boolean): ColorScheme {
