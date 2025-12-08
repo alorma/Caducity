@@ -22,12 +22,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.ui.adaptive.isWidthCompact
 import com.alorma.caducity.ui.icons.Add
 import com.alorma.caducity.ui.icons.AppIcons
@@ -40,7 +41,10 @@ fun DashboardScreen(
   viewModel: DashboardViewModel = koinViewModel()
 ) {
   val showDialog = remember { mutableStateOf(false) }
-  val state = viewModel.state.collectAsState()
+
+  val dashboardState by viewModel.state.collectAsStateWithLifecycle(
+    initialValue = DashboardState.Loading,
+  )
 
   val isCompact = isWidthCompact()
 
@@ -69,13 +73,13 @@ fun DashboardScreen(
         style = MaterialTheme.typography.headlineMedium,
       )
 
-      when (val dashboardState = state.value) {
+      when (val state = dashboardState) {
         is DashboardState.Loading -> {
           Text(text = "Loading...")
         }
 
         is DashboardState.Success -> {
-          dashboardState.sections.forEach { section ->
+          state.sections.forEach { section ->
             DashboardCard(
               title = stringResource(section.title),
               value = section.itemCount.toString(),

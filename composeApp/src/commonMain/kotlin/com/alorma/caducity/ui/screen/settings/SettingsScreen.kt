@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.alorma.caducity.settings.ThemeSelectionDialog
 import com.alorma.caducity.ui.theme.ThemeMode
 import com.alorma.caducity.ui.theme.ThemePreferences
 import com.alorma.compose.settings.ui.SettingsGroup
@@ -59,16 +60,5 @@ fun SettingsScreen() {
         onCheckedChange = { notificationsEnabled = it },
       )
     }
-  }
-
-  if (showThemeDialog) {
-    ThemeSelectionDialog(
-      currentTheme = themePreferences.themeMode,
-      onThemeSelected = { mode ->
-        themePreferences.setThemeMode(mode)
-        showThemeDialog = false
-      },
-      onDismiss = { showThemeDialog = false },
-    )
   }
 }

@@ -5,8 +5,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.navigation3.runtime.NavKey
 
-class TopLevelBackStack<T : Any>(startKey: T) {
+class TopLevelBackStack<T : NavKey>(startKey: T) {
 
   // Maintain a stack for each top level route
   private var topLevelStacks: LinkedHashMap<T, SnapshotStateList<T>> = linkedMapOf(
