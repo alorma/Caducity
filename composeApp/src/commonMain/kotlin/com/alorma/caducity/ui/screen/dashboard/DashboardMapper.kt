@@ -13,16 +13,19 @@ class DashboardMapper {
   fun mapToDashboardSections(dashboardProducts: DashboardProducts): List<DashboardSection> {
     return listOf(
       DashboardSection(
+        type = SectionType.EXPIRED,
         title = Res.string.dashboard_section_expired,
         itemCount = dashboardProducts.expired.sumOf { it.instances.size },
         products = dashboardProducts.expired.map { it.toUiModel() }
       ),
       DashboardSection(
+        type = SectionType.EXPIRING_SOON,
         title = Res.string.dashboard_section_expiring_soon,
         itemCount = dashboardProducts.expiringSoon.sumOf { it.instances.size },
         products = dashboardProducts.expiringSoon.map { it.toUiModel() }
       ),
       DashboardSection(
+        type = SectionType.FRESH,
         title = Res.string.dashboard_section_fresh,
         itemCount = dashboardProducts.fresh.sumOf { it.instances.size },
         products = dashboardProducts.fresh.map { it.toUiModel() }

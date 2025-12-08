@@ -3,8 +3,15 @@ package com.alorma.caducity.ui.screen.dashboard
 import androidx.compose.runtime.Stable
 import org.jetbrains.compose.resources.StringResource
 
+enum class SectionType {
+  EXPIRED,
+  EXPIRING_SOON,
+  FRESH,
+}
+
 @Stable
 data class DashboardSection(
+  val type: SectionType,
   val title: StringResource,
   val itemCount: Int,
   val products: List<ProductUiModel>,
