@@ -238,6 +238,7 @@ private fun ProductItem(
       val state = rememberWeekCalendarState(
         startDate = product.startDate,
         endDate = product.endDate,
+        firstVisibleWeekDate = product.startDate,
       )
 
       WeekCalendar(

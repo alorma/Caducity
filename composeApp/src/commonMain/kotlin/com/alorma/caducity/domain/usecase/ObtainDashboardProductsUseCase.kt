@@ -1,12 +1,11 @@
 package com.alorma.caducity.domain.usecase
 
 import com.alorma.caducity.data.datasource.ProductDataSource
-import com.alorma.caducity.data.model.ProductInstance
 import com.alorma.caducity.domain.model.DashboardProducts
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.time.clock.AppClock
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 
@@ -18,51 +17,47 @@ class ObtainDashboardProductsUseCase(
 
   fun obtainProducts(): Flow<DashboardProducts> {
     println("Load products")
-    return combine(
-      productDataSource.getAllProducts(),
-      productDataSource.getAllProductInstances()
-    ) { products, instances ->
-      println(instances)
+    return productDataSource.getAllProductsWithInstances()
+      .map { productsWithInstances ->
+        val now = appClock.now()
+        val soonThreshold = now + soonExpiringThreshold
 
-      val now = appClock.now()
-      val soonThreshold = now + soonExpiringThreshold
+        val expired = mutableListOf<ProductWithInstances>()
+        val expiringSoon = mutableListOf<ProductWithInstances>()
+        val fresh = mutableListOf<ProductWithInstances>()
+        val empty = mutableListOf<ProductWithInstances>()
 
-      // Group instances by expiration status
-      val expired = instances.filter { it.expirationDate <= now }
-      val expiringSoon =
-        instances.filter { it.expirationDate > now && it.expirationDate <= soonThreshold }
-      val fresh = instances.filter { it.expirationDate > soonThreshold }
+        productsWithInstances.forEach { productWithInstances ->
+          if (productWithInstances.instances.isEmpty()) {
+            empty.add(productWithInstances)
+          } else {
+            // Categorize instances by expiration status
+            val expiredInstances =
+              productWithInstances.instances.filter { it.expirationDate <= now }
+            val expiringSoonInstances = productWithInstances.instances.filter {
+              it.expirationDate > now && it.expirationDate <= soonThreshold
+            }
+            val freshInstances = productWithInstances.instances.filter { it.expirationDate > soonThreshold }
 
-      // Group instances by product
-      fun groupByProduct(instances: List<ProductInstance>): List<ProductWithInstances> {
-        return instances.groupBy { it.productId }
-          .mapNotNull { (productId, productInstances) ->
-            val product = products.find { it.id == productId }
-            product?.let {
-              ProductWithInstances(
-                product = it,
-                instances = productInstances
-              )
+            // Add product to each category that has instances
+            if (expiredInstances.isNotEmpty()) {
+              expired.add(productWithInstances.copy(instances = productWithInstances.instances))
+            }
+            if (expiringSoonInstances.isNotEmpty()) {
+              expiringSoon.add(productWithInstances.copy(instances = productWithInstances.instances))
+            }
+            if (freshInstances.isNotEmpty()) {
+              fresh.add(productWithInstances.copy(instances = productWithInstances.instances))
             }
           }
-      }
-
-      // Find products with no instances
-      val productsWithInstances = instances.map { it.productId }.toSet()
-      val emptyProducts = products.filter { it.id !in productsWithInstances }
-        .map { product ->
-          ProductWithInstances(
-            product = product,
-            instances = emptyList()
-          )
         }
 
-      DashboardProducts(
-        expired = groupByProduct(expired),
-        expiringSoon = groupByProduct(expiringSoon),
-        fresh = groupByProduct(fresh),
-        empty = emptyProducts,
-      )
-    }
+        DashboardProducts(
+          expired = expired,
+          expiringSoon = expiringSoon,
+          fresh = fresh,
+          empty = empty,
+        )
+      }
   }
 }

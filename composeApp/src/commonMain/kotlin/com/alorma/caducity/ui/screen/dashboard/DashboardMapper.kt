@@ -50,7 +50,6 @@ class DashboardMapper {
       instances = instances.map { instance ->
         ProductInstanceUiModel(
           id = instance.id,
-          productId = instance.productId,
           expirationDate = instance
             .expirationDate
             .toLocalDateTime(TimeZone.currentSystemDefault())
