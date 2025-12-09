@@ -41,13 +41,13 @@ class FakeProductDataSource(
         instances = listOf(
           ProductInstance(
             id = (instanceId++).toString(),
-            expirationDate = Instant.fromEpochMilliseconds((now - 5.days).toEpochMilliseconds()),
-            purchaseDate = Instant.fromEpochMilliseconds((now - 40.days).toEpochMilliseconds()),
+            expirationDate = now.minus(5.days),
+            purchaseDate = now.minus(40.days),
           ),
           ProductInstance(
             id = (instanceId++).toString(),
-            expirationDate = Instant.fromEpochMilliseconds((now - 2.days).toEpochMilliseconds()),
-            purchaseDate = Instant.fromEpochMilliseconds((now - 35.days).toEpochMilliseconds()),
+            expirationDate = now.minus(2.days),
+            purchaseDate = now.minus(35.days),
           ),
         ),
       ))
@@ -69,18 +69,18 @@ class FakeProductDataSource(
         instances = listOf(
           ProductInstance(
             id = (instanceId++).toString(),
-            expirationDate = Instant.fromEpochMilliseconds((now + 2.days).toEpochMilliseconds()),
-            purchaseDate = Instant.fromEpochMilliseconds((now - 30.days).toEpochMilliseconds()),
+            expirationDate = now.plus(2.days),
+            purchaseDate = now.minus(30.days),
           ),
           ProductInstance(
             id = (instanceId++).toString(),
-            expirationDate = Instant.fromEpochMilliseconds((now + 5.days).toEpochMilliseconds()),
-            purchaseDate = Instant.fromEpochMilliseconds((now - 28.days).toEpochMilliseconds()),
+            expirationDate = now.plus(5.days),
+            purchaseDate = now.minus(28.days),
           ),
           ProductInstance(
             id = (instanceId++).toString(),
-            expirationDate = Instant.fromEpochMilliseconds((now + 6.days).toEpochMilliseconds()),
-            purchaseDate = Instant.fromEpochMilliseconds((now - 25.days).toEpochMilliseconds()),
+            expirationDate = now.plus(6.days),
+            purchaseDate = now.minus(25.days),
           ),
         ),
       ))
@@ -103,18 +103,18 @@ class FakeProductDataSource(
         instances = listOf(
           ProductInstance(
             id = (instanceId++).toString(),
-            expirationDate = Instant.fromEpochMilliseconds((now + 15.days).toEpochMilliseconds()),
-            purchaseDate = Instant.fromEpochMilliseconds((now - 20.days).toEpochMilliseconds()),
+            expirationDate = now.plus(15.days),
+            purchaseDate = now.minus(20.days),
           ),
           ProductInstance(
             id = (instanceId++).toString(),
-            expirationDate = Instant.fromEpochMilliseconds((now + 30.days).toEpochMilliseconds()),
-            purchaseDate = Instant.fromEpochMilliseconds((now - 10.days).toEpochMilliseconds()),
+            expirationDate = now.plus(30.days),
+            purchaseDate = now.minus(10.days),
           ),
           ProductInstance(
             id = (instanceId++).toString(),
-            expirationDate = Instant.fromEpochMilliseconds((now + 45.days).toEpochMilliseconds()),
-            purchaseDate = Instant.fromEpochMilliseconds((now - 5.days).toEpochMilliseconds()),
+            expirationDate = now.plus(45.days),
+            purchaseDate = now.minus(5.days),
           ),
         ),
       ))
