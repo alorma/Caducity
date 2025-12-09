@@ -6,4 +6,8 @@ sealed class DashboardState {
   data class Success(
     val sections: List<DashboardSection>
   ) : DashboardState()
+
+  data class Error(
+    val message: String
+  ) : DashboardState()
 }

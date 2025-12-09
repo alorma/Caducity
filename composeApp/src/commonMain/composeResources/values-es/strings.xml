@@ -18,5 +18,9 @@
     <string name="dashboard_section_fresh">Fresco</string>
     <string name="dashboard_section_empty">Vacío</string>
 
+    <string name="dashboard_error_title">Error al cargar el panel</string>
+    <string name="dashboard_error_message">No se pueden cargar los productos. Por favor, inténtelo de nuevo más tarde.</string>
+    <string name="dashboard_error_retry">Reintentar</string>
+
     <string  name="settings_screen_title">Configuración</string>
 </resources>

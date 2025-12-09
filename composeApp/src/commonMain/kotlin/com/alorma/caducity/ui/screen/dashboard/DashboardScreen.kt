@@ -15,8 +15,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -31,10 +33,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.dashboard_screen_title
+import caducity.composeapp.generated.resources.dashboard_error_message
+import caducity.composeapp.generated.resources.dashboard_error_title
 import caducity.composeapp.generated.resources.dashboard_section_empty
 import caducity.composeapp.generated.resources.dashboard_section_expired
 import caducity.composeapp.generated.resources.dashboard_section_expiring_soon
@@ -68,6 +73,8 @@ fun DashboardScreen(
     }
 
     is DashboardState.Success -> DashboardContent(state)
+
+    is DashboardState.Error -> DashboardErrorContent(state)
   }
 }
 
@@ -91,6 +98,64 @@ fun DashboardContent(state: DashboardState.Success) {
         sections = state.sections,
         paddingValues = paddingValues,
       )
+    }
+  }
+}
+
+@Composable
+fun DashboardErrorContent(state: DashboardState.Error) {
+  Scaffold(
+    topBar = {
+      TopAppBar(
+        title = { Text(text = stringResource(Res.string.dashboard_screen_title)) },
+      )
+    },
+  ) { paddingValues ->
+    Box(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(paddingValues)
+        .padding(16.dp),
+      contentAlignment = Alignment.Center,
+    ) {
+      Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+          containerColor = MaterialTheme.colorScheme.errorContainer,
+        ),
+        shape = RoundedCornerShape(16.dp),
+      ) {
+        Column(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+          Text(
+            text = stringResource(Res.string.dashboard_error_title),
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onErrorContainer,
+            textAlign = TextAlign.Center,
+          )
+          
+          Text(
+            text = stringResource(Res.string.dashboard_error_message),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onErrorContainer,
+            textAlign = TextAlign.Center,
+          )
+          
+          if (state.message.isNotEmpty()) {
+            Text(
+              text = state.message,
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f),
+              textAlign = TextAlign.Center,
+            )
+          }
+        }
+      }
     }
   }
 }

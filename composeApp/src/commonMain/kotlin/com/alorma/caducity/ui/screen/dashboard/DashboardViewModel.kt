@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.delayEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -25,6 +26,11 @@ class DashboardViewModel(
     .map { dashboardProducts ->
       val sections = dashboardMapper.mapToDashboardSections(dashboardProducts)
       DashboardState.Success(sections = sections)
+    }
+    .catch { exception ->
+      println("Alorma: Error loading dashboard: ${exception.message}")
+      exception.printStackTrace()
+      emit(DashboardState.Error(message = exception.message ?: "Unknown error"))
     }
     .stateIn(
       scope = viewModelScope,

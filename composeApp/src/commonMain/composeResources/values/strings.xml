@@ -18,5 +18,9 @@
     <string name="dashboard_section_fresh">Fresh</string>
     <string name="dashboard_section_empty">Empty</string>
 
+    <string name="dashboard_error_title">Error Loading Dashboard</string>
+    <string name="dashboard_error_message">Unable to load products. Please try again later.</string>
+    <string name="dashboard_error_retry">Retry</string>
+
     <string name="settings_screen_title">Settings</string>
 </resources>
