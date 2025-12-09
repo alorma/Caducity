@@ -2,11 +2,14 @@ package com.alorma.caducity.ui.screen.dashboard
 
 import com.alorma.caducity.domain.model.DashboardProducts
 import com.alorma.caducity.domain.model.ProductWithInstances
+import com.alorma.caducity.time.clock.AppClock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
-class DashboardMapper {
+class DashboardMapper(
+  private val appClock: AppClock,
+) {
   fun mapToDashboardSections(dashboardProducts: DashboardProducts): List<DashboardSection> {
     return listOf(
       DashboardSection(
@@ -41,12 +44,14 @@ class DashboardMapper {
 
   private fun ProductWithInstances.toUiModel(): ProductUiModel {
     val (startDate, endDate) = getDateRange()
+    val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     return ProductUiModel(
       id = product.id,
       name = product.name,
       description = product.description,
       startDate = startDate,
       endDate = endDate,
+      today = today,
       instances = instances.map { instance ->
         ProductInstanceUiModel(
           id = instance.id,
