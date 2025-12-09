@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string  name="dashboard_screen_title">Tauler</string>
+
+    <string name="dashboard_section_expired">Caducat</string>
+    <string name="dashboard_section_expiring_soon">Pròxim</string>
+    <string name="dashboard_section_fresh">Fresc</string>
+
+    <string  name="settings_screen_title">Configuració</string>
+</resources>

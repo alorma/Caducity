@@ -143,10 +143,12 @@ private fun DashboardCompactCard(
             SectionType.FRESH -> Res.string.dashboard_section_fresh
           }.let { stringResource(it) },
           style = MaterialTheme.typography.titleMedium,
+          color = sectionColors.onContainer,
         )
         Text(
           text = value,
           style = MaterialTheme.typography.displayMedium,
+          color = sectionColors.onContainer,
         )
       }
     }

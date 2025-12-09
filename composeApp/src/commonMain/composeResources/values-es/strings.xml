@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string  name="dashboard_screen_title">Panel</string>
+
+    <string name="dashboard_section_expired">Caducado</string>
+    <string name="dashboard_section_expiring_soon">Próximo</string>
+    <string name="dashboard_section_fresh">Fresco</string>
+
+    <string  name="settings_screen_title">Configuración</string>
+</resources>
