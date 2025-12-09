@@ -23,6 +23,7 @@ class FakeProductDataSource(
     val now = appClock.now()
     val products = mutableListOf<ProductWithInstances>()
     var productId = 1
+    var instanceId = 1
 
     // EXPIRED SECTION: Products with expired instances
     val expiredProducts = listOf(
@@ -39,12 +40,12 @@ class FakeProductDataSource(
         ),
         instances = listOf(
           ProductInstance(
-            id = "1",
+            id = (instanceId++).toString(),
             expirationDate = Instant.fromEpochMilliseconds((now - 5.days).toEpochMilliseconds()),
             purchaseDate = Instant.fromEpochMilliseconds((now - 40.days).toEpochMilliseconds()),
           ),
           ProductInstance(
-            id = "2",
+            id = (instanceId++).toString(),
             expirationDate = Instant.fromEpochMilliseconds((now - 2.days).toEpochMilliseconds()),
             purchaseDate = Instant.fromEpochMilliseconds((now - 35.days).toEpochMilliseconds()),
           ),
@@ -67,17 +68,17 @@ class FakeProductDataSource(
         ),
         instances = listOf(
           ProductInstance(
-            id = "1",
+            id = (instanceId++).toString(),
             expirationDate = Instant.fromEpochMilliseconds((now + 2.days).toEpochMilliseconds()),
             purchaseDate = Instant.fromEpochMilliseconds((now - 30.days).toEpochMilliseconds()),
           ),
           ProductInstance(
-            id = "2",
+            id = (instanceId++).toString(),
             expirationDate = Instant.fromEpochMilliseconds((now + 5.days).toEpochMilliseconds()),
             purchaseDate = Instant.fromEpochMilliseconds((now - 28.days).toEpochMilliseconds()),
           ),
           ProductInstance(
-            id = "3",
+            id = (instanceId++).toString(),
             expirationDate = Instant.fromEpochMilliseconds((now + 6.days).toEpochMilliseconds()),
             purchaseDate = Instant.fromEpochMilliseconds((now - 25.days).toEpochMilliseconds()),
           ),
@@ -101,17 +102,17 @@ class FakeProductDataSource(
         ),
         instances = listOf(
           ProductInstance(
-            id = "1",
+            id = (instanceId++).toString(),
             expirationDate = Instant.fromEpochMilliseconds((now + 15.days).toEpochMilliseconds()),
             purchaseDate = Instant.fromEpochMilliseconds((now - 20.days).toEpochMilliseconds()),
           ),
           ProductInstance(
-            id = "2",
+            id = (instanceId++).toString(),
             expirationDate = Instant.fromEpochMilliseconds((now + 30.days).toEpochMilliseconds()),
             purchaseDate = Instant.fromEpochMilliseconds((now - 10.days).toEpochMilliseconds()),
           ),
           ProductInstance(
-            id = "3",
+            id = (instanceId++).toString(),
             expirationDate = Instant.fromEpochMilliseconds((now + 45.days).toEpochMilliseconds()),
             purchaseDate = Instant.fromEpochMilliseconds((now - 5.days).toEpochMilliseconds()),
           ),
