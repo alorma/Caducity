@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string-array name="day_names">
+        <item>Lun</item>
+        <item>Mar</item>
+        <item>Mié</item>
+        <item>Jue</item>
+        <item>Vie</item>
+        <item>Sáb</item>
+        <item>Dom</item>
+    </string-array>
+
     <string  name="dashboard_screen_title">Panel</string>
 
     <string name="dashboard_section_expired">Caducado</string>

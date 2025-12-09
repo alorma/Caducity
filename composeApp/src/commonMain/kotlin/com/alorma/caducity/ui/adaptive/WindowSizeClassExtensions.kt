@@ -9,7 +9,14 @@ import androidx.window.core.layout.WindowSizeClass
 fun isWidthCompact(): Boolean {
   return currentWindowAdaptiveInfo(
     supportLargeAndXLargeWidth = true,
-  ).isWidthCompact
+  ).isCompact
+}
+
+@Composable
+fun isMedium(): Boolean {
+  return currentWindowAdaptiveInfo(
+    supportLargeAndXLargeWidth = true,
+  ).isMedium
 }
 
 @Composable
@@ -19,20 +26,20 @@ fun isLarge(): Boolean {
   ).isLarge
 }
 
-private val WindowSizeClass.isWidthMediumOrLarger: Boolean
+private val WindowSizeClass.isCompact: Boolean
+  get() = isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_LARGE_LOWER_BOUND)
+
+private val WindowSizeClass.isMedium: Boolean
   get() = isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
 
 private val WindowSizeClass.isLarge: Boolean
   get() = isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_LARGE_LOWER_BOUND)
 
-private val WindowSizeClass.isWidthCompact: Boolean
-  get() = !isWidthMediumOrLarger
+private val WindowAdaptiveInfo.isCompact: Boolean
+  get() = !windowSizeClass.isCompact
 
-private val WindowAdaptiveInfo.isWidthCompact: Boolean
-  get() = windowSizeClass.isWidthCompact
-
-private val WindowAdaptiveInfo.isWidthMediumOrLarger: Boolean
-  get() = windowSizeClass.isWidthMediumOrLarger
+private val WindowAdaptiveInfo.isMedium: Boolean
+  get() = windowSizeClass.isMedium
 
 private val WindowAdaptiveInfo.isLarge: Boolean
   get() = windowSizeClass.isLarge

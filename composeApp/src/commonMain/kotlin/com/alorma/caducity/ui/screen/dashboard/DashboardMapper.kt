@@ -1,11 +1,8 @@
 package com.alorma.caducity.ui.screen.dashboard
 
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.dashboard_section_expired
-import caducity.composeapp.generated.resources.dashboard_section_expiring_soon
-import caducity.composeapp.generated.resources.dashboard_section_fresh
 import com.alorma.caducity.domain.model.DashboardProducts
 import com.alorma.caducity.domain.model.ProductWithInstances
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -35,20 +32,33 @@ class DashboardMapper {
     )
   }
 
+  private fun ProductWithInstances.getDateRange(): Pair<LocalDate, LocalDate> {
+    val dates = instances.map { instance ->
+      instance.expirationDate.toLocalDateTime(TimeZone.currentSystemDefault()).date
+    }
+    return dates.min() to dates.max()
+  }
+
   private fun ProductWithInstances.toUiModel(): ProductUiModel {
+    val (startDate, endDate) = getDateRange()
     return ProductUiModel(
       id = product.id,
       name = product.name,
       description = product.description,
+      startDate = startDate,
+      endDate = endDate,
       instances = instances.map { instance ->
-        val expirationDate = instance.expirationDate.toLocalDateTime(TimeZone.currentSystemDefault())
+        val expirationDate =
+          instance.expirationDate.toLocalDateTime(TimeZone.currentSystemDefault())
         val purchaseDate = instance.purchaseDate.toLocalDateTime(TimeZone.currentSystemDefault())
 
         ProductInstanceUiModel(
           id = instance.id,
           productId = instance.productId,
           expirationDate = expirationDate.date.toString(),
+          expirationDateInstant = instance.expirationDate,
           purchaseDate = purchaseDate.date.toString(),
+          purchaseDateInstant = instance.purchaseDate,
         )
       }
     )

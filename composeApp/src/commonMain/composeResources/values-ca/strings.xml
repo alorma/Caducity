@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string-array name="day_names">
+        <item>Dil</item>
+        <item>Dim</item>
+        <item>Dic</item>
+        <item>Dij</item>
+        <item>Div</item>
+        <item>Dis</item>
+        <item>Diu</item>
+    </string-array>
+
     <string  name="dashboard_screen_title">Tauler</string>
 
     <string name="dashboard_section_expired">Caducat</string>
