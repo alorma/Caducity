@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,6 +35,7 @@ import caducity.composeapp.generated.resources.dashboard_screen_title
 import caducity.composeapp.generated.resources.dashboard_section_expired
 import caducity.composeapp.generated.resources.dashboard_section_expiring_soon
 import caducity.composeapp.generated.resources.dashboard_section_fresh
+import com.alorma.caducity.ui.adaptive.isWidthMediumOrLarger
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -71,39 +74,86 @@ fun DashboardContent(state: DashboardState.Success) {
       )
     },
   ) { paddingValues ->
-    LazyColumn(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues = paddingValues),
-      contentPadding = PaddingValues(16.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      state.sections.forEach { section ->
-        item(key = "header_${section.type}") {
-          DashboardSectionHeader(section = section)
-        }
+    val isWidthMediumOrLarger = isWidthMediumOrLarger()
+    if (isWidthMediumOrLarger) {
+      DashboardExpandedLayout(
+        sections = state.sections,
+        paddingValues = paddingValues,
+      )
+    } else {
+      DashboardCompactLayout(
+        sections = state.sections,
+        paddingValues = paddingValues,
+      )
+    }
+  }
+}
 
-        if (section.products.isEmpty()) {
-          item(key = "empty_${section.type}") {
-            Text(
-              text = "No products in this section",
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            )
-          }
-        } else {
-          items(
-            items = section.products,
-            key = { product -> product.id }
-          ) { product ->
-            ProductItem(product = product)
-          }
-        }
+@Composable
+private fun DashboardCompactLayout(
+  sections: List<DashboardSection>,
+  paddingValues: PaddingValues,
+) {
+  val pagerState = rememberPagerState(pageCount = { sections.size })
 
-        item(key = "spacer_${section.type}") {
-          Spacer(modifier = Modifier.height(16.dp))
-        }
+  HorizontalPager(
+    state = pagerState,
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(paddingValues),
+    contentPadding = PaddingValues(horizontal = 16.dp),
+    pageSpacing = 16.dp,
+  ) { page ->
+    SectionColumn(section = sections[page])
+  }
+}
+
+@Composable
+private fun DashboardExpandedLayout(
+  sections: List<DashboardSection>,
+  paddingValues: PaddingValues,
+) {
+  Row(
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(paddingValues)
+      .padding(16.dp),
+    horizontalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    sections.forEach { section ->
+      Box(modifier = Modifier.weight(1f)) {
+        SectionColumn(section = section)
+      }
+    }
+  }
+}
+
+@Composable
+private fun SectionColumn(section: DashboardSection) {
+  LazyColumn(
+    modifier = Modifier.fillMaxSize(),
+    contentPadding = PaddingValues(vertical = 16.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    item(key = "header_${section.type}") {
+      DashboardSectionHeader(section = section)
+    }
+
+    if (section.products.isEmpty()) {
+      item(key = "empty_${section.type}") {
+        Text(
+          text = "No products in this section",
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        )
+      }
+    } else {
+      items(
+        items = section.products,
+        key = { product -> product.id }
+      ) { product ->
+        ProductItem(product = product)
       }
     }
   }
