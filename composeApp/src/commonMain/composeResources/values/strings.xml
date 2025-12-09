@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string  name="dashboard_screen_title">Dashboard</string>
+
     <string name="dashboard_section_expired">Expired</string>
     <string name="dashboard_section_expiring_soon">Expiring Soon</string>
     <string name="dashboard_section_fresh">Fresh</string>
+
+    <string  name="settings_screen_title">Settings</string>
 </resources>
