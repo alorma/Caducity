@@ -3,6 +3,7 @@ package com.alorma.caducity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -82,18 +83,25 @@ fun App() {
         TopLevelRoute.Dashboard,
         TopLevelRoute.Settings,
       )
-      if (isCompact) {
-        CompactContent(
-          topLevelBackStack = topLevelBackStack,
-          topLevelRoutes = topLevelRoutes,
-          content = content,
-        )
-      } else {
-        ExpandedContent(
-          topLevelBackStack = topLevelBackStack,
-          topLevelRoutes = topLevelRoutes,
-          content = content,
-        )
+      Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets(),
+      ) { paddingValues ->
+        if (isCompact) {
+          CompactContent(
+            paddingValues = paddingValues,
+            topLevelBackStack = topLevelBackStack,
+            topLevelRoutes = topLevelRoutes,
+            content = content,
+          )
+        } else {
+          ExpandedContent(
+            paddingValues = paddingValues,
+            topLevelBackStack = topLevelBackStack,
+            topLevelRoutes = topLevelRoutes,
+            content = content,
+          )
+        }
       }
     }
   }
@@ -101,93 +109,85 @@ fun App() {
 
 @Composable
 private fun CompactContent(
+  paddingValues: PaddingValues,
   topLevelBackStack: TopLevelBackStack<TopLevelRoute>,
   topLevelRoutes: List<TopLevelRoute>,
   content: @Composable (PaddingValues) -> Unit,
 ) {
-  Scaffold(
-    modifier = Modifier.fillMaxSize(),
-  ) { paddingValues ->
-    Box(modifier = Modifier.fillMaxSize()) {
-      content(paddingValues)
+  Box(modifier = Modifier.fillMaxSize()) {
+    content(paddingValues)
 
-      VerticalFloatingToolbar(
-        modifier = Modifier.align(Alignment.BottomEnd).safeDrawingPadding().padding(bottom = 16.dp),
-        expanded = true,
-        floatingActionButton = {
-          FloatingToolbarDefaults.VibrantFloatingActionButton(
-            onClick = { topLevelBackStack.add(TopLevelRoute.CreateProduct) }
-          ) {
-            Icon(imageVector = AppIcons.Add, contentDescription = null)
-          }
-        },
-        colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(
+    VerticalFloatingToolbar(
+      modifier = Modifier.align(Alignment.BottomEnd).safeDrawingPadding().padding(bottom = 16.dp),
+      expanded = true,
+      floatingActionButton = {
+        FloatingToolbarDefaults.VibrantFloatingActionButton(
+          onClick = { topLevelBackStack.add(TopLevelRoute.CreateProduct) }
+        ) {
+          Icon(imageVector = AppIcons.Add, contentDescription = null)
+        }
+      },
+      colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(
 
-        ),
-        scrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
-          exitDirection = FloatingToolbarExitDirection.End,
-        ),
-        content = {
-          topLevelRoutes.forEach { route ->
-            if (topLevelBackStack.topLevelKey == route) {
-              FilledIconButton(
-                onClick = { topLevelBackStack.addTopLevel(route) },
-              ) {
-                route.Icon()
-              }
-            } else {
-              IconButton(
-                onClick = { topLevelBackStack.addTopLevel(route) },
-              ) {
-                route.Icon()
-              }
+      ),
+      scrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
+        exitDirection = FloatingToolbarExitDirection.End,
+      ),
+      content = {
+        topLevelRoutes.forEach { route ->
+          if (topLevelBackStack.topLevelKey == route) {
+            FilledIconButton(
+              onClick = { topLevelBackStack.addTopLevel(route) },
+            ) {
+              route.Icon()
+            }
+          } else {
+            IconButton(
+              onClick = { topLevelBackStack.addTopLevel(route) },
+            ) {
+              route.Icon()
             }
           }
-        },
-      )
-    }
+        }
+      },
+    )
   }
 }
 
 @Composable
 private fun ExpandedContent(
+  paddingValues: PaddingValues,
   topLevelBackStack: TopLevelBackStack<TopLevelRoute>,
   topLevelRoutes: List<TopLevelRoute>,
   content: @Composable (PaddingValues) -> Unit,
 ) {
-  Scaffold(
-    modifier = Modifier.fillMaxSize().safeDrawingPadding(),
-  ) { paddingValues ->
-    Row(
+  Row {
+    NavigationRail(
       modifier = Modifier.padding(paddingValues),
-    ) {
-      NavigationRail(
-        modifier = Modifier.padding(paddingValues),
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        header = {
-          FilledIconButton(
-            modifier = Modifier.padding(vertical = 24.dp),
-            colors = IconButtonDefaults.filledIconButtonColors(
-              containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-              contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-            ),
-            onClick = { topLevelBackStack.add(TopLevelRoute.CreateProduct) }
-          ) {
-            Icon(imageVector = AppIcons.Add, contentDescription = null)
-          }
-        },
-      ) {
-
-        topLevelRoutes.forEach { route ->
-          NavigationRailItem(
-            selected = topLevelBackStack.topLevelKey == route,
-            icon = { route.Icon() },
-            label = { route.Label() },
-            onClick = { topLevelBackStack.addTopLevel(route) },
-          )
+      containerColor = MaterialTheme.colorScheme.surfaceContainer,
+      header = {
+        FilledIconButton(
+          modifier = Modifier.padding(vertical = 24.dp),
+          colors = IconButtonDefaults.filledIconButtonColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+          ),
+          onClick = { topLevelBackStack.add(TopLevelRoute.CreateProduct) }
+        ) {
+          Icon(imageVector = AppIcons.Add, contentDescription = null)
         }
+      },
+    ) {
+
+      topLevelRoutes.forEach { route ->
+        NavigationRailItem(
+          selected = topLevelBackStack.topLevelKey == route,
+          icon = { route.Icon() },
+          label = { route.Label() },
+          onClick = { topLevelBackStack.addTopLevel(route) },
+        )
       }
-      content(paddingValues)
     }
+    content(paddingValues)
   }
 }

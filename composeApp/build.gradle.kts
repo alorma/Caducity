@@ -60,7 +60,6 @@ kotlin {
       implementation(compose.ui)
       implementation(compose.foundation)
       implementation(compose.components.resources)
-      implementation(compose.components.uiToolingPreview)
 
       implementation(libs.compose.material3)
 
@@ -87,6 +86,9 @@ kotlin {
     androidMain.dependencies {
       implementation(libs.androidx.activitycompose)
       implementation(libs.koin.android)
+
+      implementation(compose.components.uiToolingPreview)
+      implementation(compose.uiTooling)
     }
     val desktopMain by getting {
       dependencies {

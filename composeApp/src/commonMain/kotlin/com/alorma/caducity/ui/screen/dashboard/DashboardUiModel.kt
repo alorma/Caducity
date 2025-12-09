@@ -12,7 +12,6 @@ enum class SectionType {
 @Stable
 data class DashboardSection(
   val type: SectionType,
-  val title: StringResource,
   val itemCount: Int,
   val products: List<ProductUiModel>,
 )
