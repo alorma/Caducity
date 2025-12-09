@@ -4,12 +4,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingToolbarDefaults
-import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
 import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -108,15 +106,13 @@ private fun CompactContent(
   content: @Composable (PaddingValues) -> Unit,
 ) {
   Scaffold(
-    modifier = Modifier.fillMaxSize().safeDrawingPadding(),
+    modifier = Modifier.fillMaxSize(),
   ) { paddingValues ->
     Box(modifier = Modifier.fillMaxSize()) {
       content(paddingValues)
 
       VerticalFloatingToolbar(
-        modifier = Modifier
-          .align(Alignment.BottomEnd)
-          .offset(x = -ScreenOffset),
+        modifier = Modifier.align(Alignment.BottomEnd).safeDrawingPadding().padding(bottom = 16.dp),
         expanded = true,
         floatingActionButton = {
           FloatingToolbarDefaults.VibrantFloatingActionButton(
