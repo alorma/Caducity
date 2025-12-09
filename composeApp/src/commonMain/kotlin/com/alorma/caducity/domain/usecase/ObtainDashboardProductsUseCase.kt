@@ -33,23 +33,17 @@ class ObtainDashboardProductsUseCase(
           if (productWithInstances.instances.isEmpty()) {
             empty.add(productWithInstances)
           } else {
-            // Categorize instances by expiration status
-            val expiredInstances =
-              productWithInstances.instances.filter { it.expirationDate <= now }
-            val expiringSoonInstances = productWithInstances.instances.filter {
+            // Categorize product based on most restrictive instance status
+            val hasExpiredInstance = productWithInstances.instances.any { it.expirationDate <= now }
+            val hasExpiringSoonInstance = productWithInstances.instances.any {
               it.expirationDate > now && it.expirationDate <= soonThreshold
             }
-            val freshInstances = productWithInstances.instances.filter { it.expirationDate > soonThreshold }
-
-            // Add product to each category that has instances
-            if (expiredInstances.isNotEmpty()) {
-              expired.add(productWithInstances.copy(instances = productWithInstances.instances))
-            }
-            if (expiringSoonInstances.isNotEmpty()) {
-              expiringSoon.add(productWithInstances.copy(instances = productWithInstances.instances))
-            }
-            if (freshInstances.isNotEmpty()) {
-              fresh.add(productWithInstances.copy(instances = productWithInstances.instances))
+            
+            // Add product to only the most restrictive category
+            when {
+              hasExpiredInstance -> expired.add(productWithInstances)
+              hasExpiringSoonInstance -> expiringSoon.add(productWithInstances)
+              else -> fresh.add(productWithInstances)
             }
           }
         }
