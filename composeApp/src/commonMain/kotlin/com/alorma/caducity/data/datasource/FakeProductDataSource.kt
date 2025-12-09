@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlin.random.Random
-import kotlin.time.Instant
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 
 class FakeProductDataSource(
   private val appClock: AppClock
