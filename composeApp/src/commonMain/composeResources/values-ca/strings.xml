@@ -20,7 +20,6 @@
 
     <string name="dashboard_error_title">Error en carregar el tauler</string>
     <string name="dashboard_error_message">No es poden carregar els productes. Si us plau, torneu-ho a intentar més tard.</string>
-    <string name="dashboard_error_retry">Tornar a intentar</string>
 
     <string  name="settings_screen_title">Configuració</string>
 </resources>
