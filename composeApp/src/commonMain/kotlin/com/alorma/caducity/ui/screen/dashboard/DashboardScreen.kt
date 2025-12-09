@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.VerticalPager
@@ -38,13 +39,9 @@ import caducity.composeapp.generated.resources.dashboard_section_empty
 import caducity.composeapp.generated.resources.dashboard_section_expired
 import caducity.composeapp.generated.resources.dashboard_section_expiring_soon
 import caducity.composeapp.generated.resources.dashboard_section_fresh
-import caducity.composeapp.generated.resources.day_names
 import com.alorma.caducity.ui.adaptive.isMedium
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.format.DayOfWeekNames
-import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -126,7 +123,7 @@ private fun DashboardExpandedLayout(
     modifier = Modifier
       .fillMaxSize()
       .padding(paddingValues)
-      .padding(16.dp),
+      .padding(horizontal = 16.dp),
     horizontalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     sections.forEach { section ->
@@ -252,6 +249,7 @@ private fun ProductItem(
           }
           Column(
             modifier = Modifier
+              .widthIn(48.dp)
               .clip(
                 if (hasItem) {
                   MaterialShapes.Cookie4Sided.toShape()
@@ -264,17 +262,13 @@ private fun ProductItem(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
           ) {
-            val weekDayNames = DayOfWeekNames(stringArrayResource(Res.array.day_names))
-            val dayNameFormat = LocalDate.Format {
-              dayOfWeek(weekDayNames)
-            }
             Text(
               text = weekDay.date.day.toString(),
-              style = MaterialTheme.typography.labelMedium,
+              style = MaterialTheme.typography.labelMediumEmphasized,
               color = contentColorFor(backgroundColor),
             )
             Text(
-              text = dayNameFormat.format(weekDay.date),
+              text = weekDay.date.dayOfWeek.toString().take(3),
               style = MaterialTheme.typography.labelSmall,
               color = contentColorFor(backgroundColor),
             )
