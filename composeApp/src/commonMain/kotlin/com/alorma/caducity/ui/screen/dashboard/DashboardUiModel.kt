@@ -2,7 +2,6 @@ package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.compose.runtime.Stable
 import kotlinx.datetime.LocalDate
-import kotlin.time.Instant
 
 enum class SectionType {
   EXPIRED,
@@ -31,7 +30,6 @@ data class ProductUiModel(
 @Stable
 data class ProductInstanceUiModel(
   val id: String,
-  val productId: String,
   val expirationDate: LocalDate,
   val purchaseDate: LocalDate,
 )

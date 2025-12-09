@@ -2,77 +2,24 @@ package com.alorma.caducity.data.datasource
 
 import com.alorma.caducity.data.model.Product
 import com.alorma.caducity.data.model.ProductInstance
+import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.time.clock.AppClock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
-import kotlin.random.Random
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 class FakeProductDataSource(
   private val appClock: AppClock
 ) : ProductDataSource {
+
   private val _products = MutableStateFlow(generateFakeProducts())
-  private val _productInstances = MutableStateFlow(generateFakeProductInstances())
 
-  override fun getAllProducts(): Flow<List<Product>> = _products.asStateFlow()
-
-  override suspend fun getProductById(id: String): Product? {
-    return _products.value.find { it.id == id }
+  override fun getAllProductsWithInstances(): Flow<List<ProductWithInstances>> {
+    return _products
   }
 
-  override suspend fun insertProduct(product: Product) {
-    _products.update { currentList ->
-      currentList + product
-    }
-  }
-
-  override suspend fun deleteProduct(id: String) {
-    _products.update { currentList ->
-      currentList.filterNot { it.id == id }
-    }
-  }
-
-  override suspend fun updateProduct(product: Product) {
-    _products.update { currentList ->
-      currentList.map { if (it.id == product.id) product else it }
-    }
-  }
-
-  override fun getAllProductInstances(): Flow<List<ProductInstance>> =
-    _productInstances.asStateFlow()
-
-  override fun getProductInstancesByProductId(productId: String): Flow<List<ProductInstance>> =
-    _productInstances.map { instances ->
-      instances.filter { it.productId == productId }
-    }
-
-  override suspend fun getProductInstanceById(id: String): ProductInstance? {
-    return _productInstances.value.find { it.id == id }
-  }
-
-  override suspend fun insertProductInstance(instance: ProductInstance) {
-    _productInstances.update { currentList ->
-      currentList + instance
-    }
-  }
-
-  override suspend fun deleteProductInstance(id: String) {
-    _productInstances.update { currentList ->
-      currentList.filterNot { it.id == id }
-    }
-  }
-
-  override suspend fun updateProductInstance(instance: ProductInstance) {
-    _productInstances.update { currentList ->
-      currentList.map { if (it.id == instance.id) instance else it }
-    }
-  }
-
-  private fun generateFakeProducts(): List<Product> {
+  private fun generateFakeProducts(): List<ProductWithInstances> {
     val allProducts = listOf(
       "Milk" to "Fresh whole milk",
       "Bread" to "Whole wheat bread",
@@ -106,53 +53,55 @@ class FakeProductDataSource(
       "Bacon" to "Hickory smoked bacon"
     )
 
-    // Randomly select 15-25 products
-    val selectedProducts = allProducts.shuffled().take((15..25).random())
+    // Select 5-8 products
+    val selectedProducts = allProducts.shuffled().take((5..8).random())
 
     return selectedProducts.mapIndexed { index, (name, description) ->
-      Product(
-        id = (index + 1).toString(),
-        name = name,
-        description = description,
+      ProductWithInstances(
+        product = Product(
+          id = (index + 1).toString(),
+          name = name,
+          description = description,
+        ),
+        instances = generateFakeProductInstances(),
       )
     }
   }
 
   private fun generateFakeProductInstances(): List<ProductInstance> {
     val now = appClock.now()
-    val products = _products.value
-    val instances = mutableListOf<ProductInstance>()
-    var instanceId = 1
 
-    // Generate 1-4 instances per product
-    products.forEach { product ->
-      val instanceCount = (1..4).random()
-      repeat(instanceCount) {
-        // Random expiration: 60% future (active), 40% past (expired)
-        val isExpired = Random.nextFloat() < 0.4f
-        val daysOffset = if (isExpired) {
-          // Expired: 1-10 days ago
-          -(1..10).random()
-        } else {
-          // Active: 1-30 days in the future
-          (1..30).random()
-        }
+    // Predefined day offsets for more varied expiration dates
+    val expirationOffsets = listOf(
+      -15, // Expired 15 days ago
+      -7,  // Expired 7 days ago
+      -3,  // Expired 3 days ago
+      -1,  // Expired yesterday
+      1,   // Expires tomorrow
+      3,   // Expires in 3 days
+      5,   // Expires in 5 days
+      9,   // Expires in 9 days
+      14,  // Expires in 14 days
+      21,  // Expires in 21 days
+      30,  // Expires in 30 days
+      45,  // Expires in 45 days
+      60,  // Expires in 60 days
+      90   // Expires in 90 days
+    )
+    val instanceCount = (3..8).random()
+    val shuffledOffsets = expirationOffsets.shuffled()
 
-        // Purchase date is 30-60 days before expiration
-        val purchaseDaysBeforeExpiration = (30..60).random()
+    return List(instanceCount) { index ->
+      val daysOffset = shuffledOffsets[index % shuffledOffsets.size]
 
-        instances.add(
-          ProductInstance(
-            id = instanceId.toString(),
-            productId = product.id,
-            expirationDate = Instant.fromEpochMilliseconds((now + daysOffset.days).toEpochMilliseconds()),
-            purchaseDate = Instant.fromEpochMilliseconds((now + daysOffset.days - purchaseDaysBeforeExpiration.days).toEpochMilliseconds()),
-          )
-        )
-        instanceId++
-      }
+      // Purchase date is 30-60 days before expiration
+      val purchaseDaysBeforeExpiration = (30..60).random()
+
+      ProductInstance(
+        id = index.toString(),
+        expirationDate = Instant.fromEpochMilliseconds((now + daysOffset.days).toEpochMilliseconds()),
+        purchaseDate = Instant.fromEpochMilliseconds((now + daysOffset.days - purchaseDaysBeforeExpiration.days).toEpochMilliseconds()),
+      )
     }
-
-    return instances
   }
 }
