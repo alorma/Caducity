@@ -128,6 +128,21 @@ WeekCalendar(
 
 ### After
 ```kotlin
+// ← NEW: Smart first visible week logic
+val firstVisibleDate = if (product.instances.any { it.expirationDate <= product.today }) {
+  // If there are items expiring on or before today, show today's week
+  product.today
+} else {
+  // Otherwise, show the week with the nearest (earliest) upcoming item
+  product.startDate
+}
+
+val state = rememberWeekCalendarState(
+  startDate = product.startDate,
+  endDate = product.endDate,
+  firstVisibleWeekDate = firstVisibleDate,  // ← Smart initial week
+)
+
 WeekCalendar(
   state = state,
   dayContent = { weekDay ->
@@ -136,7 +151,8 @@ WeekCalendar(
     
     // ← NEW: Enhanced color logic with priority
     val backgroundColor = when {
-      isToday && hasItem -> MaterialTheme.colorScheme.primary  // Primary color for today
+      isToday && hasItem -> MaterialTheme.colorScheme.primary  // Primary color for today with items
+      isToday && !hasItem -> MaterialTheme.colorScheme.primaryContainer  // Subtle color for today without items
       hasItem -> DashboardSectionColors.getSectionColors(sectionType).container  // Section color
       else -> Color.Unspecified  // No color
     }
@@ -147,7 +163,8 @@ WeekCalendar(
         .clip(
           // ← NEW: Enhanced shape logic with priority
           when {
-            isToday && hasItem -> MaterialShapes.Cookie6Sided.toShape()  // 6-sided for today
+            isToday && hasItem -> MaterialShapes.Cookie6Sided.toShape()  // 6-sided for today with items
+            isToday && !hasItem -> MaterialShapes.Cookie4Sided.toShape()  // 4-sided for today without items
             hasItem -> MaterialShapes.Cookie4Sided.toShape()  // 4-sided for other days
             else -> RectangleShape  // No shape
           }
@@ -163,6 +180,9 @@ WeekCalendar(
 ```
 
 **Why**:
+- `firstVisibleDate` logic ensures the calendar opens at the most relevant week:
+  - Shows today's week if any items expire on or before today (user needs to see expired/expiring items)
+  - Shows the earliest future item's week if all items are in the future (user wants to see next expiration)
 - `isToday` flag clearly indicates if the current day is today
 - `when` expressions provide priority-based logic (today > has item > nothing)
 - Primary color makes today stand out across all sections
@@ -288,12 +308,66 @@ languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3Expressi
 
 ---
 
+---
+
+## 8. Calendar Initial Week Logic
+
+The calendar's first visible week is determined by a smart algorithm:
+
+```kotlin
+val firstVisibleDate = if (product.instances.any { it.expirationDate <= product.today }) {
+  // If there are items expiring on or before today, show today's week
+  product.today
+} else {
+  // Otherwise, show the week with the nearest (earliest) upcoming item
+  product.startDate
+}
+```
+
+### Decision Tree
+
+```
+Has items expiring on/before today?
+│
+├─ YES → Show today's week
+│         (User needs to see expired/expiring items immediately)
+│
+└─ NO  → Show earliest item's week
+          (All items are in the future, show the next one)
+```
+
+### Examples
+
+**Case 1: Milk with expired items**
+- Today: May 17
+- Items: May 10, May 12 (both expired)
+- Result: Shows week containing May 17 (today's week)
+- Why: User needs to see that items are expired
+
+**Case 2: Fresh cheese, all future**
+- Today: May 17
+- Items: May 25, May 30, June 5 (all future)
+- Result: Shows week containing May 25 (earliest item)
+- Why: No urgent items, show next expiration
+
+**Case 3: Bread expiring today**
+- Today: May 17
+- Items: May 17, May 20
+- Result: Shows week containing May 17 (today's week)
+- Why: Item expires today, needs immediate attention
+
+---
+
 ## Summary
 
 The implementation touches three main areas:
 
 1. **Data Layer**: Add `today` field to UI model
 2. **Mapping Layer**: Calculate and inject today's date using `AppClock`
-3. **UI Layer**: Apply conditional styling based on `isToday` and `hasItem` flags
+3. **UI Layer**: 
+   - Apply conditional styling based on `isToday` and `hasItem` flags
+   - Smart calendar initial week based on item expiration dates
 
-The result: Today's date is clearly highlighted with primary color and a distinct shape when products expire on that day.
+The result: 
+- Today's date is clearly highlighted with primary color and distinct shape
+- Calendar opens at the most relevant week for the user's context

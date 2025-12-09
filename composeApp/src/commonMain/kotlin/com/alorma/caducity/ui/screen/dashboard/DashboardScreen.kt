@@ -232,10 +232,18 @@ private fun ProductItem(
         )
       }
 
+      val firstVisibleDate = if (product.instances.any { it.expirationDate <= product.today }) {
+        // If there are items expiring on or before today, show today's week
+        product.today
+      } else {
+        // Otherwise, show the week with the nearest (earliest) upcoming item
+        product.startDate
+      }
+      
       val state = rememberWeekCalendarState(
         startDate = product.startDate,
         endDate = product.endDate,
-        firstVisibleWeekDate = product.startDate,
+        firstVisibleWeekDate = firstVisibleDate,
       )
 
       WeekCalendar(
@@ -245,6 +253,7 @@ private fun ProductItem(
           val isToday = weekDay.date == product.today
           val backgroundColor = when {
             isToday && hasItem -> MaterialTheme.colorScheme.primary
+            isToday && !hasItem -> MaterialTheme.colorScheme.primaryContainer
             hasItem -> DashboardSectionColors.getSectionColors(sectionType).container
             else -> Color.Unspecified
           }
@@ -254,6 +263,7 @@ private fun ProductItem(
               .clip(
                 when {
                   isToday && hasItem -> MaterialShapes.Cookie6Sided.toShape()
+                  isToday && !hasItem -> MaterialShapes.Cookie4Sided.toShape()
                   hasItem -> MaterialShapes.Cookie4Sided.toShape()
                   else -> RectangleShape
                 }

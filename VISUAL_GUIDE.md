@@ -20,18 +20,19 @@ The week calendar in product items now visually highlights "today" when products
        Cookie4Sided  for Today  Cookie4Sided        Cookie4Sided
 ```
 
-### After (Today stands out when it has items)
+### After (Today always stands out)
 ```
 ┌─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┐
 │  MON    │  TUE    │  WED    │  THU    │  FRI    │  SAT    │  SUN    │
 │         │         │         │         │         │         │         │
-│         │ ◆ 15 ◆  │         │ ★ 17 ★  │         │ ◆ 19 ◆  │         │
-│         │   TUE   │         │   THU   │         │   SAT   │         │
-│         │         │         │ (TODAY) │         │         │         │
+│         │ ◆ 15 ◆  │  ◆ 16 ◆ │ ★ 17 ★  │         │ ◆ 19 ◆  │         │
+│         │   TUE   │   WED   │   THU   │         │   SAT   │         │
+│         │         │ (TODAY) │ (TODAY) │         │         │         │
 └─────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┘
-         Section     (no       PRIMARY    (no       Section   (no
-         Color       marker)    COLOR     marker)    Color    marker)
-       Cookie4Sided            Cookie6Sided        Cookie4Sided
+         Section    PRIMARY     PRIMARY    (no       Section   (no
+         Color      Container    COLOR     marker)    Color    marker)
+       Cookie4Sided Cookie4Sided Cookie6Sided       Cookie4Sided
+                    (no item)    (has item)
 ```
 
 ## Visual Elements
@@ -52,20 +53,32 @@ The week calendar in product items now visually highlights "today" when products
   - Gray-ish: Empty items
   
 - **Primary Color**: App's main accent color (usually vibrant blue/purple)
-  - Overrides section color when day is today
+  - Used when today has expiring products
   - Consistent with Material Design primary color role
   - Stands out across all sections
+  
+- **Primary Container Color**: Lighter/tinted version of primary color
+  - Used when today has NO expiring products
+  - Provides subtle indication that it's today
+  - Less prominent than primary color
 
 ## When Highlighting Occurs
 
-✅ **Day IS highlighted (primary color + 6-sided shape) when:**
+✅ **Day IS highlighted with PRIMARY + 6-sided shape when:**
 - The day is today (current date)
 - AND the day has product instances expiring
 
-❌ **Day is NOT highlighted when:**
-- The day is today BUT no products expire that day
-- The day is not today (uses section color + 4-sided shape instead)
-- The day has no expiring products (no shape or color)
+✅ **Day IS highlighted with PRIMARY CONTAINER + 4-sided shape when:**
+- The day is today (current date)
+- BUT no products expire that day
+
+✅ **Day shows section color + 4-sided shape when:**
+- The day is NOT today
+- AND the day has product instances expiring
+
+❌ **Day has NO styling when:**
+- The day is NOT today
+- AND no products expire that day
 
 ## Example Scenarios
 
@@ -90,10 +103,11 @@ Section: EXPIRING_SOON
 
 Week View:
   TUE      WED      THU       FRI      SAT
-  ◆15◆            (empty)    ◆ 18 ◆   ◆19◆
-Section           no         Section  Section
-Color             expiry     Color    Color
-                  today      (tmrw)
+  ◆15◆            ◆ 17 ◆     ◆ 18 ◆   ◆19◆
+Section          PRIMARY    Section  Section
+Color            Container   Color    Color
+                 (today,    (tmrw)
+                 no item)
 ```
 
 ### Scenario 3: Multiple instances, one today
@@ -121,16 +135,18 @@ Color    Color    COLOR     Color    Color
 ```kotlin
 // Color priority
 when {
-  isToday && hasItem -> Primary Color       // Highest priority
-  hasItem            -> Section Color       // Medium priority  
-  else               -> No color            // No styling
+  isToday && hasItem  -> Primary Color          // Highest priority - today with items
+  isToday && !hasItem -> Primary Container      // High priority - today without items
+  hasItem             -> Section Color          // Medium priority - other days with items
+  else                -> No color               // No styling
 }
 
 // Shape priority
 when {
-  isToday && hasItem -> Cookie6Sided       // Highest priority
-  hasItem            -> Cookie4Sided       // Medium priority
-  else               -> RectangleShape     // No shape
+  isToday && hasItem  -> Cookie6Sided          // Highest priority - today with items
+  isToday && !hasItem -> Cookie4Sided          // High priority - today without items
+  hasItem             -> Cookie4Sided          // Medium priority - other days with items
+  else                -> RectangleShape        // No shape
 }
 ```
 
@@ -148,12 +164,55 @@ when {
    - Cookie6Sided is noticeably more complex than Cookie4Sided
    - Provides visual weight/emphasis to today
 
+## Calendar Initial Week Behavior
+
+The calendar intelligently determines which week to show first:
+
+### Logic
+```
+Has items expiring on/before today?
+├─ YES → Show today's week
+└─ NO  → Show earliest item's week
+```
+
+### Example 1: Expired Milk
+```
+Today: May 17
+Items: May 10 ❌, May 12 ❌
+Initial view: Week of May 17 (today's week)
+Reason: Items are expired, user needs to see them now
+```
+
+### Example 2: Fresh Cheese
+```
+Today: May 17
+Items: May 25 ✓, May 30 ✓, June 5 ✓
+Initial view: Week of May 25 (earliest item)
+Reason: All items are future, show next expiration
+```
+
+### Example 3: Bread Expiring Today
+```
+Today: May 17
+Items: May 17 ⚠️, May 20 ✓
+Initial view: Week of May 17 (today's week)
+Reason: Item expires today, immediate attention needed
+```
+
 ## Testing Tips
 
 When testing this feature:
-1. Set system date to match a product's expiration date
-2. Verify the calendar day shows primary color
-3. Verify the calendar day shows 6-sided shape
-4. Verify other days with items show section color + 4-sided shape
-5. Test in both light and dark themes
-6. Test across different product sections (Expired, Expiring Soon, Fresh)
+1. **Calendar initial position**:
+   - Create product with past items → verify opens on today's week
+   - Create product with only future items → verify opens on earliest item's week
+   - Create product with item expiring today → verify opens on today's week
+2. **Today highlighting**:
+   - Set system date to match a product's expiration date
+   - Verify the calendar day shows primary color + 6-sided shape
+   - Verify today without items shows primary container + 4-sided shape
+3. **Other days**:
+   - Verify other days with items show section color + 4-sided shape
+   - Verify empty days have no styling
+4. **Cross-platform**:
+   - Test in both light and dark themes
+   - Test across different product sections (Expired, Expiring Soon, Fresh)
