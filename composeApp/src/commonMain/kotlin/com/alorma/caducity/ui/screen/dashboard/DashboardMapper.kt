@@ -48,17 +48,17 @@ class DashboardMapper {
       startDate = startDate,
       endDate = endDate,
       instances = instances.map { instance ->
-        val expirationDate =
-          instance.expirationDate.toLocalDateTime(TimeZone.currentSystemDefault())
-        val purchaseDate = instance.purchaseDate.toLocalDateTime(TimeZone.currentSystemDefault())
-
         ProductInstanceUiModel(
           id = instance.id,
           productId = instance.productId,
-          expirationDate = expirationDate.date.toString(),
-          expirationDateInstant = instance.expirationDate,
-          purchaseDate = purchaseDate.date.toString(),
-          purchaseDateInstant = instance.purchaseDate,
+          expirationDate = instance
+            .expirationDate
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .date,
+          purchaseDate = instance
+            .purchaseDate
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .date,
         )
       }
     )

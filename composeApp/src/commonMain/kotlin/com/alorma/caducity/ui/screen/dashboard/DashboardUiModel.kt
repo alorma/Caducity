@@ -32,8 +32,6 @@ data class ProductUiModel(
 data class ProductInstanceUiModel(
   val id: String,
   val productId: String,
-  val expirationDate: String,
-  val expirationDateInstant: Instant,
-  val purchaseDate: String,
-  val purchaseDateInstant: Instant,
+  val expirationDate: LocalDate,
+  val purchaseDate: LocalDate,
 )

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,9 +22,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import caducity.composeapp.generated.resources.Res
@@ -158,7 +162,7 @@ private fun SectionColumn(section: DashboardSection) {
         items = section.products,
         key = { product -> product.id }
       ) { product ->
-        ProductItem(product = product)
+        ProductItem(product = product, sectionType = section.type)
       }
     }
   }
@@ -202,6 +206,7 @@ private fun DashboardSectionHeader(
 @Composable
 private fun ProductItem(
   product: ProductUiModel,
+  sectionType: SectionType,
 ) {
   Card(
     modifier = Modifier.fillMaxWidth(),
@@ -238,7 +243,23 @@ private fun ProductItem(
       WeekCalendar(
         state = state,
         dayContent = { weekDay ->
+          val hasItem = weekDay.date in product.instances.map { it.expirationDate }
+          val backgroundColor = if (hasItem) {
+            DashboardSectionColors.getSectionColors(sectionType).container
+          } else {
+            Color.Unspecified
+          }
           Column(
+            modifier = Modifier
+              .clip(
+                if (hasItem) {
+                  MaterialShapes.Cookie4Sided.toShape()
+                } else {
+                  RectangleShape
+                }
+              )
+              .background(backgroundColor)
+              .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
           ) {
@@ -249,10 +270,12 @@ private fun ProductItem(
             Text(
               text = weekDay.date.day.toString(),
               style = MaterialTheme.typography.labelMedium,
+              color = contentColorFor(backgroundColor),
             )
             Text(
               text = dayNameFormat.format(weekDay.date),
               style = MaterialTheme.typography.labelSmall,
+              color = contentColorFor(backgroundColor),
             )
           }
         }
