@@ -32,10 +32,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.dashboard_screen_title
+import caducity.composeapp.generated.resources.dashboard_section_empty
 import caducity.composeapp.generated.resources.dashboard_section_expired
 import caducity.composeapp.generated.resources.dashboard_section_expiring_soon
 import caducity.composeapp.generated.resources.dashboard_section_fresh
-import com.alorma.caducity.ui.adaptive.isWidthMediumOrLarger
+import com.alorma.caducity.ui.adaptive.isLarge
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -74,8 +75,8 @@ fun DashboardContent(state: DashboardState.Success) {
       )
     },
   ) { paddingValues ->
-    val isWidthMediumOrLarger = isWidthMediumOrLarger()
-    if (isWidthMediumOrLarger) {
+    val isLarge = isLarge()
+    if (isLarge) {
       DashboardExpandedLayout(
         sections = state.sections,
         paddingValues = paddingValues,
@@ -181,6 +182,7 @@ private fun DashboardSectionHeader(
         SectionType.EXPIRED -> stringResource(Res.string.dashboard_section_expired)
         SectionType.EXPIRING_SOON -> stringResource(Res.string.dashboard_section_expiring_soon)
         SectionType.FRESH -> stringResource(Res.string.dashboard_section_fresh)
+        SectionType.EMPTY -> stringResource(Res.string.dashboard_section_empty)
       },
       style = MaterialTheme.typography.titleLarge,
       color = sectionColors.onContainer,

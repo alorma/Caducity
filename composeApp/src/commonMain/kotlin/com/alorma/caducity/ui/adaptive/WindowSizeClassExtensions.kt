@@ -13,14 +13,17 @@ fun isWidthCompact(): Boolean {
 }
 
 @Composable
-fun isWidthMediumOrLarger(): Boolean {
+fun isLarge(): Boolean {
   return currentWindowAdaptiveInfo(
     supportLargeAndXLargeWidth = true,
-  ).isWidthMediumOrLarger
+  ).isLarge
 }
 
 private val WindowSizeClass.isWidthMediumOrLarger: Boolean
   get() = isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
+
+private val WindowSizeClass.isLarge: Boolean
+  get() = isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_LARGE_LOWER_BOUND)
 
 private val WindowSizeClass.isWidthCompact: Boolean
   get() = !isWidthMediumOrLarger
@@ -30,4 +33,7 @@ private val WindowAdaptiveInfo.isWidthCompact: Boolean
 
 private val WindowAdaptiveInfo.isWidthMediumOrLarger: Boolean
   get() = windowSizeClass.isWidthMediumOrLarger
+
+private val WindowAdaptiveInfo.isLarge: Boolean
+  get() = windowSizeClass.isLarge
 

@@ -47,10 +47,21 @@ class ObtainDashboardProductsUseCase(
           }
       }
 
+      // Find products with no instances
+      val productsWithInstances = instances.map { it.productId }.toSet()
+      val emptyProducts = products.filter { it.id !in productsWithInstances }
+        .map { product ->
+          ProductWithInstances(
+            product = product,
+            instances = emptyList()
+          )
+        }
+
       DashboardProducts(
         expired = groupByProduct(expired),
         expiringSoon = groupByProduct(expiringSoon),
         fresh = groupByProduct(fresh),
+        empty = emptyProducts,
       )
     }
   }
