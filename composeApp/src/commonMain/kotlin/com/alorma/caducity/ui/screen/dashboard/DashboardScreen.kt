@@ -6,19 +6,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +34,13 @@ import caducity.composeapp.generated.resources.dashboard_section_empty
 import caducity.composeapp.generated.resources.dashboard_section_expired
 import caducity.composeapp.generated.resources.dashboard_section_expiring_soon
 import caducity.composeapp.generated.resources.dashboard_section_fresh
-import com.alorma.caducity.ui.adaptive.isLarge
+import caducity.composeapp.generated.resources.day_names
+import com.alorma.caducity.ui.adaptive.isMedium
+import com.kizitonwose.calendar.compose.WeekCalendar
+import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format.DayOfWeekNames
+import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -75,8 +79,8 @@ fun DashboardContent(state: DashboardState.Success) {
       )
     },
   ) { paddingValues ->
-    val isLarge = isLarge()
-    if (isLarge) {
+    val isMedium = isMedium()
+    if (isMedium) {
       DashboardExpandedLayout(
         sections = state.sections,
         paddingValues = paddingValues,
@@ -97,7 +101,7 @@ private fun DashboardCompactLayout(
 ) {
   val pagerState = rememberPagerState(pageCount = { sections.size })
 
-  HorizontalPager(
+  VerticalPager(
     state = pagerState,
     modifier = Modifier
       .fillMaxSize()
@@ -226,42 +230,34 @@ private fun ProductItem(
         )
       }
 
-      if (product.instances.isNotEmpty()) {
-        Spacer(modifier = Modifier.height(4.dp))
-        HorizontalDivider()
-        Spacer(modifier = Modifier.height(4.dp))
+      val state = rememberWeekCalendarState(
+        startDate = product.startDate,
+        endDate = product.endDate,
+      )
 
-        Column(
-          verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-          product.instances.forEach { instance ->
-            ProductInstanceItem(instance = instance)
+      WeekCalendar(
+        state = state,
+        dayContent = { weekDay ->
+          Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+          ) {
+            val weekDayNames = DayOfWeekNames(stringArrayResource(Res.array.day_names))
+            val dayNameFormat = LocalDate.Format {
+              dayOfWeek(weekDayNames)
+            }
+            Text(
+              text = weekDay.date.day.toString(),
+              style = MaterialTheme.typography.labelMedium,
+            )
+            Text(
+              text = dayNameFormat.format(weekDay.date),
+              style = MaterialTheme.typography.labelSmall,
+            )
           }
         }
-      }
-    }
-  }
-}
+      )
 
-@Composable
-private fun ProductInstanceItem(
-  instance: ProductInstanceUiModel,
-) {
-  Row(
-    modifier = Modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.SpaceBetween,
-  ) {
-    Column {
-      Text(
-        text = "Expires: ${instance.expirationDate}",
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-      Text(
-        text = "Purchased: ${instance.purchaseDate}",
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
     }
   }
 }

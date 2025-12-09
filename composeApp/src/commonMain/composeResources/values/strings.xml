@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string  name="dashboard_screen_title">Dashboard</string>
+
+    <string-array name="day_names">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
+
+    <string name="dashboard_screen_title">Dashboard</string>
 
     <string name="dashboard_section_expired">Expired</string>
     <string name="dashboard_section_expiring_soon">Expiring</string>
     <string name="dashboard_section_fresh">Fresh</string>
     <string name="dashboard_section_empty">Empty</string>
 
-    <string  name="settings_screen_title">Settings</string>
+    <string name="settings_screen_title">Settings</string>
 </resources>
