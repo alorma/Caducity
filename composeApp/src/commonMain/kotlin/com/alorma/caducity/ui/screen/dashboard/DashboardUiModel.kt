@@ -24,6 +24,7 @@ data class ProductUiModel(
   val description: String,
   val startDate: LocalDate,
   val endDate: LocalDate,
+  val today: LocalDate,
   val instances: List<ProductInstanceUiModel>,
 )
 

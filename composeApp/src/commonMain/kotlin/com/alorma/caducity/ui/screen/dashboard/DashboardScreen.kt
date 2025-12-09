@@ -242,19 +242,20 @@ private fun ProductItem(
         state = state,
         dayContent = { weekDay ->
           val hasItem = weekDay.date in product.instances.map { it.expirationDate }
-          val backgroundColor = if (hasItem) {
-            DashboardSectionColors.getSectionColors(sectionType).container
-          } else {
-            Color.Unspecified
+          val isToday = weekDay.date == product.today
+          val backgroundColor = when {
+            isToday && hasItem -> MaterialTheme.colorScheme.primary
+            hasItem -> DashboardSectionColors.getSectionColors(sectionType).container
+            else -> Color.Unspecified
           }
           Column(
             modifier = Modifier
               .widthIn(48.dp)
               .clip(
-                if (hasItem) {
-                  MaterialShapes.Cookie4Sided.toShape()
-                } else {
-                  RectangleShape
+                when {
+                  isToday && hasItem -> MaterialShapes.Cookie6Sided.toShape()
+                  hasItem -> MaterialShapes.Cookie4Sided.toShape()
+                  else -> RectangleShape
                 }
               )
               .background(backgroundColor)
