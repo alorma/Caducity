@@ -26,6 +26,11 @@ class DashboardMapper {
         type = SectionType.FRESH,
         itemCount = dashboardProducts.fresh.sumOf { it.instances.size },
         products = dashboardProducts.fresh.map { it.toUiModel() }
+      ),
+      DashboardSection(
+        type = SectionType.EMPTY,
+        itemCount = dashboardProducts.empty.size,
+        products = dashboardProducts.empty.map { it.toUiModel() }
       )
     )
   }

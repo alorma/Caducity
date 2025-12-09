@@ -22,6 +22,11 @@ object DashboardSectionColors {
         container = MaterialTheme.colorScheme.primaryContainer,
         onContainer = MaterialTheme.colorScheme.onPrimaryContainer
       )
+
+      SectionType.EMPTY -> SectionColors(
+        container = MaterialTheme.colorScheme.surfaceContainerHighest,
+        onContainer = MaterialTheme.colorScheme.onSurface
+      )
     }
   }
 }

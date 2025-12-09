@@ -5,6 +5,7 @@
     <string name="dashboard_section_expired">Caducado</string>
     <string name="dashboard_section_expiring_soon">Próximo</string>
     <string name="dashboard_section_fresh">Fresco</string>
+    <string name="dashboard_section_empty">Vacío</string>
 
     <string  name="settings_screen_title">Configuración</string>
 </resources>

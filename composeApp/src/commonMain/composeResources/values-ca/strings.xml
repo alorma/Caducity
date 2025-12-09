@@ -5,6 +5,7 @@
     <string name="dashboard_section_expired">Caducat</string>
     <string name="dashboard_section_expiring_soon">Pròxim</string>
     <string name="dashboard_section_fresh">Fresc</string>
+    <string name="dashboard_section_empty">Buit</string>
 
     <string  name="settings_screen_title">Configuració</string>
 </resources>

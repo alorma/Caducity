@@ -1,12 +1,12 @@
 package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.compose.runtime.Stable
-import org.jetbrains.compose.resources.StringResource
 
 enum class SectionType {
   EXPIRED,
   EXPIRING_SOON,
   FRESH,
+  EMPTY,
 }
 
 @Stable

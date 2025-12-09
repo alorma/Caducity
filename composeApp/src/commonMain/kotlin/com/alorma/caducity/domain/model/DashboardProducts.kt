@@ -7,6 +7,7 @@ data class DashboardProducts(
   val expired: List<ProductWithInstances>,
   val expiringSoon: List<ProductWithInstances>,
   val fresh: List<ProductWithInstances>,
+  val empty: List<ProductWithInstances>,
 )
 
 data class ProductWithInstances(
