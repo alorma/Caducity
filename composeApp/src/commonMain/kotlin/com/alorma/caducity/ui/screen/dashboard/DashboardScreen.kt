@@ -39,7 +39,7 @@ import caducity.composeapp.generated.resources.dashboard_section_empty
 import caducity.composeapp.generated.resources.dashboard_section_expired
 import caducity.composeapp.generated.resources.dashboard_section_expiring_soon
 import caducity.composeapp.generated.resources.dashboard_section_fresh
-import com.alorma.caducity.ui.adaptive.isMedium
+import com.alorma.caducity.ui.adaptive.isWidthCompact
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import org.jetbrains.compose.resources.stringResource
@@ -80,14 +80,14 @@ fun DashboardContent(state: DashboardState.Success) {
       )
     },
   ) { paddingValues ->
-    val isMedium = isMedium()
-    if (isMedium) {
-      DashboardExpandedLayout(
+    val isCompact = isWidthCompact()
+    if (isCompact) {
+      DashboardCompactLayout(
         sections = state.sections,
         paddingValues = paddingValues,
       )
     } else {
-      DashboardCompactLayout(
+      DashboardExpandedLayout(
         sections = state.sections,
         paddingValues = paddingValues,
       )
@@ -232,61 +232,72 @@ private fun ProductItem(
         )
       }
 
-      val firstVisibleDate = if (product.instances.any { it.expirationDate <= product.today }) {
-        // If there are items expiring on or before today, show today's week
-        product.today
-      } else {
-        // Otherwise, show the week with the nearest (earliest) upcoming item
-        product.startDate
-      }
-      
-      val state = rememberWeekCalendarState(
-        startDate = product.startDate,
-        endDate = product.endDate,
-        firstVisibleWeekDate = firstVisibleDate,
-      )
+      when (product) {
+        is ProductUiModel.WithInstances -> {
+          val firstVisibleDate = if (product.instances.any { it.expirationDate <= product.today }) {
+            // If there are items expiring on or before today, show today's week
+            product.today
+          } else {
+            // Otherwise, show the week with the nearest (earliest) upcoming item
+            product.startDate
+          }
 
-      WeekCalendar(
-        state = state,
-        dayContent = { weekDay ->
-          val hasItem = weekDay.date in product.instances.map { it.expirationDate }
-          val isToday = weekDay.date == product.today
-          val backgroundColor = when {
-            isToday && hasItem -> MaterialTheme.colorScheme.primary
-            isToday && !hasItem -> MaterialTheme.colorScheme.primaryContainer
-            hasItem -> DashboardSectionColors.getSectionColors(sectionType).container
-            else -> Color.Unspecified
-          }
-          Column(
-            modifier = Modifier
-              .widthIn(48.dp)
-              .clip(
-                when {
-                  isToday && hasItem -> MaterialShapes.Cookie6Sided.toShape()
-                  isToday && !hasItem -> MaterialShapes.Cookie4Sided.toShape()
-                  hasItem -> MaterialShapes.Cookie4Sided.toShape()
-                  else -> RectangleShape
-                }
-              )
-              .background(backgroundColor)
-              .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-          ) {
-            Text(
-              text = weekDay.date.day.toString(),
-              style = MaterialTheme.typography.labelMediumEmphasized,
-              color = contentColorFor(backgroundColor),
-            )
-            Text(
-              text = weekDay.date.dayOfWeek.toString().take(3),
-              style = MaterialTheme.typography.labelSmall,
-              color = contentColorFor(backgroundColor),
-            )
-          }
+          val state = rememberWeekCalendarState(
+            startDate = product.startDate,
+            endDate = product.endDate,
+            firstVisibleWeekDate = firstVisibleDate,
+          )
+
+          WeekCalendar(
+            state = state,
+            dayContent = { weekDay ->
+              val hasItem = weekDay.date in product.instances.map { it.expirationDate }
+              val isToday = weekDay.date == product.today
+              val backgroundColor = when {
+                isToday && hasItem -> MaterialTheme.colorScheme.primary
+                isToday && !hasItem -> MaterialTheme.colorScheme.primaryContainer
+                hasItem -> DashboardSectionColors.getSectionColors(sectionType).container
+                else -> Color.Unspecified
+              }
+              Column(
+                modifier = Modifier
+                  .widthIn(56.dp)
+                  .clip(
+                    when {
+                      isToday && hasItem -> MaterialShapes.Cookie6Sided.toShape()
+                      isToday && !hasItem -> MaterialShapes.Cookie4Sided.toShape()
+                      hasItem -> MaterialShapes.Cookie4Sided.toShape()
+                      else -> RectangleShape
+                    }
+                  )
+                  .background(backgroundColor)
+                  .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+              ) {
+                Text(
+                  text = weekDay.date.day.toString(),
+                  style = MaterialTheme.typography.labelMediumEmphasized,
+                  color = contentColorFor(backgroundColor),
+                )
+                Text(
+                  text = weekDay.date.dayOfWeek.toString().take(3),
+                  style = MaterialTheme.typography.labelSmall,
+                  color = contentColorFor(backgroundColor),
+                )
+              }
+            }
+          )
         }
-      )
 
+        is ProductUiModel.Empty -> {
+          Text(
+            text = "No active instances",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+      }
     }
   }
 }
