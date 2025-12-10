@@ -18,15 +18,29 @@ data class DashboardSection(
 )
 
 @Stable
-data class ProductUiModel(
-  val id: String,
-  val name: String,
-  val description: String,
-  val startDate: LocalDate,
-  val endDate: LocalDate,
-  val today: LocalDate,
-  val instances: List<ProductInstanceUiModel>,
-)
+sealed interface ProductUiModel {
+  val id: String
+  val name: String
+  val description: String
+
+  @Stable
+  data class WithInstances(
+    override val id: String,
+    override val name: String,
+    override val description: String,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val today: LocalDate,
+    val instances: List<ProductInstanceUiModel>,
+  ) : ProductUiModel
+
+  @Stable
+  data class Empty(
+    override val id: String,
+    override val name: String,
+    override val description: String,
+  ) : ProductUiModel
+}
 
 @Stable
 data class ProductInstanceUiModel(

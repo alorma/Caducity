@@ -43,9 +43,17 @@ class DashboardMapper(
   }
 
   private fun ProductWithInstances.toUiModel(): ProductUiModel {
+    if (instances.isEmpty()) {
+      return ProductUiModel.Empty(
+        id = product.id,
+        name = product.name,
+        description = product.description,
+      )
+    }
+
     val (startDate, endDate) = getDateRange()
     val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-    return ProductUiModel(
+    return ProductUiModel.WithInstances(
       id = product.id,
       name = product.name,
       description = product.description,
