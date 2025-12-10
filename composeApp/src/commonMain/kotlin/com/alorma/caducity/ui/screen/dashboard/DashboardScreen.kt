@@ -255,8 +255,14 @@ private fun ProductItem(
               val isToday = weekDay.date == product.today
               val backgroundColor = when {
                 isToday && hasItem -> MaterialTheme.colorScheme.primary
-                isToday && !hasItem -> MaterialTheme.colorScheme.primaryContainer
+                isToday && !hasItem -> Color.Unspecified
                 hasItem -> DashboardSectionColors.getSectionColors(sectionType).container
+                else -> Color.Unspecified
+              }
+              val contentColor = when {
+                isToday && hasItem -> MaterialTheme.colorScheme.onPrimary
+                isToday && !hasItem -> MaterialTheme.colorScheme.primary
+                hasItem -> DashboardSectionColors.getSectionColors(sectionType).onContainer
                 else -> Color.Unspecified
               }
               Column(
@@ -265,7 +271,7 @@ private fun ProductItem(
                   .clip(
                     when {
                       isToday && hasItem -> MaterialShapes.Cookie6Sided.toShape()
-                      isToday && !hasItem -> MaterialShapes.Cookie4Sided.toShape()
+                      isToday && !hasItem -> RectangleShape
                       hasItem -> MaterialShapes.Cookie4Sided.toShape()
                       else -> RectangleShape
                     }
@@ -278,12 +284,12 @@ private fun ProductItem(
                 Text(
                   text = weekDay.date.day.toString(),
                   style = MaterialTheme.typography.labelMediumEmphasized,
-                  color = contentColorFor(backgroundColor),
+                  color = contentColor,
                 )
                 Text(
                   text = weekDay.date.dayOfWeek.toString().take(3),
                   style = MaterialTheme.typography.labelSmall,
-                  color = contentColorFor(backgroundColor),
+                  color = contentColor,
                 )
               }
             }
