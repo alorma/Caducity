@@ -11,18 +11,15 @@ import kotlin.time.Duration.Companion.days
 
 class ObtainDashboardProductsUseCase(
   private val productDataSource: ProductDataSource,
+  private val expirationThresholds: ExpirationThresholds,
   private val appClock: AppClock,
 ) {
-  private val soonExpiringThreshold: Duration = 7.days
 
   fun obtainProducts(): Flow<DashboardProducts> {
-    println("Alorma: Load products")
     return productDataSource.getAllProductsWithInstances()
       .map { productsWithInstances ->
-        println("Alorma: Products: ${productsWithInstances.size}")
-
         val now = appClock.now()
-        val soonThreshold = now + soonExpiringThreshold
+        val soonThreshold = now + expirationThresholds.soonExpiringThreshold
 
         val expired = mutableListOf<ProductWithInstances>()
         val expiringSoon = mutableListOf<ProductWithInstances>()
