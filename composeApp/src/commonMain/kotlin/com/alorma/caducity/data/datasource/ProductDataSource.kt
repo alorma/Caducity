@@ -1,8 +1,8 @@
 package com.alorma.caducity.data.datasource
 
 import com.alorma.caducity.domain.model.ProductWithInstances
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface ProductDataSource {
-  fun getAllProductsWithInstances(): Flow<List<ProductWithInstances>>
+  val products: StateFlow<List<ProductWithInstances>>
 }
