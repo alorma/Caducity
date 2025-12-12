@@ -11,13 +11,6 @@ enum class SectionType {
 }
 
 @Stable
-data class DashboardSection(
-  val type: SectionType,
-  val itemCount: Int,
-  val products: List<ProductUiModel>,
-)
-
-@Stable
 sealed interface ProductUiModel {
   val id: String
   val name: String

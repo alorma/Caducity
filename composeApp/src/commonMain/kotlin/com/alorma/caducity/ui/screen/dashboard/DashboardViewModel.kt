@@ -7,7 +7,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.delayEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -24,7 +23,7 @@ class DashboardViewModel(
     .onEach { delay(5.milliseconds) }
     .map { dashboardProducts ->
       val sections = dashboardMapper.mapToDashboardSections(dashboardProducts)
-      DashboardState.Success(sections = sections)
+      DashboardState.Success(items = sections)
     }
     .stateIn(
       scope = viewModelScope,

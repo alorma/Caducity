@@ -4,6 +4,6 @@ sealed class DashboardState {
   data object Loading : DashboardState()
 
   data class Success(
-    val sections: List<DashboardSection>
+    val items: List<ProductUiModel>
   ) : DashboardState()
 }
