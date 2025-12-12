@@ -48,7 +48,7 @@ fun SettingsScreen() {
       ) {
         SettingsSegmented(
           title = { Text(text = "Theme") },
-          selectedItem = themePreferences.themeMode,
+          selectedItem = themePreferences.loadThemeMode(),
           items = ThemeMode.entries,
           itemTitleMap = { themeMode ->
             when (themeMode) {
@@ -62,7 +62,7 @@ fun SettingsScreen() {
         if (supportsDynamicColors()) {
           SettingsSwitch(
             title = { Text(text = "Dynamic Colors") },
-            state = themePreferences.useDynamicColors,
+            state = themePreferences.loadUseDynamicColors(),
             onCheckedChange = { themePreferences.setDynamicColorsEnabled(it) },
           )
         }
