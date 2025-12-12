@@ -5,16 +5,15 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
-import org.koin.compose.koinInject
 
 @Composable
 fun AppTheme(
-  themePreferences: ThemePreferences = koinInject<ThemePreferences>(),
+  themePreferences: ThemePreferences = ThemePreferencesNoOp,
   content: @Composable () -> Unit,
 ) {
   val systemInDarkTheme = isSystemInDarkTheme()
 
-  val darkTheme = when (themePreferences.themeMode) {
+  val darkTheme = when (themePreferences.loadThemeMode()) {
     ThemeMode.LIGHT -> false
     ThemeMode.DARK -> true
     ThemeMode.SYSTEM -> systemInDarkTheme
@@ -26,7 +25,7 @@ fun AppTheme(
     platformLightColorScheme()
   }
 
-  val colorScheme: ColorScheme = if (themePreferences.useDynamicColors) {
+  val colorScheme: ColorScheme = if (themePreferences.loadUseDynamicColors()) {
     dynamicColorScheme(darkTheme) ?: defaultColorScheme
   } else {
     defaultColorScheme

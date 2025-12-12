@@ -37,6 +37,7 @@ import com.alorma.caducity.ui.screen.product.create.CreateProductDialogContent
 import com.alorma.caducity.ui.screen.settings.SettingsScreen
 import com.alorma.caducity.ui.theme.AppTheme
 import org.koin.compose.KoinApplication
+import org.koin.compose.koinInject
 
 @Composable
 fun App() {
@@ -45,7 +46,9 @@ fun App() {
       modules(appModule, platformModule)
     }
   ) {
-    AppTheme {
+    AppTheme(
+      themePreferences = koinInject(),
+    ) {
       val topLevelBackStack = remember { TopLevelBackStack<TopLevelRoute>(TopLevelRoute.Dashboard) }
       val bottomSheetStrategy = remember { BottomSheetSceneStrategy<TopLevelRoute>() }
 

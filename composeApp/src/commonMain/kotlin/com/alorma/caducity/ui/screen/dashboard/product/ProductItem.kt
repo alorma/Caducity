@@ -19,16 +19,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.screen.dashboard.ExpirationColors
-import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
-import com.alorma.caducity.ui.theme.AppTheme
-import androidx.compose.ui.tooling.preview.Preview
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
+import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
+import com.alorma.caducity.ui.theme.AppTheme
 import com.kizitonwose.calendar.core.now
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ProductItem(
@@ -122,7 +121,7 @@ fun ProductItem(
 
 @Preview
 @Composable
-private fun productItemPreview() {
+private fun ProductItemPreview() {
   AppTheme {
     ProductItem(
       product = ProductUiModel.WithInstances(
