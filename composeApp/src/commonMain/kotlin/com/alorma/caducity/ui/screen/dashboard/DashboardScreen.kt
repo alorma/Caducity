@@ -23,7 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -141,12 +140,12 @@ private fun SectionColumn(section: DashboardSection) {
     contentPadding = PaddingValues(vertical = 16.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
-    item(key = "header_${section.type}") {
+    item {
       DashboardSectionHeader(section = section)
     }
 
     if (section.products.isEmpty()) {
-      item(key = "empty_${section.type}") {
+      item {
         Text(
           text = "No products in this section",
           style = MaterialTheme.typography.bodyMedium,
@@ -157,7 +156,6 @@ private fun SectionColumn(section: DashboardSection) {
     } else {
       items(
         items = section.products,
-        key = { product -> product.id }
       ) { product ->
         ProductItem(product = product, sectionType = section.type)
       }

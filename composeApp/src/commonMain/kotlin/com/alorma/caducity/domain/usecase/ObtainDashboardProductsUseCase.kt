@@ -6,8 +6,9 @@ import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.time.clock.AppClock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.days
+import kotlinx.coroutines.flow.onEach
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class ObtainDashboardProductsUseCase(
   private val productDataSource: ProductDataSource,
@@ -16,7 +17,21 @@ class ObtainDashboardProductsUseCase(
 ) {
 
   fun obtainProducts(): Flow<DashboardProducts> {
-    return productDataSource.getAllProductsWithInstances()
+    return productDataSource
+      .products
+      .onEach { products ->
+        products.forEach { product ->
+          println("Product ID: ${product.product.id}")
+          product.instances.forEachIndexed { index, instance ->
+            val date = instance
+              .expirationDate
+              .toLocalDateTime(TimeZone.currentSystemDefault())
+              .date
+
+            println("Instance: $index: [${instance.identifier}] $date")
+          }
+        }
+      }
       .map { productsWithInstances ->
         val now = appClock.now()
         val soonThreshold = now + expirationThresholds.soonExpiringThreshold
@@ -35,7 +50,7 @@ class ObtainDashboardProductsUseCase(
             val hasExpiringSoonInstance = productWithInstances.instances.any {
               it.expirationDate > now && it.expirationDate <= soonThreshold
             }
-            
+
             // Add product to only the most restrictive category
             when {
               hasExpiredInstance -> expired.add(productWithInstances)

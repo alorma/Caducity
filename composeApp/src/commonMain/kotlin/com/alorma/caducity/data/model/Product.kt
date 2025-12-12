@@ -10,6 +10,6 @@ data class Product(
 
 data class ProductInstance(
   val id: String,
+  val identifier: String,
   val expirationDate: Instant,
-  val purchaseDate: Instant,
 )

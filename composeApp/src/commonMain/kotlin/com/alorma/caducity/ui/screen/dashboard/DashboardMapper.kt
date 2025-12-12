@@ -14,17 +14,17 @@ class DashboardMapper(
     return listOf(
       DashboardSection(
         type = SectionType.EXPIRED,
-        itemCount = dashboardProducts.expired.sumOf { it.instances.size },
+        itemCount = dashboardProducts.expired.size,
         products = dashboardProducts.expired.map { it.toUiModel() }
       ),
       DashboardSection(
         type = SectionType.EXPIRING_SOON,
-        itemCount = dashboardProducts.expiringSoon.sumOf { it.instances.size },
+        itemCount = dashboardProducts.expiringSoon.size,
         products = dashboardProducts.expiringSoon.map { it.toUiModel() }
       ),
       DashboardSection(
         type = SectionType.FRESH,
-        itemCount = dashboardProducts.fresh.sumOf { it.instances.size },
+        itemCount = dashboardProducts.fresh.size,
         products = dashboardProducts.fresh.map { it.toUiModel() }
       ),
       DashboardSection(
@@ -65,10 +65,6 @@ class DashboardMapper(
           id = instance.id,
           expirationDate = instance
             .expirationDate
-            .toLocalDateTime(TimeZone.currentSystemDefault())
-            .date,
-          purchaseDate = instance
-            .purchaseDate
             .toLocalDateTime(TimeZone.currentSystemDefault())
             .date,
         )

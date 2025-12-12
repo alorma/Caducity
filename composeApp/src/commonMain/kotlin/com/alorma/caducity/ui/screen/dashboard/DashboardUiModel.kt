@@ -46,5 +46,4 @@ sealed interface ProductUiModel {
 data class ProductInstanceUiModel(
   val id: String,
   val expirationDate: LocalDate,
-  val purchaseDate: LocalDate,
 )
