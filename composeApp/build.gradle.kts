@@ -84,12 +84,13 @@ kotlin {
       implementation(libs.koin.compose.viewmodel)
 
       implementation(libs.kalendar)
+
+      implementation(compose.components.uiToolingPreview)
     }
     androidMain.dependencies {
       implementation(libs.androidx.activitycompose)
       implementation(libs.koin.android)
 
-      implementation(compose.components.uiToolingPreview)
       implementation(compose.uiTooling)
     }
     val desktopMain by getting {
