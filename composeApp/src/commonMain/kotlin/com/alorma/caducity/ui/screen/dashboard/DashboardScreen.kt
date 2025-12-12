@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -35,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.dashboard_screen_title
+import com.alorma.caducity.ui.screen.dashboard.product.ProductItem
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -112,100 +114,7 @@ private fun ProductsGrid(
     columns = gridCells,
   ) {
     items(products) { product ->
-      ProductItem(
-        product = product,
-        shape = MaterialTheme.shapes.largeIncreased,
-      )
-    }
-  }
-}
-
-@Composable
-private fun ProductItem(
-  product: ProductUiModel,
-  shape: Shape,
-) {
-  Card(
-    modifier = Modifier.fillMaxWidth(),
-    colors = CardDefaults.cardColors(
-      containerColor = MaterialTheme.colorScheme.surfaceContainer,
-    ),
-    shape = shape,
-  ) {
-    Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .clickable {}
-        .padding(16.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      Text(
-        text = product.name,
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurface,
-      )
-
-      if (product.description.isNotEmpty()) {
-        Text(
-          text = product.description,
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-      }
-
-      when (product) {
-        is ProductUiModel.WithInstances -> {
-          val instances = product.instances
-
-          val statuses = instances.map { instance ->
-            instance.status
-          }
-
-          Row(
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-          ) {
-            statuses.forEachIndexed { index, status ->
-              val colors = ExpirationColors.getSectionColors(status)
-
-              val shape = if (statuses.size == 1) {
-                MaterialTheme.shapes.small
-              } else if (index == 0) {
-                RoundedCornerShape(
-                  topStart = MaterialTheme.shapes.small.topStart,
-                  topEnd = CornerSize(0.dp),
-                  bottomEnd = CornerSize(0.dp),
-                  bottomStart = MaterialTheme.shapes.small.bottomStart,
-                )
-              } else if (index > 0 && index < (statuses.size - 1)) {
-                RectangleShape
-              } else {
-                RoundedCornerShape(
-                  topStart = CornerSize(0.dp),
-                  topEnd = MaterialTheme.shapes.small.topStart,
-                  bottomEnd = MaterialTheme.shapes.small.bottomStart,
-                  bottomStart = CornerSize(0.dp),
-                )
-              }
-
-              Box(
-                modifier = Modifier
-                  .weight(1f)
-                  .clip(shape)
-                  .background(colors.onContainer)
-                  .padding(20.dp),
-              )
-            }
-          }
-        }
-
-        is ProductUiModel.Empty -> {
-          Text(
-            text = "No active instances",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-      }
+      ProductItem(product = product)
     }
   }
 }
