@@ -3,13 +3,6 @@ package com.alorma.caducity.ui.screen.dashboard
 import androidx.compose.runtime.Stable
 import kotlinx.datetime.LocalDate
 
-enum class SectionType {
-  EXPIRED,
-  EXPIRING_SOON,
-  FRESH,
-  EMPTY,
-}
-
 @Stable
 sealed interface ProductUiModel {
   val id: String
@@ -21,8 +14,6 @@ sealed interface ProductUiModel {
     override val id: String,
     override val name: String,
     override val description: String,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
     val today: LocalDate,
     val instances: List<ProductInstanceUiModel>,
   ) : ProductUiModel
@@ -38,5 +29,12 @@ sealed interface ProductUiModel {
 @Stable
 data class ProductInstanceUiModel(
   val id: String,
+  val status: InstanceStatus,
   val expirationDate: LocalDate,
 )
+
+sealed class InstanceStatus {
+  data object Expired : InstanceStatus()
+  data object ExpiringSoon : InstanceStatus()
+  data object Fresh : InstanceStatus()
+}
