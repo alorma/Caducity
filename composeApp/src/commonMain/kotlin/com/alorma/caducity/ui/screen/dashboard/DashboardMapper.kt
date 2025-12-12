@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.dashboard
 
-import com.alorma.caducity.domain.model.DashboardProducts
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.time.clock.AppClock
 import kotlinx.datetime.LocalDate
@@ -10,29 +9,8 @@ import kotlinx.datetime.toLocalDateTime
 class DashboardMapper(
   private val appClock: AppClock,
 ) {
-  fun mapToDashboardSections(dashboardProducts: DashboardProducts): List<DashboardSection> {
-    return listOf(
-      DashboardSection(
-        type = SectionType.EXPIRED,
-        itemCount = dashboardProducts.expired.size,
-        products = dashboardProducts.expired.map { it.toUiModel() }
-      ),
-      DashboardSection(
-        type = SectionType.EXPIRING_SOON,
-        itemCount = dashboardProducts.expiringSoon.size,
-        products = dashboardProducts.expiringSoon.map { it.toUiModel() }
-      ),
-      DashboardSection(
-        type = SectionType.FRESH,
-        itemCount = dashboardProducts.fresh.size,
-        products = dashboardProducts.fresh.map { it.toUiModel() }
-      ),
-      DashboardSection(
-        type = SectionType.EMPTY,
-        itemCount = dashboardProducts.empty.size,
-        products = dashboardProducts.empty.map { it.toUiModel() }
-      )
-    )
+  fun mapToDashboardSections(products: List<ProductWithInstances>): List<ProductUiModel> {
+    return products.map { it.toUiModel() }
   }
 
   private fun ProductWithInstances.getDateRange(): Pair<LocalDate, LocalDate> {

@@ -1,48 +1,34 @@
 package com.alorma.caducity.ui.screen.dashboard
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.pager.VerticalPager
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.toShape
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.window.core.layout.WindowSizeClass
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.dashboard_screen_title
-import caducity.composeapp.generated.resources.dashboard_section_empty
-import caducity.composeapp.generated.resources.dashboard_section_expired
-import caducity.composeapp.generated.resources.dashboard_section_expiring_soon
-import caducity.composeapp.generated.resources.dashboard_section_fresh
-import com.alorma.caducity.ui.adaptive.isWidthCompact
-import com.kizitonwose.calendar.compose.WeekCalendar
-import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -81,151 +67,50 @@ fun DashboardContent(state: DashboardState.Success) {
       )
     },
   ) { paddingValues ->
-    val isCompact = isWidthCompact()
-    if (isCompact) {
-      DashboardCompactLayout(
-        sections = state.sections,
-        paddingValues = paddingValues,
-      )
-    } else {
-      DashboardExpandedLayout(
-        sections = state.sections,
-        paddingValues = paddingValues,
-      )
-    }
-  }
-}
 
-@Composable
-private fun DashboardCompactLayout(
-  sections: List<DashboardSection>,
-  paddingValues: PaddingValues,
-) {
-  val pagerState = rememberPagerState(pageCount = { sections.size })
+    val adaptativeInfo = currentWindowAdaptiveInfo(supportLargeAndXLargeWidth = true)
+    val windowSizeClass = adaptativeInfo.windowSizeClass
 
-  VerticalPager(
-    state = pagerState,
-    modifier = Modifier
-      .fillMaxSize()
-      .padding(paddingValues),
-    contentPadding = PaddingValues(horizontal = 16.dp),
-    pageSpacing = 16.dp,
-  ) { page ->
-    SectionColumn(section = sections[page])
-  }
-}
+    val isMedium = windowSizeClass.isWidthAtLeastBreakpoint(
+      WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
+    )
+    val isExpanded = windowSizeClass.isWidthAtLeastBreakpoint(
+      WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND,
+    )
 
-@Composable
-private fun DashboardExpandedLayout(
-  sections: List<DashboardSection>,
-  paddingValues: PaddingValues,
-) {
-  Row(
-    modifier = Modifier
-      .fillMaxSize()
-      .padding(paddingValues)
-      .padding(horizontal = 16.dp),
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-  ) {
-    sections.forEach { section ->
-      Box(modifier = Modifier.weight(1f)) {
-        SectionColumn(section = section)
+    ProductsGrid(
+      modifier = Modifier.padding(paddingValues),
+      products = state.items,
+      gridCells = if (isExpanded) {
+        GridCells.FixedSize(320.dp)
+      } else if (isMedium) {
+        GridCells.Fixed(2)
+      } else {
+        GridCells.Fixed(1)
       }
-    }
+    )
   }
 }
 
 @Composable
-private fun SectionColumn(section: DashboardSection) {
-  LazyColumn(
-    modifier = Modifier.fillMaxSize(),
-    contentPadding = PaddingValues(vertical = 16.dp),
-  ) {
-    item {
-      DashboardSectionHeader(
-        modifier = Modifier.padding(bottom = 12.dp),
-        section = section,
-      )
-    }
-
-    if (section.products.isEmpty()) {
-      item {
-        Text(
-          text = "No products in this section",
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-          modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        )
-      }
-    } else {
-      section.products.forEachIndexed { index, product ->
-        item {
-          ProductItem(
-            product = product,
-            shape = if (section.products.size == 1) {
-              MaterialTheme.shapes.largeIncreased
-            } else if (index == 0) {
-              RoundedCornerShape(
-                topStart = MaterialTheme.shapes.largeIncreased.topStart,
-                topEnd = MaterialTheme.shapes.largeIncreased.topStart,
-                bottomStart = CornerSize(0.dp),
-                bottomEnd = CornerSize(0.dp),
-              )
-            } else if (index > 0 && index < (section.products.size - 1)) {
-              RectangleShape
-            } else {
-              RoundedCornerShape(
-                topStart = CornerSize(0.dp),
-                topEnd = CornerSize(0.dp),
-                bottomStart = MaterialTheme.shapes.largeIncreased.topStart,
-                bottomEnd = MaterialTheme.shapes.largeIncreased.topStart,
-              )
-            },
-            sectionType = section.type,
-          )
-        }
-        if (index < (section.products.size - 1)) {
-          item { HorizontalDivider() }
-        }
-      }
-    }
-  }
-}
-
-@Composable
-private fun DashboardSectionHeader(
-  section: DashboardSection,
+private fun ProductsGrid(
+  products: List<ProductUiModel>,
+  gridCells: GridCells,
   modifier: Modifier = Modifier,
 ) {
-  val sectionColors = DashboardSectionColors.getSectionColors(section.type)
-
-  Row(
-    modifier = Modifier
-      .fillMaxWidth()
-      .then(modifier)
-      .background(
-        color = sectionColors.container,
-        shape = RoundedCornerShape(12.dp),
-      )
-      .padding(horizontal = 16.dp, vertical = 12.dp),
-    horizontalArrangement = Arrangement.SpaceBetween,
-    verticalAlignment = Alignment.CenterVertically,
+  LazyVerticalGrid(
+    modifier = Modifier.fillMaxSize().then(modifier),
+    contentPadding = PaddingValues(16.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+    horizontalArrangement = Arrangement.spacedBy(12.dp),
+    columns = gridCells,
   ) {
-    Text(
-      text = when (section.type) {
-        SectionType.EXPIRED -> stringResource(Res.string.dashboard_section_expired)
-        SectionType.EXPIRING_SOON -> stringResource(Res.string.dashboard_section_expiring_soon)
-        SectionType.FRESH -> stringResource(Res.string.dashboard_section_fresh)
-        SectionType.EMPTY -> stringResource(Res.string.dashboard_section_empty)
-      },
-      style = MaterialTheme.typography.titleLarge,
-      color = sectionColors.onContainer,
-    )
-    Text(
-      text = section.itemCount.toString(),
-      style = MaterialTheme.typography.titleLarge,
-      color = sectionColors.onContainer,
-    )
+    items(products) { product ->
+      ProductItem(
+        product = product,
+        shape = MaterialTheme.shapes.largeIncreased,
+      )
+    }
   }
 }
 
@@ -233,7 +118,6 @@ private fun DashboardSectionHeader(
 private fun ProductItem(
   product: ProductUiModel,
   shape: Shape,
-  sectionType: SectionType,
 ) {
   Card(
     modifier = Modifier.fillMaxWidth(),
@@ -245,6 +129,7 @@ private fun ProductItem(
     Column(
       modifier = Modifier
         .fillMaxWidth()
+        .clickable {}
         .padding(16.dp),
       verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -264,66 +149,7 @@ private fun ProductItem(
 
       when (product) {
         is ProductUiModel.WithInstances -> {
-          val firstVisibleDate = if (product.instances.any { it.expirationDate <= product.today }) {
-            // If there are items expiring on or before today, show today's week
-            product.today
-          } else {
-            // Otherwise, show the week with the nearest (earliest) upcoming item
-            product.startDate
-          }
 
-          val state = rememberWeekCalendarState(
-            startDate = product.startDate,
-            endDate = product.endDate,
-            firstVisibleWeekDate = firstVisibleDate,
-          )
-
-          WeekCalendar(
-            state = state,
-            dayContent = { weekDay ->
-              val hasItem = weekDay.date in product.instances.map { it.expirationDate }
-              val isToday = weekDay.date == product.today
-              val backgroundColor = when {
-                isToday && hasItem -> MaterialTheme.colorScheme.primary
-                isToday && !hasItem -> Color.Unspecified
-                hasItem -> DashboardSectionColors.getSectionColors(sectionType).container
-                else -> Color.Unspecified
-              }
-              val contentColor = when {
-                isToday && hasItem -> MaterialTheme.colorScheme.onPrimary
-                isToday && !hasItem -> MaterialTheme.colorScheme.primary
-                hasItem -> DashboardSectionColors.getSectionColors(sectionType).onContainer
-                else -> Color.Unspecified
-              }
-              Column(
-                modifier = Modifier
-                  .widthIn(56.dp)
-                  .clip(
-                    when {
-                      isToday && hasItem -> MaterialShapes.Cookie6Sided.toShape()
-                      isToday && !hasItem -> RectangleShape
-                      hasItem -> MaterialShapes.Cookie4Sided.toShape()
-                      else -> RectangleShape
-                    }
-                  )
-                  .background(backgroundColor)
-                  .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-              ) {
-                Text(
-                  text = weekDay.date.day.toString(),
-                  style = MaterialTheme.typography.labelMediumEmphasized,
-                  color = contentColor,
-                )
-                Text(
-                  text = weekDay.date.dayOfWeek.toString().take(3),
-                  style = MaterialTheme.typography.labelSmall,
-                  color = contentColor,
-                )
-              }
-            }
-          )
         }
 
         is ProductUiModel.Empty -> {

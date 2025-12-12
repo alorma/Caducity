@@ -5,13 +5,10 @@ import com.alorma.caducity.data.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.time.clock.AppClock
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlin.collections.listOf
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -20,7 +17,8 @@ class FakeProductDataSource(
   private val expirationThresholds: ExpirationThresholds,
 ) : ProductDataSource {
 
-  override val products: StateFlow<List<ProductWithInstances>> = MutableStateFlow(generateFakeProducts())
+  override val products: StateFlow<List<ProductWithInstances>> =
+    MutableStateFlow(generateFakeProducts())
 
   @OptIn(ExperimentalUuidApi::class)
   private fun generateFakeProducts(): List<ProductWithInstances> {
@@ -43,6 +41,12 @@ class FakeProductDataSource(
           identifier = Uuid.random().toHexDashString().split("-")[0],
           expirationDate = appClock.now().minus(expirationDays),
         )
+      } + List(Random.nextInt(1, 4)) { seed ->
+        ProductInstance(
+          id = (seed).toString(),
+          identifier = Uuid.random().toHexDashString().split("-")[0],
+          expirationDate = appClock.now().plus(expirationThresholds.soonExpiringThreshold + 5.days),
+        )
       },
     ),
     ProductWithInstances(
@@ -59,6 +63,24 @@ class FakeProductDataSource(
           identifier = Uuid.random().toHexDashString().split("-")[0],
           expirationDate = appClock.now().minus(expirationDays),
         )
+      } + List(Random.nextInt(1, 6)) { seed ->
+        ProductInstance(
+          id = (seed).toString(),
+          identifier = Uuid.random().toHexDashString().split("-")[0],
+          expirationDate = appClock.now().plus(expirationThresholds.soonExpiringThreshold - 1.days),
+        )
+      } + List(Random.nextInt(1, 6)) { seed ->
+        ProductInstance(
+          id = (seed).toString(),
+          identifier = Uuid.random().toHexDashString().split("-")[0],
+          expirationDate = appClock.now().plus(expirationThresholds.soonExpiringThreshold - 1.days),
+        )
+      } + List(Random.nextInt(1, 4)) { seed ->
+        ProductInstance(
+          id = (seed).toString(),
+          identifier = Uuid.random().toHexDashString().split("-")[0],
+          expirationDate = appClock.now().plus(expirationThresholds.soonExpiringThreshold + 5.days),
+        )
       },
     ),
     ProductWithInstances(
@@ -74,6 +96,18 @@ class FakeProductDataSource(
           id = (seed).toString(),
           identifier = Uuid.random().toHexDashString().split("-")[0],
           expirationDate = appClock.now().minus(expirationDays),
+        )
+      } + List(Random.nextInt(1, 6)) { seed ->
+        ProductInstance(
+          id = (seed).toString(),
+          identifier = Uuid.random().toHexDashString().split("-")[0],
+          expirationDate = appClock.now().plus(expirationThresholds.soonExpiringThreshold - 1.days),
+        )
+      } + List(Random.nextInt(1, 4)) { seed ->
+        ProductInstance(
+          id = (seed).toString(),
+          identifier = Uuid.random().toHexDashString().split("-")[0],
+          expirationDate = appClock.now().plus(expirationThresholds.soonExpiringThreshold + 5.days),
         )
       },
     ),
@@ -93,6 +127,12 @@ class FakeProductDataSource(
           identifier = Uuid.random().toHexDashString().split("-")[0],
           expirationDate = appClock.now().plus(expirationThresholds.soonExpiringThreshold - 1.days),
         )
+      } + List(Random.nextInt(1, 4)) { seed ->
+        ProductInstance(
+          id = (seed).toString(),
+          identifier = Uuid.random().toHexDashString().split("-")[0],
+          expirationDate = appClock.now().plus(expirationThresholds.soonExpiringThreshold + 5.days),
+        )
       },
     ),
     ProductWithInstances(
@@ -106,6 +146,12 @@ class FakeProductDataSource(
           id = (seed).toString(),
           identifier = Uuid.random().toHexDashString().split("-")[0],
           expirationDate = appClock.now().plus(expirationThresholds.soonExpiringThreshold - 1.days),
+        )
+      } + List(Random.nextInt(1, 4)) { seed ->
+        ProductInstance(
+          id = (seed).toString(),
+          identifier = Uuid.random().toHexDashString().split("-")[0],
+          expirationDate = appClock.now().plus(expirationThresholds.soonExpiringThreshold + 5.days),
         )
       },
     ),
