@@ -1,6 +1,7 @@
 package com.alorma.caducity.di
 
 import com.alorma.caducity.data.dataModule
+import com.alorma.caducity.domain.domainModule
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import com.alorma.caducity.time.clock.AppClock
 import com.alorma.caducity.time.clock.KotlinAppClock
@@ -14,6 +15,8 @@ import org.koin.dsl.module
 
 val appModule = module {
   includes(dataModule)
+  includes(domainModule)
+
   single { Settings() }
   single { ThemePreferences(get()) }
   single<AppClock> { KotlinAppClock() }
