@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.dashboard
 
 import com.alorma.caducity.domain.model.ProductWithInstances
+import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.time.clock.AppClock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -8,6 +9,7 @@ import kotlinx.datetime.toLocalDateTime
 
 class DashboardMapper(
   private val appClock: AppClock,
+  private val expirationThresholds: ExpirationThresholds,
 ) {
   fun mapToDashboardSections(products: List<ProductWithInstances>): List<ProductUiModel> {
     return products.map { it.toUiModel() }
@@ -29,22 +31,38 @@ class DashboardMapper(
       )
     }
 
-    val (startDate, endDate) = getDateRange()
-    val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    val now = appClock.now()
+
+    val today = now
+      .toLocalDateTime(TimeZone.currentSystemDefault())
+      .date
+
+    val expiringSoonDate = now
+      .plus(expirationThresholds.soonExpiringThreshold)
+      .toLocalDateTime(TimeZone.currentSystemDefault())
+      .date
+
     return ProductUiModel.WithInstances(
       id = product.id,
       name = product.name,
       description = product.description,
-      startDate = startDate,
-      endDate = endDate,
       today = today,
       instances = instances.map { instance ->
+        val expirationDate = instance
+          .expirationDate
+          .toLocalDateTime(TimeZone.currentSystemDefault())
+          .date
+
         ProductInstanceUiModel(
           id = instance.id,
-          expirationDate = instance
-            .expirationDate
-            .toLocalDateTime(TimeZone.currentSystemDefault())
-            .date,
+          status = if (expirationDate < today) {
+            InstanceStatus.Expired
+          } else if (expirationDate > today && expirationDate < expiringSoonDate) {
+            InstanceStatus.ExpiringSoon
+          } else {
+            InstanceStatus.Fresh
+          },
+          expirationDate = expirationDate,
         )
       }
     )
