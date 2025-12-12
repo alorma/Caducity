@@ -11,12 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import caducity.composeapp.generated.resources.Res
@@ -138,10 +140,12 @@ private fun SectionColumn(section: DashboardSection) {
   LazyColumn(
     modifier = Modifier.fillMaxSize(),
     contentPadding = PaddingValues(vertical = 16.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     item {
-      DashboardSectionHeader(section = section)
+      DashboardSectionHeader(
+        modifier = Modifier.padding(bottom = 12.dp),
+        section = section,
+      )
     }
 
     if (section.products.isEmpty()) {
@@ -154,10 +158,35 @@ private fun SectionColumn(section: DashboardSection) {
         )
       }
     } else {
-      items(
-        items = section.products,
-      ) { product ->
-        ProductItem(product = product, sectionType = section.type)
+      section.products.forEachIndexed { index, product ->
+        item {
+          ProductItem(
+            product = product,
+            shape = if (section.products.size == 1) {
+              MaterialTheme.shapes.largeIncreased
+            } else if (index == 0) {
+              RoundedCornerShape(
+                topStart = MaterialTheme.shapes.largeIncreased.topStart,
+                topEnd = MaterialTheme.shapes.largeIncreased.topStart,
+                bottomStart = CornerSize(0.dp),
+                bottomEnd = CornerSize(0.dp),
+              )
+            } else if (index > 0 && index < (section.products.size - 1)) {
+              RectangleShape
+            } else {
+              RoundedCornerShape(
+                topStart = CornerSize(0.dp),
+                topEnd = CornerSize(0.dp),
+                bottomStart = MaterialTheme.shapes.largeIncreased.topStart,
+                bottomEnd = MaterialTheme.shapes.largeIncreased.topStart,
+              )
+            },
+            sectionType = section.type,
+          )
+        }
+        if (index < (section.products.size - 1)) {
+          item { HorizontalDivider() }
+        }
       }
     }
   }
@@ -166,12 +195,14 @@ private fun SectionColumn(section: DashboardSection) {
 @Composable
 private fun DashboardSectionHeader(
   section: DashboardSection,
+  modifier: Modifier = Modifier,
 ) {
   val sectionColors = DashboardSectionColors.getSectionColors(section.type)
 
   Row(
     modifier = Modifier
       .fillMaxWidth()
+      .then(modifier)
       .background(
         color = sectionColors.container,
         shape = RoundedCornerShape(12.dp),
@@ -201,6 +232,7 @@ private fun DashboardSectionHeader(
 @Composable
 private fun ProductItem(
   product: ProductUiModel,
+  shape: Shape,
   sectionType: SectionType,
 ) {
   Card(
@@ -208,7 +240,7 @@ private fun ProductItem(
     colors = CardDefaults.cardColors(
       containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ),
-    shape = RoundedCornerShape(12.dp),
+    shape = shape,
   ) {
     Column(
       modifier = Modifier

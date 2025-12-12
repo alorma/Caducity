@@ -61,6 +61,22 @@ class FakeProductDataSource(
         )
       },
     ),
+    ProductWithInstances(
+      product = Product(
+        id = "3",
+        name = "Eggs",
+        description = "Eggs from happy chicken",
+      ),
+      instances = List(Random.nextInt(3, 9)) { seed ->
+        val expirationDays = Random(seed).nextInt(2, 12).days
+
+        ProductInstance(
+          id = (seed).toString(),
+          identifier = Uuid.random().toHexDashString().split("-")[0],
+          expirationDate = appClock.now().minus(expirationDays),
+        )
+      },
+    ),
   )
 
   @OptIn(ExperimentalUuidApi::class)
