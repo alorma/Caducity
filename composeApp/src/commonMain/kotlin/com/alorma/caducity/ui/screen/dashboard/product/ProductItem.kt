@@ -130,9 +130,7 @@ private fun CollapsedInstancesView(instances: List<ProductInstanceUiModel>) {
   ).filter { statusCounts.containsKey(it) }
 
   Row(
-    modifier = Modifier
-      .sizeIn(40.dp)
-      .clip(MaterialTheme.shapes.small),
+    modifier = Modifier.clip(MaterialTheme.shapes.small),
     horizontalArrangement = Arrangement.spacedBy(4.dp),
   ) {
     orderedStatuses.forEach { status ->
@@ -142,6 +140,7 @@ private fun CollapsedInstancesView(instances: List<ProductInstanceUiModel>) {
 
       Box(
         modifier = Modifier
+          .sizeIn(24.dp)
           .background(colors.container)
           .padding(8.dp),
         contentAlignment = Alignment.Center,
