@@ -14,31 +14,37 @@ val productWithInstancesPreview = ProductUiModel.WithInstances(
   instances = listOf(
     ProductInstanceUiModel(
       id = "atomorum",
+      identifier = "atomorum",
       status = InstanceStatus.Expired,
       expirationDate = LocalDate.now(),
     ),
     ProductInstanceUiModel(
       id = "atomorum",
+      identifier = "atomorum",
       status = InstanceStatus.Expired,
       expirationDate = LocalDate.now(),
     ),
     ProductInstanceUiModel(
       id = "atomorum",
+      identifier = "atomorum",
       status = InstanceStatus.ExpiringSoon,
       expirationDate = LocalDate.now(),
     ),
     ProductInstanceUiModel(
       id = "atomorum",
+      identifier = "atomorum",
       status = InstanceStatus.ExpiringSoon,
       expirationDate = LocalDate.now(),
     ),
     ProductInstanceUiModel(
       id = "atomorum",
+      identifier = "atomorum",
       status = InstanceStatus.Fresh,
       expirationDate = LocalDate.now(),
     ),
     ProductInstanceUiModel(
       id = "atomorum",
+      identifier = "atomorum",
       status = InstanceStatus.Fresh,
       expirationDate = LocalDate.now(),
     ),

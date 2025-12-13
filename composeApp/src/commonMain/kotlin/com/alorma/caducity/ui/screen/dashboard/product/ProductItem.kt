@@ -198,11 +198,7 @@ private fun ExpandedInstancesView(instances: List<ProductInstanceUiModel>) {
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Text(
-            text = when (instance.status) {
-              InstanceStatus.Expired -> stringResource(Res.string.dashboard_section_expired)
-              InstanceStatus.ExpiringSoon -> stringResource(Res.string.dashboard_section_expiring_soon)
-              InstanceStatus.Fresh -> stringResource(Res.string.dashboard_section_fresh)
-            },
+            text = instance.identifier,
             style = MaterialTheme.typography.bodySmall,
             color = CaducityTheme.colorScheme.onSurface,
           )
