@@ -36,6 +36,7 @@ import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductDialogContent
 import com.alorma.caducity.ui.screen.settings.SettingsScreen
 import com.alorma.caducity.ui.theme.AppTheme
+import com.alorma.caducity.ui.theme.CaducityTheme
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 
@@ -167,13 +168,13 @@ private fun ExpandedContent(
   Row {
     NavigationRail(
       modifier = Modifier.padding(paddingValues),
-      containerColor = MaterialTheme.colorScheme.surfaceContainer,
+      containerColor = CaducityTheme.colorScheme.surfaceContainer,
       header = {
         FilledIconButton(
           modifier = Modifier.padding(vertical = 24.dp),
           colors = IconButtonDefaults.filledIconButtonColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+            containerColor = CaducityTheme.colorScheme.tertiaryContainer,
+            contentColor = CaducityTheme.colorScheme.onTertiaryContainer,
           ),
           onClick = { topLevelBackStack.add(TopLevelRoute.CreateProduct) }
         ) {

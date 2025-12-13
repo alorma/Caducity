@@ -32,13 +32,20 @@ fun AppTheme(
     defaultColorScheme
   }
 
-  val colors = CaducityColors.fromColorScheme(colorScheme)
+  val colors = CaducityColors.fromColorScheme(
+    colorScheme = colorScheme,
+    expirationColorScheme = if (darkTheme) {
+      darkExpirationColorScheme
+    } else {
+      lightExpirationColorScheme
+    }
+  )
 
   CompositionLocalProvider(
     LocalCaducityColors provides colors
   ) {
     MaterialExpressiveTheme(
-      colorScheme = LocalCaducityColors.current.asColorScheme(),
+      colorScheme = LocalCaducityColors.current.colorScheme,
       motionScheme = MotionScheme.expressive(),
       content = content,
     )
