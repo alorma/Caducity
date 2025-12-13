@@ -128,54 +128,60 @@ private fun CollapsedInstancesView(instances: List<ProductInstanceUiModel>) {
 
 @Composable
 private fun ExpandedInstancesView(instances: List<ProductInstanceUiModel>) {
-  Row(
-    modifier = Modifier
-      .height(20.dp)
-      .clip(MaterialTheme.shapes.small),
-    horizontalArrangement = Arrangement.spacedBy(2.dp),
-  ) {
-    instances.forEach { instance ->
-      val colors = ExpirationColors.getSectionColors(instance.status)
-
-      Box(
-        modifier = Modifier
-          .weight(1f)
-          .background(colors.container)
-          .padding(20.dp),
-      )
-    }
-  }
-  
-  // List individual instances
   Column(
     modifier = Modifier.fillMaxWidth(),
-    verticalArrangement = Arrangement.spacedBy(4.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
-    instances.forEach { instance ->
-      val colors = ExpirationColors.getSectionColors(instance.status)
-      Row(
-        modifier = Modifier
-          .fillMaxWidth()
-          .clip(MaterialTheme.shapes.extraSmall)
-          .background(colors.container.copy(alpha = 0.3f))
-          .padding(horizontal = 8.dp, vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Text(
-          text = when (instance.status) {
-            InstanceStatus.Expired -> "Expired"
-            InstanceStatus.ExpiringSoon -> "Expiring Soon"
-            InstanceStatus.Fresh -> "Fresh"
-          },
-          style = MaterialTheme.typography.bodySmall,
-          color = CaducityTheme.colorScheme.onSurface,
+    // Status bar showing all instances
+    Row(
+      modifier = Modifier
+        .height(20.dp)
+        .clip(MaterialTheme.shapes.small),
+      horizontalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+      instances.forEach { instance ->
+        val colors = ExpirationColors.getSectionColors(instance.status)
+
+        Box(
+          modifier = Modifier
+            .weight(1f)
+            .background(colors.container)
+            .padding(20.dp),
         )
-        Text(
-          text = instance.expirationDate.toString(),
-          style = MaterialTheme.typography.bodySmall,
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
-        )
+      }
+    }
+
+    // List individual instances
+    Column(
+      modifier = Modifier.fillMaxWidth(),
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+      instances.forEach { instance ->
+        val colors = ExpirationColors.getSectionColors(instance.status)
+        Row(
+          modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.extraSmall)
+            .background(colors.container.copy(alpha = 0.3f))
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Text(
+            text = when (instance.status) {
+              InstanceStatus.Expired -> "Expired"
+              InstanceStatus.ExpiringSoon -> "Expiring Soon"
+              InstanceStatus.Fresh -> "Fresh"
+            },
+            style = MaterialTheme.typography.bodySmall,
+            color = CaducityTheme.colorScheme.onSurface,
+          )
+          Text(
+            text = instance.expirationDate.toString(),
+            style = MaterialTheme.typography.bodySmall,
+            color = CaducityTheme.colorScheme.onSurfaceVariant,
+          )
+        }
       }
     }
   }
