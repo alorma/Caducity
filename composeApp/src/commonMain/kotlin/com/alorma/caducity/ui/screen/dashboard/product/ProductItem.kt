@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -31,8 +31,6 @@ import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
 import com.alorma.caducity.ui.theme.AppTheme
 import com.alorma.caducity.ui.theme.CaducityTheme
-import com.kizitonwose.calendar.core.now
-import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -48,42 +46,70 @@ fun ProductItem(
     ),
     shape = MaterialTheme.shapes.largeIncreased,
   ) {
-    Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .clickable {}
-        .padding(16.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      Text(
-        text = product.name,
-        style = MaterialTheme.typography.titleMedium,
-        color = CaducityTheme.colorScheme.onSurface,
-      )
 
-      if (isExpanded && product.description.isNotEmpty()) {
+    if (isExpanded) {
+      Column(
+        modifier = Modifier
+          .fillMaxWidth()
+          .clickable {}
+          .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
         Text(
-          text = product.description,
-          style = MaterialTheme.typography.bodyMedium,
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
+          text = product.name,
+          style = MaterialTheme.typography.titleMedium,
+          color = CaducityTheme.colorScheme.onSurface,
         )
-      }
 
-      when (product) {
-        is ProductUiModel.WithInstances -> {
-          if (isExpanded) {
-            ExpandedInstancesView(product.instances)
-          } else {
-            CollapsedInstancesView(product.instances)
-          }
-        }
-
-        is ProductUiModel.Empty -> {
+        if (isExpanded && product.description.isNotEmpty()) {
           Text(
-            text = "No active instances",
-            style = MaterialTheme.typography.bodySmall,
+            text = product.description,
+            style = MaterialTheme.typography.bodyMedium,
             color = CaducityTheme.colorScheme.onSurfaceVariant,
           )
+        }
+
+        when (product) {
+          is ProductUiModel.WithInstances -> {
+            ExpandedInstancesView(product.instances)
+          }
+
+          is ProductUiModel.Empty -> {
+            Text(
+              text = "No active instances",
+              style = MaterialTheme.typography.bodySmall,
+              color = CaducityTheme.colorScheme.onSurfaceVariant,
+            )
+          }
+        }
+      }
+    } else {
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .clickable {}
+          .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        Text(
+          modifier = Modifier.weight(1f),
+          text = product.name,
+          style = MaterialTheme.typography.titleMedium,
+          color = CaducityTheme.colorScheme.onSurface,
+        )
+
+        when (product) {
+          is ProductUiModel.WithInstances -> {
+            CollapsedInstancesView(product.instances)
+          }
+
+          is ProductUiModel.Empty -> {
+            Text(
+              text = "No active instances",
+              style = MaterialTheme.typography.bodySmall,
+              color = CaducityTheme.colorScheme.onSurfaceVariant,
+            )
+          }
         }
       }
     }
@@ -95,7 +121,7 @@ private fun CollapsedInstancesView(instances: List<ProductInstanceUiModel>) {
   // Group instances by status and count them
   val statusCounts = instances.groupBy { it.status }
     .mapValues { it.value.size }
-  
+
   // Sort by status priority: Expired, ExpiringSoon, Fresh
   val orderedStatuses = listOf(
     InstanceStatus.Expired,
@@ -105,7 +131,7 @@ private fun CollapsedInstancesView(instances: List<ProductInstanceUiModel>) {
 
   Row(
     modifier = Modifier
-      .height(40.dp)
+      .sizeIn(40.dp)
       .clip(MaterialTheme.shapes.small),
     horizontalArrangement = Arrangement.spacedBy(4.dp),
   ) {
@@ -116,7 +142,6 @@ private fun CollapsedInstancesView(instances: List<ProductInstanceUiModel>) {
 
       Box(
         modifier = Modifier
-          .weight(1f)
           .background(colors.container)
           .padding(8.dp),
         contentAlignment = Alignment.Center,
@@ -195,50 +220,25 @@ private fun ExpandedInstancesView(instances: List<ProductInstanceUiModel>) {
 
 @Preview
 @Composable
-private fun ProductItemPreview() {
+private fun ProductItemExpandedPreview() {
   AppTheme {
     Surface {
       ProductItem(
-
-        product = ProductUiModel.WithInstances(
-          id = "condimentum",
-          name = "Carolina Jordan",
-          description = "faucibus",
-          today = LocalDate.now(),
-          instances = listOf(
-            ProductInstanceUiModel(
-              id = "atomorum",
-              status = InstanceStatus.Expired,
-              expirationDate = LocalDate.now(),
-            ),
-            ProductInstanceUiModel(
-              id = "atomorum",
-              status = InstanceStatus.Expired,
-              expirationDate = LocalDate.now(),
-            ),
-            ProductInstanceUiModel(
-              id = "atomorum",
-              status = InstanceStatus.ExpiringSoon,
-              expirationDate = LocalDate.now(),
-            ),
-            ProductInstanceUiModel(
-              id = "atomorum",
-              status = InstanceStatus.ExpiringSoon,
-              expirationDate = LocalDate.now(),
-            ),
-            ProductInstanceUiModel(
-              id = "atomorum",
-              status = InstanceStatus.Fresh,
-              expirationDate = LocalDate.now(),
-            ),
-            ProductInstanceUiModel(
-              id = "atomorum",
-              status = InstanceStatus.Fresh,
-              expirationDate = LocalDate.now(),
-            ),
-          ),
-        ),
+        product = productWithInstancesPreview,
         isExpanded = true,
+      )
+    }
+  }
+}
+
+@Preview
+@Composable
+private fun ProductItemCollapsedPreview() {
+  AppTheme {
+    Surface {
+      ProductItem(
+        product = productWithInstancesPreview,
+        isExpanded = false,
       )
     }
   }

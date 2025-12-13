@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -134,7 +135,12 @@ private fun ProductsGrid(
 ) {
   LazyVerticalGrid(
     modifier = Modifier.fillMaxSize().then(modifier),
-    contentPadding = PaddingValues(16.dp),
+    contentPadding = PaddingValues(
+      top = 16.dp,
+      start = 16.dp,
+      bottom = 16.dp,
+      end = FloatingToolbarDefaults.ContainerSize + 12.dp,
+    ),
     verticalArrangement = Arrangement.spacedBy(8.dp),
     horizontalArrangement = Arrangement.spacedBy(12.dp),
     columns = gridCells,
