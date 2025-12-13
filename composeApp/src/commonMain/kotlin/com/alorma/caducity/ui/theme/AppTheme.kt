@@ -5,6 +5,7 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 
 @Composable
 fun AppTheme(
@@ -31,9 +32,15 @@ fun AppTheme(
     defaultColorScheme
   }
 
-  MaterialExpressiveTheme(
-    colorScheme = colorScheme,
-    motionScheme = MotionScheme.expressive(),
-    content = content,
-  )
+  val colors = CaducityColors.fromColorScheme(colorScheme)
+
+  CompositionLocalProvider(
+    LocalCaducityColors provides colors
+  ) {
+    MaterialExpressiveTheme(
+      colorScheme = LocalCaducityColors.current.asColorScheme(),
+      motionScheme = MotionScheme.expressive(),
+      content = content,
+    )
+  }
 }
