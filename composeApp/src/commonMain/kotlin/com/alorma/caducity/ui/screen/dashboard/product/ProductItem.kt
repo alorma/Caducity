@@ -105,7 +105,7 @@ private fun CollapsedInstancesView(instances: List<ProductInstanceUiModel>) {
     horizontalArrangement = Arrangement.spacedBy(4.dp),
   ) {
     orderedStatuses.forEach { status ->
-      val count = statusCounts[status] ?: 0
+      val count = statusCounts.getValue(status)
       val colors = ExpirationColors.getSectionColors(status)
 
       Box(
@@ -128,18 +128,14 @@ private fun CollapsedInstancesView(instances: List<ProductInstanceUiModel>) {
 
 @Composable
 private fun ExpandedInstancesView(instances: List<ProductInstanceUiModel>) {
-  val statuses = instances.map { instance ->
-    instance.status
-  }
-
   Row(
     modifier = Modifier
       .height(20.dp)
       .clip(MaterialTheme.shapes.small),
     horizontalArrangement = Arrangement.spacedBy(2.dp),
   ) {
-    statuses.forEachIndexed { index, status ->
-      val colors = ExpirationColors.getSectionColors(status)
+    instances.forEach { instance ->
+      val colors = ExpirationColors.getSectionColors(instance.status)
 
       Box(
         modifier = Modifier
