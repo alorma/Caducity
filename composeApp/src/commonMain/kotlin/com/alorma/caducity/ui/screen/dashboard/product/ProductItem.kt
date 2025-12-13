@@ -37,7 +37,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun ProductItem(
   product: ProductUiModel,
-  isExpanded: Boolean,
+  collapsed: Boolean,
 ) {
   Card(
     modifier = Modifier.fillMaxWidth(),
@@ -47,43 +47,7 @@ fun ProductItem(
     shape = MaterialTheme.shapes.largeIncreased,
   ) {
 
-    if (isExpanded) {
-      Column(
-        modifier = Modifier
-          .fillMaxWidth()
-          .clickable {}
-          .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        Text(
-          text = product.name,
-          style = MaterialTheme.typography.titleMedium,
-          color = CaducityTheme.colorScheme.onSurface,
-        )
-
-        if (isExpanded && product.description.isNotEmpty()) {
-          Text(
-            text = product.description,
-            style = MaterialTheme.typography.bodyMedium,
-            color = CaducityTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-
-        when (product) {
-          is ProductUiModel.WithInstances -> {
-            ExpandedInstancesView(product.instances)
-          }
-
-          is ProductUiModel.Empty -> {
-            Text(
-              text = "No active instances",
-              style = MaterialTheme.typography.bodySmall,
-              color = CaducityTheme.colorScheme.onSurfaceVariant,
-            )
-          }
-        }
-      }
-    } else {
+    if (collapsed) {
       Row(
         modifier = Modifier
           .fillMaxWidth()
@@ -101,6 +65,42 @@ fun ProductItem(
         when (product) {
           is ProductUiModel.WithInstances -> {
             CollapsedInstancesView(product.instances)
+          }
+
+          is ProductUiModel.Empty -> {
+            Text(
+              text = "No active instances",
+              style = MaterialTheme.typography.bodySmall,
+              color = CaducityTheme.colorScheme.onSurfaceVariant,
+            )
+          }
+        }
+      }
+    } else {
+      Column(
+        modifier = Modifier
+          .fillMaxWidth()
+          .clickable {}
+          .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        Text(
+          text = product.name,
+          style = MaterialTheme.typography.titleMedium,
+          color = CaducityTheme.colorScheme.onSurface,
+        )
+
+        if (!collapsed && product.description.isNotEmpty()) {
+          Text(
+            text = product.description,
+            style = MaterialTheme.typography.bodyMedium,
+            color = CaducityTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+
+        when (product) {
+          is ProductUiModel.WithInstances -> {
+            ExpandedInstancesView(product.instances)
           }
 
           is ProductUiModel.Empty -> {
@@ -220,7 +220,7 @@ private fun ProductItemExpandedPreview() {
     Surface {
       ProductItem(
         product = productWithInstancesPreview,
-        isExpanded = true,
+        collapsed = true,
       )
     }
   }
@@ -233,7 +233,7 @@ private fun ProductItemCollapsedPreview() {
     Surface {
       ProductItem(
         product = productWithInstancesPreview,
-        isExpanded = false,
+        collapsed = true,
       )
     }
   }
