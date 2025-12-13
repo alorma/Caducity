@@ -55,6 +55,7 @@ class DashboardMapper(
 
         ProductInstanceUiModel(
           id = instance.id,
+          identifier = instance.identifier,
           status = if (expirationDate < today) {
             InstanceStatus.Expired
           } else if (expirationDate > today && expirationDate < expiringSoonDate) {
