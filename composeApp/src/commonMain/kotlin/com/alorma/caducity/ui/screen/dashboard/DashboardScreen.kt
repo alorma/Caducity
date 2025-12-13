@@ -37,6 +37,7 @@ import androidx.window.core.layout.WindowSizeClass
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.dashboard_screen_title
 import com.alorma.caducity.ui.screen.dashboard.product.ProductItem
+import com.alorma.caducity.ui.theme.CaducityTheme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -53,7 +54,7 @@ fun DashboardScreen(
         contentAlignment = Alignment.Center,
       ) {
         LoadingIndicator(
-          color = MaterialTheme.colorScheme.secondary,
+          color = CaducityTheme.colorScheme.secondary,
           polygons = listOf(
             MaterialShapes.Cookie4Sided,
             MaterialShapes.Cookie6Sided,

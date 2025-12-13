@@ -1,8 +1,8 @@
 package com.alorma.caducity.ui.screen.dashboard
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.alorma.caducity.ui.theme.CaducityTheme
 
 object ExpirationColors {
 
@@ -10,18 +10,18 @@ object ExpirationColors {
   fun getSectionColors(instanceStatus: InstanceStatus): StatusColors {
     return when (instanceStatus) {
       InstanceStatus.Expired -> StatusColors(
-        container = MaterialTheme.colorScheme.errorContainer,
-        onContainer = MaterialTheme.colorScheme.onErrorContainer
+        container = CaducityTheme.expirationColorScheme.expired,
+        onContainer = CaducityTheme.expirationColorScheme.onExpired,
       )
 
       InstanceStatus.ExpiringSoon -> StatusColors(
-        container = MaterialTheme.colorScheme.onSecondaryContainer,
-        onContainer = MaterialTheme.colorScheme.secondaryContainer
+        container = CaducityTheme.expirationColorScheme.expiringSoon,
+        onContainer = CaducityTheme.expirationColorScheme.onExpiringSoon,
       )
 
       InstanceStatus.Fresh -> StatusColors(
-        container = MaterialTheme.colorScheme.onPrimaryContainer,
-        onContainer = MaterialTheme.colorScheme.primaryContainer
+        container = CaducityTheme.expirationColorScheme.fresh,
+        onContainer = CaducityTheme.expirationColorScheme.onFresh,
       )
     }
   }

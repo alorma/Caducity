@@ -22,6 +22,7 @@ import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
 import com.alorma.caducity.ui.theme.AppTheme
+import com.alorma.caducity.ui.theme.CaducityTheme
 import com.kizitonwose.calendar.core.now
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -33,7 +34,7 @@ fun ProductItem(
   Card(
     modifier = Modifier.fillMaxWidth(),
     colors = CardDefaults.cardColors(
-      containerColor = MaterialTheme.colorScheme.surfaceContainer,
+      containerColor = CaducityTheme.colorScheme.surfaceContainer,
     ),
     shape = MaterialTheme.shapes.largeIncreased,
   ) {
@@ -47,14 +48,14 @@ fun ProductItem(
       Text(
         text = product.name,
         style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurface,
+        color = CaducityTheme.colorScheme.onSurface,
       )
 
       if (product.description.isNotEmpty()) {
         Text(
           text = product.description,
           style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          color = CaducityTheme.colorScheme.onSurfaceVariant,
         )
       }
 
@@ -78,7 +79,7 @@ fun ProductItem(
               Box(
                 modifier = Modifier
                   .weight(1f)
-                  .background(colors.onContainer)
+                  .background(colors.container)
                   .padding(20.dp),
               )
             }
@@ -89,7 +90,7 @@ fun ProductItem(
           Text(
             text = "No active instances",
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = CaducityTheme.colorScheme.onSurfaceVariant,
           )
         }
       }
