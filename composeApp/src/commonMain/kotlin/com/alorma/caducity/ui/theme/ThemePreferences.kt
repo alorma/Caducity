@@ -1,6 +1,12 @@
 package com.alorma.caducity.ui.theme
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+
 interface ThemePreferences {
+  var themeMode: MutableState<ThemeMode>
+  var useDynamicColors: MutableState<Boolean>
+
   fun loadThemeMode(): ThemeMode
   fun loadUseDynamicColors(): Boolean
   fun setThemeModeState(mode: ThemeMode)
@@ -8,6 +14,9 @@ interface ThemePreferences {
 }
 
 object ThemePreferencesNoOp : ThemePreferences {
+  override var themeMode: MutableState<ThemeMode> = mutableStateOf(ThemeMode.SYSTEM)
+  override var useDynamicColors: MutableState<Boolean> = mutableStateOf(true)
+
   override fun loadThemeMode(): ThemeMode {
     return ThemeMode.SYSTEM
   }
