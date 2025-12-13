@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
 import caducity.composeapp.generated.resources.Res
+import caducity.composeapp.generated.resources.dashboard_action_collapse
+import caducity.composeapp.generated.resources.dashboard_action_expand
 import caducity.composeapp.generated.resources.dashboard_screen_title
 import com.alorma.caducity.ui.screen.dashboard.product.ProductItem
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -85,7 +87,13 @@ fun DashboardContent(
         title = { Text(text = stringResource(Res.string.dashboard_screen_title)) },
         actions = {
           TextButton(onClick = onToggleExpanded) {
-            Text(text = if (isExpanded) "Collapse" else "Expand")
+            Text(
+              text = if (isExpanded) {
+                stringResource(Res.string.dashboard_action_collapse)
+              } else {
+                stringResource(Res.string.dashboard_action_expand)
+              }
+            )
           }
         },
       )

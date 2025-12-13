@@ -105,6 +105,7 @@ private fun CollapsedInstancesView(instances: List<ProductInstanceUiModel>) {
     horizontalArrangement = Arrangement.spacedBy(4.dp),
   ) {
     orderedStatuses.forEach { status ->
+      // Safe to use getValue() because orderedStatuses is filtered by statusCounts.containsKey()
       val count = statusCounts.getValue(status)
       val colors = ExpirationColors.getSectionColors(status)
 
