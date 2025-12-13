@@ -9,7 +9,7 @@ import java.awt.Dimension
 
 fun main() = application {
   val minHeight = 500
-  val minWidth = 400
+  val minWidth = 600
 
   val windowState = rememberWindowState(size = DpSize(minWidth.dp, minHeight.dp))
 
