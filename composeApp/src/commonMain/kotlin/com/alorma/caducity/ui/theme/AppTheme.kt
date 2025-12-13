@@ -13,7 +13,7 @@ fun AppTheme(
 ) {
   val systemInDarkTheme = isSystemInDarkTheme()
 
-  val darkTheme = when (themePreferences.loadThemeMode()) {
+  val darkTheme = when (themePreferences.themeMode.value) {
     ThemeMode.LIGHT -> false
     ThemeMode.DARK -> true
     ThemeMode.SYSTEM -> systemInDarkTheme
@@ -25,7 +25,7 @@ fun AppTheme(
     platformLightColorScheme()
   }
 
-  val colorScheme: ColorScheme = if (themePreferences.loadUseDynamicColors()) {
+  val colorScheme: ColorScheme = if (themePreferences.useDynamicColors.value) {
     dynamicColorScheme(darkTheme) ?: defaultColorScheme
   } else {
     defaultColorScheme
