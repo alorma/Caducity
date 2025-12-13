@@ -9,8 +9,8 @@ class ThemePreferencesImpl(private val settings: Settings) : ThemePreferences {
     private const val KEY_USE_DYNAMIC_COLORS = "use_dynamic_colors"
   }
 
-  override var themeMode = mutableStateOf(loadThemeMode())
-  override var useDynamicColors = mutableStateOf(loadUseDynamicColors())
+  override val themeMode = mutableStateOf(loadThemeMode())
+  override val useDynamicColors = mutableStateOf(loadUseDynamicColors())
   
   override fun loadThemeMode(): ThemeMode {
     val savedValue = settings.getStringOrNull(KEY_THEME_MODE)
