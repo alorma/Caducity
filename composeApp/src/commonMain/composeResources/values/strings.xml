@@ -12,6 +12,8 @@
     </string-array>
 
     <string name="dashboard_screen_title">Dashboard</string>
+    <string name="dashboard_action_collapse">Collapse</string>
+    <string name="dashboard_action_expand">Expand</string>
 
     <string name="dashboard_section_expired">Expired</string>
     <string name="dashboard_section_expiring_soon">Expiring</string>

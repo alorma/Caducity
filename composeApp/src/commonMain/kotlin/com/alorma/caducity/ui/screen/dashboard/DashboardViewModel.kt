@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
@@ -30,4 +32,11 @@ class DashboardViewModel(
       started = SharingStarted.WhileSubscribed(5.seconds),
       initialValue = DashboardState.Loading,
     )
+
+  private val _isExpanded = MutableStateFlow(true)
+  val isExpanded: StateFlow<Boolean> = _isExpanded.asStateFlow()
+
+  fun toggleExpanded() {
+    _isExpanded.value = !_isExpanded.value
+  }
 }

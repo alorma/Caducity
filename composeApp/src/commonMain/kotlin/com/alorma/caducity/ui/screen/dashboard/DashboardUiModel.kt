@@ -29,6 +29,7 @@ sealed interface ProductUiModel {
 @Stable
 data class ProductInstanceUiModel(
   val id: String,
+  val identifier: String,
   val status: InstanceStatus,
   val expirationDate: LocalDate,
 )
