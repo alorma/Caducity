@@ -21,6 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import caducity.composeapp.generated.resources.Res
+import caducity.composeapp.generated.resources.dashboard_section_expired
+import caducity.composeapp.generated.resources.dashboard_section_expiring_soon
+import caducity.composeapp.generated.resources.dashboard_section_fresh
 import com.alorma.caducity.ui.screen.dashboard.ExpirationColors
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
@@ -29,6 +33,7 @@ import com.alorma.caducity.ui.theme.AppTheme
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.kizitonwose.calendar.core.now
 import kotlinx.datetime.LocalDate
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -170,9 +175,9 @@ private fun ExpandedInstancesView(instances: List<ProductInstanceUiModel>) {
         ) {
           Text(
             text = when (instance.status) {
-              InstanceStatus.Expired -> "Expired"
-              InstanceStatus.ExpiringSoon -> "Expiring Soon"
-              InstanceStatus.Fresh -> "Fresh"
+              InstanceStatus.Expired -> stringResource(Res.string.dashboard_section_expired)
+              InstanceStatus.ExpiringSoon -> stringResource(Res.string.dashboard_section_expiring_soon)
+              InstanceStatus.Fresh -> stringResource(Res.string.dashboard_section_fresh)
             },
             style = MaterialTheme.typography.bodySmall,
             color = CaducityTheme.colorScheme.onSurface,
