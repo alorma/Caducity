@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -18,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.screen.dashboard.ExpirationColors
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
@@ -70,36 +67,17 @@ fun ProductItem(
           }
 
           Row(
-            modifier = Modifier.height(20.dp),
+            modifier = Modifier
+              .height(20.dp)
+              .clip(MaterialTheme.shapes.small),
             horizontalArrangement = Arrangement.spacedBy(2.dp),
           ) {
             statuses.forEachIndexed { index, status ->
               val colors = ExpirationColors.getSectionColors(status)
 
-              val shape = if (statuses.size == 1) {
-                MaterialTheme.shapes.small
-              } else if (index == 0) {
-                RoundedCornerShape(
-                  topStart = MaterialTheme.shapes.small.topStart,
-                  topEnd = CornerSize(0.dp),
-                  bottomEnd = CornerSize(0.dp),
-                  bottomStart = MaterialTheme.shapes.small.bottomStart,
-                )
-              } else if (index > 0 && index < (statuses.size - 1)) {
-                RectangleShape
-              } else {
-                RoundedCornerShape(
-                  topStart = CornerSize(0.dp),
-                  topEnd = MaterialTheme.shapes.small.topStart,
-                  bottomEnd = MaterialTheme.shapes.small.bottomStart,
-                  bottomStart = CornerSize(0.dp),
-                )
-              }
-
               Box(
                 modifier = Modifier
                   .weight(1f)
-                  .clip(shape)
                   .background(colors.onContainer)
                   .padding(20.dp),
               )
