@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
@@ -46,6 +47,7 @@ fun DashboardScreen(
   viewModel: DashboardViewModel = koinViewModel()
 ) {
   val dashboardState = viewModel.state.collectAsStateWithLifecycle()
+  val isExpanded = viewModel.isExpanded.collectAsStateWithLifecycle()
 
   when (val state = dashboardState.value) {
     is DashboardState.Loading -> {
@@ -63,16 +65,29 @@ fun DashboardScreen(
       }
     }
 
-    is DashboardState.Success -> DashboardContent(state)
+    is DashboardState.Success -> DashboardContent(
+      state = state,
+      isExpanded = isExpanded.value,
+      onToggleExpanded = viewModel::toggleExpanded,
+    )
   }
 }
 
 @Composable
-fun DashboardContent(state: DashboardState.Success) {
+fun DashboardContent(
+  state: DashboardState.Success,
+  isExpanded: Boolean,
+  onToggleExpanded: () -> Unit,
+) {
   Scaffold(
     topBar = {
       TopAppBar(
         title = { Text(text = stringResource(Res.string.dashboard_screen_title)) },
+        actions = {
+          TextButton(onClick = onToggleExpanded) {
+            Text(text = if (isExpanded) "Collapse" else "Expand")
+          }
+        },
       )
     },
   ) { paddingValues ->
@@ -83,14 +98,15 @@ fun DashboardContent(state: DashboardState.Success) {
     val isMedium = windowSizeClass.isWidthAtLeastBreakpoint(
       WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
     )
-    val isExpanded = windowSizeClass.isWidthAtLeastBreakpoint(
+    val isExpandedSize = windowSizeClass.isWidthAtLeastBreakpoint(
       WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND,
     )
 
     ProductsGrid(
       modifier = Modifier.padding(paddingValues),
       products = state.items,
-      gridCells = if (isExpanded) {
+      isExpanded = isExpanded,
+      gridCells = if (isExpandedSize) {
         GridCells.FixedSize(320.dp)
       } else if (isMedium) {
         GridCells.Fixed(2)
@@ -104,6 +120,7 @@ fun DashboardContent(state: DashboardState.Success) {
 @Composable
 private fun ProductsGrid(
   products: List<ProductUiModel>,
+  isExpanded: Boolean,
   gridCells: GridCells,
   modifier: Modifier = Modifier,
 ) {
@@ -115,7 +132,10 @@ private fun ProductsGrid(
     columns = gridCells,
   ) {
     items(products) { product ->
-      ProductItem(product = product)
+      ProductItem(
+        product = product,
+        isExpanded = isExpanded,
+      )
     }
   }
 }
