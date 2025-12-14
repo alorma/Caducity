@@ -22,9 +22,11 @@ class FakeProductDataSource(
   override val products: StateFlow<List<ProductWithInstances>> =
     MutableStateFlow(generateFakeProducts())
 
-  override fun getProduct(productId: String): Flow<ProductWithInstances?> {
+  override fun getProduct(productId: String): Flow<Result<ProductWithInstances>> {
     return products.map { productList ->
       productList.firstOrNull { it.product.id == productId }
+        ?.let { Result.success(it) }
+        ?: Result.failure(NoSuchElementException("Product with id $productId not found"))
     }
   }
 

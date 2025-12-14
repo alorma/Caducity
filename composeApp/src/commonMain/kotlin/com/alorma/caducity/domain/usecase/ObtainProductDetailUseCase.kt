@@ -8,7 +8,7 @@ class ObtainProductDetailUseCase(
   private val productDataSource: ProductDataSource,
 ) {
 
-  fun obtainProductDetail(productId: String): Flow<ProductWithInstances?> {
+  fun obtainProductDetail(productId: String): Flow<Result<ProductWithInstances>> {
     return productDataSource.getProduct(productId)
   }
 }

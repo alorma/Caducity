@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.StateFlow
 interface ProductDataSource {
   val products: StateFlow<List<ProductWithInstances>>
   
-  fun getProduct(productId: String): Flow<ProductWithInstances?>
+  fun getProduct(productId: String): Flow<Result<ProductWithInstances>>
 }

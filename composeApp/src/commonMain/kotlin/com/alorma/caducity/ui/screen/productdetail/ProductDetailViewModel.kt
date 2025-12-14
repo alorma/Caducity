@@ -17,13 +17,16 @@ class ProductDetailViewModel(
 
   val state: StateFlow<ProductDetailState> = obtainProductDetailUseCase
     .obtainProductDetail(productId)
-    .map { productWithInstances ->
-      if (productWithInstances == null) {
-        ProductDetailState.Error("Product not found")
-      } else {
-        val productDetail = productDetailMapper.mapToProductDetail(productWithInstances)
-        ProductDetailState.Success(productDetail)
-      }
+    .map { result ->
+      result.fold(
+        onSuccess = { productWithInstances ->
+          val productDetail = productDetailMapper.mapToProductDetail(productWithInstances)
+          ProductDetailState.Success(productDetail)
+        },
+        onFailure = { error ->
+          ProductDetailState.Error(error.message ?: "Product not found")
+        }
+      )
     }
     .catch { error ->
       emit(ProductDetailState.Error(error.message ?: "Unknown error"))
