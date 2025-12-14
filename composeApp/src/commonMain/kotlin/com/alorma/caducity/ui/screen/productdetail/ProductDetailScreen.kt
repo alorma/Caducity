@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.ui.icons.AppIcons
 import com.alorma.caducity.ui.screen.dashboard.ExpirationColors
+import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.theme.CaducityTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -190,9 +191,9 @@ private fun InstanceCard(instance: ProductInstanceDetailUiModel) {
         ) {
           Text(
             text = when (instance.status) {
-              com.alorma.caducity.ui.screen.dashboard.InstanceStatus.Expired -> "Expired"
-              com.alorma.caducity.ui.screen.dashboard.InstanceStatus.ExpiringSoon -> "Expiring Soon"
-              com.alorma.caducity.ui.screen.dashboard.InstanceStatus.Fresh -> "Fresh"
+              InstanceStatus.Expired -> "Expired"
+              InstanceStatus.ExpiringSoon -> "Expiring Soon"
+              InstanceStatus.Fresh -> "Fresh"
             },
             style = MaterialTheme.typography.labelMedium,
             color = colors.onContainer,
