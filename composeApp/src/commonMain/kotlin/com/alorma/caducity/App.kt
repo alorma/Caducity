@@ -33,7 +33,7 @@ import com.alorma.caducity.di.platformModule
 import com.alorma.caducity.ui.adaptive.isWidthCompact
 import com.alorma.caducity.ui.icons.Add
 import com.alorma.caducity.ui.icons.AppIcons
-import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
+import com.alorma.caducity.ui.screen.dashboard.DashboardAdaptiveScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductDialogContent
 import com.alorma.caducity.ui.screen.productdetail.ProductDetailRoute
 import com.alorma.caducity.ui.screen.productdetail.ProductDetailScreen
@@ -74,7 +74,7 @@ fun App() {
             sceneStrategy = bottomSheetStrategy,
             entryProvider = entryProvider {
               entry<TopLevelRoute.Dashboard> { 
-                DashboardScreen(
+                DashboardAdaptiveScreen(
                   onNavigateToProductDetail = { productId ->
                     topLevelBackStack.add(ProductDetailRoute(productId))
                   }
