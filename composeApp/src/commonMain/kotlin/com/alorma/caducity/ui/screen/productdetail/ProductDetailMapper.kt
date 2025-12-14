@@ -34,7 +34,7 @@ class ProductDetailMapper(
         identifier = instance.identifier,
         status = when {
           expirationDate < today -> InstanceStatus.Expired
-          expirationDate in today..<expiringSoonDate -> InstanceStatus.ExpiringSoon
+          expirationDate > today && expirationDate < expiringSoonDate -> InstanceStatus.ExpiringSoon
           else -> InstanceStatus.Fresh
         },
         expirationDate = expirationDate,
