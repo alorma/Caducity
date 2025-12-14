@@ -7,10 +7,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.NavKey
 
-class TopLevelBackStack<T : NavKey>(startKey: T) {
+class TopLevelBackStack(startKey: NavKey) {
 
   // Maintain a stack for each top level route
-  private var topLevelStacks: LinkedHashMap<T, SnapshotStateList<T>> = linkedMapOf(
+  private var topLevelStacks: LinkedHashMap<NavKey, SnapshotStateList<NavKey>> = linkedMapOf(
     startKey to mutableStateListOf(startKey)
   )
 
@@ -19,7 +19,7 @@ class TopLevelBackStack<T : NavKey>(startKey: T) {
     private set
 
   // Expose the back stack so it can be rendered by the NavDisplay
-  val backStack = mutableStateListOf(startKey)
+  val backStack = mutableStateListOf<NavKey>(startKey)
 
   private fun updateBackStack() =
     backStack.apply {
@@ -27,7 +27,7 @@ class TopLevelBackStack<T : NavKey>(startKey: T) {
       addAll(topLevelStacks.flatMap { it.value })
     }
 
-  fun addTopLevel(key: T) {
+  fun addTopLevel(key: NavKey) {
 
     // If the top level doesn't exist, add it
     if (topLevelStacks[key] == null) {
@@ -44,7 +44,7 @@ class TopLevelBackStack<T : NavKey>(startKey: T) {
     updateBackStack()
   }
 
-  fun add(key: T) {
+  fun add(key: NavKey) {
     topLevelStacks[topLevelKey]?.add(key)
     updateBackStack()
   }
