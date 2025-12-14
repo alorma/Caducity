@@ -1,73 +1,67 @@
 package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.layout.AnimatedPane
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
+import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.window.core.layout.WindowSizeClass
 import com.alorma.caducity.ui.screen.productdetail.ProductDetailScreen
 
 /**
  * Adaptive screen that manages the list-detail layout pattern for the Dashboard.
- * On wide screens (>= 600dp), shows the dashboard list and product detail side-by-side.
- * On narrow screens, requires navigation stack to show detail (handled by App.kt navigation).
+ * 
+ * Uses Material 3's ListDetailPaneScaffold to provide adaptive behavior:
+ * - On wide screens (>= 600dp): Shows list and detail panes side-by-side
+ * - On narrow screens: Shows one pane at a time with proper back navigation
+ * - Handles animations and transitions automatically
+ * 
+ * The scaffold automatically determines the layout based on screen size using
+ * Material Design's adaptive layout guidelines.
  */
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun DashboardAdaptiveScreen(
-  onNavigateToProductDetail: (String) -> Unit,
-) {
+fun DashboardAdaptiveScreen() {
+  val navigator = rememberListDetailPaneScaffoldNavigator<String>()
   val adaptiveInfo = currentWindowAdaptiveInfo()
-  val windowSizeClass = adaptiveInfo.windowSizeClass
-  
-  // Check if we should show list-detail side-by-side (medium or larger screens)
-  val showListDetail = windowSizeClass.isWidthAtLeastBreakpoint(
-    WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
-  )
-  
-  var selectedProductId by rememberSaveable { mutableStateOf<String?>(null) }
 
-  if (showListDetail) {
-    // Two-pane layout for medium/large screens
-    Row(modifier = Modifier.fillMaxSize()) {
-      // List pane
-      Box(modifier = Modifier.fillMaxHeight().weight(0.4f)) {
+  ListDetailPaneScaffold(
+    directive = navigator.scaffoldDirective,
+    value = navigator.scaffoldValue,
+    listPane = {
+      AnimatedPane {
         DashboardScreen(
           onNavigateToProductDetail = { productId ->
-            selectedProductId = productId
+            // Navigate to detail pane within the scaffold
+            // On wide screens, this will show the detail pane alongside the list
+            // On narrow screens, this will show the detail pane and hide the list
+            navigator.navigateTo(ListDetailPaneScaffoldRole.Detail, productId)
           }
         )
       }
-      
-      // Detail pane
-      Box(modifier = Modifier.fillMaxHeight().weight(0.6f)) {
+    },
+    detailPane = {
+      AnimatedPane {
+        // Get the selected product ID from the navigator's current destination
+        val selectedProductId = navigator.currentDestination?.content
         selectedProductId?.let { productId ->
           ProductDetailScreen(
             productId = productId,
             onBack = {
-              selectedProductId = null
+              // Navigate back to list pane
+              navigator.navigateBack()
             }
           )
-        } ?: DashboardPlaceholder()
+        } ?: Box(modifier = Modifier.fillMaxSize()) {
+          // Empty detail pane placeholder when nothing is selected
+          // On wide screens, this shows an empty state
+          // On narrow screens, this pane is hidden
+        }
       }
     }
-  } else {
-    // Single-pane layout for compact screens - use navigation
-    DashboardScreen(
-      onNavigateToProductDetail = onNavigateToProductDetail
-    )
-  }
-}
-
-@Composable
-private fun DashboardPlaceholder() {
-  Box(modifier = Modifier.fillMaxSize()) {
-    // Empty placeholder when no product is selected
-  }
+  )
 }
