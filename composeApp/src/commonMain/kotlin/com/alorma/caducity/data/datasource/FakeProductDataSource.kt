@@ -5,8 +5,10 @@ import com.alorma.caducity.data.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.time.clock.AppClock
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.days
 import kotlin.uuid.ExperimentalUuidApi
@@ -19,6 +21,12 @@ class FakeProductDataSource(
 
   override val products: StateFlow<List<ProductWithInstances>> =
     MutableStateFlow(generateFakeProducts())
+
+  override fun getProduct(productId: String): Flow<ProductWithInstances?> {
+    return products.map { productList ->
+      productList.firstOrNull { it.product.id == productId }
+    }
+  }
 
   @OptIn(ExperimentalUuidApi::class)
   private fun generateFakeProducts(): List<ProductWithInstances> {
