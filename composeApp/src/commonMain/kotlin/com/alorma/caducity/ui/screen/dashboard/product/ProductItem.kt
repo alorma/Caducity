@@ -38,6 +38,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun ProductItem(
   product: ProductUiModel,
   collapsed: Boolean,
+  onClick: (String) -> Unit,
 ) {
   Card(
     modifier = Modifier.fillMaxWidth(),
@@ -51,7 +52,7 @@ fun ProductItem(
       Row(
         modifier = Modifier
           .fillMaxWidth()
-          .clickable {}
+          .clickable { onClick(product.id) }
           .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
       ) {
@@ -80,7 +81,7 @@ fun ProductItem(
       Column(
         modifier = Modifier
           .fillMaxWidth()
-          .clickable {}
+          .clickable { onClick(product.id) }
           .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {

@@ -33,6 +33,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DashboardScreen(
+  onNavigateToProductDetail: (String) -> Unit,
   viewModel: DashboardViewModel = koinViewModel()
 ) {
   val dashboardState = viewModel.state.collectAsStateWithLifecycle()
@@ -56,6 +57,7 @@ fun DashboardScreen(
     is DashboardState.Success -> DashboardContent(
       state = state,
       onToggleExpanded = viewModel::toggleExpanded,
+      onNavigateToProductDetail = onNavigateToProductDetail,
     )
   }
 }
@@ -64,6 +66,7 @@ fun DashboardScreen(
 fun DashboardContent(
   state: DashboardState.Success,
   onToggleExpanded: (Boolean) -> Unit,
+  onNavigateToProductDetail: (String) -> Unit,
 ) {
   Scaffold(
     topBar = {
@@ -100,6 +103,7 @@ fun DashboardContent(
       modifier = Modifier.padding(paddingValues),
       products = state.items,
       collapsed = state.config.collapsed,
+      onNavigateToProductDetail = onNavigateToProductDetail,
       gridCells = if (isExpandedSize) {
         GridCells.FixedSize(320.dp)
       } else if (isMedium) {
@@ -115,6 +119,7 @@ fun DashboardContent(
 private fun ProductsGrid(
   products: List<ProductUiModel>,
   collapsed: Boolean,
+  onNavigateToProductDetail: (String) -> Unit,
   gridCells: GridCells,
   modifier: Modifier = Modifier,
 ) {
@@ -134,6 +139,7 @@ private fun ProductsGrid(
       ProductItem(
         product = product,
         collapsed = collapsed,
+        onClick = onNavigateToProductDetail,
       )
     }
   }

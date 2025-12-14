@@ -30,4 +30,9 @@ val appModule = module {
   singleOf(::ObtainDashboardProductsUseCase)
   singleOf(::DashboardMapper)
   viewModelOf(::DashboardViewModel)
+  
+  // Product detail
+  singleOf(::com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase)
+  singleOf(::com.alorma.caducity.ui.screen.productdetail.ProductDetailMapper)
+  viewModelOf(::com.alorma.caducity.ui.screen.productdetail.ProductDetailViewModel)
 }
