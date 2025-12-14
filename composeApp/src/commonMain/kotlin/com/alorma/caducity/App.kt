@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
@@ -50,8 +51,8 @@ fun App() {
     AppTheme(
       themePreferences = koinInject(),
     ) {
-      val topLevelBackStack = remember { TopLevelBackStack<TopLevelRoute>(TopLevelRoute.Dashboard) }
-      val bottomSheetStrategy = remember { BottomSheetSceneStrategy<TopLevelRoute>() }
+      val topLevelBackStack = remember { TopLevelBackStack(TopLevelRoute.Dashboard) }
+      val bottomSheetStrategy = remember { BottomSheetSceneStrategy<NavKey>() }
 
 
       val isCompact = isWidthCompact()
@@ -114,7 +115,7 @@ fun App() {
 @Composable
 private fun CompactContent(
   paddingValues: PaddingValues,
-  topLevelBackStack: TopLevelBackStack<TopLevelRoute>,
+  topLevelBackStack: TopLevelBackStack,
   topLevelRoutes: List<TopLevelRoute>,
   content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -161,7 +162,7 @@ private fun CompactContent(
 @Composable
 private fun ExpandedContent(
   paddingValues: PaddingValues,
-  topLevelBackStack: TopLevelBackStack<TopLevelRoute>,
+  topLevelBackStack: TopLevelBackStack,
   topLevelRoutes: List<TopLevelRoute>,
   content: @Composable (PaddingValues) -> Unit,
 ) {
