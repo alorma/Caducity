@@ -137,6 +137,14 @@ Uses Jetpack Navigation 3 with a custom `TopLevelBackStack` implementation:
 - ViewModel scoping via `rememberViewModelStoreNavEntryDecorator()`
 - State preservation via `rememberSaveableStateHolderNavEntryDecorator()`
 
+**Adaptive List-Detail Pattern**:
+- Dashboard uses `ListDetailPaneScaffold` from Material 3 Adaptive library
+- On wide screens (>= 600dp): Shows product list and detail side-by-side
+- On narrow screens: Shows one pane at a time with proper back navigation
+- Navigation is managed internally by the scaffold's navigator
+- Provides automatic animations and transitions between panes
+- Detail view (ProductDetailScreen) is embedded within DashboardAdaptiveScreen
+
 ### Theming
 
 Material 3 Expressive API with:
@@ -159,6 +167,7 @@ The following experimental APIs are enabled project-wide:
 - `kotlin.time.ExperimentalTime`
 - `androidx.compose.material3.ExperimentalMaterial3Api`
 - `androidx.compose.material3.ExperimentalMaterial3ExpressiveApi`
+- `androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi`
 
 ### Date/Time Handling
 - Use `kotlinx-datetime` for all date/time operations

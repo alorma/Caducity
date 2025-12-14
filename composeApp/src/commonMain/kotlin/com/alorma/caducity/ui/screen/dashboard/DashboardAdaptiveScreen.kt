@@ -2,7 +2,6 @@ package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
@@ -23,7 +22,6 @@ import com.alorma.caducity.ui.screen.productdetail.ProductDetailScreen
  * The scaffold automatically determines the layout based on screen size using
  * Material Design's adaptive layout guidelines.
  */
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun DashboardAdaptiveScreen() {
   val navigator = rememberListDetailPaneScaffoldNavigator<String>()

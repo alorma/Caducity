@@ -16,6 +16,7 @@ kotlin {
     languageSettings.optIn("kotlin.time.ExperimentalTime")
     languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3Api")
     languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")
+    languageSettings.optIn("androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi")
   }
 
   androidTarget {
