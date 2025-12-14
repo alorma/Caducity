@@ -222,6 +222,7 @@ private fun ProductItemExpandedPreview() {
       ProductItem(
         product = productWithInstancesPreview,
         collapsed = true,
+        onClick = {},
       )
     }
   }
@@ -235,6 +236,7 @@ private fun ProductItemCollapsedPreview() {
       ProductItem(
         product = productWithInstancesPreview,
         collapsed = true,
+        onClick = {},
       )
     }
   }
