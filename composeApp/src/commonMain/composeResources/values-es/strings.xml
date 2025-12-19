@@ -12,6 +12,13 @@
     </string-array>
 
     <string  name="dashboard_screen_title">Panel</string>
+    <string name="dashboard_action_collapse">Colapsar</string>
+    <string name="dashboard_action_expand">Expandir</string>
+    <string name="dashboard_search_placeholder">Buscar productos...</string>
+    <string name="dashboard_filter_fresh">Fresco</string>
+    <string name="dashboard_filter_expiring_soon">Próximo a caducar</string>
+    <string name="dashboard_filter_expired">Caducado</string>
+    <string name="dashboard_clear_filters">Limpiar filtros</string>
 
     <string name="dashboard_section_expired">Caducado</string>
     <string name="dashboard_section_expiring_soon">Próximo</string>

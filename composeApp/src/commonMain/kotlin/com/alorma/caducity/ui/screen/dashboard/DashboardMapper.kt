@@ -10,8 +10,35 @@ class DashboardMapper(
   private val appClock: AppClock,
   private val expirationThresholds: ExpirationThresholds,
 ) {
-  fun mapToDashboardSections(products: List<ProductWithInstances>): List<ProductUiModel> {
-    return products.map { it.toUiModel() }
+  fun mapToDashboardSections(
+    products: List<ProductWithInstances>,
+    searchQuery: String = "",
+    statusFilters: Set<InstanceStatus> = emptySet(),
+  ): List<ProductUiModel> {
+    return products
+      .map { it.toUiModel() }
+      .filter { product ->
+        matchesSearchQuery(product, searchQuery) && matchesStatusFilters(product, statusFilters)
+      }
+  }
+
+  private fun matchesSearchQuery(product: ProductUiModel, query: String): Boolean {
+    if (query.isBlank()) return true
+    val lowerQuery = query.lowercase()
+    return product.name.lowercase().contains(lowerQuery) ||
+      product.description.lowercase().contains(lowerQuery)
+  }
+
+  private fun matchesStatusFilters(product: ProductUiModel, filters: Set<InstanceStatus>): Boolean {
+    if (filters.isEmpty()) return true
+    return when (product) {
+      is ProductUiModel.Empty -> false  // Empty products don't match any status filter
+      is ProductUiModel.WithInstances -> {
+        product.instances.any { instance ->
+          filters.contains(instance.status)
+        }
+      }
+    }
   }
 
   private fun ProductWithInstances.toUiModel(): ProductUiModel {

@@ -12,6 +12,13 @@
     </string-array>
 
     <string  name="dashboard_screen_title">Tauler</string>
+    <string name="dashboard_action_collapse">Col·lapsar</string>
+    <string name="dashboard_action_expand">Expandir</string>
+    <string name="dashboard_search_placeholder">Cercar productes...</string>
+    <string name="dashboard_filter_fresh">Fresc</string>
+    <string name="dashboard_filter_expiring_soon">Pròxim a caducar</string>
+    <string name="dashboard_filter_expired">Caducat</string>
+    <string name="dashboard_clear_filters">Netejar filtres</string>
 
     <string name="dashboard_section_expired">Caducat</string>
     <string name="dashboard_section_expiring_soon">Pròxim</string>

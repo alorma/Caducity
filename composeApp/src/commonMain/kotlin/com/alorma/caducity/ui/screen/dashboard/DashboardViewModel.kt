@@ -24,7 +24,11 @@ class DashboardViewModel(
       obtainDashboardProductsUseCase.obtainProducts(),
       dashboardUiConfiguration.config,
     ) { products, config ->
-      val sections = dashboardMapper.mapToDashboardSections(products)
+      val sections = dashboardMapper.mapToDashboardSections(
+        products = products,
+        searchQuery = config.searchQuery,
+        statusFilters = config.statusFilters,
+      )
       DashboardState.Success(
         items = sections,
         config = config,
@@ -37,5 +41,13 @@ class DashboardViewModel(
 
   fun toggleExpanded(collapsed: Boolean) {
     dashboardUiConfiguration.updateCollapse(collapsed)
+  }
+
+  fun updateSearchQuery(query: String) {
+    dashboardUiConfiguration.updateSearchQuery(query)
+  }
+
+  fun updateStatusFilters(filters: Set<InstanceStatus>) {
+    dashboardUiConfiguration.updateStatusFilters(filters)
   }
 }
