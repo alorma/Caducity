@@ -32,7 +32,7 @@ class DashboardMapper(
   private fun matchesStatusFilters(product: ProductUiModel, filters: Set<InstanceStatus>): Boolean {
     if (filters.isEmpty()) return true
     return when (product) {
-      is ProductUiModel.Empty -> filters.isEmpty()
+      is ProductUiModel.Empty -> false  // Empty products don't match any status filter
       is ProductUiModel.WithInstances -> {
         product.instances.any { instance ->
           filters.contains(instance.status)
