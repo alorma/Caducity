@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingToolbarDefaults
@@ -44,6 +41,9 @@ import caducity.composeapp.generated.resources.dashboard_filter_expiring_soon
 import caducity.composeapp.generated.resources.dashboard_filter_fresh
 import caducity.composeapp.generated.resources.dashboard_screen_title
 import caducity.composeapp.generated.resources.dashboard_search_placeholder
+import com.alorma.caducity.ui.icons.AppIcons
+import com.alorma.caducity.ui.icons.Close
+import com.alorma.caducity.ui.icons.Search
 import com.alorma.caducity.ui.screen.dashboard.product.ProductItem
 import com.alorma.caducity.ui.theme.CaducityTheme
 import org.jetbrains.compose.resources.stringResource
@@ -137,7 +137,7 @@ fun DashboardContent(
         placeholder = { Text(stringResource(Res.string.dashboard_search_placeholder)) },
         leadingIcon = {
           Icon(
-            imageVector = Icons.Default.Search,
+            imageVector = AppIcons.Search,
             contentDescription = null,
           )
         },
@@ -145,7 +145,7 @@ fun DashboardContent(
           if (state.config.searchQuery.isNotEmpty()) {
             IconButton(onClick = { onSearchQueryChange("") }) {
               Icon(
-                imageVector = Icons.Default.Close,
+                imageVector = AppIcons.Close,
                 contentDescription = null,
               )
             }
