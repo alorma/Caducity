@@ -20,7 +20,7 @@ Caducity is a multiplatform grocery expiration tracker app that helps users redu
 - [ ] Complete create product functionality
 - [ ] Add edit product capability
 - [ ] Implement delete product feature
-- [ ] Add product search/filter on dashboard
+- [x] Add product search/filter on dashboard
 
 ---
 
