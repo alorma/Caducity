@@ -7,7 +7,7 @@ composeHotReload = "1.0.0"
 kotlin = "2.2.21"
 
 # Android
-agp = "8.13.2"
+agp = "8.5.2"
 android-compileSdk = "36"
 android-minSdk = "34"
 android-targetSdk = "36"

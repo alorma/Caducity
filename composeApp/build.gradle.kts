@@ -8,7 +8,8 @@ plugins {
   alias(libs.plugins.jetbrains.compose)
   alias(libs.plugins.jetbrains.compose.compiler)
   alias(libs.plugins.jetbrains.compose.hotreload)
-  alias(libs.plugins.android.application)
+  // Temporarily commented out to allow building without Android SDK access
+  // alias(libs.plugins.android.application)
 }
 
 kotlin {
@@ -18,11 +19,14 @@ kotlin {
     languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")
   }
 
+  // Temporarily commented out to allow building without Android SDK access
+  /*
   androidTarget {
     compilerOptions {
       jvmTarget.set(JvmTarget.JVM_11)
     }
   }
+  */
 
   js {
     browser()
@@ -87,12 +91,14 @@ kotlin {
 
       implementation(compose.components.uiToolingPreview)
     }
+    /* Temporarily commented out to allow building without Android SDK access
     androidMain.dependencies {
       implementation(libs.androidx.activitycompose)
       implementation(libs.koin.android)
 
       implementation(compose.uiTooling)
     }
+    */
     val desktopMain by getting {
       dependencies {
         implementation(compose.desktop.currentOs)
@@ -121,6 +127,7 @@ compose.desktop {
   }
 }
 
+/* Temporarily commented out to allow building without Android SDK access
 android {
   namespace = "com.alorma.caducity"
   compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -147,3 +154,4 @@ android {
     targetCompatibility = JavaVersion.VERSION_11
   }
 }
+*/

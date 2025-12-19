@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.getAndUpdate
 interface DashboardUiConfiguration {
   val config: MutableStateFlow<DashboardUI>
   fun updateCollapse(collapsed: Boolean)
+  fun updateSearchQuery(query: String)
+  fun updateStatusFilters(filters: Set<InstanceStatus>)
 }
 
 class DashboardUiConfigurationImpl(
@@ -25,11 +27,25 @@ class DashboardUiConfigurationImpl(
     }
   }
 
+  override fun updateSearchQuery(query: String) {
+    config.getAndUpdate { current ->
+      current.copy(searchQuery = query)
+    }
+  }
+
+  override fun updateStatusFilters(filters: Set<InstanceStatus>) {
+    config.getAndUpdate { current ->
+      current.copy(statusFilters = filters)
+    }
+  }
+
   companion object {
     private const val CollapseKey = "CollapseKey"
   }
 }
 
 data class DashboardUI(
-  val collapsed: Boolean
+  val collapsed: Boolean,
+  val searchQuery: String = "",
+  val statusFilters: Set<InstanceStatus> = emptySet(),
 )
