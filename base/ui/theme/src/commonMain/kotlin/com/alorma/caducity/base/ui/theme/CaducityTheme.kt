@@ -20,17 +20,17 @@ data class CaducityColors(
     ): CaducityColors {
       // Hue values: Green ~120°, Orange ~30°, Red ~0°
       val freshColor = colorScheme.primary
-        .shiftHueTowards(targetHue = 120f, amount = 0.7f)
+        .shiftHueTowards(targetHue = 120f, amount = 1.0f)
         .copy(alpha = dims.dim3)
         .compositeOver(colorScheme.surface)
 
       val expiringSoonColor = colorScheme.primary
-        .shiftHueTowards(targetHue = 30f, amount = 0.7f)
+        .shiftHueTowards(targetHue = 30f, amount = 1.0f)
         .copy(alpha = dims.dim2)
         .compositeOver(colorScheme.surface)
 
       val expiredColor = colorScheme.primary
-        .shiftHueTowards(targetHue = 0f, amount = 0.7f)
+        .shiftHueTowards(targetHue = 0f, amount = 1.0f)
         .copy(alpha = dims.dim1)
         .compositeOver(colorScheme.surface)
 
