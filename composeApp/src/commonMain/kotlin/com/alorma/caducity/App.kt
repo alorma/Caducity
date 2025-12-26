@@ -37,11 +37,15 @@ import com.alorma.caducity.ui.screen.product.create.CreateProductDialogContent
 import com.alorma.caducity.ui.screen.productdetail.ProductDetailRoute
 import com.alorma.caducity.ui.screen.productdetail.ProductDetailScreen
 import com.alorma.caducity.ui.screen.settings.SettingsScreen
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 
 @Composable
-fun App() {
+fun App(
+  modifier: Modifier = Modifier,
+) {
   KoinApplication(
     application = {
       modules(appModule, platformModule)
@@ -53,7 +57,7 @@ fun App() {
       val topLevelBackStack = remember { TopLevelBackStack(TopLevelRoute.Dashboard) }
       val bottomSheetStrategy = remember { BottomSheetSceneStrategy<NavKey>() }
 
-      val topLevelRoutes = listOf(
+      val topLevelRoutes = persistentListOf(
         TopLevelRoute.Dashboard,
         TopLevelRoute.Settings,
       )
@@ -62,7 +66,10 @@ fun App() {
         exitDirection = FloatingToolbarExitDirection.Bottom,
       )
       Scaffold(
-        modifier = Modifier.fillMaxSize().nestedScroll(exitAlwaysScrollBehavior),
+        modifier = Modifier
+          .fillMaxSize()
+          .nestedScroll(exitAlwaysScrollBehavior)
+          .then(modifier),
         contentWindowInsets = WindowInsets(),
       ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize()) {
@@ -120,7 +127,7 @@ fun App() {
 
 @Composable
 private fun NavigationBar(
-  topLevelRoutes: List<TopLevelRoute>,
+  topLevelRoutes: ImmutableList<TopLevelRoute>,
   scrollBehaviour: FloatingToolbarScrollBehavior,
   isRouteSelected: (TopLevelRoute) -> Boolean,
   onTopLevelUpdate: (TopLevelRoute) -> Unit,
