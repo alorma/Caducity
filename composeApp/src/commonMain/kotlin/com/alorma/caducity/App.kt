@@ -1,8 +1,6 @@
 package com.alorma.caducity
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,10 +10,6 @@ import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.VerticalFloatingToolbar
 import androidx.compose.runtime.Composable
@@ -30,7 +24,6 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.di.appModule
 import com.alorma.caducity.di.platformModule
-import com.alorma.caducity.ui.adaptive.isWidthCompact
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
@@ -39,7 +32,6 @@ import com.alorma.caducity.ui.screen.productdetail.ProductDetailRoute
 import com.alorma.caducity.ui.screen.productdetail.ProductDetailScreen
 import com.alorma.caducity.ui.screen.settings.SettingsScreen
 import com.alorma.caducity.base.ui.theme.AppTheme
-import com.alorma.caducity.base.ui.theme.CaducityTheme
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 
@@ -56,157 +48,86 @@ fun App() {
       val topLevelBackStack = remember { TopLevelBackStack(TopLevelRoute.Dashboard) }
       val bottomSheetStrategy = remember { BottomSheetSceneStrategy<NavKey>() }
 
+      val topLevelRoutes = listOf(
+        TopLevelRoute.Dashboard,
+        TopLevelRoute.Settings,
+      )
 
-      val isCompact = isWidthCompact()
+      Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        contentWindowInsets = WindowInsets(),
+      ) { paddingValues ->
+        Box(modifier = Modifier.fillMaxSize()) {
+          Box(
+            modifier = Modifier.padding(paddingValues),
+          ) {
+            NavDisplay(
+              modifier = Modifier.fillMaxSize(),
+              backStack = topLevelBackStack.backStack,
+              onBack = { topLevelBackStack.removeLast() },
+              entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator(),
+              ),
+              sceneStrategy = bottomSheetStrategy,
+              entryProvider = entryProvider {
+                entry<TopLevelRoute.Dashboard> {
+                  DashboardScreen(
+                    onNavigateToProductDetail = { productId ->
+                      topLevelBackStack.add(ProductDetailRoute(productId))
+                    }
+                  )
+                }
+                entry<TopLevelRoute.Settings> { SettingsScreen() }
+                entry<TopLevelRoute.CreateProduct>(
+                  metadata = BottomSheetSceneStrategy.bottomSheet(),
+                ) {
+                  CreateProductDialogContent()
+                }
+                entry<ProductDetailRoute> {
+                  ProductDetailScreen(
+                    productId = it.productId,
+                    onBack = { topLevelBackStack.removeLast() }
+                  )
+                }
+              },
+            )
+          }
 
-      val content: @Composable (PaddingValues) -> Unit = @Composable { paddingValues ->
-        Box(
-          modifier = Modifier.padding(paddingValues),
-        ) {
-          NavDisplay(
-            modifier = Modifier.fillMaxSize(),
-            backStack = topLevelBackStack.backStack,
-            onBack = { topLevelBackStack.removeLast() },
-            entryDecorators = listOf(
-              rememberSaveableStateHolderNavEntryDecorator(),
-              rememberViewModelStoreNavEntryDecorator(),
-            ),
-            sceneStrategy = bottomSheetStrategy,
-            entryProvider = entryProvider {
-              entry<TopLevelRoute.Dashboard> { 
-                DashboardScreen(
-                  onNavigateToProductDetail = { productId ->
-                    topLevelBackStack.add(ProductDetailRoute(productId))
-                  }
-                )
-              }
-              entry<TopLevelRoute.Settings> { SettingsScreen() }
-              entry<TopLevelRoute.CreateProduct>(
-                metadata = BottomSheetSceneStrategy.bottomSheet(),
+          VerticalFloatingToolbar(
+            modifier = Modifier.align(Alignment.BottomEnd).safeDrawingPadding().padding(bottom = 16.dp),
+            expanded = true,
+            floatingActionButton = {
+              FloatingToolbarDefaults.VibrantFloatingActionButton(
+                onClick = { topLevelBackStack.add(TopLevelRoute.CreateProduct) }
               ) {
-                CreateProductDialogContent()
+                Icon(imageVector = AppIcons.Add, contentDescription = null)
               }
-              entry<ProductDetailRoute> { 
-                ProductDetailScreen(
-                  productId = it.productId,
-                  onBack = { topLevelBackStack.removeLast() }
-                )
+            },
+            colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
+            scrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
+              exitDirection = FloatingToolbarExitDirection.End,
+            ),
+            content = {
+              topLevelRoutes.forEach { route ->
+                if (topLevelBackStack.topLevelKey == route) {
+                  FilledIconButton(
+                    onClick = { topLevelBackStack.addTopLevel(route) },
+                  ) {
+                    route.Icon()
+                  }
+                } else {
+                  IconButton(
+                    onClick = { topLevelBackStack.addTopLevel(route) },
+                  ) {
+                    route.Icon()
+                  }
+                }
               }
             },
           )
         }
       }
-
-
-      val topLevelRoutes = listOf(
-        TopLevelRoute.Dashboard,
-        TopLevelRoute.Settings,
-      )
-      Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        contentWindowInsets = WindowInsets(),
-      ) { paddingValues ->
-        if (isCompact) {
-          CompactContent(
-            paddingValues = paddingValues,
-            topLevelBackStack = topLevelBackStack,
-            topLevelRoutes = topLevelRoutes,
-            content = content,
-          )
-        } else {
-          ExpandedContent(
-            paddingValues = paddingValues,
-            topLevelBackStack = topLevelBackStack,
-            topLevelRoutes = topLevelRoutes,
-            content = content,
-          )
-        }
-      }
     }
-  }
-}
-
-@Composable
-private fun CompactContent(
-  paddingValues: PaddingValues,
-  topLevelBackStack: TopLevelBackStack,
-  topLevelRoutes: List<TopLevelRoute>,
-  content: @Composable (PaddingValues) -> Unit,
-) {
-  Box(modifier = Modifier.fillMaxSize()) {
-    content(paddingValues)
-
-    VerticalFloatingToolbar(
-      modifier = Modifier.align(Alignment.BottomEnd).safeDrawingPadding().padding(bottom = 16.dp),
-      expanded = true,
-      floatingActionButton = {
-        FloatingToolbarDefaults.VibrantFloatingActionButton(
-          onClick = { topLevelBackStack.add(TopLevelRoute.CreateProduct) }
-        ) {
-          Icon(imageVector = AppIcons.Add, contentDescription = null)
-        }
-      },
-      colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(
-
-      ),
-      scrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
-        exitDirection = FloatingToolbarExitDirection.End,
-      ),
-      content = {
-        topLevelRoutes.forEach { route ->
-          if (topLevelBackStack.topLevelKey == route) {
-            FilledIconButton(
-              onClick = { topLevelBackStack.addTopLevel(route) },
-            ) {
-              route.Icon()
-            }
-          } else {
-            IconButton(
-              onClick = { topLevelBackStack.addTopLevel(route) },
-            ) {
-              route.Icon()
-            }
-          }
-        }
-      },
-    )
-  }
-}
-
-@Composable
-private fun ExpandedContent(
-  paddingValues: PaddingValues,
-  topLevelBackStack: TopLevelBackStack,
-  topLevelRoutes: List<TopLevelRoute>,
-  content: @Composable (PaddingValues) -> Unit,
-) {
-  Row {
-    NavigationRail(
-      modifier = Modifier.padding(paddingValues),
-      containerColor = CaducityTheme.colorScheme.surfaceContainer,
-      header = {
-        FilledIconButton(
-          modifier = Modifier.padding(vertical = 24.dp),
-          colors = IconButtonDefaults.filledIconButtonColors(
-            containerColor = CaducityTheme.colorScheme.tertiaryContainer,
-            contentColor = CaducityTheme.colorScheme.onTertiaryContainer,
-          ),
-          onClick = { topLevelBackStack.add(TopLevelRoute.CreateProduct) }
-        ) {
-          Icon(imageVector = AppIcons.Add, contentDescription = null)
-        }
-      },
-    ) {
-
-      topLevelRoutes.forEach { route ->
-        NavigationRailItem(
-          selected = topLevelBackStack.topLevelKey == route,
-          icon = { route.Icon() },
-          label = { route.Label() },
-          onClick = { topLevelBackStack.addTopLevel(route) },
-        )
-      }
-    }
-    content(paddingValues)
   }
 }

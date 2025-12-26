@@ -8,8 +8,9 @@ import androidx.compose.ui.window.rememberWindowState
 import java.awt.Dimension
 
 fun main() = application {
-  val minHeight = 500
-  val minWidth = 600
+  // Mobile-sized window (typical phone portrait dimensions)
+  val minHeight = 800
+  val minWidth = 400
 
   val windowState = rememberWindowState(size = DpSize(minWidth.dp, minHeight.dp))
 
