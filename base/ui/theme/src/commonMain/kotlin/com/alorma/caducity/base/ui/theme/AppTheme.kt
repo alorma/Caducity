@@ -34,11 +34,6 @@ fun AppTheme(
 
   val colors = CaducityColors.fromColorScheme(
     colorScheme = colorScheme,
-    expirationColorScheme = if (darkTheme) {
-      darkExpirationColorScheme
-    } else {
-      lightExpirationColorScheme
-    }
   )
 
   CompositionLocalProvider(

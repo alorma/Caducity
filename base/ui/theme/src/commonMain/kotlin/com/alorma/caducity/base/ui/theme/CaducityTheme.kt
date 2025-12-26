@@ -15,11 +15,17 @@ data class CaducityColors(
   companion object {
     fun fromColorScheme(
       colorScheme: ColorScheme,
-      expirationColorScheme: ExpirationColorScheme,
     ): CaducityColors {
       return CaducityColors(
         colorScheme = colorScheme,
-        expirationColorScheme = expirationColorScheme,
+        expirationColorScheme = ExpirationColorScheme(
+          fresh = colorScheme.primary,
+          onFresh = colorScheme.onPrimary,
+          expiringSoon = colorScheme.primary,
+          onExpiringSoon = colorScheme.onPrimary,
+          expired = colorScheme.primary,
+          onExpired = colorScheme.onPrimary,
+        ),
       )
     }
   }
