@@ -6,16 +6,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
@@ -25,13 +22,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowSizeClass
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.dashboard_action_collapse
 import caducity.composeapp.generated.resources.dashboard_action_expand
@@ -44,14 +39,16 @@ import caducity.composeapp.generated.resources.dashboard_search_placeholder
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Close
 import com.alorma.caducity.base.ui.icons.Search
-import com.alorma.caducity.ui.screen.dashboard.product.ProductItem
 import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.screen.dashboard.product.ProductItem
+import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DashboardScreen(
   onNavigateToProductDetail: (String) -> Unit,
+  modifier: Modifier = Modifier,
   viewModel: DashboardViewModel = koinViewModel()
 ) {
   val dashboardState = viewModel.state.collectAsStateWithLifecycle()
@@ -59,7 +56,7 @@ fun DashboardScreen(
   when (val state = dashboardState.value) {
     is DashboardState.Loading -> {
       Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().then(modifier),
         contentAlignment = Alignment.Center,
       ) {
         LoadingIndicator(
@@ -74,7 +71,7 @@ fun DashboardScreen(
 
     is DashboardState.Success -> DashboardContent(
       state = state,
-      onToggleExpanded = viewModel::toggleExpanded,
+      onToggleExpand = viewModel::toggleExpanded,
       onSearchQueryChange = viewModel::updateSearchQuery,
       onStatusFiltersChange = viewModel::updateStatusFilters,
       onNavigateToProductDetail = onNavigateToProductDetail,
@@ -86,18 +83,20 @@ fun DashboardScreen(
 @Composable
 fun DashboardContent(
   state: DashboardState.Success,
-  onToggleExpanded: (Boolean) -> Unit,
+  onToggleExpand: (Boolean) -> Unit,
   onSearchQueryChange: (String) -> Unit,
   onStatusFiltersChange: (Set<InstanceStatus>) -> Unit,
   onNavigateToProductDetail: (String) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   Scaffold(
+    modifier = modifier,
     topBar = {
       TopAppBar(
         title = { Text(text = stringResource(Res.string.dashboard_screen_title)) },
         actions = {
           TextButton(
-            onClick = { onToggleExpanded(!state.config.collapsed) },
+            onClick = { onToggleExpand(!state.config.collapsed) },
           ) {
             Text(
               text = if (state.config.collapsed) {
@@ -111,16 +110,6 @@ fun DashboardContent(
       )
     },
   ) { paddingValues ->
-
-    val adaptativeInfo = currentWindowAdaptiveInfo(supportLargeAndXLargeWidth = true)
-    val windowSizeClass = adaptativeInfo.windowSizeClass
-
-    val isMedium = windowSizeClass.isWidthAtLeastBreakpoint(
-      WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND
-    )
-    val isExpandedSize = windowSizeClass.isWidthAtLeastBreakpoint(
-      WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND,
-    )
 
     Column(
       modifier = Modifier
@@ -210,17 +199,9 @@ fun DashboardContent(
       }
 
       ProductsGrid(
-        modifier = Modifier.weight(1f),
         products = state.items,
         collapsed = state.config.collapsed,
         onNavigateToProductDetail = onNavigateToProductDetail,
-        gridCells = if (isExpandedSize) {
-          GridCells.FixedSize(320.dp)
-        } else if (isMedium) {
-          GridCells.Fixed(2)
-        } else {
-          GridCells.Fixed(1)
-        }
       )
     }
   }
@@ -228,23 +209,15 @@ fun DashboardContent(
 
 @Composable
 private fun ProductsGrid(
-  products: List<ProductUiModel>,
+  products: ImmutableList<ProductUiModel>,
   collapsed: Boolean,
   onNavigateToProductDetail: (String) -> Unit,
-  gridCells: GridCells,
   modifier: Modifier = Modifier,
 ) {
-  LazyVerticalGrid(
+  LazyColumn(
     modifier = Modifier.fillMaxSize().then(modifier),
-    contentPadding = PaddingValues(
-      top = 16.dp,
-      start = 16.dp,
-      bottom = 16.dp,
-      end = FloatingToolbarDefaults.ContainerSize + 12.dp,
-    ),
+    contentPadding = PaddingValues(16.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
-    columns = gridCells,
   ) {
     items(products) { product ->
       ProductItem(
