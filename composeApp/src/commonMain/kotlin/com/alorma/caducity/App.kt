@@ -1,11 +1,14 @@
 package com.alorma.caducity
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
@@ -19,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -30,6 +35,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.theme.AppTheme
+import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.di.appModule
 import com.alorma.caducity.di.platformModule
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
@@ -71,55 +77,49 @@ fun App(
           .nestedScroll(exitAlwaysScrollBehavior)
           .then(modifier),
         contentWindowInsets = WindowInsets(),
+        floatingActionButton = {
+          NavigationBar(
+            modifier = Modifier
+              .offset(y = -ScreenOffset)
+              .zIndex(1f),
+            scrollBehaviour = exitAlwaysScrollBehavior,
+            topLevelRoutes = topLevelRoutes,
+            isRouteSelected = { topLevelBackStack.topLevelKey == it },
+            onTopLevelUpdate = { topLevelBackStack.addTopLevel(it) },
+          )
+        },
       ) { paddingValues ->
-        Box(modifier = Modifier.fillMaxSize()) {
-          Box(
-            modifier = Modifier.padding(paddingValues),
-          ) {
-            NavigationBar(
-              modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .offset(y = -ScreenOffset)
-                .zIndex(1f),
-              scrollBehaviour = exitAlwaysScrollBehavior,
-              topLevelRoutes = topLevelRoutes,
-              isRouteSelected = { topLevelBackStack.topLevelKey == it },
-              onTopLevelUpdate = { topLevelBackStack.addTopLevel(it) },
-            )
-
-            NavDisplay(
-              modifier = Modifier.fillMaxSize(),
-              backStack = topLevelBackStack.backStack,
-              onBack = { topLevelBackStack.removeLast() },
-              entryDecorators = listOf(
-                rememberSaveableStateHolderNavEntryDecorator(),
-                rememberViewModelStoreNavEntryDecorator(),
-              ),
-              sceneStrategy = bottomSheetStrategy,
-              entryProvider = entryProvider {
-                entry<TopLevelRoute.Dashboard> {
-                  DashboardScreen(
-                    onNavigateToProductDetail = { productId ->
-                      topLevelBackStack.add(ProductDetailRoute(productId))
-                    }
-                  )
+        NavDisplay(
+          modifier = Modifier.fillMaxSize().padding(paddingValues),
+          backStack = topLevelBackStack.backStack,
+          onBack = { topLevelBackStack.removeLast() },
+          entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator(),
+          ),
+          sceneStrategy = bottomSheetStrategy,
+          entryProvider = entryProvider {
+            entry<TopLevelRoute.Dashboard> {
+              DashboardScreen(
+                onNavigateToProductDetail = { productId ->
+                  topLevelBackStack.add(ProductDetailRoute(productId))
                 }
-                entry<TopLevelRoute.Settings> { SettingsScreen() }
-                entry<TopLevelRoute.CreateProduct>(
-                  metadata = BottomSheetSceneStrategy.bottomSheet(),
-                ) {
-                  CreateProductDialogContent()
-                }
-                entry<ProductDetailRoute> {
-                  ProductDetailScreen(
-                    productId = it.productId,
-                    onBack = { topLevelBackStack.removeLast() }
-                  )
-                }
-              },
-            )
-          }
-        }
+              )
+            }
+            entry<TopLevelRoute.Settings> { SettingsScreen() }
+            entry<TopLevelRoute.CreateProduct>(
+              metadata = BottomSheetSceneStrategy.bottomSheet(),
+            ) {
+              CreateProductDialogContent()
+            }
+            entry<ProductDetailRoute> {
+              ProductDetailScreen(
+                productId = it.productId,
+                onBack = { topLevelBackStack.removeLast() }
+              )
+            }
+          },
+        )
       }
     }
   }
@@ -133,6 +133,9 @@ private fun NavigationBar(
   onTopLevelUpdate: (TopLevelRoute) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+
+  val colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors()
+
   HorizontalFloatingToolbar(
     modifier = Modifier
       .safeDrawingPadding()
@@ -147,14 +150,33 @@ private fun NavigationBar(
         Icon(imageVector = AppIcons.Add, contentDescription = null)
       }
     },
-    colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
+    colors = colors,
     content = {
       topLevelRoutes.forEach { route ->
         if (isRouteSelected(route)) {
-          FilledIconButton(
-            onClick = { onTopLevelUpdate(route) },
+          Row(
+            modifier = Modifier
+              .clip(CircleShape)
+              .background(
+                color = colors.toolbarContainerColor.copy(
+                  alpha = CaducityTheme.dims.dim3,
+                ).compositeOver(CaducityTheme.colorScheme.surface)
+              )
+              .padding(
+                top = 4.dp,
+                bottom = 4.dp,
+                start = 4.dp,
+                end = 12.dp,
+              ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
           ) {
-            route.Icon()
+            FilledIconButton(
+              onClick = { onTopLevelUpdate(route) },
+            ) {
+              route.Icon()
+            }
+            route.Label()
           }
         } else {
           IconButton(
