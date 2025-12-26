@@ -38,8 +38,8 @@ import com.alorma.caducity.ui.screen.product.create.CreateProductDialogContent
 import com.alorma.caducity.ui.screen.productdetail.ProductDetailRoute
 import com.alorma.caducity.ui.screen.productdetail.ProductDetailScreen
 import com.alorma.caducity.ui.screen.settings.SettingsScreen
-import com.alorma.caducity.ui.theme.AppTheme
-import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.base.ui.theme.AppTheme
+import com.alorma.caducity.base.ui.theme.CaducityTheme
 import org.koin.compose.KoinApplication
 import org.koin.compose.koinInject
 

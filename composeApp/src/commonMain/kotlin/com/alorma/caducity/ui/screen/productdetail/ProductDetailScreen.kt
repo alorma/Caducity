@@ -30,7 +30,7 @@ import com.alorma.caducity.ui.icons.AppIcons
 import com.alorma.caducity.ui.icons.Back
 import com.alorma.caducity.ui.screen.dashboard.ExpirationColors
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
-import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.base.ui.theme.CaducityTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 

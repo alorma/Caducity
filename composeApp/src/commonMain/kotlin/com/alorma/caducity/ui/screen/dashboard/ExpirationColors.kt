@@ -2,7 +2,7 @@ package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.base.ui.theme.CaducityTheme
 
 object ExpirationColors {
 
