@@ -57,6 +57,7 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(project(":base:ui:theme"))
+      implementation(project(":base:ui:icons"))
 
       implementation(compose.runtime)
       implementation(compose.ui)

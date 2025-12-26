@@ -41,9 +41,9 @@ import caducity.composeapp.generated.resources.dashboard_filter_expiring_soon
 import caducity.composeapp.generated.resources.dashboard_filter_fresh
 import caducity.composeapp.generated.resources.dashboard_screen_title
 import caducity.composeapp.generated.resources.dashboard_search_placeholder
-import com.alorma.caducity.ui.icons.AppIcons
-import com.alorma.caducity.ui.icons.Close
-import com.alorma.caducity.ui.icons.Search
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Close
+import com.alorma.caducity.base.ui.icons.Search
 import com.alorma.caducity.ui.screen.dashboard.product.ProductItem
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import org.jetbrains.compose.resources.stringResource

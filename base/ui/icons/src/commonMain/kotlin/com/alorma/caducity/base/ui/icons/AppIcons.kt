@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.icons
+package com.alorma.caducity.base.ui.icons
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
