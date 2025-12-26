@@ -25,3 +25,4 @@ plugins {
 include(":composeApp")
 include(":base")
 include(":base:ui:theme")
+include(":base:ui:icons")
