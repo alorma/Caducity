@@ -7,6 +7,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.compositeOver
 
 data class CaducityColors(
   val colorScheme: ColorScheme,
@@ -15,15 +16,32 @@ data class CaducityColors(
   companion object {
     fun fromColorScheme(
       colorScheme: ColorScheme,
+      dims: CaducityDims,
     ): CaducityColors {
+      // Hue values: Green ~120°, Orange ~30°, Red ~0°
+      val freshColor = colorScheme.primary
+        .shiftHueTowards(targetHue = 120f, amount = 0.7f)
+        .copy(alpha = dims.dim3)
+        .compositeOver(colorScheme.surface)
+
+      val expiringSoonColor = colorScheme.primary
+        .shiftHueTowards(targetHue = 30f, amount = 0.7f)
+        .copy(alpha = dims.dim2)
+        .compositeOver(colorScheme.surface)
+
+      val expiredColor = colorScheme.primary
+        .shiftHueTowards(targetHue = 0f, amount = 0.7f)
+        .copy(alpha = dims.dim1)
+        .compositeOver(colorScheme.surface)
+
       return CaducityColors(
         colorScheme = colorScheme,
         expirationColorScheme = ExpirationColorScheme(
-          fresh = colorScheme.primary,
+          fresh = freshColor,
           onFresh = colorScheme.onPrimary,
-          expiringSoon = colorScheme.primary,
+          expiringSoon = expiringSoonColor,
           onExpiringSoon = colorScheme.onPrimary,
-          expired = colorScheme.primary,
+          expired = expiredColor,
           onExpired = colorScheme.onPrimary,
         ),
       )
@@ -31,8 +49,21 @@ data class CaducityColors(
   }
 }
 
+data class CaducityDims(
+  val noDim: Float,
+  val dim1: Float,
+  val dim2: Float,
+  val dim3: Float,
+  val dim4: Float,
+  val dim5: Float,
+)
+
 internal val LocalCaducityColors = staticCompositionLocalOf<CaducityColors> {
   error("No CaducityThemeColors defined")
+}
+
+internal val LocalCaducityDims = staticCompositionLocalOf<CaducityDims> {
+  error("No CaducityDims defined")
 }
 
 object CaducityTheme {
@@ -56,5 +87,10 @@ object CaducityTheme {
     @Composable
     @ReadOnlyComposable
     get() = MaterialTheme.typography
+
+  val dims: CaducityDims
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalCaducityDims.current
 
 }
