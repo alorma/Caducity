@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.androidLibrary
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
@@ -6,7 +7,7 @@ plugins {
   alias(libs.plugins.jetbrains.kotlin.multiplatform)
   alias(libs.plugins.jetbrains.compose)
   alias(libs.plugins.jetbrains.compose.compiler)
-  alias(libs.plugins.android.library)
+  alias(libs.plugins.android.multiplatform.library)
 }
 
 kotlin {
@@ -16,10 +17,14 @@ kotlin {
     languageSettings.optIn("androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")
   }
 
-  androidTarget {
+  androidLibrary {
     compilerOptions {
       jvmTarget.set(JvmTarget.JVM_11)
     }
+
+    namespace = "com.alorma.caducity.base.ui.icons"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    minSdk = libs.versions.android.minSdk.get().toInt()
   }
 
   js {
@@ -45,18 +50,5 @@ kotlin {
       implementation(compose.ui)
       implementation(compose.foundation)
     }
-  }
-}
-
-android {
-  namespace = "com.alorma.caducity.base.ui.icons"
-  compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-  defaultConfig {
-    minSdk = libs.versions.android.minSdk.get().toInt()
-  }
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
   }
 }
