@@ -3,6 +3,8 @@ package com.alorma.caducity.ui.screen.dashboard
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.time.clock.AppClock
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -11,22 +13,22 @@ class DashboardMapper(
   private val expirationThresholds: ExpirationThresholds,
 ) {
   fun mapToDashboardSections(
-    products: List<ProductWithInstances>,
+    products: ImmutableList<ProductWithInstances>,
     searchQuery: String = "",
     statusFilters: Set<InstanceStatus> = emptySet(),
-  ): List<ProductUiModel> {
+  ): ImmutableList<ProductUiModel> {
     return products
       .map { it.toUiModel() }
       .filter { product ->
         matchesSearchQuery(product, searchQuery) && matchesStatusFilters(product, statusFilters)
-      }
+      }.toImmutableList()
   }
 
   private fun matchesSearchQuery(product: ProductUiModel, query: String): Boolean {
     if (query.isBlank()) return true
     val lowerQuery = query.lowercase()
     return product.name.lowercase().contains(lowerQuery) ||
-      product.description.lowercase().contains(lowerQuery)
+        product.description.lowercase().contains(lowerQuery)
   }
 
   private fun matchesStatusFilters(product: ProductUiModel, filters: Set<InstanceStatus>): Boolean {

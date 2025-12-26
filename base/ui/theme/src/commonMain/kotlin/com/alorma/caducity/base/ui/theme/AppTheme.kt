@@ -7,6 +7,7 @@ import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 
+@Suppress("ModifierRequired")
 @Composable
 fun AppTheme(
   themePreferences: ThemePreferences = ThemePreferencesNoOp,
