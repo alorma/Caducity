@@ -16,9 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.settings_screen_title
-import com.alorma.caducity.ui.theme.ThemeMode
-import com.alorma.caducity.ui.theme.ThemePreferences
-import com.alorma.caducity.ui.theme.supportsDynamicColors
+import com.alorma.caducity.base.ui.theme.ThemeMode
+import com.alorma.caducity.base.ui.theme.ThemePreferences
+import com.alorma.caducity.base.ui.theme.supportsDynamicColors
 import com.alorma.compose.settings.ui.SettingsGroup
 import com.alorma.compose.settings.ui.SettingsSegmented
 import com.alorma.compose.settings.ui.SettingsSwitch

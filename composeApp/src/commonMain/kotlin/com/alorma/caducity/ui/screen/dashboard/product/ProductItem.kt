@@ -29,8 +29,8 @@ import com.alorma.caducity.ui.screen.dashboard.ExpirationColors
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
-import com.alorma.caducity.ui.theme.AppTheme
-import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.base.ui.theme.AppTheme
+import com.alorma.caducity.base.ui.theme.CaducityTheme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 

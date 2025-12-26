@@ -12,6 +12,7 @@ android-compileSdk = "36"
 android-minSdk = "34"
 android-targetSdk = "36"
 androidx-activity = "1.12.1"
+androidx-core = "1.15.0"
 
 androidx-nav3 = "1.0.0-alpha06"
 androidx-nav3-viewModel = "2.10.0-alpha06"
@@ -30,6 +31,7 @@ kalendar = "2.9.0"
 
 [libraries]
 androidx-activitycompose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
+androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
 androidx-nav3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "androidx-nav3" }
 androidx-nav3-viewModel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "androidx-nav3-viewModel" }
 
@@ -58,6 +60,7 @@ kalendar = { group = "com.kizitonwose.calendar", name = "compose-multiplatform",
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-compose-hotreload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 jetbrains-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.ui.theme.ThemeMode
+import com.alorma.caducity.base.ui.theme.ThemeMode
 
 @Composable
 fun ThemeSelectionDialog(

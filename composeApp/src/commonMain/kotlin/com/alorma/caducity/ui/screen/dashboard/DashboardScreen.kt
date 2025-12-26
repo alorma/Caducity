@@ -45,7 +45,7 @@ import com.alorma.caducity.ui.icons.AppIcons
 import com.alorma.caducity.ui.icons.Close
 import com.alorma.caducity.ui.icons.Search
 import com.alorma.caducity.ui.screen.dashboard.product.ProductItem
-import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.base.ui.theme.CaducityTheme
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
