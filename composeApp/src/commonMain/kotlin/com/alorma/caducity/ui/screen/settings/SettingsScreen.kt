@@ -1,9 +1,15 @@
 package com.alorma.caducity.ui.screen.settings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -12,10 +18,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.settings_screen_title
+import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.ThemeMode
 import com.alorma.caducity.base.ui.theme.ThemePreferences
 import com.alorma.caducity.base.ui.theme.supportsDynamicColors
@@ -69,6 +79,12 @@ fun SettingsScreen() {
       }
 
       SettingsGroup(
+        title = { Text(text = "Expiration Colors") },
+      ) {
+        ExpirationColorLegend()
+      }
+
+      SettingsGroup(
         title = { Text(text = "Notifications") },
       ) {
         SettingsSwitch(
@@ -78,5 +94,50 @@ fun SettingsScreen() {
         )
       }
     }
+  }
+}
+
+@Composable
+private fun ExpirationColorLegend() {
+  val expirationColors = CaducityTheme.expirationColorScheme
+
+  Column(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp, vertical = 8.dp),
+    verticalArrangement = Arrangement.spacedBy(12.dp),
+  ) {
+    ColorLegendItem(
+      label = "Fresh",
+      color = expirationColors.fresh,
+    )
+    ColorLegendItem(
+      label = "Expiring Soon",
+      color = expirationColors.expiringSoon,
+    )
+    ColorLegendItem(
+      label = "Expired",
+      color = expirationColors.expired,
+    )
+  }
+}
+
+@Composable
+private fun ColorLegendItem(
+  label: String,
+  color: Color,
+) {
+  Row(
+    modifier = Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.spacedBy(12.dp),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Box(
+      modifier = Modifier
+        .size(32.dp)
+        .clip(CircleShape)
+        .background(color),
+    )
+    Text(text = label)
   }
 }
