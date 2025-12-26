@@ -32,12 +32,23 @@ fun AppTheme(
     defaultColorScheme
   }
 
+  val dims = CaducityDims(
+    noDim = 1f,
+    dim1 = 0.72f,
+    dim2 = 0.68f,
+    dim3 = 0.40f,
+    dim4 = 0.16f,
+    dim5 = 0.08f,
+  )
+
   val colors = CaducityColors.fromColorScheme(
     colorScheme = colorScheme,
+    dims = dims,
   )
 
   CompositionLocalProvider(
-    LocalCaducityColors provides colors
+    LocalCaducityColors provides colors,
+    LocalCaducityDims provides dims
   ) {
     MaterialExpressiveTheme(
       colorScheme = LocalCaducityColors.current.colorScheme,
