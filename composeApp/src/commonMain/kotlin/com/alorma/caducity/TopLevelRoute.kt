@@ -34,6 +34,7 @@ fun TopLevelRoute.iconContentDescription() = when (this) {
   TopLevelRoute.Settings -> "Settings"
 }
 
+@Suppress("ModifierRequired")
 @Composable
 fun TopLevelRoute.Icon() {
   Icon(
@@ -42,6 +43,7 @@ fun TopLevelRoute.Icon() {
   )
 }
 
+@Suppress("ModifierRequired")
 @Composable
 fun TopLevelRoute.Label() {
   Text(text = iconContentDescription())
