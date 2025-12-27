@@ -44,8 +44,10 @@ class RoomProductDataSource(
       }
   }
 
-  override suspend fun createProduct(product: Product, instance: ProductInstance) {
+  override suspend fun createProduct(product: Product, instances: List<ProductInstance>) {
     productDao.insertProduct(product.toRoomEntity())
-    productDao.insertProductInstance(instance.toRoomEntity(product.id))
+    instances.forEach { instance ->
+      productDao.insertProductInstance(instance.toRoomEntity(product.id))
+    }
   }
 }

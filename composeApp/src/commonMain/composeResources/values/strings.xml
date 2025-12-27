@@ -55,4 +55,10 @@
     <string name="create_product_button_cancel">Cancel</string>
     <string name="create_product_button_create">Create</string>
     <string name="create_product_content_description_back">Back</string>
+    <string name="create_product_instances_title">Product Instances</string>
+    <string name="create_product_instance_identifier_label">Identifier</string>
+    <string name="create_product_instance_identifier_placeholder">e.g., Batch #1, Unit A</string>
+    <string name="create_product_add_instance">Add Instance</string>
+    <string name="create_product_remove_instance">Remove</string>
+    <string name="create_product_instance_number">Instance %1$d</string>
 </resources>

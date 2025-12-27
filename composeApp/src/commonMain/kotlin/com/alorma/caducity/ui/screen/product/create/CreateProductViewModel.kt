@@ -12,6 +12,8 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.format.DateTimeFormat
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class CreateProductViewModel(
   private val createProductUseCase: CreateProductUseCase,
@@ -32,21 +34,61 @@ class CreateProductViewModel(
     _state.update { it.copy(description = description) }
   }
 
-  fun updateExpirationDate(date: LocalDate) {
-    _state.update {
-      it.copy(
-        expirationDateText = dateFormat.format(date),
-        expirationDate = date,
-      )
+  fun updateInstanceIdentifier(instanceId: String, identifier: String) {
+    _state.update { currentState ->
+      val updatedInstances = currentState.instances.map { instance ->
+        if (instance.id == instanceId) {
+          instance.copy(identifier = identifier)
+        } else {
+          instance
+        }
+      }
+      currentState.copy(instances = updatedInstances)
     }
   }
 
-  fun showDatePicker() {
-    _state.update { it.copy(showDatePicker = true) }
+  fun updateInstanceExpirationDate(instanceId: String, date: LocalDate) {
+    _state.update { currentState ->
+      val updatedInstances = currentState.instances.map { instance ->
+        if (instance.id == instanceId) {
+          instance.copy(
+            expirationDateText = dateFormat.format(date),
+            expirationDate = date,
+          )
+        } else {
+          instance
+        }
+      }
+      currentState.copy(instances = updatedInstances)
+    }
+  }
+
+  fun showDatePickerForInstance(instanceId: String) {
+    _state.update { it.copy(showDatePickerForInstanceId = instanceId) }
   }
 
   fun hideDatePicker() {
-    _state.update { it.copy(showDatePicker = false) }
+    _state.update { it.copy(showDatePickerForInstanceId = null) }
+  }
+
+  @OptIn(ExperimentalUuidApi::class)
+  fun addInstance() {
+    _state.update { currentState ->
+      val newInstance = ProductInstanceInput(
+        id = Uuid.random().toString()
+      )
+      currentState.copy(instances = currentState.instances + newInstance)
+    }
+  }
+
+  fun removeInstance(instanceId: String) {
+    _state.update { currentState ->
+      if (currentState.instances.size > 1) {
+        currentState.copy(instances = currentState.instances.filter { it.id != instanceId })
+      } else {
+        currentState
+      }
+    }
   }
 
   fun createProduct(onSuccess: () -> Unit) {
@@ -59,23 +101,25 @@ class CreateProductViewModel(
     _state.update { it.copy(isLoading = true, error = null) }
 
     viewModelScope.launch {
-      val expirationDate = currentState.expirationDate
-      if (expirationDate == null) {
-        _state.update {
-          it.copy(
-            isLoading = false,
-            error = "Expiration date is required"
-          )
+      val instancesData = currentState.instances.map { instance ->
+        if (instance.expirationDate == null) {
+          _state.update {
+            it.copy(
+              isLoading = false,
+              error = "All instances must have an expiration date"
+            )
+          }
+          return@launch
         }
-        return@launch
-      }
 
-      val instant = expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault())
+        val instant = instance.expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault())
+        instance.identifier to instant
+      }
 
       val result = createProductUseCase.createProduct(
         name = currentState.name,
         description = currentState.description,
-        expirationDate = instant,
+        instances = instancesData,
       )
 
       result.fold(
@@ -102,8 +146,16 @@ class CreateProductViewModel(
       _state.update { it.copy(error = "Product name is required") }
       return false
     }
-    if (state.expirationDate == null) {
-      _state.update { it.copy(error = "Expiration date is required") }
+    if (state.instances.isEmpty()) {
+      _state.update { it.copy(error = "At least one instance is required") }
+      return false
+    }
+    if (state.instances.any { it.expirationDate == null }) {
+      _state.update { it.copy(error = "All instances must have an expiration date") }
+      return false
+    }
+    if (state.instances.any { it.identifier.isBlank() }) {
+      _state.update { it.copy(error = "All instances must have an identifier") }
       return false
     }
     return true

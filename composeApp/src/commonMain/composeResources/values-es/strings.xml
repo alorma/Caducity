@@ -55,4 +55,10 @@
     <string name="create_product_button_cancel">Cancelar</string>
     <string name="create_product_button_create">Crear</string>
     <string name="create_product_content_description_back">Atrás</string>
+    <string name="create_product_instances_title">Instancias del Producto</string>
+    <string name="create_product_instance_identifier_label">Identificador</string>
+    <string name="create_product_instance_identifier_placeholder">ej., Lote #1, Unidad A</string>
+    <string name="create_product_add_instance">Añadir Instancia</string>
+    <string name="create_product_remove_instance">Eliminar</string>
+    <string name="create_product_instance_number">Instancia %1$d</string>
 </resources>
