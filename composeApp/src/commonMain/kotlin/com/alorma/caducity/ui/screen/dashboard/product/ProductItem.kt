@@ -195,12 +195,12 @@ private fun ExpandedInstancesView(instances: List<ProductInstanceUiModel>) {
         ) {
           Text(
             text = instance.identifier,
-            style = MaterialTheme.typography.bodySmall,
+            style = CaducityTheme.typography.bodySmall,
             color = CaducityTheme.colorScheme.onSurface,
           )
           Text(
             text = instance.expirationDate.toString(),
-            style = MaterialTheme.typography.bodySmall,
+            style = CaducityTheme.typography.bodySmall,
             color = CaducityTheme.colorScheme.onSurfaceVariant,
           )
         }
