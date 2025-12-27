@@ -16,9 +16,12 @@ import kotlinx.datetime.format.DateTimeFormat
 class CreateProductViewModel(
   private val createProductUseCase: CreateProductUseCase,
   private val dateFormat: DateTimeFormat<LocalDate>,
+  private val selectableDates: FutureDateSelectableDates,
 ) : ViewModel() {
 
-  private val _state = MutableStateFlow(CreateProductState())
+  private val _state = MutableStateFlow(
+    CreateProductState(selectableDates = selectableDates)
+  )
   val state: StateFlow<CreateProductState> = _state.asStateFlow()
 
   fun updateName(name: String) {
@@ -78,7 +81,7 @@ class CreateProductViewModel(
       result.fold(
         onSuccess = {
           _state.update {
-            CreateProductState()
+            CreateProductState(selectableDates = selectableDates)
           }
           onSuccess()
         },

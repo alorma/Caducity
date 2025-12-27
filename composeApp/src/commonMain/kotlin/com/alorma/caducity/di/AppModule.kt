@@ -13,6 +13,7 @@ import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfiguration
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfigurationImpl
 import com.alorma.caducity.ui.screen.dashboard.DashboardViewModel
 import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
+import com.alorma.caducity.ui.screen.product.create.FutureDateSelectableDates
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailMapper
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailViewModel
 import com.russhwolf.settings.Settings
@@ -56,4 +57,5 @@ val appModule = module {
       year()
     }
   }
+  singleOf(::FutureDateSelectableDates)
 }
