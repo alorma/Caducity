@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.settings_screen_title
 import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.base.ui.theme.ExpirationColorSchemeType
 import com.alorma.caducity.base.ui.theme.ThemeMode
 import com.alorma.caducity.base.ui.theme.ThemePreferences
 import com.alorma.caducity.base.ui.theme.supportsDynamicColors
@@ -36,11 +37,14 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+  modifier: Modifier = Modifier,
+) {
   val themePreferences = koinInject<ThemePreferences>()
   var notificationsEnabled by remember { mutableStateOf(true) }
 
   Scaffold(
+    modifier = modifier,
     topBar = {
       TopAppBar(
         title = { Text(text = stringResource(Res.string.settings_screen_title)) },
@@ -81,6 +85,19 @@ fun SettingsScreen() {
       SettingsGroup(
         title = { Text(text = "Expiration Colors") },
       ) {
+        SettingsSegmented(
+          title = { Text(text = "Color Scheme") },
+          selectedItem = themePreferences.expirationColorSchemeType.value,
+          items = ExpirationColorSchemeType.entries,
+          itemTitleMap = { schemeType ->
+            when (schemeType) {
+              ExpirationColorSchemeType.VIBRANT -> "Vibrant"
+              ExpirationColorSchemeType.HARMONIZE -> "Harmonize"
+              ExpirationColorSchemeType.GREY -> "Grey"
+            }
+          },
+          onItemSelected = { themePreferences.setExpirationColorSchemeType(it) },
+        )
         ExpirationColorLegend()
       }
 
