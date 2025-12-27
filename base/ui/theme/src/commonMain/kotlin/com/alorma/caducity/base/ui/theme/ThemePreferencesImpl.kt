@@ -45,9 +45,9 @@ class ThemePreferencesImpl(private val settings: Settings) : ThemePreferences {
       try {
         ExpirationColorSchemeType.valueOf(it)
       } catch (_: IllegalArgumentException) {
-        ExpirationColorSchemeType.VIBRANT
+        ExpirationColorSchemeType.HARMONIZE
       }
-    } ?: ExpirationColorSchemeType.VIBRANT
+    } ?: ExpirationColorSchemeType.HARMONIZE
   }
 
   override fun setExpirationColorSchemeType(type: ExpirationColorSchemeType) {
