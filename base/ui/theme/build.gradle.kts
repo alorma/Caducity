@@ -46,17 +46,22 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
-      implementation(compose.runtime)
-      implementation(compose.ui)
-      implementation(compose.foundation)
+      implementation(libs.compose.runtime)
+      implementation(libs.compose.ui)
+      implementation(libs.compose.foundation)
 
       implementation(libs.compose.material3)
 
       implementation(libs.multiplatform.settings)
       implementation(libs.multiplatform.settings.no.arg)
+      implementation(libs.compose.ui.tooling.preview)
+
+      implementation(project.dependencies.platform(libs.koin.bom))
+      implementation(libs.koin.compose)
     }
     androidMain.dependencies {
       implementation(libs.androidx.core)
+      implementation(libs.compose.ui.tooling)
     }
   }
 }
