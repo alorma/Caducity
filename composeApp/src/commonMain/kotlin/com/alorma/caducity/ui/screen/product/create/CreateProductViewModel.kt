@@ -11,9 +11,11 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.format.DateTimeFormat
 
 class CreateProductViewModel(
   private val createProductUseCase: CreateProductUseCase,
+  private val dateFormat: DateTimeFormat<LocalDate>,
 ) : ViewModel() {
 
   private val _state = MutableStateFlow(CreateProductState())
@@ -27,8 +29,21 @@ class CreateProductViewModel(
     _state.update { it.copy(description = description) }
   }
 
-  fun updateExpirationDate(date: String) {
-    _state.update { it.copy(expirationDateText = date) }
+  fun updateExpirationDate(date: LocalDate) {
+    _state.update {
+      it.copy(
+        expirationDateText = dateFormat.format(date),
+        expirationDate = date,
+      )
+    }
+  }
+
+  fun showDatePicker() {
+    _state.update { it.copy(showDatePicker = true) }
+  }
+
+  fun hideDatePicker() {
+    _state.update { it.copy(showDatePicker = false) }
   }
 
   fun createProduct(onSuccess: () -> Unit) {
@@ -41,12 +56,12 @@ class CreateProductViewModel(
     _state.update { it.copy(isLoading = true, error = null) }
 
     viewModelScope.launch {
-      val expirationDate = parseDate(currentState.expirationDateText)
+      val expirationDate = currentState.expirationDate
       if (expirationDate == null) {
         _state.update {
           it.copy(
             isLoading = false,
-            error = "Invalid date format. Please use DD/MM/YYYY"
+            error = "Expiration date is required"
           )
         }
         return@launch
@@ -84,26 +99,11 @@ class CreateProductViewModel(
       _state.update { it.copy(error = "Product name is required") }
       return false
     }
-    if (state.expirationDateText.isBlank()) {
+    if (state.expirationDate == null) {
       _state.update { it.copy(error = "Expiration date is required") }
       return false
     }
     return true
-  }
-
-  private fun parseDate(dateText: String): LocalDate? {
-    return try {
-      val parts = dateText.split("/")
-      if (parts.size != 3) return null
-
-      val day = parts[0].toIntOrNull() ?: return null
-      val month = parts[1].toIntOrNull() ?: return null
-      val year = parts[2].toIntOrNull() ?: return null
-
-      LocalDate(year, month, day)
-    } catch (e: Exception) {
-      null
-    }
   }
 
   fun clearError() {
@@ -111,10 +111,4 @@ class CreateProductViewModel(
   }
 }
 
-data class CreateProductState(
-  val name: String = "",
-  val description: String = "",
-  val expirationDateText: String = "",
-  val isLoading: Boolean = false,
-  val error: String? = null,
-)
+

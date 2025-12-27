@@ -46,4 +46,15 @@
 
     <string name="settings_group_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable Notifications</string>
+
+    <string name="create_product_screen_title">Create Product</string>
+    <string name="create_product_name_label">Product Name</string>
+    <string name="create_product_name_placeholder">Enter product name</string>
+    <string name="create_product_description_label">Description</string>
+    <string name="create_product_description_placeholder">Enter description</string>
+    <string name="create_product_expiration_date_label">Expiration Date</string>
+    <string name="create_product_expiration_date_placeholder">DD/MM/YYYY</string>
+    <string name="create_product_button_cancel">Cancel</string>
+    <string name="create_product_button_create">Create</string>
+    <string name="create_product_content_description_back">Back</string>
 </resources>
