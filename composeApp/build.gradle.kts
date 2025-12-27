@@ -9,6 +9,8 @@ plugins {
   alias(libs.plugins.jetbrains.compose.compiler)
   alias(libs.plugins.jetbrains.compose.hotreload)
   alias(libs.plugins.android.application)
+  alias(libs.plugins.google.ksp)
+  alias(libs.plugins.androidx.room)
 }
 
 kotlin {
@@ -96,6 +98,10 @@ kotlin {
       implementation(libs.androidx.activitycompose)
       implementation(libs.koin.android)
 
+      implementation(libs.androidx.room.runtime)
+      implementation(libs.androidx.sqlite.bundled)
+      implementation(libs.androidx.room.sqlite.wrapper)
+
       implementation(compose.uiTooling)
     }
     val desktopMain by getting {
@@ -151,4 +157,12 @@ android {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
   }
+}
+
+room {
+  schemaDirectory("$projectDir/schemas")
+}
+
+dependencies {
+  add("kspAndroid", libs.androidx.room.compiler)
 }
