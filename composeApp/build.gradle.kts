@@ -9,6 +9,8 @@ plugins {
   alias(libs.plugins.jetbrains.compose.compiler)
   alias(libs.plugins.jetbrains.compose.hotreload)
   alias(libs.plugins.android.application)
+  alias(libs.plugins.google.ksp)
+  alias(libs.plugins.androidx.room)
 }
 
 kotlin {
@@ -22,11 +24,6 @@ kotlin {
     compilerOptions {
       jvmTarget.set(JvmTarget.JVM_11)
     }
-  }
-
-  js {
-    browser()
-    binaries.executable()
   }
 
   @OptIn(ExperimentalWasmDsl::class)
@@ -59,10 +56,10 @@ kotlin {
       implementation(project(":base:ui:theme"))
       implementation(project(":base:ui:icons"))
 
-      implementation(compose.runtime)
-      implementation(compose.ui)
-      implementation(compose.foundation)
-      implementation(compose.components.resources)
+      implementation(libs.compose.runtime)
+      implementation(libs.compose.ui)
+      implementation(libs.compose.foundation)
+      implementation(libs.compose.components.resources)
 
       implementation(libs.compose.material3)
 
@@ -84,19 +81,21 @@ kotlin {
 
       // Koin
       implementation(project.dependencies.platform(libs.koin.bom))
-      implementation(libs.koin.core)
       implementation(libs.koin.compose)
       implementation(libs.koin.compose.viewmodel)
 
       implementation(libs.kalendar)
 
-      implementation(compose.components.uiToolingPreview)
+      implementation(libs.compose.ui.tooling.preview)
     }
     androidMain.dependencies {
-      implementation(libs.androidx.activitycompose)
-      implementation(libs.koin.android)
+      implementation(libs.compose.ui.tooling)
 
-      implementation(compose.uiTooling)
+      implementation(libs.androidx.activitycompose)
+
+      implementation(libs.androidx.room.runtime)
+      implementation(libs.androidx.sqlite.bundled)
+      implementation(libs.androidx.room.sqlite.wrapper)
     }
     val desktopMain by getting {
       dependencies {
@@ -151,4 +150,12 @@ android {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
   }
+}
+
+room {
+  schemaDirectory("$projectDir/schemas")
+}
+
+dependencies {
+  add("kspAndroid", libs.androidx.room.compiler)
 }

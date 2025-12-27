@@ -37,7 +37,6 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.theme.AppTheme
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.di.appModule
-import com.alorma.caducity.di.platformModule
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductDialogContent
 import com.alorma.caducity.ui.screen.productdetail.ProductDetailRoute
@@ -45,17 +44,20 @@ import com.alorma.caducity.ui.screen.productdetail.ProductDetailScreen
 import com.alorma.caducity.ui.screen.settings.SettingsScreen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import org.koin.compose.KoinApplication
+import org.koin.compose.KoinMultiplatformApplication
 import org.koin.compose.koinInject
+import org.koin.core.annotation.KoinExperimentalAPI
+import org.koin.dsl.koinConfiguration
 
+@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun App(
   modifier: Modifier = Modifier,
 ) {
-  KoinApplication(
-    application = {
-      modules(appModule, platformModule)
-    }
+  KoinMultiplatformApplication(
+    config = koinConfiguration {
+      modules(appModule)
+    },
   ) {
     AppTheme(
       themePreferences = koinInject(),

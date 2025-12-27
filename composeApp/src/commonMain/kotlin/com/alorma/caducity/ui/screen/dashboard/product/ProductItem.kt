@@ -20,19 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.dashboard_section_expired
-import caducity.composeapp.generated.resources.dashboard_section_expiring_soon
-import caducity.composeapp.generated.resources.dashboard_section_fresh
+import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.ui.screen.dashboard.ExpirationColors
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
-import com.alorma.caducity.base.ui.theme.AppTheme
-import com.alorma.caducity.base.ui.theme.CaducityTheme
-import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun ProductItem(
@@ -200,12 +195,12 @@ private fun ExpandedInstancesView(instances: List<ProductInstanceUiModel>) {
         ) {
           Text(
             text = instance.identifier,
-            style = MaterialTheme.typography.bodySmall,
+            style = CaducityTheme.typography.bodySmall,
             color = CaducityTheme.colorScheme.onSurface,
           )
           Text(
             text = instance.expirationDate.toString(),
-            style = MaterialTheme.typography.bodySmall,
+            style = CaducityTheme.typography.bodySmall,
             color = CaducityTheme.colorScheme.onSurfaceVariant,
           )
         }
@@ -217,7 +212,7 @@ private fun ExpandedInstancesView(instances: List<ProductInstanceUiModel>) {
 @Preview
 @Composable
 private fun ProductItemExpandedPreview() {
-  AppTheme {
+  AppPreview {
     Surface {
       ProductItem(
         product = productWithInstancesPreview,
@@ -231,7 +226,7 @@ private fun ProductItemExpandedPreview() {
 @Preview
 @Composable
 private fun ProductItemCollapsedPreview() {
-  AppTheme {
+  AppPreview {
     Surface {
       ProductItem(
         product = productWithInstancesPreview,

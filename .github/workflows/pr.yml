@@ -21,7 +21,6 @@ jobs:
       matrix:
         config: [
           { target: android, os: ubuntu-latest, tasks: assembleDebug },
-          { target: js, os: ubuntu-latest, tasks: jsBrowserDistribution },
           { target: wasm, os: ubuntu-latest, tasks: wasmJsBrowserDistribution },
           { target: desktop, os: ubuntu-latest, tasks: packageDistributionForCurrentOS },
         ]

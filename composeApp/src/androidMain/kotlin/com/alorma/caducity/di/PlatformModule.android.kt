@@ -1,11 +1,29 @@
 package com.alorma.caducity.di
 
-import com.alorma.caducity.data.datasource.FakeProductDataSource
+import androidx.room.Room
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.alorma.caducity.data.datasource.ProductDataSource
+import com.alorma.caducity.data.datasource.RoomProductDataSource
+import com.alorma.caducity.data.room.AppDatabase
+import com.alorma.caducity.data.room.DatabaseCallback
+import kotlinx.coroutines.Dispatchers
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 actual val platformModule = module {
-  singleOf(::FakeProductDataSource) bind ProductDataSource::class
+  single {
+    Room.databaseBuilder(
+      context = androidContext(),
+      klass = AppDatabase::class.java,
+      name = "caducity.db"
+    )
+      .setDriver(BundledSQLiteDriver())
+      .setQueryCoroutineContext(Dispatchers.IO)
+      .addCallback(DatabaseCallback())
+      .build()
+  }
+
+  singleOf(::RoomProductDataSource) bind ProductDataSource::class
 }

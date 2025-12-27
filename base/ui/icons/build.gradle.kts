@@ -27,11 +27,6 @@ kotlin {
     minSdk = libs.versions.android.minSdk.get().toInt()
   }
 
-  js {
-    browser()
-    binaries.executable()
-  }
-
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     browser()
@@ -46,9 +41,9 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
-      implementation(compose.runtime)
-      implementation(compose.ui)
-      implementation(compose.foundation)
+      implementation(libs.compose.runtime)
+      implementation(libs.compose.ui)
+      implementation(libs.compose.foundation)
     }
   }
 }
