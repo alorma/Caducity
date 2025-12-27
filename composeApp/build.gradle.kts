@@ -92,6 +92,7 @@ kotlin {
       implementation(libs.kalendar)
 
       implementation(libs.compose.ui.tooling.preview)
+      implementation(libs.compose.ui.tooling)
     }
     androidMain.dependencies {
       implementation(libs.androidx.activitycompose)
@@ -99,8 +100,6 @@ kotlin {
       implementation(libs.androidx.room.runtime)
       implementation(libs.androidx.sqlite.bundled)
       implementation(libs.androidx.room.sqlite.wrapper)
-
-      implementation(libs.compose.ui.tooling)
     }
     val desktopMain by getting {
       dependencies {
