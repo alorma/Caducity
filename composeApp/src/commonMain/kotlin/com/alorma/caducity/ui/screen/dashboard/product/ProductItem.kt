@@ -22,8 +22,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.base.ui.theme.AppTheme
 import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.ui.screen.dashboard.ExpirationColors
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
@@ -212,7 +212,7 @@ private fun ExpandedInstancesView(instances: List<ProductInstanceUiModel>) {
 @Preview
 @Composable
 private fun ProductItemExpandedPreview() {
-  AppTheme {
+  AppPreview {
     Surface {
       ProductItem(
         product = productWithInstancesPreview,
@@ -226,7 +226,7 @@ private fun ProductItemExpandedPreview() {
 @Preview
 @Composable
 private fun ProductItemCollapsedPreview() {
-  AppTheme {
+  AppPreview {
     Surface {
       ProductItem(
         product = productWithInstancesPreview,

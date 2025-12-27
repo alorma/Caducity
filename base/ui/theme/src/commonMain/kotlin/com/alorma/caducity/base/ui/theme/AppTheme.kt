@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -22,13 +23,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.base.ui.theme.di.themeModule
-import org.koin.compose.KoinApplicationPreview
+import com.alorma.caducity.base.ui.theme.preview.AppPreview
+import org.koin.compose.koinInject
 
 @Suppress("ModifierRequired")
 @Composable
 fun AppTheme(
-  themePreferences: ThemePreferences = ThemePreferencesNoOp,
+  themePreferences: ThemePreferences = koinInject(),
   content: @Composable () -> Unit,
 ) {
   val systemInDarkTheme = isSystemInDarkTheme()
@@ -161,8 +162,8 @@ private fun rememberExpirationColorScheme(
 @Preview
 @Composable
 private fun ExpirationColorsPreview() {
-  KoinApplicationPreview(application = { modules(themeModule) }) {
-    AppTheme {
+  AppPreview {
+    Surface {
       ExpirationColorSchemeType
         .entries
         .forEach { expirationColorSchemeType ->
