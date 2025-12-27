@@ -19,7 +19,7 @@ class TopLevelBackStack(startKey: NavKey) {
     private set
 
   // Expose the back stack so it can be rendered by the NavDisplay
-  val backStack = mutableStateListOf<NavKey>(startKey)
+  val backStack = mutableStateListOf(startKey)
 
   private fun updateBackStack() =
     backStack.apply {

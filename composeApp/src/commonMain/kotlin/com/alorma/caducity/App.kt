@@ -81,16 +81,20 @@ fun App(
           .then(modifier),
         contentWindowInsets = WindowInsets(),
         floatingActionButton = {
-          NavigationBar(
-            modifier = Modifier
-              .offset(y = -ScreenOffset)
-              .zIndex(1f),
-            scrollBehaviour = exitAlwaysScrollBehavior,
-            topLevelRoutes = topLevelRoutes,
-            isRouteSelected = { topLevelBackStack.topLevelKey == it },
-            onTopLevelUpdate = { topLevelBackStack.addTopLevel(it) },
-            onCreateProduct = { topLevelBackStack.add(CreateProductRoute) },
-          )
+          val isTopLevelRoute = topLevelBackStack.backStack.last() is TopLevelRoute
+
+          if (isTopLevelRoute) {
+            NavigationBar(
+              modifier = Modifier
+                .offset(y = -ScreenOffset)
+                .zIndex(1f),
+              scrollBehaviour = exitAlwaysScrollBehavior,
+              topLevelRoutes = topLevelRoutes,
+              isRouteSelected = { topLevelBackStack.topLevelKey == it },
+              onTopLevelUpdate = { topLevelBackStack.addTopLevel(it) },
+              onCreateProduct = { topLevelBackStack.add(CreateProductRoute) },
+            )
+          }
         },
       ) { paddingValues ->
         NavDisplay(
