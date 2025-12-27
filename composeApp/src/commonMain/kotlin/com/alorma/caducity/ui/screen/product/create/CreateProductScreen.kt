@@ -16,12 +16,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -132,20 +131,26 @@ private fun CreateProductPage(
       )
 
       // Expiration Date Field
-      OutlinedTextField(
+
+      TextField(
+        modifier = Modifier
+          .fillMaxWidth()
+          .clickable(enabled = !state.isLoading) { onShowDatePicker() },
         value = state.expirationDateText ?: "",
         onValueChange = {},
         label = { Text(stringResource(Res.string.create_product_expiration_date_label)) },
         placeholder = { Text(stringResource(Res.string.create_product_expiration_date_placeholder)) },
-        modifier = Modifier
-          .fillMaxWidth()
-          .clickable(enabled = !state.isLoading) { onShowDatePicker() },
         enabled = false,
         readOnly = true,
         isError = state.error != null,
-        colors = OutlinedTextFieldDefaults.colors(
+        colors = TextFieldDefaults.colors(
+          focusedContainerColor = TextFieldDefaults.colors()
+            .containerColor(enabled = true, isError = false, focused = true),
+          unfocusedContainerColor = TextFieldDefaults.colors()
+            .containerColor(enabled = true, isError = false, focused = true),
           disabledTextColor = MaterialTheme.colorScheme.onSurface,
-          disabledBorderColor = MaterialTheme.colorScheme.outline,
+          disabledContainerColor = TextFieldDefaults.colors()
+            .containerColor(enabled = true, isError = false, focused = false),
           disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
         )
       )
