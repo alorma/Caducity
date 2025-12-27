@@ -112,7 +112,9 @@ fun App(
             entry<TopLevelRoute.CreateProduct>(
               metadata = BottomSheetSceneStrategy.bottomSheet(),
             ) {
-              CreateProductDialogContent()
+              CreateProductDialogContent(
+                onDismiss = { topLevelBackStack.removeLast() }
+              )
             }
             entry<ProductDetailRoute> {
               ProductDetailScreen(

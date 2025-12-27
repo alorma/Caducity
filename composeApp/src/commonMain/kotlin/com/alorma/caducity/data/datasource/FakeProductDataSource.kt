@@ -21,8 +21,8 @@ class FakeProductDataSource(
   private val expirationThresholds: ExpirationThresholds,
 ) : ProductDataSource {
 
-  override val products: StateFlow<ImmutableList<ProductWithInstances>> =
-    MutableStateFlow(generateFakeProducts())
+  private val _products = MutableStateFlow(generateFakeProducts())
+  override val products: StateFlow<ImmutableList<ProductWithInstances>> = _products
 
   override fun getProduct(productId: String): Flow<Result<ProductWithInstances>> {
     return products.map { productList ->
@@ -30,6 +30,15 @@ class FakeProductDataSource(
         ?.let { Result.success(it) }
         ?: Result.failure(NoSuchElementException("Product with id $productId not found"))
     }
+  }
+
+  override suspend fun createProduct(product: Product, instance: ProductInstance) {
+    val currentProducts = _products.value
+    val newProductWithInstances = ProductWithInstances(
+      product = product,
+      instances = listOf(instance),
+    )
+    _products.value = (currentProducts + newProductWithInstances).toImmutableList()
   }
 
   @OptIn(ExperimentalUuidApi::class)
