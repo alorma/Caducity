@@ -1,7 +1,10 @@
 package com.alorma.caducity.data.datasource
 
+import com.alorma.caducity.data.model.Product
+import com.alorma.caducity.data.model.ProductInstance
 import com.alorma.caducity.data.room.AppDatabase
 import com.alorma.caducity.data.room.toModel
+import com.alorma.caducity.data.room.toRoomEntity
 import com.alorma.caducity.domain.model.ProductWithInstances
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -39,5 +42,10 @@ class RoomProductDataSource(
         roomEntity?.let { Result.success(it.toModel()) }
           ?: Result.failure(NoSuchElementException("Product with id $productId not found"))
       }
+  }
+
+  override suspend fun createProduct(product: Product, instance: ProductInstance) {
+    productDao.insertProduct(product.toRoomEntity())
+    productDao.insertProductInstance(instance.toRoomEntity(product.id))
   }
 }

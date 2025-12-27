@@ -3,6 +3,7 @@ package com.alorma.caducity.di
 import com.alorma.caducity.base.ui.theme.di.themeModule
 import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.domain.domainModule
+import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
 import com.alorma.caducity.time.clock.AppClock
@@ -11,6 +12,7 @@ import com.alorma.caducity.ui.screen.dashboard.DashboardMapper
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfiguration
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfigurationImpl
 import com.alorma.caducity.ui.screen.dashboard.DashboardViewModel
+import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
 import com.alorma.caducity.ui.screen.productdetail.ProductDetailMapper
 import com.alorma.caducity.ui.screen.productdetail.ProductDetailViewModel
 import com.russhwolf.settings.Settings
@@ -38,4 +40,8 @@ val appModule = module {
   singleOf(::ObtainProductDetailUseCase)
   singleOf(::ProductDetailMapper)
   viewModelOf(::ProductDetailViewModel)
+
+  // Create product
+  singleOf(::CreateProductUseCase)
+  viewModelOf(::CreateProductViewModel)
 }
