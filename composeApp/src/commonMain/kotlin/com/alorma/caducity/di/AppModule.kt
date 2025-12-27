@@ -21,6 +21,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val appModule = module {
+  includes(platformModule)
   includes(dataModule)
   includes(domainModule)
 

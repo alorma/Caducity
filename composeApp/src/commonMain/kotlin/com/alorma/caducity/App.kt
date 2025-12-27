@@ -37,7 +37,6 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.theme.AppTheme
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.di.appModule
-import com.alorma.caducity.di.platformModule
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductDialogContent
 import com.alorma.caducity.ui.screen.productdetail.ProductDetailRoute
@@ -53,9 +52,7 @@ fun App(
   modifier: Modifier = Modifier,
 ) {
   KoinApplication(
-    application = {
-      modules(appModule, platformModule)
-    }
+    application = { modules(appModule) }
   ) {
     AppTheme(
       themePreferences = koinInject(),
