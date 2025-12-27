@@ -8,35 +8,48 @@
         android:scaleY="0.8"
         android:translateX="10.8"
         android:translateY="10.8">
-        <!-- Monochrome leaf design -->
+        <!-- Fresh leaf design representing freshness -->
         <!-- Main leaf body -->
         <path
-            android:fillColor="#000000"
+            android:fillColor="#2E7D32"
             android:pathData="M54,25C45,25 38,32 35,40C32,48 30,58 32,68C34,78 40,85 48,88C52,89.5 56,90 60,89C68,87 74,82 77,75C80,68 81,59 79,50C77,41 72,33 65,28C62,26 58,25 54,25Z"
+            android:strokeWidth="0" />
+
+        <!-- Leaf highlight for depth -->
+        <path
+            android:fillColor="#4CAF50"
+            android:fillAlpha="0.7"
+            android:pathData="M54,28C46,28 40,33 37,40C35,46 34,54 36,62C37,66 39,70 42,73C40,65 39,57 40,50C41,43 44,36 49,31C51,29.5 52.5,28.5 54,28Z"
             android:strokeWidth="0" />
 
         <!-- Central vein -->
         <path
-            android:strokeColor="#FFFFFF"
+            android:strokeColor="#1B5E20"
             android:strokeWidth="2"
             android:strokeLineCap="round"
             android:pathData="M54,30L48,85" />
 
         <!-- Side veins -->
         <path
-            android:strokeColor="#FFFFFF"
+            android:strokeColor="#1B5E20"
             android:strokeWidth="1.2"
             android:strokeLineCap="round"
             android:pathData="M50,42L38,48 M50,52L36,60 M49,62L35,72" />
         <path
-            android:strokeColor="#FFFFFF"
+            android:strokeColor="#1B5E20"
             android:strokeWidth="1.2"
             android:strokeLineCap="round"
             android:pathData="M52,42L64,48 M52,52L66,60 M51,62L65,72" />
 
-        <!-- Water droplet -->
+        <!-- Water droplet on leaf for extra freshness -->
         <path
-            android:fillColor="#000000"
+            android:fillColor="#81D4FA"
             android:pathData="M66,40C66,40 63,35 60,35C57,35 54,40 54,40C54,43 56.7,45 60,45C63.3,45 66,43 66,40Z" />
+
+        <!-- Droplet highlight -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:fillAlpha="0.6"
+            android:pathData="M61,37C61,37 60,36 59,36C58.5,36 58,37 58,38C58,39 58.5,39.5 59,39.5C59.5,39.5 61,38.5 61,37Z" />
     </group>
 </vector>
