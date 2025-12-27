@@ -79,7 +79,6 @@ compose-ui-tooling = { group = "org.jetbrains.compose.ui", name = "ui-tooling", 
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-android-library = { id = "com.android.library", version.ref = "agp" }
 android-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 jetbrains-compose-hotreload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose" }

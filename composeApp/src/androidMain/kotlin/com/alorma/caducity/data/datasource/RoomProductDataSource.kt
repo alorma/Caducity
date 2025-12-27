@@ -1,24 +1,43 @@
 package com.alorma.caducity.data.datasource
 
+import com.alorma.caducity.data.room.AppDatabase
+import com.alorma.caducity.data.room.toModel
 import com.alorma.caducity.domain.model.ProductWithInstances
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
-class RoomProductDataSource : ProductDataSource {
+class RoomProductDataSource(
+  private val database: AppDatabase,
+) : ProductDataSource {
 
-  private val _products = MutableStateFlow<ImmutableList<ProductWithInstances>>(persistentListOf())
+  private val productDao = database.productDao()
+  private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-  override val products: StateFlow<ImmutableList<ProductWithInstances>> = _products
+  override val products: StateFlow<ImmutableList<ProductWithInstances>> =
+    productDao.getAllProductsWithInstances()
+      .map { roomEntities ->
+        roomEntities.map { it.toModel() }.toImmutableList()
+      }
+      .stateIn(
+        scope = coroutineScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = persistentListOf()
+      )
 
   override fun getProduct(productId: String): Flow<Result<ProductWithInstances>> {
-    return products.map { productList ->
-      productList.firstOrNull { it.product.id == productId }
-        ?.let { Result.success(it) }
-        ?: Result.failure(NoSuchElementException("Product with id $productId not found"))
-    }
+    return productDao.getProductWithInstances(productId)
+      .map { roomEntity ->
+        roomEntity?.let { Result.success(it.toModel()) }
+          ?: Result.failure(NoSuchElementException("Product with id $productId not found"))
+      }
   }
 }
