@@ -4,12 +4,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -121,6 +124,7 @@ private fun CreateProductPage(
 ) {
   Scaffold(
     modifier = modifier.fillMaxSize(),
+    contentWindowInsets = WindowInsets.systemBars,
     topBar = {
       TopAppBar(
         title = { Text(stringResource(Res.string.create_product_screen_title)) },
@@ -133,6 +137,36 @@ private fun CreateProductPage(
           }
         }
       )
+    },
+    bottomBar = {
+      BottomAppBar {
+        Row(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          TextButton(
+            onClick = onBackClick,
+            enabled = !state.isLoading,
+            modifier = Modifier.weight(1f),
+          ) {
+            Text(stringResource(Res.string.create_product_button_cancel))
+          }
+          Button(
+            onClick = onCreateClick,
+            enabled = !state.isLoading,
+            modifier = Modifier.weight(1f),
+          ) {
+            if (state.isLoading) {
+              CircularProgressIndicator()
+            } else {
+              Text(stringResource(Res.string.create_product_button_create))
+            }
+          }
+        }
+      }
     }
   ) { paddingValues ->
     Column(
@@ -205,33 +239,6 @@ private fun CreateProductPage(
         LaunchedEffect(state.error, onErrorDismiss) {
           kotlinx.coroutines.delay(3000)
           onErrorDismiss()
-        }
-      }
-
-      Spacer(modifier = Modifier.height(8.dp))
-
-      // Action Buttons
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        TextButton(
-          onClick = onBackClick,
-          enabled = !state.isLoading,
-        ) {
-          Text(stringResource(Res.string.create_product_button_cancel))
-        }
-        Spacer(modifier = Modifier.padding(8.dp))
-        Button(
-          onClick = onCreateClick,
-          enabled = !state.isLoading,
-        ) {
-          if (state.isLoading) {
-            CircularProgressIndicator()
-          } else {
-            Text(stringResource(Res.string.create_product_button_create))
-          }
         }
       }
 
