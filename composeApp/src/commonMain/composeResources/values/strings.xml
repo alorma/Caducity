@@ -26,4 +26,24 @@
     <string name="dashboard_section_empty">Empty</string>
 
     <string name="settings_screen_title">Settings</string>
+
+    <string name="settings_group_appearance">Appearance</string>
+    <string name="settings_theme_title">Theme</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_dynamic_colors">Dynamic Colors</string>
+
+    <string name="settings_group_expiration_colors">Expiration Colors</string>
+    <string name="settings_color_scheme_title">Color Scheme</string>
+    <string name="settings_color_scheme_vibrant">Vibrant</string>
+    <string name="settings_color_scheme_harmony">Harmony</string>
+    <string name="settings_color_scheme_grey">Grey</string>
+    <string name="settings_color_scheme_plain">Plain</string>
+    <string name="settings_expiration_legend_fresh">Fresh</string>
+    <string name="settings_expiration_legend_expiring_soon">Expiring Soon</string>
+    <string name="settings_expiration_legend_expired">Expired</string>
+
+    <string name="settings_group_notifications">Notifications</string>
+    <string name="settings_enable_notifications">Enable Notifications</string>
 </resources>

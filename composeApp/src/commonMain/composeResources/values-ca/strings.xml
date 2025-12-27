@@ -26,4 +26,24 @@
     <string name="dashboard_section_empty">Buit</string>
 
     <string  name="settings_screen_title">Configuració</string>
+
+    <string name="settings_group_appearance">Aparença</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_light">Clar</string>
+    <string name="settings_theme_dark">Fosc</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_dynamic_colors">Colors dinàmics</string>
+
+    <string name="settings_group_expiration_colors">Colors de caducitat</string>
+    <string name="settings_color_scheme_title">Esquema de color</string>
+    <string name="settings_color_scheme_vibrant">Vibrant</string>
+    <string name="settings_color_scheme_harmony">Harmonic</string>
+    <string name="settings_color_scheme_grey">Gris</string>
+    <string name="settings_color_scheme_plain">Pla</string>
+    <string name="settings_expiration_legend_fresh">Fresc</string>
+    <string name="settings_expiration_legend_expiring_soon">Pròxim a caducar</string>
+    <string name="settings_expiration_legend_expired">Caducat</string>
+
+    <string name="settings_group_notifications">Notificacions</string>
+    <string name="settings_enable_notifications">Activar notificacions</string>
 </resources>
