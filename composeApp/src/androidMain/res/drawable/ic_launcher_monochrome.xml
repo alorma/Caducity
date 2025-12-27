@@ -3,10 +3,40 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#000000"
-        android:fillType="nonZero"
-        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
-        android:strokeWidth="1"
-        android:strokeColor="#00000000" />
+    <group
+        android:scaleX="0.8"
+        android:scaleY="0.8"
+        android:translateX="10.8"
+        android:translateY="10.8">
+        <!-- Monochrome leaf design -->
+        <!-- Main leaf body -->
+        <path
+            android:fillColor="#000000"
+            android:pathData="M54,25C45,25 38,32 35,40C32,48 30,58 32,68C34,78 40,85 48,88C52,89.5 56,90 60,89C68,87 74,82 77,75C80,68 81,59 79,50C77,41 72,33 65,28C62,26 58,25 54,25Z"
+            android:strokeWidth="0" />
+
+        <!-- Central vein -->
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="2"
+            android:strokeLineCap="round"
+            android:pathData="M54,30L48,85" />
+
+        <!-- Side veins -->
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="1.2"
+            android:strokeLineCap="round"
+            android:pathData="M50,42L38,48 M50,52L36,60 M49,62L35,72" />
+        <path
+            android:strokeColor="#FFFFFF"
+            android:strokeWidth="1.2"
+            android:strokeLineCap="round"
+            android:pathData="M52,42L64,48 M52,52L66,60 M51,62L65,72" />
+
+        <!-- Water droplet -->
+        <path
+            android:fillColor="#000000"
+            android:pathData="M66,40C66,40 63,35 60,35C57,35 54,40 54,40C54,43 56.7,45 60,45C63.3,45 66,43 66,40Z" />
+    </group>
 </vector>

@@ -118,8 +118,17 @@ compose.desktop {
       packageName = "Caducity"
       packageVersion = "1.0.0"
 
+      linux {
+        iconFile.set(project.file("src/desktopMain/resources/icon.png"))
+      }
+
+      windows {
+        iconFile.set(project.file("src/desktopMain/resources/icon.ico"))
+      }
+
       macOS {
         bundleID = "com.alorma.caducity"
+        iconFile.set(project.file("src/desktopMain/resources/icon.icns"))
       }
     }
   }
