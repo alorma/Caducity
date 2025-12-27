@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.productdetail
+package com.alorma.caducity.ui.screen.product.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

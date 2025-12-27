@@ -38,9 +38,10 @@ import com.alorma.caducity.base.ui.theme.AppTheme
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.di.appModule
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
-import com.alorma.caducity.ui.screen.product.create.CreateProductDialogContent
-import com.alorma.caducity.ui.screen.productdetail.ProductDetailRoute
-import com.alorma.caducity.ui.screen.productdetail.ProductDetailScreen
+import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
+import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
+import com.alorma.caducity.ui.screen.product.detail.ProductDetailRoute
+import com.alorma.caducity.ui.screen.product.detail.ProductDetailScreen
 import com.alorma.caducity.ui.screen.settings.SettingsScreen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -88,6 +89,7 @@ fun App(
             topLevelRoutes = topLevelRoutes,
             isRouteSelected = { topLevelBackStack.topLevelKey == it },
             onTopLevelUpdate = { topLevelBackStack.addTopLevel(it) },
+            onCreateProduct = { topLevelBackStack.add(CreateProductRoute) },
           )
         },
       ) { paddingValues ->
@@ -109,11 +111,9 @@ fun App(
               )
             }
             entry<TopLevelRoute.Settings> { SettingsScreen() }
-            entry<TopLevelRoute.CreateProduct>(
-              metadata = BottomSheetSceneStrategy.bottomSheet(),
-            ) {
-              CreateProductDialogContent(
-                onDismiss = { topLevelBackStack.removeLast() }
+            entry<CreateProductRoute> {
+              CreateProductScreen(
+                onBack = { topLevelBackStack.removeLast() }
               )
             }
             entry<ProductDetailRoute> {
@@ -135,6 +135,7 @@ private fun NavigationBar(
   scrollBehaviour: FloatingToolbarScrollBehavior,
   isRouteSelected: (TopLevelRoute) -> Boolean,
   onTopLevelUpdate: (TopLevelRoute) -> Unit,
+  onCreateProduct: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
 
@@ -149,7 +150,7 @@ private fun NavigationBar(
     expanded = true,
     floatingActionButton = {
       FloatingToolbarDefaults.VibrantFloatingActionButton(
-        onClick = { onTopLevelUpdate(TopLevelRoute.CreateProduct) }
+        onClick = onCreateProduct
       ) {
         Icon(imageVector = AppIcons.Add, contentDescription = null)
       }

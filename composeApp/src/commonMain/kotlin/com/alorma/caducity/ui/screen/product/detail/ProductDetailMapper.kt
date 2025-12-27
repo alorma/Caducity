@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.productdetail
+package com.alorma.caducity.ui.screen.product.detail
 
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.usecase.ExpirationThresholds

@@ -15,21 +15,16 @@ sealed interface TopLevelRoute : NavKey {
 
   @Serializable
   data object Settings : TopLevelRoute
-
-  @Serializable
-  data object CreateProduct : TopLevelRoute
 }
 
 @Composable
 fun TopLevelRoute.iconImageVector() = when (this) {
-  TopLevelRoute.CreateProduct -> AppIcons.Add
   TopLevelRoute.Dashboard -> AppIcons.Dashboard
   TopLevelRoute.Settings -> AppIcons.Settings
 }
 
 @Composable
 fun TopLevelRoute.iconContentDescription() = when (this) {
-  TopLevelRoute.CreateProduct -> "Add"
   TopLevelRoute.Dashboard -> "Dashboard"
   TopLevelRoute.Settings -> "Settings"
 }
