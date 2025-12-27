@@ -31,8 +31,8 @@ import com.alorma.caducity.base.ui.theme.ThemeMode
 import com.alorma.caducity.base.ui.theme.ThemePreferences
 import com.alorma.caducity.base.ui.theme.supportsDynamicColors
 import com.alorma.compose.settings.ui.SettingsGroup
-import com.alorma.compose.settings.ui.SettingsSegmented
 import com.alorma.compose.settings.ui.SettingsSwitch
+import com.alorma.compose.settings.ui.expressive.SettingsButtonGroup
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -60,7 +60,7 @@ fun SettingsScreen(
       SettingsGroup(
         title = { Text(text = "Appearance") },
       ) {
-        SettingsSegmented(
+        SettingsButtonGroup(
           title = { Text(text = "Theme") },
           selectedItem = themePreferences.themeMode.value,
           items = ThemeMode.entries,
@@ -85,7 +85,7 @@ fun SettingsScreen(
       SettingsGroup(
         title = { Text(text = "Expiration Colors") },
       ) {
-        SettingsSegmented(
+        SettingsButtonGroup(
           title = { Text(text = "Color Scheme") },
           selectedItem = themePreferences.expirationColorSchemeType.value,
           items = ExpirationColorSchemeType.entries,
