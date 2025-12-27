@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.productdetail
+package com.alorma.caducity.ui.screen.product.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

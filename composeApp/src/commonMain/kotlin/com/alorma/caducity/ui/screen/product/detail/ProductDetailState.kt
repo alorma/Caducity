@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.productdetail
+package com.alorma.caducity.ui.screen.product.detail
 
 sealed interface ProductDetailState {
   data object Loading : ProductDetailState

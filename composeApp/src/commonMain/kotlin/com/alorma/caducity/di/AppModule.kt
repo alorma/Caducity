@@ -13,8 +13,8 @@ import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfiguration
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfigurationImpl
 import com.alorma.caducity.ui.screen.dashboard.DashboardViewModel
 import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
-import com.alorma.caducity.ui.screen.productdetail.ProductDetailMapper
-import com.alorma.caducity.ui.screen.productdetail.ProductDetailViewModel
+import com.alorma.caducity.ui.screen.product.detail.ProductDetailMapper
+import com.alorma.caducity.ui.screen.product.detail.ProductDetailViewModel
 import com.russhwolf.settings.Settings
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
