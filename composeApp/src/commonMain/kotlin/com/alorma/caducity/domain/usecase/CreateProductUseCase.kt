@@ -15,7 +15,7 @@ class CreateProductUseCase(
   suspend fun createProduct(
     name: String,
     description: String,
-    expirationDate: Instant,
+    instances: List<Pair<String, Instant>>,
   ): Result<String> {
     return try {
       val productId = Uuid.random().toString()
@@ -25,14 +25,15 @@ class CreateProductUseCase(
         description = description,
       )
 
-      val instanceId = Uuid.random().toString()
-      val instance = ProductInstance(
-        id = instanceId,
-        identifier = "Instance 1",
-        expirationDate = expirationDate,
-      )
+      val productInstances = instances.map { (identifier, expirationDate) ->
+        ProductInstance(
+          id = Uuid.random().toString(),
+          identifier = identifier,
+          expirationDate = expirationDate,
+        )
+      }
 
-      productDataSource.createProduct(product, instance)
+      productDataSource.createProduct(product, productInstances)
       Result.success(productId)
     } catch (e: Exception) {
       Result.failure(e)

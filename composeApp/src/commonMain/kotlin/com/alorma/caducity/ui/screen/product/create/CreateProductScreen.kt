@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.product.create
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,45 +8,49 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import caducity.composeapp.generated.resources.Res
+import caducity.composeapp.generated.resources.create_product_add_instance
 import caducity.composeapp.generated.resources.create_product_button_cancel
 import caducity.composeapp.generated.resources.create_product_button_create
 import caducity.composeapp.generated.resources.create_product_content_description_back
 import caducity.composeapp.generated.resources.create_product_description_label
 import caducity.composeapp.generated.resources.create_product_description_placeholder
-import caducity.composeapp.generated.resources.create_product_expiration_date_label
-import caducity.composeapp.generated.resources.create_product_expiration_date_placeholder
+import caducity.composeapp.generated.resources.create_product_instance_number
+import caducity.composeapp.generated.resources.create_product_instances_title
 import caducity.composeapp.generated.resources.create_product_name_label
 import caducity.composeapp.generated.resources.create_product_name_placeholder
+import caducity.composeapp.generated.resources.create_product_remove_instance
 import caducity.composeapp.generated.resources.create_product_screen_title
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.time.Instant
 
 @Composable
 fun CreateProductScreen(
@@ -56,19 +59,50 @@ fun CreateProductScreen(
   viewModel: CreateProductViewModel = koinViewModel(),
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
+  var showInstanceBottomSheet by remember { mutableStateOf(false) }
+  var editingInstanceId by remember { mutableStateOf<String?>(null) }
 
   CreateProductPage(
     state = state.value,
     onNameChange = viewModel::updateName,
     onDescriptionChange = viewModel::updateDescription,
-    onExpirationDateChange = viewModel::updateExpirationDate,
-    onShowDatePicker = viewModel::showDatePicker,
-    onHideDatePicker = viewModel::hideDatePicker,
+    onAddInstance = {
+      editingInstanceId = null
+      showInstanceBottomSheet = true
+    },
+    onEditInstance = { instanceId ->
+      editingInstanceId = instanceId
+      showInstanceBottomSheet = true
+    },
+    onRemoveInstance = viewModel::removeInstance,
     onCreateClick = { viewModel.createProduct(onBack) },
     onBackClick = onBack,
     onErrorDismiss = viewModel::clearError,
     modifier = modifier,
   )
+
+  // Instance Bottom Sheet
+  if (showInstanceBottomSheet) {
+    val instance = state.value.instances.firstOrNull { it.id == editingInstanceId }
+
+    CreateInstanceBottomSheet(
+      instanceId = editingInstanceId,
+      instance = instance,
+      onSave = { identifier, expirationDate ->
+        if (editingInstanceId != null) {
+          viewModel.updateInstanceIdentifier(editingInstanceId!!, identifier)
+          viewModel.updateInstanceExpirationDate(editingInstanceId!!, expirationDate)
+        } else {
+          viewModel.addInstance()
+          val newInstance = viewModel.state.value.instances.last()
+          viewModel.updateInstanceIdentifier(newInstance.id, identifier)
+          viewModel.updateInstanceExpirationDate(newInstance.id, expirationDate)
+        }
+        showInstanceBottomSheet = false
+      },
+      onDismiss = { showInstanceBottomSheet = false }
+    )
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,9 +111,9 @@ private fun CreateProductPage(
   state: CreateProductState,
   onNameChange: (String) -> Unit,
   onDescriptionChange: (String) -> Unit,
-  onExpirationDateChange: (LocalDate) -> Unit,
-  onShowDatePicker: () -> Unit,
-  onHideDatePicker: () -> Unit,
+  onAddInstance: () -> Unit,
+  onEditInstance: (String) -> Unit,
+  onRemoveInstance: (String) -> Unit,
   onCreateClick: () -> Unit,
   onBackClick: () -> Unit,
   onErrorDismiss: () -> Unit,
@@ -105,9 +139,12 @@ private fun CreateProductPage(
       modifier = Modifier
         .fillMaxSize()
         .padding(paddingValues)
-        .padding(24.dp),
+        .padding(horizontal = 24.dp)
+        .verticalScroll(rememberScrollState()),
       verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+      Spacer(modifier = Modifier.height(8.dp))
+
       // Product Name Field
       TextField(
         value = state.name,
@@ -130,30 +167,33 @@ private fun CreateProductPage(
         enabled = !state.isLoading,
       )
 
-      // Expiration Date Field
-
-      TextField(
-        modifier = Modifier
-          .fillMaxWidth()
-          .clickable(enabled = !state.isLoading) { onShowDatePicker() },
-        value = state.expirationDateText ?: "",
-        onValueChange = {},
-        label = { Text(stringResource(Res.string.create_product_expiration_date_label)) },
-        placeholder = { Text(stringResource(Res.string.create_product_expiration_date_placeholder)) },
-        enabled = false,
-        readOnly = true,
-        isError = state.error != null,
-        colors = TextFieldDefaults.colors(
-          focusedContainerColor = TextFieldDefaults.colors()
-            .containerColor(enabled = true, isError = false, focused = true),
-          unfocusedContainerColor = TextFieldDefaults.colors()
-            .containerColor(enabled = true, isError = false, focused = true),
-          disabledTextColor = MaterialTheme.colorScheme.onSurface,
-          disabledContainerColor = TextFieldDefaults.colors()
-            .containerColor(enabled = true, isError = false, focused = false),
-          disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+      // Instances Section
+      Text(
+        text = stringResource(Res.string.create_product_instances_title),
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(top = 8.dp)
       )
+
+      // Instance List
+      state.instances.forEachIndexed { index, instance ->
+        ProductInstanceCard(
+          instance = instance,
+          instanceNumber = index + 1,
+          canRemove = state.instances.size > 1,
+          isLoading = state.isLoading,
+          onEdit = { onEditInstance(instance.id) },
+          onRemove = { onRemoveInstance(instance.id) },
+        )
+      }
+
+      // Add Instance Button
+      OutlinedButton(
+        onClick = onAddInstance,
+        modifier = Modifier.fillMaxWidth(),
+        enabled = !state.isLoading,
+      ) {
+        Text(stringResource(Res.string.create_product_add_instance))
+      }
 
       // Error Message
       if (state.error != null) {
@@ -183,7 +223,7 @@ private fun CreateProductPage(
           Text(stringResource(Res.string.create_product_button_cancel))
         }
         Spacer(modifier = Modifier.padding(8.dp))
-        TextButton(
+        Button(
           onClick = onCreateClick,
           enabled = !state.isLoading,
         ) {
@@ -195,37 +235,77 @@ private fun CreateProductPage(
         }
       }
 
-      // Date Picker Dialog
-      if (state.showDatePicker) {
-        val datePickerState = rememberDatePickerState(
-          selectableDates = state.selectableDates
-        )
+      Spacer(modifier = Modifier.height(16.dp))
+    }
+  }
+}
 
-        DatePickerDialog(
-          onDismissRequest = onHideDatePicker,
-          confirmButton = {
-            TextButton(
-              onClick = {
-                datePickerState.selectedDateMillis?.let { millis ->
-                  // Convert epoch millis to LocalDate
-                  val instant = Instant.fromEpochMilliseconds(millis)
-                  val localDateTime = instant.toLocalDateTime(TimeZone.UTC)
-                  onExpirationDateChange(localDateTime.date)
-                }
-                onHideDatePicker()
-              }
-            ) {
-              Text(stringResource(Res.string.create_product_button_create))
-            }
-          },
-          dismissButton = {
-            TextButton(onClick = onHideDatePicker) {
-              Text(stringResource(Res.string.create_product_button_cancel))
-            }
+@Composable
+private fun ProductInstanceCard(
+  instance: ProductInstanceInput,
+  instanceNumber: Int,
+  canRemove: Boolean,
+  isLoading: Boolean,
+  onEdit: () -> Unit,
+  onRemove: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Card(
+    modifier = modifier.fillMaxWidth(),
+    onClick = onEdit,
+    colors = CardDefaults.cardColors(
+      containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+    )
+  ) {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        Text(
+          text = stringResource(
+            resource = Res.string.create_product_instance_number,
+            instanceNumber,
+          ),
+          style = MaterialTheme.typography.titleSmall,
+          color = MaterialTheme.colorScheme.primary,
+        )
+        if (canRemove) {
+          TextButton(
+            onClick = onRemove,
+            enabled = !isLoading,
+          ) {
+            Text(stringResource(Res.string.create_product_remove_instance))
           }
-        ) {
-          DatePicker(state = datePickerState)
         }
+      }
+
+      if (instance.identifier.isNotBlank()) {
+        Text(
+          text = "ID: ${instance.identifier}",
+          style = MaterialTheme.typography.bodyMedium
+        )
+      }
+
+      if (instance.expirationDateText != null) {
+        Text(
+          text = "Expires: ${instance.expirationDateText}",
+          style = MaterialTheme.typography.bodyMedium
+        )
+      }
+
+      if (instance.identifier.isBlank() && instance.expirationDateText == null) {
+        Text(
+          text = "Tap to add details",
+          style = MaterialTheme.typography.bodySmall,
+          color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
       }
     }
   }

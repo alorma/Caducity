@@ -32,11 +32,11 @@ class FakeProductDataSource(
     }
   }
 
-  override suspend fun createProduct(product: Product, instance: ProductInstance) {
+  override suspend fun createProduct(product: Product, instances: List<ProductInstance>) {
     val currentProducts = _products.value
     val newProductWithInstances = ProductWithInstances(
       product = product,
-      instances = listOf(instance),
+      instances = instances,
     )
     _products.value = (currentProducts + newProductWithInstances).toImmutableList()
   }
