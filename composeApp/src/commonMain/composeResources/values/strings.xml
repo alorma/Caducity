@@ -38,8 +38,6 @@
     <string name="settings_color_scheme_title">Color Scheme</string>
     <string name="settings_color_scheme_vibrant">Vibrant</string>
     <string name="settings_color_scheme_harmony">Harmony</string>
-    <string name="settings_color_scheme_grey">Grey</string>
-    <string name="settings_color_scheme_plain">Plain</string>
     <string name="settings_expiration_legend_fresh">Fresh</string>
     <string name="settings_expiration_legend_expiring_soon">Expiring Soon</string>
     <string name="settings_expiration_legend_expired">Expired</string>

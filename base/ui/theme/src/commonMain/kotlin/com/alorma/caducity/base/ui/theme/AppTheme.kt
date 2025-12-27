@@ -128,34 +128,6 @@ private fun rememberExpirationColorScheme(
         onExpired = colorScheme.onPrimary,
       )
     }
-
-    ExpirationColorSchemeType.GREY -> {
-      val baseColor = colorScheme.onSurface
-
-      val freshColor = baseColor.copy(alpha = dims.dim5)
-      val expiringSoonColor = baseColor.copy(alpha = dims.dim4)
-      val expiredColor = baseColor.copy(alpha = dims.dim3)
-
-      ExpirationColorScheme(
-        fresh = freshColor,
-        onFresh = colorScheme.onSurface,
-        expiringSoon = expiringSoonColor,
-        onExpiringSoon = colorScheme.onSurface,
-        expired = expiredColor,
-        onExpired = colorScheme.onSurface,
-      )
-    }
-
-    ExpirationColorSchemeType.PLAIN -> {
-      ExpirationColorScheme(
-        fresh = colorScheme.surfaceContainerLow,
-        onFresh = colorScheme.onSurface,
-        expiringSoon = colorScheme.surfaceContainer,
-        onExpiringSoon = colorScheme.onSurface,
-        expired = colorScheme.surfaceContainerHighest,
-        onExpired = colorScheme.onSurface,
-      )
-    }
   }
 }
 

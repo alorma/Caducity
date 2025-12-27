@@ -38,8 +38,6 @@
     <string name="settings_color_scheme_title">Esquema de color</string>
     <string name="settings_color_scheme_vibrant">Vibrant</string>
     <string name="settings_color_scheme_harmony">Harmonic</string>
-    <string name="settings_color_scheme_grey">Gris</string>
-    <string name="settings_color_scheme_plain">Pla</string>
     <string name="settings_expiration_legend_fresh">Fresc</string>
     <string name="settings_expiration_legend_expiring_soon">Pròxim a caducar</string>
     <string name="settings_expiration_legend_expired">Caducat</string>

@@ -24,9 +24,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.settings_color_scheme_grey
 import caducity.composeapp.generated.resources.settings_color_scheme_harmony
-import caducity.composeapp.generated.resources.settings_color_scheme_plain
 import caducity.composeapp.generated.resources.settings_color_scheme_title
 import caducity.composeapp.generated.resources.settings_color_scheme_vibrant
 import caducity.composeapp.generated.resources.settings_dynamic_colors
@@ -67,8 +65,6 @@ fun SettingsScreen(
 
   val colorSchemeVibrant = stringResource(Res.string.settings_color_scheme_vibrant)
   val colorSchemeHarmony = stringResource(Res.string.settings_color_scheme_harmony)
-  val colorSchemeGrey = stringResource(Res.string.settings_color_scheme_grey)
-  val colorSchemePlain = stringResource(Res.string.settings_color_scheme_plain)
 
   Scaffold(
     modifier = modifier,
@@ -120,8 +116,6 @@ fun SettingsScreen(
             when (schemeType) {
               ExpirationColorSchemeType.VIBRANT -> colorSchemeVibrant
               ExpirationColorSchemeType.HARMONIZE -> colorSchemeHarmony
-              ExpirationColorSchemeType.GREY -> colorSchemeGrey
-              ExpirationColorSchemeType.PLAIN -> colorSchemePlain
             }
           },
           onItemSelected = { themePreferences.setExpirationColorSchemeType(it) },
