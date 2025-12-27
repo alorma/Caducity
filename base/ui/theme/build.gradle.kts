@@ -27,11 +27,6 @@ kotlin {
     minSdk = libs.versions.android.minSdk.get().toInt()
   }
 
-  js {
-    browser()
-    binaries.executable()
-  }
-
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     browser()
