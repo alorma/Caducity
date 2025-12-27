@@ -61,10 +61,10 @@ kotlin {
       implementation(project(":base:ui:theme"))
       implementation(project(":base:ui:icons"))
 
-      implementation(compose.runtime)
-      implementation(compose.ui)
-      implementation(compose.foundation)
-      implementation(compose.components.resources)
+      implementation(libs.compose.runtime)
+      implementation(libs.compose.ui)
+      implementation(libs.compose.foundation)
+      implementation(libs.compose.components.resources)
 
       implementation(libs.compose.material3)
 
@@ -92,7 +92,7 @@ kotlin {
 
       implementation(libs.kalendar)
 
-      implementation(compose.components.uiToolingPreview)
+      implementation(libs.compose.ui.tooling.preview)
     }
     androidMain.dependencies {
       implementation(libs.androidx.activitycompose)
@@ -102,7 +102,7 @@ kotlin {
       implementation(libs.androidx.sqlite.bundled)
       implementation(libs.androidx.room.sqlite.wrapper)
 
-      implementation(compose.uiTooling)
+      implementation(libs.compose.ui.tooling)
     }
     val desktopMain by getting {
       dependencies {
