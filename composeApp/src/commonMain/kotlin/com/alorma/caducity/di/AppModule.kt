@@ -1,7 +1,5 @@
 package com.alorma.caducity.di
 
-import com.alorma.caducity.base.ui.theme.ThemePreferences
-import com.alorma.caducity.base.ui.theme.ThemePreferencesImpl
 import com.alorma.caducity.base.ui.theme.di.themeModule
 import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.domain.domainModule
