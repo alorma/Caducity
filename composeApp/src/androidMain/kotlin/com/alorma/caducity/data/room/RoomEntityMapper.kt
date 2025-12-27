@@ -3,7 +3,7 @@ package com.alorma.caducity.data.room
 import com.alorma.caducity.data.model.Product
 import com.alorma.caducity.data.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 fun ProductRoomEntity.toModel(): Product {
   return Product(
