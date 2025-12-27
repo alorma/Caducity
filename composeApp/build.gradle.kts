@@ -92,9 +92,10 @@ kotlin {
       implementation(libs.kalendar)
 
       implementation(libs.compose.ui.tooling.preview)
-      implementation(libs.compose.ui.tooling)
     }
     androidMain.dependencies {
+      implementation(libs.compose.ui.tooling)
+
       implementation(libs.androidx.activitycompose)
 
       implementation(libs.androidx.room.runtime)
