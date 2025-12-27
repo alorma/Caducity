@@ -192,7 +192,9 @@ private fun CreateProductPage(
 
       // Date Picker Dialog
       if (state.showDatePicker) {
-        val datePickerState = rememberDatePickerState()
+        val datePickerState = rememberDatePickerState(
+          selectableDates = state.selectableDates
+        )
 
         DatePickerDialog(
           onDismissRequest = onHideDatePicker,

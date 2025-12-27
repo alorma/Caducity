@@ -4,12 +4,15 @@ import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.time.clock.AppClock
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.toLocalDateTime
 
 class ProductDetailMapper(
   private val appClock: AppClock,
   private val expirationThresholds: ExpirationThresholds,
+  private val dateFormat: DateTimeFormat<LocalDate>,
 ) {
   fun mapToProductDetail(productWithInstances: ProductWithInstances): ProductDetailUiModel {
     val now = appClock.now()
@@ -37,7 +40,7 @@ class ProductDetailMapper(
           expirationDate > today && expirationDate < expiringSoonDate -> InstanceStatus.ExpiringSoon
           else -> InstanceStatus.Fresh
         },
-        expirationDate = expirationDate,
+        expirationDate = dateFormat.format(expirationDate),
       )
     }
 
