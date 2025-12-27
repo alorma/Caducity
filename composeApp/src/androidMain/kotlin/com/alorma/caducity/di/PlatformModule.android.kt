@@ -5,7 +5,6 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.alorma.caducity.data.datasource.ProductDataSource
 import com.alorma.caducity.data.datasource.RoomProductDataSource
 import com.alorma.caducity.data.room.AppDatabase
-import com.alorma.caducity.data.room.DatabaseCallback
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
@@ -21,7 +20,7 @@ actual val platformModule = module {
     )
       .setDriver(BundledSQLiteDriver())
       .setQueryCoroutineContext(Dispatchers.IO)
-      .addCallback(DatabaseCallback())
+//      .addCallback(DatabaseCallback())
       .build()
   }
 
