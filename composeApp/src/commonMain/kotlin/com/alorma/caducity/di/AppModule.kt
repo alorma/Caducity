@@ -16,6 +16,8 @@ import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailMapper
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailViewModel
 import com.russhwolf.settings.Settings
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format.DateTimeFormat
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
@@ -44,4 +46,14 @@ val appModule = module {
   // Create product
   singleOf(::CreateProductUseCase)
   viewModelOf(::CreateProductViewModel)
+
+  single<DateTimeFormat<LocalDate>> {
+    LocalDate.Format {
+      day()
+      chars("/")
+      monthNumber()
+      chars("/")
+      year()
+    }
+  }
 }

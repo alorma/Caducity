@@ -14,7 +14,7 @@ sealed interface ProductUiModel {
     override val id: String,
     override val name: String,
     override val description: String,
-    val today: LocalDate,
+    val today: String,
     val instances: List<ProductInstanceUiModel>,
   ) : ProductUiModel
 
@@ -31,7 +31,7 @@ data class ProductInstanceUiModel(
   val id: String,
   val identifier: String,
   val status: InstanceStatus,
-  val expirationDate: LocalDate,
+  val expirationDate: String,
 )
 
 sealed class InstanceStatus {

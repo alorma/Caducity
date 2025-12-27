@@ -46,4 +46,15 @@
 
     <string name="settings_group_notifications">Notificacions</string>
     <string name="settings_enable_notifications">Activar notificacions</string>
+
+    <string name="create_product_screen_title">Crear Producte</string>
+    <string name="create_product_name_label">Nom del Producte</string>
+    <string name="create_product_name_placeholder">Introdueix el nom del producte</string>
+    <string name="create_product_description_label">Descripció</string>
+    <string name="create_product_description_placeholder">Introdueix la descripció</string>
+    <string name="create_product_expiration_date_label">Data de Caducitat</string>
+    <string name="create_product_expiration_date_placeholder">DD/MM/AAAA</string>
+    <string name="create_product_button_cancel">Cancel·lar</string>
+    <string name="create_product_button_create">Crear</string>
+    <string name="create_product_content_description_back">Enrere</string>
 </resources>

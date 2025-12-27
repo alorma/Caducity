@@ -5,12 +5,15 @@ import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.time.clock.AppClock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.toLocalDateTime
 
 class DashboardMapper(
   private val appClock: AppClock,
   private val expirationThresholds: ExpirationThresholds,
+  private val dateFormat: DateTimeFormat<LocalDate>,
 ) {
   fun mapToDashboardSections(
     products: ImmutableList<ProductWithInstances>,
@@ -67,7 +70,7 @@ class DashboardMapper(
       id = product.id,
       name = product.name,
       description = product.description,
-      today = today,
+      today = dateFormat.format(today),
       instances = instances.map { instance ->
         val expirationDate = instance
           .expirationDate
@@ -84,7 +87,7 @@ class DashboardMapper(
           } else {
             InstanceStatus.Fresh
           },
-          expirationDate = expirationDate,
+          expirationDate = dateFormat.format(expirationDate),
         )
       }
     )
