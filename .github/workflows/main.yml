@@ -42,6 +42,14 @@ jobs:
         continue-on-error: false
         run: ./gradlew :composeApp:${{ matrix.config.tasks }}
 
+      - name: Upload APK artifact
+        if: matrix.config.target == 'android'
+        uses: actions/upload-artifact@v4
+        with:
+          name: caducity-debug-apk
+          path: composeApp/build/outputs/apk/debug/*.apk
+          retention-days: 5
+
   # Deployment job
   deploy:
     name: Deploy to Github pages
