@@ -85,21 +85,21 @@ private fun rememberExpirationColorScheme(
     }
 
     ExpirationColorSchemeType.HARMONIZE -> {
+      val baseColor = colorScheme.primary
+      val baseAlpha = dims.dim3
+
       // Hue values: Green ~120°, Orange ~30°, Red ~0°
-      val freshColor = colorScheme.primary
+      val freshColor = baseColor
         .shiftHueTowards(targetHue = 120f, amount = 1.0f)
-        .copy(alpha = dims.dim3)
-        .compositeOver(colorScheme.surface)
+        .copy(alpha = baseAlpha)
 
-      val expiringSoonColor = colorScheme.primary
+      val expiringSoonColor = baseColor
         .shiftHueTowards(targetHue = 30f, amount = 1.0f)
-        .copy(alpha = dims.dim2)
-        .compositeOver(colorScheme.surface)
+        .copy(alpha = baseAlpha)
 
-      val expiredColor = colorScheme.primary
+      val expiredColor = baseColor
         .shiftHueTowards(targetHue = 0f, amount = 1.0f)
-        .copy(alpha = dims.dim1)
-        .compositeOver(colorScheme.surface)
+        .copy(alpha = baseAlpha)
 
       ExpirationColorScheme(
         fresh = freshColor,
@@ -112,9 +112,11 @@ private fun rememberExpirationColorScheme(
     }
 
     ExpirationColorSchemeType.GREY -> {
-      val freshColor = colorScheme.surfaceContainerLowest
-      val expiringSoonColor = colorScheme.surfaceContainerHigh
-      val expiredColor = colorScheme.surfaceContainerHighest
+      val baseColor = colorScheme.onSurface
+
+      val freshColor = baseColor.copy(alpha = dims.dim5)
+      val expiringSoonColor = baseColor.copy(alpha = dims.dim4)
+      val expiredColor = baseColor.copy(alpha = dims.dim3)
 
       ExpirationColorScheme(
         fresh = freshColor,
@@ -122,6 +124,17 @@ private fun rememberExpirationColorScheme(
         expiringSoon = expiringSoonColor,
         onExpiringSoon = colorScheme.onSurface,
         expired = expiredColor,
+        onExpired = colorScheme.onSurface,
+      )
+    }
+
+    ExpirationColorSchemeType.PLAIN -> {
+      ExpirationColorScheme(
+        fresh = colorScheme.surfaceContainerLow,
+        onFresh = colorScheme.onSurface,
+        expiringSoon = colorScheme.surfaceContainer,
+        onExpiringSoon = colorScheme.onSurface,
+        expired = colorScheme.surfaceContainerHighest,
         onExpired = colorScheme.onSurface,
       )
     }

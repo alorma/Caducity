@@ -26,4 +26,24 @@
     <string name="dashboard_section_empty">Vacío</string>
 
     <string  name="settings_screen_title">Configuración</string>
+
+    <string name="settings_group_appearance">Apariencia</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Oscuro</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_dynamic_colors">Colores dinámicos</string>
+
+    <string name="settings_group_expiration_colors">Colores de caducidad</string>
+    <string name="settings_color_scheme_title">Esquema de color</string>
+    <string name="settings_color_scheme_vibrant">Vibrante</string>
+    <string name="settings_color_scheme_harmony">Armonico</string>
+    <string name="settings_color_scheme_grey">Gris</string>
+    <string name="settings_color_scheme_plain">Plano</string>
+    <string name="settings_expiration_legend_fresh">Fresco</string>
+    <string name="settings_expiration_legend_expiring_soon">Próximo a caducar</string>
+    <string name="settings_expiration_legend_expired">Caducado</string>
+
+    <string name="settings_group_notifications">Notificaciones</string>
+    <string name="settings_enable_notifications">Activar notificaciones</string>
 </resources>

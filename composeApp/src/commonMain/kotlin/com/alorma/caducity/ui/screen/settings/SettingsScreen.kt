@@ -24,7 +24,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import caducity.composeapp.generated.resources.Res
+import caducity.composeapp.generated.resources.settings_color_scheme_grey
+import caducity.composeapp.generated.resources.settings_color_scheme_harmony
+import caducity.composeapp.generated.resources.settings_color_scheme_plain
+import caducity.composeapp.generated.resources.settings_color_scheme_title
+import caducity.composeapp.generated.resources.settings_color_scheme_vibrant
+import caducity.composeapp.generated.resources.settings_dynamic_colors
+import caducity.composeapp.generated.resources.settings_enable_notifications
+import caducity.composeapp.generated.resources.settings_expiration_legend_expired
+import caducity.composeapp.generated.resources.settings_expiration_legend_expiring_soon
+import caducity.composeapp.generated.resources.settings_expiration_legend_fresh
+import caducity.composeapp.generated.resources.settings_group_appearance
+import caducity.composeapp.generated.resources.settings_group_expiration_colors
+import caducity.composeapp.generated.resources.settings_group_notifications
 import caducity.composeapp.generated.resources.settings_screen_title
+import caducity.composeapp.generated.resources.settings_theme_dark
+import caducity.composeapp.generated.resources.settings_theme_light
+import caducity.composeapp.generated.resources.settings_theme_system
+import caducity.composeapp.generated.resources.settings_theme_title
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.ExpirationColorSchemeType
 import com.alorma.caducity.base.ui.theme.ThemeMode
@@ -43,6 +60,16 @@ fun SettingsScreen(
   val themePreferences = koinInject<ThemePreferences>()
   var notificationsEnabled by remember { mutableStateOf(true) }
 
+  // Load all string resources at composable level
+  val themeLight = stringResource(Res.string.settings_theme_light)
+  val themeDark = stringResource(Res.string.settings_theme_dark)
+  val themeSystem = stringResource(Res.string.settings_theme_system)
+
+  val colorSchemeVibrant = stringResource(Res.string.settings_color_scheme_vibrant)
+  val colorSchemeHarmony = stringResource(Res.string.settings_color_scheme_harmony)
+  val colorSchemeGrey = stringResource(Res.string.settings_color_scheme_grey)
+  val colorSchemePlain = stringResource(Res.string.settings_color_scheme_plain)
+
   Scaffold(
     modifier = modifier,
     topBar = {
@@ -58,24 +85,24 @@ fun SettingsScreen(
       verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       SettingsGroup(
-        title = { Text(text = "Appearance") },
+        title = { Text(text = stringResource(Res.string.settings_group_appearance)) },
       ) {
         SettingsButtonGroup(
-          title = { Text(text = "Theme") },
+          title = { Text(text = stringResource(Res.string.settings_theme_title)) },
           selectedItem = themePreferences.themeMode.value,
           items = ThemeMode.entries,
           itemTitleMap = { themeMode ->
             when (themeMode) {
-              ThemeMode.LIGHT -> "Light"
-              ThemeMode.DARK -> "Dark"
-              ThemeMode.SYSTEM -> "System"
+              ThemeMode.LIGHT -> themeLight
+              ThemeMode.DARK -> themeDark
+              ThemeMode.SYSTEM -> themeSystem
             }
           },
           onItemSelected = { themePreferences.setThemeModeState(it) },
         )
         if (supportsDynamicColors()) {
           SettingsSwitch(
-            title = { Text(text = "Dynamic Colors") },
+            title = { Text(text = stringResource(Res.string.settings_dynamic_colors)) },
             state = themePreferences.useDynamicColors.value,
             onCheckedChange = { themePreferences.setDynamicColorsEnabled(it) },
           )
@@ -83,17 +110,18 @@ fun SettingsScreen(
       }
 
       SettingsGroup(
-        title = { Text(text = "Expiration Colors") },
+        title = { Text(text = stringResource(Res.string.settings_group_expiration_colors)) },
       ) {
         SettingsButtonGroup(
-          title = { Text(text = "Color Scheme") },
+          title = { Text(text = stringResource(Res.string.settings_color_scheme_title)) },
           selectedItem = themePreferences.expirationColorSchemeType.value,
           items = ExpirationColorSchemeType.entries,
           itemTitleMap = { schemeType ->
             when (schemeType) {
-              ExpirationColorSchemeType.VIBRANT -> "Vibrant"
-              ExpirationColorSchemeType.HARMONIZE -> "Harmonize"
-              ExpirationColorSchemeType.GREY -> "Grey"
+              ExpirationColorSchemeType.VIBRANT -> colorSchemeVibrant
+              ExpirationColorSchemeType.HARMONIZE -> colorSchemeHarmony
+              ExpirationColorSchemeType.GREY -> colorSchemeGrey
+              ExpirationColorSchemeType.PLAIN -> colorSchemePlain
             }
           },
           onItemSelected = { themePreferences.setExpirationColorSchemeType(it) },
@@ -102,10 +130,10 @@ fun SettingsScreen(
       }
 
       SettingsGroup(
-        title = { Text(text = "Notifications") },
+        title = { Text(text = stringResource(Res.string.settings_group_notifications)) },
       ) {
         SettingsSwitch(
-          title = { Text(text = "Enable Notifications") },
+          title = { Text(text = stringResource(Res.string.settings_enable_notifications)) },
           state = notificationsEnabled,
           onCheckedChange = { notificationsEnabled = it },
         )
@@ -125,15 +153,15 @@ private fun ExpirationColorLegend() {
     verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {
     ColorLegendItem(
-      label = "Fresh",
+      label = stringResource(Res.string.settings_expiration_legend_fresh),
       color = expirationColors.fresh,
     )
     ColorLegendItem(
-      label = "Expiring Soon",
+      label = stringResource(Res.string.settings_expiration_legend_expiring_soon),
       color = expirationColors.expiringSoon,
     )
     ColorLegendItem(
-      label = "Expired",
+      label = stringResource(Res.string.settings_expiration_legend_expired),
       color = expirationColors.expired,
     )
   }
