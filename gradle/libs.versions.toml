@@ -51,6 +51,7 @@ multiplatform-settings = { group = "com.russhwolf", name = "multiplatform-settin
 multiplatform-settings-no-arg = { group = "com.russhwolf", name = "multiplatform-settings-no-arg", version.ref = "multiplatform-settings" }
 alorma-settings-ui-tiles = { group = "com.github.alorma.compose-settings", name = "ui-tiles", version.ref = "uiTiles" }
 alorma-settings-ui-tiles-extended = { group = "com.github.alorma.compose-settings", name = "ui-tiles-extended", version.ref = "uiTiles" }
+alorma-settings-ui-tiles-expressive = { group = "com.github.alorma.compose-settings", name = "ui-tiles-expressive", version.ref = "uiTiles" }
 
 koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin" }
 koin-core = { group = "io.insert-koin", name = "koin-core" }

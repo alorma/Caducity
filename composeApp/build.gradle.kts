@@ -80,6 +80,7 @@ kotlin {
       implementation(libs.multiplatform.settings.no.arg)
       implementation(libs.alorma.settings.ui.tiles)
       implementation(libs.alorma.settings.ui.tiles.extended)
+      implementation(libs.alorma.settings.ui.tiles.expressive)
 
       // Koin
       implementation(project.dependencies.platform(libs.koin.bom))
