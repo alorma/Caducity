@@ -7,7 +7,6 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.compositeOver
 
 data class CaducityColors(
   val colorScheme: ColorScheme,
@@ -16,34 +15,11 @@ data class CaducityColors(
   companion object {
     fun fromColorScheme(
       colorScheme: ColorScheme,
-      dims: CaducityDims,
+      expirationColorScheme: ExpirationColorScheme,
     ): CaducityColors {
-      // Hue values: Green ~120°, Orange ~30°, Red ~0°
-      val freshColor = colorScheme.primary
-        .shiftHueTowards(targetHue = 120f, amount = 1.0f)
-        .copy(alpha = dims.dim3)
-        .compositeOver(colorScheme.surface)
-
-      val expiringSoonColor = colorScheme.primary
-        .shiftHueTowards(targetHue = 30f, amount = 1.0f)
-        .copy(alpha = dims.dim2)
-        .compositeOver(colorScheme.surface)
-
-      val expiredColor = colorScheme.primary
-        .shiftHueTowards(targetHue = 0f, amount = 1.0f)
-        .copy(alpha = dims.dim1)
-        .compositeOver(colorScheme.surface)
-
       return CaducityColors(
         colorScheme = colorScheme,
-        expirationColorScheme = ExpirationColorScheme(
-          fresh = freshColor,
-          onFresh = colorScheme.onPrimary,
-          expiringSoon = expiringSoonColor,
-          onExpiringSoon = colorScheme.onPrimary,
-          expired = expiredColor,
-          onExpired = colorScheme.onPrimary,
-        ),
+        expirationColorScheme = expirationColorScheme,
       )
     }
   }
