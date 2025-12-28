@@ -49,6 +49,7 @@ import org.koin.compose.koinInject
 @Composable
 fun App(
   modifier: Modifier = Modifier,
+  showExpiringOnly: Boolean = false,
 ) {
   AppTheme(
     themePreferences = koinInject(),
@@ -101,6 +102,7 @@ fun App(
         entryProvider = entryProvider {
           entry<TopLevelRoute.Dashboard> {
             DashboardScreen(
+              showExpiringOnly = showExpiringOnly,
               onNavigateToProductDetail = { productId ->
                 topLevelBackStack.add(ProductDetailRoute(productId))
               }

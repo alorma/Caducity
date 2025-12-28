@@ -16,25 +16,24 @@ class DashboardViewModel(
   private val dashboardMapper: DashboardMapper,
 ) : ViewModel() {
 
-  val state: StateFlow<DashboardState> =
-    combine(
-      obtainDashboardProductsUseCase.obtainProducts(),
-      dashboardUiConfiguration.config,
-    ) { products, config ->
-      val sections = dashboardMapper.mapToDashboardSections(
-        products = products,
-        searchQuery = config.searchQuery,
-        statusFilters = config.statusFilters,
-      )
-      DashboardState.Success(
-        items = sections,
-        config = config,
-      )
-    }.stateIn(
-      scope = viewModelScope,
-      started = SharingStarted.WhileSubscribed(5.seconds),
-      initialValue = DashboardState.Loading,
+  val state: StateFlow<DashboardState> = combine(
+    obtainDashboardProductsUseCase.obtainProducts(),
+    dashboardUiConfiguration.config,
+  ) { products, config ->
+    val sections = dashboardMapper.mapToDashboardSections(
+      products = products,
+      searchQuery = config.searchQuery,
+      statusFilters = config.statusFilters,
     )
+    DashboardState.Success(
+      items = sections,
+      config = config,
+    )
+  }.stateIn(
+    scope = viewModelScope,
+    started = SharingStarted.WhileSubscribed(5.seconds),
+    initialValue = DashboardState.Loading,
+  )
 
   fun toggleExpanded(collapsed: Boolean) {
     dashboardUiConfiguration.updateCollapse(collapsed)

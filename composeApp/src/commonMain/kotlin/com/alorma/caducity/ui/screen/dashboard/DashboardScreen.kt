@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -50,9 +51,16 @@ import org.koin.compose.viewmodel.koinViewModel
 fun DashboardScreen(
   onNavigateToProductDetail: (String) -> Unit,
   modifier: Modifier = Modifier,
+  showExpiringOnly: Boolean = false,
   viewModel: DashboardViewModel = koinViewModel()
 ) {
   val dashboardState = viewModel.state.collectAsStateWithLifecycle()
+
+  // TODO: Implement automatic filtering when showExpiringOnly is true
+  // This would require either:
+  // 1. Adding InstanceStatus enum values for expiring products
+  // 2. Or updating the filtering logic to support expiring products
+  // For now, the notification will just open the dashboard
 
   when (val state = dashboardState.value) {
     is DashboardState.Loading -> {
