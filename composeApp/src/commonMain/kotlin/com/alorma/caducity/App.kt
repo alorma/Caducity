@@ -103,12 +103,17 @@ fun App(
           entry<TopLevelRoute.Dashboard> {
             DashboardScreen(
               showExpiringOnly = showExpiringOnly,
+              scrollConnection = exitAlwaysScrollBehavior,
               onNavigateToProductDetail = { productId ->
                 topLevelBackStack.add(ProductDetailRoute(productId))
               }
             )
           }
-          entry<TopLevelRoute.Settings> { SettingsScreen() }
+          entry<TopLevelRoute.Settings> {
+            SettingsScreen(
+              scrollConnection = exitAlwaysScrollBehavior
+            )
+          }
           entry<CreateProductRoute> {
             CreateProductScreen(
               onBack = { topLevelBackStack.removeLast() }

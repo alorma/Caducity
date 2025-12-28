@@ -27,6 +27,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import caducity.composeapp.generated.resources.Res
@@ -51,6 +53,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun DashboardScreen(
   onNavigateToProductDetail: (String) -> Unit,
+  scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
   showExpiringOnly: Boolean = false,
   viewModel: DashboardViewModel = koinViewModel { parametersOf(showExpiringOnly) }
@@ -75,6 +78,7 @@ fun DashboardScreen(
 
     is DashboardState.Success -> DashboardContent(
       state = state,
+      scrollConnection = scrollConnection,
       onToggleExpand = viewModel::toggleExpanded,
       onSearchQueryChange = viewModel::updateSearchQuery,
       onStatusFiltersChange = viewModel::updateStatusFilters,
@@ -87,6 +91,7 @@ fun DashboardScreen(
 @Composable
 fun DashboardContent(
   state: DashboardState.Success,
+  scrollConnection: NestedScrollConnection,
   onToggleExpand: (Boolean) -> Unit,
   onSearchQueryChange: (String) -> Unit,
   onStatusFiltersChange: (Set<InstanceStatus>) -> Unit,
@@ -94,7 +99,9 @@ fun DashboardContent(
   modifier: Modifier = Modifier,
 ) {
   Scaffold(
-    modifier = modifier,
+    modifier = Modifier
+      .nestedScroll(scrollConnection)
+      .then(modifier),
     topBar = {
       TopAppBar(
         title = {
