@@ -9,12 +9,6 @@ import kotlinx.datetime.LocalTime
  */
 class FakeNotificationConfigDataSource : NotificationConfigDataSource {
   /**
-   * Hardcoded to 3 days before expiration.
-   * In future, this will be configurable by the user via settings.
-   */
-  override suspend fun getExpirationThresholdDays(): Int = 3
-
-  /**
    * Hardcoded to 9:00 AM.
    * In future, this will be configurable by the user via settings.
    */

@@ -56,11 +56,12 @@ Implement a notification system to alert users when products are approaching the
 ### 3. Create Notification Configuration DataSource
 **New Files**:
 - `composeApp/src/commonMain/kotlin/com/alorma/caducity/data/datasource/NotificationConfigDataSource.kt` (interface)
-  - Methods: `getExpirationThresholdDays()`, `getNotificationTime()`, `isNotificationsEnabled()`
+  - Methods: `getNotificationTime()`, `isNotificationsEnabled()`
+  - Note: Expiration threshold is handled by existing `ExpirationThresholds` interface (currently 4 days)
 
 - `composeApp/src/androidMain/kotlin/com/alorma/caducity/data/datasource/FakeNotificationConfigDataSource.kt` (implementation)
-  - Hardcode 3 days threshold for now
   - Hardcode 9 AM notification time
+  - Hardcode notifications enabled = true
 
 **DI Integration**:
 - Register in `platformModule` (androidMain/di/PlatformModule.android.kt)
@@ -90,9 +91,9 @@ Implement a notification system to alert users when products are approaching the
 ### 6. Create UseCase for Expiring Products
 **New File**: `composeApp/src/commonMain/kotlin/com/alorma/caducity/domain/usecase/GetExpiringProductsUseCase.kt`
 - Query products from `ProductDataSource`
-- Filter by expiration date threshold (from config datasource)
+- Filter by expiration date threshold (from `ExpirationThresholds` - currently 4 days)
 - Use `AppClock` for current time comparison
-- Return `Flow<List<ProductWithInstances>>` or suspend function
+- Return `List<ProductWithInstances>` (suspend function)
 
 **DI Integration**:
 - Register in `appModule`
