@@ -45,7 +45,9 @@ import com.alorma.caducity.base.ui.theme.ExpirationColorSchemeType
 import com.alorma.caducity.base.ui.theme.ThemeMode
 import com.alorma.caducity.base.ui.theme.ThemePreferences
 import com.alorma.caducity.base.ui.theme.supportsDynamicColors
+import com.alorma.caducity.notification.NotificationDebugHelper
 import com.alorma.compose.settings.ui.SettingsGroup
+import com.alorma.compose.settings.ui.SettingsMenuLink
 import com.alorma.compose.settings.ui.SettingsSwitch
 import com.alorma.compose.settings.ui.expressive.SettingsButtonGroup
 import org.jetbrains.compose.resources.stringResource
@@ -56,6 +58,7 @@ fun SettingsScreen(
   modifier: Modifier = Modifier,
 ) {
   val themePreferences = koinInject<ThemePreferences>()
+  val debugHelper = koinInject<NotificationDebugHelper>()
   var notificationsEnabled by remember { mutableStateOf(true) }
 
   // Load all string resources at composable level
@@ -130,6 +133,11 @@ fun SettingsScreen(
           title = { Text(text = stringResource(Res.string.settings_enable_notifications)) },
           state = notificationsEnabled,
           onCheckedChange = { notificationsEnabled = it },
+        )
+        SettingsMenuLink(
+          title = { Text(text = "Test Notification (Debug)") },
+          subtitle = { Text(text = "Trigger notification check immediately") },
+          onClick = { debugHelper.triggerImmediateCheck() },
         )
       }
     }

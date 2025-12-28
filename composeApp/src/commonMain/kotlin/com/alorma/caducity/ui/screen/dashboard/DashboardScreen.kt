@@ -46,21 +46,16 @@ import com.alorma.caducity.ui.screen.dashboard.product.ProductItem
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun DashboardScreen(
   onNavigateToProductDetail: (String) -> Unit,
   modifier: Modifier = Modifier,
   showExpiringOnly: Boolean = false,
-  viewModel: DashboardViewModel = koinViewModel()
+  viewModel: DashboardViewModel = koinViewModel { parametersOf(showExpiringOnly) }
 ) {
   val dashboardState = viewModel.state.collectAsStateWithLifecycle()
-
-  // TODO: Implement automatic filtering when showExpiringOnly is true
-  // This would require either:
-  // 1. Adding InstanceStatus enum values for expiring products
-  // 2. Or updating the filtering logic to support expiring products
-  // For now, the notification will just open the dashboard
 
   when (val state = dashboardState.value) {
     is DashboardState.Loading -> {

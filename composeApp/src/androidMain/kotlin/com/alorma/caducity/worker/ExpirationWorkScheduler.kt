@@ -67,4 +67,18 @@ class ExpirationWorkScheduler(
     WorkManager.getInstance(context).cancelUniqueWork(ExpirationCheckWorker.WORK_NAME)
     Log.d(TAG, "Expiration check work cancelled")
   }
+
+  /**
+   * Triggers an immediate expiration check for testing purposes.
+   * This will run the worker immediately without waiting for the scheduled time.
+   */
+  fun triggerImmediateCheck() {
+    Log.d(TAG, "Triggering immediate expiration check...")
+
+    val workRequest = androidx.work.OneTimeWorkRequestBuilder<ExpirationCheckWorker>()
+      .build()
+
+    WorkManager.getInstance(context).enqueue(workRequest)
+    Log.d(TAG, "Immediate expiration check enqueued")
+  }
 }
