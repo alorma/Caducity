@@ -4,18 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Caducity is a Kotlin Multiplatform grocery expiration tracker application built with Compose Multiplatform. The app helps users track their groceries and avoid food waste by monitoring expiration dates across multiple platforms (Android, Desktop, JS, WebAssembly).
+Caducity is a Kotlin Multiplatform grocery expiration tracker application built with Compose Multiplatform. The app helps users track their groceries and avoid food waste by monitoring expiration dates. Currently focused on Android, but maintains multiplatform structure for potential future expansion.
 
 ## Technology Stack
 
 - **Language**: Kotlin 2.2.21
 - **UI Framework**: Jetpack Compose Multiplatform (v1.10.0-rc01) with Material 3 Expressive API
-- **Target Platforms**: Android (minSdk 34), Desktop (JVM 11), JS (browser), WebAssembly
+- **Target Platform**: Android (minSdk 34)
 - **Architecture**: MVI/MVVM with Compose state management
 - **Navigation**: Jetpack Navigation 3 (alpha06)
 - **Dependency Injection**: Koin 4.1.1
 - **Build System**: Gradle with Kotlin DSL
-- **Database**: Room (Android only, currently in planning phase)
+- **Database**: Room
 - **Date/Time**: kotlinx-datetime 0.7.1
 
 ## Build Commands
@@ -25,26 +25,16 @@ Caducity is a Kotlin Multiplatform grocery expiration tracker application built 
 # Clean build
 ./gradlew clean build
 
-# Build specific platforms
+# Android builds
 ./gradlew assembleDebug              # Android debug build
 ./gradlew assembleRelease            # Android release build
-./gradlew :composeApp:run            # Run desktop app
-./gradlew jsBrowserDevelopmentRun    # Run JS dev server (http://localhost:8080)
-./gradlew wasmJsBrowserDevelopmentRun # Run WASM dev server
 ```
 
 ### Testing
 ```bash
-# Run all tests
-./gradlew allTests
-
 # Android tests
 ./gradlew connectedDebugAndroidTest  # Requires connected device/emulator
 ./gradlew testDebugUnitTest          # Unit tests only
-
-# JS/WASM tests
-./gradlew jsTest
-./gradlew wasmJsTest
 ```
 
 ### Compose Hot Reload
@@ -59,18 +49,6 @@ Caducity is a Kotlin Multiplatform grocery expiration tracker application built 
 ./gradlew installDebug    # Debug variant
 ./gradlew installRelease  # Release variant
 ./gradlew uninstallAll    # Uninstall all variants
-```
-
-### Distribution
-```bash
-# Desktop distribution
-./gradlew :composeApp:packageDistributionForCurrentOS  # Create native package (DMG/MSI/DEB)
-./gradlew :composeApp:createDistributable              # Create distributable app bundle
-
-# Browser distributions
-./gradlew jsBrowserDistribution
-./gradlew wasmJsBrowserDistribution
-./gradlew composeCompatibilityBrowserDistribution  # Combined JS/WASM with fallback
 ```
 
 ## Architecture
@@ -96,19 +74,9 @@ composeApp/src/
 │   ├── time/              # Time/clock abstraction
 │   ├── App.kt             # Main app entry point with navigation
 │   └── TopLevelBackStack.kt/TopLevelRoute.kt  # Navigation setup
-├── androidMain/kotlin/com/alorma/caducity/
-│   ├── MainActivity.kt
-│   └── data/datasource/   # Android-specific implementations (Room)
-├── desktopMain/kotlin/com/alorma/caducity/
-│   ├── main.kt
-│   ├── di/                # Desktop platform module
-│   ├── data/datasource/   # Desktop-specific implementations (FakeDataSource)
-│   └── ui/theme/          # Desktop theme implementations
-└── webMain/kotlin/com/alorma/caducity/
-    ├── main.kt
-    ├── di/                # Web platform module
-    ├── data/datasource/   # Web-specific implementations (FakeDataSource)
-    └── ui/theme/          # Web theme implementations
+└── androidMain/kotlin/com/alorma/caducity/
+    ├── MainActivity.kt
+    └── data/datasource/   # Android-specific implementations (Room)
 ```
 
 ### Multiplatform Architecture
@@ -116,12 +84,10 @@ composeApp/src/
 **Common Code (commonMain)**:
 - Defines all shared UI, business logic, and data abstractions
 - Uses `expect` declarations for platform-specific implementations
-- All Compose UI is shared across platforms
+- All Compose UI is in commonMain for potential future platform support
 
 **Platform-Specific Code**:
-- **Android** (`androidMain`): Room database implementation for persistence
-- **Desktop** (`desktopMain`): Uses FakeProductDataSource (in-memory mock data)
-- **Web** (`webMain`): Uses FakeProductDataSource (in-memory mock data); Room not supported yet
+- **Android** (`androidMain`): Room database implementation for persistence, MainActivity, and Android-specific implementations
 
 **Dependency Injection Pattern**:
 - `appModule` (common): ViewModels, use cases, shared services
@@ -181,17 +147,12 @@ The following experimental APIs are enabled project-wide:
 - Adaptive UI for different screen sizes
 - Platform-specific data source abstraction
 - DI setup with Koin
+- Room database integration
 
 **In Progress (see IMPLEMENTATION_PLAN.md)**:
-- Room database integration (Android only)
 - Product and ProductInstance entities
 - Full CRUD operations for products
 - Dashboard statistics and data display
-
-**Platform-Specific Data Sources**:
-- Android: `RoomProductDataSource` (Room database)
-- Desktop: `FakeProductDataSource` (in-memory mock data)
-- Web: `FakeProductDataSource` (in-memory mock data)
 
 ## Development Notes
 
@@ -204,7 +165,7 @@ The following experimental APIs are enabled project-wide:
 
 ### Adding Platform-Specific Code
 1. Define `expect` declaration in `commonMain`
-2. Provide `actual` implementations in `androidMain`, `desktopMain`, and `webMain`
+2. Provide `actual` implementation in `androidMain`
 3. Common pattern: expect val/fun in DI modules or utility classes
 
 ### Version Catalog (libs.versions.toml)
