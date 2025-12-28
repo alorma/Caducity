@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class RoomProductDataSource(
-  private val database: AppDatabase,
+  database: AppDatabase,
 ) : ProductDataSource {
 
   private val productDao = database.productDao()
@@ -44,7 +44,10 @@ class RoomProductDataSource(
       }
   }
 
-  override suspend fun createProduct(product: Product, instances: List<ProductInstance>) {
+  override suspend fun createProduct(
+    product: Product,
+    instances: ImmutableList<ProductInstance>,
+  ) {
     productDao.insertProduct(product.toRoomEntity())
     instances.forEach { instance ->
       productDao.insertProductInstance(instance.toRoomEntity(product.id))

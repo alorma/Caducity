@@ -3,6 +3,7 @@ package com.alorma.caducity.domain.usecase
 import com.alorma.caducity.data.datasource.ProductDataSource
 import com.alorma.caducity.data.model.Product
 import com.alorma.caducity.data.model.ProductInstance
+import kotlinx.collections.immutable.toImmutableList
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -31,7 +32,7 @@ class CreateProductUseCase(
           identifier = identifier,
           expirationDate = expirationDate,
         )
-      }
+      }.toImmutableList()
 
       productDataSource.createProduct(product, productInstances)
       Result.success(productId)

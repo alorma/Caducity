@@ -89,7 +89,7 @@ class DashboardMapper(
           },
           expirationDate = dateFormat.format(expirationDate),
         )
-      }
+      }.toImmutableList()
     )
   }
 }

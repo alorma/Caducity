@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.dashboard.product
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
+import kotlinx.collections.immutable.toImmutableList
 
 val productWithInstancesPreview = ProductUiModel.WithInstances(
   id = "condimentum",
@@ -46,5 +47,5 @@ val productWithInstancesPreview = ProductUiModel.WithInstances(
       status = InstanceStatus.Fresh,
       expirationDate = "31 / 12 / 2025",
     ),
-  ),
+  ).toImmutableList(),
 )
