@@ -2,6 +2,8 @@ package com.alorma.caducity.di
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.alorma.caducity.data.datasource.FakeNotificationConfigDataSource
+import com.alorma.caducity.data.datasource.NotificationConfigDataSource
 import com.alorma.caducity.data.datasource.ProductDataSource
 import com.alorma.caducity.data.datasource.RoomProductDataSource
 import com.alorma.caducity.data.room.AppDatabase
@@ -25,4 +27,5 @@ actual val platformModule = module {
   }
 
   singleOf(::RoomProductDataSource) bind ProductDataSource::class
+  singleOf(::FakeNotificationConfigDataSource) bind NotificationConfigDataSource::class
 }
