@@ -74,7 +74,8 @@ class DashboardMapper(
           id = instance.id,
           identifier = instance.identifier,
           status = instance.status,
-          expirationDate = dateFormat.format(expirationLocalDate),
+          expirationDate = expirationDate,
+          expirationDateText = dateFormat.format(expirationLocalDate),
         )
       }.toImmutableList()
     )

@@ -235,7 +235,7 @@ private fun InstanceCard(instance: ProductInstanceDetailUiModel) {
           color = CaducityTheme.colorScheme.onSurfaceVariant,
         )
         Text(
-          text = instance.expirationDate,
+          text = instance.expirationDateText,
           style = MaterialTheme.typography.bodyMedium,
           color = CaducityTheme.colorScheme.onSurface,
         )
