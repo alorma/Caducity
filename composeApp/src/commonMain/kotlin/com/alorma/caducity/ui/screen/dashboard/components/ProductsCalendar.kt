@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -18,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -127,7 +126,7 @@ fun ProductsCalendar(
       },
       dayContent = { calendarDay ->
         val date = calendarDay.date
-        val kotlinDate: LocalDate = LocalDate(date.year, date.month, date.day)
+        val kotlinDate = LocalDate(date.year, date.month, date.day)
         val status = productsByDate[kotlinDate]
 
         DayContent(
@@ -145,32 +144,31 @@ private fun DayContent(
   status: InstanceStatus?,
   modifier: Modifier = Modifier,
 ) {
+  val backgroundColor = if (status != null) {
+    getStatusColor(status).copy(alpha = 0.15f)
+  } else {
+    Color.Transparent
+  }
+
   Box(
     modifier = modifier
       .aspectRatio(1f)
-      .padding(4.dp),
+      .padding(4.dp)
+      .clip(CaducityTheme.shapes.small)
+      .background(backgroundColor),
     contentAlignment = Alignment.Center,
   ) {
-    Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Center,
-    ) {
-      Text(
-        text = day,
-        style = CaducityTheme.typography.bodyMedium,
-        textAlign = TextAlign.Center,
-      )
-
-      if (status != null) {
-        Box(
-          modifier = Modifier
-            .padding(top = 2.dp)
-            .size(6.dp)
-            .clip(CircleShape)
-            .background(getStatusColor(status)),
-        )
-      }
-    }
+    Text(
+      text = day,
+      style = CaducityTheme.typography.bodyMedium,
+      textAlign = TextAlign.Center,
+      color = if (status != null) {
+        getStatusColor(status)
+      } else {
+        CaducityTheme.colorScheme.onSurface
+      },
+      fontWeight = if (status != null) FontWeight.Bold else FontWeight.Normal,
+    )
   }
 }
 

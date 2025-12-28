@@ -27,6 +27,13 @@ val productWithInstancesPreview: ProductUiModel.WithInstances
       today = today.toString(),
       instances = listOf(
         ProductInstanceUiModel(
+          id = "instance-0",
+          identifier = "Bottle #0",
+          status = InstanceStatus.Expired,
+          expirationDate = today,
+          expirationDateText = today.toString(),
+        ),
+        ProductInstanceUiModel(
           id = "instance-1",
           identifier = "Bottle #1",
           status = InstanceStatus.Expired,
