@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.dashboard.product
+package com.alorma.caducity.ui.screen.dashboard.components
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
