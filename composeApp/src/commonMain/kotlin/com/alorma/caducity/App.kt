@@ -130,7 +130,9 @@ fun App(
               onBack = { topLevelBackStack.removeLast() }
             )
           }
-          entry<DateProductsRoute> {
+          entry<DateProductsRoute>(
+            metadata = BottomSheetSceneStrategy.bottomSheet(),
+          ) {
             DateProductsScreen(
               date = it.getLocalDate(),
               onDismiss = { topLevelBackStack.removeLast() },
