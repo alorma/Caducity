@@ -69,6 +69,8 @@ kotlin {
       implementation(libs.androidx.room.runtime)
       implementation(libs.androidx.sqlite.bundled)
       implementation(libs.androidx.room.sqlite.wrapper)
+
+      implementation(libs.androidx.work.runtime.ktx)
     }
   }
 }

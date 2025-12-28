@@ -14,6 +14,7 @@ android-minSdk = "34"
 android-targetSdk = "36"
 androidx-activity = "1.12.2"
 androidx-core = "1.17.0"
+androidx-work = "2.10.0"
 
 androidx-nav3 = "1.0.0-alpha06"
 androidx-nav3-viewModel = "2.10.0-alpha07"
@@ -36,6 +37,7 @@ kalendar = "2.9.0"
 [libraries]
 androidx-activitycompose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
 androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidx-work" }
 androidx-nav3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "androidx-nav3" }
 androidx-nav3-viewModel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "androidx-nav3-viewModel" }
 
