@@ -7,6 +7,8 @@ import com.alorma.caducity.data.datasource.NotificationConfigDataSource
 import com.alorma.caducity.data.datasource.ProductDataSource
 import com.alorma.caducity.data.datasource.RoomProductDataSource
 import com.alorma.caducity.data.room.AppDatabase
+import com.alorma.caducity.notification.AndroidExpirationNotificationHelper
+import com.alorma.caducity.notification.ExpirationNotificationHelper
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
@@ -28,4 +30,8 @@ actual val platformModule = module {
 
   singleOf(::RoomProductDataSource) bind ProductDataSource::class
   singleOf(::FakeNotificationConfigDataSource) bind NotificationConfigDataSource::class
+
+  single<ExpirationNotificationHelper> {
+    AndroidExpirationNotificationHelper(androidContext())
+  }
 }

@@ -74,11 +74,18 @@ Implement a notification system to alert users when products are approaching the
 - Method: `createNotificationChannel(context: Context)`
 
 ### 5. Create Notification Helper
-**New File**: `composeApp/src/androidMain/kotlin/com/alorma/caducity/notification/ExpirationNotificationHelper.kt`
+**New File**: `composeApp/src/commonMain/kotlin/com/alorma/caducity/notification/ExpirationNotificationHelper.kt` (interface)
+- Method: `showExpirationNotification(expiringProducts: List<ProductWithInstances>)`
+- Defines constant for intent extra: `EXTRA_SHOW_EXPIRING_ONLY`
+
+**New File**: `composeApp/src/androidMain/kotlin/com/alorma/caducity/notification/AndroidExpirationNotificationHelper.kt` (implementation)
+- Implements `ExpirationNotificationHelper` interface
 - Build and display notifications
 - Handle notification content (title, text, icon)
 - Create PendingIntent to open app with filtered view
-- Method: `showExpirationNotification(context, expiringProducts: List<ProductWithInstances>)`
+
+**DI Integration**:
+- Register in `platformModule` with `androidContext()` dependency
 
 ### 6. Create UseCase for Expiring Products
 **New File**: `composeApp/src/commonMain/kotlin/com/alorma/caducity/domain/usecase/GetExpiringProductsUseCase.kt`
