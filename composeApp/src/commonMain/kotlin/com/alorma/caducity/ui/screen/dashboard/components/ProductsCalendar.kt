@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -20,6 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.plus
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
@@ -129,9 +132,17 @@ fun ProductsCalendar(
         val kotlinDate = LocalDate(date.year, date.month, date.day)
         val status = productsByDate[kotlinDate]
 
+        // Check for consecutive days
+        val prevDay = kotlinDate.plus(-1, DateTimeUnit.DAY)
+        val nextDay = kotlinDate.plus(1, DateTimeUnit.DAY)
+        val hasPrevDay = productsByDate.containsKey(prevDay)
+        val hasNextDay = productsByDate.containsKey(nextDay)
+
         DayContent(
           day = date.day.toString(),
           status = status,
+          hasPreviousDay = hasPrevDay,
+          hasNextDay = hasNextDay,
         )
       },
     )
@@ -142,6 +153,8 @@ fun ProductsCalendar(
 private fun DayContent(
   day: String,
   status: InstanceStatus?,
+  hasPreviousDay: Boolean,
+  hasNextDay: Boolean,
   modifier: Modifier = Modifier,
 ) {
   val backgroundColor = if (status != null) {
@@ -150,11 +163,31 @@ private fun DayContent(
     Color.Transparent
   }
 
+  // Determine shape based on consecutive days (horizontal layout)
+  val shape = when {
+    status == null -> RoundedCornerShape(0.dp) // No shape if no status
+    !hasPreviousDay && !hasNextDay -> CaducityTheme.shapes.small // Standalone day
+    !hasPreviousDay && hasNextDay -> RoundedCornerShape(
+      topStart = 8.dp,      // Top-left rounded
+      topEnd = 0.dp,        // Top-right square
+      bottomStart = 8.dp,   // Bottom-left rounded
+      bottomEnd = 0.dp      // Bottom-right square
+    ) // Start of sequence (left side rounded)
+    hasPreviousDay && hasNextDay -> RoundedCornerShape(0.dp) // Middle of sequence
+    hasPreviousDay && !hasNextDay -> RoundedCornerShape(
+      topStart = 0.dp,      // Top-left square
+      topEnd = 8.dp,        // Top-right rounded
+      bottomStart = 0.dp,   // Bottom-left square
+      bottomEnd = 8.dp      // Bottom-right rounded
+    ) // End of sequence (right side rounded)
+    else -> CaducityTheme.shapes.small
+  }
+
   Box(
     modifier = modifier
       .aspectRatio(1f)
       .padding(4.dp)
-      .clip(CaducityTheme.shapes.small)
+      .clip(shape)
       .background(backgroundColor),
     contentAlignment = Alignment.Center,
   ) {
