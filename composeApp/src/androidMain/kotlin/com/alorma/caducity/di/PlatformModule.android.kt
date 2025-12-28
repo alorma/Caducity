@@ -9,8 +9,10 @@ import com.alorma.caducity.data.datasource.RoomProductDataSource
 import com.alorma.caducity.data.room.AppDatabase
 import com.alorma.caducity.notification.AndroidExpirationNotificationHelper
 import com.alorma.caducity.notification.ExpirationNotificationHelper
+import com.alorma.caducity.worker.ExpirationCheckWorker
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.workmanager.dsl.workerOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -34,4 +36,7 @@ actual val platformModule = module {
   single<ExpirationNotificationHelper> {
     AndroidExpirationNotificationHelper(androidContext())
   }
+
+  // WorkManager worker
+  workerOf(::ExpirationCheckWorker)
 }

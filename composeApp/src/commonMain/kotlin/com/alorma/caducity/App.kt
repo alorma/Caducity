@@ -45,6 +45,7 @@ import com.alorma.caducity.ui.screen.product.detail.ProductDetailScreen
 import com.alorma.caducity.ui.screen.settings.SettingsScreen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.compose.KoinMultiplatformApplication
 import org.koin.compose.koinInject
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -57,6 +58,7 @@ fun App(
 ) {
   KoinMultiplatformApplication(
     config = koinConfiguration {
+      workManagerFactory()
       modules(appModule)
     },
   ) {

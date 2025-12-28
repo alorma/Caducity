@@ -6,17 +6,22 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.alorma.caducity.domain.usecase.GetExpiringProductsUseCase
 import com.alorma.caducity.notification.ExpirationNotificationHelper
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 /**
  * WorkManager worker that checks for expiring products and shows notifications.
  * Runs periodically in the background to notify users about products expiring soon.
+ *
+ * Uses Koin for dependency injection - dependencies are injected via Koin's inject() delegate.
  */
 class ExpirationCheckWorker(
   context: Context,
   params: WorkerParameters,
-  private val getExpiringProductsUseCase: GetExpiringProductsUseCase,
-  private val notificationHelper: ExpirationNotificationHelper,
-) : CoroutineWorker(context, params) {
+) : CoroutineWorker(context, params), KoinComponent {
+
+  private val getExpiringProductsUseCase: GetExpiringProductsUseCase by inject()
+  private val notificationHelper: ExpirationNotificationHelper by inject()
 
   companion object {
     private const val TAG = "ExpirationCheckWorker"

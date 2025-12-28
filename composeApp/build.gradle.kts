@@ -71,6 +71,7 @@ kotlin {
       implementation(libs.androidx.room.sqlite.wrapper)
 
       implementation(libs.androidx.work.runtime.ktx)
+      implementation(libs.koin.androidx.workmanager)
     }
   }
 }

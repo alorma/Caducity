@@ -61,6 +61,7 @@ alorma-settings-ui-tiles-expressive = { group = "com.github.alorma.compose-setti
 koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin" }
 koin-compose = { group = "io.insert-koin", name = "koin-compose" }
 koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel" }
+koin-androidx-workmanager = { group = "io.insert-koin", name = "koin-androidx-workmanager" }
 
 kalendar = { group = "com.kizitonwose.calendar", name = "compose-multiplatform", version.ref = "kalendar" }
 

@@ -46,12 +46,27 @@ Implement a notification system to alert users when products are approaching the
 ### 2. Update AndroidManifest
 **File**: `composeApp/src/androidMain/AndroidManifest.xml`
 - Add `POST_NOTIFICATIONS` permission (required for Android 13+)
-- Add `SCHEDULE_EXACT_ALARM` permission (optional, for future precise scheduling)
+- Add `tools` namespace to manifest root element
+- Disable default WorkManager initialization (required for Koin integration):
+  ```xml
+  <provider
+      android:name="androidx.startup.InitializationProvider"
+      android:authorities="${applicationId}.androidx-startup"
+      android:exported="false"
+      tools:node="merge">
+      <meta-data
+          android:name="androidx.work.WorkManagerInitializer"
+          android:value="androidx.startup"
+          tools:node="remove" />
+  </provider>
+  ```
 
-**IMPORTANT**: `POST_NOTIFICATIONS` is a runtime permission on Android 13+ (API 33+). The app must:
-1. Declare it in the manifest (this step)
-2. Request it at runtime from the user (future enhancement - see Step 12)
-3. For now, notifications will only work if user grants permission manually in system settings
+**IMPORTANT**:
+- `POST_NOTIFICATIONS` is a runtime permission on Android 13+ (API 33+). The app must:
+  1. Declare it in the manifest (this step)
+  2. Request it at runtime from the user (future enhancement - see Step 12)
+  3. For now, notifications will only work if user grants permission manually in system settings
+- Disabling default WorkManager initialization is **critical** when using Koin's WorkManager integration. Without this, the app will crash.
 
 ### 3. Create Notification Configuration DataSource
 **New Files**:
@@ -100,17 +115,19 @@ Implement a notification system to alert users when products are approaching the
 
 ### 7. Create WorkManager Worker
 **New File**: `composeApp/src/androidMain/kotlin/com/alorma/caducity/worker/ExpirationCheckWorker.kt`
-- Extend `CoroutineWorker`
-- Inject dependencies via WorkManager factory
+- Extend `CoroutineWorker` and implement `KoinComponent`
+- Inject dependencies using Koin's `inject()` delegate
 - Call `GetExpiringProductsUseCase`
 - If products are expiring, call `ExpirationNotificationHelper`
 - Return `Result.success()` or `Result.retry()`
 
-### 8. Create WorkManager Factory (for DI)
-**New File**: `composeApp/src/androidMain/kotlin/com/alorma/caducity/worker/ExpirationWorkerFactory.kt`
-- Implement `WorkerFactory`
-- Create workers with Koin dependencies
-- Inject `GetExpiringProductsUseCase`, `NotificationConfigDataSource`, etc.
+**DI Integration**:
+- Register worker with `workerOf(::ExpirationCheckWorker)` in `platformModule`
+- Uses `koin-androidx-workmanager` dependency for automatic injection
+
+### 8. ~~Create WorkManager Factory~~ (Not Needed - Using Koin Integration)
+**Note**: With Koin's WorkManager integration (`koin-androidx-workmanager`), we don't need a custom WorkerFactory.
+Koin automatically handles dependency injection for workers registered with `workerOf()`.
 
 ### 9. Create Work Scheduler
 **New File**: `composeApp/src/androidMain/kotlin/com/alorma/caducity/worker/ExpirationWorkScheduler.kt`
