@@ -122,11 +122,11 @@ private fun rememberExpirationColorScheme(
 
       ExpirationColorScheme(
         fresh = freshColor,
-        onFresh = colorScheme.onPrimary,
+        onFresh = colorScheme.onSurface,
         expiringSoon = expiringSoonColor,
-        onExpiringSoon = colorScheme.onPrimary,
+        onExpiringSoon = colorScheme.onSurface,
         expired = expiredColor,
-        onExpired = colorScheme.onPrimary,
+        onExpired = colorScheme.onSurface,
       )
     }
   }

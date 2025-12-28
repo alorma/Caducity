@@ -22,8 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.plus
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.ui.screen.dashboard.ExpirationColors
@@ -34,9 +32,11 @@ import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.daysOfWeek
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 
@@ -166,13 +166,18 @@ private fun DayContent(
   onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
 ) {
-  val statusColors = if (status != null) {
-    ExpirationColors.getSectionColors(status)
+
+  val backgroundColor = if (status != null) {
+    ExpirationColors.getSectionColors(status).container
   } else {
-    null
+    Color.Transparent
   }
 
-  val backgroundColor = statusColors?.container?.copy(alpha = 0.15f) ?: Color.Transparent
+  val textColor = if (status != null) {
+    ExpirationColors.getSectionColors(status).onContainer
+  } else {
+    CaducityTheme.colorScheme.onSurface
+  }
 
   // Determine shape based on consecutive days (horizontal layout)
   val shape = when {
@@ -213,12 +218,11 @@ private fun DayContent(
       text = day,
       style = CaducityTheme.typography.bodyMedium,
       textAlign = TextAlign.Center,
-      color = statusColors?.onContainer ?: CaducityTheme.colorScheme.onSurface,
+      color = textColor,
       fontWeight = if (status != null) FontWeight.Bold else FontWeight.Normal,
     )
   }
 }
-
 
 @Preview
 @Composable
