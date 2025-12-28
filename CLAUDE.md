@@ -164,9 +164,48 @@ The following experimental APIs are enabled project-wide:
 5. Add navigation item to `CompactContent`/`ExpandedContent`
 
 ### Adding Platform-Specific Code
-1. Define `expect` declaration in `commonMain`
-2. Provide `actual` implementation in `androidMain`
-3. Common pattern: expect val/fun in DI modules or utility classes
+
+**PREFERRED: Interface + Implementation Pattern**
+For platform-specific functionality, prefer using interfaces over expect/actual:
+
+1. Define an interface in `commonMain` (e.g., `NotificationDebugHelper`)
+2. Create platform-specific implementation in `androidMain` (e.g., `AndroidNotificationDebugHelper`)
+3. Bind implementation to interface in `platformModule`:
+   ```kotlin
+   singleOf(::AndroidNotificationDebugHelper) bind NotificationDebugHelper::class
+   ```
+
+**Benefits**:
+- More flexible and testable than expect/actual
+- Easier to mock for testing
+- No Beta warnings for expect/actual classes
+- Follows dependency inversion principle
+- Consistent with other platform abstractions (e.g., `ExpirationNotificationHelper`)
+
+**Example**:
+```kotlin
+// commonMain/notification/NotificationDebugHelper.kt
+interface NotificationDebugHelper {
+  fun triggerImmediateCheck()
+}
+
+// androidMain/notification/AndroidNotificationDebugHelper.kt
+class AndroidNotificationDebugHelper(
+  private val workScheduler: ExpirationWorkScheduler
+) : NotificationDebugHelper {
+  override fun triggerImmediateCheck() {
+    workScheduler.triggerImmediateCheck()
+  }
+}
+
+// androidMain/di/PlatformModule.android.kt
+singleOf(::AndroidNotificationDebugHelper) bind NotificationDebugHelper::class
+```
+
+**When to use expect/actual**:
+- Only use expect/actual for platform values or simple functions where interface pattern doesn't fit
+- Common pattern: expect val/fun in DI modules (`expect val platformModule`)
+- Keep expect/actual minimal and prefer interface pattern for classes
 
 ### Version Catalog (libs.versions.toml)
 All dependencies are centralized in `gradle/libs.versions.toml`:

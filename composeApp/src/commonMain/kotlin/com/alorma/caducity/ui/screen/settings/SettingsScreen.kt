@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -22,6 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.settings_color_scheme_harmony
@@ -45,7 +49,9 @@ import com.alorma.caducity.base.ui.theme.ExpirationColorSchemeType
 import com.alorma.caducity.base.ui.theme.ThemeMode
 import com.alorma.caducity.base.ui.theme.ThemePreferences
 import com.alorma.caducity.base.ui.theme.supportsDynamicColors
+import com.alorma.caducity.notification.NotificationDebugHelper
 import com.alorma.compose.settings.ui.SettingsGroup
+import com.alorma.compose.settings.ui.SettingsMenuLink
 import com.alorma.compose.settings.ui.SettingsSwitch
 import com.alorma.compose.settings.ui.expressive.SettingsButtonGroup
 import org.jetbrains.compose.resources.stringResource
@@ -53,9 +59,11 @@ import org.koin.compose.koinInject
 
 @Composable
 fun SettingsScreen(
+  scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
 ) {
   val themePreferences = koinInject<ThemePreferences>()
+  val debugHelper = koinInject<NotificationDebugHelper>()
   var notificationsEnabled by remember { mutableStateOf(true) }
 
   // Load all string resources at composable level
@@ -67,7 +75,9 @@ fun SettingsScreen(
   val colorSchemeHarmony = stringResource(Res.string.settings_color_scheme_harmony)
 
   Scaffold(
-    modifier = modifier,
+    modifier = Modifier
+      .nestedScroll(scrollConnection)
+      .then(modifier),
     topBar = {
       TopAppBar(
         title = { Text(text = stringResource(Res.string.settings_screen_title)) },
@@ -77,6 +87,7 @@ fun SettingsScreen(
     Column(
       modifier = Modifier
         .fillMaxSize()
+        .verticalScroll(rememberScrollState())
         .padding(paddingValues = paddingValues),
       verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -131,6 +142,13 @@ fun SettingsScreen(
           state = notificationsEnabled,
           onCheckedChange = { notificationsEnabled = it },
         )
+        if (notificationsEnabled) {
+          SettingsMenuLink(
+            title = { Text(text = "Test Notification (Debug)") },
+            subtitle = { Text(text = "Trigger notification check immediately") },
+            onClick = { debugHelper.triggerImmediateCheck() },
+          )
+        }
       }
     }
   }

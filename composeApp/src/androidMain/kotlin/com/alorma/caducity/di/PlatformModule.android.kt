@@ -2,11 +2,21 @@ package com.alorma.caducity.di
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.alorma.caducity.data.datasource.FakeNotificationConfigDataSource
+import com.alorma.caducity.data.datasource.NotificationConfigDataSource
 import com.alorma.caducity.data.datasource.ProductDataSource
 import com.alorma.caducity.data.datasource.RoomProductDataSource
 import com.alorma.caducity.data.room.AppDatabase
+import com.alorma.caducity.data.room.DatabaseCallback
+import com.alorma.caducity.notification.AndroidExpirationNotificationHelper
+import com.alorma.caducity.notification.AndroidNotificationDebugHelper
+import com.alorma.caducity.notification.ExpirationNotificationHelper
+import com.alorma.caducity.notification.NotificationDebugHelper
+import com.alorma.caducity.worker.ExpirationCheckWorker
+import com.alorma.caducity.worker.ExpirationWorkScheduler
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.workmanager.dsl.workerOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -20,9 +30,21 @@ actual val platformModule = module {
     )
       .setDriver(BundledSQLiteDriver())
       .setQueryCoroutineContext(Dispatchers.IO)
-//      .addCallback(DatabaseCallback())
+      .addCallback(DatabaseCallback())
       .build()
   }
 
   singleOf(::RoomProductDataSource) bind ProductDataSource::class
+  singleOf(::FakeNotificationConfigDataSource) bind NotificationConfigDataSource::class
+
+  single<ExpirationNotificationHelper> {
+    AndroidExpirationNotificationHelper(androidContext())
+  }
+
+  // WorkManager
+  workerOf(::ExpirationCheckWorker)
+  singleOf(::ExpirationWorkScheduler)
+
+  // Debug helper
+  singleOf(::AndroidNotificationDebugHelper) bind NotificationDebugHelper::class
 }
