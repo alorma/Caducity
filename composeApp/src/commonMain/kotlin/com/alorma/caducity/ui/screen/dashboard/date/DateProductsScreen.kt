@@ -25,6 +25,7 @@ import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
 import com.alorma.caducity.ui.screen.dashboard.components.ProductItem
 import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +34,7 @@ fun DateProductsScreen(
   onDismiss: () -> Unit,
   onNavigateToProductDetail: (String) -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: DashboardViewModel = koinViewModel(),
+  viewModel: DashboardViewModel = koinViewModel { parametersOf(false) },
 ) {
   val dashboardState = viewModel.state.collectAsStateWithLifecycle()
 
