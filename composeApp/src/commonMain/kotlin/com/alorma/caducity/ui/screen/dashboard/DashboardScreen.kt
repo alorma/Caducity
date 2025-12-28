@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -32,8 +31,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.dashboard_action_collapse
-import caducity.composeapp.generated.resources.dashboard_action_expand
 import caducity.composeapp.generated.resources.dashboard_clear_filters
 import caducity.composeapp.generated.resources.dashboard_filter_expired
 import caducity.composeapp.generated.resources.dashboard_filter_expiring_soon
@@ -63,7 +60,9 @@ fun DashboardScreen(
   when (val state = dashboardState.value) {
     is DashboardState.Loading -> {
       Box(
-        modifier = Modifier.fillMaxSize().then(modifier),
+        modifier = Modifier
+          .fillMaxSize()
+          .then(modifier),
         contentAlignment = Alignment.Center,
       ) {
         LoadingIndicator(
@@ -79,7 +78,6 @@ fun DashboardScreen(
     is DashboardState.Success -> DashboardContent(
       state = state,
       scrollConnection = scrollConnection,
-      onToggleExpand = viewModel::toggleExpanded,
       onSearchQueryChange = viewModel::updateSearchQuery,
       onStatusFiltersChange = viewModel::updateStatusFilters,
       onNavigateToProductDetail = onNavigateToProductDetail,
@@ -92,7 +90,6 @@ fun DashboardScreen(
 fun DashboardContent(
   state: DashboardState.Success,
   scrollConnection: NestedScrollConnection,
-  onToggleExpand: (Boolean) -> Unit,
   onSearchQueryChange: (String) -> Unit,
   onStatusFiltersChange: (Set<InstanceStatus>) -> Unit,
   onNavigateToProductDetail: (String) -> Unit,
@@ -110,23 +107,9 @@ fun DashboardContent(
             style = MaterialTheme.typography.headlineMedium,
           )
         },
-        actions = {
-          TextButton(
-            onClick = { onToggleExpand(!state.config.collapsed) },
-          ) {
-            Text(
-              text = if (state.config.collapsed) {
-                stringResource(Res.string.dashboard_action_expand)
-              } else {
-                stringResource(Res.string.dashboard_action_collapse)
-              }
-            )
-          }
-        },
       )
     },
   ) { paddingValues ->
-
     Column(
       modifier = Modifier
         .fillMaxSize()
@@ -216,7 +199,6 @@ fun DashboardContent(
 
       ProductsGrid(
         products = state.items,
-        collapsed = state.config.collapsed,
         onNavigateToProductDetail = onNavigateToProductDetail,
       )
     }
@@ -226,19 +208,19 @@ fun DashboardContent(
 @Composable
 private fun ProductsGrid(
   products: ImmutableList<ProductUiModel>,
-  collapsed: Boolean,
   onNavigateToProductDetail: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
-    modifier = Modifier.fillMaxSize().then(modifier),
+    modifier = Modifier
+      .fillMaxSize()
+      .then(modifier),
     contentPadding = PaddingValues(16.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     items(products) { product ->
       ProductItem(
         product = product,
-        collapsed = collapsed,
         onClick = onNavigateToProductDetail,
       )
     }
