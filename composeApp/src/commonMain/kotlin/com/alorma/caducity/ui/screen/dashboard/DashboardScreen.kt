@@ -24,8 +24,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import caducity.composeapp.generated.resources.Res
@@ -45,12 +48,15 @@ import com.alorma.caducity.ui.screen.dashboard.product.ProductItem
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun DashboardScreen(
   onNavigateToProductDetail: (String) -> Unit,
+  scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
-  viewModel: DashboardViewModel = koinViewModel()
+  showExpiringOnly: Boolean = false,
+  viewModel: DashboardViewModel = koinViewModel { parametersOf(showExpiringOnly) }
 ) {
   val dashboardState = viewModel.state.collectAsStateWithLifecycle()
 
@@ -72,6 +78,7 @@ fun DashboardScreen(
 
     is DashboardState.Success -> DashboardContent(
       state = state,
+      scrollConnection = scrollConnection,
       onToggleExpand = viewModel::toggleExpanded,
       onSearchQueryChange = viewModel::updateSearchQuery,
       onStatusFiltersChange = viewModel::updateStatusFilters,
@@ -84,6 +91,7 @@ fun DashboardScreen(
 @Composable
 fun DashboardContent(
   state: DashboardState.Success,
+  scrollConnection: NestedScrollConnection,
   onToggleExpand: (Boolean) -> Unit,
   onSearchQueryChange: (String) -> Unit,
   onStatusFiltersChange: (Set<InstanceStatus>) -> Unit,
@@ -91,7 +99,9 @@ fun DashboardContent(
   modifier: Modifier = Modifier,
 ) {
   Scaffold(
-    modifier = modifier,
+    modifier = Modifier
+      .nestedScroll(scrollConnection)
+      .then(modifier),
     topBar = {
       TopAppBar(
         title = {

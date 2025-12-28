@@ -4,6 +4,7 @@ import com.alorma.caducity.base.ui.theme.di.themeModule
 import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.domain.domainModule
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
+import com.alorma.caducity.domain.usecase.GetExpiringProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
 import com.alorma.caducity.time.clock.AppClock
@@ -36,6 +37,7 @@ val appModule = module {
 
   single<AppClock> { KotlinAppClock() }
   singleOf(::ObtainDashboardProductsUseCase)
+  singleOf(::GetExpiringProductsUseCase)
   singleOf(::DashboardMapper)
   viewModelOf(::DashboardViewModel)
 

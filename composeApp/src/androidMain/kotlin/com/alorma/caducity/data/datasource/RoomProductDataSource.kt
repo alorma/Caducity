@@ -6,6 +6,8 @@ import com.alorma.caducity.data.room.AppDatabase
 import com.alorma.caducity.data.room.toModel
 import com.alorma.caducity.data.room.toRoomEntity
 import com.alorma.caducity.domain.model.ProductWithInstances
+import com.alorma.caducity.domain.usecase.ExpirationThresholds
+import com.alorma.caducity.time.clock.AppClock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -20,6 +22,8 @@ import kotlinx.coroutines.flow.stateIn
 
 class RoomProductDataSource(
   database: AppDatabase,
+  private val appClock: AppClock,
+  private val expirationThresholds: ExpirationThresholds,
 ) : ProductDataSource {
 
   private val productDao = database.productDao()
@@ -28,7 +32,7 @@ class RoomProductDataSource(
   override val products: StateFlow<ImmutableList<ProductWithInstances>> =
     productDao.getAllProductsWithInstances()
       .map { roomEntities ->
-        roomEntities.map { it.toModel() }.toImmutableList()
+        roomEntities.map { it.toModel(appClock, expirationThresholds) }.toImmutableList()
       }
       .stateIn(
         scope = coroutineScope,
@@ -39,7 +43,7 @@ class RoomProductDataSource(
   override fun getProduct(productId: String): Flow<Result<ProductWithInstances>> {
     return productDao.getProductWithInstances(productId)
       .map { roomEntity ->
-        roomEntity?.let { Result.success(it.toModel()) }
+        roomEntity?.let { Result.success(it.toModel(appClock, expirationThresholds)) }
           ?: Result.failure(NoSuchElementException("Product with id $productId not found"))
       }
   }

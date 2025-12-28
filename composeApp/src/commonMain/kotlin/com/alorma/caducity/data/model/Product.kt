@@ -1,5 +1,6 @@
 package com.alorma.caducity.data.model
 
+import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import kotlin.time.Instant
 
 data class Product(
@@ -12,4 +13,5 @@ data class ProductInstance(
   val id: String,
   val identifier: String,
   val expirationDate: Instant,
+  val status: InstanceStatus,
 )
