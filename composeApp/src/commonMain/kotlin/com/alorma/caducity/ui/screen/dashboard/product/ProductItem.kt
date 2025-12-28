@@ -8,10 +8,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Card
@@ -42,7 +40,6 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 fun ProductItem(
   product: ProductUiModel,
-  collapsed: Boolean,
   onClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -65,7 +62,8 @@ fun ProductItem(
       .graphicsLayer {
         scaleX = scale
         scaleY = scale
-      }.then(modifier),
+      }
+      .then(modifier),
     colors = CardDefaults.cardColors(
       containerColor = CaducityTheme.colorScheme.surfaceContainer,
     ),
@@ -75,76 +73,34 @@ fun ProductItem(
       pressedElevation = 4.dp,
     ),
   ) {
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .clickable(
+          interactionSource = interactionSource,
+          indication = null,
+        ) { onClick(product.id) }
+        .padding(16.dp),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      Text(
+        modifier = Modifier.weight(1f),
+        text = product.name,
+        style = MaterialTheme.typography.headlineMedium,
+        color = CaducityTheme.colorScheme.onSurface,
+      )
 
-    if (collapsed) {
-      Row(
-        modifier = Modifier
-          .fillMaxWidth()
-          .clickable(
-            interactionSource = interactionSource,
-            indication = null,
-          ) { onClick(product.id) }
-          .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        Text(
-          modifier = Modifier.weight(1f),
-          text = product.name,
-          style = MaterialTheme.typography.headlineMedium,
-          color = CaducityTheme.colorScheme.onSurface,
-        )
-
-        when (product) {
-          is ProductUiModel.WithInstances -> {
-            CollapsedInstancesView(product.instances)
-          }
-
-          is ProductUiModel.Empty -> {
-            Text(
-              text = "No active instances",
-              style = MaterialTheme.typography.bodySmall,
-              color = CaducityTheme.colorScheme.onSurfaceVariant,
-            )
-          }
+      when (product) {
+        is ProductUiModel.WithInstances -> {
+          CollapsedInstancesView(product.instances)
         }
-      }
-    } else {
-      Column(
-        modifier = Modifier
-          .fillMaxWidth()
-          .clickable(
-            interactionSource = interactionSource,
-            indication = null,
-          ) { onClick(product.id) }
-          .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        Text(
-          text = product.name,
-          style = MaterialTheme.typography.headlineMedium,
-          color = CaducityTheme.colorScheme.onSurface,
-        )
 
-        if (!collapsed && product.description.isNotEmpty()) {
+        is ProductUiModel.Empty -> {
           Text(
-            text = product.description,
-            style = MaterialTheme.typography.bodyMedium,
+            text = "No active instances",
+            style = MaterialTheme.typography.bodySmall,
             color = CaducityTheme.colorScheme.onSurfaceVariant,
           )
-        }
-
-        when (product) {
-          is ProductUiModel.WithInstances -> {
-            ExpandedInstancesView(product.instances)
-          }
-
-          is ProductUiModel.Empty -> {
-            Text(
-              text = "No active instances",
-              style = MaterialTheme.typography.bodySmall,
-              color = CaducityTheme.colorScheme.onSurfaceVariant,
-            )
-          }
         }
       }
     }
@@ -203,91 +159,13 @@ private fun CollapsedInstancesView(
   }
 }
 
-@Composable
-private fun ExpandedInstancesView(
-  instances: ImmutableList<ProductInstanceUiModel>,
-) {
-  Column(
-    modifier = Modifier.fillMaxWidth(),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-  ) {
-    // Status bar showing all instances
-    Row(
-      modifier = Modifier
-        .height(20.dp)
-        .clip(MaterialTheme.shapes.small),
-      horizontalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-      instances.forEach { instance ->
-        val colors = ExpirationColors.getSectionColors(instance.status)
-
-        Box(
-          modifier = Modifier
-            .weight(1f)
-            .background(colors.container)
-            .padding(20.dp),
-        )
-      }
-    }
-
-    // List individual instances
-    Column(
-      modifier = Modifier.fillMaxWidth(),
-      verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-      instances.forEach { instance ->
-        val colors = ExpirationColors.getSectionColors(instance.status)
-        Row(
-          modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.extraSmall)
-            .background(colors.container.copy(alpha = 0.3f))
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-          horizontalArrangement = Arrangement.SpaceBetween,
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          Text(
-            text = instance.identifier,
-            style = MaterialTheme.typography.labelMedium.copy(
-              fontWeight = FontWeight.Medium,
-            ),
-            color = CaducityTheme.colorScheme.onSurface,
-          )
-          Text(
-            text = instance.expirationDate,
-            style = MaterialTheme.typography.labelMedium,
-            color = CaducityTheme.colorScheme.onSurfaceVariant.copy(
-              alpha = 0.8f,
-            ),
-          )
-        }
-      }
-    }
-  }
-}
-
 @Preview
 @Composable
-private fun ProductItemExpandedPreview() {
+private fun ProductItemPreview() {
   AppPreview {
     Surface {
       ProductItem(
         product = productWithInstancesPreview,
-        collapsed = true,
-        onClick = {},
-      )
-    }
-  }
-}
-
-@Preview
-@Composable
-private fun ProductItemCollapsedPreview() {
-  AppPreview {
-    Surface {
-      ProductItem(
-        product = productWithInstancesPreview,
-        collapsed = true,
         onClick = {},
       )
     }

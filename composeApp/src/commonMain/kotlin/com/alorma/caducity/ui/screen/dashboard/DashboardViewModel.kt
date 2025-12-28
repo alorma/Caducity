@@ -56,10 +56,6 @@ class DashboardViewModel(
     initialValue = DashboardState.Loading,
   )
 
-  fun toggleExpanded(collapsed: Boolean) {
-    dashboardUiConfiguration.updateCollapse(collapsed)
-  }
-
   fun updateSearchQuery(query: String) {
     dashboardUiConfiguration.updateSearchQuery(query)
   }
