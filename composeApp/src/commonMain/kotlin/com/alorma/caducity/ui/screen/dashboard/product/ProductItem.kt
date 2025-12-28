@@ -1,7 +1,11 @@
 package com.alorma.caducity.ui.screen.dashboard.product
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,9 +20,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,33 +37,60 @@ import com.alorma.caducity.ui.screen.dashboard.ExpirationColors
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun ProductItem(
   product: ProductUiModel,
   collapsed: Boolean,
   onClick: (String) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
+  val interactionSource = remember { MutableInteractionSource() }
+  val isPressed by interactionSource.collectIsPressedAsState()
+
+  // Expressive spring animation for press effect
+  val scale by animateFloatAsState(
+    targetValue = if (isPressed) 0.97f else 1f,
+    animationSpec = spring(
+      dampingRatio = 0.6f,
+      stiffness = 400f,
+    ),
+    label = "card_press_scale"
+  )
+
   Card(
-    modifier = Modifier.fillMaxWidth(),
+    modifier = Modifier
+      .fillMaxWidth()
+      .graphicsLayer {
+        scaleX = scale
+        scaleY = scale
+      }.then(modifier),
     colors = CardDefaults.cardColors(
       containerColor = CaducityTheme.colorScheme.surfaceContainer,
     ),
     shape = MaterialTheme.shapes.largeIncreased,
+    elevation = CardDefaults.cardElevation(
+      defaultElevation = 2.dp,
+      pressedElevation = 4.dp,
+    ),
   ) {
 
     if (collapsed) {
       Row(
         modifier = Modifier
           .fillMaxWidth()
-          .clickable { onClick(product.id) }
+          .clickable(
+            interactionSource = interactionSource,
+            indication = null,
+          ) { onClick(product.id) }
           .padding(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
       ) {
         Text(
           modifier = Modifier.weight(1f),
           text = product.name,
-          style = MaterialTheme.typography.titleMedium,
+          style = MaterialTheme.typography.headlineMedium,
           color = CaducityTheme.colorScheme.onSurface,
         )
 
@@ -76,13 +112,16 @@ fun ProductItem(
       Column(
         modifier = Modifier
           .fillMaxWidth()
-          .clickable { onClick(product.id) }
+          .clickable(
+            interactionSource = interactionSource,
+            indication = null,
+          ) { onClick(product.id) }
           .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
         Text(
           text = product.name,
-          style = MaterialTheme.typography.titleMedium,
+          style = MaterialTheme.typography.headlineMedium,
           color = CaducityTheme.colorScheme.onSurface,
         )
 
@@ -113,25 +152,35 @@ fun ProductItem(
 }
 
 @Composable
-private fun CollapsedInstancesView(instances: List<ProductInstanceUiModel>) {
+private fun CollapsedInstancesView(
+  instances: ImmutableList<ProductInstanceUiModel>,
+) {
   // Group instances by status and count them
-  val statusCounts = instances.groupBy { it.status }
-    .mapValues { it.value.size }
+  val statusCounts = remember {
+    derivedStateOf {
+      instances.groupBy { it.status }
+        .mapValues { it.value.size }
+    }
+  }
 
   // Sort by status priority: Expired, ExpiringSoon, Fresh
-  val orderedStatuses = listOf(
-    InstanceStatus.Expired,
-    InstanceStatus.ExpiringSoon,
-    InstanceStatus.Fresh
-  ).filter { statusCounts.containsKey(it) }
+  val orderedStatuses = remember {
+    derivedStateOf {
+      listOf(
+        InstanceStatus.Expired,
+        InstanceStatus.ExpiringSoon,
+        InstanceStatus.Fresh
+      ).filter { statusCounts.value.containsKey(it) }
+    }
+  }
 
   Row(
     modifier = Modifier.clip(MaterialTheme.shapes.small),
     horizontalArrangement = Arrangement.spacedBy(4.dp),
   ) {
-    orderedStatuses.forEach { status ->
+    orderedStatuses.value.forEach { status ->
       // Safe to use getValue() because orderedStatuses is filtered by statusCounts.containsKey()
-      val count = statusCounts.getValue(status)
+      val count = statusCounts.value.getValue(status)
       val colors = ExpirationColors.getSectionColors(status)
 
       Box(
@@ -143,7 +192,9 @@ private fun CollapsedInstancesView(instances: List<ProductInstanceUiModel>) {
       ) {
         Text(
           text = count.toString(),
-          style = MaterialTheme.typography.titleMedium,
+          style = MaterialTheme.typography.labelLarge.copy(
+            fontWeight = FontWeight.Bold,
+          ),
           color = colors.onContainer,
           textAlign = TextAlign.Center,
         )
@@ -153,7 +204,9 @@ private fun CollapsedInstancesView(instances: List<ProductInstanceUiModel>) {
 }
 
 @Composable
-private fun ExpandedInstancesView(instances: List<ProductInstanceUiModel>) {
+private fun ExpandedInstancesView(
+  instances: ImmutableList<ProductInstanceUiModel>,
+) {
   Column(
     modifier = Modifier.fillMaxWidth(),
     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -195,13 +248,17 @@ private fun ExpandedInstancesView(instances: List<ProductInstanceUiModel>) {
         ) {
           Text(
             text = instance.identifier,
-            style = CaducityTheme.typography.bodySmall,
+            style = MaterialTheme.typography.labelMedium.copy(
+              fontWeight = FontWeight.Medium,
+            ),
             color = CaducityTheme.colorScheme.onSurface,
           )
           Text(
             text = instance.expirationDate,
-            style = CaducityTheme.typography.bodySmall,
-            color = CaducityTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.labelMedium,
+            color = CaducityTheme.colorScheme.onSurfaceVariant.copy(
+              alpha = 0.8f,
+            ),
           )
         }
       }

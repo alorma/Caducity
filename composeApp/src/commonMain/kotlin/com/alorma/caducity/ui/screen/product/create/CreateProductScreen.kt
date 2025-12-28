@@ -127,7 +127,12 @@ private fun CreateProductPage(
     contentWindowInsets = WindowInsets.systemBars,
     topBar = {
       TopAppBar(
-        title = { Text(stringResource(Res.string.create_product_screen_title)) },
+        title = {
+          Text(
+            text = stringResource(Res.string.create_product_screen_title),
+            style = MaterialTheme.typography.headlineMedium,
+          )
+        },
         navigationIcon = {
           IconButton(onClick = onBackClick) {
             Icon(
@@ -204,7 +209,7 @@ private fun CreateProductPage(
       // Instances Section
       Text(
         text = stringResource(Res.string.create_product_instances_title),
-        style = MaterialTheme.typography.titleMedium,
+        style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(top = 8.dp)
       )
 
@@ -280,7 +285,7 @@ private fun ProductInstanceCard(
             resource = Res.string.create_product_instance_number,
             instanceNumber,
           ),
-          style = MaterialTheme.typography.titleSmall,
+          style = MaterialTheme.typography.labelLarge,
           color = MaterialTheme.colorScheme.primary,
         )
         if (canRemove) {

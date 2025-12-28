@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -93,7 +94,12 @@ fun DashboardContent(
     modifier = modifier,
     topBar = {
       TopAppBar(
-        title = { Text(text = stringResource(Res.string.dashboard_screen_title)) },
+        title = {
+          Text(
+            text = stringResource(Res.string.dashboard_screen_title),
+            style = MaterialTheme.typography.headlineMedium,
+          )
+        },
         actions = {
           TextButton(
             onClick = { onToggleExpand(!state.config.collapsed) },

@@ -79,6 +79,7 @@ fun AppTheme(
   ) {
     MaterialExpressiveTheme(
       colorScheme = LocalCaducityColors.current.colorScheme,
+      typography = caducityTypography,
       motionScheme = MotionScheme.expressive(),
       content = content,
     )

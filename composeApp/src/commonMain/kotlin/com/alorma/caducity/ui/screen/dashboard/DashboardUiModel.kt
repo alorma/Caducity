@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.compose.runtime.Stable
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 
 @Stable
@@ -15,7 +16,7 @@ sealed interface ProductUiModel {
     override val name: String,
     override val description: String,
     val today: String,
-    val instances: List<ProductInstanceUiModel>,
+    val instances: ImmutableList<ProductInstanceUiModel>,
   ) : ProductUiModel
 
   @Stable
