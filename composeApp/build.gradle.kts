@@ -1,6 +1,4 @@
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
   alias(libs.plugins.jetbrains.kotlin.multiplatform)
@@ -21,31 +19,6 @@ kotlin {
   }
 
   androidTarget {
-    compilerOptions {
-      jvmTarget.set(JvmTarget.JVM_11)
-    }
-  }
-
-  @OptIn(ExperimentalWasmDsl::class)
-  wasmJs {
-    browser {
-      val rootDirPath = project.rootDir.path
-      val projectDirPath = project.projectDir.path
-      commonWebpackConfig {
-        outputFileName = "composeApp.js"
-        devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-          static = (static ?: mutableListOf()).apply {
-            // Serve sources to debug inside browser
-            add(rootDirPath)
-            add(projectDirPath)
-          }
-        }
-      }
-    }
-    binaries.executable()
-  }
-
-  jvm("desktop") {
     compilerOptions {
       jvmTarget.set(JvmTarget.JVM_11)
     }
@@ -96,31 +69,6 @@ kotlin {
       implementation(libs.androidx.room.runtime)
       implementation(libs.androidx.sqlite.bundled)
       implementation(libs.androidx.room.sqlite.wrapper)
-    }
-    val desktopMain by getting {
-      dependencies {
-        implementation(compose.desktop.currentOs)
-        implementation(libs.kotlinx.coroutines.swing)
-      }
-    }
-  }
-}
-
-compose.desktop {
-  application {
-    mainClass = "com.alorma.caducity.MainKt"
-    nativeDistributions {
-      targetFormats(
-        org.jetbrains.compose.desktop.application.dsl.TargetFormat.Dmg,
-        org.jetbrains.compose.desktop.application.dsl.TargetFormat.Msi,
-        org.jetbrains.compose.desktop.application.dsl.TargetFormat.Deb
-      )
-      packageName = "Caducity"
-      packageVersion = "1.0.0"
-
-      macOS {
-        bundleID = "com.alorma.caducity"
-      }
     }
   }
 }
