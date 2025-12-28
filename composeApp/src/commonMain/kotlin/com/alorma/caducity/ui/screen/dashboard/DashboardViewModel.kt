@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlin.time.Duration.Companion.seconds
 
 class DashboardViewModel(
-  showExpiringOnly: Boolean,
+  showExpiringOnly: Boolean = false,
   obtainDashboardProductsUseCase: ObtainDashboardProductsUseCase,
   private val dashboardUiConfiguration: DashboardUiConfiguration,
   private val dashboardMapper: DashboardMapper,

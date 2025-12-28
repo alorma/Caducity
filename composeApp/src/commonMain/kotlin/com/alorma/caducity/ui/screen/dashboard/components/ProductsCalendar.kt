@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.dashboard.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.plus
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
+import com.alorma.caducity.ui.screen.dashboard.ExpirationColors
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -41,6 +43,7 @@ import kotlin.time.Clock
 @Composable
 fun ProductsCalendar(
   products: ImmutableList<ProductUiModel>,
+  onDateClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -143,6 +146,11 @@ fun ProductsCalendar(
           status = status,
           hasPreviousDay = hasPrevDay,
           hasNextDay = hasNextDay,
+          onClick = if (status != null) {
+            { onDateClick(kotlinDate) }
+          } else {
+            null
+          },
         )
       },
     )
@@ -155,13 +163,16 @@ private fun DayContent(
   status: InstanceStatus?,
   hasPreviousDay: Boolean,
   hasNextDay: Boolean,
+  onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
 ) {
-  val backgroundColor = if (status != null) {
-    getStatusColor(status).copy(alpha = 0.15f)
+  val statusColors = if (status != null) {
+    ExpirationColors.getSectionColors(status)
   } else {
-    Color.Transparent
+    null
   }
+
+  val backgroundColor = statusColors?.container?.copy(alpha = 0.15f) ?: Color.Transparent
 
   // Determine shape based on consecutive days (horizontal layout)
   val shape = when {
@@ -188,31 +199,26 @@ private fun DayContent(
       .aspectRatio(1f)
       .padding(4.dp)
       .clip(shape)
-      .background(backgroundColor),
+      .background(backgroundColor)
+      .then(
+        if (onClick != null) {
+          Modifier.clickable(onClick = onClick)
+        } else {
+          Modifier
+        }
+      ),
     contentAlignment = Alignment.Center,
   ) {
     Text(
       text = day,
       style = CaducityTheme.typography.bodyMedium,
       textAlign = TextAlign.Center,
-      color = if (status != null) {
-        getStatusColor(status)
-      } else {
-        CaducityTheme.colorScheme.onSurface
-      },
+      color = statusColors?.onContainer ?: CaducityTheme.colorScheme.onSurface,
       fontWeight = if (status != null) FontWeight.Bold else FontWeight.Normal,
     )
   }
 }
 
-@Composable
-private fun getStatusColor(status: InstanceStatus): Color {
-  return when (status) {
-    InstanceStatus.Expired -> CaducityTheme.colorScheme.error
-    InstanceStatus.ExpiringSoon -> CaducityTheme.colorScheme.tertiary
-    InstanceStatus.Fresh -> CaducityTheme.colorScheme.primary
-  }
-}
 
 @Preview
 @Composable
@@ -220,6 +226,7 @@ private fun ProductsCalendarPreview() {
   AppPreview {
     ProductsCalendar(
       products = listOf(productWithInstancesPreview).toImmutableList(),
+      onDateClick = {},
     )
   }
 }
