@@ -142,11 +142,13 @@ fun SettingsScreen(
           state = notificationsEnabled,
           onCheckedChange = { notificationsEnabled = it },
         )
-        SettingsMenuLink(
-          title = { Text(text = "Test Notification (Debug)") },
-          subtitle = { Text(text = "Trigger notification check immediately") },
-          onClick = { debugHelper.triggerImmediateCheck() },
-        )
+        if (notificationsEnabled) {
+          SettingsMenuLink(
+            title = { Text(text = "Test Notification (Debug)") },
+            subtitle = { Text(text = "Trigger notification check immediately") },
+            onClick = { debugHelper.triggerImmediateCheck() },
+          )
+        }
       }
     }
   }

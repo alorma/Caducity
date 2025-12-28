@@ -7,7 +7,9 @@ import com.alorma.caducity.data.datasource.NotificationConfigDataSource
 import com.alorma.caducity.data.datasource.ProductDataSource
 import com.alorma.caducity.data.datasource.RoomProductDataSource
 import com.alorma.caducity.data.room.AppDatabase
+import com.alorma.caducity.data.room.DatabaseCallback
 import com.alorma.caducity.notification.AndroidExpirationNotificationHelper
+import com.alorma.caducity.notification.AndroidNotificationDebugHelper
 import com.alorma.caducity.notification.ExpirationNotificationHelper
 import com.alorma.caducity.notification.NotificationDebugHelper
 import com.alorma.caducity.worker.ExpirationCheckWorker
@@ -28,7 +30,7 @@ actual val platformModule = module {
     )
       .setDriver(BundledSQLiteDriver())
       .setQueryCoroutineContext(Dispatchers.IO)
-//      .addCallback(DatabaseCallback())
+      .addCallback(DatabaseCallback())
       .build()
   }
 
@@ -44,5 +46,5 @@ actual val platformModule = module {
   singleOf(::ExpirationWorkScheduler)
 
   // Debug helper
-  singleOf(::NotificationDebugHelper)
+  singleOf(::AndroidNotificationDebugHelper) bind NotificationDebugHelper::class
 }
