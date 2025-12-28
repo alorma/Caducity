@@ -36,7 +36,6 @@ import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.theme.AppTheme
 import com.alorma.caducity.base.ui.theme.CaducityTheme
-import com.alorma.caducity.di.appModule
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
 import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
@@ -45,92 +44,82 @@ import com.alorma.caducity.ui.screen.product.detail.ProductDetailScreen
 import com.alorma.caducity.ui.screen.settings.SettingsScreen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import org.koin.androidx.workmanager.koin.workManagerFactory
-import org.koin.compose.KoinMultiplatformApplication
 import org.koin.compose.koinInject
-import org.koin.core.annotation.KoinExperimentalAPI
-import org.koin.dsl.koinConfiguration
 
-@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun App(
   modifier: Modifier = Modifier,
 ) {
-  KoinMultiplatformApplication(
-    config = koinConfiguration {
-      workManagerFactory()
-      modules(appModule)
-    },
+  AppTheme(
+    themePreferences = koinInject(),
   ) {
-    AppTheme(
-      themePreferences = koinInject(),
-    ) {
-      val topLevelBackStack = remember { TopLevelBackStack(TopLevelRoute.Dashboard) }
-      val bottomSheetStrategy = remember { BottomSheetSceneStrategy<NavKey>() }
+    val topLevelBackStack = remember { TopLevelBackStack(TopLevelRoute.Dashboard) }
+    val bottomSheetStrategy = remember { BottomSheetSceneStrategy<NavKey>() }
 
-      val topLevelRoutes = persistentListOf(
-        TopLevelRoute.Dashboard,
-        TopLevelRoute.Settings,
-      )
+    val topLevelRoutes = persistentListOf(
+      TopLevelRoute.Dashboard,
+      TopLevelRoute.Settings,
+    )
 
-      val exitAlwaysScrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
-        exitDirection = FloatingToolbarExitDirection.Bottom,
-      )
-      Scaffold(
+    val exitAlwaysScrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
+      exitDirection = FloatingToolbarExitDirection.Bottom,
+    )
+    Scaffold(
+      modifier = Modifier
+        .fillMaxSize()
+        .nestedScroll(exitAlwaysScrollBehavior)
+        .then(modifier),
+      contentWindowInsets = WindowInsets(),
+      floatingActionButton = {
+        val isTopLevelRoute = topLevelBackStack.backStack.last() is TopLevelRoute
+
+        if (isTopLevelRoute) {
+          NavigationBar(
+            modifier = Modifier
+              .offset(y = -ScreenOffset)
+              .zIndex(1f),
+            scrollBehaviour = exitAlwaysScrollBehavior,
+            topLevelRoutes = topLevelRoutes,
+            isRouteSelected = { topLevelBackStack.topLevelKey == it },
+            onTopLevelUpdate = { topLevelBackStack.addTopLevel(it) },
+            onCreateProduct = { topLevelBackStack.add(CreateProductRoute) },
+          )
+        }
+      },
+    ) { paddingValues ->
+      NavDisplay(
         modifier = Modifier
           .fillMaxSize()
-          .nestedScroll(exitAlwaysScrollBehavior)
-          .then(modifier),
-        contentWindowInsets = WindowInsets(),
-        floatingActionButton = {
-          val isTopLevelRoute = topLevelBackStack.backStack.last() is TopLevelRoute
-
-          if (isTopLevelRoute) {
-            NavigationBar(
-              modifier = Modifier
-                .offset(y = -ScreenOffset)
-                .zIndex(1f),
-              scrollBehaviour = exitAlwaysScrollBehavior,
-              topLevelRoutes = topLevelRoutes,
-              isRouteSelected = { topLevelBackStack.topLevelKey == it },
-              onTopLevelUpdate = { topLevelBackStack.addTopLevel(it) },
-              onCreateProduct = { topLevelBackStack.add(CreateProductRoute) },
+          .padding(paddingValues),
+        backStack = topLevelBackStack.backStack,
+        onBack = { topLevelBackStack.removeLast() },
+        entryDecorators = listOf(
+          rememberSaveableStateHolderNavEntryDecorator(),
+          rememberViewModelStoreNavEntryDecorator(),
+        ),
+        sceneStrategy = bottomSheetStrategy,
+        entryProvider = entryProvider {
+          entry<TopLevelRoute.Dashboard> {
+            DashboardScreen(
+              onNavigateToProductDetail = { productId ->
+                topLevelBackStack.add(ProductDetailRoute(productId))
+              }
+            )
+          }
+          entry<TopLevelRoute.Settings> { SettingsScreen() }
+          entry<CreateProductRoute> {
+            CreateProductScreen(
+              onBack = { topLevelBackStack.removeLast() }
+            )
+          }
+          entry<ProductDetailRoute> {
+            ProductDetailScreen(
+              productId = it.productId,
+              onBack = { topLevelBackStack.removeLast() }
             )
           }
         },
-      ) { paddingValues ->
-        NavDisplay(
-          modifier = Modifier.fillMaxSize().padding(paddingValues),
-          backStack = topLevelBackStack.backStack,
-          onBack = { topLevelBackStack.removeLast() },
-          entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator(),
-          ),
-          sceneStrategy = bottomSheetStrategy,
-          entryProvider = entryProvider {
-            entry<TopLevelRoute.Dashboard> {
-              DashboardScreen(
-                onNavigateToProductDetail = { productId ->
-                  topLevelBackStack.add(ProductDetailRoute(productId))
-                }
-              )
-            }
-            entry<TopLevelRoute.Settings> { SettingsScreen() }
-            entry<CreateProductRoute> {
-              CreateProductScreen(
-                onBack = { topLevelBackStack.removeLast() }
-              )
-            }
-            entry<ProductDetailRoute> {
-              ProductDetailScreen(
-                productId = it.productId,
-                onBack = { topLevelBackStack.removeLast() }
-              )
-            }
-          },
-        )
-      }
+      )
     }
   }
 }
