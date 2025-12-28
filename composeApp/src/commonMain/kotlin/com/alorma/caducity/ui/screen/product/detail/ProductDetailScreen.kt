@@ -1,6 +1,10 @@
 package com.alorma.caducity.ui.screen.product.detail
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
@@ -21,9 +26,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.base.ui.icons.AppIcons
@@ -80,6 +89,7 @@ fun ProductDetailScreen(
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProductDetailContent(
   product: ProductDetailUiModel,
@@ -88,7 +98,12 @@ private fun ProductDetailContent(
   Scaffold(
     topBar = {
       TopAppBar(
-        title = { Text(text = product.name) },
+        title = {
+          Text(
+            text = product.name,
+            style = MaterialTheme.typography.headlineMedium,
+          )
+        },
         navigationIcon = {
           IconButton(onClick = onBack) {
             Icon(
@@ -125,12 +140,12 @@ private fun ProductDetailContent(
             ) {
               Text(
                 text = "Description",
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
                 color = CaducityTheme.colorScheme.onSurface,
               )
               Text(
                 text = product.description,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 color = CaducityTheme.colorScheme.onSurfaceVariant,
               )
             }
@@ -142,7 +157,7 @@ private fun ProductDetailContent(
       item {
         Text(
           text = "Instances (${product.instances.size})",
-          style = MaterialTheme.typography.titleLarge,
+          style = MaterialTheme.typography.headlineSmall,
           color = CaducityTheme.colorScheme.onSurface,
         )
       }
@@ -165,6 +180,9 @@ private fun InstanceCard(instance: ProductInstanceDetailUiModel) {
       containerColor = CaducityTheme.colorScheme.surfaceContainer,
     ),
     shape = MaterialTheme.shapes.largeIncreased,
+    elevation = CardDefaults.cardElevation(
+      defaultElevation = 2.dp,
+    ),
   ) {
     Column(
       modifier = Modifier
@@ -180,7 +198,9 @@ private fun InstanceCard(instance: ProductInstanceDetailUiModel) {
       ) {
         Text(
           text = instance.identifier,
-          style = MaterialTheme.typography.titleMedium,
+          style = MaterialTheme.typography.titleLarge.copy(
+            fontWeight = FontWeight.SemiBold,
+          ),
           color = CaducityTheme.colorScheme.onSurface,
         )
 
@@ -196,7 +216,9 @@ private fun InstanceCard(instance: ProductInstanceDetailUiModel) {
               InstanceStatus.ExpiringSoon -> "Expiring Soon"
               InstanceStatus.Fresh -> "Fresh"
             },
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelLarge.copy(
+              fontWeight = FontWeight.SemiBold,
+            ),
             color = colors.onContainer,
           )
         }
@@ -246,13 +268,34 @@ private fun PlaceholderActionButton(
   text: String,
   modifier: Modifier = Modifier,
 ) {
+  val interactionSource = remember { MutableInteractionSource() }
+  val isPressed by interactionSource.collectIsPressedAsState()
+
+  // Expressive spring animation for press effect
+  val scale by animateFloatAsState(
+    targetValue = if (isPressed) 0.95f else 1f,
+    animationSpec = spring(
+      dampingRatio = 0.6f,
+      stiffness = 400f,
+    ),
+    label = "button_press_scale"
+  )
+
   Card(
-    modifier = modifier,
+    modifier = modifier.graphicsLayer {
+      scaleX = scale
+      scaleY = scale
+    },
     colors = CardDefaults.cardColors(
       containerColor = CaducityTheme.colorScheme.secondaryContainer,
     ),
     shape = MaterialTheme.shapes.medium,
     onClick = { /* Placeholder - no action */ },
+    interactionSource = interactionSource,
+    elevation = CardDefaults.cardElevation(
+      defaultElevation = 1.dp,
+      pressedElevation = 2.dp,
+    ),
   ) {
     Box(
       modifier = Modifier
@@ -262,7 +305,9 @@ private fun PlaceholderActionButton(
     ) {
       Text(
         text = text,
-        style = MaterialTheme.typography.labelMedium,
+        style = MaterialTheme.typography.labelLarge.copy(
+          fontWeight = FontWeight.Medium,
+        ),
         color = CaducityTheme.colorScheme.onSecondaryContainer,
       )
     }
