@@ -17,5 +17,6 @@ data class ProductInstanceDetailUiModel(
   val id: String,
   val identifier: String,
   val status: InstanceStatus,
-  val expirationDate: String,
+  val expirationDate: LocalDate,
+  val expirationDateText: String,
 )
