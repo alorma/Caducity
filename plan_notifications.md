@@ -48,6 +48,11 @@ Implement a notification system to alert users when products are approaching the
 - Add `POST_NOTIFICATIONS` permission (required for Android 13+)
 - Add `SCHEDULE_EXACT_ALARM` permission (optional, for future precise scheduling)
 
+**IMPORTANT**: `POST_NOTIFICATIONS` is a runtime permission on Android 13+ (API 33+). The app must:
+1. Declare it in the manifest (this step)
+2. Request it at runtime from the user (future enhancement - see Step 12)
+3. For now, notifications will only work if user grants permission manually in system settings
+
 ### 3. Create Notification Configuration DataSource
 **New Files**:
 - `composeApp/src/commonMain/kotlin/com/alorma/caducity/data/datasource/NotificationConfigDataSource.kt` (interface)
@@ -132,11 +137,25 @@ Implement a notification system to alert users when products are approaching the
 **Update File**: `composeApp/src/commonMain/kotlin/com/alorma/caducity/ui/screen/dashboard/DashboardScreen.kt`
 - Add filtering logic to show only expiring products when flag is true
 
-### 12. Testing Considerations
+### 12. Request Notification Permission at Runtime (Future Enhancement)
+**Note**: This step is NOT included in the current implementation but should be added before production.
+
+**New File**: `composeApp/src/androidMain/kotlin/com/alorma/caducity/permission/NotificationPermissionHandler.kt`
+- Check if `POST_NOTIFICATIONS` permission is granted
+- Request permission using `ActivityResultContracts.RequestPermission`
+- Handle permission result and update UI accordingly
+
+**Integration**:
+- Call permission request on app first launch or from settings screen
+- Show rationale dialog explaining why notifications are needed
+- NOT use Accompanist Permissions
+
+### 13. Testing Considerations
 - Add logging to Worker to verify it runs
 - Create manual trigger for testing (e.g., debug button to schedule immediate work)
 - Test notification display on Android 13+ with runtime permission
 - Verify deep linking works when tapping notification
+- **For now**: Manually grant notification permission in system settings (Settings > Apps > Caducity > Notifications)
 
 ## File Structure Summary
 
