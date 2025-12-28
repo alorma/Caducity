@@ -37,6 +37,8 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.theme.AppTheme
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
+import com.alorma.caducity.ui.screen.dashboard.date.DateProductsRoute
+import com.alorma.caducity.ui.screen.dashboard.date.DateProductsScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
 import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailRoute
@@ -106,6 +108,9 @@ fun App(
               scrollConnection = exitAlwaysScrollBehavior,
               onNavigateToProductDetail = { productId ->
                 topLevelBackStack.add(ProductDetailRoute(productId))
+              },
+              onNavigateToDate = { date ->
+                topLevelBackStack.add(DateProductsRoute(date))
               }
             )
           }
@@ -123,6 +128,15 @@ fun App(
             ProductDetailScreen(
               productId = it.productId,
               onBack = { topLevelBackStack.removeLast() }
+            )
+          }
+          entry<DateProductsRoute> {
+            DateProductsScreen(
+              date = it.getLocalDate(),
+              onDismiss = { topLevelBackStack.removeLast() },
+              onNavigateToProductDetail = { productId ->
+                topLevelBackStack.add(ProductDetailRoute(productId))
+              }
             )
           }
         },

@@ -47,6 +47,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun DashboardScreen(
   onNavigateToProductDetail: (String) -> Unit,
+  onNavigateToDate: (kotlinx.datetime.LocalDate) -> Unit,
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
   showExpiringOnly: Boolean = false,
@@ -78,6 +79,7 @@ fun DashboardScreen(
       onSearchQueryChange = viewModel::updateSearchQuery,
       onStatusFiltersChange = viewModel::updateStatusFilters,
       onNavigateToProductDetail = onNavigateToProductDetail,
+      onNavigateToDate = onNavigateToDate,
     )
   }
 }
@@ -90,6 +92,7 @@ fun DashboardContent(
   onSearchQueryChange: (String) -> Unit,
   onStatusFiltersChange: (Set<InstanceStatus>) -> Unit,
   onNavigateToProductDetail: (String) -> Unit,
+  onNavigateToDate: (kotlinx.datetime.LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Scaffold(
@@ -196,6 +199,7 @@ fun DashboardContent(
 
       ProductsCalendar(
         products = state.items,
+        onDateClick = onNavigateToDate,
       )
 
       ProductsGrid(
