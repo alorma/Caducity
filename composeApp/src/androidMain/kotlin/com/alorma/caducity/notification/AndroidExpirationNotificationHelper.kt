@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
+import androidx.core.content.getSystemService
 import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ProductWithInstances
@@ -26,8 +27,7 @@ class AndroidExpirationNotificationHelper(
       return
     }
 
-    val notificationManager =
-      context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val notificationManager = context.getSystemService<NotificationManager>()
 
     // Create intent to open app with filtered view
     val intent = Intent(context, MainActivity::class.java).apply {
@@ -53,7 +53,7 @@ class AndroidExpirationNotificationHelper(
         .setContentIntent(pendingIntent)
         .build()
 
-    notificationManager.notify(NOTIFICATION_ID, notification)
+    notificationManager?.notify(NOTIFICATION_ID, notification)
   }
 
   private fun buildNotificationTitle(count: Int): String {
