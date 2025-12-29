@@ -3,7 +3,6 @@ package com.alorma.caducity.di
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.alorma.caducity.data.datasource.room.AppDatabase
-import com.alorma.caducity.data.datasource.room.DatabaseCallback
 import com.alorma.caducity.notification.AndroidExpirationNotificationHelper
 import com.alorma.caducity.notification.AndroidNotificationDebugHelper
 import com.alorma.caducity.notification.ExpirationNotificationHelper
@@ -27,7 +26,6 @@ actual val platformModule = module {
     )
       .setDriver(BundledSQLiteDriver())
       .setQueryCoroutineContext(Dispatchers.IO)
-      .addCallback(DatabaseCallback())
       .build()
   }
 
