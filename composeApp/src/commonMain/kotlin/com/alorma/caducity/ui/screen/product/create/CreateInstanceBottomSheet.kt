@@ -68,6 +68,9 @@ fun CreateInstanceBottomSheet(
   }
   var showDatePicker by remember { mutableStateOf(false) }
 
+  // Register permission contract for barcode scanning
+  barcodeHandler.registerPermissionContract()
+
   ModalBottomSheet(
     onDismissRequest = onDismiss,
     modifier = modifier
