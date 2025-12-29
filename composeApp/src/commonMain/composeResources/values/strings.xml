@@ -26,6 +26,12 @@
     <string name="dashboard_section_empty">Empty</string>
 
     <string name="settings_screen_title">Settings</string>
+    <string name="settings_appearance_title">Appearance</string>
+    <string name="settings_appearance_description">Theme, colors, and display</string>
+    <string name="settings_notifications_title">Notifications</string>
+    <string name="settings_notifications_description">Manage notification preferences</string>
+    <string name="settings_about_title">About</string>
+    <string name="settings_about_description">App information and credits</string>
 
     <string name="settings_group_appearance">Appearance</string>
     <string name="settings_theme_title">Theme</string>
@@ -44,6 +50,10 @@
 
     <string name="settings_group_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable Notifications</string>
+
+    <string name="about_version">Version</string>
+    <string name="about_developer">Developer</string>
+    <string name="about_github_link">View on GitHub</string>
 
     <string name="create_product_screen_title">Create Product</string>
     <string name="create_product_name_label">Product Name</string>
