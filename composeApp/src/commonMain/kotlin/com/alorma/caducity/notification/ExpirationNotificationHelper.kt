@@ -1,5 +1,6 @@
 package com.alorma.caducity.notification
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import com.alorma.caducity.domain.model.ProductWithInstances
 
@@ -9,9 +10,29 @@ import com.alorma.caducity.domain.model.ProductWithInstances
  */
 interface ExpirationNotificationHelper {
 
+  /**
+   * Returns a MutableState reflecting whether notifications are enabled.
+   * On Android, this checks the actual system permission state.
+   */
   fun areNotificationsEnabled(): MutableState<Boolean>
 
-  fun setNotificationsEnabled(enabled: Boolean)
+  /**
+   * Attempts to enable or disable notifications.
+   * @param enabled Whether to enable notifications
+   * @return true if the operation was successful, false if permission was denied
+   */
+  fun setNotificationsEnabled(enabled: Boolean): Boolean
+
+  /**
+   * Checks if the app has notification permission without triggering state updates.
+   * @return true if notifications are permitted by the system
+   */
+  fun hasNotificationPermission(): Boolean
+
+  @Composable
+  fun registerContract()
+
+  fun launch()
 
   /**
    * Shows a notification for expiring products.
