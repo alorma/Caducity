@@ -19,9 +19,8 @@ interface ExpirationNotificationHelper {
   /**
    * Attempts to enable or disable notifications.
    * @param enabled Whether to enable notifications
-   * @return true if the operation was successful, false if permission was denied
    */
-  fun setNotificationsEnabled(enabled: Boolean): Boolean
+  fun setNotificationsEnabled(enabled: Boolean)
 
   /**
    * Checks if the app has notification permission without triggering state updates.

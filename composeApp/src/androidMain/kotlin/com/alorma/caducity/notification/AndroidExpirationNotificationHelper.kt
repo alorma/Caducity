@@ -39,19 +39,16 @@ class AndroidExpirationNotificationHelper(
     return notifications
   }
 
-  override fun setNotificationsEnabled(enabled: Boolean): Boolean {
+  override fun setNotificationsEnabled(enabled: Boolean) {
     if (enabled) {
       // Can only enable if permission is granted
       val hasPermission = checkNotificationPermission()
       if (hasPermission) {
         notifications.value = true
-        return true
       }
-      return false
     } else {
       // Can always disable
       notifications.value = false
-      return true
     }
   }
 
