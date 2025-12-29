@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -14,8 +13,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
@@ -31,8 +28,8 @@ import caducity.composeapp.generated.resources.settings_notifications_title
 import caducity.composeapp.generated.resources.settings_screen_title
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Palette
-import com.alorma.caducity.base.ui.theme.CaducityTheme
-import com.alorma.compose.settings.ui.SettingsMenuLink
+import com.alorma.caducity.ui.screen.settings.components.CardPosition
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -81,12 +78,7 @@ fun SettingsRootScreen(
           title = stringResource(Res.string.settings_appearance_title),
           subtitle = stringResource(Res.string.settings_appearance_description),
           onClick = onNavigateToAppearance,
-          shape = RoundedCornerShape(
-            topStart = CaducityTheme.shapes.extraLarge.topStart,
-            topEnd = CaducityTheme.shapes.extraLarge.topEnd,
-            bottomStart = CaducityTheme.shapes.small.bottomStart,
-            bottomEnd = CaducityTheme.shapes.small.bottomEnd,
-          ),
+          position = CardPosition.Top,
         )
 
         StyledSettingsCard(
@@ -99,12 +91,7 @@ fun SettingsRootScreen(
           title = stringResource(Res.string.settings_notifications_title),
           subtitle = stringResource(Res.string.settings_notifications_description),
           onClick = onNavigateToNotifications,
-          shape = RoundedCornerShape(
-            topStart = CaducityTheme.shapes.small.topStart,
-            topEnd = CaducityTheme.shapes.small.topEnd,
-            bottomStart = CaducityTheme.shapes.extraLarge.bottomStart,
-            bottomEnd = CaducityTheme.shapes.extraLarge.bottomEnd,
-          ),
+          position = CardPosition.Bottom,
         )
       }
 
@@ -122,34 +109,10 @@ fun SettingsRootScreen(
           title = stringResource(Res.string.settings_about_title),
           subtitle = stringResource(Res.string.settings_about_description),
           onClick = onNavigateToAbout,
-          shape = CaducityTheme.shapes.extraLarge,
+          position = CardPosition.Single,
         )
       }
     }
   }
 }
 
-@Composable
-private fun StyledSettingsCard(
-  title: String,
-  subtitle: String,
-  onClick: () -> Unit,
-  shape: Shape,
-  modifier: Modifier = Modifier,
-  icon: @Composable () -> Unit
-) {
-  SettingsMenuLink(
-    modifier = modifier
-      .fillMaxWidth()
-      .clip(shape),
-    icon = icon,
-    title = {
-      Text(
-        text = title,
-        fontWeight = FontWeight.SemiBold,
-      )
-    },
-    subtitle = { Text(text = subtitle) },
-    onClick = onClick,
-  )
-}
