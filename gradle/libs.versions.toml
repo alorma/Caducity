@@ -33,7 +33,7 @@ uiTiles = "2.23.0"
 koin = "4.1.1"
 kalendar = "2.9.0"
 
-kScan = "0.5.0"
+scanEngine = "1.6.2"
 
 [libraries]
 androidx-activitycompose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
@@ -80,7 +80,7 @@ compose-foundation = { group = "org.jetbrains.compose.foundation", name = "found
 compose-ui-tooling-preview = { group = "org.jetbrains.compose.ui", name = "ui-tooling-preview", version.ref = "compose" }
 compose-ui-tooling = { group = "org.jetbrains.compose.ui", name = "ui-tooling", version.ref = "compose" }
 
-kScan = { group = "io.github.ismai117", name = "KScan", version.ref = "kScan" }
+scan-engine = { group = "com.github.tillhub", name = "scan-engine", version.ref = "scanEngine" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -89,6 +89,7 @@ jetbrains-compose-hotreload = { id = "org.jetbrains.compose.hot-reload", version
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 jetbrains-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 jetbrains-kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+jetbrains-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 androidx-room = { id = "androidx.room", version.ref = "room" }

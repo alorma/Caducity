@@ -62,7 +62,6 @@ fun CreateProductScreen(
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: CreateProductViewModel = koinViewModel(),
-  barcodeHandler: BarcodeHandler = koinInject(),
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
   var showInstanceBottomSheet by remember { mutableStateOf(false) }
@@ -87,8 +86,6 @@ fun CreateProductScreen(
     modifier = modifier,
   )
 
-  barcodeHandler.Scanner()
-
   // Instance Bottom Sheet
   if (showInstanceBottomSheet) {
     val instance = state.value.instances.firstOrNull { it.id == editingInstanceId }
@@ -96,7 +93,6 @@ fun CreateProductScreen(
     CreateInstanceBottomSheet(
       instanceId = editingInstanceId,
       instance = instance,
-      barcodeHandler = barcodeHandler,
       onSave = { identifier, expirationDate ->
         if (editingInstanceId != null) {
           viewModel.updateInstanceIdentifier(editingInstanceId!!, identifier)
