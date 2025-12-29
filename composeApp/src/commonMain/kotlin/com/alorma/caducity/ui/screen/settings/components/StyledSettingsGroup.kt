@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.alorma.compose.settings.ui.SettingsGroup
 
 /**
  * A styled settings group that wraps content with proper spacing.
@@ -19,9 +20,9 @@ fun StyledSettingsGroup(
   modifier: Modifier = Modifier,
   content: @Composable ColumnScope.() -> Unit
 ) {
-  Column(
+  SettingsGroup(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(2.dp),
-    content = content
+    content = content,
   )
 }
