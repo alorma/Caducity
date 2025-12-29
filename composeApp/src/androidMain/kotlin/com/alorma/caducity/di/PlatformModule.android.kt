@@ -13,11 +13,12 @@ import com.alorma.caducity.worker.ExpirationWorkSchedulerImpl
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.workmanager.dsl.workerOf
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-actual val platformModule = module {
+actual val platformModule: Module = module {
   single {
     Room.databaseBuilder(
       context = androidContext(),
@@ -27,21 +28,5 @@ actual val platformModule = module {
       .setDriver(BundledSQLiteDriver())
       .setQueryCoroutineContext(Dispatchers.IO)
       .build()
-  }
-
-  singleOf(::AndroidExpirationNotificationHelper) {
-    bind<ExpirationNotificationHelper>()
-  }
-
-  // WorkManager
-  workerOf(::ExpirationCheckWorker)
-
-  singleOf(::ExpirationWorkSchedulerImpl) {
-    bind<ExpirationWorkScheduler>()
-  }
-
-  // Debug helper
-  singleOf(::AndroidNotificationDebugHelper) {
-    bind<NotificationDebugHelper>()
   }
 }

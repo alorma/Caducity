@@ -7,6 +7,7 @@ import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
+import com.alorma.caducity.notification.notificationsModule
 import com.alorma.caducity.time.clock.AppClock
 import com.alorma.caducity.time.clock.KotlinAppClock
 import com.alorma.caducity.ui.screen.dashboard.DashboardMapper
@@ -27,6 +28,7 @@ import org.koin.dsl.module
 
 val appModule = module {
   includes(platformModule)
+  includes(notificationsModule)
   includes(themeModule)
   includes(dataModule)
   includes(domainModule)
