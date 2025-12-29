@@ -72,7 +72,11 @@ fun NotificationsSettingsScreen(
         StyledSettingsSwitchCard(
           title = stringResource(Res.string.settings_enable_notifications),
           state = notificationsEnabled,
-          position = CardPosition.Top,
+          position = if (notificationsEnabled) {
+            CardPosition.Top
+          } else {
+            CardPosition.Single
+          },
           onCheckedChange = { notificationsEnabled = it },
         )
         if (notificationsEnabled) {
