@@ -1,5 +1,6 @@
 package com.alorma.caducity.notification
 
+import androidx.compose.runtime.MutableState
 import com.alorma.caducity.domain.model.ProductWithInstances
 
 /**
@@ -7,6 +8,11 @@ import com.alorma.caducity.domain.model.ProductWithInstances
  * Platform-specific implementations handle the actual notification display.
  */
 interface ExpirationNotificationHelper {
+
+  fun areNotificationsEnabled(): MutableState<Boolean>
+
+  fun setNotificationsEnabled(enabled: Boolean)
+
   /**
    * Shows a notification for expiring products.
    *

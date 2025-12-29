@@ -32,11 +32,6 @@ fun SettingsContainer(
   NavDisplay(
     modifier = modifier,
     backStack = settingsBackStack,
-    onBack = {
-      if (settingsBackStack.size > 1) {
-        settingsBackStack.removeLast()
-      }
-    },
     sceneStrategy = bottomSheetStrategy,
     entryDecorators = listOf(
       rememberSaveableStateHolderNavEntryDecorator(),
@@ -52,32 +47,27 @@ fun SettingsContainer(
           onNavigateToAbout = { settingsBackStack.add(SettingsRoute.About) },
         )
       }
-      entry<SettingsRoute.Appearance> {
-        AppearanceSettingsScreen(
-          scrollConnection = scrollConnection,
-          onBack = { settingsBackStack.removeLast() },
-        )
+      entry<SettingsRoute.Appearance>(
+        metadata = BottomSheetSceneStrategy.bottomSheet(),
+      ) {
+        AppearanceSettingsScreen()
       }
-      entry<SettingsRoute.Notifications> {
-        NotificationsSettingsScreen(
-          scrollConnection = scrollConnection,
-          onBack = { settingsBackStack.removeLast() },
-        )
+      entry<SettingsRoute.Notifications>(
+        metadata = BottomSheetSceneStrategy.bottomSheet(),
+      ) {
+        NotificationsSettingsScreen()
       }
       if (debugModeProvider.isDebugMode()) {
         entry<SettingsRoute.Debug>(
           metadata = BottomSheetSceneStrategy.bottomSheet(),
         ) {
-          DebugSettingsScreen(
-            onBack = { settingsBackStack.removeLast() },
-          )
+          DebugSettingsScreen()
         }
       }
-      entry<SettingsRoute.About> {
-        AboutScreen(
-          scrollConnection = scrollConnection,
-          onBack = { settingsBackStack.removeLast() },
-        )
+      entry<SettingsRoute.About>(
+        metadata = BottomSheetSceneStrategy.bottomSheet(),
+      ) {
+        AboutScreen()
       }
     },
   )
