@@ -69,7 +69,7 @@ class AndroidExpirationNotificationHelper(
   }
 
   override fun showExpirationNotification(expiringProducts: List<ProductWithInstances>) {
-    if (areNotificationsEnabled().value) {
+    if (!areNotificationsEnabled().value) {
       return
     }
 
