@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,10 +33,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.create_product_add_instance
@@ -53,6 +56,7 @@ import caducity.composeapp.generated.resources.create_product_screen_title
 import com.alorma.caducity.barcode.BarcodeHandler
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
+import com.alorma.caducity.base.ui.icons.BarcodeScanner
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -62,10 +66,16 @@ fun CreateProductScreen(
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: CreateProductViewModel = koinViewModel(),
+  barcodeHandler: BarcodeHandler = koinInject(),
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
   var showInstanceBottomSheet by remember { mutableStateOf(false) }
   var editingInstanceId by remember { mutableStateOf<String?>(null) }
+  var scannedBarcode by remember { mutableStateOf<String?>(null) }
+  val coroutineScope = rememberCoroutineScope()
+
+  // Register permission contract for barcode scanning
+  barcodeHandler.registerPermissionContract()
 
   CreateProductPage(
     state = state.value,
@@ -73,10 +83,22 @@ fun CreateProductScreen(
     onDescriptionChange = viewModel::updateDescription,
     onAddInstance = {
       editingInstanceId = null
+      scannedBarcode = null
       showInstanceBottomSheet = true
     },
+    onScanBarcode = {
+      coroutineScope.launch {
+        barcodeHandler.scan { barcode ->
+          editingInstanceId = null
+          scannedBarcode = barcode.data
+          showInstanceBottomSheet = true
+        }
+      }
+    },
+    hasBarcodeCapability = barcodeHandler.hasBarcodeCapability(),
     onEditInstance = { instanceId ->
       editingInstanceId = instanceId
+      scannedBarcode = null
       showInstanceBottomSheet = true
     },
     onRemoveInstance = viewModel::removeInstance,
@@ -93,6 +115,7 @@ fun CreateProductScreen(
     CreateInstanceBottomSheet(
       instanceId = editingInstanceId,
       instance = instance,
+      scannedBarcode = scannedBarcode,
       onSave = { identifier, expirationDate ->
         if (editingInstanceId != null) {
           viewModel.updateInstanceIdentifier(editingInstanceId!!, identifier)
@@ -103,9 +126,13 @@ fun CreateProductScreen(
           viewModel.updateInstanceIdentifier(newInstance.id, identifier)
           viewModel.updateInstanceExpirationDate(newInstance.id, expirationDate)
         }
+        scannedBarcode = null
         showInstanceBottomSheet = false
       },
-      onDismiss = { showInstanceBottomSheet = false }
+      onDismiss = {
+        scannedBarcode = null
+        showInstanceBottomSheet = false
+      }
     )
   }
 }
@@ -117,6 +144,8 @@ private fun CreateProductPage(
   onNameChange: (String) -> Unit,
   onDescriptionChange: (String) -> Unit,
   onAddInstance: () -> Unit,
+  onScanBarcode: () -> Unit,
+  hasBarcodeCapability: Boolean,
   onEditInstance: (String) -> Unit,
   onRemoveInstance: (String) -> Unit,
   onCreateClick: () -> Unit,
@@ -227,13 +256,31 @@ private fun CreateProductPage(
         )
       }
 
-      // Add Instance Button
-      OutlinedButton(
-        onClick = onAddInstance,
+      // Add Instance Buttons
+      Row(
         modifier = Modifier.fillMaxWidth(),
-        enabled = !state.isLoading,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
       ) {
-        Text(stringResource(Res.string.create_product_add_instance))
+        OutlinedButton(
+          onClick = onAddInstance,
+          modifier = Modifier.weight(1f),
+          enabled = !state.isLoading,
+        ) {
+          Text(stringResource(Res.string.create_product_add_instance))
+        }
+
+        if (hasBarcodeCapability) {
+          OutlinedIconButton(
+            onClick = onScanBarcode,
+            enabled = !state.isLoading,
+          ) {
+            Icon(
+              imageVector = AppIcons.BarcodeScanner,
+              contentDescription = "Scan barcode",
+            )
+          }
+        }
       }
 
       // Error Message
