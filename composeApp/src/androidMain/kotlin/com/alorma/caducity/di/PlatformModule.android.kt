@@ -2,6 +2,7 @@ package com.alorma.caducity.di
 
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.alorma.caducity.barcode.barcodeModule
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.debug.AndroidDebugModeProvider
 import com.alorma.caducity.debug.DebugModeProvider
@@ -10,6 +11,7 @@ import com.alorma.caducity.notification.AndroidNotificationDebugHelper
 import com.alorma.caducity.notification.ExpirationNotificationHelper
 import com.alorma.caducity.notification.ExpirationWorkScheduler
 import com.alorma.caducity.notification.NotificationDebugHelper
+import com.alorma.caducity.notification.notificationsModule
 import com.alorma.caducity.version.AndroidAppVersionProvider
 import com.alorma.caducity.version.AppVersionProvider
 import com.alorma.caducity.worker.ExpirationCheckWorker
@@ -23,6 +25,9 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 actual val platformModule: Module = module {
+  includes(barcodeModule)
+  includes(notificationsModule)
+
   single {
     Room.databaseBuilder(
       context = androidContext(),

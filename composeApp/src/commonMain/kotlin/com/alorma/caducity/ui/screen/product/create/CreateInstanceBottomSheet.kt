@@ -12,7 +12,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -34,6 +35,10 @@ import caducity.composeapp.generated.resources.create_product_expiration_date_la
 import caducity.composeapp.generated.resources.create_product_expiration_date_placeholder
 import caducity.composeapp.generated.resources.create_product_instance_identifier_label
 import caducity.composeapp.generated.resources.create_product_instance_identifier_placeholder
+import com.alorma.caducity.barcode.BarcodeHandler
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.BarcodeScanner
+import com.alorma.caducity.base.ui.theme.CaducityTheme
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat
@@ -49,13 +54,18 @@ fun CreateInstanceBottomSheet(
   instance: ProductInstanceInput?,
   onSave: (String, LocalDate) -> Unit,
   onDismiss: () -> Unit,
+  barcodeHandler: BarcodeHandler,
   modifier: Modifier = Modifier,
   dateFormat: DateTimeFormat<LocalDate> = koinInject(),
-  selectableDates: FutureDateSelectableDates = koinInject(),
+  selectableDates: FutureDateSelectableDates = koinInject()
 ) {
   var identifier by remember(instance) { mutableStateOf(instance?.identifier ?: "") }
   var expirationDate by remember(instance) { mutableStateOf(instance?.expirationDate) }
-  var expirationDateText by remember(instance) { mutableStateOf(instance?.expirationDateText ?: "") }
+  var expirationDateText by remember(instance) {
+    mutableStateOf(
+      instance?.expirationDateText ?: ""
+    )
+  }
   var showDatePicker by remember { mutableStateOf(false) }
 
   ModalBottomSheet(
@@ -68,101 +78,134 @@ fun CreateInstanceBottomSheet(
         .padding(horizontal = 24.dp, vertical = 16.dp),
       verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-    // Title
-    Text(
-      text = if (instanceId == null) "Add Instance" else "Edit Instance",
-      style = MaterialTheme.typography.headlineSmall,
-      modifier = Modifier.padding(bottom = 8.dp)
-    )
-
-    // Instance Identifier Field
-    TextField(
-      value = identifier,
-      onValueChange = { identifier = it },
-      label = { Text(stringResource(Res.string.create_product_instance_identifier_label)) },
-      placeholder = { Text(stringResource(Res.string.create_product_instance_identifier_placeholder)) },
-      modifier = Modifier.fillMaxWidth(),
-    )
-
-    // Instance Expiration Date Field
-    TextField(
-      modifier = Modifier
-        .fillMaxWidth()
-        .clickable { showDatePicker = true },
-      value = expirationDateText,
-      onValueChange = {},
-      label = { Text(stringResource(Res.string.create_product_expiration_date_label)) },
-      placeholder = { Text(stringResource(Res.string.create_product_expiration_date_placeholder)) },
-      enabled = false,
-      readOnly = true,
-      colors = TextFieldDefaults.colors(
-        focusedContainerColor = TextFieldDefaults.colors()
-          .containerColor(enabled = true, isError = false, focused = true),
-        unfocusedContainerColor = TextFieldDefaults.colors()
-          .containerColor(enabled = true, isError = false, focused = true),
-        disabledTextColor = MaterialTheme.colorScheme.onSurface,
-        disabledContainerColor = TextFieldDefaults.colors()
-          .containerColor(enabled = true, isError = false, focused = false),
-        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-    )
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    // Action Buttons
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.End,
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      TextButton(onClick = onDismiss) {
-        Text(stringResource(Res.string.create_product_button_cancel))
-      }
-      Spacer(modifier = Modifier.padding(8.dp))
-      Button(
-        onClick = {
-          expirationDate?.let { date ->
-            onSave(identifier, date)
-          }
-        },
-        enabled = identifier.isNotBlank() && expirationDate != null
-      ) {
-        Text(stringResource(Res.string.create_product_button_create))
-      }
-    }
-
-    // Date Picker Dialog
-    if (showDatePicker) {
-      val datePickerState = rememberDatePickerState(
-        selectableDates = selectableDates
+      // Title
+      Text(
+        text = if (instanceId == null) "Add Instance" else "Edit Instance",
+        style = CaducityTheme.typography.headlineSmall,
+        modifier = Modifier.padding(bottom = 8.dp)
       )
 
-      DatePickerDialog(
-        onDismissRequest = { showDatePicker = false },
-        confirmButton = {
-          TextButton(
-            onClick = {
-              datePickerState.selectedDateMillis?.let { millis ->
-                val instant = Instant.fromEpochMilliseconds(millis)
-                val localDateTime = instant.toLocalDateTime(TimeZone.UTC)
-                expirationDate = localDateTime.date
-                expirationDateText = dateFormat.format(localDateTime.date)
-              }
-              showDatePicker = false
+      // Instance Identifier Field
+      TextField(
+        value = identifier,
+        onValueChange = { identifier = it },
+        label = { Text(stringResource(Res.string.create_product_instance_identifier_label)) },
+        placeholder = { Text(stringResource(Res.string.create_product_instance_identifier_placeholder)) },
+        modifier = Modifier.fillMaxWidth(),
+        colors = TextFieldDefaults.colors(
+          unfocusedIndicatorColor = CaducityTheme.colorScheme.primary,
+          disabledTrailingIconColor = CaducityTheme.colorScheme.primary,
+        ),
+        trailingIcon = if (barcodeHandler.hasBarcodeCapability()) {
+          {
+            IconButton(
+              onClick = {
+                barcodeHandler.scan(
+                  onBarcodeObtained = { barcode ->
+                    identifier = barcode.data
+                  },
+                )
+              },
+            ) {
+              Icon(
+                imageVector = AppIcons.BarcodeScanner,
+                contentDescription = null,
+              )
             }
-          ) {
-            Text(stringResource(Res.string.create_product_button_create))
           }
+        } else {
+          null
         },
-        dismissButton = {
-          TextButton(onClick = { showDatePicker = false }) {
-            Text(stringResource(Res.string.create_product_button_cancel))
-          }
-        }
+      )
+
+      // Instance Expiration Date Field
+      TextField(
+        modifier = Modifier
+          .fillMaxWidth()
+          .clickable { showDatePicker = true },
+        value = expirationDateText,
+        onValueChange = {},
+        label = { Text(stringResource(Res.string.create_product_expiration_date_label)) },
+        placeholder = { Text(stringResource(Res.string.create_product_expiration_date_placeholder)) },
+        enabled = false,
+        readOnly = true,
+        colors = TextFieldDefaults.colors(
+          focusedContainerColor = TextFieldDefaults.colors().containerColor(
+            enabled = true,
+            isError = false,
+            focused = true,
+          ),
+          unfocusedContainerColor = TextFieldDefaults.colors().containerColor(
+            enabled = true,
+            isError = false,
+            focused = true,
+          ),
+          disabledTextColor = CaducityTheme.colorScheme.onSurface,
+          disabledContainerColor = TextFieldDefaults.colors().containerColor(
+            enabled = true,
+            isError = false,
+            focused = false,
+          ),
+          disabledLabelColor = CaducityTheme.colorScheme.onSurfaceVariant,
+        ),
+      )
+
+      Spacer(modifier = Modifier.height(16.dp))
+
+      // Action Buttons
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically,
       ) {
-        DatePicker(state = datePickerState)
+        TextButton(onClick = onDismiss) {
+          Text(stringResource(Res.string.create_product_button_cancel))
+        }
+        Spacer(modifier = Modifier.padding(8.dp))
+        Button(
+          onClick = {
+            expirationDate?.let { date ->
+              onSave(identifier, date)
+            }
+          },
+          enabled = identifier.isNotBlank() && expirationDate != null
+        ) {
+          Text(stringResource(Res.string.create_product_button_create))
+        }
       }
-    }
+
+      // Date Picker Dialog
+      if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(
+          selectableDates = selectableDates
+        )
+
+        DatePickerDialog(
+          onDismissRequest = { showDatePicker = false },
+          confirmButton = {
+            TextButton(
+              onClick = {
+                datePickerState.selectedDateMillis?.let { millis ->
+                  val instant = Instant.fromEpochMilliseconds(millis)
+                  val localDateTime = instant.toLocalDateTime(TimeZone.UTC)
+                  expirationDate = localDateTime.date
+                  expirationDateText = dateFormat.format(localDateTime.date)
+                }
+                showDatePicker = false
+              }
+            ) {
+              Text(stringResource(Res.string.create_product_button_create))
+            }
+          },
+          dismissButton = {
+            TextButton(onClick = { showDatePicker = false }) {
+              Text(stringResource(Res.string.create_product_button_cancel))
+            }
+          }
+        ) {
+          DatePicker(state = datePickerState)
+        }
+      }
     }
   }
 }
