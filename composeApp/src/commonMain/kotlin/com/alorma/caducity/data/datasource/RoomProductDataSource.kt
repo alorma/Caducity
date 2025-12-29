@@ -2,9 +2,10 @@ package com.alorma.caducity.data.datasource
 
 import com.alorma.caducity.data.model.Product
 import com.alorma.caducity.data.model.ProductInstance
-import com.alorma.caducity.data.room.AppDatabase
-import com.alorma.caducity.data.room.toModel
-import com.alorma.caducity.data.room.toRoomEntity
+import com.alorma.caducity.data.datasource.room.AppDatabase
+import com.alorma.caducity.data.datasource.room.toModel
+import com.alorma.caducity.data.datasource.room.toRoomEntity
+import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.time.clock.AppClock
@@ -36,7 +37,7 @@ class RoomProductDataSource(
       }
       .stateIn(
         scope = coroutineScope,
-        started = SharingStarted.WhileSubscribed(5000),
+        started = SharingStarted.Companion.WhileSubscribed(5000),
         initialValue = persistentListOf()
       )
 

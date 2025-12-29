@@ -1,5 +1,6 @@
 package com.alorma.caducity.data.datasource
 
+import com.alorma.caducity.domain.NotificationConfigDataSource
 import kotlinx.datetime.LocalTime
 
 /**

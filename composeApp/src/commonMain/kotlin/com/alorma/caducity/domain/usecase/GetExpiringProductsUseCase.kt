@@ -1,6 +1,6 @@
 package com.alorma.caducity.domain.usecase
 
-import com.alorma.caducity.data.datasource.ProductDataSource
+import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import kotlinx.collections.immutable.toImmutableList

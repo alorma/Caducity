@@ -1,4 +1,4 @@
-package com.alorma.caducity.data.datasource
+package com.alorma.caducity.domain
 
 import kotlinx.datetime.LocalTime
 

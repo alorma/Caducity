@@ -1,4 +1,4 @@
-package com.alorma.caducity.data.datasource
+package com.alorma.caducity.domain
 
 import com.alorma.caducity.data.model.Product
 import com.alorma.caducity.data.model.ProductInstance
