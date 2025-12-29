@@ -3,6 +3,8 @@ package com.alorma.caducity.di
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.alorma.caducity.data.datasource.room.AppDatabase
+import com.alorma.caducity.debug.AndroidDebugModeProvider
+import com.alorma.caducity.debug.DebugModeProvider
 import com.alorma.caducity.notification.AndroidExpirationNotificationHelper
 import com.alorma.caducity.notification.AndroidNotificationDebugHelper
 import com.alorma.caducity.notification.ExpirationNotificationHelper
@@ -34,5 +36,9 @@ actual val platformModule: Module = module {
 
   singleOf(::AndroidAppVersionProvider) {
     bind<AppVersionProvider>()
+  }
+
+  singleOf(::AndroidDebugModeProvider) {
+    bind<DebugModeProvider>()
   }
 }

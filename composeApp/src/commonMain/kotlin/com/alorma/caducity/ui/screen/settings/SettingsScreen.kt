@@ -20,23 +20,29 @@ import caducity.composeapp.generated.resources.settings_about_description
 import caducity.composeapp.generated.resources.settings_about_title
 import caducity.composeapp.generated.resources.settings_appearance_description
 import caducity.composeapp.generated.resources.settings_appearance_title
+import caducity.composeapp.generated.resources.settings_debug_description
+import caducity.composeapp.generated.resources.settings_debug_title
 import caducity.composeapp.generated.resources.settings_notifications_description
 import caducity.composeapp.generated.resources.settings_notifications_title
 import caducity.composeapp.generated.resources.settings_screen_title
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Palette
+import com.alorma.caducity.debug.DebugModeProvider
 import com.alorma.caducity.ui.screen.settings.components.CardPosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun SettingsRootScreen(
   onNavigateToAppearance: () -> Unit,
   onNavigateToNotifications: () -> Unit,
+  onNavigateToDebug: () -> Unit,
   onNavigateToAbout: () -> Unit,
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
+  debugModeProvider: DebugModeProvider = koinInject()
 ) {
   Scaffold(
     modifier = Modifier
@@ -89,7 +95,25 @@ fun SettingsRootScreen(
         )
       }
 
-      // Group 2: About
+      // Group 2: Debug (only shown in debug mode)
+      if (debugModeProvider.isDebugMode()) {
+        StyledSettingsGroup {
+          StyledSettingsCard(
+            icon = {
+              Icon(
+                imageVector = AppIcons.Settings,
+                contentDescription = null,
+              )
+            },
+            title = stringResource(Res.string.settings_debug_title),
+            subtitle = stringResource(Res.string.settings_debug_description),
+            onClick = onNavigateToDebug,
+            position = CardPosition.Single,
+          )
+        }
+      }
+
+      // Group 3: About
       StyledSettingsGroup {
         StyledSettingsCard(
           icon = {
