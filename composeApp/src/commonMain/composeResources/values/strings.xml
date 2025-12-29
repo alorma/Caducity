@@ -30,6 +30,8 @@
     <string name="settings_appearance_description">Theme, colors, and display</string>
     <string name="settings_notifications_title">Notifications</string>
     <string name="settings_notifications_description">Manage notification preferences</string>
+    <string name="settings_debug_title">Debug</string>
+    <string name="settings_debug_description">Developer and debugging tools</string>
     <string name="settings_about_title">About</string>
     <string name="settings_about_description">App information and credits</string>
 

@@ -10,14 +10,18 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.alorma.caducity.debug.DebugModeProvider
 import com.alorma.caducity.ui.screen.settings.about.AboutScreen
 import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScreen
+import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsScreen
 import com.alorma.caducity.ui.screen.settings.notifications.NotificationsSettingsScreen
+import org.koin.compose.koinInject
 
 @Composable
 fun SettingsContainer(
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
+  debugModeProvider: DebugModeProvider = koinInject()
 ) {
   val settingsBackStack = remember {
     mutableStateListOf<NavKey>(SettingsRoute.Root)
@@ -41,6 +45,7 @@ fun SettingsContainer(
           scrollConnection = scrollConnection,
           onNavigateToAppearance = { settingsBackStack.add(SettingsRoute.Appearance) },
           onNavigateToNotifications = { settingsBackStack.add(SettingsRoute.Notifications) },
+          onNavigateToDebug = { settingsBackStack.add(SettingsRoute.Debug) },
           onNavigateToAbout = { settingsBackStack.add(SettingsRoute.About) },
         )
       }
@@ -55,6 +60,14 @@ fun SettingsContainer(
           scrollConnection = scrollConnection,
           onBack = { settingsBackStack.removeLast() },
         )
+      }
+      if (debugModeProvider.isDebugMode()) {
+        entry<SettingsRoute.Debug> {
+          DebugSettingsScreen(
+            scrollConnection = scrollConnection,
+            onBack = { settingsBackStack.removeLast() },
+          )
+        }
       }
       entry<SettingsRoute.About> {
         AboutScreen(

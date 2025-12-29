@@ -29,21 +29,18 @@ import caducity.composeapp.generated.resources.settings_notifications_title
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
-import com.alorma.caducity.notification.NotificationDebugHelper
 import com.alorma.caducity.ui.screen.settings.components.CardPosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.screen.settings.previewSettingsModule
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
 
 @Composable
 fun NotificationsSettingsScreen(
   onBack: () -> Unit,
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
-  debugHelper: NotificationDebugHelper = koinInject()
 ) {
   var notificationsEnabled by remember { mutableStateOf(true) }
 
@@ -77,21 +74,9 @@ fun NotificationsSettingsScreen(
         StyledSettingsSwitchCard(
           title = stringResource(Res.string.settings_enable_notifications),
           state = notificationsEnabled,
-          position = if (notificationsEnabled) {
-            CardPosition.Top
-          } else {
-            CardPosition.Single
-          },
+          position = CardPosition.Single,
           onCheckedChange = { notificationsEnabled = it },
         )
-        if (notificationsEnabled) {
-          StyledSettingsCard(
-            title = "Test Notification (Debug)",
-            subtitle = "Trigger notification check immediately",
-            position = CardPosition.Bottom,
-            onClick = { debugHelper.triggerImmediateCheck() },
-          )
-        }
       }
     }
   }
