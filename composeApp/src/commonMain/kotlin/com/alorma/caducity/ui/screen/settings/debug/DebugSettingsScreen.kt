@@ -17,7 +17,6 @@ import org.koin.compose.koinInject
 
 @Composable
 fun DebugSettingsScreen(
-  onBack: () -> Unit,
   modifier: Modifier = Modifier,
   debugHelper: NotificationDebugHelper = koinInject()
 ) {

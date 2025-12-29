@@ -12,24 +12,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.FloatingToolbarDefaults
-import androidx.compose.material3.FloatingToolbarExitDirection
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.settings_appearance_title
 import caducity.composeapp.generated.resources.settings_color_scheme_harmony
 import caducity.composeapp.generated.resources.settings_color_scheme_title
 import caducity.composeapp.generated.resources.settings_color_scheme_vibrant
@@ -41,8 +32,6 @@ import caducity.composeapp.generated.resources.settings_theme_dark
 import caducity.composeapp.generated.resources.settings_theme_light
 import caducity.composeapp.generated.resources.settings_theme_system
 import caducity.composeapp.generated.resources.settings_theme_title
-import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.ExpirationColorSchemeType
 import com.alorma.caducity.base.ui.theme.ThemeMode
@@ -59,8 +48,6 @@ import org.koin.compose.koinInject
 
 @Composable
 fun AppearanceSettingsScreen(
-  onBack: () -> Unit,
-  scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
 ) {
   val themePreferences = koinInject<ThemePreferences>()
@@ -73,72 +60,53 @@ fun AppearanceSettingsScreen(
   val colorSchemeVibrant = stringResource(Res.string.settings_color_scheme_vibrant)
   val colorSchemeHarmony = stringResource(Res.string.settings_color_scheme_harmony)
 
-  Scaffold(
+  Column(
     modifier = Modifier
-      .nestedScroll(scrollConnection)
+      .fillMaxSize()
+      .verticalScroll(rememberScrollState())
+      .padding(horizontal = 16.dp)
       .then(modifier),
-    topBar = {
-      CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(Res.string.settings_appearance_title)) },
-        navigationIcon = {
-          IconButton(onClick = onBack) {
-            Icon(
-              imageVector = AppIcons.Back,
-              contentDescription = "Back"
-            )
-          }
-        }
-      )
-    },
-  ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(paddingValues)
-        .padding(horizontal = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
-      StyledSettingsGroup {
-        StyledSettingsButtonGroupCard(
-          title = stringResource(Res.string.settings_theme_title),
-          selectedItem = themePreferences.themeMode.value,
-          position = CardPosition.Top,
-          items = ThemeMode.entries,
-          itemTitleMap = { themeMode ->
-            when (themeMode) {
-              ThemeMode.LIGHT -> themeLight
-              ThemeMode.DARK -> themeDark
-              ThemeMode.SYSTEM -> themeSystem
-            }
-          },
-          onItemSelected = { themePreferences.setThemeModeState(it) },
-        )
-        if (supportsDynamicColors()) {
-          StyledSettingsSwitchCard(
-            title = stringResource(Res.string.settings_dynamic_colors),
-            state = themePreferences.useDynamicColors.value,
-            position = CardPosition.Bottom,
-            onCheckedChange = { themePreferences.setDynamicColorsEnabled(it) },
-          )
-        }
-      }
-
+    verticalArrangement = Arrangement.spacedBy(24.dp),
+  ) {
+    StyledSettingsGroup {
       StyledSettingsButtonGroupCard(
-        title = stringResource(Res.string.settings_color_scheme_title),
-        selectedItem = themePreferences.expirationColorSchemeType.value,
-        items = ExpirationColorSchemeType.entries,
-        position = CardPosition.Single,
-        itemTitleMap = { schemeType ->
-          when (schemeType) {
-            ExpirationColorSchemeType.VIBRANT -> colorSchemeVibrant
-            ExpirationColorSchemeType.HARMONIZE -> colorSchemeHarmony
+        title = stringResource(Res.string.settings_theme_title),
+        selectedItem = themePreferences.themeMode.value,
+        position = CardPosition.Top,
+        items = ThemeMode.entries,
+        itemTitleMap = { themeMode ->
+          when (themeMode) {
+            ThemeMode.LIGHT -> themeLight
+            ThemeMode.DARK -> themeDark
+            ThemeMode.SYSTEM -> themeSystem
           }
         },
-        onItemSelected = { themePreferences.setExpirationColorSchemeType(it) },
+        onItemSelected = { themePreferences.setThemeModeState(it) },
       )
-      ExpirationColorLegend()
+      if (supportsDynamicColors()) {
+        StyledSettingsSwitchCard(
+          title = stringResource(Res.string.settings_dynamic_colors),
+          state = themePreferences.useDynamicColors.value,
+          position = CardPosition.Bottom,
+          onCheckedChange = { themePreferences.setDynamicColorsEnabled(it) },
+        )
+      }
     }
+
+    StyledSettingsButtonGroupCard(
+      title = stringResource(Res.string.settings_color_scheme_title),
+      selectedItem = themePreferences.expirationColorSchemeType.value,
+      items = ExpirationColorSchemeType.entries,
+      position = CardPosition.Single,
+      itemTitleMap = { schemeType ->
+        when (schemeType) {
+          ExpirationColorSchemeType.VIBRANT -> colorSchemeVibrant
+          ExpirationColorSchemeType.HARMONIZE -> colorSchemeHarmony
+        }
+      },
+      onItemSelected = { themePreferences.setExpirationColorSchemeType(it) },
+    )
+    ExpirationColorLegend()
   }
 }
 
@@ -191,12 +159,6 @@ private fun ColorLegendItem(
 @Composable
 private fun AppearanceSettingsScreenPreview() {
   AppPreview(previewSettingsModule) {
-    val exitAlwaysScrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
-      exitDirection = FloatingToolbarExitDirection.Bottom,
-    )
-    AppearanceSettingsScreen(
-      onBack = {},
-      scrollConnection = exitAlwaysScrollBehavior,
-    )
+    AppearanceSettingsScreen()
   }
 }

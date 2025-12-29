@@ -4,6 +4,8 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import com.alorma.caducity.MainActivity
@@ -18,8 +20,14 @@ class AndroidExpirationNotificationHelper(
   private val context: Context
 ) : ExpirationNotificationHelper {
 
-  companion object {
-    private const val NOTIFICATION_ID = 1001
+  private val notifications: MutableState<Boolean> = mutableStateOf(true)
+
+  override fun areNotificationsEnabled(): MutableState<Boolean> {
+    return notifications
+  }
+
+  override fun setNotificationsEnabled(enabled: Boolean) {
+    notifications.value = enabled
   }
 
   override fun showExpirationNotification(expiringProducts: List<ProductWithInstances>) {
@@ -70,5 +78,9 @@ class AndroidExpirationNotificationHelper(
     } else {
       "${products.first().product.name} and ${products.size - 1} more"
     }
+  }
+
+  companion object {
+    private const val NOTIFICATION_ID = 1001
   }
 }

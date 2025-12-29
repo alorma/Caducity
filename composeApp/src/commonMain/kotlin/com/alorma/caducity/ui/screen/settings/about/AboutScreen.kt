@@ -6,24 +6,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.FloatingToolbarDefaults
-import androidx.compose.material3.FloatingToolbarExitDirection
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.about_github_link
-import caducity.composeapp.generated.resources.settings_about_title
-import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.ui.screen.settings.components.CardPosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
@@ -35,55 +23,34 @@ import org.koin.compose.koinInject
 
 @Composable
 fun AboutScreen(
-  onBack: () -> Unit,
-  scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
   versionProvider: AppVersionProvider = koinInject()
 ) {
-  Scaffold(
+  Column(
     modifier = Modifier
-      .nestedScroll(scrollConnection)
+      .fillMaxSize()
+      .verticalScroll(rememberScrollState())
+      .padding(horizontal = 16.dp)
       .then(modifier),
-    topBar = {
-      CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(Res.string.settings_about_title)) },
-        navigationIcon = {
-          IconButton(onClick = onBack) {
-            Icon(
-              imageVector = AppIcons.Back,
-              contentDescription = "Back"
-            )
-          }
-        }
+    verticalArrangement = Arrangement.spacedBy(24.dp),
+  ) {
+    StyledSettingsGroup {
+      StyledSettingsCard(
+        title = versionProvider.getVersionName(),
+        subtitle = "Current version",
+        position = CardPosition.Top,
+        onClick = { /* No action for version */ },
       )
-    },
-  ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(paddingValues)
-        .padding(horizontal = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
-      StyledSettingsGroup {
-        StyledSettingsCard(
-          title = versionProvider.getVersionName(),
-          subtitle = "Current version",
-          position = CardPosition.Top,
-          onClick = { /* No action for version */ },
-        )
 
-        StyledSettingsCard(
-          title = stringResource(Res.string.about_github_link),
-          subtitle = "github.com/alorma/caducity",
-          position = CardPosition.Bottom,
-          onClick = {
-            // TODO: Open browser to GitHub repository
-            // This would require platform-specific implementation
-          },
-        )
-      }
+      StyledSettingsCard(
+        title = stringResource(Res.string.about_github_link),
+        subtitle = "github.com/alorma/caducity",
+        position = CardPosition.Bottom,
+        onClick = {
+          // TODO: Open browser to GitHub repository
+          // This would require platform-specific implementation
+        },
+      )
     }
   }
 }
@@ -92,12 +59,6 @@ fun AboutScreen(
 @Composable
 private fun AboutScreenPreview() {
   AppPreview(previewSettingsModule) {
-    val exitAlwaysScrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
-      exitDirection = FloatingToolbarExitDirection.Bottom,
-    )
-    AboutScreen(
-      onBack = {},
-      scrollConnection = exitAlwaysScrollBehavior,
-    )
+    AboutScreen()
   }
 }
