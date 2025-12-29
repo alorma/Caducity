@@ -17,14 +17,12 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.about_developer
 import caducity.composeapp.generated.resources.about_github_link
-import caducity.composeapp.generated.resources.about_version
 import caducity.composeapp.generated.resources.settings_about_title
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
-import com.alorma.compose.settings.ui.SettingsGroup
-import com.alorma.compose.settings.ui.SettingsMenuLink
+import com.alorma.caducity.ui.screen.settings.components.CardPosition
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -55,31 +53,27 @@ fun AboutScreen(
       modifier = Modifier
         .fillMaxSize()
         .verticalScroll(rememberScrollState())
-        .padding(paddingValues = paddingValues),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
+        .padding(paddingValues)
+        .padding(horizontal = 16.dp),
+      verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-      SettingsGroup(
-        title = { Text(text = stringResource(Res.string.about_version)) },
-      ) {
-        SettingsMenuLink(
-          title = { Text(text = "1.0.0") },
-          subtitle = { Text(text = "Current version") },
-          onClick = { /* No action for version */ },
-        )
-      }
 
-      SettingsGroup(
-        title = { Text(text = stringResource(Res.string.about_developer)) },
-      ) {
-        SettingsMenuLink(
-          title = { Text(text = stringResource(Res.string.about_github_link)) },
-          subtitle = { Text(text = "github.com/alorma/caducity") },
-          onClick = {
-            // TODO: Open browser to GitHub repository
-            // This would require platform-specific implementation
-          },
-        )
-      }
+      StyledSettingsCard(
+        title = "1.0.0",
+        subtitle = "Current version",
+        position = CardPosition.Top,
+        onClick = { /* No action for version */ },
+      )
+
+      StyledSettingsCard(
+        title = stringResource(Res.string.about_github_link),
+        subtitle = "github.com/alorma/caducity",
+        position = CardPosition.Bottom,
+        onClick = {
+          // TODO: Open browser to GitHub repository
+          // This would require platform-specific implementation
+        },
+      )
     }
   }
 }

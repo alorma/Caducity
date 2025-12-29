@@ -34,8 +34,6 @@ import caducity.composeapp.generated.resources.settings_dynamic_colors
 import caducity.composeapp.generated.resources.settings_expiration_legend_expired
 import caducity.composeapp.generated.resources.settings_expiration_legend_expiring_soon
 import caducity.composeapp.generated.resources.settings_expiration_legend_fresh
-import caducity.composeapp.generated.resources.settings_group_appearance
-import caducity.composeapp.generated.resources.settings_group_expiration_colors
 import caducity.composeapp.generated.resources.settings_theme_dark
 import caducity.composeapp.generated.resources.settings_theme_light
 import caducity.composeapp.generated.resources.settings_theme_system
@@ -47,9 +45,9 @@ import com.alorma.caducity.base.ui.theme.ExpirationColorSchemeType
 import com.alorma.caducity.base.ui.theme.ThemeMode
 import com.alorma.caducity.base.ui.theme.ThemePreferences
 import com.alorma.caducity.base.ui.theme.supportsDynamicColors
-import com.alorma.compose.settings.ui.SettingsGroup
-import com.alorma.compose.settings.ui.SettingsSwitch
-import com.alorma.compose.settings.ui.expressive.SettingsButtonGroup
+import com.alorma.caducity.ui.screen.settings.components.CardPosition
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -91,15 +89,17 @@ fun AppearanceSettingsScreen(
       modifier = Modifier
         .fillMaxSize()
         .verticalScroll(rememberScrollState())
-        .padding(paddingValues = paddingValues),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
+        .padding(paddingValues)
+        .padding(horizontal = 16.dp),
+      verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-      SettingsGroup(
-        title = { Text(text = stringResource(Res.string.settings_group_appearance)) },
+      Column(
+        verticalArrangement = Arrangement.spacedBy(2.dp),
       ) {
-        SettingsButtonGroup(
-          title = { Text(text = stringResource(Res.string.settings_theme_title)) },
+        StyledSettingsButtonGroupCard(
+          title = stringResource(Res.string.settings_theme_title),
           selectedItem = themePreferences.themeMode.value,
+          position = CardPosition.Top,
           items = ThemeMode.entries,
           itemTitleMap = { themeMode ->
             when (themeMode) {
@@ -111,31 +111,29 @@ fun AppearanceSettingsScreen(
           onItemSelected = { themePreferences.setThemeModeState(it) },
         )
         if (supportsDynamicColors()) {
-          SettingsSwitch(
-            title = { Text(text = stringResource(Res.string.settings_dynamic_colors)) },
+          StyledSettingsSwitchCard(
+            title = stringResource(Res.string.settings_dynamic_colors),
             state = themePreferences.useDynamicColors.value,
+            position = CardPosition.Bottom,
             onCheckedChange = { themePreferences.setDynamicColorsEnabled(it) },
           )
         }
       }
 
-      SettingsGroup(
-        title = { Text(text = stringResource(Res.string.settings_group_expiration_colors)) },
-      ) {
-        SettingsButtonGroup(
-          title = { Text(text = stringResource(Res.string.settings_color_scheme_title)) },
-          selectedItem = themePreferences.expirationColorSchemeType.value,
-          items = ExpirationColorSchemeType.entries,
-          itemTitleMap = { schemeType ->
-            when (schemeType) {
-              ExpirationColorSchemeType.VIBRANT -> colorSchemeVibrant
-              ExpirationColorSchemeType.HARMONIZE -> colorSchemeHarmony
-            }
-          },
-          onItemSelected = { themePreferences.setExpirationColorSchemeType(it) },
-        )
-        ExpirationColorLegend()
-      }
+      StyledSettingsButtonGroupCard(
+        title = stringResource(Res.string.settings_color_scheme_title),
+        selectedItem = themePreferences.expirationColorSchemeType.value,
+        items = ExpirationColorSchemeType.entries,
+        position = CardPosition.Single,
+        itemTitleMap = { schemeType ->
+          when (schemeType) {
+            ExpirationColorSchemeType.VIBRANT -> colorSchemeVibrant
+            ExpirationColorSchemeType.HARMONIZE -> colorSchemeHarmony
+          }
+        },
+        onItemSelected = { themePreferences.setExpirationColorSchemeType(it) },
+      )
+      ExpirationColorLegend()
     }
   }
 }
