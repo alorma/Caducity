@@ -17,16 +17,23 @@ import androidx.core.content.getSystemService
 import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ProductWithInstances
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.set
 
 /**
  * Android implementation of ExpirationNotificationHelper.
  * Builds and shows notifications using Android's notification system.
  */
 class AndroidExpirationNotificationHelper(
-  private val context: Context
+  private val context: Context,
+  private val settings: Settings,
 ) : ExpirationNotificationHelper {
 
-  private val notifications: MutableState<Boolean> = mutableStateOf(false)
+  private val notifications: MutableState<Boolean> =
+    mutableStateOf(
+      // Initialize based on both permission status and saved preference
+      settings.getBoolean(NotificationsEnabledKey, false) && checkNotificationPermission(),
+    )
 
   private fun checkNotificationPermission(): Boolean {
     return context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
@@ -34,8 +41,12 @@ class AndroidExpirationNotificationHelper(
   }
 
   override fun areNotificationsEnabled(): MutableState<Boolean> {
-    // Update state to reflect actual permission status
-    notifications.value = checkNotificationPermission()
+    // Sync state with actual permission status
+    // If permission was revoked externally, update state to false
+    if (notifications.value && !checkNotificationPermission()) {
+      notifications.value = false
+      settings[NotificationsEnabledKey] = false
+    }
     return notifications
   }
 
@@ -44,10 +55,11 @@ class AndroidExpirationNotificationHelper(
       // Can only enable if permission is granted
       val hasPermission = checkNotificationPermission()
       if (hasPermission) {
+        settings[NotificationsEnabledKey] = true
         notifications.value = true
       }
     } else {
-      // Can always disable
+      settings[NotificationsEnabledKey] = false
       notifications.value = false
     }
   }
@@ -126,5 +138,6 @@ class AndroidExpirationNotificationHelper(
 
   companion object {
     private const val NOTIFICATION_ID = 1001
+    private const val NotificationsEnabledKey = "notifications_enabled_key"
   }
 }
