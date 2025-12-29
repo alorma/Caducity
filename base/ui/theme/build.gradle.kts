@@ -35,6 +35,7 @@ kotlin {
       implementation(libs.compose.ui.tooling.preview)
 
       implementation(libs.compose.material3)
+      implementation(libs.alorma.settings.ui.base)
 
       implementation(libs.multiplatform.settings)
       implementation(libs.multiplatform.settings.no.arg)

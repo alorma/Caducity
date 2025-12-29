@@ -24,6 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
+import com.alorma.compose.settings.ui.base.internal.LocalSettingsTileColors
+import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
 import org.koin.compose.koinInject
 
 @Suppress("ModifierRequired")
@@ -81,8 +83,18 @@ fun AppTheme(
       colorScheme = LocalCaducityColors.current.colorScheme,
       typography = caducityTypography,
       motionScheme = MotionScheme.expressive(),
-      content = content,
-    )
+    ) {
+      val settingsColors = SettingsTileDefaults.colors(
+        containerColor = colorScheme.surfaceContainer,
+        titleColor = colorScheme.primary,
+        subtitleColor = colorScheme.onSurface,
+        iconColor = colorScheme.primary,
+        actionColor = colorScheme.primary,
+      )
+      CompositionLocalProvider(LocalSettingsTileColors provides settingsColors) {
+        content()
+      }
+    }
   }
 }
 
