@@ -26,6 +26,9 @@ fun NotificationsSettingsScreen(
   modifier: Modifier = Modifier,
   notificationHelper: ExpirationNotificationHelper = koinInject(),
 ) {
+
+  notificationHelper.registerContract()
+
   Column(
     modifier = Modifier
       .fillMaxSize()
