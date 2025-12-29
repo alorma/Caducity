@@ -3,6 +3,7 @@ package com.alorma.caducity
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation3.runtime.NavKey
 import com.alorma.caducity.base.ui.icons.AppIcons
 import kotlinx.serialization.Serializable
@@ -40,5 +41,8 @@ fun TopLevelRoute.Icon() {
 @Suppress("ModifierRequired")
 @Composable
 fun TopLevelRoute.Label() {
-  Text(text = iconContentDescription())
+  Text(
+    text = iconContentDescription(),
+    fontWeight = FontWeight.Bold,
+  )
 }

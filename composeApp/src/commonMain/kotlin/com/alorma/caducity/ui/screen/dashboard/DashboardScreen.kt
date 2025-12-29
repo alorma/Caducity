@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -38,8 +41,8 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Close
 import com.alorma.caducity.base.ui.icons.Search
 import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.screen.dashboard.components.ProductItem
 import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
-import com.alorma.caducity.ui.screen.dashboard.components.ProductsGrid
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -197,15 +200,28 @@ fun DashboardContent(
         }
       }
 
-      ProductsCalendar(
-        products = state.items,
-        onDateClick = onNavigateToDate,
-      )
+      LazyColumn(
+        contentPadding = PaddingValues(horizontal = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        item(contentType = "calendar") {
+          ProductsCalendar(
+            products = state.items,
+            onDateClick = onNavigateToDate,
+          )
+        }
 
-      ProductsGrid(
-        products = state.items,
-        onNavigateToProductDetail = onNavigateToProductDetail,
-      )
+        items(
+          items = state.items,
+          key = { product -> product.id },
+          contentType = { _ -> "productItem" },
+        ) { product ->
+          ProductItem(
+            product = product,
+            onClick = onNavigateToProductDetail,
+          )
+        }
+      }
     }
   }
 }

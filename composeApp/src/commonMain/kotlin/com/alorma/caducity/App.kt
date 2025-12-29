@@ -1,5 +1,6 @@
 package com.alorma.caducity
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
 import androidx.compose.material3.FloatingToolbarExitDirection
@@ -176,36 +176,29 @@ private fun NavigationBar(
     colors = colors,
     content = {
       topLevelRoutes.forEach { route ->
-        if (isRouteSelected(route)) {
-          Row(
-            modifier = Modifier
-              .clip(CircleShape)
-              .background(
-                color = colors.toolbarContainerColor.copy(
-                  alpha = CaducityTheme.dims.dim3,
-                ).compositeOver(CaducityTheme.colorScheme.surface)
-              )
-              .padding(
-                top = 4.dp,
-                bottom = 4.dp,
-                start = 4.dp,
-                end = 12.dp,
-              ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-          ) {
-            FilledIconButton(
+        AnimatedContent(isRouteSelected(route)) { expand ->
+          if (expand) {
+            Row(
+              modifier = Modifier
+                .clip(CircleShape)
+                .background(
+                  color = colors.toolbarContainerColor.copy(
+                    alpha = CaducityTheme.dims.dim3,
+                  ).compositeOver(CaducityTheme.colorScheme.surface)
+                )
+                .padding(vertical = 12.dp, horizontal = 14.dp),
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+              route.Icon()
+              route.Label()
+            }
+          } else {
+            IconButton(
               onClick = { onTopLevelUpdate(route) },
             ) {
               route.Icon()
             }
-            route.Label()
-          }
-        } else {
-          IconButton(
-            onClick = { onTopLevelUpdate(route) },
-          ) {
-            route.Icon()
           }
         }
       }
