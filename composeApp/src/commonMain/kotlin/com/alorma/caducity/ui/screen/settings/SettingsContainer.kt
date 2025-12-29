@@ -10,6 +10,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.alorma.caducity.BottomSheetSceneStrategy
 import com.alorma.caducity.debug.DebugModeProvider
 import com.alorma.caducity.ui.screen.settings.about.AboutScreen
 import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScreen
@@ -27,6 +28,7 @@ fun SettingsContainer(
     mutableStateListOf<NavKey>(SettingsRoute.Root)
   }
 
+  val bottomSheetStrategy = remember { BottomSheetSceneStrategy<NavKey>() }
   NavDisplay(
     modifier = modifier,
     backStack = settingsBackStack,
@@ -35,6 +37,7 @@ fun SettingsContainer(
         settingsBackStack.removeLast()
       }
     },
+    sceneStrategy = bottomSheetStrategy,
     entryDecorators = listOf(
       rememberSaveableStateHolderNavEntryDecorator(),
       rememberViewModelStoreNavEntryDecorator(),
@@ -62,9 +65,10 @@ fun SettingsContainer(
         )
       }
       if (debugModeProvider.isDebugMode()) {
-        entry<SettingsRoute.Debug> {
+        entry<SettingsRoute.Debug>(
+          metadata = BottomSheetSceneStrategy.bottomSheet(),
+        ) {
           DebugSettingsScreen(
-            scrollConnection = scrollConnection,
             onBack = { settingsBackStack.removeLast() },
           )
         }
