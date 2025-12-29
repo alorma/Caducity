@@ -1,4 +1,4 @@
-package com.alorma.caducity.data.room
+package com.alorma.caducity.data.datasource.room
 
 import androidx.room.Dao
 import androidx.room.Insert

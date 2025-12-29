@@ -1,8 +1,7 @@
 package com.alorma.caducity.domain.usecase
 
-import com.alorma.caducity.data.datasource.ProductDataSource
+import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.ProductWithInstances
-import com.alorma.caducity.time.clock.AppClock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow

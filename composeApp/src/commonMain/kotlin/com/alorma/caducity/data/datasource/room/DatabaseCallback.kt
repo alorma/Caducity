@@ -1,4 +1,4 @@
-package com.alorma.caducity.data.room
+package com.alorma.caducity.data.datasource.room
 
 import androidx.room.RoomDatabase
 import androidx.sqlite.SQLiteConnection
@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 
 class DatabaseCallback : RoomDatabase.Callback() {
@@ -23,7 +24,7 @@ class DatabaseCallback : RoomDatabase.Callback() {
   }
 
   private fun populateDatabase(connection: SQLiteConnection) {
-    val now = kotlin.time.Clock.System.now().toEpochMilliseconds()
+    val now = Clock.System.now().toEpochMilliseconds()
     val oneDayMs = 1.days.inWholeMilliseconds
     val threeDaysMs = 3.days.inWholeMilliseconds
     val sevenDaysMs = 7.days.inWholeMilliseconds

@@ -2,8 +2,8 @@ package com.alorma.caducity
 
 import android.app.Application
 import com.alorma.caducity.di.appModule
+import com.alorma.caducity.notification.ExpirationWorkScheduler
 import com.alorma.caducity.notification.NotificationChannelManager
-import com.alorma.caducity.worker.ExpirationWorkScheduler
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
