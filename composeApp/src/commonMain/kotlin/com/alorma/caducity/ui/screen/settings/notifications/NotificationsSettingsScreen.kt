@@ -40,7 +40,16 @@ fun NotificationsSettingsScreen(
         state = notificationHelper.areNotificationsEnabled().value,
         position = CardPosition.Single,
         onCheckedChange = { enabled ->
-          notificationHelper.setNotificationsEnabled(enabled)
+          if (enabled) {
+            // Check if we need to request permission
+            if (!notificationHelper.hasNotificationPermission()) {
+              notificationHelper.launch()
+            } else {
+              notificationHelper.setNotificationsEnabled(true)
+            }
+          } else {
+            notificationHelper.setNotificationsEnabled(false)
+          }
         },
       )
     }
