@@ -20,6 +20,8 @@ kotlin {
       jvmTarget.set(JvmTarget.JVM_11)
     }
 
+    androidResources.enable = true
+
     namespace = "com.alorma.caducity.base.ui.theme"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     minSdk = libs.versions.android.minSdk.get().toInt()
