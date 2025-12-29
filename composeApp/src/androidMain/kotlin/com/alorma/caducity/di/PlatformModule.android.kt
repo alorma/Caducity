@@ -8,6 +8,8 @@ import com.alorma.caducity.notification.AndroidNotificationDebugHelper
 import com.alorma.caducity.notification.ExpirationNotificationHelper
 import com.alorma.caducity.notification.ExpirationWorkScheduler
 import com.alorma.caducity.notification.NotificationDebugHelper
+import com.alorma.caducity.version.AndroidAppVersionProvider
+import com.alorma.caducity.version.AppVersionProvider
 import com.alorma.caducity.worker.ExpirationCheckWorker
 import com.alorma.caducity.worker.ExpirationWorkSchedulerImpl
 import kotlinx.coroutines.Dispatchers
@@ -28,5 +30,9 @@ actual val platformModule: Module = module {
       .setDriver(BundledSQLiteDriver())
       .setQueryCoroutineContext(Dispatchers.IO)
       .build()
+  }
+
+  singleOf(::AndroidAppVersionProvider) {
+    bind<AppVersionProvider>()
   }
 }
