@@ -23,6 +23,7 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.ui.screen.settings.components.CardPosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -57,23 +58,24 @@ fun AboutScreen(
         .padding(horizontal = 16.dp),
       verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
+      StyledSettingsGroup {
+        StyledSettingsCard(
+          title = "1.0.0",
+          subtitle = "Current version",
+          position = CardPosition.Top,
+          onClick = { /* No action for version */ },
+        )
 
-      StyledSettingsCard(
-        title = "1.0.0",
-        subtitle = "Current version",
-        position = CardPosition.Top,
-        onClick = { /* No action for version */ },
-      )
-
-      StyledSettingsCard(
-        title = stringResource(Res.string.about_github_link),
-        subtitle = "github.com/alorma/caducity",
-        position = CardPosition.Bottom,
-        onClick = {
-          // TODO: Open browser to GitHub repository
-          // This would require platform-specific implementation
-        },
-      )
+        StyledSettingsCard(
+          title = stringResource(Res.string.about_github_link),
+          subtitle = "github.com/alorma/caducity",
+          position = CardPosition.Bottom,
+          onClick = {
+            // TODO: Open browser to GitHub repository
+            // This would require platform-specific implementation
+          },
+        )
+      }
     }
   }
 }

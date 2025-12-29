@@ -47,6 +47,7 @@ import com.alorma.caducity.base.ui.theme.ThemePreferences
 import com.alorma.caducity.base.ui.theme.supportsDynamicColors
 import com.alorma.caducity.ui.screen.settings.components.CardPosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -93,9 +94,7 @@ fun AppearanceSettingsScreen(
         .padding(horizontal = 16.dp),
       verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-      Column(
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-      ) {
+      StyledSettingsGroup {
         StyledSettingsButtonGroupCard(
           title = stringResource(Res.string.settings_theme_title),
           selectedItem = themePreferences.themeMode.value,

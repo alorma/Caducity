@@ -30,6 +30,7 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Palette
 import com.alorma.caducity.ui.screen.settings.components.CardPosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -65,9 +66,7 @@ fun SettingsRootScreen(
       )
 
       // Group 1: Appearance & Notifications
-      Column(
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-      ) {
+      StyledSettingsGroup {
         StyledSettingsCard(
           icon = {
             Icon(
@@ -96,9 +95,7 @@ fun SettingsRootScreen(
       }
 
       // Group 2: About
-      Column(
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-      ) {
+      StyledSettingsGroup {
         StyledSettingsCard(
           icon = {
             Icon(

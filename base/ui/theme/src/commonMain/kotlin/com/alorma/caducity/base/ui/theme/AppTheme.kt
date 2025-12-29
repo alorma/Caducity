@@ -85,7 +85,7 @@ fun AppTheme(
       motionScheme = MotionScheme.expressive(),
     ) {
       val settingsColors = SettingsTileDefaults.colors(
-        containerColor = colorScheme.surfaceContainer,
+        containerColor = colorScheme.surfaceContainerLow,
         titleColor = colorScheme.primary,
         subtitleColor = colorScheme.onSurface,
         iconColor = colorScheme.primary,
