@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +40,7 @@ import com.alorma.caducity.barcode.BarcodeHandler
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.BarcodeScanner
 import com.alorma.caducity.base.ui.theme.CaducityTheme
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat
@@ -54,10 +56,10 @@ fun CreateInstanceBottomSheet(
   instance: ProductInstanceInput?,
   onSave: (String, LocalDate) -> Unit,
   onDismiss: () -> Unit,
-  barcodeHandler: BarcodeHandler,
   modifier: Modifier = Modifier,
   dateFormat: DateTimeFormat<LocalDate> = koinInject(),
-  selectableDates: FutureDateSelectableDates = koinInject()
+  selectableDates: FutureDateSelectableDates = koinInject(),
+  barcodeHandler: BarcodeHandler = koinInject(),
 ) {
   var identifier by remember(instance) { mutableStateOf(instance?.identifier ?: "") }
   var expirationDate by remember(instance) { mutableStateOf(instance?.expirationDate) }
@@ -88,6 +90,8 @@ fun CreateInstanceBottomSheet(
         modifier = Modifier.padding(bottom = 8.dp)
       )
 
+      val coroutineScope = rememberCoroutineScope()
+
       // Instance Identifier Field
       TextField(
         value = identifier,
@@ -103,11 +107,13 @@ fun CreateInstanceBottomSheet(
           {
             IconButton(
               onClick = {
-                barcodeHandler.scan(
-                  onBarcodeObtained = { barcode ->
-                    identifier = barcode.data
-                  },
-                )
+                coroutineScope.launch {
+                  barcodeHandler.scan(
+                    onBarcodeObtained = { barcode ->
+                      identifier = barcode.data
+                    },
+                  )
+                }
               },
             ) {
               Icon(

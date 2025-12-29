@@ -1,7 +1,6 @@
 package com.alorma.caducity.barcode
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 
 interface BarcodeHandler {
 
@@ -24,14 +23,10 @@ interface BarcodeHandler {
    * Requests camera permission and initiates scanning after permission is granted.
    * @param onBarcodeObtained Callback invoked when a barcode is successfully scanned
    */
-  fun scan(onBarcodeObtained: (BarcodeModel) -> Unit)
-
-  @Composable
-  fun Scanner(modifier: Modifier = Modifier)
-
+  suspend fun scan(onBarcodeObtained: (BarcodeModel) -> Unit)
 }
 
 data class BarcodeModel(
   val data: String,
-  val format: String,
+  val format: String?,
 )

@@ -73,7 +73,7 @@ kotlin {
       implementation(libs.androidx.work.runtime.ktx)
       implementation(libs.koin.androidx.workmanager)
 
-      implementation(libs.kScan)
+      implementation(libs.scan.engine)
     }
   }
 }
@@ -99,11 +99,17 @@ android {
       isMinifyEnabled = false
     }
   }
+  buildFeatures {
+    buildConfig = true
+  }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
   }
 }
+
+// Apply parcelize plugin after android plugin configuration
+plugins.apply("org.jetbrains.kotlin.plugin.parcelize")
 
 room {
   schemaDirectory("$projectDir/schemas")
