@@ -57,11 +57,14 @@ fun CreateInstanceBottomSheet(
   onSave: (String, LocalDate) -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
+  scannedBarcode: String? = null,
   dateFormat: DateTimeFormat<LocalDate> = koinInject(),
   selectableDates: FutureDateSelectableDates = koinInject(),
   barcodeHandler: BarcodeHandler = koinInject(),
 ) {
-  var identifier by remember(instance) { mutableStateOf(instance?.identifier ?: "") }
+  var identifier by remember(instance, scannedBarcode) {
+    mutableStateOf(scannedBarcode ?: instance?.identifier ?: "")
+  }
   var expirationDate by remember(instance) { mutableStateOf(instance?.expirationDate) }
   var expirationDateText by remember(instance) {
     mutableStateOf(
