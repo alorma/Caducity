@@ -24,7 +24,10 @@ class BarcodeActivity : ComponentActivity() {
       scanner.observeScannerResults().collect { scanEvent ->
         when (scanEvent) {
           is ScannerEvent.Camera.InProgress -> {}
-          ScannerEvent.Camera.Canceled -> {}
+          ScannerEvent.Camera.Canceled -> {
+            setResult(RESULT_CANCELED)
+            finish()
+          }
           ScannerEvent.External.Connected -> {}
           is ScannerEvent.External.Connecting -> {}
           ScannerEvent.External.NotConnected -> {}
