@@ -13,6 +13,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -24,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.settings_appearance_title
@@ -44,11 +47,13 @@ import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.ExpirationColorSchemeType
 import com.alorma.caducity.base.ui.theme.ThemeMode
 import com.alorma.caducity.base.ui.theme.ThemePreferences
+import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.base.ui.theme.supportsDynamicColors
 import com.alorma.caducity.ui.screen.settings.components.CardPosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
+import com.alorma.caducity.ui.screen.settings.previewSettingsModule
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -179,5 +184,19 @@ private fun ColorLegendItem(
         .background(color),
     )
     Text(text = label)
+  }
+}
+
+@Preview
+@Composable
+private fun AppearanceSettingsScreenPreview() {
+  AppPreview(previewSettingsModule) {
+    val exitAlwaysScrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
+      exitDirection = FloatingToolbarExitDirection.Bottom,
+    )
+    AppearanceSettingsScreen(
+      onBack = {},
+      scrollConnection = exitAlwaysScrollBehavior,
+    )
   }
 }
