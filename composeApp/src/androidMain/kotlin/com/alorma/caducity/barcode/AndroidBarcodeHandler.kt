@@ -1,6 +1,12 @@
 package com.alorma.caducity.barcode
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -13,18 +19,47 @@ import org.ncgroup.kscan.BarcodeResult
 import org.ncgroup.kscan.ScannerController
 import org.ncgroup.kscan.ScannerView
 
-class AndroidBarcodeHandler : BarcodeHandler {
+class AndroidBarcodeHandler(
+  private val context: Context,
+) : BarcodeHandler {
 
   private val showScanner: MutableState<Boolean> = mutableStateOf(false)
   private var barcodeCallback: ((BarcodeModel) -> Unit)? = null
+  private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
   override fun hasBarcodeCapability(): Boolean = true
+
+  override fun hasCameraPermission(): Boolean {
+    return context.checkSelfPermission(Manifest.permission.CAMERA) ==
+        PackageManager.PERMISSION_GRANTED
+  }
+
+  @Suppress("ModifierRequired")
+  @Composable
+  override fun registerPermissionContract() {
+    permissionLauncher = rememberLauncherForActivityResult(
+      ActivityResultContracts.RequestPermission()
+    ) { granted ->
+      if (granted) {
+        // Permission granted, show scanner
+        showScanner.value = true
+      }
+      // If denied, do nothing (scanner won't show)
+    }
+  }
 
   override fun scan(
     onBarcodeObtained: (BarcodeModel) -> Unit,
   ) {
-    showScanner.value = true
     barcodeCallback = onBarcodeObtained
+
+    // Check if we have permission
+    if (hasCameraPermission()) {
+      showScanner.value = true
+    } else {
+      // Request permission
+      permissionLauncher.launch(Manifest.permission.CAMERA)
+    }
   }
 
   @Suppress("ModifierDefaultValue")
