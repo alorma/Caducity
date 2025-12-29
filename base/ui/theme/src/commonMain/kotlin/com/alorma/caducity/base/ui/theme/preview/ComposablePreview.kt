@@ -1,10 +1,13 @@
 package com.alorma.caducity.base.ui.theme.preview
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.alorma.caducity.base.ui.theme.AppTheme
 import com.alorma.caducity.base.ui.theme.ExpirationColorSchemeType
+import com.alorma.caducity.base.ui.theme.LocalSystemBarsAppearance
+import com.alorma.caducity.base.ui.theme.SystemBarsAppearanceNoOp
 import com.alorma.caducity.base.ui.theme.ThemeMode
 import com.alorma.caducity.base.ui.theme.ThemePreferences
 import org.koin.compose.KoinApplicationPreview
@@ -15,7 +18,7 @@ import org.koin.dsl.module
 @Suppress("ModifierRequired")
 @Composable
 fun AppPreview(
-  module: Module = module {  },
+  module: Module = module { },
   block: @Composable () -> Unit,
 ) {
   KoinApplicationPreview(application = {
@@ -24,7 +27,11 @@ fun AppPreview(
       module,
     )
   }) {
-    AppTheme { block() }
+    CompositionLocalProvider(
+      LocalSystemBarsAppearance provides SystemBarsAppearanceNoOp,
+    ) {
+      AppTheme { block() }
+    }
   }
 }
 
