@@ -8,15 +8,22 @@ import com.alorma.caducity.base.ui.theme.ExpirationColorSchemeType
 import com.alorma.caducity.base.ui.theme.ThemeMode
 import com.alorma.caducity.base.ui.theme.ThemePreferences
 import org.koin.compose.KoinApplicationPreview
+import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
 @Suppress("ModifierRequired")
 @Composable
 fun AppPreview(
+  module: Module = module {  },
   block: @Composable () -> Unit,
 ) {
-  KoinApplicationPreview(application = { modules(themePreviewModule) }) {
+  KoinApplicationPreview(application = {
+    modules(
+      themePreviewModule,
+      module,
+    )
+  }) {
     AppTheme { block() }
   }
 }
