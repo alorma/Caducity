@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.CompositionLocalProvider
+import com.alorma.caducity.base.ui.theme.AndroidSystemBarsAppearance
+import com.alorma.caducity.base.ui.theme.LocalSystemBarsAppearance
 import com.alorma.caducity.notification.ExpirationNotificationHelper
 
 class MainActivity : ComponentActivity() {
@@ -19,7 +22,11 @@ class MainActivity : ComponentActivity() {
     ) ?: false
 
     setContent {
-      App(showExpiringOnly = showExpiringOnly)
+      CompositionLocalProvider(
+        LocalSystemBarsAppearance provides AndroidSystemBarsAppearance(this)
+      ) {
+        App(showExpiringOnly = showExpiringOnly)
+      }
     }
   }
 }
