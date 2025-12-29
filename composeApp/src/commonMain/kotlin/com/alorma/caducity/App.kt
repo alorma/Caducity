@@ -43,7 +43,11 @@ import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
 import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailRoute
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailScreen
-import com.alorma.caducity.ui.screen.settings.SettingsScreen
+import com.alorma.caducity.ui.screen.settings.SettingsRootScreen
+import com.alorma.caducity.ui.screen.settings.SettingsRoute
+import com.alorma.caducity.ui.screen.settings.about.AboutScreen
+import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScreen
+import com.alorma.caducity.ui.screen.settings.notifications.NotificationsSettingsScreen
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.koin.compose.koinInject
@@ -115,8 +119,29 @@ fun App(
             )
           }
           entry<TopLevelRoute.Settings> {
-            SettingsScreen(
-              scrollConnection = exitAlwaysScrollBehavior
+            SettingsRootScreen(
+              scrollConnection = exitAlwaysScrollBehavior,
+              onNavigateToAppearance = { topLevelBackStack.add(SettingsRoute.Appearance) },
+              onNavigateToNotifications = { topLevelBackStack.add(SettingsRoute.Notifications) },
+              onNavigateToAbout = { topLevelBackStack.add(SettingsRoute.About) },
+            )
+          }
+          entry<SettingsRoute.Appearance> {
+            AppearanceSettingsScreen(
+              scrollConnection = exitAlwaysScrollBehavior,
+              onBack = { topLevelBackStack.removeLast() },
+            )
+          }
+          entry<SettingsRoute.Notifications> {
+            NotificationsSettingsScreen(
+              scrollConnection = exitAlwaysScrollBehavior,
+              onBack = { topLevelBackStack.removeLast() },
+            )
+          }
+          entry<SettingsRoute.About> {
+            AboutScreen(
+              scrollConnection = exitAlwaysScrollBehavior,
+              onBack = { topLevelBackStack.removeLast() },
             )
           }
           entry<CreateProductRoute> {
