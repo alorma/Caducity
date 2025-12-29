@@ -28,6 +28,7 @@ import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.notification.NotificationDebugHelper
 import com.alorma.caducity.ui.screen.settings.components.CardPosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -67,9 +68,7 @@ fun NotificationsSettingsScreen(
         .padding(horizontal = 16.dp),
       verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-      Column(
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-      ) {
+      StyledSettingsGroup {
         StyledSettingsSwitchCard(
           title = stringResource(Res.string.settings_enable_notifications),
           state = notificationsEnabled,
