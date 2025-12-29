@@ -50,9 +50,11 @@ import caducity.composeapp.generated.resources.create_product_name_label
 import caducity.composeapp.generated.resources.create_product_name_placeholder
 import caducity.composeapp.generated.resources.create_product_remove_instance
 import caducity.composeapp.generated.resources.create_product_screen_title
+import com.alorma.caducity.barcode.BarcodeHandler
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -60,6 +62,7 @@ fun CreateProductScreen(
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: CreateProductViewModel = koinViewModel(),
+  barcodeHandler: BarcodeHandler = koinInject(),
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
   var showInstanceBottomSheet by remember { mutableStateOf(false) }
@@ -84,6 +87,8 @@ fun CreateProductScreen(
     modifier = modifier,
   )
 
+  barcodeHandler.Scanner()
+
   // Instance Bottom Sheet
   if (showInstanceBottomSheet) {
     val instance = state.value.instances.firstOrNull { it.id == editingInstanceId }
@@ -91,6 +96,7 @@ fun CreateProductScreen(
     CreateInstanceBottomSheet(
       instanceId = editingInstanceId,
       instance = instance,
+      barcodeHandler = barcodeHandler,
       onSave = { identifier, expirationDate ->
         if (editingInstanceId != null) {
           viewModel.updateInstanceIdentifier(editingInstanceId!!, identifier)
