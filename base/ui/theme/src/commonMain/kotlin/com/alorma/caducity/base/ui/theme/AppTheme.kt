@@ -66,11 +66,6 @@ fun AppTheme(
     dim5 = 0.08f,
   )
 
-  val expirationColorScheme = rememberExpirationColorScheme(
-    schemeType = themePreferences.expirationColorSchemeType.value,
-    colorScheme = colorScheme,
-  )
-
   // Update system bars appearance based on theme
   val systemBarsAppearance = LocalSystemBarsAppearance.current
   SideEffect {
@@ -87,6 +82,9 @@ fun AppTheme(
     typography = caducityTypography,
     motionScheme = MotionScheme.expressive(),
   ) {
+    val expirationColorScheme = generateExpirationColors(
+      schemeType = themePreferences.expirationColorSchemeType.value,
+    )
     CompositionLocalProvider(
       LocalExpirationColors provides expirationColorScheme,
       LocalCaducityDims provides dims,
@@ -107,10 +105,11 @@ fun AppTheme(
 
 @Suppress("ContentEmission")
 @Composable
-private fun rememberExpirationColorScheme(
+private fun generateExpirationColors(
   schemeType: ExpirationColorSchemeType,
-  colorScheme: ColorScheme,
 ): ExpirationColorScheme {
+
+  val colorScheme = CaducityTheme.colorScheme
 
   val matchSaturation = when (schemeType) {
     ExpirationColorSchemeType.VIBRANT -> false
@@ -166,10 +165,7 @@ private fun ExpirationColorsPreview() {
             Text(text = "Type: ${expirationColorSchemeType.name}")
 
             ExpirationColorLegend(
-              expirationColors = rememberExpirationColorScheme(
-                schemeType = expirationColorSchemeType,
-                colorScheme = CaducityTheme.colorScheme,
-              )
+              expirationColors = generateExpirationColors(schemeType = expirationColorSchemeType)
             )
           }
         }
