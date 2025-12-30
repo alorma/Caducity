@@ -15,6 +15,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,15 +27,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
+import com.alorma.caducity.time.clock.AppClock
 import com.alorma.caducity.ui.screen.dashboard.ExpirationDefaults
 import com.alorma.caducity.ui.screen.dashboard.components.productListWithInstancesPreview
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.koin.compose.koinInject
 
 @Composable
 fun ProductsListItem(
   product: ProductsListUiModel,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  appClock: AppClock = koinInject(),
+  relativeTimeFormatter: RelativeTimeFormatter = remember { RelativeTimeFormatter() },
 ) {
+  val today = remember(appClock) {
+    appClock.now()
+      .toLocalDateTime(TimeZone.currentSystemDefault())
+      .date
+  }
   Column(
     modifier = Modifier
       .fillMaxWidth()
@@ -101,10 +117,11 @@ fun ProductsListItem(
               }
             }
 
-            Text(
-              text = instance.expirationDateText,
-              style = MaterialTheme.typography.bodySmall,
-              color = CaducityTheme.colorScheme.onSurfaceVariant,
+            ProductInstanceRelativeTime(
+              expirationDate = instance.expirationDate,
+              expirationDateText = instance.expirationDateText,
+              today = today,
+              relativeTimeFormatter = relativeTimeFormatter,
             )
           }
         }
@@ -118,6 +135,35 @@ fun ProductsListItem(
         )
       }
     }
+  }
+}
+
+@Composable
+private fun ProductInstanceRelativeTime(
+  expirationDate: kotlinx.datetime.LocalDate,
+  expirationDateText: String,
+  today: kotlinx.datetime.LocalDate,
+  relativeTimeFormatter: RelativeTimeFormatter,
+) {
+  var relativeTimeText by remember { mutableStateOf("") }
+
+  LaunchedEffect(expirationDate, today) {
+    relativeTimeText = relativeTimeFormatter.format(today, expirationDate)
+  }
+
+  Column(
+    horizontalAlignment = Alignment.End,
+  ) {
+    Text(
+      text = relativeTimeText,
+      style = MaterialTheme.typography.bodyMedium,
+      color = CaducityTheme.colorScheme.onSurface,
+    )
+    Text(
+      text = expirationDateText,
+      style = MaterialTheme.typography.bodySmall,
+      color = CaducityTheme.colorScheme.onSurfaceVariant,
+    )
   }
 }
 
