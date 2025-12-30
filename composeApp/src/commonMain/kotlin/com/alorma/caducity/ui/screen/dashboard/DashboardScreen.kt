@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -41,6 +40,7 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Close
 import com.alorma.caducity.base.ui.icons.Search
 import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.screen.dashboard.components.DashboardSummaryCard
 import com.alorma.caducity.ui.screen.dashboard.components.ProductItem
 import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
 import org.jetbrains.compose.resources.stringResource
@@ -201,9 +201,16 @@ fun DashboardContent(
       }
 
       LazyColumn(
-        contentPadding = PaddingValues(horizontal = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
+        // Summary card showing up to 3 items: expired, expiring soon, fresh
+        item(
+          key = "summary",
+          contentType = "summary"
+        ) {
+          DashboardSummaryCard(summary = state.summary)
+        }
+
         item(contentType = "calendar") {
           ProductsCalendar(
             products = state.items,
@@ -225,3 +232,4 @@ fun DashboardContent(
     }
   }
 }
+

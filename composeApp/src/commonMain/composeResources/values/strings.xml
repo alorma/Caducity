@@ -16,7 +16,7 @@
     <string name="dashboard_action_expand">Expand</string>
     <string name="dashboard_search_placeholder">Search products...</string>
     <string name="dashboard_filter_fresh">Fresh</string>
-    <string name="dashboard_filter_expiring_soon">Expiring Soon</string>
+    <string name="dashboard_filter_expiring_soon">Expiring</string>
     <string name="dashboard_filter_expired">Expired</string>
     <string name="dashboard_clear_filters">Clear Filters</string>
 
@@ -47,7 +47,7 @@
     <string name="settings_color_scheme_vibrant">Vibrant</string>
     <string name="settings_color_scheme_harmony">Harmony</string>
     <string name="settings_expiration_legend_fresh">Fresh</string>
-    <string name="settings_expiration_legend_expiring_soon">Expiring Soon</string>
+    <string name="settings_expiration_legend_expiring_soon">Expiring</string>
     <string name="settings_expiration_legend_expired">Expired</string>
 
     <string name="settings_group_notifications">Notifications</string>

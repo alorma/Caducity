@@ -7,6 +7,13 @@ sealed class DashboardState {
 
   data class Success(
     val items: ImmutableList<ProductUiModel>,
+    val summary: DashboardSummary,
     val config: DashboardUI,
   ) : DashboardState()
 }
+
+data class DashboardSummary(
+  val expired: Int,
+  val expiringSoon: Int,
+  val fresh: Int,
+)
