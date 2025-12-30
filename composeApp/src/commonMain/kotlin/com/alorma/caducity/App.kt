@@ -37,8 +37,8 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.theme.AppTheme
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
-import com.alorma.caducity.ui.screen.dashboard.products.ProductsListRoute
-import com.alorma.caducity.ui.screen.dashboard.products.ProductsListScreen
+import com.alorma.caducity.ui.screen.products.ProductsListRoute
+import com.alorma.caducity.ui.screen.products.ProductsListScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
 import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailRoute

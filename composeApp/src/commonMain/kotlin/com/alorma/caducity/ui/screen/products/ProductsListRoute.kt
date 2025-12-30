@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.dashboard.products
+package com.alorma.caducity.ui.screen.products
 
 import androidx.navigation3.runtime.NavKey
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
