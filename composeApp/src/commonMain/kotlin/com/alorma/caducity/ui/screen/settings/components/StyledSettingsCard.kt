@@ -10,9 +10,9 @@ import com.alorma.compose.settings.ui.SettingsMenuLink
 @Composable
 fun StyledSettingsCard(
   title: String,
-  subtitle: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
+  subtitle: String? = null,
   position: CardPosition = CardPosition.Single,
   icon: (@Composable () -> Unit)? = null,
   action: (@Composable () -> Unit)? = null,
@@ -27,7 +27,12 @@ fun StyledSettingsCard(
         fontWeight = FontWeight.SemiBold,
       )
     },
-    subtitle = { Text(text = subtitle) },
+    subtitle = if (subtitle != null
+    ) {
+      { Text(text = subtitle) }
+    } else {
+      null
+    },
     action = action,
     onClick = onClick,
   )
