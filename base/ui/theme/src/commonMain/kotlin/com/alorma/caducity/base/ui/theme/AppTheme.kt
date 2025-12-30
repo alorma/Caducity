@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Surface
@@ -27,8 +26,12 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.compose.settings.ui.base.internal.LocalSettingsTileColors
 import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
+import com.materialkolor.DynamicMaterialExpressiveTheme
+import com.materialkolor.PaletteStyle
+import com.materialkolor.dynamiccolor.ColorSpec
 import com.materialkolor.ktx.harmonizeWithPrimary
 import com.materialkolor.ktx.isLight
+import com.materialkolor.rememberDynamicColorScheme
 import org.koin.compose.koinInject
 
 @Suppress("ModifierRequired")
@@ -39,24 +42,6 @@ fun AppTheme(
 ) {
   val systemInDarkTheme = isSystemInDarkTheme()
 
-  val darkTheme = when (themePreferences.themeMode.value) {
-    ThemeMode.LIGHT -> false
-    ThemeMode.DARK -> true
-    ThemeMode.SYSTEM -> systemInDarkTheme
-  }
-
-  val defaultColorScheme = if (darkTheme) {
-    platformDarkColorScheme()
-  } else {
-    platformLightColorScheme()
-  }
-
-  val colorScheme: ColorScheme = if (themePreferences.useDynamicColors.value) {
-    dynamicColorScheme(darkTheme) ?: defaultColorScheme
-  } else {
-    defaultColorScheme
-  }
-
   val dims = CaducityDims(
     noDim = 1f,
     dim1 = 0.72f,
@@ -64,6 +49,40 @@ fun AppTheme(
     dim3 = 0.40f,
     dim4 = 0.16f,
     dim5 = 0.08f,
+  )
+
+  val darkTheme = when (themePreferences.themeMode.value) {
+    ThemeMode.LIGHT -> false
+    ThemeMode.DARK -> true
+    ThemeMode.SYSTEM -> systemInDarkTheme
+  }
+
+  val colorScheme = if (themePreferences.useDynamicColors.value) {
+    rememberDynamicColorScheme(
+      seedColor = Seed,
+      isDark = darkTheme,
+      specVersion = ColorSpec.SpecVersion.SPEC_2025,
+      style = PaletteStyle.Expressive
+    )
+  } else {
+    if (darkTheme) {
+      darkColorScheme
+    } else {
+      lightColorScheme
+    }
+  }
+
+  MaterialExpressiveTheme(
+    colorScheme = colorScheme,
+    typography = caducityTypography,
+    motionScheme = MotionScheme.expressive(),
+    content = {
+      InternalTheme(
+        themePreferences = themePreferences,
+        dims = dims,
+        content = content,
+      )
+    },
   )
 
   // Update system bars appearance based on theme
@@ -76,31 +95,36 @@ fun AppTheme(
       it.setLightNavigationBars(!darkTheme)
     }
   }
+}
 
-  MaterialExpressiveTheme(
-    colorScheme = colorScheme,
-    typography = caducityTypography,
-    motionScheme = MotionScheme.expressive(),
+@Suppress("ModifierRequired")
+@Composable
+fun InternalTheme(
+  themePreferences: ThemePreferences,
+  dims: CaducityDims,
+  content: @Composable () -> Unit,
+) {
+  val expirationColorScheme = generateExpirationColors(
+    schemeType = themePreferences.expirationColorSchemeType.value,
+  )
+  val colorScheme = CaducityTheme.colorScheme
+
+  CompositionLocalProvider(
+    LocalExpirationColors provides expirationColorScheme,
+    LocalCaducityDims provides dims,
   ) {
-    val expirationColorScheme = generateExpirationColors(
-      schemeType = themePreferences.expirationColorSchemeType.value,
+    val settingsColors = SettingsTileDefaults.colors(
+      containerColor = colorScheme.surfaceContainer,
+      titleColor = colorScheme.primary,
+      subtitleColor = colorScheme.onSurface,
+      iconColor = colorScheme.primary,
+      actionColor = colorScheme.primary,
     )
-    CompositionLocalProvider(
-      LocalExpirationColors provides expirationColorScheme,
-      LocalCaducityDims provides dims,
-    ) {
-      val settingsColors = SettingsTileDefaults.colors(
-        containerColor = colorScheme.surfaceContainer,
-        titleColor = colorScheme.primary,
-        subtitleColor = colorScheme.onSurface,
-        iconColor = colorScheme.primary,
-        actionColor = colorScheme.primary,
-      )
-      CompositionLocalProvider(LocalSettingsTileColors provides settingsColors) {
-        content()
-      }
+    CompositionLocalProvider(LocalSettingsTileColors provides settingsColors) {
+      content()
     }
   }
+
 }
 
 @Suppress("ContentEmission")

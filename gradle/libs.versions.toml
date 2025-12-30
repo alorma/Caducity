@@ -33,7 +33,7 @@ uiTiles = "2.23.0"
 koin = "4.1.1"
 kalendar = "2.9.0"
 
-materialKolor = "4.0.5"
+materialKolor = "5.0.0-alpha04"
 
 scanEngine = "1.6.2"
 
