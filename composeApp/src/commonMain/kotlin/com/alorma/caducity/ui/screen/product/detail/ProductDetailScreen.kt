@@ -24,7 +24,6 @@ import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -35,11 +34,12 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alorma.caducity.base.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
+import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.screen.dashboard.ExpirationColors
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
-import com.alorma.caducity.base.ui.theme.CaducityTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -97,7 +97,7 @@ private fun ProductDetailContent(
 ) {
   Scaffold(
     topBar = {
-      TopAppBar(
+      StyledTopAppBar(
         title = {
           Text(
             text = product.name,

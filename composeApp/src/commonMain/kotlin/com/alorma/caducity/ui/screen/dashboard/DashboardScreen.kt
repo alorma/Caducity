@@ -36,6 +36,7 @@ import caducity.composeapp.generated.resources.dashboard_filter_expiring_soon
 import caducity.composeapp.generated.resources.dashboard_filter_fresh
 import caducity.composeapp.generated.resources.dashboard_screen_title
 import caducity.composeapp.generated.resources.dashboard_search_placeholder
+import com.alorma.caducity.base.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Close
 import com.alorma.caducity.base.ui.icons.Search
@@ -103,7 +104,7 @@ fun DashboardContent(
       .nestedScroll(scrollConnection)
       .then(modifier),
     topBar = {
-      TopAppBar(
+      StyledTopAppBar(
         title = {
           Text(
             text = stringResource(Res.string.dashboard_screen_title),

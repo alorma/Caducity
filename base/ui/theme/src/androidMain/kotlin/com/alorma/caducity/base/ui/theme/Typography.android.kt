@@ -5,6 +5,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
 
 val TYPOGRAPHY = Typography()
 
@@ -73,6 +74,8 @@ actual val caducityTypography = Typography(
 
 fun TextStyle.topBar() = copy(
   fontFamily = AppFonts.robotoFlexTopBar,
+  fontSize = 32.sp,
+  lineHeight = 32.sp
 )
 
 @OptIn(ExperimentalTextApi::class)

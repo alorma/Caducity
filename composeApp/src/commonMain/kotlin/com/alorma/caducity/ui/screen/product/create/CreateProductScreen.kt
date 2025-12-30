@@ -54,6 +54,7 @@ import caducity.composeapp.generated.resources.create_product_name_placeholder
 import caducity.composeapp.generated.resources.create_product_remove_instance
 import caducity.composeapp.generated.resources.create_product_screen_title
 import com.alorma.caducity.barcode.BarcodeHandler
+import com.alorma.caducity.base.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.BarcodeScanner
@@ -157,7 +158,7 @@ private fun CreateProductPage(
     modifier = modifier.fillMaxSize(),
     contentWindowInsets = WindowInsets.systemBars,
     topBar = {
-      TopAppBar(
+      StyledTopAppBar(
         title = {
           Text(
             text = stringResource(Res.string.create_product_screen_title),
