@@ -26,6 +26,8 @@
     <string name="dashboard_section_empty">Buit</string>
 
     <string  name="settings_screen_title">Configuració</string>
+    <string name="settings_language_title">Idioma</string>
+    <string name="settings_language_description">Idioma de l'aplicació</string>
 
     <string name="settings_group_appearance">Aparença</string>
     <string name="settings_theme_title">Tema</string>
@@ -76,4 +78,9 @@
     <string name="relative_time_weeks_ago">Fa %1$d setmanes</string>
     <string name="relative_time_a_month_ago">Fa un mes</string>
     <string name="relative_time_months_ago">Fa %1$d mesos</string>
+
+    <!-- Language strings -->
+    <string name="language_english">English</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_catalan">Català</string>
 </resources>

@@ -217,6 +217,102 @@ All dependencies are centralized in `gradle/libs.versions.toml`:
 - Source/target: Java 11
 - Ensure JDK 11+ is configured in IDE
 
+## Localization and Language Support
+
+The app uses Compose Multiplatform resources with Android 13+ per-app language preferences. Currently supported languages: English (en), Spanish (es), and Catalan (ca).
+
+### Adding a New Language
+
+To add a new language (e.g., French):
+
+1. **Add Language Enum Entry**
+   - Edit `base/ui/theme/src/commonMain/kotlin/com/alorma/caducity/base/ui/theme/language/Language.kt`
+   - Add new enum entry:
+   ```kotlin
+   enum class Language(val code: String) {
+     ENGLISH("en"),
+     SPANISH("es"),
+     CATALAN("ca"),
+     FRENCH("fr"),  // Add new language
+   }
+   ```
+
+2. **Create Resource Directory**
+   - Create `composeApp/src/commonMain/composeResources/values-{code}/` directory
+   - Example: `composeApp/src/commonMain/composeResources/values-fr/`
+
+3. **Add String Resources**
+   - Copy `strings.xml` from `values/` to your new `values-{code}/` directory
+   - Translate all string values to the target language
+   - Keep string keys unchanged
+
+4. **Update LanguageSettingsScreen**
+   - Edit `composeApp/src/commonMain/kotlin/com/alorma/caducity/ui/screen/settings/language/LanguageSettingsScreen.kt`
+   - Add string resource:
+   ```kotlin
+   import caducity.composeapp.generated.resources.language_french
+   val languageFrench = stringResource(Res.string.language_french)
+   ```
+   - Add language to when expression:
+   ```kotlin
+   val title = when (language) {
+     Language.ENGLISH -> languageEnglish
+     Language.SPANISH -> languageSpanish
+     Language.CATALAN -> languageCatalan
+     Language.FRENCH -> languageFrench
+   }
+   ```
+
+5. **Add Language Name String**
+   - Edit all `composeApp/src/commonMain/composeResources/values*/strings.xml` files
+   - Add the language name in each language:
+   ```xml
+   <!-- values/strings.xml (English) -->
+   <string name="language_french">Français</string>
+
+   <!-- values-es/strings.xml (Spanish) -->
+   <string name="language_french">Francés</string>
+
+   <!-- values-ca/strings.xml (Catalan) -->
+   <string name="language_french">Francès</string>
+
+   <!-- values-fr/strings.xml (French) -->
+   <string name="language_french">Français</string>
+   ```
+
+6. **Update Android Locales Config**
+   - Edit `composeApp/src/androidMain/res/xml/locales_config.xml`
+   - Add new locale:
+   ```xml
+   <locale android:name="fr"/>
+   ```
+
+7. **Generate Resource Accessors**
+   - Run: `./gradlew :composeApp:generateResourceAccessorsForCommonMain`
+   - This generates the `Res.string.language_french` accessor
+
+8. **Test**
+   - Build and install: `./gradlew installDebug`
+   - Navigate to Settings → Language
+   - Verify new language appears and switches correctly
+
+### Language Architecture
+
+- **LanguageManager**: Abstract base class handling persistence and platform-specific application
+  - Located: `base/ui/theme/src/commonMain/kotlin/com/alorma/caducity/base/ui/theme/LanguageManager.kt`
+  - Persists selection using `Settings` (key: "app_language")
+  - Reads from platform API (`AppCompatDelegate.getApplicationLocales()` on Android)
+
+- **AndroidLanguageManager**: Android implementation
+  - Located: `composeApp/src/androidMain/kotlin/com/alorma/caducity/language/AndroidLanguageManager.kt`
+  - Uses `LocaleManager.applicationLocales` on Android 13+ for seamless language changes without app restart
+  - Falls back to `AppCompatDelegate.setApplicationLocales()` on older Android versions
+  - Requires Context to be injected via Koin
+
+- **System Language Detection**: On first launch, detects system language and defaults to English if unsupported
+
+- **No App Restart**: Language changes apply immediately without restarting the app on Android 13+ (API 33+)
+
 ## Important References
 
 - Detailed implementation plan: `IMPLEMENTATION_PLAN.md`

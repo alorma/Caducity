@@ -15,6 +15,7 @@ fun StyledSettingsCard(
   modifier: Modifier = Modifier,
   position: CardPosition = CardPosition.Single,
   icon: (@Composable () -> Unit)? = null,
+  action: (@Composable () -> Unit)? = null,
 ) {
   SettingsMenuLink(
     modifier = modifier.fillMaxWidth(),
@@ -27,6 +28,7 @@ fun StyledSettingsCard(
       )
     },
     subtitle = { Text(text = subtitle) },
+    action = action,
     onClick = onClick,
   )
 }
