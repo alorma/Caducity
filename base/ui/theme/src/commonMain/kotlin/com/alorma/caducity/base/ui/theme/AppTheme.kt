@@ -27,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.compose.settings.ui.base.internal.LocalSettingsTileColors
 import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
+import com.materialkolor.ktx.harmonizeWithPrimary
+import com.materialkolor.ktx.isLight
 import org.koin.compose.koinInject
 
 @Suppress("ModifierRequired")
@@ -66,14 +68,7 @@ fun AppTheme(
 
   val expirationColorScheme = rememberExpirationColorScheme(
     schemeType = themePreferences.expirationColorSchemeType.value,
-    darkTheme = darkTheme,
     colorScheme = colorScheme,
-    dims = dims,
-  )
-
-  val colors = CaducityColors.fromColorScheme(
-    colorScheme = colorScheme,
-    expirationColorScheme = expirationColorScheme,
   )
 
   // Update system bars appearance based on theme
@@ -87,14 +82,14 @@ fun AppTheme(
     }
   }
 
-  CompositionLocalProvider(
-    LocalCaducityColors provides colors,
-    LocalCaducityDims provides dims
+  MaterialExpressiveTheme(
+    colorScheme = colorScheme,
+    typography = caducityTypography,
+    motionScheme = MotionScheme.expressive(),
   ) {
-    MaterialExpressiveTheme(
-      colorScheme = LocalCaducityColors.current.colorScheme,
-      typography = caducityTypography,
-      motionScheme = MotionScheme.expressive(),
+    CompositionLocalProvider(
+      LocalExpirationColors provides expirationColorScheme,
+      LocalCaducityDims provides dims,
     ) {
       val settingsColors = SettingsTileDefaults.colors(
         containerColor = colorScheme.surfaceContainer,
@@ -114,46 +109,47 @@ fun AppTheme(
 @Composable
 private fun rememberExpirationColorScheme(
   schemeType: ExpirationColorSchemeType,
-  darkTheme: Boolean,
   colorScheme: ColorScheme,
-  dims: CaducityDims,
 ): ExpirationColorScheme {
-  return when (schemeType) {
-    ExpirationColorSchemeType.VIBRANT -> {
-      if (darkTheme) {
-        darkExpirationColorScheme
-      } else {
-        lightExpirationColorScheme
-      }
-    }
 
-    ExpirationColorSchemeType.HARMONIZE -> {
-      val baseColor = colorScheme.primary
-      val baseAlpha = dims.dim3
-
-      // Hue values: Green ~120°, Orange ~30°, Red ~0°
-      val freshColor = baseColor
-        .shiftHueTowards(targetHue = 120f, amount = 1.0f)
-        .copy(alpha = baseAlpha)
-
-      val expiringSoonColor = baseColor
-        .shiftHueTowards(targetHue = 30f, amount = 1.0f)
-        .copy(alpha = baseAlpha)
-
-      val expiredColor = baseColor
-        .shiftHueTowards(targetHue = 0f, amount = 1.0f)
-        .copy(alpha = baseAlpha)
-
-      ExpirationColorScheme(
-        fresh = freshColor,
-        onFresh = colorScheme.onSurface,
-        expiringSoon = expiringSoonColor,
-        onExpiringSoon = colorScheme.onSurface,
-        expired = expiredColor,
-        onExpired = colorScheme.onSurface,
-      )
-    }
+  val matchSaturation = when (schemeType) {
+    ExpirationColorSchemeType.VIBRANT -> false
+    ExpirationColorSchemeType.HARMONIZE -> true
   }
+
+  val freshColor = colorScheme.harmonizeWithPrimary(
+    color = Color.Green,
+    matchSaturation = matchSaturation,
+  )
+  val expiringSoonColor = colorScheme.harmonizeWithPrimary(
+    color = Color(0xFFFF8000),
+    matchSaturation = matchSaturation,
+  )
+  val expiredColor = colorScheme.harmonizeWithPrimary(
+    color = Color.Red,
+    matchSaturation = matchSaturation,
+  )
+
+  return ExpirationColorScheme(
+    fresh = freshColor,
+    onFresh = if (freshColor.isLight()) {
+      colorScheme.inverseSurface
+    } else {
+      colorScheme.surface
+    },
+    expiringSoon = expiringSoonColor,
+    onExpiringSoon = if (expiringSoonColor.isLight()) {
+      colorScheme.inverseSurface
+    } else {
+      colorScheme.surface
+    },
+    expired = expiredColor,
+    onExpired = if (expiredColor.isLight()) {
+      colorScheme.inverseSurface
+    } else {
+      colorScheme.surface
+    },
+  )
 }
 
 @Preview
@@ -172,9 +168,7 @@ private fun ExpirationColorsPreview() {
             ExpirationColorLegend(
               expirationColors = rememberExpirationColorScheme(
                 schemeType = expirationColorSchemeType,
-                darkTheme = false,
                 colorScheme = CaducityTheme.colorScheme,
-                dims = CaducityTheme.dims,
               )
             )
           }

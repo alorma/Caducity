@@ -33,6 +33,8 @@ uiTiles = "2.23.0"
 koin = "4.1.1"
 kalendar = "2.9.0"
 
+materialKolor = "4.0.5"
+
 scanEngine = "1.6.2"
 
 [libraries]
@@ -79,6 +81,8 @@ compose-components-resources = { group = "org.jetbrains.compose.components", nam
 compose-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "compose" }
 compose-ui-tooling-preview = { group = "org.jetbrains.compose.ui", name = "ui-tooling-preview", version.ref = "compose" }
 compose-ui-tooling = { group = "org.jetbrains.compose.ui", name = "ui-tooling", version.ref = "compose" }
+
+material-kolor = { group = "com.materialkolor", name = "material-kolor", version.ref = "materialKolor" }
 
 scan-engine = { group = "com.github.tillhub", name = "scan-engine", version.ref = "scanEngine" }
 
