@@ -37,8 +37,9 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.theme.AppTheme
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
-import com.alorma.caducity.ui.screen.dashboard.date.DateProductsRoute
-import com.alorma.caducity.ui.screen.dashboard.date.DateProductsScreen
+import com.alorma.caducity.ui.screen.dashboard.products.ProductsListFilter
+import com.alorma.caducity.ui.screen.dashboard.products.ProductsListRoute
+import com.alorma.caducity.ui.screen.dashboard.products.ProductsListScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
 import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailRoute
@@ -106,11 +107,8 @@ fun App(
             DashboardScreen(
               showExpiringOnly = showExpiringOnly,
               scrollConnection = exitAlwaysScrollBehavior,
-              onNavigateToProductDetail = { productId ->
-                topLevelBackStack.add(ProductDetailRoute(productId))
-              },
               onNavigateToDate = { date ->
-                topLevelBackStack.add(DateProductsRoute(date))
+                topLevelBackStack.add(ProductsListRoute(date))
               }
             )
           }
@@ -130,12 +128,11 @@ fun App(
               onBack = { topLevelBackStack.removeLast() }
             )
           }
-          entry<DateProductsRoute>(
+          entry<ProductsListRoute>(
             metadata = BottomSheetSceneStrategy.bottomSheet(),
           ) {
-            DateProductsScreen(
-              date = it.getLocalDate(),
-              onDismiss = { topLevelBackStack.removeLast() },
+            ProductsListScreen(
+              filters = ProductsListFilter.ByDate(it.getLocalDate()),
               onNavigateToProductDetail = { productId ->
                 topLevelBackStack.add(ProductDetailRoute(productId))
               }

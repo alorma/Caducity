@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.dashboard.date
+package com.alorma.caducity.ui.screen.dashboard.products
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,63 +11,41 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.base.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.screen.dashboard.DashboardState
-import com.alorma.caducity.ui.screen.dashboard.DashboardViewModel
-import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
 import com.alorma.caducity.ui.screen.dashboard.components.ProductItem
-import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DateProductsScreen(
-  date: LocalDate,
-  onDismiss: () -> Unit,
+fun ProductsListScreen(
+  filters: ProductsListFilter,
   onNavigateToProductDetail: (String) -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: DashboardViewModel = koinViewModel { parametersOf(false) },
+  viewModel: ProductsListViewModel = koinViewModel(),
 ) {
-  val dashboardState = viewModel.state.collectAsStateWithLifecycle()
 
-  val productsForDate by remember(dashboardState.value, date) {
-    derivedStateOf {
-      when (val state = dashboardState.value) {
-        is DashboardState.Success -> {
-          state.items.filter { product ->
-            if (product is ProductUiModel.WithInstances) {
-              product.instances.any { instance ->
-                instance.expirationDate == date
-              }
-            } else {
-              false
-            }
-          }
-        }
+  LaunchedEffect(filters) {
+    viewModel.onFiltersUpdate(filters)
+  }
 
-        else -> emptyList()
-      }
-    }
+  val state = viewModel.state.collectAsStateWithLifecycle()
+
+  val productsForDate = when (val currentState = state.value) {
+    is DateProductsState.Success -> currentState.items
+    else -> emptyList()
   }
 
   Column(
     modifier = Modifier
       .fillMaxWidth()
-      .padding(horizontal = 16.dp),
+      .padding(horizontal = 16.dp)
+      .then(modifier),
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
-    Text(
-      text = "Products expiring on ${date}",
-      style = MaterialTheme.typography.titleLarge,
-      color = CaducityTheme.colorScheme.onSurface,
-    )
 
     LazyColumn(
       contentPadding = PaddingValues(bottom = 16.dp),
