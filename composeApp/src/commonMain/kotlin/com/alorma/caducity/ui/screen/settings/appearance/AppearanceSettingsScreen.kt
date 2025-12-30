@@ -33,11 +33,11 @@ import caducity.composeapp.generated.resources.settings_theme_light
 import caducity.composeapp.generated.resources.settings_theme_system
 import caducity.composeapp.generated.resources.settings_theme_title
 import com.alorma.caducity.base.ui.theme.CaducityTheme
-import com.alorma.caducity.base.ui.theme.ExpirationColorSchemeType
+import com.alorma.caducity.base.ui.theme.colors.ExpirationColorSchemeType
 import com.alorma.caducity.base.ui.theme.ThemeMode
 import com.alorma.caducity.base.ui.theme.ThemePreferences
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
-import com.alorma.caducity.base.ui.theme.supportsDynamicColors
+import com.alorma.caducity.base.ui.theme.colors.supportsDynamicColors
 import com.alorma.caducity.ui.screen.settings.components.CardPosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup

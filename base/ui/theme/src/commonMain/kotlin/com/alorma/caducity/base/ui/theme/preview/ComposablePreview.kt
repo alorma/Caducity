@@ -5,7 +5,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.alorma.caducity.base.ui.theme.AppTheme
-import com.alorma.caducity.base.ui.theme.ExpirationColorSchemeType
+import com.alorma.caducity.base.ui.theme.colors.ExpirationColorSchemeType
 import com.alorma.caducity.base.ui.theme.LocalSystemBarsAppearance
 import com.alorma.caducity.base.ui.theme.SystemBarsAppearanceNoOp
 import com.alorma.caducity.base.ui.theme.ThemeMode

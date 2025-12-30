@@ -1,6 +1,8 @@
 package com.alorma.caducity.base.ui.theme
 
 import androidx.compose.runtime.mutableStateOf
+import com.alorma.caducity.base.ui.theme.colors.ExpirationColorSchemeType
+import com.alorma.caducity.base.ui.theme.colors.supportsDynamicColors
 import com.russhwolf.settings.Settings
 
 class ThemePreferencesImpl(private val settings: Settings) : ThemePreferences {

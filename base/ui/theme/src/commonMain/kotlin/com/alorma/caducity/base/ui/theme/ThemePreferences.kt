@@ -1,6 +1,7 @@
 package com.alorma.caducity.base.ui.theme
 
 import androidx.compose.runtime.MutableState
+import com.alorma.caducity.base.ui.theme.colors.ExpirationColorSchemeType
 
 interface ThemePreferences {
   val themeMode: MutableState<ThemeMode>
