@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -25,6 +24,7 @@ import caducity.composeapp.generated.resources.settings_debug_title
 import caducity.composeapp.generated.resources.settings_notifications_description
 import caducity.composeapp.generated.resources.settings_notifications_title
 import caducity.composeapp.generated.resources.settings_screen_title
+import com.alorma.caducity.base.ui.components.StyledCenterAlignedTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Palette
 import com.alorma.caducity.debug.DebugModeProvider
@@ -49,7 +49,7 @@ fun SettingsRootScreen(
       .nestedScroll(scrollConnection)
       .then(modifier),
     topBar = {
-      CenterAlignedTopAppBar(
+      StyledCenterAlignedTopAppBar(
         title = {
           Text(
             text = stringResource(Res.string.settings_screen_title),
