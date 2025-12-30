@@ -16,7 +16,7 @@
     <string name="dashboard_action_expand">Expandir</string>
     <string name="dashboard_search_placeholder">Buscar productos...</string>
     <string name="dashboard_filter_fresh">Fresco</string>
-    <string name="dashboard_filter_expiring_soon">Próximo a caducar</string>
+    <string name="dashboard_filter_expiring_soon">Próximo</string>
     <string name="dashboard_filter_expired">Caducado</string>
     <string name="dashboard_clear_filters">Limpiar filtros</string>
 
@@ -39,7 +39,7 @@
     <string name="settings_color_scheme_vibrant">Vibrante</string>
     <string name="settings_color_scheme_harmony">Armonico</string>
     <string name="settings_expiration_legend_fresh">Fresco</string>
-    <string name="settings_expiration_legend_expiring_soon">Próximo a caducar</string>
+    <string name="settings_expiration_legend_expiring_soon">Próximo</string>
     <string name="settings_expiration_legend_expired">Caducado</string>
 
     <string name="settings_group_notifications">Notificaciones</string>

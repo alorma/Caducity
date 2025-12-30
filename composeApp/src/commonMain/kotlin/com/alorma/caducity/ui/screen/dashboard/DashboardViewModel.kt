@@ -41,13 +41,14 @@ class DashboardViewModel(
     obtainDashboardProductsUseCase.obtainProducts(),
     dashboardUiConfiguration.config,
   ) { products, config ->
-    val sections = dashboardMapper.mapToDashboardSections(
+    val dashboardData = dashboardMapper.mapToDashboardSections(
       products = products,
       searchQuery = config.searchQuery,
       statusFilters = config.statusFilters,
     )
     DashboardState.Success(
-      items = sections,
+      items = dashboardData.items,
+      summary = dashboardData.summary,
       config = config,
     )
   }.stateIn(

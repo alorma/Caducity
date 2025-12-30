@@ -16,7 +16,7 @@
     <string name="dashboard_action_expand">Expandir</string>
     <string name="dashboard_search_placeholder">Cercar productes...</string>
     <string name="dashboard_filter_fresh">Fresc</string>
-    <string name="dashboard_filter_expiring_soon">Pròxim a caducar</string>
+    <string name="dashboard_filter_expiring_soon">Pròxim</string>
     <string name="dashboard_filter_expired">Caducat</string>
     <string name="dashboard_clear_filters">Netejar filtres</string>
 
@@ -39,7 +39,7 @@
     <string name="settings_color_scheme_vibrant">Vibrant</string>
     <string name="settings_color_scheme_harmony">Harmonic</string>
     <string name="settings_expiration_legend_fresh">Fresc</string>
-    <string name="settings_expiration_legend_expiring_soon">Pròxim a caducar</string>
+    <string name="settings_expiration_legend_expiring_soon">Pròxim</string>
     <string name="settings_expiration_legend_expired">Caducat</string>
 
     <string name="settings_group_notifications">Notificacions</string>

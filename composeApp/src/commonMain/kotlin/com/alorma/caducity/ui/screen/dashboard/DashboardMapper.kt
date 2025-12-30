@@ -13,16 +13,61 @@ class DashboardMapper(
   private val appClock: AppClock,
   private val dateFormat: DateTimeFormat<LocalDate>,
 ) {
+  data class DashboardData(
+    val items: ImmutableList<ProductUiModel>,
+    val summary: DashboardSummary,
+  )
+
   fun mapToDashboardSections(
     products: ImmutableList<ProductWithInstances>,
     searchQuery: String = "",
     statusFilters: Set<InstanceStatus> = emptySet(),
-  ): ImmutableList<ProductUiModel> {
-    return products
-      .map { it.toUiModel() }
+  ): DashboardData {
+    val allProducts = products.map { it.toUiModel() }
+
+    // Calculate summary from all products (before filtering)
+    val summary = calculateSummary(allProducts)
+
+    // Apply filters for the list
+    val filteredItems = allProducts
       .filter { product ->
         matchesSearchQuery(product, searchQuery) && matchesStatusFilters(product, statusFilters)
-      }.toImmutableList()
+      }
+      .toImmutableList()
+
+    return DashboardData(
+      items = filteredItems,
+      summary = summary,
+    )
+  }
+
+  private fun calculateSummary(products: List<ProductUiModel>): DashboardSummary {
+    var expiredCount = 0
+    var expiringSoonCount = 0
+    var freshCount = 0
+
+    products.forEach { product ->
+      when (product) {
+        is ProductUiModel.Empty -> {
+          // Empty products don't contribute to summary
+        }
+        is ProductUiModel.WithInstances -> {
+          product.instances.forEach { instance ->
+            when (instance.status) {
+              is InstanceStatus.Expired -> expiredCount++
+              is InstanceStatus.ExpiringSoon -> expiringSoonCount++
+              is InstanceStatus.Fresh -> freshCount++
+            }
+          }
+        }
+      }
+    }
+
+    return DashboardSummary(
+      expired = expiredCount,
+      expiringSoon = expiringSoonCount,
+      fresh = freshCount,
+    )
   }
 
   private fun matchesSearchQuery(product: ProductUiModel, query: String): Boolean {
