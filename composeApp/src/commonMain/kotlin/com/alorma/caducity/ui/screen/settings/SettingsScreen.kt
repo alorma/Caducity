@@ -21,6 +21,8 @@ import caducity.composeapp.generated.resources.settings_appearance_description
 import caducity.composeapp.generated.resources.settings_appearance_title
 import caducity.composeapp.generated.resources.settings_debug_description
 import caducity.composeapp.generated.resources.settings_debug_title
+import caducity.composeapp.generated.resources.settings_language_description
+import caducity.composeapp.generated.resources.settings_language_title
 import caducity.composeapp.generated.resources.settings_notifications_description
 import caducity.composeapp.generated.resources.settings_notifications_title
 import caducity.composeapp.generated.resources.settings_screen_title
@@ -37,6 +39,7 @@ import org.koin.compose.koinInject
 @Composable
 fun SettingsRootScreen(
   onNavigateToAppearance: () -> Unit,
+  onNavigateToLanguage: () -> Unit,
   onNavigateToNotifications: () -> Unit,
   onNavigateToDebug: () -> Unit,
   onNavigateToAbout: () -> Unit,
@@ -66,7 +69,7 @@ fun SettingsRootScreen(
         .padding(horizontal = 16.dp),
       verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-      // Group 1: Appearance & Notifications
+      // Group 1: Appearance, Language & Notifications
       StyledSettingsGroup {
         StyledSettingsCard(
           icon = {
@@ -79,6 +82,19 @@ fun SettingsRootScreen(
           subtitle = stringResource(Res.string.settings_appearance_description),
           onClick = onNavigateToAppearance,
           position = CardPosition.Top,
+        )
+
+        StyledSettingsCard(
+          icon = {
+            Icon(
+              imageVector = AppIcons.Language,
+              contentDescription = null,
+            )
+          },
+          title = stringResource(Res.string.settings_language_title),
+          subtitle = stringResource(Res.string.settings_language_description),
+          onClick = onNavigateToLanguage,
+          position = CardPosition.Middle,
         )
 
         StyledSettingsCard(

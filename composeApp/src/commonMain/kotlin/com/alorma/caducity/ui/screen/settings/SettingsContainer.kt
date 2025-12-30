@@ -15,6 +15,7 @@ import com.alorma.caducity.debug.DebugModeProvider
 import com.alorma.caducity.ui.screen.settings.about.AboutScreen
 import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScreen
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsScreen
+import com.alorma.caducity.ui.screen.settings.language.LanguageSettingsScreen
 import com.alorma.caducity.ui.screen.settings.notifications.NotificationsSettingsScreen
 import org.koin.compose.koinInject
 
@@ -42,6 +43,7 @@ fun SettingsContainer(
         SettingsRootScreen(
           scrollConnection = scrollConnection,
           onNavigateToAppearance = { settingsBackStack.add(SettingsRoute.Appearance) },
+          onNavigateToLanguage = { settingsBackStack.add(SettingsRoute.Language) },
           onNavigateToNotifications = { settingsBackStack.add(SettingsRoute.Notifications) },
           onNavigateToDebug = { settingsBackStack.add(SettingsRoute.Debug) },
           onNavigateToAbout = { settingsBackStack.add(SettingsRoute.About) },
@@ -51,6 +53,11 @@ fun SettingsContainer(
         metadata = BottomSheetSceneStrategy.bottomSheet(),
       ) {
         AppearanceSettingsScreen()
+      }
+      entry<SettingsRoute.Language>(
+        metadata = BottomSheetSceneStrategy.bottomSheet(),
+      ) {
+        LanguageSettingsScreen()
       }
       entry<SettingsRoute.Notifications>(
         metadata = BottomSheetSceneStrategy.bottomSheet(),

@@ -13,6 +13,7 @@ android-compileSdk = "36"
 android-minSdk = "35"
 android-targetSdk = "36"
 androidx-activity = "1.12.2"
+androidx-appcompat = "1.7.0"
 androidx-core = "1.17.0"
 androidx-work = "2.11.0"
 
@@ -39,6 +40,7 @@ scanEngine = "1.6.2"
 
 [libraries]
 androidx-activitycompose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidx-activity" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidx-work" }
 androidx-nav3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "androidx-nav3" }

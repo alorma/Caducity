@@ -66,6 +66,7 @@ kotlin {
       implementation(libs.compose.ui.tooling)
 
       implementation(libs.androidx.activitycompose)
+      implementation(libs.androidx.appcompat)
 
       implementation(libs.androidx.room.runtime)
       implementation(libs.androidx.sqlite.bundled)

@@ -28,6 +28,8 @@
     <string name="settings_screen_title">Settings</string>
     <string name="settings_appearance_title">Appearance</string>
     <string name="settings_appearance_description">Theme, colors, and display</string>
+    <string name="settings_language_title">Language</string>
+    <string name="settings_language_description">App language</string>
     <string name="settings_notifications_title">Notifications</string>
     <string name="settings_notifications_description">Manage notification preferences</string>
     <string name="settings_debug_title">Debug</string>
@@ -88,4 +90,9 @@
     <string name="relative_time_weeks_ago">%1$d weeks ago</string>
     <string name="relative_time_a_month_ago">A month ago</string>
     <string name="relative_time_months_ago">%1$d months ago</string>
+
+    <!-- Language strings -->
+    <string name="language_english">English</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_catalan">Català</string>
 </resources>
