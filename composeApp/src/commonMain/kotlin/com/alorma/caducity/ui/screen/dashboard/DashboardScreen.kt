@@ -4,24 +4,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,19 +21,10 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.dashboard_clear_filters
-import caducity.composeapp.generated.resources.dashboard_filter_expired
-import caducity.composeapp.generated.resources.dashboard_filter_expiring_soon
-import caducity.composeapp.generated.resources.dashboard_filter_fresh
 import caducity.composeapp.generated.resources.dashboard_screen_title
-import caducity.composeapp.generated.resources.dashboard_search_placeholder
 import com.alorma.caducity.base.ui.components.StyledTopAppBar
-import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.Close
-import com.alorma.caducity.base.ui.icons.Search
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardSummaryCard
-import com.alorma.caducity.ui.screen.dashboard.components.ProductItem
 import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -50,7 +32,6 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun DashboardScreen(
-  onNavigateToProductDetail: (String) -> Unit,
   onNavigateToDate: (kotlinx.datetime.LocalDate) -> Unit,
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
@@ -80,9 +61,6 @@ fun DashboardScreen(
     is DashboardState.Success -> DashboardContent(
       state = state,
       scrollConnection = scrollConnection,
-      onSearchQueryChange = viewModel::updateSearchQuery,
-      onStatusFiltersChange = viewModel::updateStatusFilters,
-      onNavigateToProductDetail = onNavigateToProductDetail,
       onNavigateToDate = onNavigateToDate,
     )
   }
@@ -93,9 +71,6 @@ fun DashboardScreen(
 fun DashboardContent(
   state: DashboardState.Success,
   scrollConnection: NestedScrollConnection,
-  onSearchQueryChange: (String) -> Unit,
-  onStatusFiltersChange: (Set<InstanceStatus>) -> Unit,
-  onNavigateToProductDetail: (String) -> Unit,
   onNavigateToDate: (kotlinx.datetime.LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -119,88 +94,6 @@ fun DashboardContent(
         .fillMaxSize()
         .padding(paddingValues),
     ) {
-      // Search bar
-      OutlinedTextField(
-        value = state.config.searchQuery,
-        onValueChange = onSearchQueryChange,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp, vertical = 8.dp),
-        placeholder = { Text(stringResource(Res.string.dashboard_search_placeholder)) },
-        leadingIcon = {
-          Icon(
-            imageVector = AppIcons.Search,
-            contentDescription = null,
-          )
-        },
-        trailingIcon = {
-          if (state.config.searchQuery.isNotEmpty()) {
-            IconButton(onClick = { onSearchQueryChange("") }) {
-              Icon(
-                imageVector = AppIcons.Close,
-                contentDescription = null,
-              )
-            }
-          }
-        },
-        singleLine = true,
-      )
-
-      // Filter chips
-      FlowRow(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        FilterChip(
-          selected = state.config.statusFilters.contains(InstanceStatus.Fresh),
-          onClick = {
-            val newFilters = if (state.config.statusFilters.contains(InstanceStatus.Fresh)) {
-              state.config.statusFilters - InstanceStatus.Fresh
-            } else {
-              state.config.statusFilters + InstanceStatus.Fresh
-            }
-            onStatusFiltersChange(newFilters)
-          },
-          label = { Text(stringResource(Res.string.dashboard_filter_fresh)) },
-        )
-
-        FilterChip(
-          selected = state.config.statusFilters.contains(InstanceStatus.ExpiringSoon),
-          onClick = {
-            val newFilters = if (state.config.statusFilters.contains(InstanceStatus.ExpiringSoon)) {
-              state.config.statusFilters - InstanceStatus.ExpiringSoon
-            } else {
-              state.config.statusFilters + InstanceStatus.ExpiringSoon
-            }
-            onStatusFiltersChange(newFilters)
-          },
-          label = { Text(stringResource(Res.string.dashboard_filter_expiring_soon)) },
-        )
-
-        FilterChip(
-          selected = state.config.statusFilters.contains(InstanceStatus.Expired),
-          onClick = {
-            val newFilters = if (state.config.statusFilters.contains(InstanceStatus.Expired)) {
-              state.config.statusFilters - InstanceStatus.Expired
-            } else {
-              state.config.statusFilters + InstanceStatus.Expired
-            }
-            onStatusFiltersChange(newFilters)
-          },
-          label = { Text(stringResource(Res.string.dashboard_filter_expired)) },
-        )
-
-        if (state.config.statusFilters.isNotEmpty()) {
-          TextButton(
-            onClick = { onStatusFiltersChange(emptySet()) },
-          ) {
-            Text(stringResource(Res.string.dashboard_clear_filters))
-          }
-        }
-      }
-
       LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
@@ -216,17 +109,6 @@ fun DashboardContent(
           ProductsCalendar(
             products = state.items,
             onDateClick = onNavigateToDate,
-          )
-        }
-
-        items(
-          items = state.items,
-          key = { product -> product.id },
-          contentType = { _ -> "productItem" },
-        ) { product ->
-          ProductItem(
-            product = product,
-            onClick = onNavigateToProductDetail,
           )
         }
       }
