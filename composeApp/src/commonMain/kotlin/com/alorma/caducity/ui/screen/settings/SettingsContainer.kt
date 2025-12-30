@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -25,7 +26,7 @@ fun SettingsContainer(
   modifier: Modifier = Modifier,
   debugModeProvider: DebugModeProvider = koinInject()
 ) {
-  val settingsBackStack = remember {
+  val settingsBackStack = retain {
     mutableStateListOf<NavKey>(SettingsRoute.Root)
   }
 
