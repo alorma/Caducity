@@ -10,6 +10,10 @@ sealed class ProductsListState {
   data class Success(
     val items: ImmutableList<ProductsListUiModel>,
   ) : ProductsListState()
+
+  data class Empty(
+    val filter: ProductsListFilter,
+  ) : ProductsListState()
 }
 
 @Stable

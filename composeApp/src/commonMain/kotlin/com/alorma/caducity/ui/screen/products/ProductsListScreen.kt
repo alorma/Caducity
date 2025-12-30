@@ -34,11 +34,6 @@ fun ProductsListScreen(
 
   val state by viewModel.state.collectAsStateWithLifecycle()
 
-  val products = when (state) {
-    is ProductsListState.Success -> (state as ProductsListState.Success).items
-    else -> emptyList()
-  }
-
   Column(
     modifier = Modifier
       .fillMaxWidth()
@@ -46,28 +41,59 @@ fun ProductsListScreen(
       .then(modifier),
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
+    when (val currentState = state) {
+      is ProductsListState.Loading -> ProductsListLoading()
+      is ProductsListState.Empty -> ProductsListEmptyState(currentState)
+      is ProductsListState.Success -> ProductsListSuccess(currentState, onNavigateToProductDetail)
+    }
+  }
+}
 
-    LazyColumn(
-      contentPadding = PaddingValues(bottom = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      items(products, key = { it.id }) { product ->
-        ProductsListItem(
-          product = product,
-          onClick = { onNavigateToProductDetail(product.id) },
-        )
-      }
+@Composable
+private fun ProductsListLoading() {
+  Text(
+    text = "Loading...",
+    style = MaterialTheme.typography.bodyMedium,
+    color = CaducityTheme.colorScheme.onSurfaceVariant,
+    modifier = Modifier.padding(vertical = 32.dp),
+  )
+}
 
-      if (products.isEmpty()) {
-        item {
-          Text(
-            text = "No products found",
-            style = MaterialTheme.typography.bodyMedium,
-            color = CaducityTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(vertical = 32.dp),
-          )
-        }
-      }
+@Composable
+private fun ProductsListEmptyState(state: ProductsListState.Empty) {
+  when (val filter = state.filter) {
+    ProductsListFilter.All -> {
+      Text(text = "No products")
+    }
+
+    is ProductsListFilter.ByDate -> {
+      Text(text = "No products for date ${filter.date}")
+    }
+
+    is ProductsListFilter.ByDateRange -> {
+      Text(text = "No products for date range ${filter.startDate} - ${filter.endDate}")
+    }
+
+    is ProductsListFilter.ByStatus -> {
+      Text(text = "No products for statuses: ${filter.statuses}")
+    }
+  }
+}
+
+@Composable
+private fun ProductsListSuccess(
+  state: ProductsListState.Success,
+  onNavigateToProductDetail: (String) -> Unit
+) {
+  LazyColumn(
+    contentPadding = PaddingValues(bottom = 16.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    items(state.items, key = { it.id }) { product ->
+      ProductsListItem(
+        product = product,
+        onClick = { onNavigateToProductDetail(product.id) },
+      )
     }
   }
 }
