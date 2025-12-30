@@ -104,9 +104,6 @@ fun App(
         ) {
           val systemBarsInsets = WindowInsets.systemBars.asPaddingValues()
 
-          val layoutDirection = LocalLayoutDirection.current
-          val cutoutInsets = WindowInsets.displayCutout.asPaddingValues()
-
           Box(
             Modifier
               .fillMaxWidth(),
@@ -191,6 +188,9 @@ fun App(
             ProductsListScreen(
               filters = it.toFilter(),
               onNavigateToProductDetail = { productId ->
+                if (topLevelBackStack.backStack.last() is ProductsListRoute) {
+                  topLevelBackStack.removeLast()
+                }
                 topLevelBackStack.add(ProductDetailRoute(productId))
               }
             )
