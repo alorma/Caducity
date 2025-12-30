@@ -142,15 +142,11 @@ fun ProductsCalendar(
         val hasNextDay = productsByDate.containsKey(nextDay)
 
         DayContent(
-          day = date.day.toString(),
+          date = date,
           status = status,
           hasPreviousDay = hasPrevDay,
           hasNextDay = hasNextDay,
-          onClick = if (status != null) {
-            { onDateClick(kotlinDate) }
-          } else {
-            null
-          },
+          onClick = { onDateClick(it) },
         )
       },
     )
@@ -159,11 +155,11 @@ fun ProductsCalendar(
 
 @Composable
 private fun DayContent(
-  day: String,
+  date: LocalDate,
   status: InstanceStatus?,
   hasPreviousDay: Boolean,
   hasNextDay: Boolean,
-  onClick: (() -> Unit)?,
+  onClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
 
@@ -202,20 +198,14 @@ private fun DayContent(
   Box(
     modifier = modifier
       .aspectRatio(1f)
-      .padding(4.dp)
       .clip(shape)
       .background(backgroundColor)
-      .then(
-        if (onClick != null) {
-          Modifier.clickable(onClick = onClick)
-        } else {
-          Modifier
-        }
-      ),
+      .clickable { onClick(date) }
+      .padding(4.dp),
     contentAlignment = Alignment.Center,
   ) {
     Text(
-      text = day,
+      text = date.day.toString(),
       style = CaducityTheme.typography.bodyMedium,
       textAlign = TextAlign.Center,
       color = textColor,
