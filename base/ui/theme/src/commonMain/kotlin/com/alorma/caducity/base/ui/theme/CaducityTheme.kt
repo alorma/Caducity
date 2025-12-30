@@ -34,8 +34,8 @@ data class CaducityDims(
   val dim5: Float,
 )
 
-internal val LocalCaducityColors = staticCompositionLocalOf<CaducityColors> {
-  error("No CaducityThemeColors defined")
+internal val LocalExpirationColors = staticCompositionLocalOf<ExpirationColorScheme> {
+  error("No ExpirationColorScheme defined")
 }
 
 internal val LocalCaducityDims = staticCompositionLocalOf<CaducityDims> {
@@ -47,12 +47,12 @@ object CaducityTheme {
   val colorScheme: ColorScheme
     @Composable
     @ReadOnlyComposable
-    get() = LocalCaducityColors.current.colorScheme
+    get() = MaterialTheme.colorScheme
 
   val expirationColorScheme: ExpirationColorScheme
     @Composable
     @ReadOnlyComposable
-    get() = LocalCaducityColors.current.expirationColorScheme
+    get() = LocalExpirationColors.current
 
   val shapes: Shapes
     @Composable

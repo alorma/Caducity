@@ -35,6 +35,9 @@ kotlin {
       implementation(libs.compose.ui.tooling.preview)
 
       implementation(libs.compose.material3)
+
+      implementation(libs.material.kolor)
+
       implementation(libs.alorma.settings.ui.base)
 
       implementation(libs.multiplatform.settings)
