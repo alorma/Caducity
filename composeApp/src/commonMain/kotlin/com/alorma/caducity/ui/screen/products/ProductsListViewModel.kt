@@ -27,9 +27,11 @@ class ProductsListViewModel(
         filter = filter,
       )
 
-      ProductsListState.Success(
-        items = filteredItems,
-      )
+      if (filteredItems.isEmpty()) {
+        ProductsListState.Empty(filter = filter)
+      } else {
+        ProductsListState.Success(items = filteredItems)
+      }
     }
     .stateIn(
       scope = viewModelScope,
