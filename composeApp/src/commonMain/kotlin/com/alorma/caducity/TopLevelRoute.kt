@@ -3,7 +3,7 @@ package com.alorma.caducity
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavKey
 import com.alorma.caducity.base.ui.icons.AppIcons
 import kotlinx.serialization.Serializable
@@ -18,31 +18,47 @@ sealed interface TopLevelRoute : NavKey {
 }
 
 @Composable
-fun TopLevelRoute.iconImageVector() = when (this) {
+fun TopLevelRoute.selectedIconImageVector() = when (this) {
   TopLevelRoute.Dashboard -> AppIcons.Dashboard
   TopLevelRoute.Settings -> AppIcons.Settings
 }
 
 @Composable
-fun TopLevelRoute.iconContentDescription() = when (this) {
+fun TopLevelRoute.unSelectedIconImageVector() = when (this) {
+  TopLevelRoute.Dashboard -> AppIcons.Dashboard
+  TopLevelRoute.Settings -> AppIcons.Settings
+}
+
+@Composable
+fun TopLevelRoute.textLabel() = when (this) {
   TopLevelRoute.Dashboard -> "Dashboard"
   TopLevelRoute.Settings -> "Settings"
 }
 
 @Suppress("ModifierRequired")
 @Composable
-fun TopLevelRoute.Icon() {
+fun TopLevelRoute.Icon(
+  selected: Boolean,
+  modifier: Modifier = Modifier,
+) {
   Icon(
-    imageVector = iconImageVector(),
-    contentDescription = iconContentDescription(),
+    modifier = modifier,
+    imageVector = if (selected) {
+      selectedIconImageVector()
+    } else {
+      unSelectedIconImageVector()
+    },
+    contentDescription = textLabel(),
   )
 }
 
 @Suppress("ModifierRequired")
 @Composable
-fun TopLevelRoute.Label() {
+fun TopLevelRoute.Label(
+  modifier: Modifier = Modifier,
+) {
   Text(
-    text = iconContentDescription(),
-    fontWeight = FontWeight.Bold,
+    modifier = modifier,
+    text = textLabel(),
   )
 }

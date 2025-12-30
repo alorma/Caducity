@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.settings.language
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.language_catalan
@@ -26,8 +28,8 @@ import org.koin.compose.koinInject
 @Composable
 fun LanguageSettingsScreen(
   modifier: Modifier = Modifier,
+  languageManager: LanguageManager = koinInject()
 ) {
-  val languageManager = koinInject<LanguageManager>()
 
   val languageEnglish = stringResource(Res.string.language_english)
   val languageSpanish = stringResource(Res.string.language_spanish)
