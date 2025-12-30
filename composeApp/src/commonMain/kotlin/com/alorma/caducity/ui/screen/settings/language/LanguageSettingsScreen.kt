@@ -45,7 +45,6 @@ fun LanguageSettingsScreen(
 
         StyledSettingsCard(
           title = locale.displayName,
-          subtitle = "",
           position = position,
           action = if (selectedLocale.language == locale.language) {
             {
