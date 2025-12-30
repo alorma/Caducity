@@ -24,7 +24,6 @@ class ProductsListViewModel(
     .combine(filters) { products, filter ->
       val filteredItems = productsListMapper.mapToProductsList(
         products = products,
-        filter = filter,
       )
 
       if (filteredItems.isEmpty()) {

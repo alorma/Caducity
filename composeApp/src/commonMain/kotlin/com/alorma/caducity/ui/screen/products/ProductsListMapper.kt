@@ -2,14 +2,12 @@ package com.alorma.caducity.ui.screen.products
 
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.time.clock.AppClock
-import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Duration
 
 class ProductsListMapper(
   private val appClock: AppClock,
@@ -17,38 +15,8 @@ class ProductsListMapper(
 ) {
   fun mapToProductsList(
     products: ImmutableList<ProductWithInstances>,
-    filter: ProductsListFilter,
   ): ImmutableList<ProductsListUiModel> {
     return products.map { it.toUiModel() }.toImmutableList()
-  }
-
-  private fun matchesStatus(
-    instance: ProductsListInstanceUiModel,
-    status: InstanceStatus
-  ): Boolean {
-    val now = appClock.now()
-    val today = now
-      .toLocalDateTime(TimeZone.currentSystemDefault())
-      .date
-
-    return when (status) {
-      InstanceStatus.Expired -> instance.expirationDate <= today
-      InstanceStatus.ExpiringSoon -> {
-        val expiringSoonDate = now
-          .plus(Duration.parse("7d"))
-          .toLocalDateTime(TimeZone.currentSystemDefault())
-          .date
-        instance.expirationDate > today && instance.expirationDate < expiringSoonDate
-      }
-
-      InstanceStatus.Fresh -> {
-        val expiringSoonDate = now
-          .plus(Duration.parse("7d"))
-          .toLocalDateTime(TimeZone.currentSystemDefault())
-          .date
-        instance.expirationDate >= expiringSoonDate
-      }
-    }
   }
 
   private fun ProductWithInstances.toUiModel(): ProductsListUiModel {
@@ -59,6 +27,10 @@ class ProductsListMapper(
         description = product.description,
       )
     }
+
+    val today = appClock.now()
+      .toLocalDateTime(TimeZone.currentSystemDefault())
+      .date
 
     return ProductsListUiModel.WithInstances(
       id = product.id,

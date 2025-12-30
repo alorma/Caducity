@@ -61,4 +61,19 @@
     <string name="create_product_add_instance">Afegir Instància</string>
     <string name="create_product_remove_instance">Eliminar</string>
     <string name="create_product_instance_number">Instància %1$d</string>
+
+    <!-- Relative time strings -->
+    <string name="relative_time_today">Avui</string>
+    <string name="relative_time_tomorrow">Demà</string>
+    <string name="relative_time_yesterday">Ahir</string>
+    <string name="relative_time_in_days">En %1$d dies</string>
+    <string name="relative_time_in_a_week">En una setmana</string>
+    <string name="relative_time_in_weeks">En %1$d setmanes</string>
+    <string name="relative_time_in_a_month">En un mes</string>
+    <string name="relative_time_in_months">En %1$d mesos</string>
+    <string name="relative_time_days_ago">Fa %1$d dies</string>
+    <string name="relative_time_a_week_ago">Fa una setmana</string>
+    <string name="relative_time_weeks_ago">Fa %1$d setmanes</string>
+    <string name="relative_time_a_month_ago">Fa un mes</string>
+    <string name="relative_time_months_ago">Fa %1$d mesos</string>
 </resources>

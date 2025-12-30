@@ -73,4 +73,19 @@
     <string name="create_product_add_instance">Add Instance</string>
     <string name="create_product_remove_instance">Remove</string>
     <string name="create_product_instance_number">Instance %1$d</string>
+
+    <!-- Relative time strings -->
+    <string name="relative_time_today">Today</string>
+    <string name="relative_time_tomorrow">Tomorrow</string>
+    <string name="relative_time_yesterday">Yesterday</string>
+    <string name="relative_time_in_days">In %1$d days</string>
+    <string name="relative_time_in_a_week">In a week</string>
+    <string name="relative_time_in_weeks">In %1$d weeks</string>
+    <string name="relative_time_in_a_month">In a month</string>
+    <string name="relative_time_in_months">In %1$d months</string>
+    <string name="relative_time_days_ago">%1$d days ago</string>
+    <string name="relative_time_a_week_ago">A week ago</string>
+    <string name="relative_time_weeks_ago">%1$d weeks ago</string>
+    <string name="relative_time_a_month_ago">A month ago</string>
+    <string name="relative_time_months_ago">%1$d months ago</string>
 </resources>
