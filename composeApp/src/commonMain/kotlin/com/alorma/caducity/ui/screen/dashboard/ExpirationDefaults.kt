@@ -2,12 +2,17 @@ package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import caducity.composeapp.generated.resources.Res
+import caducity.composeapp.generated.resources.dashboard_filter_expired
+import caducity.composeapp.generated.resources.dashboard_filter_expiring_soon
+import caducity.composeapp.generated.resources.dashboard_filter_fresh
 import com.alorma.caducity.base.ui.theme.CaducityTheme
+import org.jetbrains.compose.resources.stringResource
 
-object ExpirationColors {
+object ExpirationDefaults {
 
   @Composable
-  fun getSectionColors(instanceStatus: InstanceStatus): StatusColors {
+  fun getColors(instanceStatus: InstanceStatus): StatusColors {
     return when (instanceStatus) {
       InstanceStatus.Expired -> StatusColors(
         container = CaducityTheme.expirationColorScheme.expired,
@@ -24,6 +29,13 @@ object ExpirationColors {
         onContainer = CaducityTheme.expirationColorScheme.onFresh,
       )
     }
+  }
+
+  @Composable
+  fun getText(status: InstanceStatus) = when (status) {
+    InstanceStatus.Expired -> stringResource(Res.string.dashboard_filter_expired)
+    InstanceStatus.ExpiringSoon -> stringResource(Res.string.dashboard_filter_expiring_soon)
+    InstanceStatus.Fresh -> stringResource(Res.string.dashboard_filter_fresh)
   }
 }
 

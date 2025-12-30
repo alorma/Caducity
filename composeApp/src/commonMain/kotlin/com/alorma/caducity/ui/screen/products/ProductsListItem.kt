@@ -18,9 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.base.ui.theme.preview.AppPreview
+import com.alorma.caducity.ui.screen.dashboard.ExpirationDefaults
+import com.alorma.caducity.ui.screen.dashboard.components.productListWithInstancesPreview
 
 @Composable
 fun ProductsListItem(
@@ -72,10 +75,13 @@ fun ProductsListItem(
                 color = CaducityTheme.colorScheme.onSurface,
               )
               Spacer(modifier = Modifier.width(8.dp))
+
+              val colors = ExpirationDefaults.getColors(instance.status)
+
               Row(
                 modifier = Modifier
                   .clip(MaterialTheme.shapes.small)
-                  .background(Color(instance.statusColor).copy(alpha = 0.1f))
+                  .background(colors.container.copy(CaducityTheme.dims.dim3))
                   .padding(horizontal = 8.dp, vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
               ) {
@@ -83,13 +89,14 @@ fun ProductsListItem(
                   modifier = Modifier
                     .size(6.dp)
                     .clip(CircleShape)
-                    .background(Color(instance.statusColor))
+                    .background(colors.container)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
+
                 Text(
-                  text = instance.statusText,
+                  text = ExpirationDefaults.getText(instance.status),
                   style = MaterialTheme.typography.labelSmall,
-                  color = Color(instance.statusColor),
+                  color = colors.onContainer,
                 )
               }
             }
@@ -111,5 +118,16 @@ fun ProductsListItem(
         )
       }
     }
+  }
+}
+
+@Preview
+@Composable
+private fun ProductsListItemPreview() {
+  AppPreview {
+    ProductsListItem(
+      product = productListWithInstancesPreview,
+      onClick = {},
+    )
   }
 }

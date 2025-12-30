@@ -19,56 +19,7 @@ class ProductsListMapper(
     products: ImmutableList<ProductWithInstances>,
     filter: ProductsListFilter,
   ): ImmutableList<ProductsListUiModel> {
-    val allProducts = products.map { it.toUiModel() }
-
-    return when (filter) {
-      is ProductsListFilter.ByDate -> {
-        allProducts.filter { product ->
-          if (product is ProductsListUiModel.WithInstances) {
-            product.instances.any { instance ->
-              instance.expirationDate == filter.date
-            }
-          } else {
-            false
-          }
-        }.toImmutableList()
-      }
-
-      is ProductsListFilter.ByStatus -> {
-        allProducts.mapNotNull { product ->
-          if (product is ProductsListUiModel.WithInstances) {
-            val matchingInstances = product.instances.filter { instance ->
-              filter.statuses.any { status ->
-                matchesStatus(instance, status)
-              }
-            }.toImmutableList()
-
-            if (matchingInstances.isNotEmpty()) {
-              product.copy(instances = matchingInstances)
-            } else {
-              null
-            }
-          } else {
-            null
-          }
-        }.toImmutableList()
-      }
-
-      is ProductsListFilter.ByDateRange -> {
-        allProducts.filter { product ->
-          if (product is ProductsListUiModel.WithInstances) {
-            product.instances.any { instance ->
-              instance.expirationDate >= filter.startDate &&
-                instance.expirationDate <= filter.endDate
-            }
-          } else {
-            false
-          }
-        }.toImmutableList()
-      }
-
-      ProductsListFilter.All -> allProducts.toImmutableList()
-    }
+    return products.map { it.toUiModel() }.toImmutableList()
   }
 
   private fun matchesStatus(
@@ -89,6 +40,7 @@ class ProductsListMapper(
           .date
         instance.expirationDate > today && instance.expirationDate < expiringSoonDate
       }
+
       InstanceStatus.Fresh -> {
         val expiringSoonDate = now
           .plus(Duration.parse("7d"))
@@ -108,8 +60,6 @@ class ProductsListMapper(
       )
     }
 
-    val now = appClock.now()
-
     return ProductsListUiModel.WithInstances(
       id = product.id,
       name = product.name,
@@ -125,16 +75,7 @@ class ProductsListMapper(
         ProductsListInstanceUiModel(
           id = instance.id,
           identifier = instance.identifier,
-          statusText = when (status) {
-            InstanceStatus.Expired -> "Expired"
-            InstanceStatus.ExpiringSoon -> "Expiring Soon"
-            InstanceStatus.Fresh -> "Fresh"
-          },
-          statusColor = when (status) {
-            InstanceStatus.Expired -> 0xFFE53935
-            InstanceStatus.ExpiringSoon -> 0xFFFB8C00
-            InstanceStatus.Fresh -> 0xFF43A047
-          },
+          status = status,
           expirationDate = expirationLocalDate,
           expirationDateText = dateFormat.format(expirationLocalDate),
         )
