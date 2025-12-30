@@ -17,10 +17,6 @@ class MainActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    // Apply saved language
-    val savedLanguage = languageManager.loadLanguage()
-    languageManager.setLanguage(savedLanguage)
-
     enableEdgeToEdge()
 
     // Check if we should show expiring products only (from notification tap)
