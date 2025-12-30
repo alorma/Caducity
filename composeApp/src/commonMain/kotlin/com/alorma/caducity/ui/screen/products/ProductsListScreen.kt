@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.dashboard.products
+package com.alorma.caducity.ui.screen.products
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,11 +12,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.base.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.screen.dashboard.components.ProductItem
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,10 +32,10 @@ fun ProductsListScreen(
     viewModel.onFiltersUpdate(filters)
   }
 
-  val state = viewModel.state.collectAsStateWithLifecycle()
+  val state by viewModel.state.collectAsStateWithLifecycle()
 
-  val productsForDate = when (val currentState = state.value) {
-    is DateProductsState.Success -> currentState.items
+  val products = when (state) {
+    is ProductsListState.Success -> (state as ProductsListState.Success).items
     else -> emptyList()
   }
 
@@ -51,17 +51,17 @@ fun ProductsListScreen(
       contentPadding = PaddingValues(bottom = 16.dp),
       verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-      items(productsForDate, key = { it.id }) { product ->
-        ProductItem(
+      items(products, key = { it.id }) { product ->
+        ProductsListItem(
           product = product,
           onClick = { onNavigateToProductDetail(product.id) },
         )
       }
 
-      if (productsForDate.isEmpty()) {
+      if (products.isEmpty()) {
         item {
           Text(
-            text = "No products expiring on this date",
+            text = "No products found",
             style = MaterialTheme.typography.bodyMedium,
             color = CaducityTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(vertical = 32.dp),

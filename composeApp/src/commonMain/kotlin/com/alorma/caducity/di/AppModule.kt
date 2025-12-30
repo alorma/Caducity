@@ -13,7 +13,8 @@ import com.alorma.caducity.ui.screen.dashboard.DashboardMapper
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfiguration
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfigurationImpl
 import com.alorma.caducity.ui.screen.dashboard.DashboardViewModel
-import com.alorma.caducity.ui.screen.dashboard.products.ProductsListViewModel
+import com.alorma.caducity.ui.screen.products.ProductsListMapper
+import com.alorma.caducity.ui.screen.products.ProductsListViewModel
 import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
 import com.alorma.caducity.ui.screen.product.create.FutureDateSelectableDates
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailMapper
@@ -41,6 +42,9 @@ val appModule = module {
   singleOf(::GetExpiringProductsUseCase)
   singleOf(::DashboardMapper)
   viewModelOf(::DashboardViewModel)
+
+  // Products list
+  singleOf(::ProductsListMapper)
   viewModelOf(::ProductsListViewModel)
 
   // Product detail

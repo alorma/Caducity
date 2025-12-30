@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.dashboard.products
+package com.alorma.caducity.ui.screen.products
 
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import kotlinx.datetime.LocalDate
