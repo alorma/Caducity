@@ -26,13 +26,15 @@ import com.alorma.caducity.base.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardSummaryCard
 import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
 fun DashboardScreen(
-  onNavigateToDate: (kotlinx.datetime.LocalDate) -> Unit,
+  onNavigateToDate: (LocalDate) -> Unit,
+  onNavigateToStatus: (InstanceStatus) -> Unit,
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
   showExpiringOnly: Boolean = false,
@@ -62,6 +64,7 @@ fun DashboardScreen(
       state = state,
       scrollConnection = scrollConnection,
       onNavigateToDate = onNavigateToDate,
+      onNavigateToStatus = onNavigateToStatus,
     )
   }
 }
@@ -71,7 +74,8 @@ fun DashboardScreen(
 fun DashboardContent(
   state: DashboardState.Success,
   scrollConnection: NestedScrollConnection,
-  onNavigateToDate: (kotlinx.datetime.LocalDate) -> Unit,
+  onNavigateToDate: (LocalDate) -> Unit,
+  onNavigateToStatus: (InstanceStatus) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Scaffold(
@@ -102,7 +106,10 @@ fun DashboardContent(
           key = "summary",
           contentType = "summary"
         ) {
-          DashboardSummaryCard(summary = state.summary)
+          DashboardSummaryCard(
+            summary = state.summary,
+            onStatusClick = { status -> onNavigateToStatus(status) },
+          )
         }
 
         item(contentType = "calendar") {

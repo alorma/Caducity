@@ -37,7 +37,6 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.theme.AppTheme
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
-import com.alorma.caducity.ui.screen.dashboard.products.ProductsListFilter
 import com.alorma.caducity.ui.screen.dashboard.products.ProductsListRoute
 import com.alorma.caducity.ui.screen.dashboard.products.ProductsListScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
@@ -108,8 +107,11 @@ fun App(
               showExpiringOnly = showExpiringOnly,
               scrollConnection = exitAlwaysScrollBehavior,
               onNavigateToDate = { date ->
-                topLevelBackStack.add(ProductsListRoute(date))
-              }
+                topLevelBackStack.add(ProductsListRoute.byDate(date))
+              },
+              onNavigateToStatus = { status ->
+                topLevelBackStack.add(ProductsListRoute.byStatus(setOf(status)))
+              },
             )
           }
           entry<TopLevelRoute.Settings> {
@@ -132,7 +134,7 @@ fun App(
             metadata = BottomSheetSceneStrategy.bottomSheet(),
           ) {
             ProductsListScreen(
-              filters = ProductsListFilter.ByDate(it.getLocalDate()),
+              filters = it.toFilter(),
               onNavigateToProductDetail = { productId ->
                 topLevelBackStack.add(ProductDetailRoute(productId))
               }

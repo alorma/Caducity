@@ -35,6 +35,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun DashboardSummaryCard(
   summary: DashboardSummary,
+  onStatusClick: (InstanceStatus) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Row(
@@ -48,17 +49,17 @@ fun DashboardSummaryCard(
     SummaryStatusCard(
       status = InstanceStatus.Expired,
       count = summary.expired,
-      onClick = {},
+      onClick = { onStatusClick(it) },
     )
     SummaryStatusCard(
       status = InstanceStatus.ExpiringSoon,
       count = summary.expiringSoon,
-      onClick = {},
+      onClick = { onStatusClick(it) },
     )
     SummaryStatusCard(
       status = InstanceStatus.Fresh,
       count = summary.fresh,
-      onClick = {},
+      onClick = { onStatusClick(it) },
     )
     Spacer(modifier = Modifier.width(16.dp))
   }
@@ -128,7 +129,8 @@ private fun DashboardSummaryCardPreview() {
             expired = 3,
             expiringSoon = 5,
             fresh = 12,
-          )
+          ),
+          onStatusClick = {},
         )
       }
     }
