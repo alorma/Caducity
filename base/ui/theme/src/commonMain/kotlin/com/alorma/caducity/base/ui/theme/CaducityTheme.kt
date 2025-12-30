@@ -7,6 +7,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.alorma.caducity.base.ui.theme.colors.ExpirationColorScheme
 
 data class CaducityColors(
   val colorScheme: ColorScheme,

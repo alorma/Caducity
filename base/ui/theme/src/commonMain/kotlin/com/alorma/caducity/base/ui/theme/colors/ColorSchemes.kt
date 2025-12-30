@@ -1,4 +1,4 @@
-package com.alorma.caducity.base.ui.theme
+package com.alorma.caducity.base.ui.theme.colors
 
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme

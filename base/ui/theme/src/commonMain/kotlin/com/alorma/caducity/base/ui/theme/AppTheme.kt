@@ -23,15 +23,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.alorma.caducity.base.ui.theme.colors.ExpirationColorScheme
+import com.alorma.caducity.base.ui.theme.colors.ExpirationColorSchemeType
+import com.alorma.caducity.base.ui.theme.colors.darkColorScheme
+import com.alorma.caducity.base.ui.theme.colors.dynamicColorScheme
+import com.alorma.caducity.base.ui.theme.colors.lightColorScheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.compose.settings.ui.base.internal.LocalSettingsTileColors
 import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
-import com.materialkolor.DynamicMaterialExpressiveTheme
-import com.materialkolor.PaletteStyle
-import com.materialkolor.dynamiccolor.ColorSpec
 import com.materialkolor.ktx.harmonizeWithPrimary
 import com.materialkolor.ktx.isLight
-import com.materialkolor.rememberDynamicColorScheme
 import org.koin.compose.koinInject
 
 @Suppress("ModifierRequired")
@@ -58,12 +59,7 @@ fun AppTheme(
   }
 
   val colorScheme = if (themePreferences.useDynamicColors.value) {
-    rememberDynamicColorScheme(
-      seedColor = Seed,
-      isDark = darkTheme,
-      specVersion = ColorSpec.SpecVersion.SPEC_2025,
-      style = PaletteStyle.Expressive
-    )
+    dynamicColorScheme(darkTheme)
   } else {
     if (darkTheme) {
       darkColorScheme
