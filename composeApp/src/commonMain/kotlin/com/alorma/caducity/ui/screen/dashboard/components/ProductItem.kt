@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
-import com.alorma.caducity.ui.screen.dashboard.ExpirationColors
+import com.alorma.caducity.ui.screen.dashboard.ExpirationDefaults
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
@@ -137,7 +137,7 @@ private fun CollapsedInstancesView(
     orderedStatuses.value.forEach { status ->
       // Safe to use getValue() because orderedStatuses is filtered by statusCounts.containsKey()
       val count = statusCounts.value.getValue(status)
-      val colors = ExpirationColors.getSectionColors(status)
+      val colors = ExpirationDefaults.getColors(status)
 
       Box(
         modifier = Modifier

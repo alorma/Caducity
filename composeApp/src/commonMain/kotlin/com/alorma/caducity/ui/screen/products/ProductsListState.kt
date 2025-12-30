@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.products
 
 import androidx.compose.runtime.Stable
+import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 
@@ -42,8 +43,7 @@ sealed interface ProductsListUiModel {
 data class ProductsListInstanceUiModel(
   val id: String,
   val identifier: String,
-  val statusText: String,
-  val statusColor: Long,
+  val status: InstanceStatus,
   val expirationDate: LocalDate,
   val expirationDateText: String,
 )
