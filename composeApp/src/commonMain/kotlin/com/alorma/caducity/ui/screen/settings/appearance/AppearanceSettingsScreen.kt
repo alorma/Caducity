@@ -38,7 +38,7 @@ import com.alorma.caducity.base.ui.theme.ThemeMode
 import com.alorma.caducity.base.ui.theme.ThemePreferences
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.base.ui.theme.colors.supportsDynamicColors
-import com.alorma.caducity.ui.screen.settings.components.CardPosition
+import com.alorma.caducity.base.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
@@ -72,7 +72,7 @@ fun AppearanceSettingsScreen(
       StyledSettingsButtonGroupCard(
         title = stringResource(Res.string.settings_theme_title),
         selectedItem = themePreferences.themeMode.value,
-        position = CardPosition.Top,
+        position = ShapePosition.Start,
         items = ThemeMode.entries,
         itemTitleMap = { themeMode ->
           when (themeMode) {
@@ -87,7 +87,7 @@ fun AppearanceSettingsScreen(
         StyledSettingsSwitchCard(
           title = stringResource(Res.string.settings_dynamic_colors),
           state = themePreferences.useDynamicColors.value,
-          position = CardPosition.Bottom,
+          position = ShapePosition.End,
           onCheckedChange = { themePreferences.setDynamicColorsEnabled(it) },
         )
       }
@@ -97,7 +97,7 @@ fun AppearanceSettingsScreen(
       title = stringResource(Res.string.settings_color_scheme_title),
       selectedItem = themePreferences.expirationColorSchemeType.value,
       items = ExpirationColorSchemeType.entries,
-      position = CardPosition.Single,
+      position = ShapePosition.Single,
       itemTitleMap = { schemeType ->
         when (schemeType) {
           ExpirationColorSchemeType.VIBRANT -> colorSchemeVibrant

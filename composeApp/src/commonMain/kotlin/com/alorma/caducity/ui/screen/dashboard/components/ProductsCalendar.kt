@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -22,6 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.alorma.caducity.base.ui.components.shape.ShapePosition
+import com.alorma.caducity.base.ui.components.shape.toCalendarShape
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.time.clock.AppClock
@@ -319,35 +320,20 @@ private fun DayContent(
     CaducityTheme.colorScheme.onSurface
   }
 
-  val externalBaseShape = CaducityTheme.shapes.large
-  val internalBaseShape = CaducityTheme.shapes.extraSmall
-
-  val shape = when {
-    status == null -> externalBaseShape
-    !hasPreviousDay && !hasNextDay -> externalBaseShape
-    !hasPreviousDay && hasNextDay -> RoundedCornerShape(
-      topStart = externalBaseShape.topStart,
-      topEnd = internalBaseShape.topEnd,
-      bottomStart = externalBaseShape.bottomStart,
-      bottomEnd = internalBaseShape.bottomEnd,
-    )
-
-    hasPreviousDay && hasNextDay -> internalBaseShape
-    hasPreviousDay && !hasNextDay -> RoundedCornerShape(
-      topStart = internalBaseShape.topStart,
-      topEnd = externalBaseShape.topEnd,
-      bottomStart = internalBaseShape.bottomStart,
-      bottomEnd = externalBaseShape.bottomEnd,
-    )
-
-    else -> externalBaseShape
+  val shapePosition = when {
+    status == null -> ShapePosition.None
+    !hasPreviousDay && !hasNextDay -> ShapePosition.Single
+    !hasPreviousDay && hasNextDay -> ShapePosition.Start
+    hasPreviousDay && hasNextDay -> ShapePosition.Middle
+    hasPreviousDay && !hasNextDay -> ShapePosition.End
+    else -> ShapePosition.None
   }
 
   Box(
     modifier = modifier
       .aspectRatio(1f)
       .padding(2.dp)
-      .clip(shape)
+      .clip(shapePosition.toCalendarShape())
       .background(backgroundColor)
       .clickable { onClick(date) },
     contentAlignment = Alignment.Center,

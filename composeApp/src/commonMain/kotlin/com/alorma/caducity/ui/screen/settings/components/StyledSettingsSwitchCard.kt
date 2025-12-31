@@ -5,6 +5,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import com.alorma.caducity.base.ui.components.shape.ShapePosition
+import com.alorma.caducity.base.ui.components.shape.toCardShape
 import com.alorma.compose.settings.ui.SettingsSwitch
 
 @Composable
@@ -13,13 +15,13 @@ fun StyledSettingsSwitchCard(
   state: Boolean,
   onCheckedChange: (Boolean) -> Unit,
   modifier: Modifier = Modifier,
-  position: CardPosition = CardPosition.Single,
+  position: ShapePosition = ShapePosition.Single,
   subtitle: String? = null,
   icon: (@Composable () -> Unit)? = null
 ) {
   SettingsSwitch(
     modifier = modifier.fillMaxWidth(),
-    shape = position.toShape(),
+    shape = position.toCardShape(),
     icon = icon,
     title = {
       Text(

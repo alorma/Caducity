@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.theme.LanguageManager
-import com.alorma.caducity.ui.screen.settings.components.CardPosition
+import com.alorma.caducity.base.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import org.koin.compose.koinInject
@@ -37,10 +37,10 @@ fun LanguageSettingsScreen(
     StyledSettingsGroup {
       availableLocales.forEachIndexed { index, locale ->
         val position = when {
-          availableLocales.size == 1 -> CardPosition.Single
-          index == 0 -> CardPosition.Top
-          index == availableLocales.lastIndex -> CardPosition.Bottom
-          else -> CardPosition.Middle
+          availableLocales.size == 1 -> ShapePosition.Single
+          index == 0 -> ShapePosition.Start
+          index == availableLocales.lastIndex -> ShapePosition.End
+          else -> ShapePosition.Middle
         }
 
         StyledSettingsCard(

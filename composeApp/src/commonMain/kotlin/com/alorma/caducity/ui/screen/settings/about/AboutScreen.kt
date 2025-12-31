@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.about_github_link
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
-import com.alorma.caducity.ui.screen.settings.components.CardPosition
+import com.alorma.caducity.base.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.previewSettingsModule
@@ -38,14 +38,14 @@ fun AboutScreen(
       StyledSettingsCard(
         title = versionProvider.getVersionName(),
         subtitle = "Current version",
-        position = CardPosition.Top,
+        position = ShapePosition.Start,
         onClick = { /* No action for version */ },
       )
 
       StyledSettingsCard(
         title = stringResource(Res.string.about_github_link),
         subtitle = "github.com/alorma/caducity",
-        position = CardPosition.Bottom,
+        position = ShapePosition.End,
         onClick = {
           // TODO: Open browser to GitHub repository
           // This would require platform-specific implementation
