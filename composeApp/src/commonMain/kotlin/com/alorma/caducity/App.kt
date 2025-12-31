@@ -154,6 +154,7 @@ fun App(
           entry<TopLevelRoute.Products> {
             ProductsListScreen(
               filters = ProductsListFilter.All,
+              scrollConnection = exitAlwaysScrollBehavior,
               onNavigateToProductDetail = { productId ->
                 topLevelBackStack.add(ProductDetailRoute(productId))
               },

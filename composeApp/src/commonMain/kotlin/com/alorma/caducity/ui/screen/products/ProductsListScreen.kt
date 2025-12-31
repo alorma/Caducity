@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,6 +39,7 @@ import org.koin.core.parameter.parametersOf
 fun ProductsListScreen(
   filters: ProductsListFilter,
   onNavigateToProductDetail: (String) -> Unit,
+  scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
   viewModel: ProductsListViewModel = koinViewModel { parametersOf(filters) },
 ) {
@@ -48,7 +50,9 @@ fun ProductsListScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
 
   Scaffold(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier
+      .fillMaxSize()
+      .nestedScroll(scrollConnection),
     topBar = {
       StyledTopAppBar(
         title = { Text(stringResource(Res.string.products_screen_title)) },
