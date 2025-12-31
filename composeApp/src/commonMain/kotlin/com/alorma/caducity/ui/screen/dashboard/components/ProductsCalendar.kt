@@ -94,6 +94,12 @@ fun ProductsCalendar(
             }.toImmutableList()
           }
 
+          val weekDates = remember {
+            week.days.map { weekDay ->
+              weekDay.date
+            }.toImmutableList()
+          }
+
           val firstMonth = week.days.first().date.month
           val lastMonth = week.days.last().date.month
           val firstYear = week.days.first().date.year
@@ -103,6 +109,7 @@ fun ProductsCalendar(
             firstMonth = firstMonth,
             secondMonth = lastMonth,
             daysOfWeek = daysOfWeek,
+            weekDates = weekDates,
             highlightToday = true,
             firstYear = firstYear,
             secondYear = lastYear,
@@ -170,6 +177,7 @@ private fun CalendarHeader(
   secondMonth: Month,
   daysOfWeek: ImmutableList<DayOfWeek>,
   modifier: Modifier = Modifier,
+  weekDates: ImmutableList<LocalDate>? = null,
   highlightToday: Boolean = false,
   firstYear: Int? = null,
   secondYear: Int? = null,
@@ -177,7 +185,6 @@ private fun CalendarHeader(
   appClock: AppClock = koinInject(),
 ) {
   val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-  val todayDayOfWeek = today.dayOfWeek
 
   Column(
     modifier = modifier,
@@ -234,8 +241,13 @@ private fun CalendarHeader(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-      daysOfWeek.forEach { dayOfWeek ->
-        val isToday = highlightToday && todayDayOfWeek == dayOfWeek
+      daysOfWeek.forEachIndexed { index, dayOfWeek ->
+        // Check if today is actually in this week by comparing dates, not just day names
+        val isToday = if (highlightToday && weekDates != null) {
+          weekDates.getOrNull(index) == today
+        } else {
+          false
+        }
 
         Text(
           text = dateFormatter.getDayOfWeekAbbreviation(dayOfWeek),
