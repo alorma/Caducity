@@ -98,6 +98,8 @@ private fun SummaryStatusCard(
         InstanceStatus.Expired -> stringResource(Res.string.dashboard_section_expired)
         InstanceStatus.ExpiringSoon -> stringResource(Res.string.dashboard_section_expiring_soon)
         InstanceStatus.Fresh -> stringResource(Res.string.dashboard_section_fresh)
+        InstanceStatus.Frozen -> "Frozen" // Frozen items shouldn't appear in summary
+        InstanceStatus.Consumed -> "Consumed" // Consumed items shouldn't appear in summary
       }
 
       Text(

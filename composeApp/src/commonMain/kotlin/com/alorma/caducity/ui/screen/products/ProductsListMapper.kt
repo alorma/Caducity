@@ -67,6 +67,8 @@ class ProductsListMapper(
           InstanceStatus.Expired -> 0
           InstanceStatus.ExpiringSoon -> 1
           InstanceStatus.Fresh -> 2
+          InstanceStatus.Frozen -> 3
+          InstanceStatus.Consumed -> 4 // Consumed items should be filtered out
         }
       },
       // Second: Sort by expiration date (earliest first)

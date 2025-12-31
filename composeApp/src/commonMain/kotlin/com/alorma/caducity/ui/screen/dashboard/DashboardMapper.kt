@@ -67,6 +67,8 @@ class DashboardMapper(
               is InstanceStatus.Expired -> expiredCount++
               is InstanceStatus.ExpiringSoon -> expiringSoonCount++
               is InstanceStatus.Fresh -> freshCount++
+              is InstanceStatus.Frozen -> {} // Frozen items don't count in summary
+              is InstanceStatus.Consumed -> {} // Consumed items are already filtered out
             }
           }
         }
