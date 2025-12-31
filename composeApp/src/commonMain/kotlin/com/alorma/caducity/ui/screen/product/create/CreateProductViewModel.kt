@@ -81,6 +81,21 @@ class CreateProductViewModel(
     }
   }
 
+  @OptIn(ExperimentalUuidApi::class)
+  fun addInstances(count: Int, identifier: String, expirationDate: LocalDate) {
+    _state.update { currentState ->
+      val newInstances = List(count) { index ->
+        ProductInstanceInput(
+          id = Uuid.random().toString(),
+          identifier = identifier,
+          expirationDate = expirationDate,
+          expirationDateText = dateFormat.format(expirationDate)
+        )
+      }
+      currentState.copy(instances = currentState.instances + newInstances)
+    }
+  }
+
   fun removeInstance(instanceId: String) {
     _state.update { currentState ->
       if (currentState.instances.size > 1) {
