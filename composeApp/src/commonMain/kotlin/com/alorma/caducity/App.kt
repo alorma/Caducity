@@ -1,5 +1,6 @@
 package com.alorma.caducity
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.expandHorizontally
@@ -10,19 +11,16 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingToolbarDefaults
-import androidx.compose.material3.FloatingToolbarDefaults.ScreenOffset
 import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.material3.FloatingToolbarScrollBehavior
 import androidx.compose.material3.HorizontalFloatingToolbar
@@ -65,6 +63,7 @@ import kotlinx.collections.immutable.persistentListOf
 import org.koin.compose.koinInject
 
 @Suppress("DeferStateReads")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun App(
   modifier: Modifier = Modifier,
@@ -90,7 +89,7 @@ fun App(
         .nestedScroll(exitAlwaysScrollBehavior)
         .then(modifier),
       contentWindowInsets = WindowInsets(),
-      bottomBar = {
+      floatingActionButton = {
         val isTopLevelRoute = topLevelBackStack.backStack.last() is TopLevelRoute
 
         val motionScheme = CaducityTheme.motionScheme
@@ -100,38 +99,23 @@ fun App(
           enter = slideInVertically(motionScheme.slowSpatialSpec()) { it },
           exit = slideOutVertically(motionScheme.slowSpatialSpec()) { it }
         ) {
-          val systemBarsInsets = WindowInsets.systemBars.asPaddingValues()
-
-          Box(
-            Modifier
-              .fillMaxWidth(),
-            contentAlignment = Alignment.BottomEnd,
-          ) {
-            NavigationBar(
-              modifier = Modifier
-                .padding(
-                  top = ScreenOffset,
-                  bottom = systemBarsInsets.calculateBottomPadding() + ScreenOffset,
-                  start = systemBarsInsets.calculateBottomPadding(),
-                  end = systemBarsInsets.calculateBottomPadding(),
-                )
-                .zIndex(1f),
-              scrollBehaviour = exitAlwaysScrollBehavior,
-              topLevelRoutes = topLevelRoutes,
-              isRouteSelected = { topLevelBackStack.topLevelKey == it },
-              onTopLevelUpdate = { topLevelBackStack.addTopLevel(it) },
-              onCreateProduct = { topLevelBackStack.add(CreateProductRoute) },
-            )
-          }
+          NavigationBar(
+            modifier = Modifier
+              .padding(BottomAppBarDefaults.windowInsets.asPaddingValues())
+              .zIndex(1f),
+            scrollBehaviour = exitAlwaysScrollBehavior,
+            topLevelRoutes = topLevelRoutes,
+            isRouteSelected = { topLevelBackStack.topLevelKey == it },
+            onTopLevelUpdate = { topLevelBackStack.addTopLevel(it) },
+            onCreateProduct = { topLevelBackStack.add(CreateProductRoute) },
+          )
         }
       },
     ) { paddingValues ->
       val motionScheme = CaducityTheme.motionScheme
 
       NavDisplay(
-        modifier = Modifier
-          .fillMaxSize()
-          .padding(paddingValues),
+        modifier = Modifier.fillMaxSize(),
         backStack = topLevelBackStack.backStack,
         onBack = { topLevelBackStack.removeLast() },
         entryDecorators = listOf(
