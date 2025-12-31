@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
+import com.alorma.caducity.domain.usecase.ProductsListFilter
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -38,7 +39,7 @@ class DashboardViewModel(
   }
 
   val state: StateFlow<DashboardState> = combine(
-    obtainDashboardProductsUseCase.obtainProducts(),
+    obtainDashboardProductsUseCase.obtainProducts(ProductsListFilter.All),
     dashboardUiConfiguration.config,
   ) { products, config ->
     val dashboardData = dashboardMapper.mapToDashboardSections(
