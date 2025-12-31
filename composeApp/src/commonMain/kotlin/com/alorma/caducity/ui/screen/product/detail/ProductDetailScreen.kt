@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -31,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +51,11 @@ import com.alorma.caducity.base.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.screen.dashboard.CalendarMode
+import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
 import com.alorma.caducity.ui.screen.product.create.CreateInstanceBottomSheet
+import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -137,6 +145,31 @@ private fun ProductDetailContent(
   onConsumeInstance: (String) -> Unit,
   onToggleFreezeInstance: (String, kotlin.time.Instant, Boolean) -> Unit,
 ) {
+  val listState = rememberLazyListState()
+  val coroutineScope = rememberCoroutineScope()
+
+  // Map instance IDs to their positions in the LazyColumn
+  // Position 0: Description (if present)
+  // Position 1: Calendar (if instances present)
+  // Position 2: Instances header
+  // Position 3: Add Instance button
+  // Position 4+: Instance cards
+  val instanceIndexMap = remember(product.instances) {
+    val hasDescription = product.description.isNotEmpty()
+    val hasCalendar = product.instances.isNotEmpty()
+
+    val baseIndex = listOf(
+      hasDescription, // 0 or not present
+      hasCalendar,    // 1 or not present
+      true,           // 2: header
+      true,           // 3: add button
+    ).count { it }
+
+    product.instances.mapIndexed { index, instance ->
+      instance.id to (baseIndex + index)
+    }.toMap()
+  }
+
   Scaffold(
     topBar = {
       StyledTopAppBar(
@@ -153,10 +186,11 @@ private fun ProductDetailContent(
     },
   ) { paddingValues ->
     LazyColumn(
+      state = listState,
       modifier = Modifier
         .fillMaxSize()
-        .padding(paddingValues)
-        .padding(16.dp),
+        .padding(paddingValues),
+      contentPadding = PaddingValues(16.dp),
       verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       // Product description section
@@ -184,6 +218,53 @@ private fun ProductDetailContent(
                 text = product.description,
                 style = MaterialTheme.typography.bodyLarge,
                 color = CaducityTheme.colorScheme.onSurfaceVariant,
+              )
+            }
+          }
+        }
+      }
+
+      // Calendar section
+      if (product.instances.isNotEmpty()) {
+        item {
+          val calendarData = remember(product.instances) {
+            product.instances.toCalendarData(hideConsumed = true)
+          }
+
+          Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+              containerColor = CaducityTheme.colorScheme.surfaceContainer,
+            ),
+            shape = MaterialTheme.shapes.largeIncreased,
+          ) {
+            Column(
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+              verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+              Text(
+                text = "Expiration Timeline",
+                style = MaterialTheme.typography.titleLarge,
+                color = CaducityTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(horizontal = 16.dp),
+              )
+              ProductsCalendar(
+                calendarData = calendarData,
+                calendarMode = CalendarMode.WEEK,
+                onDateClick = { date ->
+                  // Find the first instance with this expiration date
+                  val instance = product.instances.firstOrNull { it.expirationDate == date }
+                  if (instance != null) {
+                    val index = instanceIndexMap[instance.id]
+                    if (index != null) {
+                      coroutineScope.launch {
+                        listState.animateScrollToItem(index)
+                      }
+                    }
+                  }
+                },
               )
             }
           }
