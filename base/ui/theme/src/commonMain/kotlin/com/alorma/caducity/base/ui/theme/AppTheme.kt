@@ -141,7 +141,7 @@ private fun generateExpirationColors(
     matchSaturation = matchSaturation,
   )
   val expiringSoonColor = colorScheme.harmonizeWithPrimary(
-    color = Color(0xFFFF8000),
+    color = Color(0xFFFFDE21),
     matchSaturation = matchSaturation,
   )
   val expiredColor = colorScheme.harmonizeWithPrimary(
