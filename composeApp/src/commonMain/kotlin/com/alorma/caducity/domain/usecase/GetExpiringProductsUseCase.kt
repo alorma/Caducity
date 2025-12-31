@@ -18,17 +18,14 @@ class GetExpiringProductsUseCase(
    * Returns a list of products that are expiring soon or already expired.
    * Only includes products with instances that have ExpiringSoon or Expired status.
    */
-  suspend fun invoke(): List<ProductWithInstances> {
-    // Get all products and filter by status
-    val allProducts = productDataSource.products.first()
+  suspend fun load(): List<ProductWithInstances> {
+    // Get all products filtered by expiring/expired status
+    val statusFilter = ProductsListFilter.ByStatus(
+      statuses = setOf(InstanceStatus.ExpiringSoon, InstanceStatus.Expired)
+    )
+    val filteredProducts = productDataSource.getProducts(statusFilter).first()
 
-    return allProducts
-      .filter { productWithInstances ->
-        // Check if any instance is expiring or expired
-        productWithInstances.instances.any { instance ->
-          instance.status == InstanceStatus.ExpiringSoon || instance.status == InstanceStatus.Expired
-        }
-      }
+    return filteredProducts
       .map { productWithInstances ->
         // For each product, only include instances that are expiring or expired
         productWithInstances.copy(
