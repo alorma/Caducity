@@ -17,9 +17,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import caducity.base.ui.components.generated.resources.Res
+import caducity.base.ui.components.generated.resources.expiration_status_badge_consumed
 import caducity.base.ui.components.generated.resources.expiration_status_badge_expired
 import caducity.base.ui.components.generated.resources.expiration_status_badge_expiring_soon
 import caducity.base.ui.components.generated.resources.expiration_status_badge_fresh
+import caducity.base.ui.components.generated.resources.expiration_status_badge_frozen
 import com.alorma.caducity.base.main.InstanceStatus
 import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
 import org.jetbrains.compose.resources.stringResource
@@ -96,6 +98,8 @@ fun StatusBadge(
       InstanceStatus.Expired -> stringResource(Res.string.expiration_status_badge_expired)
       InstanceStatus.ExpiringSoon -> stringResource(Res.string.expiration_status_badge_expiring_soon)
       InstanceStatus.Fresh -> stringResource(Res.string.expiration_status_badge_fresh)
+      InstanceStatus.Frozen -> stringResource(Res.string.expiration_status_badge_frozen)
+      InstanceStatus.Consumed -> stringResource(Res.string.expiration_status_badge_consumed)
     }
 
     Text(

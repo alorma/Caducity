@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.product.detail
 import androidx.compose.runtime.Stable
 import com.alorma.caducity.base.main.InstanceStatus
 import kotlinx.datetime.LocalDate
+import kotlin.time.Instant
 
 @Stable
 data class ProductDetailUiModel(
@@ -19,4 +20,5 @@ data class ProductInstanceDetailUiModel(
   val status: InstanceStatus,
   val expirationDate: LocalDate,
   val expirationDateText: String,
+  val expirationInstant: Instant,
 )

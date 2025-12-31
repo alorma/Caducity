@@ -120,6 +120,9 @@ private fun ProductDetailContent(
   product: ProductDetailUiModel,
   onBack: () -> Unit,
   onAddInstance: () -> Unit,
+  onDeleteInstance: (String) -> Unit,
+  onConsumeInstance: (String) -> Unit,
+  onToggleFreezeInstance: (String, kotlin.time.Instant, Boolean) -> Unit,
 ) {
   Scaffold(
     topBar = {

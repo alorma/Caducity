@@ -24,6 +24,16 @@ object ExpirationDefaults {
         container = CaducityTheme.expirationColorScheme.fresh,
         onContainer = CaducityTheme.expirationColorScheme.onFresh,
       )
+
+      InstanceStatus.Frozen -> StatusColors(
+        container = CaducityTheme.expirationColorScheme.frozen,
+        onContainer = CaducityTheme.expirationColorScheme.onFrozen,
+      )
+
+      InstanceStatus.Consumed -> StatusColors(
+        container = CaducityTheme.expirationColorScheme.consumed,
+        onContainer = CaducityTheme.expirationColorScheme.onConsumed,
+      )
     }
   }
 }

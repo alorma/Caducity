@@ -10,7 +10,13 @@ data class ExpirationColorScheme(
   val onExpiringSoon: Color,
 
   val expired: Color,
-  val onExpired: Color
+  val onExpired: Color,
+
+  val frozen: Color,
+  val onFrozen: Color,
+
+  val consumed: Color,
+  val onConsumed: Color
 )
 
 val lightExpirationColorScheme = ExpirationColorScheme(
@@ -22,6 +28,12 @@ val lightExpirationColorScheme = ExpirationColorScheme(
 
   expired = Color(0xFFFF5449),
   onExpired = Color(0xFF000000),
+
+  frozen = Color(0xFF81C9FA),
+  onFrozen = Color(0xFF000000),
+
+  consumed = Color(0xFF9E9E9E),
+  onConsumed = Color(0xFF000000),
 )
 
 val darkExpirationColorScheme = ExpirationColorScheme(
@@ -33,4 +45,10 @@ val darkExpirationColorScheme = ExpirationColorScheme(
 
   expired = Color(0xFFFFAEA4),
   onExpired = Color(0xFF220001),
+
+  frozen = Color(0xFF9EDAFF),
+  onFrozen = Color(0xFF003548),
+
+  consumed = Color(0xFFBDBDBD),
+  onConsumed = Color(0xFF303030),
 )
