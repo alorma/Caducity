@@ -324,9 +324,8 @@ private fun DayContent(
     status == null -> ShapePosition.None
     !hasPreviousDay && !hasNextDay -> ShapePosition.Single
     !hasPreviousDay && hasNextDay -> ShapePosition.Start
-    hasPreviousDay && hasNextDay -> ShapePosition.Middle
     hasPreviousDay && !hasNextDay -> ShapePosition.End
-    else -> ShapePosition.None
+    else -> ShapePosition.Middle
   }
 
   Box(
