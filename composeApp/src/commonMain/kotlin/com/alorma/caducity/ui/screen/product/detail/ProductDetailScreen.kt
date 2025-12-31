@@ -2,7 +2,6 @@ package com.alorma.caducity.ui.screen.product.detail
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -29,17 +28,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alorma.caducity.base.ui.components.StatusBadge
+import com.alorma.caducity.base.ui.components.StatusBadgeSize
 import com.alorma.caducity.base.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.theme.CaducityTheme
-import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
-import com.alorma.caducity.base.main.InstanceStatus
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -47,6 +45,7 @@ import org.koin.core.parameter.parametersOf
 fun ProductDetailScreen(
   productId: String,
   onBack: () -> Unit,
+  modifier: Modifier = Modifier,
   viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
@@ -54,7 +53,7 @@ fun ProductDetailScreen(
   when (val currentState = state.value) {
     is ProductDetailState.Loading -> {
       Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().then(modifier),
         contentAlignment = Alignment.Center,
       ) {
         LoadingIndicator(
@@ -167,8 +166,6 @@ private fun ProductDetailContent(
 
 @Composable
 private fun InstanceCard(instance: ProductInstanceDetailUiModel) {
-  val colors = ExpirationDefaults.getColors(instance.status)
-
   Card(
     modifier = Modifier.fillMaxWidth(),
     colors = CardDefaults.cardColors(
@@ -199,24 +196,10 @@ private fun InstanceCard(instance: ProductInstanceDetailUiModel) {
           color = CaducityTheme.colorScheme.onSurface,
         )
 
-        Box(
-          modifier = Modifier
-            .clip(MaterialTheme.shapes.small)
-            .background(colors.container)
-            .padding(horizontal = 12.dp, vertical = 6.dp),
-        ) {
-          Text(
-            text = when (instance.status) {
-              InstanceStatus.Expired -> "Expired"
-              InstanceStatus.ExpiringSoon -> "Expiring Soon"
-              InstanceStatus.Fresh -> "Fresh"
-            },
-            style = MaterialTheme.typography.labelLarge.copy(
-              fontWeight = FontWeight.SemiBold,
-            ),
-            color = colors.onContainer,
-          )
-        }
+        StatusBadge(
+          status = instance.status,
+          size = StatusBadgeSize.Medium,
+        )
       }
 
       // Expiration date
