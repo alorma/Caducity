@@ -1,7 +1,7 @@
 package com.alorma.caducity.data.datasource
 
-import com.alorma.caducity.data.model.Product
-import com.alorma.caducity.data.model.ProductInstance
+import com.alorma.caducity.domain.model.Product
+import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.toModel
 import com.alorma.caducity.data.datasource.room.toRoomEntity
@@ -10,6 +10,7 @@ import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.ProductsListFilter
 import com.alorma.caducity.time.clock.AppClock
+import com.alorma.caducity.domain.model.InstanceStatus
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -42,17 +43,33 @@ class RoomProductDataSource(
         productDao.getProductsWithInstancesByDateRange(startMillis, endMillis)
       }
       is ProductsListFilter.ByStatus -> {
-        // Status filtering needs to be done in memory since it depends on current time
-        // and business logic in toModel()
-        productDao.getAllProductsWithInstances()
+        // Convert status filters to date range queries for SQL optimization
+        when {
+          filter.statuses.isEmpty() -> {
+            productDao.getAllProductsWithInstances()
+          }
+          filter.statuses.size == 1 -> {
+            // Single status: fully optimized SQL query
+            val status = filter.statuses.first()
+            val (minDate, maxDate) = statusToDateRange(status)
+            productDao.getProductsWithInstancesByDateRange(minDate, maxDate)
+          }
+          else -> {
+            // Multiple statuses: hybrid approach - SQL narrows range, then in-memory filter
+            val dateRanges = filter.statuses.map { statusToDateRange(it) }
+            val minDate = dateRanges.minOf { it.first }
+            val maxDate = dateRanges.maxOf { it.second }
+            productDao.getProductsWithInstancesByDateRange(minDate, maxDate)
+          }
+        }
       }
     }
 
     return daoFlow.map { roomEntities ->
       val products = roomEntities.map { it.toModel(appClock, expirationThresholds) }
 
-      // Apply status filter in memory if needed
-      val filtered = if (filter is ProductsListFilter.ByStatus) {
+      // Apply status filter in memory if needed for multiple statuses
+      val filtered = if (filter is ProductsListFilter.ByStatus && filter.statuses.size > 1) {
         products.filter { productWithInstances ->
           productWithInstances.instances.any { instance ->
             instance.status in filter.statuses
@@ -63,6 +80,24 @@ class RoomProductDataSource(
       }
 
       filtered.toImmutableList()
+    }
+  }
+
+  private fun statusToDateRange(status: InstanceStatus): Pair<Long, Long> {
+    val now = appClock.now()
+    val nowMillis = now.toEpochMilliseconds()
+    val expiringSoonMillis = now.plus(expirationThresholds.soonExpiringThreshold).toEpochMilliseconds()
+
+    return when (status) {
+      InstanceStatus.Expired -> {
+        Pair(0L, nowMillis) // From epoch to now
+      }
+      InstanceStatus.ExpiringSoon -> {
+        Pair(nowMillis, expiringSoonMillis) // From now to (now + threshold)
+      }
+      InstanceStatus.Fresh -> {
+        Pair(expiringSoonMillis, Long.MAX_VALUE) // From (now + threshold) to infinity
+      }
     }
   }
 

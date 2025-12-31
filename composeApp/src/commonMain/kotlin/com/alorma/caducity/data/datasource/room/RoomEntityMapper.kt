@@ -1,11 +1,11 @@
 package com.alorma.caducity.data.datasource.room
 
-import com.alorma.caducity.data.model.Product
-import com.alorma.caducity.data.model.ProductInstance
+import com.alorma.caducity.domain.model.Product
+import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.time.clock.AppClock
-import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
+import com.alorma.caducity.domain.model.InstanceStatus
 import kotlinx.collections.immutable.toImmutableList
 import kotlin.time.Instant
 

@@ -23,6 +23,7 @@ import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.dashboard_screen_title
 import com.alorma.caducity.base.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardSummaryCard
 import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
 import kotlinx.datetime.LocalDate

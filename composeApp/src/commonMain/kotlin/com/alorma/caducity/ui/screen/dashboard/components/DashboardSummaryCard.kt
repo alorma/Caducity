@@ -25,7 +25,7 @@ import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.ui.screen.dashboard.DashboardSummary
 import com.alorma.caducity.ui.screen.dashboard.ExpirationDefaults
-import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
+import com.alorma.caducity.domain.model.InstanceStatus
 
 @Composable
 fun DashboardSummaryCard(

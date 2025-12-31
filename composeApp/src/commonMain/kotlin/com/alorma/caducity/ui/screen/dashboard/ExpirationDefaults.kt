@@ -7,6 +7,7 @@ import caducity.composeapp.generated.resources.dashboard_filter_expired
 import caducity.composeapp.generated.resources.dashboard_filter_expiring_soon
 import caducity.composeapp.generated.resources.dashboard_filter_fresh
 import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.domain.model.InstanceStatus
 import org.jetbrains.compose.resources.stringResource
 
 object ExpirationDefaults {
