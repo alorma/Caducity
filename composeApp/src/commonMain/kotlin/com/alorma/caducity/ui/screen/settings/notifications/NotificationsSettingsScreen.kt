@@ -14,7 +14,7 @@ import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.settings_enable_notifications
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.notification.ExpirationNotificationHelper
-import com.alorma.caducity.ui.screen.settings.components.CardPosition
+import com.alorma.caducity.base.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.screen.settings.previewSettingsModule
@@ -41,7 +41,7 @@ fun NotificationsSettingsScreen(
       StyledSettingsSwitchCard(
         title = stringResource(Res.string.settings_enable_notifications),
         state = notificationHelper.areNotificationsEnabled().value,
-        position = CardPosition.Single,
+        position = ShapePosition.Single,
         onCheckedChange = { enabled ->
           if (enabled) {
             // Check if we need to request permission

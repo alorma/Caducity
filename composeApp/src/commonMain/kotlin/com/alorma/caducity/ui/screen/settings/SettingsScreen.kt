@@ -31,7 +31,7 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Palette
 import com.alorma.caducity.base.ui.theme.LanguageManager
 import com.alorma.caducity.debug.DebugModeProvider
-import com.alorma.caducity.ui.screen.settings.components.CardPosition
+import com.alorma.caducity.base.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import org.jetbrains.compose.resources.stringResource
@@ -83,7 +83,7 @@ fun SettingsRootScreen(
           title = stringResource(Res.string.settings_appearance_title),
           subtitle = stringResource(Res.string.settings_appearance_description),
           onClick = onNavigateToAppearance,
-          position = CardPosition.Top,
+          position = ShapePosition.Start,
         )
 
         if (languageManager.loadSupportedLocales().isNotEmpty()) {
@@ -97,7 +97,7 @@ fun SettingsRootScreen(
             title = stringResource(Res.string.settings_language_title),
             subtitle = stringResource(Res.string.settings_language_description),
             onClick = onNavigateToLanguage,
-            position = CardPosition.Middle,
+            position = ShapePosition.Middle,
           )
         }
 
@@ -111,7 +111,7 @@ fun SettingsRootScreen(
           title = stringResource(Res.string.settings_notifications_title),
           subtitle = stringResource(Res.string.settings_notifications_description),
           onClick = onNavigateToNotifications,
-          position = CardPosition.Bottom,
+          position = ShapePosition.End,
         )
       }
 
@@ -128,7 +128,7 @@ fun SettingsRootScreen(
             title = stringResource(Res.string.settings_debug_title),
             subtitle = stringResource(Res.string.settings_debug_description),
             onClick = onNavigateToDebug,
-            position = CardPosition.Single,
+            position = ShapePosition.Single,
           )
         }
       }
@@ -145,7 +145,7 @@ fun SettingsRootScreen(
           title = stringResource(Res.string.settings_about_title),
           subtitle = stringResource(Res.string.settings_about_description),
           onClick = onNavigateToAbout,
-          position = CardPosition.Single,
+          position = ShapePosition.Single,
         )
       }
     }
