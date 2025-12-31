@@ -152,6 +152,14 @@ private fun generateExpirationColors(
     color = Color.Red,
     matchSaturation = matchSaturation,
   )
+  val frozenColor = colorScheme.harmonizeWithPrimary(
+    color = Color.Cyan,
+    matchSaturation = matchSaturation,
+  )
+  val consumedColor = colorScheme.harmonizeWithPrimary(
+    color = Color.Gray,
+    matchSaturation = matchSaturation,
+  )
 
   return ExpirationColorScheme(
     fresh = freshColor,
@@ -168,6 +176,18 @@ private fun generateExpirationColors(
     },
     expired = expiredColor,
     onExpired = if (expiredColor.isLight() && !darkMode) {
+      colorScheme.inverseSurface
+    } else {
+      colorScheme.surface
+    },
+    frozen = frozenColor,
+    onFrozen = if (frozenColor.isLight() && !darkMode) {
+      colorScheme.inverseSurface
+    } else {
+      colorScheme.surface
+    },
+    consumed = consumedColor,
+    onConsumed = if (consumedColor.isLight() && !darkMode) {
       colorScheme.inverseSurface
     } else {
       colorScheme.surface

@@ -24,6 +24,7 @@
     <string name="dashboard_section_expired">Expired</string>
     <string name="dashboard_section_expiring_soon">Expiring</string>
     <string name="dashboard_section_fresh">Fresh</string>
+    <string name="dashboard_section_frozen">Frozen</string>
     <string name="dashboard_section_empty">Empty</string>
 
     <string name="settings_screen_title">Settings</string>
@@ -52,6 +53,8 @@
     <string name="settings_expiration_legend_fresh">Fresh</string>
     <string name="settings_expiration_legend_expiring_soon">Expiring</string>
     <string name="settings_expiration_legend_expired">Expired</string>
+    <string name="settings_expiration_legend_frozen">Frozen</string>
+    <string name="settings_expiration_legend_consumed">Consumed</string>
 
     <string name="settings_group_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable Notifications</string>

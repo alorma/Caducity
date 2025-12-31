@@ -17,4 +17,5 @@ data class DashboardSummary(
   val expired: Int,
   val expiringSoon: Int,
   val fresh: Int,
+  val frozen: Int,
 )
