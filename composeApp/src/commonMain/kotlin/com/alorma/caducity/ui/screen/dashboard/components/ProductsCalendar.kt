@@ -216,7 +216,7 @@ private fun CalendarHeader(
 
       if (secondMonth != firstMonth) {
         Column(horizontalAlignment = Alignment.End) {
-          if (secondYear != null && secondYear != firstYear) {
+          if (secondYear != null) {
             Text(
               text = secondYear.toString(),
               style = CaducityTheme.typography.labelLarge,
