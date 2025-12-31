@@ -94,21 +94,21 @@ private fun SummaryStatusCard(
   val dim = if (count > 0) {
     CaducityTheme.dims.noDim
   } else {
-    CaducityTheme.dims.dim3
+    CaducityTheme.dims.dim4
   }
 
   Surface(
     modifier = Modifier.then(modifier),
     color = colors.container.copy(alpha = dim),
     contentColor = colors.onContainer,
-    shape = MaterialShapes.Square.toShape(),
+    shape = CaducityTheme.shapes.extraLarge,
   ) {
     Column(
       modifier = Modifier
         .clickable(onClick = { onClick(status) })
         .fillMaxWidth()
-        .padding(24.dp),
-      verticalArrangement = Arrangement.spacedBy(12.dp),
+        .padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
 
       val text = when (status) {

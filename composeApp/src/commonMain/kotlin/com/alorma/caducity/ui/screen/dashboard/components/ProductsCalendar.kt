@@ -35,7 +35,6 @@ import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import com.kizitonwose.calendar.core.DayPosition
-import com.kizitonwose.calendar.core.OutDateStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DayOfWeek
@@ -299,7 +298,7 @@ private fun DayContent(
     val color = ExpirationDefaults.getColors(status).container
 
     if (isOutDay) {
-      color.copy(alpha = CaducityTheme.dims.dim3)
+      color.copy(alpha = CaducityTheme.dims.dim2)
     } else {
       color
     }
@@ -311,6 +310,12 @@ private fun DayContent(
     ExpirationDefaults.getColors(status).onContainer
   } else {
     CaducityTheme.colorScheme.onSurface
+  }.let { color ->
+    if (isOutDay) {
+      color.copy(alpha = CaducityTheme.dims.dim2)
+    } else {
+      color
+    }
   }
 
   Box(
