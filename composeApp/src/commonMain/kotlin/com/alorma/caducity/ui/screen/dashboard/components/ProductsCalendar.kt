@@ -39,22 +39,21 @@ import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
-import kotlin.time.Clock
 
 @Composable
 fun ProductsCalendar(
   products: ImmutableList<ProductUiModel>,
   onDateClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
-  dateFormatter: LocalizedDateFormatter = koinInject(),
   appClock: AppClock = koinInject(),
 ) {
-  val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+  val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
   val currentMonth = YearMonth(today.year, today.month)
 
   // Calculate start and end months
@@ -120,47 +119,21 @@ fun ProductsCalendar(
       state = weekCalendarState,
       contentPadding = PaddingValues(horizontal = 16.dp),
       weekHeader = { week ->
-        Column {
-
-          val daysOfWeek = remember {
-            week.days.map { weekDay ->
-              weekDay.date.dayOfWeek
-            }.toImmutableList()
-          }
-
-          val firstMonth = week.days.first().date.month
-          val lastMonth = week.days.last().date.month
-
-          Row(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(end = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-          ) {
-            Text(
-              text = dateFormatter.getMonthName(firstMonth),
-              style = CaducityTheme.typography.titleMedium,
-              color = CaducityTheme.colorScheme.onSurface.copy(
-                alpha = CaducityTheme.dims.dim1,
-              ),
-            )
-
-            if (firstMonth != lastMonth) {
-              Text(
-                text = dateFormatter.getMonthName(lastMonth),
-                style = CaducityTheme.typography.titleMedium,
-                color = CaducityTheme.colorScheme.onSurface.copy(
-                  alpha = CaducityTheme.dims.dim1,
-                ),
-              )
-            }
-          }
-
-          WeekDaysNames(
-            daysOfWeek = daysOfWeek,
-            dateFormatter = dateFormatter,
-          )
+        val daysOfWeek = remember {
+          week.days.map { weekDay ->
+            weekDay.date.dayOfWeek
+          }.toImmutableList()
         }
+
+        val firstMonth = week.days.first().date.month
+        val lastMonth = week.days.last().date.month
+
+        CalendarHeader(
+          firstMonth = firstMonth,
+          secondMonth = lastMonth,
+          daysOfWeek = daysOfWeek,
+          highlightToday = true,
+        )
       },
       dayContent = { weekDay ->
         DayContentWrapper(
@@ -176,31 +149,20 @@ fun ProductsCalendar(
       state = calendarState,
       contentPadding = PaddingValues(horizontal = 16.dp),
       monthHeader = { calendarMonth ->
-        Column(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        ) {
-          val name = dateFormatter.getMonthName(calendarMonth.yearMonth.month)
-
-          Text(
-            modifier = Modifier.padding(bottom = 8.dp),
-            text = "$name ${calendarMonth.yearMonth.year}",
-            style = CaducityTheme.typography.titleMedium,
-          )
-
-          val daysOfWeek = remember {
-            calendarMonth.weekDays.first().map { weekDay ->
-              weekDay.date.dayOfWeek
-            }.toImmutableList()
-          }
-
-          // Day of week headers
-          WeekDaysNames(
-            daysOfWeek = daysOfWeek,
-            dateFormatter = dateFormatter,
-          )
+        val daysOfWeek = remember {
+          calendarMonth.weekDays.first().map { weekDay ->
+            weekDay.date.dayOfWeek
+          }.toImmutableList()
         }
+
+        val firstMonth = calendarMonth.yearMonth.month
+        val lastMonth = calendarMonth.weekDays.last().last().date.month
+
+        CalendarHeader(
+          firstMonth = firstMonth,
+          secondMonth = lastMonth,
+          daysOfWeek = daysOfWeek,
+        )
       },
       dayContent = { calendarDay ->
         DayContentWrapper(
@@ -214,21 +176,69 @@ fun ProductsCalendar(
 }
 
 @Composable
-private fun WeekDaysNames(
+private fun CalendarHeader(
+  firstMonth: Month,
+  secondMonth: Month,
   daysOfWeek: ImmutableList<DayOfWeek>,
-  dateFormatter: LocalizedDateFormatter
+  modifier: Modifier = Modifier,
+  highlightToday: Boolean = false,
+  dateFormatter: LocalizedDateFormatter = koinInject(),
+  appClock: AppClock = koinInject(),
 ) {
-  Row(
-    modifier = Modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.SpaceBetween,
+  val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+  val todayDayOfWeek = today.dayOfWeek
+
+  Column(
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
-    daysOfWeek.forEach { dayOfWeek ->
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 12.dp, horizontal = 24.dp),
+      horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+      val firstMonthText = dateFormatter.getMonthName(firstMonth)
+
       Text(
-        text = dateFormatter.getDayOfWeekAbbreviation(dayOfWeek),
-        style = CaducityTheme.typography.labelSmall,
-        modifier = Modifier.weight(1f),
-        textAlign = TextAlign.Center,
+        text = firstMonthText,
+        style = CaducityTheme.typography.titleMedium,
+        color = CaducityTheme.colorScheme.onSurface.copy(
+          alpha = CaducityTheme.dims.dim1,
+        ),
       )
+
+      if (secondMonth != firstMonth) {
+        Text(
+          text = dateFormatter.getMonthName(secondMonth),
+          style = CaducityTheme.typography.titleMedium,
+          color = CaducityTheme.colorScheme.onSurface.copy(
+            alpha = CaducityTheme.dims.dim1,
+          ),
+        )
+      }
+    }
+
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+      daysOfWeek.forEach { dayOfWeek ->
+        val isToday = highlightToday && todayDayOfWeek == dayOfWeek
+
+        Text(
+          text = dateFormatter.getDayOfWeekAbbreviation(dayOfWeek),
+          style = CaducityTheme.typography.labelSmall,
+          modifier = Modifier.weight(1f),
+          textAlign = TextAlign.Center,
+          color = if (isToday) {
+            CaducityTheme.colorScheme.primary
+          } else {
+            CaducityTheme.colorScheme.onSurface
+          },
+          fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
+        )
+      }
     }
   }
 }
