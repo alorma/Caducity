@@ -34,6 +34,7 @@ import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
+import com.kizitonwose.calendar.core.OutDateStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DayOfWeek
@@ -125,6 +126,7 @@ fun ProductsCalendar(
         modifier = modifier.fillMaxWidth(),
         state = calendarState,
         contentPadding = PaddingValues(horizontal = 16.dp),
+        outDateStyle = OutDateStyle.None,
         monthHeader = { calendarMonth ->
           val daysOfWeek = remember {
             calendarMonth.weekDays.first().map { weekDay ->
