@@ -13,4 +13,6 @@ interface ProductDataSource {
   fun getProduct(productId: String): Flow<Result<ProductWithInstances>>
 
   suspend fun createProduct(product: Product, instances: ImmutableList<ProductInstance>)
+
+  suspend fun addInstance(productId: String, instance: ProductInstance)
 }
