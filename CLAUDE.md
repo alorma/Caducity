@@ -4,19 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Caducity is a Kotlin Multiplatform grocery expiration tracker application built with Compose Multiplatform. The app helps users track their groceries and avoid food waste by monitoring expiration dates. Currently focused on Android, but maintains multiplatform structure for potential future expansion.
+Caducity is a Kotlin Multiplatform grocery expiration tracker application built with Compose Multiplatform. The app helps users track their groceries and avoid food waste by monitoring expiration dates.
+
+**Current Focus**: Android (minSdk 35) - The project maintains multiplatform structure for potential future expansion to Desktop and Web, but development is currently Android-only.
 
 ## Technology Stack
 
-- **Language**: Kotlin 2.2.21
-- **UI Framework**: Jetpack Compose Multiplatform (v1.10.0-rc01) with Material 3 Expressive API
-- **Target Platform**: Android (minSdk 34)
+- **Language**: Kotlin 2.3.0 (cutting-edge versions, may require regular updates)
+- **UI Framework**: Jetpack Compose Multiplatform (v1.10.0-rc02) with Material 3 Expressive API
+- **Target Platform**: Android (minSdk 35, compileSdk 36, targetSdk 36)
 - **Architecture**: MVI/MVVM with Compose state management
 - **Navigation**: Jetpack Navigation 3 (alpha06)
 - **Dependency Injection**: Koin 4.1.1
 - **Build System**: Gradle with Kotlin DSL
-- **Database**: Room
+- **Database**: Room 2.8.4
 - **Date/Time**: kotlinx-datetime 0.7.1
+- **Background Work**: WorkManager 2.11.0 (for expiration notifications)
 
 ## Build Commands
 
@@ -32,15 +35,20 @@ Caducity is a Kotlin Multiplatform grocery expiration tracker application built 
 
 ### Testing
 ```bash
-# Android tests
-./gradlew connectedDebugAndroidTest  # Requires connected device/emulator
-./gradlew testDebugUnitTest          # Unit tests only
-```
+# Run all tests
+./gradlew test
 
-### Compose Hot Reload
-```bash
-# Hot reload is configured but requires running application
-./gradlew reload
+# Run all checks (lint + tests)
+./gradlew check
+
+# Android device tests (requires connected device/emulator)
+./gradlew connectedDebugAndroidTest
+
+# Unit tests only
+./gradlew testDebugUnitTest
+
+# Lint
+./gradlew lint
 ```
 
 ### Installation
@@ -70,13 +78,23 @@ composeApp/src/
 │   │   ├── theme/         # Theming (Material 3 with dynamic colors)
 │   │   ├── icons/         # Custom icons
 │   │   └── adaptive/      # Adaptive/responsive utilities
+│   ├── notification/      # Notification abstractions
 │   ├── di/                # Dependency injection modules
 │   ├── time/              # Time/clock abstraction
 │   ├── App.kt             # Main app entry point with navigation
 │   └── TopLevelBackStack.kt/TopLevelRoute.kt  # Navigation setup
 └── androidMain/kotlin/com/alorma/caducity/
     ├── MainActivity.kt
-    └── data/datasource/   # Android-specific implementations (Room)
+    ├── data/datasource/   # Android-specific implementations (Room)
+    ├── notification/      # Android notification & WorkManager
+    └── language/          # Android language manager
+
+base/
+├── main/                  # Core domain models (InstanceStatus, etc.)
+└── ui/
+    ├── components/        # Reusable UI components (StatusBadge, TopBars)
+    ├── icons/             # Custom icon definitions
+    └── theme/             # Theme system (colors, typography, language, preferences)
 ```
 
 ### Multiplatform Architecture
@@ -85,13 +103,20 @@ composeApp/src/
 - Defines all shared UI, business logic, and data abstractions
 - Uses `expect` declarations for platform-specific implementations
 - All Compose UI is in commonMain for potential future platform support
+- Contains platform abstractions (interfaces) for notifications, language management, etc.
 
 **Platform-Specific Code**:
-- **Android** (`androidMain`): Room database implementation for persistence, MainActivity, and Android-specific implementations
+- **Android** (`androidMain`):
+  - Room database implementation (ProductDataSource)
+  - MainActivity and Android-specific UI setup
+  - Notification system (WorkManager, NotificationChannelManager)
+  - Language management (AndroidLanguageManager)
+  - System integration (dynamic colors, system bars)
 
 **Dependency Injection Pattern**:
 - `appModule` (common): ViewModels, use cases, shared services
-- `platformModule` (expect/actual): Platform-specific implementations (e.g., ProductDataSource)
+- `platformModule` (expect/actual): Platform-specific implementations (e.g., ProductDataSource, NotificationDebugHelper)
+- `themeModule` (base): Theme preferences and language management
 - Both modules are combined in `App.kt` via Koin
 
 ### Navigation System
@@ -110,6 +135,39 @@ Material 3 Expressive API with:
 - Dark mode toggle with system default option
 - Theme preferences persisted via custom `ThemePreferences` class
 - Uses compose-settings library for settings UI tiles
+
+### Notification System
+
+Android notification system for expiration alerts:
+- **ExpirationWorkScheduler**: Schedules periodic background checks using WorkManager
+- **NotificationChannelManager**: Creates and manages Android notification channels
+- **ExpirationNotificationHelper**: Interface for platform-specific notification implementations
+- **AndroidExpirationNotificationHelper**: Android implementation using NotificationCompat
+- **NotificationDebugHelper**: Interface for testing notifications (follows preferred interface pattern)
+- Background work runs daily to check for expiring products
+
+### Base Module Organization
+
+The `base/` module contains reusable components separated into focused sub-modules:
+
+- **base/main**: Core domain models shared across features
+  - `InstanceStatus`: Enum for product instance states (Fresh, ExpiringSoon, Expired)
+
+- **base/ui/components**: Reusable UI components
+  - `StatusBadge`: Visual status indicators for product instances
+  - `TopBars`: Common app bar components
+  - `ExpirationDefaults`: Shared expiration-related UI constants
+
+- **base/ui/icons**: Custom icon definitions using Compose vector graphics
+  - `AppIcons`: Centralized icon access
+  - Individual icon files (Search, Add, Calendar, etc.)
+
+- **base/ui/theme**: Comprehensive theme system
+  - Color schemes (dynamic colors, contrast levels, expressive palettes)
+  - Typography with custom fonts
+  - Theme preferences and persistence
+  - Language management system
+  - System bars appearance
 
 ## Key Patterns and Conventions
 
@@ -149,10 +207,11 @@ The following experimental APIs are enabled project-wide:
 - DI setup with Koin
 - Room database integration
 
-**In Progress (see IMPLEMENTATION_PLAN.md)**:
+**In Progress (see DEVELOPMENT_PLAN.md)**:
 - Product and ProductInstance entities
 - Full CRUD operations for products
 - Dashboard statistics and data display
+- Expiration notifications system
 
 ## Development Notes
 
@@ -315,6 +374,6 @@ To add a new language (e.g., French):
 
 ## Important References
 
-- Detailed implementation plan: `IMPLEMENTATION_PLAN.md`
-- Compose hot reload is enabled via plugin
+- Detailed implementation plan: `DEVELOPMENT_PLAN.md`
 - All build configurations use Kotlin DSL (`.gradle.kts`)
+- Version catalog: `gradle/libs.versions.toml` (centralized dependency management)
