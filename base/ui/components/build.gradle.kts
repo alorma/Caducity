@@ -29,6 +29,7 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
+      implementation(projects.base.main)
       implementation(projects.base.ui.theme)
       implementation(projects.base.ui.icons)
 
