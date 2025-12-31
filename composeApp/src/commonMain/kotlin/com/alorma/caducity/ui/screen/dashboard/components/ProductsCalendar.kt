@@ -179,30 +179,34 @@ private fun DayContent(
     CaducityTheme.colorScheme.onSurface
   }
 
-  // Determine shape based on consecutive days (horizontal layout)
+  val externalBaseShape = CaducityTheme.shapes.large
+  val internalBaseShape = CaducityTheme.shapes.extraSmall
+
   val shape = when {
-    status == null -> RoundedCornerShape(0.dp) // No shape if no status
-    !hasPreviousDay && !hasNextDay -> CaducityTheme.shapes.small // Standalone day
+    status == null -> externalBaseShape
+    !hasPreviousDay && !hasNextDay -> externalBaseShape
     !hasPreviousDay && hasNextDay -> RoundedCornerShape(
-      topStart = 8.dp,      // Top-left rounded
-      topEnd = 0.dp,        // Top-right square
-      bottomStart = 8.dp,   // Bottom-left rounded
-      bottomEnd = 0.dp      // Bottom-right square
-    ) // Start of sequence (left side rounded)
-    hasPreviousDay && hasNextDay -> RoundedCornerShape(0.dp) // Middle of sequence
+      topStart = externalBaseShape.topStart,
+      topEnd = internalBaseShape.topEnd,
+      bottomStart = externalBaseShape.bottomStart,
+      bottomEnd = internalBaseShape.bottomEnd,
+    )
+
+    hasPreviousDay && hasNextDay -> internalBaseShape
     hasPreviousDay && !hasNextDay -> RoundedCornerShape(
-      topStart = 0.dp,      // Top-left square
-      topEnd = 8.dp,        // Top-right rounded
-      bottomStart = 0.dp,   // Bottom-left square
-      bottomEnd = 8.dp      // Bottom-right rounded
-    ) // End of sequence (right side rounded)
-    else -> CaducityTheme.shapes.small
+      topStart = internalBaseShape.topStart,
+      topEnd = externalBaseShape.topEnd,
+      bottomStart = internalBaseShape.bottomStart,
+      bottomEnd = externalBaseShape.bottomEnd,
+    )
+
+    else -> externalBaseShape
   }
 
   Box(
     modifier = modifier
       .aspectRatio(1f)
-      .padding(4.dp)
+      .padding(2.dp)
       .clip(shape)
       .background(backgroundColor)
       .clickable { onClick(date) },
