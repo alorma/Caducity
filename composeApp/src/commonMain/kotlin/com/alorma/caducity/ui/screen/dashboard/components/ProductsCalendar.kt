@@ -38,6 +38,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
+import org.koin.compose.koinInject
 import kotlin.time.Clock
 
 @Composable
@@ -45,6 +46,7 @@ fun ProductsCalendar(
   products: ImmutableList<ProductUiModel>,
   onDateClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
+  dateFormatter: LocalizedDateFormatter = koinInject(),
 ) {
   val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
   val currentMonth = YearMonth(today.year, today.month)
@@ -108,7 +110,7 @@ fun ProductsCalendar(
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         ) {
-          val name = calendarMonth.yearMonth.month.name
+          val name = dateFormatter.getMonthName(calendarMonth.yearMonth.month)
 
           Text(
             text = "$name ${calendarMonth.yearMonth.year}",
@@ -123,7 +125,7 @@ fun ProductsCalendar(
           ) {
             daysOfWeek.forEach { dayOfWeek ->
               Text(
-                text = dayOfWeek.name.take(3),
+                text = dateFormatter.getDayOfWeekAbbreviation(dayOfWeek),
                 style = CaducityTheme.typography.labelSmall,
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
@@ -200,10 +202,10 @@ private fun DayContent(
   Box(
     modifier = modifier
       .aspectRatio(1f)
+      .padding(4.dp)
       .clip(shape)
       .background(backgroundColor)
-      .clickable { onClick(date) }
-      .padding(4.dp),
+      .clickable { onClick(date) },
     contentAlignment = Alignment.Center,
   ) {
     Text(
