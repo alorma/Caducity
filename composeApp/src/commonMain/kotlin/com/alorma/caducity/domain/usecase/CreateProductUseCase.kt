@@ -4,7 +4,7 @@ import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.Product
 import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.time.clock.AppClock
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.base.main.InstanceStatus
 import kotlinx.collections.immutable.toImmutableList
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi

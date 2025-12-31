@@ -1,7 +1,7 @@
 package com.alorma.caducity.ui.screen.product.detail
 
 import com.alorma.caducity.domain.model.ProductWithInstances
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.base.main.InstanceStatus
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat

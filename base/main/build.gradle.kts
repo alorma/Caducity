@@ -25,7 +25,7 @@ kotlin {
 
   sourceSets {
     commonMain.dependencies {
-      // Add common dependencies here when needed
+      implementation(libs.kotlinx.datetime)
     }
     androidMain.dependencies {
       // Add Android-specific dependencies here when needed

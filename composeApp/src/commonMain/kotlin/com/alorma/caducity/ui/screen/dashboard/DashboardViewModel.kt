@@ -2,7 +2,7 @@ package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.base.main.InstanceStatus
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import com.alorma.caducity.domain.usecase.ProductsListFilter
 import kotlinx.collections.immutable.toImmutableSet

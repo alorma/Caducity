@@ -1,7 +1,7 @@
 package com.alorma.caducity.ui.screen.product.detail
 
 import androidx.compose.runtime.Stable
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.base.main.InstanceStatus
 import kotlinx.datetime.LocalDate
 
 @Stable
