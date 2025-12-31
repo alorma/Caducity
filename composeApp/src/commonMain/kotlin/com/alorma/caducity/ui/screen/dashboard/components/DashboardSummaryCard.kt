@@ -1,15 +1,11 @@
 package com.alorma.caducity.ui.screen.dashboard.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -39,35 +35,50 @@ fun DashboardSummaryCard(
   onStatusClick: (InstanceStatus) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Row(
+  Column(
     modifier = Modifier
       .fillMaxWidth()
-      .horizontalScroll(rememberScrollState())
+      .padding(horizontal = 16.dp)
       .then(modifier),
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
+    verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {
-    Spacer(modifier = Modifier.width(16.dp))
-    SummaryStatusCard(
-      status = InstanceStatus.Expired,
-      count = summary.expired,
-      onClick = { onStatusClick(it) },
-    )
-    SummaryStatusCard(
-      status = InstanceStatus.ExpiringSoon,
-      count = summary.expiringSoon,
-      onClick = { onStatusClick(it) },
-    )
-    SummaryStatusCard(
-      status = InstanceStatus.Fresh,
-      count = summary.fresh,
-      onClick = { onStatusClick(it) },
-    )
-    SummaryStatusCard(
-      status = InstanceStatus.Frozen,
-      count = summary.frozen,
-      onClick = { onStatusClick(it) },
-    )
-    Spacer(modifier = Modifier.width(16.dp))
+    // First row: Expired, Expiring Soon
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+      SummaryStatusCard(
+        status = InstanceStatus.Expired,
+        count = summary.expired,
+        onClick = { onStatusClick(it) },
+        modifier = Modifier.weight(1f),
+      )
+      SummaryStatusCard(
+        status = InstanceStatus.ExpiringSoon,
+        count = summary.expiringSoon,
+        onClick = { onStatusClick(it) },
+        modifier = Modifier.weight(1f),
+      )
+    }
+
+    // Second row: Fresh, Frozen
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+      SummaryStatusCard(
+        status = InstanceStatus.Fresh,
+        count = summary.fresh,
+        onClick = { onStatusClick(it) },
+        modifier = Modifier.weight(1f),
+      )
+      SummaryStatusCard(
+        status = InstanceStatus.Frozen,
+        count = summary.frozen,
+        onClick = { onStatusClick(it) },
+        modifier = Modifier.weight(1f),
+      )
+    }
   }
 }
 
@@ -95,8 +106,8 @@ private fun SummaryStatusCard(
     Column(
       modifier = Modifier
         .clickable(onClick = { onClick(status) })
-        .padding(24.dp)
-        .width(120.dp),
+        .fillMaxWidth()
+        .padding(24.dp),
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
 
