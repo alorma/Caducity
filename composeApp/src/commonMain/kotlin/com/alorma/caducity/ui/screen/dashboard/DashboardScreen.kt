@@ -39,6 +39,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun DashboardScreen(
   onNavigateToDate: (LocalDate) -> Unit,
+  onNavigateToCreateWithDate: (LocalDate) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
@@ -69,6 +70,7 @@ fun DashboardScreen(
       state = state,
       scrollConnection = scrollConnection,
       onNavigateToDate = onNavigateToDate,
+      onNavigateToCreateWithDate = onNavigateToCreateWithDate,
       onNavigateToStatus = onNavigateToStatus,
       onToggleCalendarMode = { viewModel.toggleCalendarMode() },
     )
@@ -81,6 +83,7 @@ fun DashboardContent(
   state: DashboardState.Success,
   scrollConnection: NestedScrollConnection,
   onNavigateToDate: (LocalDate) -> Unit,
+  onNavigateToCreateWithDate: (LocalDate) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
   onToggleCalendarMode: () -> Unit,
   modifier: Modifier = Modifier,
@@ -133,7 +136,15 @@ fun DashboardContent(
         item(contentType = "calendar") {
           ProductsCalendar(
             calendarData = state.calendarData,
-            onDateClick = onNavigateToDate,
+            onDateClick = { date ->
+              // Check if date has products
+              val hasProducts = state.calendarData.productsByDate.containsKey(date)
+              if (hasProducts) {
+                onNavigateToDate(date)
+              } else {
+                onNavigateToCreateWithDate(date)
+              }
+            },
             calendarMode = state.config.calendarMode,
           )
         }

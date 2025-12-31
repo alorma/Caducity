@@ -164,6 +164,14 @@ class CreateProductViewModel(
   fun clearError() {
     _state.update { it.copy(error = null) }
   }
+
+  fun initializeWithDate(date: LocalDate) {
+    if (_state.value.instances.isEmpty()) {
+      addInstance()
+      val newInstance = _state.value.instances.first()
+      updateInstanceExpirationDate(newInstance.id, date)
+    }
+  }
 }
 
 

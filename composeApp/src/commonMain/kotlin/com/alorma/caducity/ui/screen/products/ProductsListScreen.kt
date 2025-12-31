@@ -3,13 +3,18 @@ package com.alorma.caducity.ui.screen.products
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +28,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.products_screen_title
 import com.alorma.caducity.base.ui.components.StyledTopAppBar
+import com.alorma.caducity.base.ui.icons.Add
+import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.domain.usecase.ProductsListFilter
 import org.jetbrains.compose.resources.stringResource
@@ -80,6 +87,7 @@ fun ProductsListBottomSheet(
   filters: ProductsListFilter,
   onNavigateToProductDetail: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onCreateProduct: (() -> Unit)? = null,
   viewModel: ProductsListViewModel = koinViewModel { parametersOf(filters) },
 ) {
   LaunchedEffect(filters) {
@@ -91,6 +99,7 @@ fun ProductsListBottomSheet(
   ProductsListContent(
     state = state,
     onNavigateToProductDetail = onNavigateToProductDetail,
+    onCreateProduct = onCreateProduct,
     modifier = modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
@@ -102,6 +111,7 @@ private fun ProductsListContent(
   state: ProductsListState,
   onNavigateToProductDetail: (String) -> Unit,
   modifier: Modifier = Modifier,
+  onCreateProduct: (() -> Unit)? = null,
 ) {
   Column(
     modifier = modifier,
@@ -110,7 +120,7 @@ private fun ProductsListContent(
     when (val currentState = state) {
       is ProductsListState.Loading -> ProductsListLoading()
       is ProductsListState.Empty -> ProductsListEmptyState(currentState)
-      is ProductsListState.Success -> ProductsListSuccess(currentState, onNavigateToProductDetail)
+      is ProductsListState.Success -> ProductsListSuccess(currentState, onNavigateToProductDetail, onCreateProduct)
     }
   }
 }
@@ -149,12 +159,32 @@ private fun ProductsListEmptyState(state: ProductsListState.Empty) {
 @Composable
 private fun ProductsListSuccess(
   state: ProductsListState.Success,
-  onNavigateToProductDetail: (String) -> Unit
+  onNavigateToProductDetail: (String) -> Unit,
+  onCreateProduct: (() -> Unit)? = null,
 ) {
   LazyColumn(
     contentPadding = PaddingValues(bottom = 16.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
+    // Add "Create Product" button for date filters
+    if (onCreateProduct != null && state.filter is ProductsListFilter.ByDate) {
+      item(key = "create_product_button") {
+        OutlinedButton(
+          onClick = onCreateProduct,
+          modifier = Modifier.fillMaxWidth()
+        ) {
+          Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(vertical = 4.dp)
+          ) {
+            Icon(imageVector = AppIcons.Add, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Create Product for this date")
+          }
+        }
+      }
+    }
+
     items(state.items, key = { it.id }) { product ->
       ProductsListItem(
         product = product,

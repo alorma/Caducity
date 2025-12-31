@@ -65,6 +65,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun CreateProductScreen(
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
+  prefilledExpirationDate: String? = null,
   viewModel: CreateProductViewModel = koinViewModel(),
   barcodeHandler: BarcodeHandler = koinInject(),
 ) {
@@ -73,6 +74,15 @@ fun CreateProductScreen(
   var editingInstanceId by remember { mutableStateOf<String?>(null) }
   var scannedBarcode by remember { mutableStateOf<String?>(null) }
   val coroutineScope = rememberCoroutineScope()
+
+  // Initialize with prefilled date if provided
+  LaunchedEffect(prefilledExpirationDate) {
+    prefilledExpirationDate?.let { dateString ->
+      val date = kotlinx.datetime.LocalDate.parse(dateString)
+      viewModel.initializeWithDate(date)
+      showInstanceBottomSheet = true
+    }
+  }
 
   // Register permission contract for barcode scanning
   barcodeHandler.registerPermissionContract()

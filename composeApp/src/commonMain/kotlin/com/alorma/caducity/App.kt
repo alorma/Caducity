@@ -110,7 +110,7 @@ fun App(
             topLevelRoutes = topLevelRoutes,
             isRouteSelected = { topLevelBackStack.topLevelKey == it },
             onTopLevelUpdate = { topLevelBackStack.addTopLevel(it) },
-            onCreateProduct = { topLevelBackStack.add(CreateProductRoute) },
+            onCreateProduct = { topLevelBackStack.add(CreateProductRoute()) },
           )
         }
       },
@@ -146,6 +146,9 @@ fun App(
               onNavigateToDate = { date ->
                 topLevelBackStack.add(ProductsListRoute.byDate(date))
               },
+              onNavigateToCreateWithDate = { date ->
+                topLevelBackStack.add(CreateProductRoute.withDate(date))
+              },
               onNavigateToStatus = { status ->
                 topLevelBackStack.add(ProductsListRoute.byStatus(setOf(status)))
               },
@@ -167,6 +170,7 @@ fun App(
           }
           entry<CreateProductRoute> {
             CreateProductScreen(
+              prefilledExpirationDate = it.prefilledExpirationDate,
               onBack = { topLevelBackStack.removeLast() }
             )
           }
@@ -180,7 +184,13 @@ fun App(
                   topLevelBackStack.removeLast()
                 }
                 topLevelBackStack.add(ProductDetailRoute(productId))
-              }
+              },
+              onCreateProduct = if (it.date != null) {
+                {
+                  topLevelBackStack.removeLast()
+                  topLevelBackStack.add(CreateProductRoute.withDate(kotlinx.datetime.LocalDate.parse(it.date)))
+                }
+              } else null
             )
           }
           entry<ProductDetailRoute> {
