@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.ui.screen.dashboard.ExpirationDefaults
-import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
+import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
 import kotlinx.collections.immutable.ImmutableList

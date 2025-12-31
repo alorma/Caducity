@@ -1,6 +1,6 @@
 package com.alorma.caducity.domain.usecase
 
-import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
+import com.alorma.caducity.domain.model.InstanceStatus
 import kotlinx.datetime.LocalDate
 
 sealed class ProductsListFilter {
