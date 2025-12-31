@@ -5,7 +5,6 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.sp
 
 val TYPOGRAPHY = Typography()
 
@@ -23,27 +22,27 @@ actual val caducityTypography = Typography(
     fontFeatureSettings = "ss02, dlig"
   ),
   headlineLarge = TYPOGRAPHY.headlineLarge.copy(
-    fontFamily = AppFonts.googleFlex600,
+    fontFamily = AppFonts.roboto,
     fontFeatureSettings = "ss02, dlig"
   ),
   headlineMedium = TYPOGRAPHY.headlineMedium.copy(
-    fontFamily = AppFonts.googleFlex600,
+    fontFamily = AppFonts.roboto,
     fontFeatureSettings = "ss02, dlig"
   ),
   headlineSmall = TYPOGRAPHY.headlineSmall.copy(
-    fontFamily = AppFonts.googleFlex600,
+    fontFamily = AppFonts.roboto,
     fontFeatureSettings = "ss02, dlig"
   ),
   titleLarge = TYPOGRAPHY.titleLarge.copy(
-    fontFamily = AppFonts.googleFlex400,
+    fontFamily = AppFonts.roboto,
     fontFeatureSettings = "ss02, dlig"
   ),
   titleMedium = TYPOGRAPHY.titleMedium.copy(
-    fontFamily = AppFonts.googleFlex600,
+    fontFamily = AppFonts.roboto,
     fontFeatureSettings = "ss02, dlig"
   ),
   titleSmall = TYPOGRAPHY.titleSmall.copy(
-    fontFamily = AppFonts.googleFlex600,
+    fontFamily = AppFonts.roboto,
     fontFeatureSettings = "ss02, dlig"
   ),
   bodyLarge = TYPOGRAPHY.bodyLarge.copy(
@@ -72,17 +71,11 @@ actual val caducityTypography = Typography(
   )
 )
 
-fun TextStyle.topBar() = copy(
-  fontFamily = AppFonts.robotoFlexTopBar,
-  fontSize = 32.sp,
-  lineHeight = 32.sp
-)
-
 @OptIn(ExperimentalTextApi::class)
 object AppFonts {
   val googleFlex400 = FontFamily(Font(R.font.google_sans_flex_400))
 
   val googleFlex600 = FontFamily(Font(R.font.google_sans_flex_600))
 
-  val robotoFlexTopBar = FontFamily(Font(R.font.roboto_flex_logo))
+  val roboto = FontFamily(Font(R.font.roboto_flex_logo))
 }

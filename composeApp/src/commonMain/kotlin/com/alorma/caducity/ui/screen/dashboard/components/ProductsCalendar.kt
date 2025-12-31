@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
+import com.alorma.caducity.time.clock.AppClock
 import com.alorma.caducity.ui.screen.dashboard.ExpirationDefaults
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
@@ -51,6 +52,7 @@ fun ProductsCalendar(
   onDateClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
   dateFormatter: LocalizedDateFormatter = koinInject(),
+  appClock: AppClock = koinInject(),
 ) {
   val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
   val currentMonth = YearMonth(today.year, today.month)
@@ -79,6 +81,9 @@ fun ProductsCalendar(
   val weekCalendarState = rememberWeekCalendarState(
     startDate = startMonth.firstDay,
     endDate = endMonth.lastDay,
+    firstDayOfWeek = appClock.now()
+      .toLocalDateTime(TimeZone.currentSystemDefault())
+      .dayOfWeek,
   )
 
   // Group products by expiration date with their most critical status
@@ -123,8 +128,33 @@ fun ProductsCalendar(
             }.toImmutableList()
           }
 
-          val month = dateFormatter.getMonthName(week.days.first().date.month)
-          Text(text = month)
+          val firstMonth = week.days.first().date.month
+          val lastMonth = week.days.last().date.month
+
+          Row(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(end = 24.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+          ) {
+            Text(
+              text = dateFormatter.getMonthName(firstMonth),
+              style = CaducityTheme.typography.titleMedium,
+              color = CaducityTheme.colorScheme.onSurface.copy(
+                alpha = CaducityTheme.dims.dim1,
+              ),
+            )
+
+            if (firstMonth != lastMonth) {
+              Text(
+                text = dateFormatter.getMonthName(lastMonth),
+                style = CaducityTheme.typography.titleMedium,
+                color = CaducityTheme.colorScheme.onSurface.copy(
+                  alpha = CaducityTheme.dims.dim1,
+                ),
+              )
+            }
+          }
 
           WeekDaysNames(
             daysOfWeek = daysOfWeek,
@@ -154,9 +184,9 @@ fun ProductsCalendar(
           val name = dateFormatter.getMonthName(calendarMonth.yearMonth.month)
 
           Text(
+            modifier = Modifier.padding(bottom = 8.dp),
             text = "$name ${calendarMonth.yearMonth.year}",
             style = CaducityTheme.typography.titleMedium,
-            modifier = Modifier.padding(bottom = 8.dp),
           )
 
           val daysOfWeek = remember {
