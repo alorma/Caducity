@@ -12,6 +12,7 @@
     </string-array>
 
     <string name="dashboard_screen_title">Dashboard</string>
+    <string name="products_screen_title">Products</string>
     <string name="dashboard_action_collapse">Collapse</string>
     <string name="dashboard_action_expand">Expand</string>
     <string name="dashboard_search_placeholder">Search products...</string>

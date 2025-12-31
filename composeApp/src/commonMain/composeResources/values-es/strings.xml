@@ -12,6 +12,7 @@
     </string-array>
 
     <string  name="dashboard_screen_title">Panel</string>
+    <string name="products_screen_title">Productos</string>
     <string name="dashboard_action_collapse">Colapsar</string>
     <string name="dashboard_action_expand">Expandir</string>
     <string name="dashboard_search_placeholder">Buscar productos...</string>

@@ -55,6 +55,7 @@ import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
 import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailRoute
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailScreen
+import com.alorma.caducity.domain.usecase.ProductsListFilter
 import com.alorma.caducity.ui.screen.products.ProductsListRoute
 import com.alorma.caducity.ui.screen.products.ProductsListScreen
 import com.alorma.caducity.ui.screen.settings.SettingsContainer
@@ -77,6 +78,7 @@ fun App(
 
     val topLevelRoutes = persistentListOf(
       TopLevelRoute.Dashboard,
+      TopLevelRoute.Products,
       TopLevelRoute.Settings,
     )
 
@@ -145,6 +147,14 @@ fun App(
               },
               onNavigateToStatus = { status ->
                 topLevelBackStack.add(ProductsListRoute.byStatus(setOf(status)))
+              },
+            )
+          }
+          entry<TopLevelRoute.Products> {
+            ProductsListScreen(
+              filters = ProductsListFilter.All,
+              onNavigateToProductDetail = { productId ->
+                topLevelBackStack.add(ProductDetailRoute(productId))
               },
             )
           }

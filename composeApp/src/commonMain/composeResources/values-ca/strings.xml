@@ -12,6 +12,7 @@
     </string-array>
 
     <string  name="dashboard_screen_title">Tauler</string>
+    <string name="products_screen_title">Productes</string>
     <string name="dashboard_action_collapse">Col·lapsar</string>
     <string name="dashboard_action_expand">Expandir</string>
     <string name="dashboard_search_placeholder">Cercar productes...</string>
