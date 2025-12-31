@@ -3,12 +3,12 @@ package com.alorma.caducity.domain
 import com.alorma.caducity.data.model.Product
 import com.alorma.caducity.data.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
+import com.alorma.caducity.domain.usecase.ProductsListFilter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 
 interface ProductDataSource {
-  val products: StateFlow<ImmutableList<ProductWithInstances>>
+  fun getProducts(filter: ProductsListFilter): Flow<ImmutableList<ProductWithInstances>>
 
   fun getProduct(productId: String): Flow<Result<ProductWithInstances>>
 

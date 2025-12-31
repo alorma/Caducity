@@ -15,6 +15,22 @@ interface ProductDao {
   fun getAllProductsWithInstances(): Flow<List<ProductWithInstancesRoomEntity>>
 
   @Transaction
+  @Query("""
+    SELECT DISTINCT p.* FROM products p
+    INNER JOIN product_instances pi ON p.id = pi.productId
+    WHERE pi.expirationDate >= :startDate AND pi.expirationDate < :endDate
+  """)
+  fun getProductsWithInstancesByDateRange(startDate: Long, endDate: Long): Flow<List<ProductWithInstancesRoomEntity>>
+
+  @Transaction
+  @Query("""
+    SELECT DISTINCT p.* FROM products p
+    INNER JOIN product_instances pi ON p.id = pi.productId
+    WHERE pi.expirationDate >= :date AND pi.expirationDate < :nextDay
+  """)
+  fun getProductsWithInstancesByDate(date: Long, nextDay: Long): Flow<List<ProductWithInstancesRoomEntity>>
+
+  @Transaction
   @Query("SELECT * FROM products WHERE id = :productId")
   fun getProductWithInstances(productId: String): Flow<ProductWithInstancesRoomEntity?>
 

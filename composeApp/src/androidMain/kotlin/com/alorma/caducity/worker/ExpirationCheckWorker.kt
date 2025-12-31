@@ -33,7 +33,7 @@ class ExpirationCheckWorker(
       Log.d(TAG, "Starting expiration check...")
 
       // Get products expiring soon
-      val expiringProducts = getExpiringProductsUseCase.invoke()
+      val expiringProducts = getExpiringProductsUseCase.load()
 
       Log.d(TAG, "Found ${expiringProducts.size} expiring products")
 
