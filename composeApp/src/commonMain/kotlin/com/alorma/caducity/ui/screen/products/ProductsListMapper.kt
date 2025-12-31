@@ -39,8 +39,9 @@ class ProductsListMapper(
       description = product.description,
       instances = instances
         .map { instance ->
-          val expirationLocalDate = instance
-            .expirationDate
+          // Use displayDate for frozen items (pausedDate) or expirationDate for others
+          val displayLocalDate = instance
+            .displayDate
             .toLocalDateTime(TimeZone.currentSystemDefault())
             .date
 
@@ -50,8 +51,8 @@ class ProductsListMapper(
             id = instance.id,
             identifier = instance.identifier,
             status = status,
-            expirationDate = expirationLocalDate,
-            expirationDateText = dateFormat.format(expirationLocalDate),
+            expirationDate = displayLocalDate,
+            expirationDateText = dateFormat.format(displayLocalDate),
           )
         }
         .sortedWith(instanceComparator)
@@ -67,6 +68,8 @@ class ProductsListMapper(
           InstanceStatus.Expired -> 0
           InstanceStatus.ExpiringSoon -> 1
           InstanceStatus.Fresh -> 2
+          InstanceStatus.Frozen -> 3
+          InstanceStatus.Consumed -> 4 // Consumed items should be filtered out
         }
       },
       // Second: Sort by expiration date (earliest first)

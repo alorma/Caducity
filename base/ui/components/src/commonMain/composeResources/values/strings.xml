@@ -3,4 +3,6 @@
     <string name="expiration_status_badge_expired">Expired</string>
     <string name="expiration_status_badge_expiring_soon">Expiring soon</string>
     <string name="expiration_status_badge_fresh">Fresh</string>
+    <string name="expiration_status_badge_frozen">Frozen</string>
+    <string name="expiration_status_badge_consumed">Consumed</string>
 </resources>

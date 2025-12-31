@@ -55,6 +55,7 @@ class DashboardMapper(
     var expiredCount = 0
     var expiringSoonCount = 0
     var freshCount = 0
+    var frozenCount = 0
 
     products.forEach { product ->
       when (product) {
@@ -67,6 +68,8 @@ class DashboardMapper(
               is InstanceStatus.Expired -> expiredCount++
               is InstanceStatus.ExpiringSoon -> expiringSoonCount++
               is InstanceStatus.Fresh -> freshCount++
+              is InstanceStatus.Frozen -> frozenCount++
+              is InstanceStatus.Consumed -> {} // Consumed items are already filtered out
             }
           }
         }
@@ -77,6 +80,7 @@ class DashboardMapper(
       expired = expiredCount,
       expiringSoon = expiringSoonCount,
       fresh = freshCount,
+      frozen = frozenCount,
     )
   }
 
@@ -105,15 +109,20 @@ class DashboardMapper(
       products.forEach { product ->
         if (product is ProductUiModel.WithInstances) {
           product.instances.forEach { instance ->
+            // Use expirationDate here as UI model already converted to correct display date
+            // For frozen items: expirationDate field already contains the pausedDate
+            // For normal items: expirationDate contains the actual expiration date
             val date = instance.expirationDate
             val currentStatus = get(date)
 
-            // Keep the most critical status (Expired > ExpiringSoon > Fresh)
+            // Keep the most critical status (Expired > ExpiringSoon > Frozen > Fresh)
             val newStatus = when {
               currentStatus == InstanceStatus.Expired -> InstanceStatus.Expired
               instance.status == InstanceStatus.Expired -> InstanceStatus.Expired
               currentStatus == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
               instance.status == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
+              currentStatus == InstanceStatus.Frozen -> InstanceStatus.Frozen
+              instance.status == InstanceStatus.Frozen -> InstanceStatus.Frozen
               else -> InstanceStatus.Fresh
             }
 
@@ -162,8 +171,9 @@ class DashboardMapper(
       description = product.description,
       today = dateFormat.format(today),
       instances = instances.map { instance ->
-        val expirationLocalDate = instance
-          .expirationDate
+        // Use displayDate for frozen items (pausedDate) or expirationDate for others
+        val displayLocalDate = instance
+          .displayDate
           .toLocalDateTime(TimeZone.currentSystemDefault())
           .date
 
@@ -171,10 +181,8 @@ class DashboardMapper(
           id = instance.id,
           identifier = instance.identifier,
           status = instance.status,
-          expirationDate = instance.expirationDate
-            .toLocalDateTime(TimeZone.currentSystemDefault())
-            .date,
-          expirationDateText = dateFormat.format(expirationLocalDate),
+          expirationDate = displayLocalDate,
+          expirationDateText = dateFormat.format(displayLocalDate),
         )
       }.toImmutableList()
     )

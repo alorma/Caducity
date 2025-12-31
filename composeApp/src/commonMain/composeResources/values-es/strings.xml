@@ -24,6 +24,7 @@
     <string name="dashboard_section_expired">Caducado</string>
     <string name="dashboard_section_expiring_soon">Próximo</string>
     <string name="dashboard_section_fresh">Fresco</string>
+    <string name="dashboard_section_frozen">Congelado</string>
     <string name="dashboard_section_empty">Vacío</string>
 
     <string  name="settings_screen_title">Configuración</string>
@@ -44,6 +45,8 @@
     <string name="settings_expiration_legend_fresh">Fresco</string>
     <string name="settings_expiration_legend_expiring_soon">Próximo</string>
     <string name="settings_expiration_legend_expired">Caducado</string>
+    <string name="settings_expiration_legend_frozen">Congelado</string>
+    <string name="settings_expiration_legend_consumed">Consumido</string>
 
     <string name="settings_group_notifications">Notificaciones</string>
     <string name="settings_enable_notifications">Activar notificaciones</string>

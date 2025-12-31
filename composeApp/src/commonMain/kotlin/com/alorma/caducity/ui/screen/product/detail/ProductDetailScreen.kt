@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +38,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alorma.caducity.base.main.InstanceStatus
 import com.alorma.caducity.base.ui.components.StatusBadge
 import com.alorma.caducity.base.ui.components.StatusBadgeSize
 import caducity.composeapp.generated.resources.Res
@@ -80,6 +83,11 @@ fun ProductDetailScreen(
         product = currentState.product,
         onBack = onBack,
         onAddInstance = { showInstanceBottomSheet = true },
+        onDeleteInstance = { instanceId -> viewModel.deleteInstance(instanceId) },
+        onConsumeInstance = { instanceId -> viewModel.consumeInstance(instanceId) },
+        onToggleFreezeInstance = { instanceId, expirationInstant, isFrozen ->
+          viewModel.toggleFreezeInstance(instanceId, expirationInstant, isFrozen)
+        },
       )
     }
 
@@ -120,6 +128,9 @@ private fun ProductDetailContent(
   product: ProductDetailUiModel,
   onBack: () -> Unit,
   onAddInstance: () -> Unit,
+  onDeleteInstance: (String) -> Unit,
+  onConsumeInstance: (String) -> Unit,
+  onToggleFreezeInstance: (String, kotlin.time.Instant, Boolean) -> Unit,
 ) {
   Scaffold(
     topBar = {
@@ -195,14 +206,25 @@ private fun ProductDetailContent(
 
       // Instance cards
       items(product.instances) { instance ->
-        InstanceCard(instance = instance)
+        InstanceCard(
+          instance = instance,
+          onDeleteInstance = onDeleteInstance,
+          onConsumeInstance = onConsumeInstance,
+          onToggleFreezeInstance = onToggleFreezeInstance,
+        )
       }
     }
   }
 }
 
 @Composable
-private fun InstanceCard(instance: ProductInstanceDetailUiModel) {
+private fun InstanceCard(
+  instance: ProductInstanceDetailUiModel,
+  onDeleteInstance: (String) -> Unit,
+  onConsumeInstance: (String) -> Unit,
+  onToggleFreezeInstance: (String, kotlin.time.Instant, Boolean) -> Unit,
+) {
+  var showDeleteConfirmation by remember { mutableStateOf(false) }
   Card(
     modifier = Modifier.fillMaxWidth(),
     colors = CardDefaults.cardColors(
@@ -256,31 +278,69 @@ private fun InstanceCard(instance: ProductInstanceDetailUiModel) {
         )
       }
 
-      // Action buttons (placeholders)
+      // Action buttons
       Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
       ) {
-        PlaceholderActionButton(
-          text = "Remove/Consume",
+        // Delete button
+        ActionButton(
+          text = "Delete",
           modifier = Modifier.weight(1f),
+          onClick = { showDeleteConfirmation = true },
         )
-        PlaceholderActionButton(
-          text = "Freeze",
+
+        // Consume button
+        ActionButton(
+          text = "Consume",
           modifier = Modifier.weight(1f),
+          onClick = { onConsumeInstance(instance.id) },
         )
-        PlaceholderActionButton(
-          text = "Edit",
+
+        // Freeze/Unfreeze button
+        val isFrozen = instance.status == InstanceStatus.Frozen
+        ActionButton(
+          text = if (isFrozen) "Unfreeze" else "Freeze",
           modifier = Modifier.weight(1f),
+          onClick = {
+            onToggleFreezeInstance(instance.id, instance.expirationInstant, isFrozen)
+          },
         )
       }
     }
   }
+
+  // Delete confirmation dialog
+  if (showDeleteConfirmation) {
+    AlertDialog(
+      onDismissRequest = { showDeleteConfirmation = false },
+      title = { Text("Delete Instance?") },
+      text = { Text("Are you sure you want to delete \"${instance.identifier}\"? This action cannot be undone.") },
+      confirmButton = {
+        TextButton(
+          onClick = {
+            onDeleteInstance(instance.id)
+            showDeleteConfirmation = false
+          }
+        ) {
+          Text("Delete")
+        }
+      },
+      dismissButton = {
+        TextButton(
+          onClick = { showDeleteConfirmation = false }
+        ) {
+          Text("Cancel")
+        }
+      }
+    )
+  }
 }
 
 @Composable
-private fun PlaceholderActionButton(
+private fun ActionButton(
   text: String,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
@@ -305,7 +365,7 @@ private fun PlaceholderActionButton(
       containerColor = CaducityTheme.colorScheme.secondaryContainer,
     ),
     shape = MaterialTheme.shapes.medium,
-    onClick = { /* Placeholder - no action */ },
+    onClick = onClick,
     interactionSource = interactionSource,
     elevation = CardDefaults.cardElevation(
       defaultElevation = 1.dp,

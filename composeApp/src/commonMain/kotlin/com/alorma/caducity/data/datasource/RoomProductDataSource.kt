@@ -1,6 +1,7 @@
 package com.alorma.caducity.data.datasource
 
 import com.alorma.caducity.data.datasource.room.AppDatabase
+import com.alorma.caducity.data.datasource.room.ProductInstanceRoomEntity
 import com.alorma.caducity.data.datasource.room.toModel
 import com.alorma.caducity.data.datasource.room.toRoomEntity
 import com.alorma.caducity.domain.ProductDataSource
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
 
 class RoomProductDataSource(
@@ -74,7 +76,9 @@ class RoomProductDataSource(
     }
 
     return daoFlow.map { roomEntities ->
-      val products = roomEntities.map { it.toModel(appClock, expirationThresholds) }
+      // Filter consumed instances at the source
+      val filteredEntities = roomEntities.map { it.filterConsumed() }
+      val products = filteredEntities.map { it.toModel(appClock, expirationThresholds) }
 
       // Apply in-memory status filter only for multiple statuses
       // (to handle non-contiguous date ranges like Expired + Fresh)
@@ -111,14 +115,26 @@ class RoomProductDataSource(
       InstanceStatus.Fresh -> {
         Pair(expiringSoonMillis, Long.MAX_VALUE) // From (now + threshold) to infinity
       }
+
+      InstanceStatus.Frozen -> {
+        // Frozen items don't have a date range filter - return all dates
+        Pair(0L, Long.MAX_VALUE)
+      }
+
+      InstanceStatus.Consumed -> {
+        // Consumed items are filtered at the mapper level
+        Pair(0L, Long.MAX_VALUE)
+      }
     }
   }
 
   override fun getProduct(productId: String): Flow<Result<ProductWithInstances>> {
     return productDao.getProductWithInstances(productId)
       .map { roomEntity ->
-        roomEntity?.let { Result.success(it.toModel(appClock, expirationThresholds)) }
-          ?: Result.failure(NoSuchElementException("Product with id $productId not found"))
+        roomEntity?.let {
+          // Filter consumed instances before converting
+          Result.success(it.filterConsumed().toModel(appClock, expirationThresholds))
+        } ?: Result.failure(NoSuchElementException("Product with id $productId not found"))
       }
   }
 
@@ -134,5 +150,50 @@ class RoomProductDataSource(
 
   override suspend fun addInstance(productId: String, instance: ProductInstance) {
     productDao.insertProductInstance(instance.toRoomEntity(productId))
+  }
+
+  override suspend fun deleteInstance(instanceId: String) {
+    productDao.deleteProductInstance(instanceId)
+  }
+
+  override suspend fun markInstanceAsConsumed(instanceId: String) {
+    productDao.getProductInstance(instanceId)?.let { instance ->
+      val updatedInstance = instance.copy(
+        consumedDate = appClock.now().toEpochMilliseconds(),
+        pausedDate = null, // Clear frozen state if it was frozen
+        remainingDays = null
+      )
+      productDao.updateProductInstance(updatedInstance)
+    }
+  }
+
+  override suspend fun freezeInstance(instanceId: String, remainingDays: Int) {
+    productDao.getProductInstance(instanceId)?.let { instance ->
+      val updatedInstance = instance.copy(
+        pausedDate = appClock.now().toEpochMilliseconds(),
+        remainingDays = remainingDays
+      )
+      productDao.updateProductInstance(updatedInstance)
+    }
+  }
+
+  override suspend fun unfreezeInstance(instanceId: String) {
+    productDao.getProductInstance(instanceId)?.let { instance ->
+      val pausedDate = instance.pausedDate
+      val remainingDays = instance.remainingDays
+
+      if (pausedDate != null && remainingDays != null) {
+        // Calculate new expiration date: now + remaining days
+        val now = appClock.now()
+        val newExpirationDate = now.toEpochMilliseconds() + (remainingDays.days.inWholeMilliseconds)
+
+        val updatedInstance = instance.copy(
+          expirationDate = newExpirationDate,
+          pausedDate = null,
+          remainingDays = null
+        )
+        productDao.updateProductInstance(updatedInstance)
+      }
+    }
   }
 }

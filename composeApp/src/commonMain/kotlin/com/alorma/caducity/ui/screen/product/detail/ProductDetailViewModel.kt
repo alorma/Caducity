@@ -3,6 +3,9 @@ package com.alorma.caducity.ui.screen.product.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.AddInstanceToProductUseCase
+import com.alorma.caducity.domain.usecase.ConsumeInstanceUseCase
+import com.alorma.caducity.domain.usecase.DeleteInstanceUseCase
+import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +22,9 @@ class ProductDetailViewModel(
   obtainProductDetailUseCase: ObtainProductDetailUseCase,
   productDetailMapper: ProductDetailMapper,
   private val addInstanceToProductUseCase: AddInstanceToProductUseCase,
+  private val deleteInstanceUseCase: DeleteInstanceUseCase,
+  private val consumeInstanceUseCase: ConsumeInstanceUseCase,
+  private val freezeInstanceUseCase: FreezeInstanceUseCase,
 ) : ViewModel() {
 
   val state: StateFlow<ProductDetailState> = obtainProductDetailUseCase
@@ -65,6 +71,28 @@ class ProductDetailViewModel(
           println("Failed to add instance: ${error.message}")
         }
       )
+    }
+  }
+
+  fun deleteInstance(instanceId: String) {
+    viewModelScope.launch {
+      deleteInstanceUseCase.deleteInstance(instanceId)
+    }
+  }
+
+  fun consumeInstance(instanceId: String) {
+    viewModelScope.launch {
+      consumeInstanceUseCase.consumeInstance(instanceId)
+    }
+  }
+
+  fun toggleFreezeInstance(instanceId: String, expirationDate: kotlin.time.Instant, isFrozen: Boolean) {
+    viewModelScope.launch {
+      if (isFrozen) {
+        freezeInstanceUseCase.unfreezeInstance(instanceId)
+      } else {
+        freezeInstanceUseCase.freezeInstance(instanceId, expirationDate)
+      }
     }
   }
 }

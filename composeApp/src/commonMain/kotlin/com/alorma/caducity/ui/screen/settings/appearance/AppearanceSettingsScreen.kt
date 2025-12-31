@@ -25,9 +25,11 @@ import caducity.composeapp.generated.resources.settings_color_scheme_harmony
 import caducity.composeapp.generated.resources.settings_color_scheme_title
 import caducity.composeapp.generated.resources.settings_color_scheme_vibrant
 import caducity.composeapp.generated.resources.settings_dynamic_colors
+import caducity.composeapp.generated.resources.settings_expiration_legend_consumed
 import caducity.composeapp.generated.resources.settings_expiration_legend_expired
 import caducity.composeapp.generated.resources.settings_expiration_legend_expiring_soon
 import caducity.composeapp.generated.resources.settings_expiration_legend_fresh
+import caducity.composeapp.generated.resources.settings_expiration_legend_frozen
 import caducity.composeapp.generated.resources.settings_theme_dark
 import caducity.composeapp.generated.resources.settings_theme_light
 import caducity.composeapp.generated.resources.settings_theme_system
@@ -131,6 +133,14 @@ private fun ExpirationColorLegend() {
     ColorLegendItem(
       label = stringResource(Res.string.settings_expiration_legend_expired),
       color = expirationColors.expired,
+    )
+    ColorLegendItem(
+      label = stringResource(Res.string.settings_expiration_legend_frozen),
+      color = expirationColors.frozen,
+    )
+    ColorLegendItem(
+      label = stringResource(Res.string.settings_expiration_legend_consumed),
+      color = expirationColors.consumed,
     )
   }
 }

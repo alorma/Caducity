@@ -45,6 +45,8 @@ data class ProductsListRoute(
       is InstanceStatus.Expired -> "expired"
       is InstanceStatus.ExpiringSoon -> "expiringSoon"
       is InstanceStatus.Fresh -> "fresh"
+      is InstanceStatus.Frozen -> "frozen"
+      is InstanceStatus.Consumed -> "consumed"
     }
   }
 
@@ -77,6 +79,8 @@ data class ProductsListRoute(
     "expired" -> InstanceStatus.Expired
     "expiringSoon" -> InstanceStatus.ExpiringSoon
     "fresh" -> InstanceStatus.Fresh
+    "frozen" -> InstanceStatus.Frozen
+    "consumed" -> InstanceStatus.Consumed
     else -> error("Unknown status: $this")
   }
 }

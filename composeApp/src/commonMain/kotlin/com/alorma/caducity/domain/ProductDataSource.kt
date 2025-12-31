@@ -15,4 +15,12 @@ interface ProductDataSource {
   suspend fun createProduct(product: Product, instances: ImmutableList<ProductInstance>)
 
   suspend fun addInstance(productId: String, instance: ProductInstance)
+
+  suspend fun deleteInstance(instanceId: String)
+
+  suspend fun markInstanceAsConsumed(instanceId: String)
+
+  suspend fun freezeInstance(instanceId: String, remainingDays: Int)
+
+  suspend fun unfreezeInstance(instanceId: String)
 }

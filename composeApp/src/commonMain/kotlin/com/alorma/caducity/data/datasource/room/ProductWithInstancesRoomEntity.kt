@@ -12,4 +12,9 @@ data class ProductWithInstancesRoomEntity(
     entityColumn = "productId"
   )
   val instances: List<ProductInstanceRoomEntity>
-)
+) {
+  // Filter consumed instances in memory (Room @Relation doesn't support WHERE clauses well)
+  fun filterConsumed(): ProductWithInstancesRoomEntity {
+    return copy(instances = instances.filter { it.consumedDate == null })
+  }
+}

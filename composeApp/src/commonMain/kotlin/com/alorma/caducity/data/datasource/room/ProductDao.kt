@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -18,7 +19,15 @@ interface ProductDao {
   @Query("""
     SELECT DISTINCT p.* FROM products p
     INNER JOIN product_instances pi ON p.id = pi.productId
-    WHERE pi.expirationDate >= :startDate AND pi.expirationDate < :endDate
+    WHERE CASE
+            WHEN pi.pausedDate IS NOT NULL THEN pi.pausedDate
+            ELSE pi.expirationDate
+          END >= :startDate
+      AND CASE
+            WHEN pi.pausedDate IS NOT NULL THEN pi.pausedDate
+            ELSE pi.expirationDate
+          END < :endDate
+      AND pi.consumedDate IS NULL
   """)
   fun getProductsWithInstancesByDateRange(startDate: Long, endDate: Long): Flow<List<ProductWithInstancesRoomEntity>>
 
@@ -26,7 +35,15 @@ interface ProductDao {
   @Query("""
     SELECT DISTINCT p.* FROM products p
     INNER JOIN product_instances pi ON p.id = pi.productId
-    WHERE pi.expirationDate >= :date AND pi.expirationDate < :nextDay
+    WHERE CASE
+            WHEN pi.pausedDate IS NOT NULL THEN pi.pausedDate
+            ELSE pi.expirationDate
+          END >= :date
+      AND CASE
+            WHEN pi.pausedDate IS NOT NULL THEN pi.pausedDate
+            ELSE pi.expirationDate
+          END < :nextDay
+      AND pi.consumedDate IS NULL
   """)
   fun getProductsWithInstancesByDate(date: Long, nextDay: Long): Flow<List<ProductWithInstancesRoomEntity>>
 
@@ -52,11 +69,17 @@ interface ProductDao {
   @Query("SELECT * FROM product_instances WHERE productId = :productId")
   fun getProductInstances(productId: String): Flow<List<ProductInstanceRoomEntity>>
 
+  @Query("SELECT * FROM product_instances WHERE id = :instanceId")
+  suspend fun getProductInstance(instanceId: String): ProductInstanceRoomEntity?
+
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insertProductInstance(instance: ProductInstanceRoomEntity)
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insertProductInstances(instances: List<ProductInstanceRoomEntity>)
+
+  @Update
+  suspend fun updateProductInstance(instance: ProductInstanceRoomEntity)
 
   @Query("DELETE FROM product_instances WHERE id = :instanceId")
   suspend fun deleteProductInstance(instanceId: String)

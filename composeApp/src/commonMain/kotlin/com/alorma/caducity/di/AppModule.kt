@@ -4,7 +4,10 @@ import com.alorma.caducity.base.ui.theme.di.themeModule
 import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.domain.domainModule
 import com.alorma.caducity.domain.usecase.AddInstanceToProductUseCase
+import com.alorma.caducity.domain.usecase.ConsumeInstanceUseCase
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
+import com.alorma.caducity.domain.usecase.DeleteInstanceUseCase
+import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
@@ -52,6 +55,9 @@ val appModule = module {
   // Product detail
   singleOf(::ObtainProductDetailUseCase)
   singleOf(::AddInstanceToProductUseCase)
+  singleOf(::DeleteInstanceUseCase)
+  singleOf(::ConsumeInstanceUseCase)
+  singleOf(::FreezeInstanceUseCase)
   singleOf(::ProductDetailMapper)
   viewModelOf(::ProductDetailViewModel)
 

@@ -12,30 +12,35 @@ class ProductDetailMapper(
 ) {
   fun mapToProductDetail(productWithInstances: ProductWithInstances): ProductDetailUiModel {
 
-    val instances = productWithInstances.instances.map { instance ->
-      val expirationLocalDate = instance
-        .expirationDate
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-        .date
-
-      ProductInstanceDetailUiModel(
-        id = instance.id,
-        identifier = instance.identifier,
-        status = instance.status,
-        expirationDate = instance.expirationDate
+    val instances = productWithInstances.instances
+      // Consumed instances are already filtered at data source level
+      .map { instance ->
+        // Use displayDate for frozen items (pausedDate) or expirationDate for others
+        val displayLocalDate = instance
+          .displayDate
           .toLocalDateTime(TimeZone.currentSystemDefault())
-          .date,
-        expirationDateText = dateFormat.format(expirationLocalDate),
-      )
-    }
+          .date
 
-    // Sort instances: expired > expiring soon > fresh
+        ProductInstanceDetailUiModel(
+          id = instance.id,
+          identifier = instance.identifier,
+          status = instance.status,
+          expirationDate = displayLocalDate,
+          expirationDateText = dateFormat.format(displayLocalDate),
+          // Keep actual expiration date for freeze/unfreeze calculations
+          expirationInstant = instance.expirationDate,
+        )
+      }
+
+    // Sort instances: expired > expiring soon > fresh > frozen
     val sortedInstances = instances.sortedWith(
       compareBy<ProductInstanceDetailUiModel> {
         when (it.status) {
           InstanceStatus.Expired -> 0
           InstanceStatus.ExpiringSoon -> 1
           InstanceStatus.Fresh -> 2
+          InstanceStatus.Frozen -> 3
+          InstanceStatus.Consumed -> 4 // Should never happen due to filter
         }
       }.thenBy { it.expirationDate }
     )
