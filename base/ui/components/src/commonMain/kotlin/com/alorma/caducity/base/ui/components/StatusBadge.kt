@@ -13,21 +13,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import caducity.base.ui.components.generated.resources.Res
+import caducity.base.ui.components.generated.resources.expiration_status_badge_expired
+import caducity.base.ui.components.generated.resources.expiration_status_badge_expiring_soon
+import caducity.base.ui.components.generated.resources.expiration_status_badge_fresh
+import com.alorma.caducity.base.main.InstanceStatus
+import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.base.ui.theme.CaducityTheme
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun StatusBadge(
-  text: String,
-  containerColor: Color,
-  onContainerColor: Color,
+  status: InstanceStatus,
   modifier: Modifier = Modifier,
 ) {
+  val colors = ExpirationDefaults.getColors(status)
+
   Row(
     modifier = modifier
       .clip(MaterialTheme.shapes.small)
-      .background(containerColor.copy(CaducityTheme.dims.dim3))
+      .background(colors.container.copy(CaducityTheme.dims.dim3))
       .padding(horizontal = 8.dp, vertical = 4.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -35,14 +41,21 @@ fun StatusBadge(
       modifier = Modifier
         .size(6.dp)
         .clip(CircleShape)
-        .background(containerColor)
+        .background(colors.onContainer)
     )
+
     Spacer(modifier = Modifier.width(4.dp))
+
+    val text = when (status) {
+      InstanceStatus.Expired -> stringResource(Res.string.expiration_status_badge_expired)
+      InstanceStatus.ExpiringSoon -> stringResource(Res.string.expiration_status_badge_expiring_soon)
+      InstanceStatus.Fresh -> stringResource(Res.string.expiration_status_badge_fresh)
+    }
 
     Text(
       text = text,
       style = MaterialTheme.typography.labelSmall,
-      color = onContainerColor,
+      color = colors.onContainer,
     )
   }
 }

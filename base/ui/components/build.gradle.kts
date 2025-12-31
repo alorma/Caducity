@@ -40,6 +40,8 @@ kotlin {
 
       implementation(libs.compose.material3)
       implementation(libs.alorma.settings.ui.base)
+
+      implementation(compose.components.resources)
     }
     androidMain.dependencies {
       implementation(libs.compose.ui.tooling)

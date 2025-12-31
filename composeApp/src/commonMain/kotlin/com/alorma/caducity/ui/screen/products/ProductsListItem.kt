@@ -24,10 +24,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.components.StatusBadge
+import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.time.clock.AppClock
-import com.alorma.caducity.ui.screen.dashboard.ExpirationDefaults
 import com.alorma.caducity.ui.screen.dashboard.components.productListWithInstancesPreview
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -93,11 +93,7 @@ fun ProductsListItem(
 
               val colors = ExpirationDefaults.getColors(instance.status)
 
-              StatusBadge(
-                text = ExpirationDefaults.getText(instance.status),
-                containerColor = colors.container,
-                onContainerColor = colors.onContainer,
-              )
+              StatusBadge(status = instance.status)
             }
 
             ProductInstanceRelativeTime(
@@ -109,6 +105,7 @@ fun ProductsListItem(
           }
         }
       }
+
       is ProductsListUiModel.Empty -> {
         Spacer(modifier = Modifier.height(8.dp))
         Text(

@@ -21,11 +21,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import caducity.composeapp.generated.resources.Res
+import caducity.composeapp.generated.resources.dashboard_section_expired
+import caducity.composeapp.generated.resources.dashboard_section_expiring_soon
+import caducity.composeapp.generated.resources.dashboard_section_fresh
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.ui.screen.dashboard.DashboardSummary
-import com.alorma.caducity.ui.screen.dashboard.ExpirationDefaults
+import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.base.main.InstanceStatus
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DashboardSummaryCard(
@@ -89,9 +94,15 @@ private fun SummaryStatusCard(
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
 
+      val text = when (status) {
+        InstanceStatus.Expired -> stringResource(Res.string.dashboard_section_expired)
+        InstanceStatus.ExpiringSoon -> stringResource(Res.string.dashboard_section_expiring_soon)
+        InstanceStatus.Fresh -> stringResource(Res.string.dashboard_section_fresh)
+      }
+
       Text(
         modifier = Modifier.fillMaxWidth(),
-        text = ExpirationDefaults.getText(status),
+        text = text,
         style = MaterialTheme.typography.labelLarge,
         fontWeight = FontWeight.SemiBold,
         textAlign = TextAlign.Start,

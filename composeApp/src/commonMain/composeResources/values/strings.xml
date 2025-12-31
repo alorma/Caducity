@@ -76,7 +76,7 @@
     <string name="create_product_remove_instance">Remove</string>
     <string name="create_product_instance_number">Instance %1$d</string>
 
-    <!-- Relative time strings -->
+    <!-- Relative time values -->
     <string name="relative_time_today">Today</string>
     <string name="relative_time_tomorrow">Tomorrow</string>
     <string name="relative_time_yesterday">Yesterday</string>
@@ -91,7 +91,7 @@
     <string name="relative_time_a_month_ago">A month ago</string>
     <string name="relative_time_months_ago">%1$d months ago</string>
 
-    <!-- Language strings -->
+    <!-- Language values -->
     <string name="language_english">English</string>
     <string name="language_spanish">Español</string>
     <string name="language_catalan">Català</string>
