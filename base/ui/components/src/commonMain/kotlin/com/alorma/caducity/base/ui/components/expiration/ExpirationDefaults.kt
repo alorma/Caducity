@@ -1,14 +1,9 @@
-package com.alorma.caducity.ui.screen.dashboard
+package com.alorma.caducity.base.ui.components.expiration
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.dashboard_filter_expired
-import caducity.composeapp.generated.resources.dashboard_filter_expiring_soon
-import caducity.composeapp.generated.resources.dashboard_filter_fresh
-import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.main.InstanceStatus
-import org.jetbrains.compose.resources.stringResource
+import com.alorma.caducity.base.ui.theme.CaducityTheme
 
 object ExpirationDefaults {
 
@@ -30,13 +25,6 @@ object ExpirationDefaults {
         onContainer = CaducityTheme.expirationColorScheme.onFresh,
       )
     }
-  }
-
-  @Composable
-  fun getText(status: InstanceStatus) = when (status) {
-    InstanceStatus.Expired -> stringResource(Res.string.dashboard_filter_expired)
-    InstanceStatus.ExpiringSoon -> stringResource(Res.string.dashboard_filter_expiring_soon)
-    InstanceStatus.Fresh -> stringResource(Res.string.dashboard_filter_fresh)
   }
 }
 
