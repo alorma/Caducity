@@ -28,11 +28,15 @@ import com.alorma.caducity.ui.screen.dashboard.ExpirationDefaults
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
 import com.kizitonwose.calendar.compose.HorizontalCalendar
+import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
-import com.kizitonwose.calendar.core.daysOfWeek
+import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.YearMonth
@@ -66,12 +70,15 @@ fun ProductsCalendar(
   } else {
     YearMonth(today.year + 1, endMonthNum - 12)
   }
-  val daysOfWeek = daysOfWeek()
-
   val calendarState = rememberCalendarState(
     startMonth = startMonth,
     endMonth = endMonth,
     firstVisibleMonth = currentMonth,
+  )
+
+  val weekCalendarState = rememberWeekCalendarState(
+    startDate = startMonth.firstDay,
+    endDate = endMonth.lastDay,
   )
 
   // Group products by expiration date with their most critical status
@@ -99,7 +106,41 @@ fun ProductsCalendar(
     }
   }
 
-  Column(modifier = modifier) {
+  Column(
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(24.dp),
+  ) {
+
+    WeekCalendar(
+      state = weekCalendarState,
+      contentPadding = PaddingValues(horizontal = 16.dp),
+      weekHeader = { week ->
+        Column {
+
+          val daysOfWeek = remember {
+            week.days.map { weekDay ->
+              weekDay.date.dayOfWeek
+            }.toImmutableList()
+          }
+
+          val month = dateFormatter.getMonthName(week.days.first().date.month)
+          Text(text = month)
+
+          WeekDaysNames(
+            daysOfWeek = daysOfWeek,
+            dateFormatter = dateFormatter,
+          )
+        }
+      },
+      dayContent = { weekDay ->
+        DayContentWrapper(
+          date = weekDay.date,
+          productsByDate = productsByDate.toImmutableMap(),
+          onDateClick = onDateClick,
+        )
+      },
+    )
+
     HorizontalCalendar(
       modifier = Modifier.fillMaxWidth(),
       state = calendarState,
@@ -118,43 +159,72 @@ fun ProductsCalendar(
             modifier = Modifier.padding(bottom = 8.dp),
           )
 
-          // Day of week headers
-          Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-          ) {
-            daysOfWeek.forEach { dayOfWeek ->
-              Text(
-                text = dateFormatter.getDayOfWeekAbbreviation(dayOfWeek),
-                style = CaducityTheme.typography.labelSmall,
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-              )
-            }
+          val daysOfWeek = remember {
+            calendarMonth.weekDays.first().map { weekDay ->
+              weekDay.date.dayOfWeek
+            }.toImmutableList()
           }
+
+          // Day of week headers
+          WeekDaysNames(
+            daysOfWeek = daysOfWeek,
+            dateFormatter = dateFormatter,
+          )
         }
       },
       dayContent = { calendarDay ->
-        val date = calendarDay.date
-        val kotlinDate = LocalDate(date.year, date.month, date.day)
-        val status = productsByDate[kotlinDate]
-
-        // Check for consecutive days
-        val prevDay = kotlinDate.plus(-1, DateTimeUnit.DAY)
-        val nextDay = kotlinDate.plus(1, DateTimeUnit.DAY)
-        val hasPrevDay = productsByDate.containsKey(prevDay)
-        val hasNextDay = productsByDate.containsKey(nextDay)
-
-        DayContent(
-          date = date,
-          status = status,
-          hasPreviousDay = hasPrevDay,
-          hasNextDay = hasNextDay,
-          onClick = { onDateClick(it) },
+        DayContentWrapper(
+          date = calendarDay.date,
+          productsByDate = productsByDate.toImmutableMap(),
+          onDateClick = onDateClick,
         )
       },
     )
   }
+}
+
+@Composable
+private fun WeekDaysNames(
+  daysOfWeek: ImmutableList<DayOfWeek>,
+  dateFormatter: LocalizedDateFormatter
+) {
+  Row(
+    modifier = Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.SpaceBetween,
+  ) {
+    daysOfWeek.forEach { dayOfWeek ->
+      Text(
+        text = dateFormatter.getDayOfWeekAbbreviation(dayOfWeek),
+        style = CaducityTheme.typography.labelSmall,
+        modifier = Modifier.weight(1f),
+        textAlign = TextAlign.Center,
+      )
+    }
+  }
+}
+
+@Composable
+private fun DayContentWrapper(
+  date: LocalDate,
+  productsByDate: ImmutableMap<LocalDate, InstanceStatus>,
+  onDateClick: (LocalDate) -> Unit
+) {
+  val kotlinDate = LocalDate(date.year, date.month, date.day)
+  val status = productsByDate[kotlinDate]
+
+  // Check for consecutive days
+  val prevDay = kotlinDate.plus(-1, DateTimeUnit.DAY)
+  val nextDay = kotlinDate.plus(1, DateTimeUnit.DAY)
+  val hasPrevDay = productsByDate.containsKey(prevDay)
+  val hasNextDay = productsByDate.containsKey(nextDay)
+
+  DayContent(
+    date = date,
+    status = status,
+    hasPreviousDay = hasPrevDay,
+    hasNextDay = hasNextDay,
+    onClick = { onDateClick(it) },
+  )
 }
 
 @Composable
