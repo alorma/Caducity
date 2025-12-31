@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -85,10 +84,7 @@ fun DashboardContent(
     topBar = {
       StyledTopAppBar(
         title = {
-          Text(
-            text = stringResource(Res.string.dashboard_screen_title),
-            style = MaterialTheme.typography.headlineMedium,
-          )
+          Text(text = stringResource(Res.string.dashboard_screen_title))
         },
       )
     },

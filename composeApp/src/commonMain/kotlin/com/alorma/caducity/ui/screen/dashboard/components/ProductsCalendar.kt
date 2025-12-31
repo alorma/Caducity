@@ -108,8 +108,10 @@ fun ProductsCalendar(
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         ) {
+          val name = calendarMonth.yearMonth.month.name
+
           Text(
-            text = "${calendarMonth.yearMonth.month.name} ${calendarMonth.yearMonth.year}",
+            text = "$name ${calendarMonth.yearMonth.year}",
             style = CaducityTheme.typography.titleMedium,
             modifier = Modifier.padding(bottom = 8.dp),
           )
