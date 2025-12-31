@@ -22,7 +22,6 @@ import caducity.base.ui.components.generated.resources.expiration_status_badge_e
 import caducity.base.ui.components.generated.resources.expiration_status_badge_fresh
 import com.alorma.caducity.base.main.InstanceStatus
 import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
-import com.alorma.caducity.base.ui.theme.CaducityTheme
 import org.jetbrains.compose.resources.stringResource
 
 enum class StatusBadgeSize {
@@ -77,8 +76,11 @@ fun StatusBadge(
   Row(
     modifier = modifier
       .clip(MaterialTheme.shapes.small)
-      .background(colors.container.copy(CaducityTheme.dims.dim3))
-      .padding(horizontal = size.horizontalPadding, vertical = size.verticalPadding),
+      .background(colors.container)
+      .padding(
+        horizontal = size.horizontalPadding,
+        vertical = size.verticalPadding,
+      ),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Spacer(
