@@ -127,12 +127,16 @@ fun ProductsCalendar(
 
         val firstMonth = week.days.first().date.month
         val lastMonth = week.days.last().date.month
+        val firstYear = week.days.first().date.year
+        val lastYear = week.days.last().date.year
 
         CalendarHeader(
           firstMonth = firstMonth,
           secondMonth = lastMonth,
           daysOfWeek = daysOfWeek,
           highlightToday = true,
+          firstYear = firstYear,
+          secondYear = lastYear,
         )
       },
       dayContent = { weekDay ->
@@ -157,11 +161,15 @@ fun ProductsCalendar(
 
         val firstMonth = calendarMonth.yearMonth.month
         val lastMonth = calendarMonth.weekDays.last().last().date.month
+        val firstYear = calendarMonth.weekDays.first().first().date.year
+        val lastYear = calendarMonth.weekDays.last().last().date.year
 
         CalendarHeader(
           firstMonth = firstMonth,
           secondMonth = lastMonth,
           daysOfWeek = daysOfWeek,
+          firstYear = firstYear,
+          secondYear = lastYear,
         )
       },
       dayContent = { calendarDay ->
@@ -182,6 +190,8 @@ private fun CalendarHeader(
   daysOfWeek: ImmutableList<DayOfWeek>,
   modifier: Modifier = Modifier,
   highlightToday: Boolean = false,
+  firstYear: Int? = null,
+  secondYear: Int? = null,
   dateFormatter: LocalizedDateFormatter = koinInject(),
   appClock: AppClock = koinInject(),
 ) {
@@ -198,24 +208,44 @@ private fun CalendarHeader(
         .padding(vertical = 12.dp, horizontal = 24.dp),
       horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-      val firstMonthText = dateFormatter.getMonthName(firstMonth)
-
-      Text(
-        text = firstMonthText,
-        style = CaducityTheme.typography.titleMedium,
-        color = CaducityTheme.colorScheme.onSurface.copy(
-          alpha = CaducityTheme.dims.dim1,
-        ),
-      )
-
-      if (secondMonth != firstMonth) {
+      Column(horizontalAlignment = Alignment.Start) {
+        if (firstYear != null) {
+          Text(
+            text = firstYear.toString(),
+            style = CaducityTheme.typography.labelLarge,
+            color = CaducityTheme.colorScheme.onSurface.copy(
+              alpha = CaducityTheme.dims.dim2,
+            ),
+          )
+        }
         Text(
-          text = dateFormatter.getMonthName(secondMonth),
+          text = dateFormatter.getMonthName(firstMonth),
           style = CaducityTheme.typography.titleMedium,
           color = CaducityTheme.colorScheme.onSurface.copy(
             alpha = CaducityTheme.dims.dim1,
           ),
         )
+      }
+
+      if (secondMonth != firstMonth) {
+        Column(horizontalAlignment = Alignment.End) {
+          if (secondYear != null && secondYear != firstYear) {
+            Text(
+              text = secondYear.toString(),
+              style = CaducityTheme.typography.labelLarge,
+              color = CaducityTheme.colorScheme.onSurface.copy(
+                alpha = CaducityTheme.dims.dim2,
+              ),
+            )
+          }
+          Text(
+            text = dateFormatter.getMonthName(secondMonth),
+            style = CaducityTheme.typography.titleMedium,
+            color = CaducityTheme.colorScheme.onSurface.copy(
+              alpha = CaducityTheme.dims.dim1,
+            ),
+          )
+        }
       }
     }
 
