@@ -113,6 +113,7 @@ fun ProductsCalendar(
             date = weekDay.date,
             calendarData = calendarData,
             onDateClick = onDateClick,
+            isOutDay = false,
           )
         },
       )
@@ -152,13 +153,12 @@ fun ProductsCalendar(
           )
         },
         dayContent = { calendarDay ->
-          if (calendarDay.position == DayPosition.MonthDate) {
-            DayContentWrapper(
-              date = calendarDay.date,
-              calendarData = calendarData,
-              onDateClick = onDateClick,
-            )
-          }
+          DayContentWrapper(
+            date = calendarDay.date,
+            isOutDay = calendarDay.position != DayPosition.MonthDate,
+            calendarData = calendarData,
+            onDateClick = onDateClick,
+          )
         },
       )
     }
@@ -260,6 +260,7 @@ private fun DayContentWrapper(
   date: LocalDate,
   calendarData: CalendarData,
   onDateClick: (LocalDate) -> Unit,
+  isOutDay: Boolean,
 ) {
   val kotlinDate = LocalDate(date.year, date.month, date.day)
   val dateInfo = calendarData.productsByDate[kotlinDate]
@@ -268,6 +269,7 @@ private fun DayContentWrapper(
     date = date,
     status = dateInfo?.status,
     shapePosition = dateInfo?.shapePosition ?: ShapePosition.None,
+    isOutDay = isOutDay,
     onClick = { onDateClick(it) },
   )
 }
@@ -277,12 +279,19 @@ private fun DayContent(
   date: LocalDate,
   status: InstanceStatus?,
   shapePosition: ShapePosition,
+  isOutDay: Boolean,
   onClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
 
   val backgroundColor = if (status != null) {
-    ExpirationDefaults.getColors(status).container
+    val color = ExpirationDefaults.getColors(status).container
+
+    if (isOutDay) {
+      color.copy(alpha = CaducityTheme.dims.dim3)
+    } else {
+      color
+    }
   } else {
     Color.Transparent
   }
