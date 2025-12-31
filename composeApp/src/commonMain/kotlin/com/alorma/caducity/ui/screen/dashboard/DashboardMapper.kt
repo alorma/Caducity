@@ -109,10 +109,9 @@ class DashboardMapper(
       products.forEach { product ->
         if (product is ProductUiModel.WithInstances) {
           product.instances.forEach { instance ->
-            // Use the date that this instance appears on:
-            // - For frozen items: use the freeze date (when paused)
-            // - For normal items: use the expiration date
-            // Note: Frozen items have their own freeze date, so they should display with Frozen status
+            // Use expirationDate here as UI model already converted to correct display date
+            // For frozen items: expirationDate field already contains the pausedDate
+            // For normal items: expirationDate contains the actual expiration date
             val date = instance.expirationDate
             val currentStatus = get(date)
 
@@ -172,8 +171,9 @@ class DashboardMapper(
       description = product.description,
       today = dateFormat.format(today),
       instances = instances.map { instance ->
-        val expirationLocalDate = instance
-          .expirationDate
+        // Use displayDate for frozen items (pausedDate) or expirationDate for others
+        val displayLocalDate = instance
+          .displayDate
           .toLocalDateTime(TimeZone.currentSystemDefault())
           .date
 
@@ -181,10 +181,8 @@ class DashboardMapper(
           id = instance.id,
           identifier = instance.identifier,
           status = instance.status,
-          expirationDate = instance.expirationDate
-            .toLocalDateTime(TimeZone.currentSystemDefault())
-            .date,
-          expirationDateText = dateFormat.format(expirationLocalDate),
+          expirationDate = displayLocalDate,
+          expirationDateText = dateFormat.format(displayLocalDate),
         )
       }.toImmutableList()
     )

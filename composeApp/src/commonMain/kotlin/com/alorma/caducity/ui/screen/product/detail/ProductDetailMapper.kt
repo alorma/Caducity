@@ -15,8 +15,9 @@ class ProductDetailMapper(
     val instances = productWithInstances.instances
       // Consumed instances are already filtered at data source level
       .map { instance ->
-        val expirationLocalDate = instance
-          .expirationDate
+        // Use displayDate for frozen items (pausedDate) or expirationDate for others
+        val displayLocalDate = instance
+          .displayDate
           .toLocalDateTime(TimeZone.currentSystemDefault())
           .date
 
@@ -24,10 +25,9 @@ class ProductDetailMapper(
           id = instance.id,
           identifier = instance.identifier,
           status = instance.status,
-          expirationDate = instance.expirationDate
-            .toLocalDateTime(TimeZone.currentSystemDefault())
-            .date,
-          expirationDateText = dateFormat.format(expirationLocalDate),
+          expirationDate = displayLocalDate,
+          expirationDateText = dateFormat.format(displayLocalDate),
+          // Keep actual expiration date for freeze/unfreeze calculations
           expirationInstant = instance.expirationDate,
         )
       }

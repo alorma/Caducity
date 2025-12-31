@@ -22,6 +22,7 @@ fun ProductInstanceRoomEntity.toModel(
   expirationThresholds: ExpirationThresholds
 ): ProductInstance {
   val expirationInstant = Instant.fromEpochMilliseconds(expirationDate)
+  val pausedInstant = pausedDate?.let { Instant.fromEpochMilliseconds(it) }
 
   // Determine status: consumed > frozen > calculated
   val status = when {
@@ -39,6 +40,7 @@ fun ProductInstanceRoomEntity.toModel(
     identifier = identifier,
     expirationDate = expirationInstant,
     status = status,
+    pausedDate = pausedInstant,
   )
 }
 
