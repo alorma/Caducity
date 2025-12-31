@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.Scaffold
@@ -22,6 +24,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.dashboard_screen_title
 import com.alorma.caducity.base.ui.components.StyledTopAppBar
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.CalendarCollapse
+import com.alorma.caducity.base.ui.icons.CalendarExpand
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.main.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardSummaryCard
@@ -65,6 +70,7 @@ fun DashboardScreen(
       scrollConnection = scrollConnection,
       onNavigateToDate = onNavigateToDate,
       onNavigateToStatus = onNavigateToStatus,
+      onToggleCalendarMode = { viewModel.toggleCalendarMode() },
     )
   }
 }
@@ -76,6 +82,7 @@ fun DashboardContent(
   scrollConnection: NestedScrollConnection,
   onNavigateToDate: (LocalDate) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
+  onToggleCalendarMode: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Scaffold(
@@ -86,6 +93,20 @@ fun DashboardContent(
       StyledTopAppBar(
         title = {
           Text(text = stringResource(Res.string.dashboard_screen_title))
+        },
+        actions = {
+          IconButton(onClick = onToggleCalendarMode) {
+            Icon(
+              imageVector = when (state.config.calendarMode) {
+                CalendarMode.MONTH -> AppIcons.CalendarCollapse
+                CalendarMode.WEEK -> AppIcons.CalendarExpand
+              },
+              contentDescription = when (state.config.calendarMode) {
+                CalendarMode.MONTH -> "Switch to week view"
+                CalendarMode.WEEK -> "Switch to month view"
+              }
+            )
+          }
         },
       )
     },
@@ -113,6 +134,7 @@ fun DashboardContent(
           ProductsCalendar(
             calendarData = state.calendarData,
             onDateClick = onNavigateToDate,
+            calendarMode = state.config.calendarMode,
           )
         }
       }
