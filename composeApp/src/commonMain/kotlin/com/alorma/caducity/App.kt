@@ -56,6 +56,7 @@ import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailRoute
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailScreen
 import com.alorma.caducity.domain.usecase.ProductsListFilter
+import com.alorma.caducity.ui.screen.products.ProductsListBottomSheet
 import com.alorma.caducity.ui.screen.products.ProductsListRoute
 import com.alorma.caducity.ui.screen.products.ProductsListScreen
 import com.alorma.caducity.ui.screen.settings.SettingsContainer
@@ -171,7 +172,7 @@ fun App(
           entry<ProductsListRoute>(
             metadata = BottomSheetSceneStrategy.bottomSheet(),
           ) {
-            ProductsListScreen(
+            ProductsListBottomSheet(
               filters = it.toFilter(),
               onNavigateToProductDetail = { productId ->
                 if (topLevelBackStack.backStack.last() is ProductsListRoute) {
