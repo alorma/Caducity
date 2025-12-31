@@ -131,4 +131,8 @@ class RoomProductDataSource(
       productDao.insertProductInstance(instance.toRoomEntity(product.id))
     }
   }
+
+  override suspend fun addInstance(productId: String, instance: ProductInstance) {
+    productDao.insertProductInstance(instance.toRoomEntity(productId))
+  }
 }
