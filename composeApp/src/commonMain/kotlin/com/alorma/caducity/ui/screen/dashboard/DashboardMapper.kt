@@ -1,12 +1,16 @@
 package com.alorma.caducity.ui.screen.dashboard
 
+import com.alorma.caducity.base.ui.components.shape.ShapePosition
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.time.clock.AppClock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
 class DashboardMapper(
@@ -16,6 +20,7 @@ class DashboardMapper(
   data class DashboardData(
     val items: ImmutableList<ProductUiModel>,
     val summary: DashboardSummary,
+    val calendarData: CalendarData,
   )
 
   fun mapToDashboardSections(
@@ -28,6 +33,9 @@ class DashboardMapper(
     // Calculate summary from all products (before filtering)
     val summary = calculateSummary(allProducts)
 
+    // Calculate calendar data from all products (before filtering)
+    val calendarData = calculateCalendarData(allProducts)
+
     // Apply filters for the list
     val filteredItems = allProducts
       .filter { product ->
@@ -38,6 +46,7 @@ class DashboardMapper(
     return DashboardData(
       items = filteredItems,
       summary = summary,
+      calendarData = calendarData,
     )
   }
 
@@ -87,6 +96,48 @@ class DashboardMapper(
         }
       }
     }
+  }
+
+  private fun calculateCalendarData(products: List<ProductUiModel>): CalendarData {
+    // Group products by date with most critical status
+    val productsByDate = buildMap {
+      products.forEach { product ->
+        if (product is ProductUiModel.WithInstances) {
+          product.instances.forEach { instance ->
+            val date = instance.expirationDate
+            val currentStatus = get(date)
+
+            // Keep the most critical status (Expired > ExpiringSoon > Fresh)
+            val newStatus = when {
+              currentStatus == InstanceStatus.Expired -> InstanceStatus.Expired
+              instance.status == InstanceStatus.Expired -> InstanceStatus.Expired
+              currentStatus == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
+              instance.status == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
+              else -> InstanceStatus.Fresh
+            }
+
+            put(date, newStatus)
+          }
+        }
+      }
+    }
+
+    // Calculate shape position for each date
+    val dateWithShapes = productsByDate.mapValues { (date, status) ->
+      val hasPrevDay = productsByDate.containsKey(date.plus(-1, DateTimeUnit.DAY))
+      val hasNextDay = productsByDate.containsKey(date.plus(1, DateTimeUnit.DAY))
+
+      val shapePosition = when {
+        !hasPrevDay && !hasNextDay -> ShapePosition.Single
+        !hasPrevDay && hasNextDay -> ShapePosition.Start
+        hasPrevDay && !hasNextDay -> ShapePosition.End
+        else -> ShapePosition.Middle
+      }
+
+      CalendarDateInfo(status, shapePosition)
+    }.toImmutableMap()
+
+    return CalendarData(dateWithShapes)
   }
 
   private fun ProductWithInstances.toUiModel(): ProductUiModel {

@@ -9,6 +9,7 @@ sealed class DashboardState {
     val items: ImmutableList<ProductUiModel>,
     val summary: DashboardSummary,
     val config: DashboardUI,
+    val calendarData: CalendarData,
   ) : DashboardState()
 }
 

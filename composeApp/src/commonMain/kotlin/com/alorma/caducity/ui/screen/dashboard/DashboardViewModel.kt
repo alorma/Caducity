@@ -50,6 +50,7 @@ class DashboardViewModel(
       items = dashboardData.items,
       summary = dashboardData.summary,
       config = config,
+      calendarData = dashboardData.calendarData,
     )
   }.stateIn(
     scope = viewModelScope,

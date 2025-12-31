@@ -1,7 +1,9 @@
 package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.compose.runtime.Stable
+import com.alorma.caducity.base.ui.components.shape.ShapePosition
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -80,3 +82,14 @@ sealed class InstanceStatus {
     }
   }
 }
+
+@Stable
+data class CalendarData(
+  val productsByDate: ImmutableMap<LocalDate, CalendarDateInfo>
+)
+
+@Stable
+data class CalendarDateInfo(
+  val status: InstanceStatus,
+  val shapePosition: ShapePosition,
+)

@@ -26,6 +26,7 @@ import com.alorma.caducity.base.ui.components.shape.toCalendarShape
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.time.clock.AppClock
+import com.alorma.caducity.ui.screen.dashboard.CalendarData
 import com.alorma.caducity.ui.screen.dashboard.ExpirationDefaults
 import com.alorma.caducity.ui.screen.dashboard.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
@@ -49,7 +50,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun ProductsCalendar(
-  products: ImmutableList<ProductUiModel>,
+  calendarData: CalendarData,
   onDateClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
   appClock: AppClock = koinInject(),
@@ -86,31 +87,6 @@ fun ProductsCalendar(
       .dayOfWeek,
   )
 
-  // Group products by expiration date with their most critical status
-  val productsByDate = remember(products) {
-    buildMap {
-      products.forEach { product ->
-        if (product is ProductUiModel.WithInstances) {
-          product.instances.forEach { instance ->
-            val date = instance.expirationDate
-            val currentStatus = get(date)
-
-            // Keep the most critical status (Expired > ExpiringSoon > Fresh)
-            val newStatus = when {
-              currentStatus == InstanceStatus.Expired -> InstanceStatus.Expired
-              instance.status == InstanceStatus.Expired -> InstanceStatus.Expired
-              currentStatus == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
-              instance.status == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
-              else -> InstanceStatus.Fresh
-            }
-
-            put(date, newStatus)
-          }
-        }
-      }
-    }
-  }
-
   Column(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -143,7 +119,7 @@ fun ProductsCalendar(
       dayContent = { weekDay ->
         DayContentWrapper(
           date = weekDay.date,
-          productsByDate = productsByDate.toImmutableMap(),
+          calendarData = calendarData,
           onDateClick = onDateClick,
         )
       },
@@ -176,7 +152,7 @@ fun ProductsCalendar(
       dayContent = { calendarDay ->
         DayContentWrapper(
           date = calendarDay.date,
-          productsByDate = productsByDate.toImmutableMap(),
+          calendarData = calendarData,
           onDateClick = onDateClick,
         )
       },
@@ -277,23 +253,16 @@ private fun CalendarHeader(
 @Composable
 private fun DayContentWrapper(
   date: LocalDate,
-  productsByDate: ImmutableMap<LocalDate, InstanceStatus>,
+  calendarData: CalendarData,
   onDateClick: (LocalDate) -> Unit
 ) {
   val kotlinDate = LocalDate(date.year, date.month, date.day)
-  val status = productsByDate[kotlinDate]
-
-  // Check for consecutive days
-  val prevDay = kotlinDate.plus(-1, DateTimeUnit.DAY)
-  val nextDay = kotlinDate.plus(1, DateTimeUnit.DAY)
-  val hasPrevDay = productsByDate.containsKey(prevDay)
-  val hasNextDay = productsByDate.containsKey(nextDay)
+  val dateInfo = calendarData.productsByDate[kotlinDate]
 
   DayContent(
     date = date,
-    status = status,
-    hasPreviousDay = hasPrevDay,
-    hasNextDay = hasNextDay,
+    status = dateInfo?.status,
+    shapePosition = dateInfo?.shapePosition ?: ShapePosition.None,
     onClick = { onDateClick(it) },
   )
 }
@@ -302,8 +271,7 @@ private fun DayContentWrapper(
 private fun DayContent(
   date: LocalDate,
   status: InstanceStatus?,
-  hasPreviousDay: Boolean,
-  hasNextDay: Boolean,
+  shapePosition: ShapePosition,
   onClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -318,14 +286,6 @@ private fun DayContent(
     ExpirationDefaults.getColors(status).onContainer
   } else {
     CaducityTheme.colorScheme.onSurface
-  }
-
-  val shapePosition = when {
-    status == null -> ShapePosition.None
-    !hasPreviousDay && !hasNextDay -> ShapePosition.Single
-    !hasPreviousDay && hasNextDay -> ShapePosition.Start
-    hasPreviousDay && !hasNextDay -> ShapePosition.End
-    else -> ShapePosition.Middle
   }
 
   Box(
@@ -351,8 +311,12 @@ private fun DayContent(
 @Composable
 private fun ProductsCalendarPreview() {
   AppPreview {
+    // Create empty calendar data for preview
+    val emptyCalendarData = CalendarData(
+      productsByDate = kotlinx.collections.immutable.persistentMapOf()
+    )
     ProductsCalendar(
-      products = listOf(productWithInstancesPreview).toImmutableList(),
+      calendarData = emptyCalendarData,
       onDateClick = {},
     )
   }
