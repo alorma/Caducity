@@ -27,6 +27,7 @@ import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.time.clock.AppClock
 import com.alorma.caducity.ui.screen.dashboard.CalendarData
+import com.alorma.caducity.ui.screen.dashboard.CalendarMode
 import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.base.main.InstanceStatus
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -48,6 +49,7 @@ fun ProductsCalendar(
   calendarData: CalendarData,
   onDateClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
+  calendarMode: CalendarMode = CalendarMode.MONTH,
   appClock: AppClock = koinInject(),
 ) {
   val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -82,76 +84,76 @@ fun ProductsCalendar(
       .dayOfWeek,
   )
 
-  Column(
-    modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(24.dp),
-  ) {
+  when (calendarMode) {
+    CalendarMode.WEEK -> {
+      WeekCalendar(
+        modifier = modifier,
+        state = weekCalendarState,
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        weekHeader = { week ->
+          val daysOfWeek = remember {
+            week.days.map { weekDay ->
+              weekDay.date.dayOfWeek
+            }.toImmutableList()
+          }
 
-    WeekCalendar(
-      state = weekCalendarState,
-      contentPadding = PaddingValues(horizontal = 16.dp),
-      weekHeader = { week ->
-        val daysOfWeek = remember {
-          week.days.map { weekDay ->
-            weekDay.date.dayOfWeek
-          }.toImmutableList()
-        }
+          val firstMonth = week.days.first().date.month
+          val lastMonth = week.days.last().date.month
+          val firstYear = week.days.first().date.year
+          val lastYear = week.days.last().date.year
 
-        val firstMonth = week.days.first().date.month
-        val lastMonth = week.days.last().date.month
-        val firstYear = week.days.first().date.year
-        val lastYear = week.days.last().date.year
+          CalendarHeader(
+            firstMonth = firstMonth,
+            secondMonth = lastMonth,
+            daysOfWeek = daysOfWeek,
+            highlightToday = true,
+            firstYear = firstYear,
+            secondYear = lastYear,
+          )
+        },
+        dayContent = { weekDay ->
+          DayContentWrapper(
+            date = weekDay.date,
+            calendarData = calendarData,
+            onDateClick = onDateClick,
+          )
+        },
+      )
+    }
+    CalendarMode.MONTH -> {
+      HorizontalCalendar(
+        modifier = modifier.fillMaxWidth(),
+        state = calendarState,
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        monthHeader = { calendarMonth ->
+          val daysOfWeek = remember {
+            calendarMonth.weekDays.first().map { weekDay ->
+              weekDay.date.dayOfWeek
+            }.toImmutableList()
+          }
 
-        CalendarHeader(
-          firstMonth = firstMonth,
-          secondMonth = lastMonth,
-          daysOfWeek = daysOfWeek,
-          highlightToday = true,
-          firstYear = firstYear,
-          secondYear = lastYear,
-        )
-      },
-      dayContent = { weekDay ->
-        DayContentWrapper(
-          date = weekDay.date,
-          calendarData = calendarData,
-          onDateClick = onDateClick,
-        )
-      },
-    )
+          val firstMonth = calendarMonth.yearMonth.month
+          val lastMonth = calendarMonth.weekDays.last().last().date.month
+          val firstYear = calendarMonth.weekDays.first().first().date.year
+          val lastYear = calendarMonth.weekDays.last().last().date.year
 
-    HorizontalCalendar(
-      modifier = Modifier.fillMaxWidth(),
-      state = calendarState,
-      contentPadding = PaddingValues(horizontal = 16.dp),
-      monthHeader = { calendarMonth ->
-        val daysOfWeek = remember {
-          calendarMonth.weekDays.first().map { weekDay ->
-            weekDay.date.dayOfWeek
-          }.toImmutableList()
-        }
-
-        val firstMonth = calendarMonth.yearMonth.month
-        val lastMonth = calendarMonth.weekDays.last().last().date.month
-        val firstYear = calendarMonth.weekDays.first().first().date.year
-        val lastYear = calendarMonth.weekDays.last().last().date.year
-
-        CalendarHeader(
-          firstMonth = firstMonth,
-          secondMonth = lastMonth,
-          daysOfWeek = daysOfWeek,
-          firstYear = firstYear,
-          secondYear = lastYear,
-        )
-      },
-      dayContent = { calendarDay ->
-        DayContentWrapper(
-          date = calendarDay.date,
-          calendarData = calendarData,
-          onDateClick = onDateClick,
-        )
-      },
-    )
+          CalendarHeader(
+            firstMonth = firstMonth,
+            secondMonth = lastMonth,
+            daysOfWeek = daysOfWeek,
+            firstYear = firstYear,
+            secondYear = lastYear,
+          )
+        },
+        dayContent = { calendarDay ->
+          DayContentWrapper(
+            date = calendarDay.date,
+            calendarData = calendarData,
+            onDateClick = onDateClick,
+          )
+        },
+      )
+    }
   }
 }
 

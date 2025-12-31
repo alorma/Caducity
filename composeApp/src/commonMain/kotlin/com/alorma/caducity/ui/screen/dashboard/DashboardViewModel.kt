@@ -67,4 +67,8 @@ class DashboardViewModel(
   fun updateStatusFilters(filters: Set<InstanceStatus>) {
     dashboardUiConfiguration.updateStatusFilters(filters)
   }
+
+  fun toggleCalendarMode() {
+    dashboardUiConfiguration.toggleCalendarMode()
+  }
 }
