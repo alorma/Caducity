@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.products
 
+import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.time.clock.AppClock
 import kotlinx.collections.immutable.ImmutableList
@@ -36,22 +37,40 @@ class ProductsListMapper(
       id = product.id,
       name = product.name,
       description = product.description,
-      instances = instances.map { instance ->
-        val expirationLocalDate = instance
-          .expirationDate
-          .toLocalDateTime(TimeZone.currentSystemDefault())
-          .date
+      instances = instances
+        .map { instance ->
+          val expirationLocalDate = instance
+            .expirationDate
+            .toLocalDateTime(TimeZone.currentSystemDefault())
+            .date
 
-        val status = instance.status
+          val status = instance.status
 
-        ProductsListInstanceUiModel(
-          id = instance.id,
-          identifier = instance.identifier,
-          status = status,
-          expirationDate = expirationLocalDate,
-          expirationDateText = dateFormat.format(expirationLocalDate),
-        )
-      }.toImmutableList()
+          ProductsListInstanceUiModel(
+            id = instance.id,
+            identifier = instance.identifier,
+            status = status,
+            expirationDate = expirationLocalDate,
+            expirationDateText = dateFormat.format(expirationLocalDate),
+          )
+        }
+        .sortedWith(instanceComparator)
+        .toImmutableList()
+    )
+  }
+
+  companion object {
+    private val instanceComparator = compareBy<ProductsListInstanceUiModel>(
+      // First: Sort by status priority (Expired first, then ExpiringSoon, then Fresh)
+      { instance ->
+        when (instance.status) {
+          InstanceStatus.Expired -> 0
+          InstanceStatus.ExpiringSoon -> 1
+          InstanceStatus.Fresh -> 2
+        }
+      },
+      // Second: Sort by expiration date (earliest first)
+      { instance -> instance.expirationDate }
     )
   }
 }
