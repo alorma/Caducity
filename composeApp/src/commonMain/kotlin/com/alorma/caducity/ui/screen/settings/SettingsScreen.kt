@@ -32,6 +32,11 @@ import com.alorma.caducity.base.ui.icons.Palette
 import com.alorma.caducity.base.ui.theme.LanguageManager
 import com.alorma.caducity.debug.DebugModeProvider
 import com.alorma.caducity.base.ui.components.shape.ShapePosition
+import com.alorma.caducity.base.ui.icons.Info
+import com.alorma.caducity.base.ui.icons.Language
+import com.alorma.caducity.base.ui.icons.Notifications
+import com.alorma.caducity.base.ui.icons.filled.Settings
+import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import org.jetbrains.compose.resources.stringResource
@@ -121,7 +126,7 @@ fun SettingsRootScreen(
           StyledSettingsCard(
             icon = {
               Icon(
-                imageVector = AppIcons.Settings,
+                imageVector = AppIcons.Outlined.Settings,
                 contentDescription = null,
               )
             },
