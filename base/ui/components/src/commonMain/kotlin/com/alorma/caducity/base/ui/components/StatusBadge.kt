@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import caducity.base.ui.components.generated.resources.Res
 import caducity.base.ui.components.generated.resources.expiration_status_badge_expired
@@ -23,10 +25,52 @@ import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import org.jetbrains.compose.resources.stringResource
 
+enum class StatusBadgeSize {
+  Small,
+  Medium,
+  Large;
+
+  val dotSize: Dp
+    get() = when (this) {
+      Small -> 6.dp
+      Medium -> 8.dp
+      Large -> 10.dp
+    }
+
+  val horizontalPadding: Dp
+    get() = when (this) {
+      Small -> 8.dp
+      Medium -> 12.dp
+      Large -> 16.dp
+    }
+
+  val verticalPadding: Dp
+    get() = when (this) {
+      Small -> 4.dp
+      Medium -> 6.dp
+      Large -> 8.dp
+    }
+
+  val spacing: Dp
+    get() = when (this) {
+      Small -> 4.dp
+      Medium -> 6.dp
+      Large -> 8.dp
+    }
+
+  @Composable
+  fun textStyle(): TextStyle = when (this) {
+    Small -> MaterialTheme.typography.labelSmall
+    Medium -> MaterialTheme.typography.labelMedium
+    Large -> MaterialTheme.typography.labelLarge
+  }
+}
+
 @Composable
 fun StatusBadge(
   status: InstanceStatus,
   modifier: Modifier = Modifier,
+  size: StatusBadgeSize = StatusBadgeSize.Small,
 ) {
   val colors = ExpirationDefaults.getColors(status)
 
@@ -34,17 +78,17 @@ fun StatusBadge(
     modifier = modifier
       .clip(MaterialTheme.shapes.small)
       .background(colors.container.copy(CaducityTheme.dims.dim3))
-      .padding(horizontal = 8.dp, vertical = 4.dp),
+      .padding(horizontal = size.horizontalPadding, vertical = size.verticalPadding),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Spacer(
       modifier = Modifier
-        .size(6.dp)
+        .size(size.dotSize)
         .clip(CircleShape)
         .background(colors.onContainer)
     )
 
-    Spacer(modifier = Modifier.width(4.dp))
+    Spacer(modifier = Modifier.width(size.spacing))
 
     val text = when (status) {
       InstanceStatus.Expired -> stringResource(Res.string.expiration_status_badge_expired)
@@ -54,7 +98,7 @@ fun StatusBadge(
 
     Text(
       text = text,
-      style = MaterialTheme.typography.labelSmall,
+      style = size.textStyle(),
       color = colors.onContainer,
     )
   }
