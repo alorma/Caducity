@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
+import com.alorma.caducity.domain.usecase.ProductsListFilter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +28,7 @@ class ProductsListViewModel(
 
   @OptIn(ExperimentalCoroutinesApi::class)
   val products: Flow<ImmutableList<ProductWithInstances>> = filters.flatMapConcat { filter ->
-    obtainDashboardProductsUseCase.obtainProducts()
+    obtainDashboardProductsUseCase.obtainProducts(filter)
   }
 
   val state: StateFlow<ProductsListState> = combine(

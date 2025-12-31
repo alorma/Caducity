@@ -30,7 +30,7 @@ class RoomProductDataSource(
   private val productDao = database.productDao()
   private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-  override val products: StateFlow<ImmutableList<ProductWithInstances>> =
+override val products: StateFlow<ImmutableList<ProductWithInstances>> =
     productDao.getAllProductsWithInstances()
       .map { roomEntities ->
         roomEntities.map { it.toModel(appClock, expirationThresholds) }.toImmutableList()
