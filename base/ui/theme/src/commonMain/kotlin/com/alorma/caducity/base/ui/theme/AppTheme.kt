@@ -75,6 +75,7 @@ fun AppTheme(
     content = {
       InternalTheme(
         themePreferences = themePreferences,
+        darkMode = darkTheme,
         dims = dims,
         content = content,
       )
@@ -97,11 +98,13 @@ fun AppTheme(
 @Composable
 fun InternalTheme(
   themePreferences: ThemePreferences,
+  darkMode: Boolean,
   dims: CaducityDims,
   content: @Composable () -> Unit,
 ) {
   val expirationColorScheme = generateExpirationColors(
     schemeType = themePreferences.expirationColorSchemeType.value,
+    darkMode = darkMode,
   )
   val colorScheme = CaducityTheme.colorScheme
 
@@ -127,6 +130,7 @@ fun InternalTheme(
 @Composable
 private fun generateExpirationColors(
   schemeType: ExpirationColorSchemeType,
+  darkMode: Boolean,
 ): ExpirationColorScheme {
 
   val colorScheme = CaducityTheme.colorScheme
@@ -151,19 +155,19 @@ private fun generateExpirationColors(
 
   return ExpirationColorScheme(
     fresh = freshColor,
-    onFresh = if (freshColor.isLight()) {
+    onFresh = if (freshColor.isLight() && !darkMode) {
       colorScheme.inverseSurface
     } else {
       colorScheme.surface
     },
     expiringSoon = expiringSoonColor,
-    onExpiringSoon = if (expiringSoonColor.isLight()) {
+    onExpiringSoon = if (expiringSoonColor.isLight() && !darkMode) {
       colorScheme.inverseSurface
     } else {
       colorScheme.surface
     },
     expired = expiredColor,
-    onExpired = if (expiredColor.isLight()) {
+    onExpired = if (expiredColor.isLight() && !darkMode) {
       colorScheme.inverseSurface
     } else {
       colorScheme.surface
@@ -185,7 +189,10 @@ private fun ExpirationColorsPreview() {
             Text(text = "Type: ${expirationColorSchemeType.name}")
 
             ExpirationColorLegend(
-              expirationColors = generateExpirationColors(schemeType = expirationColorSchemeType)
+              expirationColors = generateExpirationColors(
+                schemeType = expirationColorSchemeType,
+                darkMode = isSystemInDarkTheme(),
+              )
             )
           }
         }
