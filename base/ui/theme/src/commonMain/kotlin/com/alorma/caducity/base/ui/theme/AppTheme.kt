@@ -152,10 +152,7 @@ private fun generateExpirationColors(
     color = Color.Red,
     matchSaturation = matchSaturation,
   )
-  val frozenColor = colorScheme.harmonizeWithPrimary(
-    color = Color.Cyan,
-    matchSaturation = matchSaturation,
-  )
+  val frozenColor = Color.Magenta
   val consumedColor = colorScheme.harmonizeWithPrimary(
     color = Color.Gray,
     matchSaturation = matchSaturation,

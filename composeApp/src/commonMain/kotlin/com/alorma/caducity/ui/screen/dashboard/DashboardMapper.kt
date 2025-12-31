@@ -109,15 +109,21 @@ class DashboardMapper(
       products.forEach { product ->
         if (product is ProductUiModel.WithInstances) {
           product.instances.forEach { instance ->
+            // Use the date that this instance appears on:
+            // - For frozen items: use the freeze date (when paused)
+            // - For normal items: use the expiration date
+            // Note: Frozen items have their own freeze date, so they should display with Frozen status
             val date = instance.expirationDate
             val currentStatus = get(date)
 
-            // Keep the most critical status (Expired > ExpiringSoon > Fresh)
+            // Keep the most critical status (Expired > ExpiringSoon > Frozen > Fresh)
             val newStatus = when {
               currentStatus == InstanceStatus.Expired -> InstanceStatus.Expired
               instance.status == InstanceStatus.Expired -> InstanceStatus.Expired
               currentStatus == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
               instance.status == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
+              currentStatus == InstanceStatus.Frozen -> InstanceStatus.Frozen
+              instance.status == InstanceStatus.Frozen -> InstanceStatus.Frozen
               else -> InstanceStatus.Fresh
             }
 
