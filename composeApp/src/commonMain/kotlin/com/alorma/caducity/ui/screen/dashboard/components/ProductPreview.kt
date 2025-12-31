@@ -1,6 +1,6 @@
 package com.alorma.caducity.ui.screen.dashboard.components
 
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.base.main.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
 import com.alorma.caducity.ui.screen.products.ProductsListInstanceUiModel

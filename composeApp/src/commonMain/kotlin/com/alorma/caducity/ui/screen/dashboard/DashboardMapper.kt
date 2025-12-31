@@ -1,7 +1,7 @@
 package com.alorma.caducity.ui.screen.dashboard
 
 import com.alorma.caducity.base.ui.components.shape.ShapePosition
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.base.main.InstanceStatus
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.time.clock.AppClock
 import kotlinx.collections.immutable.ImmutableList

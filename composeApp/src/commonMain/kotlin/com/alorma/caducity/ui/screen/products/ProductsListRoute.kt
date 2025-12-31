@@ -2,7 +2,7 @@ package com.alorma.caducity.ui.screen.products
 
 import androidx.navigation3.runtime.NavKey
 import com.alorma.caducity.domain.usecase.ProductsListFilter
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.base.main.InstanceStatus
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
