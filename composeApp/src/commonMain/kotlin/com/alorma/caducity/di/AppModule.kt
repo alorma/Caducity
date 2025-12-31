@@ -13,6 +13,7 @@ import com.alorma.caducity.ui.screen.dashboard.DashboardMapper
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfiguration
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfigurationImpl
 import com.alorma.caducity.ui.screen.dashboard.DashboardViewModel
+import com.alorma.caducity.ui.screen.dashboard.components.LocalizedDateFormatter
 import com.alorma.caducity.ui.screen.products.ProductsListMapper
 import com.alorma.caducity.ui.screen.products.ProductsListViewModel
 import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
@@ -66,4 +67,5 @@ val appModule = module {
     }
   }
   singleOf(::FutureDateSelectableDates)
+  singleOf(::LocalizedDateFormatter)
 }
