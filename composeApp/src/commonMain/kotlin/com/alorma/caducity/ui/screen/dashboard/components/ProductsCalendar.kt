@@ -125,7 +125,6 @@ fun ProductsCalendar(
         startMonth = startMonth,
         endMonth = endMonth,
         firstVisibleMonth = currentMonth,
-        outDateStyle = OutDateStyle.EndOfRow,
       )
 
       HorizontalCalendar(
