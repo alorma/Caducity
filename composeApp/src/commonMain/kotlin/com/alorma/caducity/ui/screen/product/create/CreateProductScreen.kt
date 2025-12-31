@@ -116,15 +116,23 @@ fun CreateProductScreen(
       instanceId = editingInstanceId,
       instance = instance,
       scannedBarcode = scannedBarcode,
-      onSave = { identifier, expirationDate ->
+      onSave = { identifier, expirationDate, quantity ->
         if (editingInstanceId != null) {
+          // Editing existing instance - quantity is ignored
           viewModel.updateInstanceIdentifier(editingInstanceId!!, identifier)
           viewModel.updateInstanceExpirationDate(editingInstanceId!!, expirationDate)
         } else {
-          viewModel.addInstance()
-          val newInstance = viewModel.state.value.instances.last()
-          viewModel.updateInstanceIdentifier(newInstance.id, identifier)
-          viewModel.updateInstanceExpirationDate(newInstance.id, expirationDate)
+          // Creating new instance(s)
+          if (quantity > 1) {
+            // Create multiple instances
+            viewModel.addInstances(quantity, identifier, expirationDate)
+          } else {
+            // Create single instance
+            viewModel.addInstance()
+            val newInstance = viewModel.state.value.instances.last()
+            viewModel.updateInstanceIdentifier(newInstance.id, identifier)
+            viewModel.updateInstanceExpirationDate(newInstance.id, expirationDate)
+          }
         }
         scannedBarcode = null
         showInstanceBottomSheet = false

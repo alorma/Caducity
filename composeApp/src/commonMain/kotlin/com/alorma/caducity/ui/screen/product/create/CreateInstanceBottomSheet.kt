@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.create_product_button_cancel
@@ -36,6 +39,9 @@ import caducity.composeapp.generated.resources.create_product_expiration_date_la
 import caducity.composeapp.generated.resources.create_product_expiration_date_placeholder
 import caducity.composeapp.generated.resources.create_product_instance_identifier_label
 import caducity.composeapp.generated.resources.create_product_instance_identifier_placeholder
+import caducity.composeapp.generated.resources.create_product_instance_quantity_label
+import caducity.composeapp.generated.resources.create_product_instance_quantity_placeholder
+import caducity.composeapp.generated.resources.create_product_instance_split_preview
 import com.alorma.caducity.barcode.BarcodeHandler
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.BarcodeScanner
@@ -54,7 +60,7 @@ import kotlin.time.Instant
 fun CreateInstanceBottomSheet(
   instanceId: String?,
   instance: ProductInstanceInput?,
-  onSave: (String, LocalDate) -> Unit,
+  onSave: (String, LocalDate, Int) -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
   scannedBarcode: String? = null,
@@ -71,6 +77,7 @@ fun CreateInstanceBottomSheet(
       instance?.expirationDateText ?: ""
     )
   }
+  var quantity by remember(instanceId) { mutableStateOf("1") }
   var showDatePicker by remember { mutableStateOf(false) }
 
   // Register permission contract for barcode scanning
@@ -130,6 +137,34 @@ fun CreateInstanceBottomSheet(
         },
       )
 
+      // Quantity Field - only show when creating new instance
+      if (instanceId == null) {
+        TextField(
+          value = quantity,
+          onValueChange = { newValue ->
+            if (newValue.isEmpty() || newValue.all { it.isDigit() }) {
+              quantity = newValue
+            }
+          },
+          label = { Text(stringResource(Res.string.create_product_instance_quantity_label)) },
+          placeholder = { Text(stringResource(Res.string.create_product_instance_quantity_placeholder)) },
+          modifier = Modifier.fillMaxWidth(),
+          keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+          singleLine = true,
+        )
+
+        // Preview text when quantity > 1
+        val quantityValue = quantity.toIntOrNull() ?: 1
+        if (quantityValue > 1) {
+          Text(
+            text = stringResource(Res.string.create_product_instance_split_preview, quantityValue),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 16.dp)
+          )
+        }
+      }
+
       // Instance Expiration Date Field
       TextField(
         modifier = Modifier
@@ -177,10 +212,12 @@ fun CreateInstanceBottomSheet(
         Button(
           onClick = {
             expirationDate?.let { date ->
-              onSave(identifier, date)
+              val quantityValue = quantity.toIntOrNull()?.coerceIn(1, 99) ?: 1
+              onSave(identifier, date, quantityValue)
             }
           },
-          enabled = identifier.isNotBlank() && expirationDate != null
+          enabled = identifier.isNotBlank() && expirationDate != null &&
+                    (quantity.toIntOrNull() ?: 0) in 1..99
         ) {
           Text(stringResource(Res.string.create_product_button_create))
         }

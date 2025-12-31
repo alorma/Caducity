@@ -110,9 +110,14 @@ fun ProductDetailScreen(
     CreateInstanceBottomSheet(
       instanceId = null,
       instance = null,
-      onSave = { identifier, expirationDate ->
-        viewModel.addInstance(identifier, expirationDate) {
-          showInstanceBottomSheet = false
+      onSave = { identifier, expirationDate, quantity ->
+        // For product detail screen, create instances one by one
+        repeat(quantity) {
+          viewModel.addInstance(identifier, expirationDate) {
+            if (it == quantity - 1) {
+              showInstanceBottomSheet = false
+            }
+          }
         }
       },
       onDismiss = {

@@ -67,6 +67,9 @@
     <string name="create_product_add_instance">Afegir Instància</string>
     <string name="create_product_remove_instance">Eliminar</string>
     <string name="create_product_instance_number">Instància %1$d</string>
+    <string name="create_product_instance_quantity_label">Quantitat</string>
+    <string name="create_product_instance_quantity_placeholder">1</string>
+    <string name="create_product_instance_split_preview">Es crearan %1$d instàncies</string>
 
     <!-- Relative time values -->
     <string name="relative_time_today">Avui</string>
