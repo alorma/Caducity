@@ -89,6 +89,7 @@ fun App(
         .fillMaxSize()
         .nestedScroll(exitAlwaysScrollBehavior)
         .then(modifier),
+      contentWindowInsets = WindowInsets(),
       bottomBar = {
         val isTopLevelRoute = topLevelBackStack.backStack.last() is TopLevelRoute
 

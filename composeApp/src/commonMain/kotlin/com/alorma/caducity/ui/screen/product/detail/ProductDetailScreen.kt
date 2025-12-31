@@ -98,12 +98,7 @@ private fun ProductDetailContent(
   Scaffold(
     topBar = {
       StyledTopAppBar(
-        title = {
-          Text(
-            text = product.name,
-            style = MaterialTheme.typography.headlineMedium,
-          )
-        },
+        title = { Text(text = product.name) },
         navigationIcon = {
           IconButton(onClick = onBack) {
             Icon(
