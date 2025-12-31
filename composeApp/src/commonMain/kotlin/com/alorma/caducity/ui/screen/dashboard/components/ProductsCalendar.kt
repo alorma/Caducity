@@ -21,6 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.alorma.caducity.base.main.InstanceStatus
+import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.base.ui.components.shape.ShapePosition
 import com.alorma.caducity.base.ui.components.shape.toCalendarShape
 import com.alorma.caducity.base.ui.theme.CaducityTheme
@@ -28,12 +30,11 @@ import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.time.clock.AppClock
 import com.alorma.caducity.ui.screen.dashboard.CalendarData
 import com.alorma.caducity.ui.screen.dashboard.CalendarMode
-import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
-import com.alorma.caducity.base.main.InstanceStatus
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
+import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.OutDateStyle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -71,22 +72,17 @@ fun ProductsCalendar(
   } else {
     YearMonth(today.year + 1, endMonthNum - 12)
   }
-  val calendarState = rememberCalendarState(
-    startMonth = startMonth,
-    endMonth = endMonth,
-    firstVisibleMonth = currentMonth,
-  )
-
-  val weekCalendarState = rememberWeekCalendarState(
-    startDate = startMonth.firstDay,
-    endDate = endMonth.lastDay,
-    firstDayOfWeek = appClock.now()
-      .toLocalDateTime(TimeZone.currentSystemDefault())
-      .dayOfWeek,
-  )
 
   when (calendarMode) {
     CalendarMode.WEEK -> {
+      val weekCalendarState = rememberWeekCalendarState(
+        startDate = startMonth.firstDay,
+        endDate = endMonth.lastDay,
+        firstDayOfWeek = appClock.now()
+          .toLocalDateTime(TimeZone.currentSystemDefault())
+          .dayOfWeek,
+      )
+
       WeekCalendar(
         modifier = modifier,
         state = weekCalendarState,
@@ -121,12 +117,20 @@ fun ProductsCalendar(
         },
       )
     }
+
     CalendarMode.MONTH -> {
+
+      val calendarState = rememberCalendarState(
+        startMonth = startMonth,
+        endMonth = endMonth,
+        firstVisibleMonth = currentMonth,
+        outDateStyle = OutDateStyle.EndOfRow,
+      )
+
       HorizontalCalendar(
         modifier = modifier.fillMaxWidth(),
         state = calendarState,
         contentPadding = PaddingValues(horizontal = 16.dp),
-        outDateStyle = OutDateStyle.None,
         monthHeader = { calendarMonth ->
           val daysOfWeek = remember {
             calendarMonth.weekDays.first().map { weekDay ->
@@ -148,11 +152,13 @@ fun ProductsCalendar(
           )
         },
         dayContent = { calendarDay ->
-          DayContentWrapper(
-            date = calendarDay.date,
-            calendarData = calendarData,
-            onDateClick = onDateClick,
-          )
+          if (calendarDay.position == DayPosition.MonthDate) {
+            DayContentWrapper(
+              date = calendarDay.date,
+              calendarData = calendarData,
+              onDateClick = onDateClick,
+            )
+          }
         },
       )
     }
@@ -253,7 +259,7 @@ private fun CalendarHeader(
 private fun DayContentWrapper(
   date: LocalDate,
   calendarData: CalendarData,
-  onDateClick: (LocalDate) -> Unit
+  onDateClick: (LocalDate) -> Unit,
 ) {
   val kotlinDate = LocalDate(date.year, date.month, date.day)
   val dateInfo = calendarData.productsByDate[kotlinDate]
