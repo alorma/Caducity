@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.alorma.caducity.base.ui.components.StatusBadge
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.time.clock.AppClock
@@ -94,27 +93,11 @@ fun ProductsListItem(
 
               val colors = ExpirationDefaults.getColors(instance.status)
 
-              Row(
-                modifier = Modifier
-                  .clip(MaterialTheme.shapes.small)
-                  .background(colors.container.copy(CaducityTheme.dims.dim3))
-                  .padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-              ) {
-                Spacer(
-                  modifier = Modifier
-                    .size(6.dp)
-                    .clip(CircleShape)
-                    .background(colors.container)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-
-                Text(
-                  text = ExpirationDefaults.getText(instance.status),
-                  style = MaterialTheme.typography.labelSmall,
-                  color = colors.onContainer,
-                )
-              }
+              StatusBadge(
+                text = ExpirationDefaults.getText(instance.status),
+                containerColor = colors.container,
+                onContainerColor = colors.onContainer,
+              )
             }
 
             ProductInstanceRelativeTime(
