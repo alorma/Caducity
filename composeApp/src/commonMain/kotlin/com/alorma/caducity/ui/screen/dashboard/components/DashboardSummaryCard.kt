@@ -25,6 +25,7 @@ import caducity.composeapp.generated.resources.Res
 import caducity.composeapp.generated.resources.dashboard_section_expired
 import caducity.composeapp.generated.resources.dashboard_section_expiring_soon
 import caducity.composeapp.generated.resources.dashboard_section_fresh
+import caducity.composeapp.generated.resources.dashboard_section_frozen
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.ui.screen.dashboard.DashboardSummary
@@ -59,6 +60,11 @@ fun DashboardSummaryCard(
     SummaryStatusCard(
       status = InstanceStatus.Fresh,
       count = summary.fresh,
+      onClick = { onStatusClick(it) },
+    )
+    SummaryStatusCard(
+      status = InstanceStatus.Frozen,
+      count = summary.frozen,
       onClick = { onStatusClick(it) },
     )
     Spacer(modifier = Modifier.width(16.dp))
@@ -98,8 +104,8 @@ private fun SummaryStatusCard(
         InstanceStatus.Expired -> stringResource(Res.string.dashboard_section_expired)
         InstanceStatus.ExpiringSoon -> stringResource(Res.string.dashboard_section_expiring_soon)
         InstanceStatus.Fresh -> stringResource(Res.string.dashboard_section_fresh)
-        InstanceStatus.Frozen -> "Frozen" // Frozen items shouldn't appear in summary
-        InstanceStatus.Consumed -> "Consumed" // Consumed items shouldn't appear in summary
+        InstanceStatus.Frozen -> stringResource(Res.string.dashboard_section_frozen)
+        InstanceStatus.Consumed -> "Consumed" // Consumed items don't appear in dashboard
       }
 
       Text(
@@ -132,6 +138,7 @@ private fun DashboardSummaryCardPreview() {
             expired = 3,
             expiringSoon = 5,
             fresh = 12,
+            frozen = 2,
           ),
           onStatusClick = {},
         )

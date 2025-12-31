@@ -13,8 +13,7 @@ class ProductDetailMapper(
   fun mapToProductDetail(productWithInstances: ProductWithInstances): ProductDetailUiModel {
 
     val instances = productWithInstances.instances
-      // Filter out consumed instances
-      .filterNot { it.status == InstanceStatus.Consumed }
+      // Consumed instances are already filtered at data source level
       .map { instance ->
         val expirationLocalDate = instance
           .expirationDate

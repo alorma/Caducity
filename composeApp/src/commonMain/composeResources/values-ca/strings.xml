@@ -24,6 +24,7 @@
     <string name="dashboard_section_expired">Caducat</string>
     <string name="dashboard_section_expiring_soon">Pròxim</string>
     <string name="dashboard_section_fresh">Fresc</string>
+    <string name="dashboard_section_frozen">Congelat</string>
     <string name="dashboard_section_empty">Buit</string>
 
     <string  name="settings_screen_title">Configuració</string>
@@ -44,6 +45,8 @@
     <string name="settings_expiration_legend_fresh">Fresc</string>
     <string name="settings_expiration_legend_expiring_soon">Pròxim</string>
     <string name="settings_expiration_legend_expired">Caducat</string>
+    <string name="settings_expiration_legend_frozen">Congelat</string>
+    <string name="settings_expiration_legend_consumed">Consumit</string>
 
     <string name="settings_group_notifications">Notificacions</string>
     <string name="settings_enable_notifications">Activar notificacions</string>

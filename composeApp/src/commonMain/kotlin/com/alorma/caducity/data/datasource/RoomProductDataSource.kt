@@ -76,7 +76,9 @@ class RoomProductDataSource(
     }
 
     return daoFlow.map { roomEntities ->
-      val products = roomEntities.map { it.toModel(appClock, expirationThresholds) }
+      // Filter consumed instances at the source
+      val filteredEntities = roomEntities.map { it.filterConsumed() }
+      val products = filteredEntities.map { it.toModel(appClock, expirationThresholds) }
 
       // Apply in-memory status filter only for multiple statuses
       // (to handle non-contiguous date ranges like Expired + Fresh)
@@ -129,8 +131,10 @@ class RoomProductDataSource(
   override fun getProduct(productId: String): Flow<Result<ProductWithInstances>> {
     return productDao.getProductWithInstances(productId)
       .map { roomEntity ->
-        roomEntity?.let { Result.success(it.toModel(appClock, expirationThresholds)) }
-          ?: Result.failure(NoSuchElementException("Product with id $productId not found"))
+        roomEntity?.let {
+          // Filter consumed instances before converting
+          Result.success(it.filterConsumed().toModel(appClock, expirationThresholds))
+        } ?: Result.failure(NoSuchElementException("Product with id $productId not found"))
       }
   }
 

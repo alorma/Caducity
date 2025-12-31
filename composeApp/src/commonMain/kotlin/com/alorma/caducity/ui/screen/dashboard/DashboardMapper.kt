@@ -55,6 +55,7 @@ class DashboardMapper(
     var expiredCount = 0
     var expiringSoonCount = 0
     var freshCount = 0
+    var frozenCount = 0
 
     products.forEach { product ->
       when (product) {
@@ -67,7 +68,7 @@ class DashboardMapper(
               is InstanceStatus.Expired -> expiredCount++
               is InstanceStatus.ExpiringSoon -> expiringSoonCount++
               is InstanceStatus.Fresh -> freshCount++
-              is InstanceStatus.Frozen -> {} // Frozen items don't count in summary
+              is InstanceStatus.Frozen -> frozenCount++
               is InstanceStatus.Consumed -> {} // Consumed items are already filtered out
             }
           }
@@ -79,6 +80,7 @@ class DashboardMapper(
       expired = expiredCount,
       expiringSoon = expiringSoonCount,
       fresh = freshCount,
+      frozen = frozenCount,
     )
   }
 
