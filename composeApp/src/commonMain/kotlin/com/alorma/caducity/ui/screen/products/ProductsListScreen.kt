@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,7 +26,7 @@ fun ProductsListScreen(
   filters: ProductsListFilter,
   onNavigateToProductDetail: (String) -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: ProductsListViewModel = koinViewModel(),
+  viewModel: ProductsListViewModel = koinViewModel { parametersOf(filters) },
 ) {
 
   LaunchedEffect(filters) {

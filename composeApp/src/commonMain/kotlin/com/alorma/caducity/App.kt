@@ -158,12 +158,6 @@ fun App(
               onBack = { topLevelBackStack.removeLast() }
             )
           }
-          entry<ProductDetailRoute> {
-            ProductDetailScreen(
-              productId = it.productId,
-              onBack = { topLevelBackStack.removeLast() }
-            )
-          }
           entry<ProductsListRoute>(
             metadata = BottomSheetSceneStrategy.bottomSheet(),
           ) {
@@ -175,6 +169,12 @@ fun App(
                 }
                 topLevelBackStack.add(ProductDetailRoute(productId))
               }
+            )
+          }
+          entry<ProductDetailRoute> {
+            ProductDetailScreen(
+              productId = it.productId,
+              onBack = { topLevelBackStack.removeLast() }
             )
           }
         },
