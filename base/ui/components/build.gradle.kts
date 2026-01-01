@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
   alias(libs.plugins.android.library)
   alias(libs.plugins.jetbrains.kotlin.android)
-  alias(libs.plugins.jetbrains.compose)
   alias(libs.plugins.jetbrains.compose.compiler)
 }
 
@@ -33,16 +32,16 @@ dependencies {
   implementation(projects.base.ui.theme)
   implementation(projects.base.ui.icons)
 
-  implementation(libs.compose.runtime)
-  implementation(libs.compose.ui)
-  implementation(libs.compose.foundation)
-  implementation(libs.compose.ui.tooling.preview)
+  // Compose BOM
+  implementation(platform(libs.androidx.compose.bom))
+  implementation(libs.androidx.compose.runtime)
+  implementation(libs.androidx.compose.ui)
+  implementation(libs.androidx.compose.foundation)
+  implementation(libs.androidx.compose.ui.tooling.preview)
+  debugImplementation(libs.androidx.compose.ui.tooling)
 
-  implementation(libs.compose.material3)
+  implementation(libs.androidx.compose.material3)
   implementation(libs.alorma.settings.ui.base)
 
-  implementation(compose.components.resources)
-
-  implementation(libs.compose.ui.tooling)
   implementation(libs.androidx.core)
 }

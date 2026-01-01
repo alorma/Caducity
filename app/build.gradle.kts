@@ -4,7 +4,6 @@ plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.jetbrains.kotlin.android)
 
-  alias(libs.plugins.jetbrains.compose)
   alias(libs.plugins.jetbrains.compose.compiler)
 
   alias(libs.plugins.google.ksp)
@@ -31,6 +30,8 @@ android {
   packaging {
     resources {
       excludes += "/META-INF/{AL2.0,LGPL2.1}"
+      // Exclude duplicate annotation files
+      excludes += "META-INF/versions/9/previous-compilation-data.bin"
     }
   }
   buildTypes {
@@ -57,17 +58,29 @@ kotlin {
 }
 
 dependencies {
+  // Force single version of annotations to avoid conflicts
+  constraints {
+    implementation("org.jetbrains:annotations:23.0.0") {
+      because("Avoid conflicts between com.intellij:annotations and org.jetbrains:annotations")
+    }
+  }
+  configurations.all {
+    exclude(group = "com.intellij", module = "annotations")
+  }
+
   implementation(projects.base.main)
   implementation(projects.base.ui.theme)
   implementation(projects.base.ui.icons)
   implementation(projects.base.ui.components)
 
-  implementation(libs.compose.runtime)
-  implementation(libs.compose.ui)
-  implementation(libs.compose.foundation)
-  implementation(libs.compose.components.resources)
-
-  implementation(libs.compose.material3)
+  // Compose BOM
+  implementation(platform(libs.androidx.compose.bom))
+  implementation(libs.androidx.compose.runtime)
+  implementation(libs.androidx.compose.ui)
+  implementation(libs.androidx.compose.foundation)
+  implementation(libs.androidx.compose.material3)
+  implementation(libs.androidx.compose.ui.tooling.preview)
+  debugImplementation(libs.androidx.compose.ui.tooling)
 
   implementation(libs.androidx.nav3.ui)
   implementation(libs.androidx.nav3.viewModel)
@@ -91,10 +104,6 @@ dependencies {
   implementation(libs.koin.compose.viewmodel)
 
   implementation(libs.kalendar)
-
-  implementation(libs.compose.ui.tooling.preview)
-
-  implementation(libs.compose.ui.tooling)
 
   implementation(libs.androidx.activitycompose)
   implementation(libs.androidx.appcompat)
