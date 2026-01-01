@@ -27,7 +27,7 @@ class ProductDetailMapper(
           status = instance.status,
           expirationDate = displayLocalDate,
           expirationDateText = dateFormat.format(displayLocalDate),
-          // Keep actual expiration date for freeze/unfreeze calculations
+          // Keep expiration date for freeze/unfreeze calculations
           expirationInstant = instance.expirationDate,
         )
       }

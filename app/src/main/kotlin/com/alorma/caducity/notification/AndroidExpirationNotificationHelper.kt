@@ -41,7 +41,7 @@ class AndroidExpirationNotificationHelper(
   }
 
   override fun areNotificationsEnabled(): MutableState<Boolean> {
-    // Sync state with actual permission status
+    // Sync state with permission status
     // If permission was revoked externally, update state to false
     if (notifications.value && !checkNotificationPermission()) {
       notifications.value = false

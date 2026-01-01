@@ -24,6 +24,7 @@ android {
 kotlin {
   compilerOptions {
     jvmTarget = JvmTarget.JVM_11
+    optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
   }
 }
 

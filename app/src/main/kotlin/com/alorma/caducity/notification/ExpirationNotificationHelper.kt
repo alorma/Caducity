@@ -6,13 +6,13 @@ import com.alorma.caducity.domain.model.ProductWithInstances
 
 /**
  * Interface for showing expiration notifications.
- * Platform-specific implementations handle the actual notification display.
+ * Platform-specific implementations handle the notification display.
  */
 interface ExpirationNotificationHelper {
 
   /**
    * Returns a MutableState reflecting whether notifications are enabled.
-   * On Android, this checks the actual system permission state.
+   * On Android, this checks the system permission state.
    */
   fun areNotificationsEnabled(): MutableState<Boolean>
 
