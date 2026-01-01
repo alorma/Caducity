@@ -8,6 +8,8 @@ plugins {
 
   alias(libs.plugins.google.ksp)
   alias(libs.plugins.jetbrains.kotlin.serialization)
+
+  alias(libs.plugins.compose.screenshot)
 }
 
 android {
@@ -41,6 +43,12 @@ android {
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
+  }
+  experimentalProperties["android.experimental.enableScreenshotTest"] = true
+  testOptions {
+    unitTests {
+      isIncludeAndroidResources = true
+    }
   }
 }
 
@@ -107,4 +115,13 @@ dependencies {
   implementation(libs.koin.androidx.workmanager)
 
   implementation(libs.scan.engine)
+
+  // Screenshot testing
+  screenshotTestImplementation(libs.androidx.compose.ui.test.junit4)
+  debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+  // Test infrastructure
+  testImplementation(libs.junit)
+  testImplementation(libs.androidx.test.runner)
+  testImplementation(libs.androidx.test.rules)
 }
