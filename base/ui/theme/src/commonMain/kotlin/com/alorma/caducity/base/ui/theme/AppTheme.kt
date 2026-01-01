@@ -1,37 +1,22 @@
 package com.alorma.caducity.base.ui.theme
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import com.alorma.caducity.base.ui.theme.colors.BaseExpirationColors
 import com.alorma.caducity.base.ui.theme.colors.ExpirationColorScheme
 import com.alorma.caducity.base.ui.theme.colors.ExpirationColorSchemeType
 import com.alorma.caducity.base.ui.theme.colors.darkColorScheme
 import com.alorma.caducity.base.ui.theme.colors.dynamicColorScheme
 import com.alorma.caducity.base.ui.theme.colors.lightColorScheme
-import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.compose.settings.ui.base.internal.LocalSettingsTileColors
 import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
-import com.materialkolor.ktx.harmonizeWithPrimary
+import com.materialkolor.ktx.harmonize
 import com.materialkolor.ktx.isLight
 import org.koin.compose.koinInject
 
@@ -131,135 +116,88 @@ fun InternalTheme(
 private fun generateExpirationColors(
   schemeType: ExpirationColorSchemeType,
   darkMode: Boolean,
+  baseExpirationColors: BaseExpirationColors = koinInject(),
 ): ExpirationColorScheme {
-
-  val colorScheme = CaducityTheme.colorScheme
 
   val matchSaturation = when (schemeType) {
     ExpirationColorSchemeType.VIBRANT -> false
     ExpirationColorSchemeType.HARMONIZE -> true
   }
 
-  val freshColor = colorScheme.harmonizeWithPrimary(
-    color = Color.Green,
-    matchSaturation = matchSaturation,
-  )
-  val expiringSoonColor = colorScheme.harmonizeWithPrimary(
-    color = Color(0xFFFFDE21),
-    matchSaturation = matchSaturation,
-  )
-  val expiredColor = colorScheme.harmonizeWithPrimary(
-    color = Color.Red,
-    matchSaturation = matchSaturation,
-  )
-  val frozenColor = colorScheme.harmonizeWithPrimary(
-    color = Color.Cyan,
-    matchSaturation = matchSaturation,
-  )
-  val consumedColor = colorScheme.harmonizeWithPrimary(
-    color = Color.Gray,
-    matchSaturation = matchSaturation,
-  )
+  val baseColor = baseExpirationColors.baseColor
+
+  val freshColor = baseExpirationColors.freshColor
+    .harmonize(
+      other = baseColor,
+      matchSaturation = matchSaturation,
+    )
+  val expiringSoonColor = baseExpirationColors.expiringSoonColor
+    .harmonize(
+      other = baseColor,
+      matchSaturation = matchSaturation,
+    )
+  val expiredColor = baseExpirationColors.expiredColor
+    .harmonize(
+      other = baseColor,
+      matchSaturation = matchSaturation,
+    )
+  val frozenColor = baseExpirationColors.frozenColor
+    .harmonize(
+      other = baseColor,
+      matchSaturation = matchSaturation,
+    )
+  val consumedColor = baseExpirationColors.consumedColor
+    .harmonize(
+      other = baseColor,
+      matchSaturation = matchSaturation,
+    )
 
   return ExpirationColorScheme(
     fresh = freshColor,
-    onFresh = if (freshColor.isLight() && !darkMode) {
-      colorScheme.inverseSurface
-    } else {
-      colorScheme.surface
-    },
+    onFresh = contentColorForExpiration(
+      color = freshColor,
+      darkMode = darkMode,
+    ),
     expiringSoon = expiringSoonColor,
-    onExpiringSoon = if (expiringSoonColor.isLight() && !darkMode) {
-      colorScheme.inverseSurface
-    } else {
-      colorScheme.surface
-    },
+    onExpiringSoon = contentColorForExpiration(
+      color = expiringSoonColor,
+      darkMode = darkMode,
+    ),
     expired = expiredColor,
-    onExpired = if (expiredColor.isLight() && !darkMode) {
-      colorScheme.inverseSurface
-    } else {
-      colorScheme.surface
-    },
+    onExpired = contentColorForExpiration(
+      color = expiredColor,
+      darkMode = darkMode,
+    ),
     frozen = frozenColor,
-    onFrozen = if (frozenColor.isLight() && !darkMode) {
-      colorScheme.inverseSurface
-    } else {
-      colorScheme.surface
-    },
+    onFrozen = contentColorForExpiration(
+      color = frozenColor,
+      darkMode = darkMode,
+    ),
     consumed = consumedColor,
-    onConsumed = if (consumedColor.isLight() && !darkMode) {
-      colorScheme.inverseSurface
-    } else {
-      colorScheme.surface
-    },
+    onConsumed = contentColorForExpiration(
+      color = consumedColor,
+      darkMode = darkMode,
+    ),
   )
 }
 
-@Preview
+@ReadOnlyComposable
 @Composable
-private fun ExpirationColorsPreview() {
-  AppPreview {
-    Surface {
-      ExpirationColorSchemeType
-        .entries
-        .forEach { expirationColorSchemeType ->
-          Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-          ) {
-            Text(text = "Type: ${expirationColorSchemeType.name}")
-
-            ExpirationColorLegend(
-              expirationColors = generateExpirationColors(
-                schemeType = expirationColorSchemeType,
-                darkMode = isSystemInDarkTheme(),
-              )
-            )
-          }
-        }
-    }
-  }
-}
-
-
-@Composable
-private fun ExpirationColorLegend(expirationColors: ExpirationColorScheme) {
-  Column(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp, vertical = 8.dp),
-    verticalArrangement = Arrangement.spacedBy(12.dp),
-  ) {
-    ColorLegendItem(
-      label = "Fresh",
-      color = expirationColors.fresh,
-    )
-    ColorLegendItem(
-      label = "Expire soon",
-      color = expirationColors.expiringSoon,
-    )
-    ColorLegendItem(
-      label = "Expired",
-      color = expirationColors.expired,
-    )
-  }
-}
-
-@Composable
-private fun ColorLegendItem(
-  label: String,
+private fun contentColorForExpiration(
   color: Color,
-) {
-  Row(
-    modifier = Modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Box(
-      modifier = Modifier
-        .size(32.dp)
-        .clip(CircleShape)
-        .background(color),
-    )
-    Text(text = label)
+  darkMode: Boolean,
+): Color {
+  return if (color.isLight()) {
+    if (darkMode) {
+      CaducityTheme.colorScheme.surface
+    } else {
+      CaducityTheme.colorScheme.onSurface
+    }
+  } else {
+    if (darkMode) {
+      CaducityTheme.colorScheme.onSurface
+    } else {
+      CaducityTheme.colorScheme.surface
+    }
   }
 }

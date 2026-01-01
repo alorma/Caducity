@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,13 +35,15 @@ import caducity.composeapp.generated.resources.settings_theme_dark
 import caducity.composeapp.generated.resources.settings_theme_light
 import caducity.composeapp.generated.resources.settings_theme_system
 import caducity.composeapp.generated.resources.settings_theme_title
+import com.alorma.caducity.base.ui.components.shape.ShapePosition
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.outlined.Leaf
 import com.alorma.caducity.base.ui.theme.CaducityTheme
-import com.alorma.caducity.base.ui.theme.colors.ExpirationColorSchemeType
 import com.alorma.caducity.base.ui.theme.ThemeMode
 import com.alorma.caducity.base.ui.theme.ThemePreferences
-import com.alorma.caducity.base.ui.theme.preview.AppPreview
+import com.alorma.caducity.base.ui.theme.colors.ExpirationColorSchemeType
 import com.alorma.caducity.base.ui.theme.colors.supportsDynamicColors
-import com.alorma.caducity.base.ui.components.shape.ShapePosition
+import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
@@ -124,23 +127,28 @@ private fun ExpirationColorLegend() {
   ) {
     ColorLegendItem(
       label = stringResource(Res.string.settings_expiration_legend_fresh),
-      color = expirationColors.fresh,
+      containerColor = expirationColors.fresh,
+      contentColor = expirationColors.onFresh,
     )
     ColorLegendItem(
       label = stringResource(Res.string.settings_expiration_legend_expiring_soon),
-      color = expirationColors.expiringSoon,
+      containerColor = expirationColors.expiringSoon,
+      contentColor = expirationColors.onExpiringSoon,
     )
     ColorLegendItem(
       label = stringResource(Res.string.settings_expiration_legend_expired),
-      color = expirationColors.expired,
+      containerColor = expirationColors.expired,
+      contentColor = expirationColors.onExpired,
     )
     ColorLegendItem(
       label = stringResource(Res.string.settings_expiration_legend_frozen),
-      color = expirationColors.frozen,
+      containerColor = expirationColors.frozen,
+      contentColor = expirationColors.onFrozen,
     )
     ColorLegendItem(
       label = stringResource(Res.string.settings_expiration_legend_consumed),
-      color = expirationColors.consumed,
+      containerColor = expirationColors.consumed,
+      contentColor = expirationColors.onConsumed,
     )
   }
 }
@@ -148,7 +156,8 @@ private fun ExpirationColorLegend() {
 @Composable
 private fun ColorLegendItem(
   label: String,
-  color: Color,
+  containerColor: Color,
+  contentColor: Color,
 ) {
   Row(
     modifier = Modifier.fillMaxWidth(),
@@ -159,8 +168,15 @@ private fun ColorLegendItem(
       modifier = Modifier
         .size(32.dp)
         .clip(CircleShape)
-        .background(color),
-    )
+        .background(containerColor)
+        .padding(4.dp),
+    ) {
+      Icon(
+        imageVector = AppIcons.Outlined.Leaf,
+        contentDescription = null,
+        tint = contentColor,
+      )
+    }
     Text(text = label)
   }
 }
