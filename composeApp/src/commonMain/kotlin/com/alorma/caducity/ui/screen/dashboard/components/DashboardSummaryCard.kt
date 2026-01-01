@@ -94,7 +94,7 @@ private fun SummaryStatusCard(
   val dim = if (count > 0) {
     CaducityTheme.dims.noDim
   } else {
-    CaducityTheme.dims.dim4
+    CaducityTheme.dims.dim2
   }
 
   Surface(
