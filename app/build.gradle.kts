@@ -28,8 +28,6 @@ android {
   packaging {
     resources {
       excludes += "/META-INF/{AL2.0,LGPL2.1}"
-      // Exclude duplicate annotation files
-      excludes += "META-INF/versions/9/previous-compilation-data.bin"
     }
   }
   buildTypes {
@@ -60,16 +58,6 @@ ksp {
 }
 
 dependencies {
-  // Force single version of annotations to avoid conflicts
-  constraints {
-    implementation("org.jetbrains:annotations:23.0.0") {
-      because("Avoid conflicts between com.intellij:annotations and org.jetbrains:annotations")
-    }
-  }
-  configurations.all {
-    exclude(group = "com.intellij", module = "annotations")
-  }
-
   implementation(projects.base.main)
   implementation(projects.base.ui.theme)
   implementation(projects.base.ui.icons)
