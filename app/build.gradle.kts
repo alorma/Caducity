@@ -39,15 +39,18 @@ android {
   }
   buildFeatures {
     buildConfig = true
+    compose = true
   }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
   }
+
   experimentalProperties["android.experimental.enableScreenshotTest"] = true
+
   testOptions {
-    unitTests {
-      isIncludeAndroidResources = true
+    screenshotTests {
+      imageDifferenceThreshold = 0.01f
     }
   }
 }
@@ -125,6 +128,10 @@ dependencies {
   screenshotTestImplementation(libs.androidx.compose.ui.test.junit4)
   debugImplementation(libs.androidx.compose.ui.test.manifest)
 
+  screenshotTestImplementation(libs.screenshot.validation.api)
+  screenshotTestImplementation(libs.androidx.compose.ui.tooling)
+
   // Koin for testing (AppPreview dependency)
   screenshotTestImplementation(libs.koin.compose)
+
 }
