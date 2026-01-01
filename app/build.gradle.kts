@@ -84,12 +84,10 @@ dependencies {
   implementation(libs.androidx.compose.ui.tooling.preview)
   debugImplementation(libs.androidx.compose.ui.tooling)
 
-  implementation(libs.androidx.nav3.ui)
-  implementation(libs.androidx.nav3.viewModel)
-  implementation(libs.androidx.material3.adaptive)
-  implementation(libs.androidx.material3.adaptive.nav3)
+  implementation(libs.androidx.navigation.compose)
+  implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-  implementation(libs.lifecycle.runtime.compose)
+  implementation(libs.androidx.lifecycle.runtime.compose)
 
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.kotlinx.datetime)
