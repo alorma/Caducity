@@ -111,7 +111,7 @@ class DashboardMapper(
           product.instances.forEach { instance ->
             // Use expirationDate here as UI model already converted to correct display date
             // For frozen items: expirationDate field already contains the pausedDate
-            // For normal items: expirationDate contains the actual expiration date
+            // For normal items: expirationDate contains the expiration date
             val date = instance.expirationDate
             val currentStatus = get(date)
 

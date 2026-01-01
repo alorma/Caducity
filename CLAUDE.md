@@ -237,7 +237,7 @@ For platform-specific functionality, prefer using interfaces over expect/actual:
 **Benefits**:
 - More flexible and testable than expect/actual
 - Easier to mock for testing
-- No Beta warnings for expect/actual classes
+- No Beta warnings for expect/classes
 - Follows dependency inversion principle
 - Consistent with other platform abstractions (e.g., `ExpirationNotificationHelper`)
 
@@ -262,9 +262,9 @@ singleOf(::AndroidNotificationDebugHelper) bind NotificationDebugHelper::class
 ```
 
 **When to use expect/actual**:
-- Only use expect/actual for platform values or simple functions where interface pattern doesn't fit
+- Only use expect/for platform values or simple functions where interface pattern doesn't fit
 - Common pattern: expect val/fun in DI modules (`expect val platformModule`)
-- Keep expect/actual minimal and prefer interface pattern for classes
+- Keep expect/minimal and prefer interface pattern for classes
 
 ### Version Catalog (libs.versions.toml)
 All dependencies are centralized in `gradle/libs.versions.toml`:

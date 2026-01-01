@@ -18,7 +18,7 @@ import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-actual val platformModule: Module = module {
+val platformModule: Module = module {
   includes(barcodeModule)
   includes(notificationsModule)
 

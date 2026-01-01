@@ -22,6 +22,7 @@ android {
 kotlin {
   compilerOptions {
     jvmTarget = JvmTarget.JVM_11
+    optIn.add("kotlin.time.ExperimentalTime")
   }
 }
 
