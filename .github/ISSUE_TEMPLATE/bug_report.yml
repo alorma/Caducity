@@ -8,21 +8,6 @@ body:
       value: |
         Thanks for taking the time to report a bug! Please fill out the form below to help us fix it.
 
-  - type: dropdown
-    id: platform
-    attributes:
-      label: Platform
-      description: Which platform are you using?
-      options:
-        - Android
-        - Desktop (Windows)
-        - Desktop (macOS)
-        - Desktop (Linux)
-        - Web
-        - WebAssembly
-    validations:
-      required: true
-
   - type: textarea
     id: description
     attributes:
