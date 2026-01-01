@@ -1,7 +1,6 @@
 package com.alorma.caducity.di
 
 import androidx.room.Room
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.alorma.caducity.barcode.barcodeModule
 import com.alorma.caducity.base.ui.theme.LanguageManager
 import com.alorma.caducity.data.datasource.room.AppDatabase
@@ -11,7 +10,6 @@ import com.alorma.caducity.language.AndroidLanguageManager
 import com.alorma.caducity.notification.notificationsModule
 import com.alorma.caducity.version.AndroidAppVersionProvider
 import com.alorma.caducity.version.AppVersionProvider
-import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.bind
@@ -24,13 +22,10 @@ val platformModule: Module = module {
 
   single {
     Room.databaseBuilder(
-      context = androidContext(),
-      klass = AppDatabase::class.java,
-      name = "caducity.db"
-    )
-      .setDriver(BundledSQLiteDriver())
-      .setQueryCoroutineContext(Dispatchers.IO)
-      .build()
+      androidContext(),
+      AppDatabase::class.java,
+      "caducity.db"
+    ).build()
   }
 
   singleOf(::AndroidAppVersionProvider) {
