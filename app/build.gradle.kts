@@ -116,12 +116,15 @@ dependencies {
 
   implementation(libs.scan.engine)
 
-  // Screenshot testing
-  screenshotTestImplementation(libs.androidx.compose.ui.test.junit4)
-  debugImplementation(libs.androidx.compose.ui.test.manifest)
-
   // Test infrastructure
   testImplementation(libs.junit)
   testImplementation(libs.androidx.test.runner)
   testImplementation(libs.androidx.test.rules)
+
+  // Screenshot testing
+  screenshotTestImplementation(libs.androidx.compose.ui.test.junit4)
+  debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+  // Koin for testing (AppPreview dependency)
+  screenshotTestImplementation(libs.koin.compose)
 }
