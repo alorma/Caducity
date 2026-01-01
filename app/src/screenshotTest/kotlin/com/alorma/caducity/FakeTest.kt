@@ -15,7 +15,7 @@ class FakeTest {
   @Preview
   @PreviewTest
   @Composable
-  fun appPreviewBottomSheet() {
+  fun fake() {
     Box(
       modifier = Modifier
         .size(100.dp)
