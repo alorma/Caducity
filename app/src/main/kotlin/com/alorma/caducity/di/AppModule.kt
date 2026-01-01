@@ -18,15 +18,18 @@ import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfiguration
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfigurationImpl
 import com.alorma.caducity.ui.screen.dashboard.DashboardViewModel
 import com.alorma.caducity.ui.screen.dashboard.components.LocalizedDateFormatter
-import com.alorma.caducity.ui.screen.products.ProductsListMapper
-import com.alorma.caducity.ui.screen.products.ProductsListViewModel
 import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
 import com.alorma.caducity.ui.screen.product.create.FutureDateSelectableDates
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailMapper
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailViewModel
+import com.alorma.caducity.ui.screen.products.ProductsListMapper
+import com.alorma.caducity.ui.screen.products.ProductsListViewModel
+import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
 import com.russhwolf.settings.Settings
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
@@ -42,7 +45,10 @@ val appModule = module {
 
   singleOf(::DashboardUiConfigurationImpl) bind DashboardUiConfiguration::class
 
-  single<AppClock> { KotlinAppClock() }
+  singleOf(::KotlinAppClock) { bind<AppClock>() }
+
+  factoryOf(::RelativeTimeFormatter)
+
   singleOf(::ObtainDashboardProductsUseCase)
   singleOf(::GetExpiringProductsUseCase)
   singleOf(::DashboardMapper)

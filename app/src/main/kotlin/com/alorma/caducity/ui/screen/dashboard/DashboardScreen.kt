@@ -22,8 +22,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.dashboard_screen_title
 import com.alorma.caducity.base.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.CalendarCollapse
@@ -33,7 +31,8 @@ import com.alorma.caducity.base.main.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardSummaryCard
 import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
 import kotlinx.datetime.LocalDate
-import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.res.stringResource
+import com.alorma.caducity.R
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -93,7 +92,7 @@ fun DashboardContent(
     topBar = {
       StyledTopAppBar(
         title = {
-          Text(text = stringResource(Res.string.dashboard_screen_title))
+          Text(text = stringResource(R.string.dashboard_screen_title))
         },
         actions = {
           IconButton(onClick = onToggleCalendarMode) {

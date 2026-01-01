@@ -10,15 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.settings_enable_notifications
+import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.notification.ExpirationNotificationHelper
 import com.alorma.caducity.base.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.screen.settings.previewSettingsModule
-import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.res.stringResource
 import org.koin.compose.koinInject
 
 @Composable
@@ -39,7 +38,7 @@ fun NotificationsSettingsScreen(
   ) {
     StyledSettingsGroup {
       StyledSettingsSwitchCard(
-        title = stringResource(Res.string.settings_enable_notifications),
+        title = stringResource(R.string.settings_enable_notifications),
         state = notificationHelper.areNotificationsEnabled().value,
         position = ShapePosition.Single,
         onCheckedChange = { enabled ->

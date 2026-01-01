@@ -4,20 +4,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation3.runtime.NavKey
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.dashboard_screen_title
-import caducity.composeapp.generated.resources.products_screen_title
-import caducity.composeapp.generated.resources.settings_screen_title
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.filled.Settings
 import com.alorma.caducity.base.ui.icons.filled.Dashboard
 import com.alorma.caducity.base.ui.icons.filled.List
+import com.alorma.caducity.base.ui.icons.filled.Settings
 import com.alorma.caducity.base.ui.icons.outlined.Dashboard
 import com.alorma.caducity.base.ui.icons.outlined.List
 import com.alorma.caducity.base.ui.icons.outlined.Settings
 import kotlinx.serialization.Serializable
-import org.jetbrains.compose.resources.stringResource
 
 sealed interface TopLevelRoute : NavKey {
 
@@ -47,9 +43,9 @@ fun TopLevelRoute.unSelectedIconImageVector() = when (this) {
 
 @Composable
 fun TopLevelRoute.textLabel() = when (this) {
-  TopLevelRoute.Dashboard -> stringResource(Res.string.dashboard_screen_title)
-  TopLevelRoute.Products -> stringResource(Res.string.products_screen_title)
-  TopLevelRoute.Settings -> stringResource(Res.string.settings_screen_title)
+  TopLevelRoute.Dashboard -> stringResource(R.string.dashboard_screen_title)
+  TopLevelRoute.Products -> stringResource(R.string.products_screen_title)
+  TopLevelRoute.Settings -> stringResource(R.string.settings_screen_title)
 }
 
 @Suppress("ModifierRequired")
