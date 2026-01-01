@@ -17,6 +17,28 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: feature
+    attributes:
+      label: Related Feature
+      description: Which feature is this bug related to?
+      options:
+        - Dashboard
+        - Product Details
+        - Product Management (Create/Edit/Delete)
+        - Instance Management
+        - Theme/UI
+        - Notifications
+        - Search & Filter
+        - Barcode Scanning
+        - Settings
+        - Navigation
+        - Data Persistence
+        - Multi-platform Support
+        - Other
+    validations:
+      required: true
+
   - type: textarea
     id: steps
     attributes:
