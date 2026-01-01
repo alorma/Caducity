@@ -14,18 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.settings_about_description
-import caducity.composeapp.generated.resources.settings_about_title
-import caducity.composeapp.generated.resources.settings_appearance_description
-import caducity.composeapp.generated.resources.settings_appearance_title
-import caducity.composeapp.generated.resources.settings_debug_description
-import caducity.composeapp.generated.resources.settings_debug_title
-import caducity.composeapp.generated.resources.settings_language_description
-import caducity.composeapp.generated.resources.settings_language_title
-import caducity.composeapp.generated.resources.settings_notifications_description
-import caducity.composeapp.generated.resources.settings_notifications_title
-import caducity.composeapp.generated.resources.settings_screen_title
+import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.components.StyledCenterAlignedTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Palette
@@ -39,7 +28,7 @@ import com.alorma.caducity.base.ui.icons.filled.Settings
 import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
-import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.res.stringResource
 import org.koin.compose.koinInject
 
 @Composable
@@ -62,7 +51,7 @@ fun SettingsRootScreen(
       StyledCenterAlignedTopAppBar(
         title = {
           Text(
-            text = stringResource(Res.string.settings_screen_title),
+            text = stringResource(R.string.settings_screen_title),
           )
         },
       )
@@ -85,8 +74,8 @@ fun SettingsRootScreen(
               contentDescription = null,
             )
           },
-          title = stringResource(Res.string.settings_appearance_title),
-          subtitle = stringResource(Res.string.settings_appearance_description),
+          title = stringResource(R.string.settings_appearance_title),
+          subtitle = stringResource(R.string.settings_appearance_description),
           onClick = onNavigateToAppearance,
           position = ShapePosition.Start,
         )
@@ -99,8 +88,8 @@ fun SettingsRootScreen(
                 contentDescription = null,
               )
             },
-            title = stringResource(Res.string.settings_language_title),
-            subtitle = stringResource(Res.string.settings_language_description),
+            title = stringResource(R.string.settings_language_title),
+            subtitle = stringResource(R.string.settings_language_description),
             onClick = onNavigateToLanguage,
             position = ShapePosition.Middle,
           )
@@ -113,8 +102,8 @@ fun SettingsRootScreen(
               contentDescription = null,
             )
           },
-          title = stringResource(Res.string.settings_notifications_title),
-          subtitle = stringResource(Res.string.settings_notifications_description),
+          title = stringResource(R.string.settings_notifications_title),
+          subtitle = stringResource(R.string.settings_notifications_description),
           onClick = onNavigateToNotifications,
           position = ShapePosition.End,
         )
@@ -130,8 +119,8 @@ fun SettingsRootScreen(
                 contentDescription = null,
               )
             },
-            title = stringResource(Res.string.settings_debug_title),
-            subtitle = stringResource(Res.string.settings_debug_description),
+            title = stringResource(R.string.settings_debug_title),
+            subtitle = stringResource(R.string.settings_debug_description),
             onClick = onNavigateToDebug,
             position = ShapePosition.Single,
           )
@@ -147,8 +136,8 @@ fun SettingsRootScreen(
               contentDescription = null,
             )
           },
-          title = stringResource(Res.string.settings_about_title),
-          subtitle = stringResource(Res.string.settings_about_description),
+          title = stringResource(R.string.settings_about_title),
+          subtitle = stringResource(R.string.settings_about_description),
           onClick = onNavigateToAbout,
           position = ShapePosition.Single,
         )

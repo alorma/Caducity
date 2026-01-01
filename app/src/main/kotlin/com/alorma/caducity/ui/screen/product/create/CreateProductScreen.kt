@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,28 +34,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.create_product_add_instance
-import caducity.composeapp.generated.resources.create_product_button_cancel
-import caducity.composeapp.generated.resources.create_product_button_create
-import caducity.composeapp.generated.resources.create_product_content_description_back
-import caducity.composeapp.generated.resources.create_product_description_label
-import caducity.composeapp.generated.resources.create_product_description_placeholder
-import caducity.composeapp.generated.resources.create_product_instance_number
-import caducity.composeapp.generated.resources.create_product_instances_title
-import caducity.composeapp.generated.resources.create_product_name_label
-import caducity.composeapp.generated.resources.create_product_name_placeholder
-import caducity.composeapp.generated.resources.create_product_remove_instance
-import caducity.composeapp.generated.resources.create_product_screen_title
+import com.alorma.caducity.R
 import com.alorma.caducity.barcode.BarcodeHandler
 import com.alorma.caducity.base.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.BarcodeScanner
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -166,13 +152,13 @@ private fun CreateProductPage(
     topBar = {
       StyledTopAppBar(
         title = {
-          Text(text = stringResource(Res.string.create_product_screen_title))
+          Text(text = stringResource(R.string.create_product_screen_title))
         },
         navigationIcon = {
           IconButton(onClick = onBackClick) {
             Icon(
               imageVector = AppIcons.Back,
-              contentDescription = stringResource(Res.string.create_product_content_description_back)
+              contentDescription = stringResource(R.string.create_product_content_description_back)
             )
           }
         }
@@ -192,7 +178,7 @@ private fun CreateProductPage(
             enabled = !state.isLoading,
             modifier = Modifier.weight(1f),
           ) {
-            Text(stringResource(Res.string.create_product_button_cancel))
+            Text(stringResource(R.string.create_product_button_cancel))
           }
           Button(
             onClick = onCreateClick,
@@ -202,7 +188,7 @@ private fun CreateProductPage(
             if (state.isLoading) {
               CircularProgressIndicator()
             } else {
-              Text(stringResource(Res.string.create_product_button_create))
+              Text(stringResource(R.string.create_product_button_create))
             }
           }
         }
@@ -223,8 +209,8 @@ private fun CreateProductPage(
       TextField(
         value = state.name,
         onValueChange = onNameChange,
-        label = { Text(stringResource(Res.string.create_product_name_label)) },
-        placeholder = { Text(stringResource(Res.string.create_product_name_placeholder)) },
+        label = { Text(stringResource(R.string.create_product_name_label)) },
+        placeholder = { Text(stringResource(R.string.create_product_name_placeholder)) },
         modifier = Modifier.fillMaxWidth(),
         enabled = !state.isLoading,
         isError = state.error != null,
@@ -234,8 +220,8 @@ private fun CreateProductPage(
       TextField(
         value = state.description,
         onValueChange = onDescriptionChange,
-        label = { Text(stringResource(Res.string.create_product_description_label)) },
-        placeholder = { Text(stringResource(Res.string.create_product_description_placeholder)) },
+        label = { Text(stringResource(R.string.create_product_description_label)) },
+        placeholder = { Text(stringResource(R.string.create_product_description_placeholder)) },
         modifier = Modifier.fillMaxWidth(),
         minLines = 3,
         enabled = !state.isLoading,
@@ -243,7 +229,7 @@ private fun CreateProductPage(
 
       // Instances Section
       Text(
-        text = stringResource(Res.string.create_product_instances_title),
+        text = stringResource(R.string.create_product_instances_title),
         style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.padding(top = 8.dp)
       )
@@ -271,7 +257,7 @@ private fun CreateProductPage(
           modifier = Modifier.weight(1f),
           enabled = !state.isLoading,
         ) {
-          Text(stringResource(Res.string.create_product_add_instance))
+          Text(stringResource(R.string.create_product_add_instance))
         }
 
         if (hasBarcodeCapability) {
@@ -335,7 +321,7 @@ private fun ProductInstanceCard(
       ) {
         Text(
           text = stringResource(
-            resource = Res.string.create_product_instance_number,
+            id = R.string.create_product_instance_number,
             instanceNumber,
           ),
           style = MaterialTheme.typography.labelLarge,
@@ -346,7 +332,7 @@ private fun ProductInstanceCard(
             onClick = onRemove,
             enabled = !isLoading,
           ) {
-            Text(stringResource(Res.string.create_product_remove_instance))
+            Text(stringResource(R.string.create_product_remove_instance))
           }
         }
       }

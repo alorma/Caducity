@@ -6,28 +6,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.dashboard_section_expired
-import caducity.composeapp.generated.resources.dashboard_section_expiring_soon
-import caducity.composeapp.generated.resources.dashboard_section_fresh
-import caducity.composeapp.generated.resources.dashboard_section_frozen
+import com.alorma.caducity.R
+import com.alorma.caducity.base.main.InstanceStatus
+import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.ui.screen.dashboard.DashboardSummary
-import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
-import com.alorma.caducity.base.main.InstanceStatus
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun DashboardSummaryCard(
@@ -112,10 +106,10 @@ private fun SummaryStatusCard(
     ) {
 
       val text = when (status) {
-        InstanceStatus.Expired -> stringResource(Res.string.dashboard_section_expired)
-        InstanceStatus.ExpiringSoon -> stringResource(Res.string.dashboard_section_expiring_soon)
-        InstanceStatus.Fresh -> stringResource(Res.string.dashboard_section_fresh)
-        InstanceStatus.Frozen -> stringResource(Res.string.dashboard_section_frozen)
+        InstanceStatus.Expired -> stringResource(R.string.dashboard_section_expired)
+        InstanceStatus.ExpiringSoon -> stringResource(R.string.dashboard_section_expiring_soon)
+        InstanceStatus.Fresh -> stringResource(R.string.dashboard_section_fresh)
+        InstanceStatus.Frozen -> stringResource(R.string.dashboard_section_frozen)
         InstanceStatus.Consumed -> "Consumed" // Consumed items don't appear in dashboard
       }
 

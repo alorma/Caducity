@@ -20,12 +20,11 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.products_screen_title
+import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.domain.usecase.ProductsListFilter
-import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.res.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -55,7 +54,7 @@ fun ProductsListScreen(
       .nestedScroll(scrollConnection),
     topBar = {
       StyledTopAppBar(
-        title = { Text(stringResource(Res.string.products_screen_title)) },
+        title = { Text(stringResource(R.string.products_screen_title)) },
       )
     },
   ) { paddingValues ->

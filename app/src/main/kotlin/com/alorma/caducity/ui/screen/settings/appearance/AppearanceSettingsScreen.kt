@@ -21,20 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.settings_color_scheme_harmony
-import caducity.composeapp.generated.resources.settings_color_scheme_title
-import caducity.composeapp.generated.resources.settings_color_scheme_vibrant
-import caducity.composeapp.generated.resources.settings_dynamic_colors
-import caducity.composeapp.generated.resources.settings_expiration_legend_consumed
-import caducity.composeapp.generated.resources.settings_expiration_legend_expired
-import caducity.composeapp.generated.resources.settings_expiration_legend_expiring_soon
-import caducity.composeapp.generated.resources.settings_expiration_legend_fresh
-import caducity.composeapp.generated.resources.settings_expiration_legend_frozen
-import caducity.composeapp.generated.resources.settings_theme_dark
-import caducity.composeapp.generated.resources.settings_theme_light
-import caducity.composeapp.generated.resources.settings_theme_system
-import caducity.composeapp.generated.resources.settings_theme_title
+import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.components.shape.ShapePosition
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.outlined.Leaf
@@ -48,7 +35,7 @@ import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGro
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.screen.settings.previewSettingsModule
-import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.res.stringResource
 import org.koin.compose.koinInject
 
 @Composable
@@ -58,12 +45,12 @@ fun AppearanceSettingsScreen(
   val themePreferences = koinInject<ThemePreferences>()
 
   // Load all string resources at composable level
-  val themeLight = stringResource(Res.string.settings_theme_light)
-  val themeDark = stringResource(Res.string.settings_theme_dark)
-  val themeSystem = stringResource(Res.string.settings_theme_system)
+  val themeLight = stringResource(R.string.settings_theme_light)
+  val themeDark = stringResource(R.string.settings_theme_dark)
+  val themeSystem = stringResource(R.string.settings_theme_system)
 
-  val colorSchemeVibrant = stringResource(Res.string.settings_color_scheme_vibrant)
-  val colorSchemeHarmony = stringResource(Res.string.settings_color_scheme_harmony)
+  val colorSchemeVibrant = stringResource(R.string.settings_color_scheme_vibrant)
+  val colorSchemeHarmony = stringResource(R.string.settings_color_scheme_harmony)
 
   Column(
     modifier = Modifier
@@ -75,7 +62,7 @@ fun AppearanceSettingsScreen(
   ) {
     StyledSettingsGroup {
       StyledSettingsButtonGroupCard(
-        title = stringResource(Res.string.settings_theme_title),
+        title = stringResource(R.string.settings_theme_title),
         selectedItem = themePreferences.themeMode.value,
         position = ShapePosition.Start,
         items = ThemeMode.entries,
@@ -90,7 +77,7 @@ fun AppearanceSettingsScreen(
       )
       if (supportsDynamicColors()) {
         StyledSettingsSwitchCard(
-          title = stringResource(Res.string.settings_dynamic_colors),
+          title = stringResource(R.string.settings_dynamic_colors),
           state = themePreferences.useDynamicColors.value,
           position = ShapePosition.End,
           onCheckedChange = { themePreferences.setDynamicColorsEnabled(it) },
@@ -99,7 +86,7 @@ fun AppearanceSettingsScreen(
     }
 
     StyledSettingsButtonGroupCard(
-      title = stringResource(Res.string.settings_color_scheme_title),
+      title = stringResource(R.string.settings_color_scheme_title),
       selectedItem = themePreferences.expirationColorSchemeType.value,
       items = ExpirationColorSchemeType.entries,
       position = ShapePosition.Single,
@@ -126,27 +113,27 @@ private fun ExpirationColorLegend() {
     verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {
     ColorLegendItem(
-      label = stringResource(Res.string.settings_expiration_legend_fresh),
+      label = stringResource(R.string.settings_expiration_legend_fresh),
       containerColor = expirationColors.fresh,
       contentColor = expirationColors.onFresh,
     )
     ColorLegendItem(
-      label = stringResource(Res.string.settings_expiration_legend_expiring_soon),
+      label = stringResource(R.string.settings_expiration_legend_expiring_soon),
       containerColor = expirationColors.expiringSoon,
       contentColor = expirationColors.onExpiringSoon,
     )
     ColorLegendItem(
-      label = stringResource(Res.string.settings_expiration_legend_expired),
+      label = stringResource(R.string.settings_expiration_legend_expired),
       containerColor = expirationColors.expired,
       contentColor = expirationColors.onExpired,
     )
     ColorLegendItem(
-      label = stringResource(Res.string.settings_expiration_legend_frozen),
+      label = stringResource(R.string.settings_expiration_legend_frozen),
       containerColor = expirationColors.frozen,
       contentColor = expirationColors.onFrozen,
     )
     ColorLegendItem(
-      label = stringResource(Res.string.settings_expiration_legend_consumed),
+      label = stringResource(R.string.settings_expiration_legend_consumed),
       containerColor = expirationColors.consumed,
       contentColor = expirationColors.onConsumed,
     )

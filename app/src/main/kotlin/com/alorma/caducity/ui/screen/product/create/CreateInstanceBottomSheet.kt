@@ -30,18 +30,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.create_product_button_cancel
-import caducity.composeapp.generated.resources.create_product_button_create
-import caducity.composeapp.generated.resources.create_product_expiration_date_label
-import caducity.composeapp.generated.resources.create_product_expiration_date_placeholder
-import caducity.composeapp.generated.resources.create_product_instance_identifier_label
-import caducity.composeapp.generated.resources.create_product_instance_identifier_placeholder
-import caducity.composeapp.generated.resources.create_product_instance_quantity_label
-import caducity.composeapp.generated.resources.create_product_instance_quantity_placeholder
-import caducity.composeapp.generated.resources.create_product_instance_split_preview
+import com.alorma.caducity.R
 import com.alorma.caducity.barcode.BarcodeHandler
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.BarcodeScanner
@@ -51,7 +43,6 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.toLocalDateTime
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import kotlin.time.Instant
 
@@ -106,8 +97,8 @@ fun CreateInstanceBottomSheet(
       TextField(
         value = identifier,
         onValueChange = { identifier = it },
-        label = { Text(stringResource(Res.string.create_product_instance_identifier_label)) },
-        placeholder = { Text(stringResource(Res.string.create_product_instance_identifier_placeholder)) },
+        label = { Text(stringResource(R.string.create_product_instance_identifier_label)) },
+        placeholder = { Text(stringResource(R.string.create_product_instance_identifier_placeholder)) },
         modifier = Modifier.fillMaxWidth(),
         colors = TextFieldDefaults.colors(
           unfocusedIndicatorColor = CaducityTheme.colorScheme.primary,
@@ -146,8 +137,8 @@ fun CreateInstanceBottomSheet(
               quantity = newValue
             }
           },
-          label = { Text(stringResource(Res.string.create_product_instance_quantity_label)) },
-          placeholder = { Text(stringResource(Res.string.create_product_instance_quantity_placeholder)) },
+          label = { Text(stringResource(R.string.create_product_instance_quantity_label)) },
+          placeholder = { Text(stringResource(R.string.create_product_instance_quantity_placeholder)) },
           modifier = Modifier.fillMaxWidth(),
           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
           singleLine = true,
@@ -157,7 +148,7 @@ fun CreateInstanceBottomSheet(
         val quantityValue = quantity.toIntOrNull() ?: 1
         if (quantityValue > 1) {
           Text(
-            text = stringResource(Res.string.create_product_instance_split_preview, quantityValue),
+            text = stringResource(R.string.create_product_instance_split_preview, quantityValue),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(start = 16.dp)
@@ -172,8 +163,8 @@ fun CreateInstanceBottomSheet(
           .clickable { showDatePicker = true },
         value = expirationDateText,
         onValueChange = {},
-        label = { Text(stringResource(Res.string.create_product_expiration_date_label)) },
-        placeholder = { Text(stringResource(Res.string.create_product_expiration_date_placeholder)) },
+        label = { Text(stringResource(R.string.create_product_expiration_date_label)) },
+        placeholder = { Text(stringResource(R.string.create_product_expiration_date_placeholder)) },
         enabled = false,
         readOnly = true,
         colors = TextFieldDefaults.colors(
@@ -206,7 +197,7 @@ fun CreateInstanceBottomSheet(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         TextButton(onClick = onDismiss) {
-          Text(stringResource(Res.string.create_product_button_cancel))
+          Text(stringResource(R.string.create_product_button_cancel))
         }
         Spacer(modifier = Modifier.padding(8.dp))
         Button(
@@ -217,9 +208,9 @@ fun CreateInstanceBottomSheet(
             }
           },
           enabled = identifier.isNotBlank() && expirationDate != null &&
-                    (quantity.toIntOrNull() ?: 0) in 1..99
+              (quantity.toIntOrNull() ?: 0) in 1..99
         ) {
-          Text(stringResource(Res.string.create_product_button_create))
+          Text(stringResource(R.string.create_product_button_create))
         }
       }
 
@@ -243,12 +234,12 @@ fun CreateInstanceBottomSheet(
                 showDatePicker = false
               }
             ) {
-              Text(stringResource(Res.string.create_product_button_create))
+              Text(stringResource(R.string.create_product_button_create))
             }
           },
           dismissButton = {
             TextButton(onClick = { showDatePicker = false }) {
-              Text(stringResource(Res.string.create_product_button_cancel))
+              Text(stringResource(R.string.create_product_button_cancel))
             }
           }
         ) {

@@ -310,7 +310,7 @@ To add a new language (e.g., French):
    - Add string resource:
    ```kotlin
    import caducity.composeapp.generated.resources.language_french
-   val languageFrench = stringResource(Res.string.language_french)
+   val languageFrench = stringResource(R.string.language_french)
    ```
    - Add language to when expression:
    ```kotlin
@@ -348,7 +348,7 @@ To add a new language (e.g., French):
 
 7. **Generate Resource Accessors**
    - Run: `./gradlew :composeApp:generateResourceAccessorsForCommonMain`
-   - This generates the `Res.string.language_french` accessor
+   - This generates the `R.string.language_french` accessor
 
 8. **Test**
    - Build and install: `./gradlew installDebug`

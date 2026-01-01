@@ -45,8 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.base.main.InstanceStatus
 import com.alorma.caducity.base.ui.components.StatusBadge
 import com.alorma.caducity.base.ui.components.StatusBadgeSize
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.create_product_add_instance
+import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
@@ -56,7 +55,7 @@ import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
 import com.alorma.caducity.ui.screen.product.create.CreateInstanceBottomSheet
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.res.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -286,7 +285,7 @@ private fun ProductDetailContent(
           onClick = onAddInstance,
           modifier = Modifier.fillMaxWidth(),
         ) {
-          Text(stringResource(Res.string.create_product_add_instance))
+          Text(stringResource(R.string.create_product_add_instance))
         }
       }
 

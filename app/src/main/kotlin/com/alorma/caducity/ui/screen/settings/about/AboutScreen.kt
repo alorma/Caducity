@@ -10,15 +10,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import caducity.composeapp.generated.resources.Res
-import caducity.composeapp.generated.resources.about_github_link
+import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.base.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.previewSettingsModule
 import com.alorma.caducity.version.AppVersionProvider
-import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.res.stringResource
 import org.koin.compose.koinInject
 
 @Composable
@@ -43,7 +42,7 @@ fun AboutScreen(
       )
 
       StyledSettingsCard(
-        title = stringResource(Res.string.about_github_link),
+        title = stringResource(R.string.about_github_link),
         subtitle = "github.com/alorma/caducity",
         position = ShapePosition.End,
         onClick = {
