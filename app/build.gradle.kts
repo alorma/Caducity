@@ -8,8 +8,6 @@ plugins {
 
   alias(libs.plugins.google.ksp)
   alias(libs.plugins.jetbrains.kotlin.serialization)
-
-  alias(libs.plugins.androidx.room)
 }
 
 android {
@@ -109,17 +107,11 @@ dependencies {
   implementation(libs.androidx.appcompat)
 
   implementation(libs.androidx.room.runtime)
-  implementation(libs.androidx.sqlite.bundled)
-  implementation(libs.androidx.room.sqlite.wrapper)
+  implementation(libs.androidx.room.ktx)
+  ksp(libs.androidx.room.compiler)
 
   implementation(libs.androidx.work.runtime.ktx)
   implementation(libs.koin.androidx.workmanager)
 
   implementation(libs.scan.engine)
-
-  implementation(libs.androidx.room.compiler)
-}
-
-room {
-  schemaDirectory("$projectDir/schemas")
 }
