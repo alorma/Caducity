@@ -66,6 +66,10 @@ kotlin {
   }
 }
 
+ksp {
+  arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
   // Force single version of annotations to avoid conflicts
   constraints {
