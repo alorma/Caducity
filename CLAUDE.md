@@ -4,15 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Caducity is a Kotlin Multiplatform grocery expiration tracker application built with Compose Multiplatform. The app helps users track their groceries and avoid food waste by monitoring expiration dates.
+Caducity is an Android grocery expiration tracker application built with Jetpack Compose. The app helps users track their groceries and avoid food waste by monitoring expiration dates.
 
-**Current Focus**: Android (minSdk 35) - The project maintains multiplatform structure for potential future expansion to Desktop and Web, but development is currently Android-only.
+**Target Platform**: Android (minSdk 35, compileSdk 36, targetSdk 36)
 
 ## Technology Stack
 
 - **Language**: Kotlin 2.3.0 (cutting-edge versions, may require regular updates)
-- **UI Framework**: Jetpack Compose Multiplatform (v1.10.0-rc02) with Material 3 Expressive API
-- **Target Platform**: Android (minSdk 35, compileSdk 36, targetSdk 36)
+- **UI Framework**: Jetpack Compose with Material 3 Expressive API
 - **Architecture**: MVI/MVVM with Compose state management
 - **Navigation**: Jetpack Navigation 3 (alpha06)
 - **Dependency Injection**: Koin 4.1.1
@@ -63,31 +62,27 @@ Caducity is a Kotlin Multiplatform grocery expiration tracker application built 
 
 ### Project Structure
 ```
-composeApp/src/
-├── commonMain/kotlin/com/alorma/caducity/
-│   ├── data/              # Data layer
-│   │   ├── datasource/    # Abstract data source interfaces
-│   │   ├── entity/        # Data entities
-│   │   ├── model/         # Data models
-│   │   └── mapper/        # Entity-to-Model mappers
-│   ├── domain/            # Business logic
-│   │   ├── model/         # Domain models
-│   │   └── usecase/       # Use cases
-│   ├── ui/                # UI layer
-│   │   ├── screen/        # Feature screens (dashboard, settings)
-│   │   ├── theme/         # Theming (Material 3 with dynamic colors)
-│   │   ├── icons/         # Custom icons
-│   │   └── adaptive/      # Adaptive/responsive utilities
-│   ├── notification/      # Notification abstractions
-│   ├── di/                # Dependency injection modules
-│   ├── time/              # Time/clock abstraction
-│   ├── App.kt             # Main app entry point with navigation
-│   └── TopLevelBackStack.kt/TopLevelRoute.kt  # Navigation setup
-└── androidMain/kotlin/com/alorma/caducity/
-    ├── MainActivity.kt
-    ├── data/datasource/   # Android-specific implementations (Room)
-    ├── notification/      # Android notification & WorkManager
-    └── language/          # Android language manager
+app/src/main/kotlin/com/alorma/caducity/
+├── data/                  # Data layer
+│   ├── datasource/        # Data source interfaces and Room implementations
+│   ├── entity/            # Room entities
+│   ├── model/             # Data models
+│   └── mapper/            # Entity-to-Model mappers
+├── domain/                # Business logic
+│   ├── model/             # Domain models
+│   └── usecase/           # Use cases
+├── ui/                    # UI layer
+│   ├── screen/            # Feature screens (dashboard, settings)
+│   ├── theme/             # Theming (Material 3 with dynamic colors)
+│   ├── icons/             # Custom icons
+│   └── adaptive/          # Adaptive/responsive utilities
+├── notification/          # Notification system (WorkManager, NotificationChannelManager)
+├── language/              # Language manager
+├── di/                    # Dependency injection modules
+├── time/                  # Time/clock abstraction
+├── MainActivity.kt        # Main activity
+├── App.kt                 # Main app entry point with navigation
+└── TopLevelBackStack.kt/TopLevelRoute.kt  # Navigation setup
 
 base/
 ├── main/                  # Core domain models (InstanceStatus, etc.)
@@ -97,27 +92,19 @@ base/
     └── theme/             # Theme system (colors, typography, language, preferences)
 ```
 
-### Multiplatform Architecture
+### Architecture
 
-**Common Code (commonMain)**:
-- Defines all shared UI, business logic, and data abstractions
-- Uses `expect` declarations for platform-specific implementations
-- All Compose UI is in commonMain for potential future platform support
-- Contains platform abstractions (interfaces) for notifications, language management, etc.
-
-**Platform-Specific Code**:
-- **Android** (`androidMain`):
-  - Room database implementation (ProductDataSource)
-  - MainActivity and Android-specific UI setup
-  - Notification system (WorkManager, NotificationChannelManager)
-  - Language management (AndroidLanguageManager)
-  - System integration (dynamic colors, system bars)
+**Clean Architecture with Clear Separation**:
+- **Data Layer**: Room database implementation, entities, and data sources
+- **Domain Layer**: Business logic, use cases, and domain models
+- **UI Layer**: Jetpack Compose screens, ViewModels, and navigation
+- **Base Module**: Reusable components and theming shared across features
 
 **Dependency Injection Pattern**:
-- `appModule` (common): ViewModels, use cases, shared services
-- `platformModule` (expect/actual): Platform-specific implementations (e.g., ProductDataSource, NotificationDebugHelper)
+- `appModule`: ViewModels, use cases, shared services
+- `dataModule`: Data sources, repositories, Room database
 - `themeModule` (base): Theme preferences and language management
-- Both modules are combined in `App.kt` via Koin
+- All modules are combined in `App.kt` via Koin
 
 ### Navigation System
 
@@ -131,7 +118,7 @@ Uses Jetpack Navigation 3 with a custom `TopLevelBackStack` implementation:
 ### Theming
 
 Material 3 Expressive API with:
-- Dynamic color support (platform-dependent via `expect/actual`)
+- Dynamic color support (Android 12+)
 - Dark mode toggle with system default option
 - Theme preferences persisted via custom `ThemePreferences` class
 - Uses compose-settings library for settings UI tiles
@@ -141,9 +128,8 @@ Material 3 Expressive API with:
 Android notification system for expiration alerts:
 - **ExpirationWorkScheduler**: Schedules periodic background checks using WorkManager
 - **NotificationChannelManager**: Creates and manages Android notification channels
-- **ExpirationNotificationHelper**: Interface for platform-specific notification implementations
-- **AndroidExpirationNotificationHelper**: Android implementation using NotificationCompat
-- **NotificationDebugHelper**: Interface for testing notifications (follows preferred interface pattern)
+- **ExpirationNotificationHelper**: Handles notification creation and display using NotificationCompat
+- **NotificationDebugHelper**: Interface for testing notifications
 - Background work runs daily to check for expiring products
 
 ### Base Module Organization
@@ -173,7 +159,7 @@ The `base/` module contains reusable components separated into focused sub-modul
 
 ### Data Flow
 1. **ViewModel** collects data from **UseCase**
-2. **UseCase** calls **DataSource** (via platform module)
+2. **UseCase** calls **DataSource** (Room database)
 3. **DataSource** returns domain **Model** (mapped from **Entity**)
 4. **ViewModel** maps to **UiModel** for screens
 5. **Screen** observes `StateFlow<UiState>` from ViewModel
@@ -193,7 +179,7 @@ The following experimental APIs are enabled project-wide:
 ### Dependency Injection
 - Register ViewModels with `viewModelOf(::ClassName)`
 - Register singletons with `singleOf(::ClassName)` or `single { }`
-- Use `bind` to map implementations to interfaces in platform modules
+- Use `bind` to map implementations to interfaces
 - Always inject dependencies via constructor
 
 ## Current Implementation Status
@@ -203,7 +189,6 @@ The following experimental APIs are enabled project-wide:
 - Dashboard screen with ViewModel
 - Settings screen with theme selection
 - Adaptive UI for different screen sizes
-- Platform-specific data source abstraction
 - DI setup with Koin
 - Room database integration
 
@@ -222,33 +207,30 @@ The following experimental APIs are enabled project-wide:
 4. Register in `App.kt` `entryProvider` block
 5. Add navigation item to `CompactContent`/`ExpandedContent`
 
-### Adding Platform-Specific Code
+### Using Interfaces for Abstraction
 
-**PREFERRED: Interface + Implementation Pattern**
-For platform-specific functionality, prefer using interfaces over expect/actual:
+When you need abstraction or testability, use the interface pattern:
 
-1. Define an interface in `commonMain` (e.g., `NotificationDebugHelper`)
-2. Create platform-specific implementation in `androidMain` (e.g., `AndroidNotificationDebugHelper`)
-3. Bind implementation to interface in `platformModule`:
+1. Define an interface (e.g., `NotificationDebugHelper`)
+2. Create concrete implementation (e.g., `AndroidNotificationDebugHelper`)
+3. Bind implementation to interface in DI module:
    ```kotlin
    singleOf(::AndroidNotificationDebugHelper) bind NotificationDebugHelper::class
    ```
 
 **Benefits**:
-- More flexible and testable than expect/actual
-- Easier to mock for testing
-- No Beta warnings for expect/classes
+- Flexible and testable
+- Easy to mock for testing
 - Follows dependency inversion principle
-- Consistent with other platform abstractions (e.g., `ExpirationNotificationHelper`)
 
 **Example**:
 ```kotlin
-// commonMain/notification/NotificationDebugHelper.kt
+// notification/NotificationDebugHelper.kt
 interface NotificationDebugHelper {
   fun triggerImmediateCheck()
 }
 
-// androidMain/notification/AndroidNotificationDebugHelper.kt
+// notification/AndroidNotificationDebugHelper.kt
 class AndroidNotificationDebugHelper(
   private val workScheduler: ExpirationWorkScheduler
 ) : NotificationDebugHelper {
@@ -257,14 +239,9 @@ class AndroidNotificationDebugHelper(
   }
 }
 
-// androidMain/di/PlatformModule.android.kt
+// di/AppModule.kt
 singleOf(::AndroidNotificationDebugHelper) bind NotificationDebugHelper::class
 ```
-
-**When to use expect/actual**:
-- Only use expect/for platform values or simple functions where interface pattern doesn't fit
-- Common pattern: expect val/fun in DI modules (`expect val platformModule`)
-- Keep expect/minimal and prefer interface pattern for classes
 
 ### Version Catalog (libs.versions.toml)
 All dependencies are centralized in `gradle/libs.versions.toml`:
@@ -278,14 +255,14 @@ All dependencies are centralized in `gradle/libs.versions.toml`:
 
 ## Localization and Language Support
 
-The app uses Compose Multiplatform resources with Android 13+ per-app language preferences. Currently supported languages: English (en), Spanish (es), and Catalan (ca).
+The app uses Android resources with Android 13+ per-app language preferences. Currently supported languages: English (en), Spanish (es), and Catalan (ca).
 
 ### Adding a New Language
 
 To add a new language (e.g., French):
 
 1. **Add Language Enum Entry**
-   - Edit `base/ui/theme/src/commonMain/kotlin/com/alorma/caducity/base/ui/theme/language/Language.kt`
+   - Edit `base/ui/theme/language/Language.kt`
    - Add new enum entry:
    ```kotlin
    enum class Language(val code: String) {
@@ -297,19 +274,18 @@ To add a new language (e.g., French):
    ```
 
 2. **Create Resource Directory**
-   - Create `composeApp/src/commonMain/composeResources/values-{code}/` directory
-   - Example: `composeApp/src/commonMain/composeResources/values-fr/`
+   - Create `app/src/main/res/values-{code}/` directory
+   - Example: `app/src/main/res/values-fr/`
 
 3. **Add String Resources**
-   - Copy `strings.xml` from `values/` to your new `values-{code}/` directory
+   - Copy `strings.xml` from `res/values/` to your new `values-{code}/` directory
    - Translate all string values to the target language
    - Keep string keys unchanged
 
 4. **Update LanguageSettingsScreen**
-   - Edit `composeApp/src/commonMain/kotlin/com/alorma/caducity/ui/screen/settings/language/LanguageSettingsScreen.kt`
+   - Edit `ui/screen/settings/language/LanguageSettingsScreen.kt`
    - Add string resource:
    ```kotlin
-   import caducity.composeapp.generated.resources.language_french
    val languageFrench = stringResource(R.string.language_french)
    ```
    - Add language to when expression:
@@ -323,7 +299,7 @@ To add a new language (e.g., French):
    ```
 
 5. **Add Language Name String**
-   - Edit all `composeApp/src/commonMain/composeResources/values*/strings.xml` files
+   - Edit all `app/src/main/res/values*/strings.xml` files
    - Add the language name in each language:
    ```xml
    <!-- values/strings.xml (English) -->
@@ -340,30 +316,26 @@ To add a new language (e.g., French):
    ```
 
 6. **Update Android Locales Config**
-   - Edit `composeApp/src/androidMain/res/xml/locales_config.xml`
+   - Edit `app/src/main/res/xml/locales_config.xml`
    - Add new locale:
    ```xml
    <locale android:name="fr"/>
    ```
 
-7. **Generate Resource Accessors**
-   - Run: `./gradlew :composeApp:generateResourceAccessorsForCommonMain`
-   - This generates the `R.string.language_french` accessor
-
-8. **Test**
+7. **Test**
    - Build and install: `./gradlew installDebug`
    - Navigate to Settings → Language
    - Verify new language appears and switches correctly
 
 ### Language Architecture
 
-- **LanguageManager**: Abstract base class handling persistence and platform-specific application
-  - Located: `base/ui/theme/src/commonMain/kotlin/com/alorma/caducity/base/ui/theme/LanguageManager.kt`
+- **LanguageManager**: Base class handling persistence and language application
+  - Located: `base/ui/theme/language/LanguageManager.kt`
   - Persists selection using `Settings` (key: "app_language")
-  - Reads from platform API (`AppCompatDelegate.getApplicationLocales()` on Android)
+  - Reads from Android API (`AppCompatDelegate.getApplicationLocales()`)
 
-- **AndroidLanguageManager**: Android implementation
-  - Located: `composeApp/src/androidMain/kotlin/com/alorma/caducity/language/AndroidLanguageManager.kt`
+- **AndroidLanguageManager**: Implementation
+  - Located: `language/AndroidLanguageManager.kt`
   - Uses `LocaleManager.applicationLocales` on Android 13+ for seamless language changes without app restart
   - Falls back to `AppCompatDelegate.setApplicationLocales()` on older Android versions
   - Requires Context to be injected via Koin
