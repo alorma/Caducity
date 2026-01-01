@@ -28,7 +28,6 @@ import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
 import com.russhwolf.settings.Settings
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
-import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -45,7 +44,7 @@ val appModule = module {
 
   singleOf(::DashboardUiConfigurationImpl) bind DashboardUiConfiguration::class
 
-  singleOf(::KotlinAppClock) { bind<AppClock>() }
+  single<AppClock> { KotlinAppClock() }
 
   factoryOf(::RelativeTimeFormatter)
 
