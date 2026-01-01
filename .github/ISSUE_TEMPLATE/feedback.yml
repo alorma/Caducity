@@ -1,0 +1,120 @@
+name: 💬 Feedback
+description: Share your thoughts, suggestions, or ideas to improve Caducity
+title: "[FEEDBACK] "
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing your feedback! Your input helps make Caducity better for everyone.
+
+  - type: dropdown
+    id: feedback-type
+    attributes:
+      label: Feedback Type
+      description: What kind of feedback are you providing?
+      options:
+        - Feature Request
+        - User Experience Improvement
+        - Performance Suggestion
+        - Design Feedback
+        - Documentation Improvement
+        - General Feedback
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: Which platform is this feedback related to? (Select all that apply if relevant)
+      options:
+        - Android
+        - Desktop (Windows)
+        - Desktop (macOS)
+        - Desktop (Linux)
+        - Web
+        - WebAssembly
+        - All Platforms
+        - Not Platform Specific
+
+  - type: textarea
+    id: feedback-description
+    attributes:
+      label: Feedback Description
+      description: Share your thoughts, suggestions, or ideas in detail.
+      placeholder: Tell us what you think...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or Pain Point
+      description: What problem does this feedback address? What challenges are you facing?
+      placeholder: Describe the issue or challenge you're experiencing...
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: How do you think this could be improved or implemented?
+      placeholder: Share your ideas for how to solve this...
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Have you considered any alternative approaches?
+      placeholder: What other options might work...
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: Describe how you would use this feature or improvement in your daily workflow.
+      placeholder: For example, "I would use this when..."
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority (Your Opinion)
+      description: How important is this feedback to you?
+      options:
+        - Critical - Blocking my use of the app
+        - High - Would significantly improve my experience
+        - Medium - Nice to have
+        - Low - Minor improvement
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: related-features
+    attributes:
+      label: Related Features
+      description: Which existing or planned features does this relate to?
+      options:
+        - label: Product Management
+        - label: Instance Management
+        - label: Dashboard
+        - label: Notifications
+        - label: Search & Filter
+        - label: Theme/UI
+        - label: Analytics & Insights
+        - label: Barcode Scanning
+        - label: Multi-platform Support
+        - label: Other
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or References
+      description: Are there any apps, websites, or examples that demonstrate what you're suggesting?
+      placeholder: Provide links or describe similar implementations...
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or information about your feedback.
