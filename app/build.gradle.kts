@@ -8,6 +8,8 @@ plugins {
 
   alias(libs.plugins.google.ksp)
   alias(libs.plugins.jetbrains.kotlin.serialization)
+
+  alias(libs.plugins.compose.screenshot)
 }
 
 android {
@@ -21,10 +23,20 @@ android {
     versionCode = 1
     versionName = "1.0"
   }
+
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
   }
+
+  experimentalProperties["android.experimental.enableScreenshotTest"] = true
+
+  testOptions {
+    screenshotTests {
+      imageDifferenceThreshold = 0.01f
+    }
+  }
+
   packaging {
     resources {
       excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -32,18 +44,17 @@ android {
       excludes += "META-INF/versions/9/previous-compilation-data.bin"
     }
   }
+
   buildTypes {
     getByName("release") {
       isMinifyEnabled = false
     }
   }
+
   buildFeatures {
     buildConfig = true
   }
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
-  }
+
 }
 
 kotlin {
@@ -114,4 +125,13 @@ dependencies {
   implementation(libs.koin.androidx.workmanager)
 
   implementation(libs.scan.engine)
+
+  debugImplementation(libs.androidx.compose.ui.tooling)
+  debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+  // Screenshot testing
+  screenshotTestImplementation(libs.compose.screenshot.validation)
+  screenshotTestImplementation(libs.androidx.compose.ui.tooling)
+  screenshotTestImplementation(platform(libs.androidx.compose.bom))
+  screenshotTestImplementation(libs.androidx.compose.ui)
 }
