@@ -52,7 +52,7 @@ class DashboardViewModel(
       items = dashboardData.items,
       summary = dashboardData.summary,
       config = config,
-      calendarData = dashboardData.calendarData,
+      calendarState = dashboardData.calendarState,
     )
   }.stateIn(
     scope = viewModelScope,

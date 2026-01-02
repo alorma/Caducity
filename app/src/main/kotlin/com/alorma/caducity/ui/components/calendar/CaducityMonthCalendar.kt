@@ -7,33 +7,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.screen.dashboard.CalendarData
+import com.alorma.caducity.ui.screen.dashboard.CalendarState
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.DayPosition
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.YearMonth
 import kotlinx.datetime.yearMonth
 
 @Composable
 fun CaducityMonthCalendar(
-  startMonth: YearMonth,
-  endMonth: YearMonth,
-  today: LocalDate,
-  calendarData: CalendarData,
+  calendarState: CalendarState,
   onDateClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val calendarState = rememberCalendarState(
-    startMonth = startMonth,
-    endMonth = endMonth,
-    firstVisibleMonth = today.yearMonth,
+  val monthCalendarState = rememberCalendarState(
+    startMonth = calendarState.startMonth,
+    endMonth = calendarState.endMonth,
+    firstVisibleMonth = calendarState.today.yearMonth,
   )
 
   HorizontalCalendar(
     modifier = modifier.fillMaxWidth(),
-    state = calendarState,
+    state = monthCalendarState,
     contentPadding = PaddingValues(horizontal = 16.dp),
     monthHeader = { calendarMonth ->
       val daysOfWeek = remember {
@@ -57,10 +53,10 @@ fun CaducityMonthCalendar(
     },
     dayContent = { calendarDay ->
       val date = calendarDay.date
-      val dateInfo = calendarData.productsByDate[date]
+      val dateInfo = calendarState.calendarData.productsByDate[date]
 
       DayContent(
-        today = today,
+        today = calendarState.today,
         date = date,
         status = dateInfo?.status,
         shapePosition = dateInfo?.shapePosition ?: ShapePosition.None,

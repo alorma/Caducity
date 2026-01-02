@@ -5,8 +5,10 @@ import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.dashboard.CalendarData
 import com.alorma.caducity.ui.screen.dashboard.CalendarDateInfo
+import com.alorma.caducity.ui.screen.dashboard.CalendarState
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
 import kotlin.time.Instant
 
 @Stable
@@ -28,14 +30,35 @@ data class ProductInstanceDetailUiModel(
 )
 
 /**
- * Convert product instances to calendar data for visualization
+ * Convert product instances to calendar state for visualization
+ * @param today Current date for calendar calculations
  * @param hideConsumed If true, filters out consumed instances from the calendar
  */
-fun List<ProductInstanceDetailUiModel>.toCalendarData(hideConsumed: Boolean = true): CalendarData {
+fun List<ProductInstanceDetailUiModel>.toCalendarState(
+  today: LocalDate,
+  hideConsumed: Boolean = true
+): CalendarState {
   val filteredInstances = if (hideConsumed) {
     this.filter { it.status != InstanceStatus.Consumed }
   } else {
     this
+  }
+
+  // Calculate start and end months for calendar range
+  val currentMonthNum = today.month.ordinal + 1 // Month ordinal is 0-based
+
+  val startMonthNum = currentMonthNum - 1
+  val startMonth = if (startMonthNum >= 1) {
+    YearMonth(today.year, startMonthNum)
+  } else {
+    YearMonth(today.year - 1, 12)
+  }
+
+  val endMonthNum = currentMonthNum + 3
+  val endMonth = if (endMonthNum <= 12) {
+    YearMonth(today.year, endMonthNum)
+  } else {
+    YearMonth(today.year + 1, endMonthNum - 12)
   }
 
   // Group instances by expiration date
@@ -75,7 +98,14 @@ fun List<ProductInstanceDetailUiModel>.toCalendarData(hideConsumed: Boolean = tr
     )
   }
 
-  return CalendarData(productsByDate = productsByDate.toImmutableMap())
+  val calendarData = CalendarData(productsByDate = productsByDate.toImmutableMap())
+
+  return CalendarState(
+    startMonth = startMonth,
+    endMonth = endMonth,
+    today = today,
+    calendarData = calendarData,
+  )
 }
 
 private fun LocalDate.minusDays(days: Int): LocalDate {

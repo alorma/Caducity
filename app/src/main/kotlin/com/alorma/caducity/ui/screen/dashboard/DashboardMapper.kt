@@ -10,6 +10,7 @@ import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.YearMonth
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
@@ -21,7 +22,7 @@ class DashboardMapper(
   data class DashboardData(
     val items: ImmutableList<ProductUiModel>,
     val summary: DashboardSummary,
-    val calendarData: CalendarData,
+    val calendarState: CalendarState,
   )
 
   fun mapToDashboardSections(
@@ -34,8 +35,8 @@ class DashboardMapper(
     // Calculate summary from all products (before filtering)
     val summary = calculateSummary(allProducts)
 
-    // Calculate calendar data from all products (before filtering)
-    val calendarData = calculateCalendarData(allProducts)
+    // Calculate calendar state from all products (before filtering)
+    val calendarState = calculateCalendarState(allProducts)
 
     // Apply filters for the list
     val filteredItems = allProducts
@@ -47,7 +48,7 @@ class DashboardMapper(
     return DashboardData(
       items = filteredItems,
       summary = summary,
-      calendarData = calendarData,
+      calendarState = calendarState,
     )
   }
 
@@ -104,12 +105,30 @@ class DashboardMapper(
     }
   }
 
-  private fun calculateCalendarData(
+  private fun calculateCalendarState(
     products: List<ProductUiModel>,
-  ): CalendarData {
+  ): CalendarState {
     val today = appClock.now()
       .toLocalDateTime(TimeZone.currentSystemDefault())
       .date
+
+    // Calculate start and end months for calendar range
+    val currentMonth = YearMonth(today.year, today.month)
+    val currentMonthNum = today.month.ordinal + 1 // Month ordinal is 0-based
+
+    val startMonthNum = currentMonthNum - 1
+    val startMonth = if (startMonthNum >= 1) {
+      YearMonth(today.year, startMonthNum)
+    } else {
+      YearMonth(today.year - 1, 12)
+    }
+
+    val endMonthNum = currentMonthNum + 3
+    val endMonth = if (endMonthNum <= 12) {
+      YearMonth(today.year, endMonthNum)
+    } else {
+      YearMonth(today.year + 1, endMonthNum - 12)
+    }
 
     // Group products by date with most critical status
     val productsByDate = buildMap {
@@ -161,7 +180,14 @@ class DashboardMapper(
       CalendarDateInfo(status, shapePosition)
     }.toImmutableMap()
 
-    return CalendarData(dateWithShapes)
+    val calendarData = CalendarData(dateWithShapes)
+
+    return CalendarState(
+      startMonth = startMonth,
+      endMonth = endMonth,
+      today = today,
+      calendarData = calendarData,
+    )
   }
 
   private fun ProductWithInstances.toUiModel(): ProductUiModel {
