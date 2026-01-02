@@ -11,63 +11,63 @@ val TYPOGRAPHY = Typography()
 val caducityTypography = Typography(
   displayLarge = TYPOGRAPHY.displayLarge.copy(
     fontFamily = AppFonts.googleFlex600,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   displayMedium = TYPOGRAPHY.displayMedium.copy(
     fontFamily = AppFonts.googleFlex600,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   displaySmall = TYPOGRAPHY.displaySmall.copy(
     fontFamily = AppFonts.googleFlex600,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   headlineLarge = TYPOGRAPHY.headlineLarge.copy(
     fontFamily = AppFonts.roboto,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   headlineMedium = TYPOGRAPHY.headlineMedium.copy(
     fontFamily = AppFonts.roboto,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   headlineSmall = TYPOGRAPHY.headlineSmall.copy(
     fontFamily = AppFonts.roboto,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   titleLarge = TYPOGRAPHY.titleLarge.copy(
     fontFamily = AppFonts.roboto,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   titleMedium = TYPOGRAPHY.titleMedium.copy(
     fontFamily = AppFonts.roboto,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   titleSmall = TYPOGRAPHY.titleSmall.copy(
     fontFamily = AppFonts.roboto,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   bodyLarge = TYPOGRAPHY.bodyLarge.copy(
     fontFamily = AppFonts.googleFlex600,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   bodyMedium = TYPOGRAPHY.bodyMedium.copy(
     fontFamily = AppFonts.googleFlex400,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   bodySmall = TYPOGRAPHY.bodySmall.copy(
     fontFamily = AppFonts.googleFlex400,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   labelLarge = TYPOGRAPHY.labelLarge.copy(
     fontFamily = AppFonts.googleFlex600,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   labelMedium = TYPOGRAPHY.labelMedium.copy(
     fontFamily = AppFonts.googleFlex600,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   ),
   labelSmall = TYPOGRAPHY.labelSmall.copy(
     fontFamily = AppFonts.googleFlex600,
-    fontFeatureSettings = "ss02, dlig"
+    fontFeatureSettings = "ss02"
   )
 )
 
