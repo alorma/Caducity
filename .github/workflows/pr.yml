@@ -29,4 +29,4 @@ jobs:
 
       - name: Build Android - PR
         continue-on-error: false
-        run: ./gradlew :composeApp:assembleDebug
+        run: ./gradlew :app:assembleDebug
