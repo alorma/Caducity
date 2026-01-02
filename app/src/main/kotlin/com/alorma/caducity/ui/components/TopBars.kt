@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import com.alorma.caducity.base.ui.theme.preview.AppPreview
+import com.alorma.caducity.ui.theme.preview.AppPreview
 
 @Composable
 fun StyledCenterAlignedTopAppBar(

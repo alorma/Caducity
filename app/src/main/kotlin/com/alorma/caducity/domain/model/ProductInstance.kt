@@ -1,6 +1,6 @@
 package com.alorma.caducity.domain.model
 
-import com.alorma.caducity.base.main.InstanceStatus
+import com.alorma.caducity.domain.model.InstanceStatus
 import kotlin.time.Instant
 
 data class ProductInstance(

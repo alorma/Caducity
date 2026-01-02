@@ -23,13 +23,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.base.main.InstanceStatus
+import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.shape.toCalendarShape
-import com.alorma.caducity.base.ui.theme.CaducityTheme
-import com.alorma.caducity.base.ui.theme.preview.AppPreview
-import com.alorma.caducity.clock.AppClock
+import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.preview.AppPreview
+import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.ui.screen.dashboard.CalendarData
 import com.alorma.caducity.ui.screen.dashboard.CalendarMode
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -39,6 +39,7 @@ import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.now
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -380,7 +381,7 @@ private fun ProductsCalendarPreview() {
   AppPreview {
     // Create empty calendar data for preview
     val emptyCalendarData = CalendarData(
-      productsByDate = kotlinx.collections.immutable.persistentMapOf()
+      productsByDate = persistentMapOf()
     )
     ProductsCalendar(
       calendarData = emptyCalendarData,

@@ -48,8 +48,13 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.theme.AppTheme
-import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
+import com.alorma.caducity.config.navigation.Icon
+import com.alorma.caducity.config.navigation.Label
+import com.alorma.caducity.config.navigation.TopLevelBackStack
+import com.alorma.caducity.config.navigation.TopLevelRoute
+import com.alorma.caducity.ui.theme.AppTheme
+import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.domain.usecase.ProductsListFilter
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductRoute

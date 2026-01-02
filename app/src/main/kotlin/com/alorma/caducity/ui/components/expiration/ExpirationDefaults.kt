@@ -2,8 +2,8 @@ package com.alorma.caducity.ui.components.expiration
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.alorma.caducity.base.main.InstanceStatus
-import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.ui.theme.CaducityTheme
 
 object ExpirationDefaults {
 

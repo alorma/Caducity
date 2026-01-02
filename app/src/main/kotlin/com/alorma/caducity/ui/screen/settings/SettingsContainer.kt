@@ -11,8 +11,8 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.alorma.caducity.BottomSheetSceneStrategy
-import com.alorma.caducity.debug.DebugModeProvider
+import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
+import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.ui.screen.settings.about.AboutScreen
 import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScreen
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsScreen

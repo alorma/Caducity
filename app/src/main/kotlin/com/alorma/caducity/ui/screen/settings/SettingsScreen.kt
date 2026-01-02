@@ -18,8 +18,8 @@ import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.StyledCenterAlignedTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Palette
-import com.alorma.caducity.base.ui.theme.LanguageManager
-import com.alorma.caducity.debug.DebugModeProvider
+import com.alorma.caducity.config.language.LanguageManager
+import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.base.ui.icons.Info
 import com.alorma.caducity.base.ui.icons.Language

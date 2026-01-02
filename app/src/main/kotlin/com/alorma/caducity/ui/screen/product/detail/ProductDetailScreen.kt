@@ -40,14 +40,14 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.alorma.caducity.base.main.InstanceStatus
+import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
-import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.screen.dashboard.CalendarMode
 import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
 import com.alorma.caducity.ui.screen.product.create.CreateInstanceBottomSheet

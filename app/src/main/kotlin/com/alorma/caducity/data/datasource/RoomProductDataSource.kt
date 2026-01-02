@@ -4,13 +4,13 @@ import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.toModel
 import com.alorma.caducity.data.datasource.room.toRoomEntity
 import com.alorma.caducity.domain.ProductDataSource
-import com.alorma.caducity.base.main.InstanceStatus
+import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.Product
 import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.ProductsListFilter
-import com.alorma.caducity.clock.AppClock
+import com.alorma.caducity.config.clock.AppClock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow

@@ -1,6 +1,6 @@
 package com.alorma.caducity.ui.screen.dashboard
 
-import com.alorma.caducity.base.main.InstanceStatus
+import com.alorma.caducity.domain.model.InstanceStatus
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
