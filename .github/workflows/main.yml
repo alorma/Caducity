@@ -29,11 +29,11 @@ jobs:
 
       - name: Build Android - Main
         continue-on-error: false
-        run: ./gradlew :composeApp:assembleDebug
+        run: ./gradlew :app:assembleDebug
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: caducity-debug-apk
-          path: composeApp/build/outputs/apk/debug/*.apk
+          path: app/build/outputs/apk/debug/*.apk
           retention-days: 5
