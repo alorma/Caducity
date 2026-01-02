@@ -1,9 +1,9 @@
 package com.alorma.caducity.ui.screen.dashboard
 
-import com.alorma.caducity.ui.components.shape.ShapePosition
+import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.ProductWithInstances
-import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.ui.components.shape.ShapePosition
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
@@ -62,6 +62,7 @@ class DashboardMapper(
         is ProductUiModel.Empty -> {
           // Empty products don't contribute to summary
         }
+
         is ProductUiModel.WithInstances -> {
           product.instances.forEach { instance ->
             when (instance.status) {
@@ -103,7 +104,13 @@ class DashboardMapper(
     }
   }
 
-  private fun calculateCalendarData(products: List<ProductUiModel>): CalendarData {
+  private fun calculateCalendarData(
+    products: List<ProductUiModel>,
+  ): CalendarData {
+    val today = appClock.now()
+      .toLocalDateTime(TimeZone.currentSystemDefault())
+      .date
+
     // Group products by date with most critical status
     val productsByDate = buildMap {
       products.forEach { product ->
@@ -130,6 +137,11 @@ class DashboardMapper(
           }
         }
       }
+
+      // Ensure today is always in the map, even if no products
+      if (!containsKey(today)) {
+        put(today, null)
+      }
     }
 
     // Calculate shape position for each date
@@ -138,6 +150,8 @@ class DashboardMapper(
       val hasNextDay = productsByDate.containsKey(date.plus(1, DateTimeUnit.DAY))
 
       val shapePosition = when {
+        date == today && !hasPrevDay && !hasNextDay -> ShapePosition.Single
+        date == today && hasPrevDay && !hasNextDay -> ShapePosition.End
         !hasPrevDay && !hasNextDay -> ShapePosition.Single
         !hasPrevDay && hasNextDay -> ShapePosition.Start
         hasPrevDay && !hasNextDay -> ShapePosition.End

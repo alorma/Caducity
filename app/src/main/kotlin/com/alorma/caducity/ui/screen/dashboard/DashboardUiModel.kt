@@ -46,6 +46,6 @@ data class CalendarData(
 
 @Stable
 data class CalendarDateInfo(
-  val status: InstanceStatus,
+  val status: InstanceStatus?,
   val shapePosition: ShapePosition,
 )
