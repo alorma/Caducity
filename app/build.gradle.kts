@@ -58,7 +58,7 @@ ksp {
 }
 
 dependencies {
-  implementation(projects.base.ui.icons)
+  implementation(projects.icons)
 
   // Compose BOM
   implementation(platform(libs.androidx.compose.bom))
