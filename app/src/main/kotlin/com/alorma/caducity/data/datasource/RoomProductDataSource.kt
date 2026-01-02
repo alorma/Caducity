@@ -1,7 +1,6 @@
 package com.alorma.caducity.data.datasource
 
 import com.alorma.caducity.data.datasource.room.AppDatabase
-import com.alorma.caducity.data.datasource.room.ProductInstanceRoomEntity
 import com.alorma.caducity.data.datasource.room.toModel
 import com.alorma.caducity.data.datasource.room.toRoomEntity
 import com.alorma.caducity.domain.ProductDataSource
@@ -11,14 +10,13 @@ import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.ProductsListFilter
-import com.alorma.caducity.time.clock.AppClock
+import com.alorma.caducity.base.main.clock.AppClock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
 
 class RoomProductDataSource(

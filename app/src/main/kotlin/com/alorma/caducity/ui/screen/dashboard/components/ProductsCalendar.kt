@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.dashboard.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -27,7 +29,7 @@ import com.alorma.caducity.base.ui.components.shape.ShapePosition
 import com.alorma.caducity.base.ui.components.shape.toCalendarShape
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
-import com.alorma.caducity.time.clock.AppClock
+import com.alorma.caducity.base.main.clock.AppClock
 import com.alorma.caducity.ui.screen.dashboard.CalendarData
 import com.alorma.caducity.ui.screen.dashboard.CalendarMode
 import com.kizitonwose.calendar.compose.HorizontalCalendar
@@ -35,6 +37,7 @@ import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import com.kizitonwose.calendar.core.DayPosition
+import com.kizitonwose.calendar.core.now
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DayOfWeek
@@ -115,10 +118,15 @@ fun ProductsCalendar(
           )
         },
         dayContent = { weekDay ->
-          DayContentWrapper(
-            date = weekDay.date,
-            calendarData = calendarData,
-            onDateClick = onDateClick,
+          val date = weekDay.date
+          val dateInfo = calendarData.productsByDate[date]
+
+          DayContent(
+            today = today,
+            date = date,
+            status = dateInfo?.status,
+            shapePosition = dateInfo?.shapePosition ?: ShapePosition.None,
+            onClick = onDateClick,
             isOutDay = false,
           )
         },
@@ -158,11 +166,16 @@ fun ProductsCalendar(
           )
         },
         dayContent = { calendarDay ->
-          DayContentWrapper(
-            date = calendarDay.date,
+          val date = calendarDay.date
+          val dateInfo = calendarData.productsByDate[date]
+
+          DayContent(
+            today = today,
+            date = date,
+            status = dateInfo?.status,
+            shapePosition = dateInfo?.shapePosition ?: ShapePosition.None,
+            onClick = onDateClick,
             isOutDay = calendarDay.position != DayPosition.MonthDate,
-            calendarData = calendarData,
-            onDateClick = onDateClick,
           )
         },
       )
@@ -266,26 +279,8 @@ private fun CalendarHeader(
 }
 
 @Composable
-private fun DayContentWrapper(
-  date: LocalDate,
-  calendarData: CalendarData,
-  onDateClick: (LocalDate) -> Unit,
-  isOutDay: Boolean,
-) {
-  val kotlinDate = LocalDate(date.year, date.month, date.day)
-  val dateInfo = calendarData.productsByDate[kotlinDate]
-
-  DayContent(
-    date = date,
-    status = dateInfo?.status,
-    shapePosition = dateInfo?.shapePosition ?: ShapePosition.None,
-    isOutDay = isOutDay,
-    onClick = { onDateClick(it) },
-  )
-}
-
-@Composable
 private fun DayContent(
+  today: LocalDate,
   date: LocalDate,
   status: InstanceStatus?,
   shapePosition: ShapePosition,
@@ -318,23 +313,65 @@ private fun DayContent(
     }
   }
 
-  Box(
-    modifier = modifier
-      .aspectRatio(1f)
-      .padding(2.dp)
-      .clip(shapePosition.toCalendarShape())
-      .background(backgroundColor)
-      .clickable { onClick(date) },
-    contentAlignment = Alignment.Center,
-  ) {
-    Text(
-      text = date.day.toString(),
-      style = CaducityTheme.typography.bodyMedium,
-      textAlign = TextAlign.Center,
-      color = textColor,
-      fontWeight = if (status != null) FontWeight.Bold else FontWeight.Normal,
-    )
+  Box(modifier = modifier) {
+    if (today == date) {
+      Box(
+        modifier = Modifier
+          .aspectRatio(1f)
+          .padding(2.dp)
+          .clip(shapePosition.toCalendarShape())
+          .border(
+            width = 2.dp,
+            color = backgroundColor,
+            shape = shapePosition.toCalendarShape(),
+          )
+          .clickable { onClick(date) }
+          .padding(2.dp),
+        contentAlignment = Alignment.Center,
+      ) {
+        Box(
+          modifier = Modifier
+            .aspectRatio(1f)
+            .clip(shapePosition.toCalendarShape())
+            .background(backgroundColor),
+          contentAlignment = Alignment.Center,
+        ) {
+          DayText(
+            dayText = date.day.toString(),
+            textColor = textColor,
+          )
+        }
+      }
+    } else {
+      Box(
+        modifier = Modifier
+          .aspectRatio(1f)
+          .padding(2.dp)
+          .clip(shapePosition.toCalendarShape())
+          .background(backgroundColor)
+          .clickable { onClick(date) },
+        contentAlignment = Alignment.Center,
+      ) {
+        DayText(
+          dayText = date.day.toString(),
+          textColor = textColor,
+        )
+      }
+    }
   }
+}
+
+@Composable
+private fun DayText(
+  dayText: String,
+  textColor: Color,
+) {
+  Text(
+    text = dayText,
+    style = CaducityTheme.typography.bodyMedium,
+    textAlign = TextAlign.Center,
+    color = textColor,
+  )
 }
 
 @Preview
@@ -348,6 +385,22 @@ private fun ProductsCalendarPreview() {
     ProductsCalendar(
       calendarData = emptyCalendarData,
       onDateClick = {},
+    )
+  }
+}
+
+@Preview
+@Composable
+private fun DayContentPreview() {
+  AppPreview {
+    DayContent(
+      modifier = Modifier.size(56.dp),
+      date = LocalDate.now(),
+      today = LocalDate.now(),
+      status = InstanceStatus.Expired,
+      shapePosition = ShapePosition.Start,
+      isOutDay = false,
+      onClick = {},
     )
   }
 }

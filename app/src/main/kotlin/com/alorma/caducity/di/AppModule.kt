@@ -1,5 +1,6 @@
 package com.alorma.caducity.di
 
+import com.alorma.caducity.base.main.clock.clockModule
 import com.alorma.caducity.base.ui.theme.di.themeModule
 import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.domain.domainModule
@@ -11,8 +12,6 @@ import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
-import com.alorma.caducity.time.clock.AppClock
-import com.alorma.caducity.time.clock.KotlinAppClock
 import com.alorma.caducity.ui.screen.dashboard.DashboardMapper
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfiguration
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfigurationImpl
@@ -35,6 +34,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val appModule = module {
+  includes(clockModule)
   includes(platformModule)
   includes(themeModule)
   includes(dataModule)
@@ -43,8 +43,6 @@ val appModule = module {
   single { Settings() }
 
   singleOf(::DashboardUiConfigurationImpl) bind DashboardUiConfiguration::class
-
-  single<AppClock> { KotlinAppClock() }
 
   factoryOf(::RelativeTimeFormatter)
 

@@ -27,7 +27,7 @@ import com.alorma.caducity.base.ui.components.StatusBadge
 import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
-import com.alorma.caducity.time.clock.AppClock
+import com.alorma.caducity.base.main.clock.AppClock
 import com.alorma.caducity.ui.screen.dashboard.components.productListWithInstancesPreview
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
