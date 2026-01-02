@@ -1,4 +1,4 @@
-package com.alorma.caducity.base.ui.components
+package com.alorma.caducity.ui.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope

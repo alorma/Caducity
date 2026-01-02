@@ -1,6 +1,6 @@
 package com.alorma.caducity.di
 
-import com.alorma.caducity.base.main.clock.clockModule
+import com.alorma.caducity.clock.clockModule
 import com.alorma.caducity.base.ui.theme.di.themeModule
 import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.domain.domainModule

@@ -1,4 +1,4 @@
-package com.alorma.caducity.base.ui.components.expiration
+package com.alorma.caducity.ui.components.expiration
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color

@@ -23,11 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.base.ui.components.StatusBadge
-import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
+import com.alorma.caducity.ui.components.StatusBadge
+import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.base.ui.theme.CaducityTheme
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
-import com.alorma.caducity.base.main.clock.AppClock
+import com.alorma.caducity.clock.AppClock
 import com.alorma.caducity.ui.screen.dashboard.components.productListWithInstancesPreview
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime

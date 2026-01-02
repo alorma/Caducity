@@ -61,7 +61,6 @@ dependencies {
   implementation(projects.base.main)
   implementation(projects.base.ui.theme)
   implementation(projects.base.ui.icons)
-  implementation(projects.base.ui.components)
 
   // Compose BOM
   implementation(platform(libs.androidx.compose.bom))

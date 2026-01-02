@@ -1,4 +1,4 @@
-package com.alorma.caducity.base.main.clock
+package com.alorma.caducity.clock
 
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant

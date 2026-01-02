@@ -1,4 +1,4 @@
-package com.alorma.caducity.base.ui.components.shape
+package com.alorma.caducity.ui.components.shape
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable

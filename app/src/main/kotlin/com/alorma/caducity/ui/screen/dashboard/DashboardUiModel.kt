@@ -1,15 +1,11 @@
 package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.compose.runtime.Stable
-import com.alorma.caducity.base.ui.components.shape.ShapePosition
+import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.base.main.InstanceStatus
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Duration
-import kotlin.time.Instant
 
 @Stable
 sealed interface ProductUiModel {

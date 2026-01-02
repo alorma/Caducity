@@ -22,7 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
-import com.alorma.caducity.base.ui.components.shape.ShapePosition
+import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.outlined.Leaf
 import com.alorma.caducity.base.ui.theme.CaducityTheme

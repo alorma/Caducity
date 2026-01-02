@@ -13,11 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,10 +41,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.base.main.InstanceStatus
-import com.alorma.caducity.base.ui.components.StatusBadge
-import com.alorma.caducity.base.ui.components.StatusBadgeSize
+import com.alorma.caducity.ui.components.StatusBadge
+import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.R
-import com.alorma.caducity.base.ui.components.StyledTopAppBar
+import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.theme.CaducityTheme
@@ -54,7 +52,6 @@ import com.alorma.caducity.ui.screen.dashboard.CalendarMode
 import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
 import com.alorma.caducity.ui.screen.product.create.CreateInstanceBottomSheet
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
 import androidx.compose.ui.res.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
