@@ -1,9 +1,8 @@
-package com.alorma.caducity.ui.screen.dashboard.components
+package com.alorma.caducity.config.language
 
-import com.alorma.caducity.config.language.LanguageManager
-import java.time.format.TextStyle
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.Month
+import java.time.format.TextStyle
 
 class LocalizedDateFormatter(
   private val languageManager: LanguageManager,

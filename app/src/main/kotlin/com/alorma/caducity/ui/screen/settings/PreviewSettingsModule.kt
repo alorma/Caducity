@@ -1,7 +1,7 @@
 package com.alorma.caducity.ui.screen.settings
 
+import com.alorma.caducity.config.version.AppVersionProvider
 import com.alorma.caducity.feature.notification.NotificationDebugHelper
-import com.alorma.caducity.feature.version.AppVersionProvider
 import org.koin.dsl.module
 
 val previewSettingsModule = module {

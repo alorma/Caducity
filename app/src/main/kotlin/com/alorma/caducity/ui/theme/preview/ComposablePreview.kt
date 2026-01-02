@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.alorma.caducity.config.clock.clockModule
+import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.config.clock.KotlinAppClock
+import com.alorma.caducity.config.language.LanguageManager
 import com.alorma.caducity.ui.theme.AppTheme
 import com.alorma.caducity.ui.theme.colors.ExpirationColorSchemeType
 import com.alorma.caducity.ui.theme.LocalSystemBarsAppearance
@@ -19,6 +21,7 @@ import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import java.util.Locale
 
 @Suppress("ModifierRequired")
 @Composable
@@ -41,7 +44,8 @@ fun AppPreview(
 }
 
 val themePreviewModule = module {
-  includes(clockModule)
+  single<AppClock> { KotlinAppClock() }
+
   single {
     object : ThemePreferences {
       override val themeMode: MutableState<ThemeMode> = mutableStateOf(ThemeMode.SYSTEM)
@@ -77,6 +81,23 @@ val themePreviewModule = module {
 
     }
   } bind ThemePreferences::class
+
+  single {
+    object: LanguageManager() {
+      override fun getLocale(): Locale {
+        return Locale.ENGLISH
+      }
+
+      override fun applyLocale(locale: Locale) {
+
+      }
+
+      override fun loadSupportedLocales(): List<Locale> {
+        return emptyList()
+      }
+
+    }
+  } bind LanguageManager::class
 
   singleOf(::CaducityBaseExpirationColors) {
     bind<BaseExpirationColors>()

@@ -1,7 +1,6 @@
 package com.alorma.caducity.di
 
-import com.alorma.caducity.config.clock.clockModule
-import com.alorma.caducity.ui.theme.di.themeModule
+import com.alorma.caducity.config.configModule
 import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.domain.domainModule
 import com.alorma.caducity.domain.usecase.AddInstanceToProductUseCase
@@ -16,7 +15,6 @@ import com.alorma.caducity.ui.screen.dashboard.DashboardMapper
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfiguration
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfigurationImpl
 import com.alorma.caducity.ui.screen.dashboard.DashboardViewModel
-import com.alorma.caducity.ui.screen.dashboard.components.LocalizedDateFormatter
 import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
 import com.alorma.caducity.ui.screen.product.create.FutureDateSelectableDates
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailMapper
@@ -24,6 +22,7 @@ import com.alorma.caducity.ui.screen.product.detail.ProductDetailViewModel
 import com.alorma.caducity.ui.screen.products.ProductsListMapper
 import com.alorma.caducity.ui.screen.products.ProductsListViewModel
 import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
+import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
@@ -34,7 +33,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val appModule = module {
-  includes(clockModule)
+  includes(configModule)
   includes(platformModule)
   includes(themeModule)
   includes(dataModule)
@@ -78,5 +77,4 @@ val appModule = module {
     }
   }
   singleOf(::FutureDateSelectableDates)
-  singleOf(::LocalizedDateFormatter)
 }

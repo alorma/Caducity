@@ -1,49 +1,14 @@
 package com.alorma.caducity.ui.screen.dashboard.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
-import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.components.shape.toCalendarShape
-import com.alorma.caducity.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.theme.preview.AppPreview
 import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.ui.components.calendar.CaducityMonthCalendar
+import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
 import com.alorma.caducity.ui.screen.dashboard.CalendarData
 import com.alorma.caducity.ui.screen.dashboard.CalendarMode
-import com.kizitonwose.calendar.compose.HorizontalCalendar
-import com.kizitonwose.calendar.compose.WeekCalendar
-import com.kizitonwose.calendar.compose.rememberCalendarState
-import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
-import com.kizitonwose.calendar.core.DayPosition
-import com.kizitonwose.calendar.core.now
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.toLocalDateTime
@@ -76,332 +41,27 @@ fun ProductsCalendar(
     YearMonth(today.year + 1, endMonthNum - 12)
   }
 
-  when (calendarMode) {
-    CalendarMode.WEEK -> {
-      val weekCalendarState = rememberWeekCalendarState(
-        startDate = startMonth.firstDay,
-        endDate = endMonth.lastDay,
-        firstDayOfWeek = appClock.now()
-          .toLocalDateTime(TimeZone.currentSystemDefault())
-          .dayOfWeek,
-      )
-
-      WeekCalendar(
-        modifier = modifier,
-        state = weekCalendarState,
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        weekHeader = { week ->
-          val daysOfWeek = remember {
-            week.days.map { weekDay ->
-              weekDay.date.dayOfWeek
-            }.toImmutableList()
-          }
-
-          val weekDates = remember {
-            week.days.map { weekDay ->
-              weekDay.date
-            }.toImmutableList()
-          }
-
-          val firstMonth = week.days.first().date.month
-          val lastMonth = week.days.last().date.month
-          val firstYear = week.days.first().date.year
-          val lastYear = week.days.last().date.year
-
-          CalendarHeader(
-            firstMonth = firstMonth,
-            secondMonth = lastMonth,
-            daysOfWeek = daysOfWeek,
-            weekDates = weekDates,
-            highlightToday = true,
-            firstYear = firstYear,
-            secondYear = lastYear,
-          )
-        },
-        dayContent = { weekDay ->
-          val date = weekDay.date
-          val dateInfo = calendarData.productsByDate[date]
-
-          DayContent(
-            today = today,
-            date = date,
-            status = dateInfo?.status,
-            shapePosition = dateInfo?.shapePosition ?: ShapePosition.None,
-            onClick = onDateClick,
-            isOutDay = false,
-          )
-        },
-      )
-    }
-
-    CalendarMode.MONTH -> {
-
-      val calendarState = rememberCalendarState(
-        startMonth = startMonth,
-        endMonth = endMonth,
-        firstVisibleMonth = currentMonth,
-      )
-
-      HorizontalCalendar(
-        modifier = modifier.fillMaxWidth(),
-        state = calendarState,
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        monthHeader = { calendarMonth ->
-          val daysOfWeek = remember {
-            calendarMonth.weekDays.first().map { weekDay ->
-              weekDay.date.dayOfWeek
-            }.toImmutableList()
-          }
-
-          val firstMonth = calendarMonth.yearMonth.month
-          val lastMonth = calendarMonth.weekDays.last().last().date.month
-          val firstYear = calendarMonth.weekDays.first().first().date.year
-          val lastYear = calendarMonth.weekDays.last().last().date.year
-
-          CalendarHeader(
-            firstMonth = firstMonth,
-            secondMonth = lastMonth,
-            daysOfWeek = daysOfWeek,
-            firstYear = firstYear,
-            secondYear = lastYear,
-          )
-        },
-        dayContent = { calendarDay ->
-          val date = calendarDay.date
-          val dateInfo = calendarData.productsByDate[date]
-
-          DayContent(
-            today = today,
-            date = date,
-            status = dateInfo?.status,
-            shapePosition = dateInfo?.shapePosition ?: ShapePosition.None,
-            onClick = onDateClick,
-            isOutDay = calendarDay.position != DayPosition.MonthDate,
-          )
-        },
-      )
-    }
-  }
-}
-
-@Composable
-private fun CalendarHeader(
-  firstMonth: Month,
-  secondMonth: Month,
-  daysOfWeek: ImmutableList<DayOfWeek>,
-  modifier: Modifier = Modifier,
-  weekDates: ImmutableList<LocalDate>? = null,
-  highlightToday: Boolean = false,
-  firstYear: Int? = null,
-  secondYear: Int? = null,
-  dateFormatter: LocalizedDateFormatter = koinInject(),
-  appClock: AppClock = koinInject(),
-) {
-  val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-
-  Column(
-    modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(4.dp),
-  ) {
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 12.dp, horizontal = 24.dp),
-      horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-      Column(horizontalAlignment = Alignment.Start) {
-        if (firstYear != null) {
-          Text(
-            text = firstYear.toString(),
-            style = CaducityTheme.typography.labelLarge,
-            color = CaducityTheme.colorScheme.onSurface.copy(
-              alpha = CaducityTheme.dims.dim2,
-            ),
-          )
-        }
-        Text(
-          text = dateFormatter.getMonthName(firstMonth),
-          style = CaducityTheme.typography.titleMedium,
-          color = CaducityTheme.colorScheme.onSurface.copy(
-            alpha = CaducityTheme.dims.dim1,
-          ),
-        )
-      }
-
-      if (secondMonth != firstMonth) {
-        Column(horizontalAlignment = Alignment.End) {
-          if (secondYear != null) {
-            Text(
-              text = secondYear.toString(),
-              style = CaducityTheme.typography.labelLarge,
-              color = CaducityTheme.colorScheme.onSurface.copy(
-                alpha = CaducityTheme.dims.dim2,
-              ),
-            )
-          }
-          Text(
-            text = dateFormatter.getMonthName(secondMonth),
-            style = CaducityTheme.typography.titleMedium,
-            color = CaducityTheme.colorScheme.onSurface.copy(
-              alpha = CaducityTheme.dims.dim1,
-            ),
-          )
-        }
-      }
-    }
-
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-      daysOfWeek.forEachIndexed { index, dayOfWeek ->
-        // Check if today is actually in this week by comparing dates, not just day names
-        val isToday = if (highlightToday && weekDates != null) {
-          weekDates.getOrNull(index) == today
-        } else {
-          false
-        }
-
-        Text(
-          text = dateFormatter.getDayOfWeekAbbreviation(dayOfWeek),
-          style = CaducityTheme.typography.labelSmall,
-          modifier = Modifier.weight(1f),
-          textAlign = TextAlign.Center,
-          color = if (isToday) {
-            CaducityTheme.colorScheme.primary
-          } else {
-            CaducityTheme.colorScheme.onSurface
-          },
-          fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun DayContent(
-  today: LocalDate,
-  date: LocalDate,
-  status: InstanceStatus?,
-  shapePosition: ShapePosition,
-  isOutDay: Boolean,
-  onClick: (LocalDate) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-
-  val backgroundColor = if (status != null) {
-    val color = ExpirationDefaults.getColors(status).container
-
-    if (isOutDay) {
-      color.copy(alpha = CaducityTheme.dims.dim2)
-    } else {
-      color
-    }
-  } else {
-    Color.Transparent
-  }
-
-  val textColor = if (status != null) {
-    ExpirationDefaults.getColors(status).onContainer
-  } else {
-    CaducityTheme.colorScheme.onSurface
-  }.let { color ->
-    if (isOutDay) {
-      color.copy(alpha = CaducityTheme.dims.dim2)
-    } else {
-      color
-    }
-  }
-
   Box(modifier = modifier) {
-    if (today == date) {
-      Box(
-        modifier = Modifier
-          .aspectRatio(1f)
-          .padding(2.dp)
-          .clip(shapePosition.toCalendarShape())
-          .border(
-            width = 2.dp,
-            color = backgroundColor,
-            shape = shapePosition.toCalendarShape(),
-          )
-          .clickable { onClick(date) }
-          .padding(2.dp),
-        contentAlignment = Alignment.Center,
-      ) {
-        Box(
-          modifier = Modifier
-            .aspectRatio(1f)
-            .clip(shapePosition.toCalendarShape())
-            .background(backgroundColor),
-          contentAlignment = Alignment.Center,
-        ) {
-          DayText(
-            dayText = date.day.toString(),
-            textColor = textColor,
-          )
-        }
+    when (calendarMode) {
+      CalendarMode.WEEK -> {
+        CaducityWeekCalendar(
+          startMonth = startMonth,
+          endMonth = endMonth,
+          today = today,
+          calendarData = calendarData,
+          onDateClick = onDateClick,
+        )
       }
-    } else {
-      Box(
-        modifier = Modifier
-          .aspectRatio(1f)
-          .padding(2.dp)
-          .clip(shapePosition.toCalendarShape())
-          .background(backgroundColor)
-          .clickable { onClick(date) },
-        contentAlignment = Alignment.Center,
-      ) {
-        DayText(
-          dayText = date.day.toString(),
-          textColor = textColor,
+
+      CalendarMode.MONTH -> {
+        CaducityMonthCalendar(
+          startMonth = startMonth,
+          endMonth = endMonth,
+          today = today,
+          calendarData = calendarData,
+          onDateClick = onDateClick,
         )
       }
     }
-  }
-}
-
-@Composable
-private fun DayText(
-  dayText: String,
-  textColor: Color,
-) {
-  Text(
-    text = dayText,
-    style = CaducityTheme.typography.bodyMedium,
-    textAlign = TextAlign.Center,
-    color = textColor,
-  )
-}
-
-@Preview
-@Composable
-private fun ProductsCalendarPreview() {
-  AppPreview {
-    // Create empty calendar data for preview
-    val emptyCalendarData = CalendarData(
-      productsByDate = persistentMapOf()
-    )
-    ProductsCalendar(
-      calendarData = emptyCalendarData,
-      onDateClick = {},
-    )
-  }
-}
-
-@Preview
-@Composable
-private fun DayContentPreview() {
-  AppPreview {
-    DayContent(
-      modifier = Modifier.size(56.dp),
-      date = LocalDate.now(),
-      today = LocalDate.now(),
-      status = InstanceStatus.Expired,
-      shapePosition = ShapePosition.Start,
-      isOutDay = false,
-      onClick = {},
-    )
   }
 }
