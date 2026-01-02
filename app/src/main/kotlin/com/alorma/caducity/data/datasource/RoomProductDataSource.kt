@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Duration.Companion.days
 
 class RoomProductDataSource(
@@ -97,17 +98,24 @@ class RoomProductDataSource(
 
   private fun statusToDateRange(status: InstanceStatus): Pair<Long, Long> {
     val now = appClock.now()
-    val nowMillis = now.toEpochMilliseconds()
     val expiringSoonMillis =
       now.plus(expirationThresholds.soonExpiringThreshold).toEpochMilliseconds()
 
+    // Calculate start of today for consistent date boundary handling
+    val todayStartMillis = now.toLocalDateTime(TimeZone.currentSystemDefault())
+      .date
+      .atStartOfDayIn(TimeZone.currentSystemDefault())
+      .toEpochMilliseconds()
+
     return when (status) {
       InstanceStatus.Expired -> {
-        Pair(0L, nowMillis) // From epoch to now
+        // From epoch to yesterday (before today starts) - excludes items expiring today
+        Pair(0L, todayStartMillis)
       }
 
       InstanceStatus.ExpiringSoon -> {
-        Pair(nowMillis, expiringSoonMillis) // From now to (now + threshold)
+        // From today (start of day) to (now + threshold) - includes items expiring today
+        Pair(todayStartMillis, expiringSoonMillis)
       }
 
       InstanceStatus.Fresh -> {
