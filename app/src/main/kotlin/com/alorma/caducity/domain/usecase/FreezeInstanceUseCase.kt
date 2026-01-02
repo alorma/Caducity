@@ -1,7 +1,7 @@
 package com.alorma.caducity.domain.usecase
 
 import com.alorma.caducity.domain.ProductDataSource
-import com.alorma.caducity.time.clock.AppClock
+import com.alorma.caducity.base.main.clock.AppClock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant

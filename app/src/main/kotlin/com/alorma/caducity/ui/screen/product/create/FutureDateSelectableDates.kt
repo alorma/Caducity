@@ -2,7 +2,7 @@ package com.alorma.caducity.ui.screen.product.create
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates
-import com.alorma.caducity.time.clock.AppClock
+import com.alorma.caducity.base.main.clock.AppClock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime

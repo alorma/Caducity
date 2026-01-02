@@ -30,6 +30,8 @@ kotlin {
 }
 
 dependencies {
+  implementation(projects.base.main)
+
   // Compose BOM
   implementation(platform(libs.androidx.compose.bom))
   implementation(libs.androidx.compose.runtime)
