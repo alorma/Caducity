@@ -106,5 +106,11 @@
     <string name="language_english">English</string>
     <string name="language_spanish">Español</string>
     <string name="language_catalan">Català</string>
+
+    <!-- Instance action errors -->
+    <string name="error_instance_not_found">Instance not found</string>
+    <string name="error_cannot_freeze_expired">Cannot freeze expired items</string>
+    <string name="error_cannot_consume_expired">It is not safe to consume expired products</string>
+
     <string name="app_name">Caducity</string>
 </resources>
