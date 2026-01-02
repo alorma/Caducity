@@ -40,7 +40,7 @@ sealed class InstanceStatus {
         .date
 
       return when {
-        expirationLocalDate <= today -> Expired
+        expirationLocalDate < today -> Expired
         expirationLocalDate < expiringSoonDate -> ExpiringSoon
         else -> Fresh
       }
