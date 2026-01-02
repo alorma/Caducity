@@ -9,7 +9,7 @@ import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.config.language.AndroidLanguageManager
 import com.alorma.caducity.feature.notification.notificationsModule
 import com.alorma.caducity.config.version.AndroidAppVersionProvider
-import com.alorma.caducity.feature.version.AppVersionProvider
+import com.alorma.caducity.config.version.AppVersionProvider
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.bind
@@ -28,15 +28,9 @@ val platformModule: Module = module {
     ).build()
   }
 
-  singleOf(::AndroidAppVersionProvider) {
-    bind<AppVersionProvider>()
-  }
 
   singleOf(::AndroidDebugModeProvider) {
     bind<DebugModeProvider>()
   }
 
-  singleOf(::AndroidLanguageManager) {
-    bind<LanguageManager>()
-  }
 }

@@ -8,16 +8,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
-import com.alorma.caducity.ui.theme.preview.AppPreview
+import com.alorma.caducity.config.version.AppVersionProvider
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.previewSettingsModule
-import com.alorma.caducity.feature.version.AppVersionProvider
-import androidx.compose.ui.res.stringResource
+import com.alorma.caducity.ui.theme.preview.AppPreview
 import org.koin.compose.koinInject
 
 @Composable
