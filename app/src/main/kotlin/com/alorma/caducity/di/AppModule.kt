@@ -38,6 +38,7 @@ val appModule = module {
   includes(themeModule)
   includes(dataModule)
   includes(domainModule)
+  includes(fireAndForgetModule)
 
   single { Settings() }
 
