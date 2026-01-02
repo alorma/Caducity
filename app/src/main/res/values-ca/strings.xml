@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="expiration_status_badge_fresh">Fresc</string>
+    <string name="expiration_status_badge_expiring_soon">Pròxim</string>
+    <string name="expiration_status_badge_expired">Caducat</string>
+    <string name="expiration_status_badge_frozen">Congelat</string>
+    <string name="expiration_status_badge_consumed">Consumit</string>
 
     <string-array name="day_names">
         <item>Dil</item>

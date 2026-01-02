@@ -22,7 +22,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.alorma.caducity.base.ui.components.StyledTopAppBar
+import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.CalendarCollapse
 import com.alorma.caducity.base.ui.icons.CalendarExpand

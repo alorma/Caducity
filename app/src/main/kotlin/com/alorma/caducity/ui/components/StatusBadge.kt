@@ -1,4 +1,4 @@
-package com.alorma.caducity.base.ui.components
+package com.alorma.caducity.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -18,7 +18,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.main.InstanceStatus
-import com.alorma.caducity.base.ui.components.expiration.ExpirationDefaults
+import com.alorma.caducity.base.ui.components.R
+import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 
 enum class StatusBadgeSize {
   Small,

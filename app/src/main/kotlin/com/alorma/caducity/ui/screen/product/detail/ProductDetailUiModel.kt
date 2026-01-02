@@ -2,7 +2,7 @@ package com.alorma.caducity.ui.screen.product.detail
 
 import androidx.compose.runtime.Stable
 import com.alorma.caducity.base.main.InstanceStatus
-import com.alorma.caducity.base.ui.components.shape.ShapePosition
+import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.dashboard.CalendarData
 import com.alorma.caducity.ui.screen.dashboard.CalendarDateInfo
 import kotlinx.collections.immutable.toImmutableMap

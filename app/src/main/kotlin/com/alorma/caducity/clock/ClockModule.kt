@@ -1,4 +1,4 @@
-package com.alorma.caducity.base.main.clock
+package com.alorma.caducity.clock
 
 import org.koin.dsl.module
 

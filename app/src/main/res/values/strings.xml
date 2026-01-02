@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <string name="expiration_status_badge_expired">Expired</string>
+    <string name="expiration_status_badge_expiring_soon">Expiring soon</string>
+    <string name="expiration_status_badge_fresh">Fresh</string>
+    <string name="expiration_status_badge_frozen">Frozen</string>
+    <string name="expiration_status_badge_consumed">Consumed</string>
     <string-array name="day_names">
         <item>Mon</item>
         <item>Tue</item>
@@ -15,7 +19,7 @@
     <string name="products_screen_title">Products</string>
     <string name="dashboard_action_collapse">Collapse</string>
     <string name="dashboard_action_expand">Expand</string>
-    <string name="dashboard_search_placeholder">Search products...</string>
+    <string name="dashboard_search_placeholder">Search products…</string>
     <string name="dashboard_filter_fresh">Fresh</string>
     <string name="dashboard_filter_expiring_soon">Expiring</string>
     <string name="dashboard_filter_expired">Expired</string>

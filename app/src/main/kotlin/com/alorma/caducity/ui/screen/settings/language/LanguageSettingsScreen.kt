@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.theme.LanguageManager
-import com.alorma.caducity.base.ui.components.shape.ShapePosition
+import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.base.ui.icons.Check
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup

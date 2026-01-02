@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.theme.preview.AppPreview
 import com.alorma.caducity.notification.ExpirationNotificationHelper
-import com.alorma.caducity.base.ui.components.shape.ShapePosition
+import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.screen.settings.previewSettingsModule
