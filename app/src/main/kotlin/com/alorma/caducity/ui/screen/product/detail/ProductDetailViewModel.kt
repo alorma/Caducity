@@ -2,13 +2,18 @@ package com.alorma.caducity.ui.screen.product.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.domain.model.InstanceActionError
+import com.alorma.caducity.domain.model.InstanceActionResult
 import com.alorma.caducity.domain.usecase.AddInstanceToProductUseCase
 import com.alorma.caducity.domain.usecase.ConsumeInstanceUseCase
 import com.alorma.caducity.domain.usecase.DeleteInstanceUseCase
 import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -26,6 +31,9 @@ class ProductDetailViewModel(
   private val consumeInstanceUseCase: ConsumeInstanceUseCase,
   private val freezeInstanceUseCase: FreezeInstanceUseCase,
 ) : ViewModel() {
+
+  private val _actionError = MutableSharedFlow<InstanceActionError>()
+  val actionError: SharedFlow<InstanceActionError> = _actionError.asSharedFlow()
 
   val state: StateFlow<ProductDetailState> = obtainProductDetailUseCase
     .obtainProductDetail(productId)
@@ -82,7 +90,10 @@ class ProductDetailViewModel(
 
   fun consumeInstance(instanceId: String) {
     viewModelScope.launch {
-      consumeInstanceUseCase.consumeInstance(instanceId)
+      val result = consumeInstanceUseCase.consumeInstance(instanceId)
+      if (result is InstanceActionResult.Failure) {
+        _actionError.emit(result.error)
+      }
     }
   }
 
@@ -91,7 +102,10 @@ class ProductDetailViewModel(
       if (isFrozen) {
         freezeInstanceUseCase.unfreezeInstance(instanceId)
       } else {
-        freezeInstanceUseCase.freezeInstance(instanceId, expirationDate)
+        val result = freezeInstanceUseCase.freezeInstance(instanceId, expirationDate)
+        if (result is InstanceActionResult.Failure) {
+          _actionError.emit(result.error)
+        }
       }
     }
   }

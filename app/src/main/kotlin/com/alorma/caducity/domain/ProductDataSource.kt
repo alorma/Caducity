@@ -18,6 +18,8 @@ interface ProductDataSource {
 
   suspend fun deleteInstance(instanceId: String)
 
+  suspend fun getInstance(instanceId: String): ProductInstance?
+
   suspend fun markInstanceAsConsumed(instanceId: String)
 
   suspend fun freezeInstance(instanceId: String, remainingDays: Int)

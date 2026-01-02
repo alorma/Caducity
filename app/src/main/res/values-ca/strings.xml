@@ -95,5 +95,11 @@
     <string name="language_english">English</string>
     <string name="language_spanish">Español</string>
     <string name="language_catalan">Català</string>
+
+    <!-- Instance action errors -->
+    <string name="error_instance_not_found">Instància no trobada</string>
+    <string name="error_cannot_freeze_expired">No es poden congelar articles caducats</string>
+    <string name="error_cannot_consume_expired">No és segur consumir productes caducats</string>
+
     <string name="app_name">Caducity</string>
 </resources>

@@ -154,6 +154,10 @@ class RoomProductDataSource(
     productDao.deleteProductInstance(instanceId)
   }
 
+  override suspend fun getInstance(instanceId: String): ProductInstance? {
+    return productDao.getProductInstance(instanceId)?.toModel(appClock, expirationThresholds)
+  }
+
   override suspend fun markInstanceAsConsumed(instanceId: String) {
     productDao.getProductInstance(instanceId)?.let { instance ->
       val updatedInstance = instance.copy(

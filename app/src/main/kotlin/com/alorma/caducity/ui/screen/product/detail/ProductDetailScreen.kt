@@ -26,24 +26,30 @@ import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alorma.caducity.R
+import com.alorma.caducity.domain.model.InstanceActionError
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
-import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
@@ -65,6 +71,24 @@ fun ProductDetailScreen(
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
   var showInstanceBottomSheet by remember { mutableStateOf(false) }
+  val snackbarHostState = remember { SnackbarHostState() }
+
+  // Error message strings
+  val errorInstanceNotFound = stringResource(R.string.error_instance_not_found)
+  val errorCannotFreezeExpired = stringResource(R.string.error_cannot_freeze_expired)
+  val errorCannotConsumeExpired = stringResource(R.string.error_cannot_consume_expired)
+
+  // Collect action errors and show them in snackbar
+  LaunchedEffect(viewModel) {
+    viewModel.actionError.collectLatest { error ->
+      val message = when (error) {
+        InstanceActionError.InstanceNotFound -> errorInstanceNotFound
+        InstanceActionError.CannotFreezeExpiredInstance -> errorCannotFreezeExpired
+        InstanceActionError.CannotConsumeExpiredInstance -> errorCannotConsumeExpired
+      }
+      snackbarHostState.showSnackbar(message)
+    }
+  }
 
   when (val currentState = state.value) {
     is ProductDetailState.Loading -> {
@@ -85,6 +109,7 @@ fun ProductDetailScreen(
     is ProductDetailState.Success -> {
       ProductDetailContent(
         product = currentState.product,
+        snackbarHostState = snackbarHostState,
         onBack = onBack,
         onAddInstance = { showInstanceBottomSheet = true },
         onDeleteInstance = { instanceId -> viewModel.deleteInstance(instanceId) },
@@ -135,6 +160,7 @@ fun ProductDetailScreen(
 @Composable
 private fun ProductDetailContent(
   product: ProductDetailUiModel,
+  snackbarHostState: SnackbarHostState,
   onBack: () -> Unit,
   onAddInstance: () -> Unit,
   onDeleteInstance: (String) -> Unit,
@@ -179,6 +205,15 @@ private fun ProductDetailContent(
           }
         },
       )
+    },
+    snackbarHost = {
+      SnackbarHost(hostState = snackbarHostState) { data ->
+        Snackbar(
+          snackbarData = data,
+          containerColor = CaducityTheme.colorScheme.errorContainer,
+          contentColor = CaducityTheme.colorScheme.onErrorContainer,
+        )
+      }
     },
   ) { paddingValues ->
     LazyColumn(
