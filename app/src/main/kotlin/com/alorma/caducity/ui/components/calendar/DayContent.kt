@@ -82,12 +82,12 @@ fun DayContent(
             shape = shape,
           )
           .clickable { onClick(date) }
-          .padding(4.dp),
+          .padding(6.dp),
         contentAlignment = Alignment.Center,
       ) {
         val internalShape = shapePosition.toCalendarShape(
           externalBaseShape = CaducityTheme.shapes.medium,
-          internalBaseShape = RoundedCornerShape(1.dp),
+          internalBaseShape = RoundedCornerShape(2.dp),
         )
         Box(
           modifier = Modifier
