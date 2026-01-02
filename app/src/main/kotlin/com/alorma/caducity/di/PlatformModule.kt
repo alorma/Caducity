@@ -1,15 +1,15 @@
 package com.alorma.caducity.di
 
 import androidx.room.Room
-import com.alorma.caducity.barcode.barcodeModule
-import com.alorma.caducity.base.ui.theme.LanguageManager
+import com.alorma.caducity.feature.barcode.barcodeModule
+import com.alorma.caducity.config.language.LanguageManager
 import com.alorma.caducity.data.datasource.room.AppDatabase
-import com.alorma.caducity.debug.AndroidDebugModeProvider
-import com.alorma.caducity.debug.DebugModeProvider
-import com.alorma.caducity.language.AndroidLanguageManager
-import com.alorma.caducity.notification.notificationsModule
-import com.alorma.caducity.version.AndroidAppVersionProvider
-import com.alorma.caducity.version.AppVersionProvider
+import com.alorma.caducity.feature.debug.AndroidDebugModeProvider
+import com.alorma.caducity.feature.debug.DebugModeProvider
+import com.alorma.caducity.config.language.AndroidLanguageManager
+import com.alorma.caducity.feature.notification.notificationsModule
+import com.alorma.caducity.config.version.AndroidAppVersionProvider
+import com.alorma.caducity.feature.version.AppVersionProvider
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.bind

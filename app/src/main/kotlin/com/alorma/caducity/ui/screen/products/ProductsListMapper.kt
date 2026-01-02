@@ -1,8 +1,8 @@
 package com.alorma.caducity.ui.screen.products
 
-import com.alorma.caducity.base.main.InstanceStatus
+import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.ProductWithInstances
-import com.alorma.caducity.clock.AppClock
+import com.alorma.caducity.config.clock.AppClock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate

@@ -4,7 +4,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.CaducityTheme
 
 enum class ShapePosition {
   None,

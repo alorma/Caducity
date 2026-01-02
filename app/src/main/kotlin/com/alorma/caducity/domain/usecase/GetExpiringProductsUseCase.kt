@@ -2,7 +2,7 @@ package com.alorma.caducity.domain.usecase
 
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.ProductWithInstances
-import com.alorma.caducity.base.main.InstanceStatus
+import com.alorma.caducity.domain.model.InstanceStatus
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.first
 

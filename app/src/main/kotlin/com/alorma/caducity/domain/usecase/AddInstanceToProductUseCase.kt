@@ -2,8 +2,8 @@ package com.alorma.caducity.domain.usecase
 
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.ProductInstance
-import com.alorma.caducity.clock.AppClock
-import com.alorma.caducity.base.main.InstanceStatus
+import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.domain.model.InstanceStatus
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid

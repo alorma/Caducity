@@ -1,6 +1,6 @@
 package com.alorma.caducity.ui.screen.dashboard.components
 
-import com.alorma.caducity.base.ui.theme.LanguageManager
+import com.alorma.caducity.config.language.LanguageManager
 import java.time.format.TextStyle
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.Month

@@ -58,8 +58,6 @@ ksp {
 }
 
 dependencies {
-  implementation(projects.base.main)
-  implementation(projects.base.ui.theme)
   implementation(projects.base.ui.icons)
 
   // Compose BOM
@@ -70,6 +68,8 @@ dependencies {
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.ui.tooling.preview)
   debugImplementation(libs.androidx.compose.ui.tooling)
+
+  implementation(libs.material.kolor)
 
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.viewmodel.compose)

@@ -24,6 +24,4 @@ plugins {
 
 include(":app")
 include(":base")
-include(":base:main")
-include(":base:ui:theme")
 include(":base:ui:icons")

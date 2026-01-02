@@ -26,8 +26,8 @@ import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.CalendarCollapse
 import com.alorma.caducity.base.ui.icons.CalendarExpand
-import com.alorma.caducity.base.ui.theme.CaducityTheme
-import com.alorma.caducity.base.main.InstanceStatus
+import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardSummaryCard
 import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
 import kotlinx.datetime.LocalDate

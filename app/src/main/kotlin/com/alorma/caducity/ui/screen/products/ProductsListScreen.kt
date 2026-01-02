@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.StyledTopAppBar
-import com.alorma.caducity.base.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.domain.usecase.ProductsListFilter
 import androidx.compose.ui.res.stringResource
 import org.koin.compose.viewmodel.koinViewModel

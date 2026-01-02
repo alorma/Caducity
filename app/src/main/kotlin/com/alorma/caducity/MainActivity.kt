@@ -5,9 +5,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
-import com.alorma.caducity.base.ui.theme.AndroidSystemBarsAppearance
-import com.alorma.caducity.base.ui.theme.LocalSystemBarsAppearance
-import com.alorma.caducity.notification.ExpirationNotificationHelper
+import com.alorma.caducity.ui.theme.AndroidSystemBarsAppearance
+import com.alorma.caducity.ui.theme.LocalSystemBarsAppearance
+import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
 
 class MainActivity : AppCompatActivity() {
 

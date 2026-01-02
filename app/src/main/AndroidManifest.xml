@@ -27,7 +27,7 @@
         </activity>
 
         <activity
-            android:name=".barcode.BarcodeActivity"
+            android:name=".feature.barcode.BarcodeActivity"
             android:exported="false" />
 
         <!-- Disable default WorkManager initialization when using Koin integration -->
