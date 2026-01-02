@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.components.shape
 
+import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.RectangleShape
@@ -42,10 +43,10 @@ fun ShapePosition.toCardShape(): Shape {
 
 @Suppress("ContentEmission")
 @Composable
-fun ShapePosition.toCalendarShape(): Shape {
-
-  val externalBaseShape = CaducityTheme.shapes.large
-  val internalBaseShape = CaducityTheme.shapes.extraSmall
+fun ShapePosition.toCalendarShape(
+  externalBaseShape: CornerBasedShape = CaducityTheme.shapes.large,
+  internalBaseShape: CornerBasedShape = CaducityTheme.shapes.extraSmall,
+): CornerBasedShape {
 
   return when (this) {
     ShapePosition.None -> externalBaseShape

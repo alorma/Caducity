@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,8 +24,8 @@ import com.alorma.caducity.ui.components.shape.toCalendarShape
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.AppPreview
 import com.kizitonwose.calendar.core.now
+import com.kizitonwose.calendar.core.plusDays
 import kotlinx.datetime.LocalDate
-
 
 @Composable
 fun DayContent(
@@ -62,26 +63,39 @@ fun DayContent(
   }
 
   Box(modifier = modifier) {
+    val shape = shapePosition.toCalendarShape()
+
     if (today == date) {
+      val borderColor = if (status == null) {
+        CaducityTheme.colorScheme.surfaceContainerHighest
+      } else {
+        backgroundColor
+      }
       Box(
         modifier = Modifier
           .aspectRatio(1f)
           .padding(2.dp)
-          .clip(shapePosition.toCalendarShape())
+          .clip(shape)
           .border(
             width = 2.dp,
-            color = backgroundColor,
-            shape = shapePosition.toCalendarShape(),
+            color = borderColor,
+            shape = shape,
           )
-          .clickable { onClick(date) }
-          .padding(2.dp),
+          .padding(4.dp)
+          .clickable { onClick(date) },
         contentAlignment = Alignment.Center,
       ) {
+        val internalShape = shapePosition.toCalendarShape(
+          externalBaseShape = CaducityTheme.shapes.medium,
+          internalBaseShape = RoundedCornerShape(1.dp),
+        )
         Box(
           modifier = Modifier
             .aspectRatio(1f)
-            .clip(shapePosition.toCalendarShape())
-            .background(backgroundColor),
+            .background(
+              color = backgroundColor,
+              shape = internalShape,
+            ),
           contentAlignment = Alignment.Center,
         ) {
           DayText(
@@ -95,7 +109,7 @@ fun DayContent(
         modifier = Modifier
           .aspectRatio(1f)
           .padding(2.dp)
-          .clip(shapePosition.toCalendarShape())
+          .clip(shape)
           .background(backgroundColor)
           .clickable { onClick(date) },
         contentAlignment = Alignment.Center,
@@ -124,13 +138,61 @@ private fun DayText(
 
 @Preview
 @Composable
-private fun DayContentPreview() {
+private fun DayTodayWithStatusContentPreview() {
   AppPreview {
     DayContent(
       modifier = Modifier.size(56.dp),
       date = LocalDate.now(),
       today = LocalDate.now(),
       status = InstanceStatus.Expired,
+      shapePosition = ShapePosition.Start,
+      isOutDay = false,
+      onClick = {},
+    )
+  }
+}
+
+@Preview
+@Composable
+private fun DayTodayWithoutContentPreview() {
+  AppPreview {
+    DayContent(
+      modifier = Modifier.size(56.dp),
+      date = LocalDate.now(),
+      today = LocalDate.now(),
+      status = null,
+      shapePosition = ShapePosition.Start,
+      isOutDay = false,
+      onClick = {},
+    )
+  }
+}
+
+@Preview
+@Composable
+private fun DayWithStatusContentPreview() {
+  AppPreview {
+    DayContent(
+      modifier = Modifier.size(56.dp),
+      date = LocalDate.now().plusDays(3),
+      today = LocalDate.now(),
+      status = InstanceStatus.Expired,
+      shapePosition = ShapePosition.Start,
+      isOutDay = false,
+      onClick = {},
+    )
+  }
+}
+
+@Preview
+@Composable
+private fun DayWithoutContentPreview() {
+  AppPreview {
+    DayContent(
+      modifier = Modifier.size(56.dp),
+      date = LocalDate.now().plusDays(3),
+      today = LocalDate.now(),
+      status = null,
       shapePosition = ShapePosition.Start,
       isOutDay = false,
       onClick = {},
