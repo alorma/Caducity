@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.model.InstanceActionError
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StatusBadge
@@ -56,6 +57,9 @@ import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.screen.dashboard.CalendarMode
 import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.koin.compose.koinInject
 import com.alorma.caducity.ui.screen.product.create.CreateInstanceBottomSheet
 import kotlinx.coroutines.launch
 import androidx.compose.ui.res.stringResource
@@ -166,9 +170,11 @@ private fun ProductDetailContent(
   onDeleteInstance: (String) -> Unit,
   onConsumeInstance: (String) -> Unit,
   onToggleFreezeInstance: (String, kotlin.time.Instant, Boolean) -> Unit,
+  appClock: AppClock = koinInject(),
 ) {
   val listState = rememberLazyListState()
   val coroutineScope = rememberCoroutineScope()
+  val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
   // Map instance IDs to their positions in the LazyColumn
   // Position 0: Description (if present)
@@ -258,8 +264,8 @@ private fun ProductDetailContent(
       // Calendar section
       if (product.instances.isNotEmpty()) {
         item {
-          val calendarData = remember(product.instances) {
-            product.instances.toCalendarData(hideConsumed = true)
+          val calendarState = remember(product.instances, today) {
+            product.instances.toCalendarState(today = today, hideConsumed = true)
           }
 
           Card(
@@ -282,7 +288,7 @@ private fun ProductDetailContent(
                 modifier = Modifier.padding(horizontal = 16.dp),
               )
               ProductsCalendar(
-                calendarData = calendarData,
+                calendarState = calendarState,
                 calendarMode = CalendarMode.WEEK,
                 onDateClick = { date ->
                   // Find the first instance with this expiration date

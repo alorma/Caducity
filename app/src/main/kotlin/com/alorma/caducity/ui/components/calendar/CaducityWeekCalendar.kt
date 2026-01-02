@@ -6,27 +6,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.screen.dashboard.CalendarData
+import com.alorma.caducity.ui.screen.dashboard.CalendarState
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.YearMonth
 
 @Composable
 fun CaducityWeekCalendar(
-  startMonth: YearMonth,
-  endMonth: YearMonth,
-  today: LocalDate,
-  calendarData: CalendarData,
+  calendarState: CalendarState,
   onDateClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
 
   val weekCalendarState = rememberWeekCalendarState(
-    startDate = startMonth.firstDay,
-    endDate = endMonth.lastDay,
-    firstDayOfWeek = today.dayOfWeek,
+    startDate = calendarState.startMonth.firstDay,
+    endDate = calendarState.endMonth.lastDay,
+    firstDayOfWeek = calendarState.today.dayOfWeek,
   )
 
   WeekCalendar(
@@ -63,10 +59,10 @@ fun CaducityWeekCalendar(
     },
     dayContent = { weekDay ->
       val date = weekDay.date
-      val dateInfo = calendarData.productsByDate[date]
+      val dateInfo = calendarState.calendarData.productsByDate[date]
 
       DayContent(
-        today = today,
+        today = calendarState.today,
         date = date,
         status = dateInfo?.status,
         shapePosition = dateInfo?.shapePosition ?: ShapePosition.None,

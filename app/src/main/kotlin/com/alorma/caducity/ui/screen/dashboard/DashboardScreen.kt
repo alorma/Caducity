@@ -133,7 +133,7 @@ fun DashboardContent(
 
         item(contentType = "calendar") {
           ProductsCalendar(
-            calendarData = state.calendarData,
+            calendarState = state.calendarState,
             onDateClick = onNavigateToDate,
             calendarMode = state.config.calendarMode,
           )
