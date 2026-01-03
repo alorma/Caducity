@@ -8,7 +8,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
-import com.alorma.caducity.ui.theme.colors.ExpirationColorScheme
+import com.alorma.caducity.ui.theme.colors.ExpirationColors
 
 data class CaducityDims(
   val noDim: Float,
@@ -19,8 +19,12 @@ data class CaducityDims(
   val dim5: Float,
 )
 
-internal val LocalExpirationColors = staticCompositionLocalOf<ExpirationColorScheme> {
-  error("No ExpirationColorScheme defined")
+internal val LocalDarkMode = staticCompositionLocalOf<Boolean> {
+  error("No dark mode defined")
+}
+
+internal val LocalExpirationColors = staticCompositionLocalOf<ExpirationColors> {
+  error("No ExpirationColors defined")
 }
 
 internal val LocalCaducityDims = staticCompositionLocalOf<CaducityDims> {
@@ -29,15 +33,20 @@ internal val LocalCaducityDims = staticCompositionLocalOf<CaducityDims> {
 
 object CaducityTheme {
 
+  val isDark: Boolean
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalDarkMode.current
+
   val colorScheme: ColorScheme
     @Composable
     @ReadOnlyComposable
     get() = MaterialTheme.colorScheme
 
-  val expirationColorScheme: ExpirationColorScheme
-    @Composable
-    @ReadOnlyComposable
-    get() = LocalExpirationColors.current
+  val expirationColors: ExpirationColors
+      @Composable
+      @ReadOnlyComposable
+      get() = LocalExpirationColors.current
 
   val shapes: Shapes
     @Composable

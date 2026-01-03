@@ -158,7 +158,11 @@ private fun containerColor(feedbackType: AppFeedbackType): Color = when (feedbac
 @Suppress("ContentEmission")
 @Composable
 private fun contentColor(feedbackType: AppFeedbackType): Color = when (feedbackType) {
-  is AppFeedbackType.Status -> ExpirationDefaults.getColors(feedbackType.status).onContainer
+  is AppFeedbackType.Status -> ExpirationDefaults.getColors(
+    instanceStatus = feedbackType.status,
+    matchSaturation = true,
+  ).onContainer
+
   AppFeedbackType.Error -> CaducityTheme.colorScheme.onErrorContainer
   AppFeedbackType.Info -> CaducityTheme.colorScheme.onSurface
   AppFeedbackType.Success -> CaducityTheme.colorScheme.onPrimaryContainer
