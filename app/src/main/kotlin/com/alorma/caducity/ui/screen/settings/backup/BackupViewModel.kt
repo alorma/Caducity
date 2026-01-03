@@ -6,8 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.BackupFileHandler
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -19,6 +22,9 @@ class BackupViewModel(
 
   private val _uiState = MutableStateFlow<BackupUiState>(BackupUiState.Idle)
   val uiState: StateFlow<BackupUiState> = _uiState.asStateFlow()
+
+  private val _sideEffect = MutableSharedFlow<BackupSideEffect>()
+  val sideEffect: SharedFlow<BackupSideEffect> = _sideEffect.asSharedFlow()
 
   private val _showRestoreDialog = MutableStateFlow(false)
   val showRestoreDialog: StateFlow<Boolean> = _showRestoreDialog.asStateFlow()
@@ -33,19 +39,23 @@ class BackupViewModel(
           onSuccess = { backupData ->
             backupFileHandler.writeBackupToUri(uri, backupData).fold(
               onSuccess = {
-                _uiState.value = BackupUiState.ExportSuccess
+                _uiState.value = BackupUiState.Idle
+                _sideEffect.emit(BackupSideEffect.ExportSuccess)
               },
               onFailure = { error ->
-                _uiState.value = BackupUiState.Error(BackupError.ExportFailed(error.message))
+                _uiState.value = BackupUiState.Idle
+                _sideEffect.emit(BackupSideEffect.Error(BackupError.ExportFailed(error.message)))
               }
             )
           },
           onFailure = { error ->
-            _uiState.value = BackupUiState.Error(BackupError.ExportFailed(error.message))
+            _uiState.value = BackupUiState.Idle
+            _sideEffect.emit(BackupSideEffect.Error(BackupError.ExportFailed(error.message)))
           }
         )
       } catch (e: Exception) {
-        _uiState.value = BackupUiState.Error(BackupError.ExportFailed(e.message))
+        _uiState.value = BackupUiState.Idle
+        _sideEffect.emit(BackupSideEffect.Error(BackupError.ExportFailed(e.message)))
       }
     }
   }
@@ -66,27 +76,32 @@ class BackupViewModel(
           onSuccess = { backupData ->
             importBackupUseCase.import(backupData).fold(
               onSuccess = {
-                _uiState.value = BackupUiState.RestoreSuccess
+                _uiState.value = BackupUiState.Idle
+                _sideEffect.emit(BackupSideEffect.RestoreSuccess)
                 pendingRestoreUri = null
               },
               onFailure = { error ->
-                _uiState.value = when {
+                _uiState.value = BackupUiState.Idle
+                val backupError = when {
                   error.message?.contains("version", ignoreCase = true) == true ->
-                    BackupUiState.Error(BackupError.VersionMismatch)
+                    BackupError.VersionMismatch
                   else ->
-                    BackupUiState.Error(BackupError.RestoreFailed(error.message))
+                    BackupError.RestoreFailed(error.message)
                 }
+                _sideEffect.emit(BackupSideEffect.Error(backupError))
                 pendingRestoreUri = null
               }
             )
           },
           onFailure = { error ->
-            _uiState.value = BackupUiState.Error(BackupError.InvalidFile(error.message))
+            _uiState.value = BackupUiState.Idle
+            _sideEffect.emit(BackupSideEffect.Error(BackupError.InvalidFile(error.message)))
             pendingRestoreUri = null
           }
         )
       } catch (e: Exception) {
-        _uiState.value = BackupUiState.Error(BackupError.InvalidFile(e.message))
+        _uiState.value = BackupUiState.Idle
+        _sideEffect.emit(BackupSideEffect.Error(BackupError.InvalidFile(e.message)))
         pendingRestoreUri = null
       }
     }
@@ -96,22 +111,17 @@ class BackupViewModel(
     _showRestoreDialog.value = false
     pendingRestoreUri = null
   }
-
-  fun onErrorDismissed() {
-    _uiState.value = BackupUiState.Idle
-  }
-
-  fun onSuccessDismissed() {
-    _uiState.value = BackupUiState.Idle
-  }
 }
 
 sealed interface BackupUiState {
   data object Idle : BackupUiState
   data object Loading : BackupUiState
-  data object ExportSuccess : BackupUiState
-  data object RestoreSuccess : BackupUiState
-  data class Error(val error: BackupError) : BackupUiState
+}
+
+sealed interface BackupSideEffect {
+  data object ExportSuccess : BackupSideEffect
+  data object RestoreSuccess : BackupSideEffect
+  data class Error(val error: BackupError) : BackupSideEffect
 }
 
 sealed interface BackupError {

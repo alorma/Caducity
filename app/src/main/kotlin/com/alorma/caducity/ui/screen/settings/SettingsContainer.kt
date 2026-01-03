@@ -31,7 +31,10 @@ fun SettingsContainer(
     mutableStateListOf<NavKey>(SettingsRoute.Root)
   }
 
-  val bottomSheetStrategy = remember { BottomSheetSceneStrategy<NavKey>() }
+  val bottomSheetStrategy = remember {
+    BottomSheetSceneStrategy<NavKey>()
+  }
+
   NavDisplay(
     modifier = modifier,
     backStack = settingsBackStack,

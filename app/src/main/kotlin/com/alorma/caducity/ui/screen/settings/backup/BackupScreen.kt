@@ -30,9 +30,11 @@ import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.ui.components.StyledCenterAlignedTopAppBar
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.components.snackbar.rememberAppSnackbarHostState
+import com.alorma.caducity.ui.components.snackbar.AppSnackbarType
+import com.alorma.caducity.ui.components.snackbar.LocalAppSnackbarHostState
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -44,7 +46,7 @@ fun BackupScreen(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val showRestoreDialog by viewModel.showRestoreDialog.collectAsStateWithLifecycle()
-  val snackbarHostState = rememberAppSnackbarHostState()
+  val snackbarHostState = LocalAppSnackbarHostState.current
 
   val exportBackupLauncher = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.CreateDocument("application/json")
@@ -58,35 +60,43 @@ fun BackupScreen(
     uri?.let { viewModel.onRestoreBackupRequest(it) }
   }
 
-  // Handle success/error messages
-  LaunchedEffect(uiState) {
-    when (uiState) {
-      is BackupUiState.ExportSuccess -> {
-        snackbarHostState.showSnackbar(
-          message = "Backup exported successfully",
-        )
-        viewModel.onSuccessDismissed()
-      }
-
-      is BackupUiState.RestoreSuccess -> {
-        snackbarHostState.showSnackbar(
-          message = "Backup restored successfully"
-        )
-        viewModel.onSuccessDismissed()
-      }
-
-      is BackupUiState.Error -> {
-        val errorMessage = when (val error = (uiState as BackupUiState.Error).error) {
-          is BackupError.ExportFailed -> "Failed to export backup"
-          is BackupError.RestoreFailed -> "Failed to restore backup"
-          is BackupError.InvalidFile -> "Invalid backup file"
-          is BackupError.VersionMismatch -> "Incompatible backup version"
+  // Handle side effects (success/error messages)
+  LaunchedEffect(viewModel.sideEffect) {
+    viewModel.sideEffect.collect { sideEffect ->
+      when (sideEffect) {
+        is BackupSideEffect.ExportSuccess -> {
+          launch {
+            snackbarHostState.showSnackbar(
+              message = R.string.backup_export_success,
+              type = AppSnackbarType.Success,
+            )
+          }
         }
-        snackbarHostState.showSnackbar(errorMessage)
-        viewModel.onErrorDismissed()
-      }
 
-      else -> {}
+        is BackupSideEffect.RestoreSuccess -> {
+          launch {
+            snackbarHostState.showSnackbar(
+              message = R.string.backup_restore_success,
+              type = AppSnackbarType.Success,
+            )
+          }
+        }
+
+        is BackupSideEffect.Error -> {
+          launch {
+            val errorMessage = when (sideEffect.error) {
+              is BackupError.ExportFailed -> R.string.backup_error_export_failed
+              is BackupError.RestoreFailed -> R.string.backup_error_restore_failed
+              is BackupError.InvalidFile -> R.string.backup_error_invalid_file
+              is BackupError.VersionMismatch -> R.string.backup_error_version_mismatch
+            }
+            snackbarHostState.showSnackbar(
+              message = errorMessage,
+              type = AppSnackbarType.Error,
+            )
+          }
+        }
+      }
     }
   }
 
