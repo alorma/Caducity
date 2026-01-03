@@ -1,7 +1,11 @@
 package com.alorma.caducity.ui.components.scaffold
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -11,13 +15,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.alorma.caducity.ui.components.feedback.dialog.AppDialogHost
+import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
+import com.alorma.caducity.ui.components.feedback.dialog.LocalAppDialogState
+import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHost
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
 import com.alorma.caducity.ui.components.feedback.snackbar.LocalAppSnackbarHostState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
-import com.infojobs.base.compose.components.dialog.AppDialogState
-import com.infojobs.base.compose.components.dialog.LocalAppDialogState
-import com.infojobs.base.compose.components.dialog.rememberAppDialogState
 
 @Suppress("ModifierTopMost")
 @Composable
@@ -48,7 +53,16 @@ fun AppScaffold(
       containerColor = containerColor,
       contentColor = contentColor,
       contentWindowInsets = contentWindowInsets,
-      content = content,
-    )
+    ) { paddingValues ->
+      Box(
+        modifier = Modifier
+          .fillMaxSize()
+          .consumeWindowInsets(paddingValues)
+          .imePadding(),
+      ) {
+        content(paddingValues)
+        AppDialogHost(LocalAppDialogState.current)
+      }
+    }
   }
 }

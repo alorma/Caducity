@@ -28,13 +28,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.AccessibilityManager
 import androidx.compose.ui.platform.LocalAccessibilityManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.dismiss
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
+import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.exposeResource
 import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.delay
@@ -106,8 +107,8 @@ class AppSnackbarHostState {
     try {
       return suspendCancellableCoroutine { continuation ->
         currentAppSnackbarData = AppSnackbarDataImpl(
-          message = AppSnackbarResource.AsString(message),
-          actionLabel = actionLabel?.let { AppSnackbarResource.AsString(it) },
+          message = AppFeedbackResource.AsString(message),
+          actionLabel = actionLabel?.let { AppFeedbackResource.AsString(it) },
           duration = duration,
           type = type,
           continuation = continuation,
@@ -129,8 +130,8 @@ class AppSnackbarHostState {
     try {
       return suspendCancellableCoroutine { continuation ->
         currentAppSnackbarData = AppSnackbarDataImpl(
-          message = AppSnackbarResource.AsResource(message),
-          actionLabel = actionLabel?.let { AppSnackbarResource.AsResource(it) },
+          message = AppFeedbackResource.AsResource(message),
+          actionLabel = actionLabel?.let { AppFeedbackResource.AsResource(it) },
           duration = duration,
           type = type,
           continuation = continuation,
@@ -144,8 +145,8 @@ class AppSnackbarHostState {
 
   @Stable
   private class AppSnackbarDataImpl(
-    override val message: AppSnackbarResource,
-    override val actionLabel: AppSnackbarResource?,
+    override val message: AppFeedbackResource,
+    override val actionLabel: AppFeedbackResource?,
     override val duration: SnackbarDuration,
     override val type: AppFeedbackType,
     private val continuation: CancellableContinuation<AppSnackbarResult>,
@@ -244,7 +245,12 @@ fun AppSnackbar(
     content = snackbarContentColor,
     action = snackbarActionColor
   )
-  val actionLength = exposeResource(snackbarData.actionLabel).orEmpty().length
+
+  // Expose resources at composable call site
+  val messageText = exposeResource(snackbarData.message).toString()
+  val actionLabelText = snackbarData.actionLabel?.let { exposeResource(it).toString() }
+
+  val actionLength = actionLabelText?.length ?: 0
 
   val actionOnNewLine = when (snackbarData.layout) {
     AppSnackbarLayout.ActionLengthBased -> actionLength >= AppSnackbarDefaults.MaxSizeToDisplayActionOnNewLine
@@ -259,8 +265,8 @@ fun AppSnackbar(
       }
 
       override val visuals: SnackbarVisuals = object : SnackbarVisuals {
-        override val message: String = exposeResource(snackbarData.message).orEmpty()
-        override val actionLabel: String? = exposeResource(snackbarData.actionLabel)
+        override val message: String = messageText
+        override val actionLabel: String? = actionLabelText
         override val duration: SnackbarDuration = snackbarData.duration
         override val withDismissAction: Boolean = false
       }
@@ -277,14 +283,6 @@ fun AppSnackbar(
   )
 }
 
-@Composable
-private fun exposeResource(ijSnackbarResource: AppSnackbarResource?): String? =
-  when (ijSnackbarResource) {
-    is AppSnackbarResource.AsResource -> stringResource(ijSnackbarResource.stringRes)
-    is AppSnackbarResource.AsString -> ijSnackbarResource.string
-    null -> null
-  }
-
 data class SnackbarColors(val background: Color, val content: Color, val action: Color)
 
 /**
@@ -296,8 +294,8 @@ data class SnackbarColors(val background: Color, val content: Color, val action:
  * @property type type of the AppSnackbar
  */
 interface AppSnackbarData {
-  val message: AppSnackbarResource
-  val actionLabel: AppSnackbarResource?
+  val message: AppFeedbackResource
+  val actionLabel: AppFeedbackResource?
   val duration: SnackbarDuration
   val type: AppFeedbackType
   val layout: AppSnackbarLayout
@@ -335,7 +333,6 @@ enum class AppSnackbarLayout {
   StackedAction,
 }
 
-// TODO: to be replaced with the public customizable implementation
 // it's basically tweaked nullable version of Crossfade
 @Composable
 private fun FadeInFadeOutWithScale(
@@ -346,7 +343,7 @@ private fun FadeInFadeOutWithScale(
   val state = remember { FadeInFadeOutState<AppSnackbarData?>() }
   if (current != state.current) {
     state.current = current
-    val keys = state.items.map { it.key }.toMutableList()
+    val keys = remember { state.items.map { it.key }.toMutableList() }
     if (!keys.contains(current)) {
       keys.add(current)
     }
@@ -356,7 +353,13 @@ private fun FadeInFadeOutWithScale(
         val isVisible = key == current
         val duration = if (isVisible) AppSnackbarFadeInMillis else AppSnackbarFadeOutMillis
         val delay = AppSnackbarFadeOutMillis + AppSnackbarInBetweenDelayMillis
-        val animationDelay = if (isVisible && keys.filterNotNull().size != 1) delay else 0
+        val animationDelay = remember {
+          if (isVisible && keys.filterNotNull().size != 1) {
+            delay
+          } else {
+            0
+          }
+        }
         val opacity = animatedOpacity(
           animation = tween(
             easing = LinearEasing,
@@ -430,7 +433,7 @@ private fun animatedOpacity(
   onAnimationFinish: () -> Unit = {},
 ): State<Float> {
   val alpha = remember { Animatable(if (!visible) 1f else 0f) }
-  LaunchedEffect(visible) {
+  LaunchedEffect(visible, onAnimationFinish) {
     alpha.animateTo(
       if (visible) 1f else 0f,
       animationSpec = animation
