@@ -8,7 +8,10 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 object ExpirationDefaults {
 
   @Composable
-  fun getColors(instanceStatus: InstanceStatus): StatusColors {
+  fun getColors(
+    instanceStatus: InstanceStatus,
+    matchSaturation: Boolean = false,
+  ): StatusColors {
     return when (instanceStatus) {
       InstanceStatus.Expired -> StatusColors(
         container = CaducityTheme.expirationColorScheme.expired,

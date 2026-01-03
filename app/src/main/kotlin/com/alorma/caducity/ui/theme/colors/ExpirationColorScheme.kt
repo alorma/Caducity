@@ -6,6 +6,8 @@ import androidx.compose.ui.graphics.Color
 import com.alorma.caducity.ui.theme.CaducityTheme
 
 data class ExpirationColorScheme(
+  val baseColor: Color,
+
   val fresh: Color,
   val onFresh: Color,
 
@@ -22,28 +24,16 @@ data class ExpirationColorScheme(
   val onConsumed: Color
 )
 
-interface BaseExpirationColors {
-  val freshColor: Color
-  val expiringSoonColor: Color
-  val expiredColor: Color
-  val frozenColor: Color
-  val consumedColor: Color
+class BaseExpirationColors {
+  val freshColor: Color = Color.Green
+  val expiringSoonColor: Color = Color(0xFFFFDE21)
+  val expiredColor: Color = Color.Red
+  val frozenColor: Color = Color.Cyan
+  val consumedColor: Color = Color.Gray
 
   @get:ReadOnlyComposable
   @get:Composable
   val baseColor: Color
-}
-
-class CaducityBaseExpirationColors : BaseExpirationColors {
-  override val freshColor: Color = Color.Green
-  override val expiringSoonColor: Color = Color(0xFFFFDE21)
-  override val expiredColor: Color = Color.Red
-  override val frozenColor: Color = Color.Cyan
-  override val consumedColor: Color = Color.Gray
-
-  @get:ReadOnlyComposable
-  @get:Composable
-  override val baseColor: Color
     get() = CaducityTheme.colorScheme.surfaceContainerHighest
 
 }
