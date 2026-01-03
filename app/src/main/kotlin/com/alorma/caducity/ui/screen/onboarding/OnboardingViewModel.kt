@@ -50,7 +50,7 @@ class OnboardingViewModel(
   }
 
   private fun completeOnboarding() {
-    onboardingFlag.disable()
+    //onboardingFlag.disable()
     _state.update { it.copy(isCompleted = true) }
   }
 }
