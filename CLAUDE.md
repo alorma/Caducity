@@ -132,6 +132,62 @@ Android notification system for expiration alerts:
 - **NotificationDebugHelper**: Interface for testing notifications
 - Background work runs daily to check for expiring products
 
+### FireAndForget System
+
+One-time operation flags for features like onboarding, announcements, and first-run setups:
+- **FireAndForgetRunner**: Interface for managing one-time flags
+- **SettingsFireAndForgetRunner**: Implementation using multiplatform-settings for persistence
+- **fireAndForgetModule**: Koin DI module providing the singleton runner
+- State persisted via SharedPreferences on Android
+
+**Use Cases**:
+- First-time user onboarding tutorials
+- "What's new" announcements for version updates
+- Feature discovery tooltips
+- Initial app setup flags
+- Settings screen "Reset tutorials" functionality
+
+**How to Use**:
+1. Define a flag class by extending `FireAndForget`:
+   ```kotlin
+   class OnboardingFlag(runner: FireAndForgetRunner) : FireAndForget(
+     fireAndForgetRunner = runner,
+     name = "user_onboarding",
+     defaultValue = true  // true means enabled by default
+   )
+   ```
+
+2. Register the flag in a Koin module:
+   ```kotlin
+   val appModule = module {
+     singleOf(::OnboardingFlag)
+   }
+   ```
+
+3. Inject the flag in your ViewModel or use case:
+   ```kotlin
+   class DashboardViewModel(
+     private val onboardingFlag: OnboardingFlag,
+   ) : ViewModel() {
+     fun checkOnboarding() {
+       if (onboardingFlag.isEnabled()) {
+         // Show onboarding UI
+         onboardingFlag.disable()  // Mark as completed
+       }
+     }
+   }
+   ```
+
+4. Register the ViewModel with Koin:
+   ```kotlin
+   viewModelOf(::DashboardViewModel)
+   ```
+
+**Key Methods**:
+- `isEnabled()`: Check if the flag is enabled (operation should run)
+- `disable()`: Mark the operation as completed (won't run again)
+- `enable()`: Re-enable the flag (for "Reset tutorials" features)
+
 ### Base Module Organization
 
 The `base/` module contains reusable components separated into focused sub-modules:
