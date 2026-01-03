@@ -1,11 +1,30 @@
 package com.alorma.caducity.ui.theme
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.theme.colors.DefaultExpirationColors
 import com.alorma.caducity.ui.theme.colors.ExpirationColors
 import com.alorma.caducity.ui.theme.colors.SoftExpirationColors
@@ -13,6 +32,8 @@ import com.alorma.caducity.ui.theme.colors.VibrantExpirationColors
 import com.alorma.caducity.ui.theme.colors.darkColorScheme
 import com.alorma.caducity.ui.theme.colors.dynamicColorScheme
 import com.alorma.caducity.ui.theme.colors.lightColorScheme
+import com.alorma.caducity.ui.theme.preview.AppPreview
+import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.compose.settings.ui.base.internal.LocalSettingsTileColors
 import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
 import org.koin.compose.koinInject
@@ -115,5 +136,117 @@ fun InternalTheme(
       content()
     }
   }
+}
 
+
+@Suppress("ModifierRequired")
+@PreviewDynamicLightDark
+@Composable
+private fun MaterialColorsPreview() {
+  AppPreview {
+    Surface {
+      Column(
+        modifier = Modifier
+          .padding(16.dp)
+          .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+      ) {
+        Text(
+          text = "Color Scheme",
+          style = CaducityTheme.typography.titleLarge,
+          color = CaducityTheme.colorScheme.onSurface
+        )
+
+        ColorRow("Primary", CaducityTheme.colorScheme.primary)
+        ColorRow("Secondary", CaducityTheme.colorScheme.secondary)
+        ColorRow("Tertiary", CaducityTheme.colorScheme.tertiary)
+        ColorRow("Error", CaducityTheme.colorScheme.error)
+        ColorRow("Surface", CaducityTheme.colorScheme.surface)
+        ColorRow("Surface Variant", CaducityTheme.colorScheme.surfaceVariant)
+      }
+    }
+  }
+}
+
+@Suppress("ModifierRequired")
+@PreviewDynamicLightDark
+@Composable
+private fun ExpirationColorsVibrantPreview() {
+  AppPreview {
+    Surface {
+      Column(
+        modifier = Modifier
+          .padding(16.dp)
+          .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+      ) {
+        Text(
+          text = "Expiration Colors - Vibrant",
+          style = CaducityTheme.typography.titleLarge,
+          color = CaducityTheme.colorScheme.onSurface
+        )
+
+        ColorRow("Fresh", CaducityTheme.expirationColors.vibrant.fresh)
+        ColorRow("Expiring Soon", CaducityTheme.expirationColors.vibrant.expiringSoon)
+        ColorRow("Expired", CaducityTheme.expirationColors.vibrant.expired)
+        ColorRow("Frozen", CaducityTheme.expirationColors.vibrant.frozen)
+        ColorRow("Consumed", CaducityTheme.expirationColors.vibrant.consumed)
+      }
+    }
+  }
+}
+
+@Suppress("ModifierRequired")
+@PreviewDynamicLightDark
+@Composable
+private fun ExpirationColorsSoftPreview() {
+  AppPreview {
+    Surface {
+      Column(
+        modifier = Modifier
+          .padding(16.dp)
+          .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+      ) {
+        Text(
+          text = "Expiration Colors - Soft",
+          style = CaducityTheme.typography.titleLarge,
+          color = CaducityTheme.colorScheme.onSurface
+        )
+
+        ColorRow("Fresh", CaducityTheme.expirationColors.soft.fresh)
+        ColorRow("Expiring Soon", CaducityTheme.expirationColors.soft.expiringSoon)
+        ColorRow("Expired", CaducityTheme.expirationColors.soft.expired)
+        ColorRow("Frozen", CaducityTheme.expirationColors.soft.frozen)
+        ColorRow("Consumed", CaducityTheme.expirationColors.soft.consumed)
+      }
+    }
+  }
+}
+
+@Composable
+private fun ColorRow(name: String, color: Color) {
+  Row(
+    modifier = Modifier
+      .fillMaxWidth()
+      .height(48.dp),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    Box(
+      modifier = Modifier
+        .size(48.dp)
+        .background(color, RoundedCornerShape(8.dp))
+        .border(
+          width = 1.dp,
+          color = CaducityTheme.colorScheme.outline,
+          shape = RoundedCornerShape(8.dp)
+        )
+    )
+    Text(
+      text = name,
+      style = CaducityTheme.typography.bodyMedium,
+      color = CaducityTheme.colorScheme.onSurface
+    )
+  }
 }
