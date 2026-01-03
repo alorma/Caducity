@@ -123,7 +123,4 @@ dependencies {
   screenshotTestImplementation(libs.androidx.compose.ui.test.manifest)
   screenshotTestImplementation(libs.androidx.compose.ui.tooling)
   screenshotTestImplementation(libs.androidx.compose.ui)
-
-  screenshotTestImplementation(project.dependencies.platform(libs.koin.bom))
-  screenshotTestImplementation(libs.koin.compose)
 }

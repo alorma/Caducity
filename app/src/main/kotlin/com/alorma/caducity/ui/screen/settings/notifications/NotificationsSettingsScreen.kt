@@ -8,16 +8,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
-import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
-import com.alorma.caducity.ui.screen.settings.previewSettingsModule
-import androidx.compose.ui.res.stringResource
 import org.koin.compose.koinInject
 
 @Composable
@@ -55,13 +52,5 @@ fun NotificationsSettingsScreen(
         },
       )
     }
-  }
-}
-
-@Preview
-@Composable
-private fun NotificationsSettingsScreenPreviewTheme() {
-  PreviewTheme(previewSettingsModule) {
-    NotificationsSettingsScreen()
   }
 }

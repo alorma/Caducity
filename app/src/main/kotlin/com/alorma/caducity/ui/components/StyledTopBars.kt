@@ -69,9 +69,9 @@ fun StyledTopAppBar(
 @Composable
 fun StyledCenterAlignedTopBarPreviewTheme() {
   PreviewTheme {
-    StyledCenterAlignedTopAppBar(title = {
-      Text(text = "Preview")
-    })
+    StyledCenterAlignedTopAppBar(
+      title = { Text(text = "Preview") },
+    )
   }
 }
 
@@ -79,8 +79,8 @@ fun StyledCenterAlignedTopBarPreviewTheme() {
 @Composable
 fun StyledTopBarPreviewTheme() {
   PreviewTheme {
-    StyledTopAppBar(title = {
-      Text(text = "Preview")
-    })
+    StyledTopAppBar(
+      title = { Text(text = "Preview") },
+    )
   }
 }
