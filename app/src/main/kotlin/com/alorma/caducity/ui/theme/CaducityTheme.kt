@@ -10,23 +10,6 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.alorma.caducity.ui.theme.colors.ExpirationColorScheme
 
-data class CaducityColors(
-  val colorScheme: ColorScheme,
-  val expirationColorScheme: ExpirationColorScheme,
-) {
-  companion object {
-    fun fromColorScheme(
-      colorScheme: ColorScheme,
-      expirationColorScheme: ExpirationColorScheme,
-    ): CaducityColors {
-      return CaducityColors(
-        colorScheme = colorScheme,
-        expirationColorScheme = expirationColorScheme,
-      )
-    }
-  }
-}
-
 data class CaducityDims(
   val noDim: Float,
   val dim1: Float,

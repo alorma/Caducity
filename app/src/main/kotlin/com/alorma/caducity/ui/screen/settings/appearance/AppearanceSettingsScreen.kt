@@ -1,41 +1,23 @@
 package com.alorma.caducity.ui.screen.settings.appearance
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.outlined.Leaf
-import com.alorma.caducity.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.theme.ThemeMode
-import com.alorma.caducity.ui.theme.ThemePreferences
-import com.alorma.caducity.ui.theme.colors.ExpirationColorSchemeType
-import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
-import com.alorma.caducity.ui.theme.preview.AppPreview
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
-import com.alorma.caducity.ui.screen.settings.previewSettingsModule
-import androidx.compose.ui.res.stringResource
+import com.alorma.caducity.ui.theme.ThemeMode
+import com.alorma.caducity.ui.theme.ThemePreferences
+import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import org.koin.compose.koinInject
 
 @Composable
@@ -84,94 +66,5 @@ fun AppearanceSettingsScreen(
         )
       }
     }
-
-    StyledSettingsButtonGroupCard(
-      title = stringResource(R.string.settings_color_scheme_title),
-      selectedItem = themePreferences.expirationColorSchemeType.value,
-      items = ExpirationColorSchemeType.entries,
-      position = ShapePosition.Single,
-      itemTitleMap = { schemeType ->
-        when (schemeType) {
-          ExpirationColorSchemeType.VIBRANT -> colorSchemeVibrant
-          ExpirationColorSchemeType.HARMONIZE -> colorSchemeHarmony
-        }
-      },
-      onItemSelected = { themePreferences.setExpirationColorSchemeType(it) },
-    )
-    ExpirationColorLegend()
-  }
-}
-
-@Composable
-private fun ExpirationColorLegend() {
-  val expirationColors = CaducityTheme.expirationColorScheme
-
-  Column(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp, vertical = 8.dp),
-    verticalArrangement = Arrangement.spacedBy(12.dp),
-  ) {
-    ColorLegendItem(
-      label = stringResource(R.string.settings_expiration_legend_fresh),
-      containerColor = expirationColors.fresh,
-      contentColor = expirationColors.onFresh,
-    )
-    ColorLegendItem(
-      label = stringResource(R.string.settings_expiration_legend_expiring_soon),
-      containerColor = expirationColors.expiringSoon,
-      contentColor = expirationColors.onExpiringSoon,
-    )
-    ColorLegendItem(
-      label = stringResource(R.string.settings_expiration_legend_expired),
-      containerColor = expirationColors.expired,
-      contentColor = expirationColors.onExpired,
-    )
-    ColorLegendItem(
-      label = stringResource(R.string.settings_expiration_legend_frozen),
-      containerColor = expirationColors.frozen,
-      contentColor = expirationColors.onFrozen,
-    )
-    ColorLegendItem(
-      label = stringResource(R.string.settings_expiration_legend_consumed),
-      containerColor = expirationColors.consumed,
-      contentColor = expirationColors.onConsumed,
-    )
-  }
-}
-
-@Composable
-private fun ColorLegendItem(
-  label: String,
-  containerColor: Color,
-  contentColor: Color,
-) {
-  Row(
-    modifier = Modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Box(
-      modifier = Modifier
-        .size(32.dp)
-        .clip(CircleShape)
-        .background(containerColor)
-        .padding(4.dp),
-    ) {
-      Icon(
-        imageVector = AppIcons.Outlined.Leaf,
-        contentDescription = null,
-        tint = contentColor,
-      )
-    }
-    Text(text = label)
-  }
-}
-
-@Preview
-@Composable
-private fun AppearanceSettingsScreenPreview() {
-  AppPreview(previewSettingsModule) {
-    AppearanceSettingsScreen()
   }
 }

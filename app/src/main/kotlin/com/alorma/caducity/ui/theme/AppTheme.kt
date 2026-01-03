@@ -10,13 +10,11 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import com.alorma.caducity.ui.theme.colors.BaseExpirationColors
 import com.alorma.caducity.ui.theme.colors.ExpirationColorScheme
-import com.alorma.caducity.ui.theme.colors.ExpirationColorSchemeType
 import com.alorma.caducity.ui.theme.colors.darkColorScheme
 import com.alorma.caducity.ui.theme.colors.dynamicColorScheme
 import com.alorma.caducity.ui.theme.colors.lightColorScheme
 import com.alorma.compose.settings.ui.base.internal.LocalSettingsTileColors
 import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
-import com.materialkolor.ktx.harmonize
 import com.materialkolor.ktx.isLight
 import org.koin.compose.koinInject
 
@@ -88,7 +86,6 @@ fun InternalTheme(
   content: @Composable () -> Unit,
 ) {
   val expirationColorScheme = generateExpirationColors(
-    schemeType = themePreferences.expirationColorSchemeType.value,
     darkMode = darkMode,
   )
   val colorScheme = CaducityTheme.colorScheme
@@ -114,45 +111,20 @@ fun InternalTheme(
 @Suppress("ContentEmission")
 @Composable
 private fun generateExpirationColors(
-  schemeType: ExpirationColorSchemeType,
   darkMode: Boolean,
   baseExpirationColors: BaseExpirationColors = koinInject(),
 ): ExpirationColorScheme {
 
-  val matchSaturation = when (schemeType) {
-    ExpirationColorSchemeType.VIBRANT -> false
-    ExpirationColorSchemeType.HARMONIZE -> true
-  }
-
   val baseColor = baseExpirationColors.baseColor
-
   val freshColor = baseExpirationColors.freshColor
-    .harmonize(
-      other = baseColor,
-      matchSaturation = matchSaturation,
-    )
   val expiringSoonColor = baseExpirationColors.expiringSoonColor
-    .harmonize(
-      other = baseColor,
-      matchSaturation = matchSaturation,
-    )
   val expiredColor = baseExpirationColors.expiredColor
-    .harmonize(
-      other = baseColor,
-      matchSaturation = matchSaturation,
-    )
   val frozenColor = baseExpirationColors.frozenColor
-    .harmonize(
-      other = baseColor,
-      matchSaturation = matchSaturation,
-    )
   val consumedColor = baseExpirationColors.consumedColor
-    .harmonize(
-      other = baseColor,
-      matchSaturation = matchSaturation,
-    )
 
   return ExpirationColorScheme(
+    baseColor = baseColor,
+
     fresh = freshColor,
     onFresh = contentColorForExpiration(
       color = freshColor,
@@ -181,6 +153,7 @@ private fun generateExpirationColors(
   )
 }
 
+@Suppress("ContentEmission")
 @ReadOnlyComposable
 @Composable
 private fun contentColorForExpiration(
