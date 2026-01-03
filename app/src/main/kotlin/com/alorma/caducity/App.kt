@@ -43,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
+import com.alorma.caducity.onboarding.OnboardingFlag
+import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
@@ -74,11 +76,23 @@ import org.koin.compose.koinInject
 @Composable
 fun App(
   modifier: Modifier = Modifier,
-  showExpiringOnly: Boolean = false,
+  onboardingFlag: OnboardingFlag = koinInject()
 ) {
+
   AppTheme(
     themePreferences = koinInject(),
   ) {
+    // Check if onboarding should be shown
+    if (onboardingFlag.isEnabled()) {
+      OnboardingScreen(
+        onCompleted = {
+          // After onboarding, navigate to Create Product screen
+          // (This will be handled by showing the main app, which has the FAB to create products)
+        }
+      )
+      return@AppTheme
+    }
+
     val topLevelBackStack = retain { TopLevelBackStack(TopLevelRoute.Dashboard) }
     val bottomSheetStrategy = remember { BottomSheetSceneStrategy<NavKey>() }
 
@@ -146,7 +160,6 @@ fun App(
         entryProvider = entryProvider {
           entry<TopLevelRoute.Dashboard> {
             DashboardScreen(
-              showExpiringOnly = showExpiringOnly,
               scrollConnection = exitAlwaysScrollBehavior,
               onNavigateToDate = { date ->
                 topLevelBackStack.add(ProductsListRoute.byDate(date))
