@@ -119,12 +119,15 @@ dependencies {
 
   implementation(libs.scan.engine)
 
-  // Test infrastructure
-  testImplementation(libs.junit)
-  testImplementation(libs.androidx.test.runner)
-  testImplementation(libs.androidx.test.rules)
-
   // Screenshot testing
   screenshotTestImplementation(libs.screenshot.validation.api)
+
+  screenshotTestImplementation(platform(libs.androidx.compose.bom))
+  screenshotTestImplementation(libs.androidx.compose.ui.test.junit4)
+  screenshotTestImplementation(libs.androidx.compose.ui.test.manifest)
   screenshotTestImplementation(libs.androidx.compose.ui.tooling)
+  screenshotTestImplementation(libs.androidx.compose.ui)
+
+  screenshotTestImplementation(project.dependencies.platform(libs.koin.bom))
+  screenshotTestImplementation(libs.koin.compose)
 }
