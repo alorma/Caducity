@@ -4,7 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.ui.components.colors.ContainerColors
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.colors.ExpirationColorsPalette
 import com.materialkolor.ktx.harmonize
 import com.materialkolor.ktx.isLight
 
@@ -13,41 +15,42 @@ object ExpirationDefaults {
   @Composable
   fun getVibrantColors(
     instanceStatus: InstanceStatus,
-  ): StatusColors {
-    val expirationColors = CaducityTheme.expirationColors
-    return when (instanceStatus) {
-      InstanceStatus.Fresh -> statusColors(expirationColors.fresh, false)
-      InstanceStatus.ExpiringSoon -> statusColors(expirationColors.expiringSoon, false)
-      InstanceStatus.Expired -> statusColors(expirationColors.expired, false)
-      InstanceStatus.Frozen -> statusColors(expirationColors.frozen, false)
-      InstanceStatus.Consumed -> statusColors(expirationColors.consumed, false)
-    }
+  ): ContainerColors {
+    return expirationColorByStatus(
+      instanceStatus = instanceStatus,
+      expirationColors = CaducityTheme.expirationColors.vibrant,
+    )
   }
 
   @Composable
   fun getSoftColors(
     instanceStatus: InstanceStatus,
-  ): StatusColors {
-    val expirationColors = CaducityTheme.expirationColors
-    return when (instanceStatus) {
-      InstanceStatus.Fresh -> statusColors(expirationColors.fresh, true)
-      InstanceStatus.ExpiringSoon -> statusColors(expirationColors.expiringSoon, true)
-      InstanceStatus.Expired -> statusColors(expirationColors.expired, true)
-      InstanceStatus.Frozen -> statusColors(expirationColors.frozen, true)
-      InstanceStatus.Consumed -> statusColors(expirationColors.consumed, true)
-    }
+  ): ContainerColors {
+    return expirationColorByStatus(
+      instanceStatus = instanceStatus,
+      expirationColors = CaducityTheme.expirationColors.soft,
+    )
+  }
+
+  @Composable
+  private fun expirationColorByStatus(
+    instanceStatus: InstanceStatus,
+    expirationColors: ExpirationColorsPalette,
+  ): ContainerColors = when (instanceStatus) {
+    InstanceStatus.Fresh -> statusColors(expirationColors.fresh)
+    InstanceStatus.ExpiringSoon -> statusColors(expirationColors.expiringSoon)
+    InstanceStatus.Expired -> statusColors(expirationColors.expired)
+    InstanceStatus.Frozen -> statusColors(expirationColors.frozen)
+    InstanceStatus.Consumed -> statusColors(expirationColors.consumed)
   }
 
   @Composable
   private fun statusColors(
     color: Color,
-    matchSaturation: Boolean,
-  ): StatusColors {
-    val contentColor = harmonizedColor(color, matchSaturation)
-
-    return StatusColors(
-      container = contentColor,
-      onContainer = contentColorForExpiration(contentColor),
+  ): ContainerColors {
+    return ContainerColors(
+      container = color,
+      onContainer = contentColorForExpiration(color),
     )
   }
 
@@ -61,7 +64,6 @@ object ExpirationDefaults {
       matchSaturation = matchSaturation,
     )
   }
-
 }
 
 @Suppress("ContentEmission")
@@ -87,7 +89,3 @@ private fun contentColorForExpiration(
   }
 }
 
-data class StatusColors(
-  val container: Color,
-  val onContainer: Color,
-)

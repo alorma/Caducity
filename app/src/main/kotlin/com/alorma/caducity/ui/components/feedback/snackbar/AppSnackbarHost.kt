@@ -24,7 +24,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.AccessibilityManager
 import androidx.compose.ui.platform.LocalAccessibilityManager
@@ -32,11 +31,11 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.dismiss
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.vibrantColors
 import com.alorma.caducity.ui.components.feedback.exposeResource
-import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.components.feedback.softColors
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -211,43 +210,6 @@ fun AppSnackbar(
   snackbarData: AppSnackbarData,
   modifier: Modifier = Modifier,
 ) {
-  val colorsScheme = CaducityTheme.colorScheme
-
-  val snackbarBackgroundColor = when (val type = snackbarData.type) {
-    is AppFeedbackType.Status -> {
-      val colors = ExpirationDefaults.getSoftColors(type.status)
-      colors.container
-    }
-
-    AppFeedbackType.Success -> colorsScheme.primary
-    AppFeedbackType.Info -> colorsScheme.inverseSurface
-    AppFeedbackType.Error -> colorsScheme.error
-  }
-
-  val snackbarContentColor = when (val type = snackbarData.type) {
-    is AppFeedbackType.Status -> {
-      val colors = ExpirationDefaults.getSoftColors(
-        instanceStatus = type.status,
-      )
-      colors.onContainer
-    }
-
-    AppFeedbackType.Success -> colorsScheme.onPrimary
-    AppFeedbackType.Info -> colorsScheme.inverseOnSurface
-    AppFeedbackType.Error -> colorsScheme.onError
-  }
-  val snackbarActionColor = when (snackbarData.type) {
-    is AppFeedbackType.Status -> colorsScheme.inverseSurface
-    AppFeedbackType.Success -> colorsScheme.surface
-    AppFeedbackType.Info -> colorsScheme.inversePrimary
-    AppFeedbackType.Error -> colorsScheme.surface
-  }
-  val colors = SnackbarColors(
-    background = snackbarBackgroundColor,
-    content = snackbarContentColor,
-    action = snackbarActionColor
-  )
-
   // Expose resources at composable call site
   val messageText = exposeResource(snackbarData.message).toString()
   val actionLabelText = snackbarData.actionLabel?.let { exposeResource(it).toString() }
@@ -260,7 +222,10 @@ fun AppSnackbar(
     AppSnackbarLayout.StackedAction -> true
   }
 
+  val colors = snackbarData.type.vibrantColors()
+
   Snackbar(
+    modifier = modifier,
     snackbarData = object : SnackbarData {
       override fun dismiss() {
         snackbarData.dismiss()
@@ -277,15 +242,12 @@ fun AppSnackbar(
         snackbarData.performAction()
       }
     },
-    modifier = modifier,
     actionOnNewLine = actionOnNewLine,
-    containerColor = colors.background,
-    contentColor = colors.content,
-    actionColor = colors.action,
+    containerColor = colors.container,
+    contentColor = colors.onContainer,
+    actionColor = colors.onContainer,
   )
 }
-
-data class SnackbarColors(val background: Color, val content: Color, val action: Color)
 
 /**
  * Interface to represent one particular [AppSnackbar] as a piece of the [AppSnackbarHostState]
