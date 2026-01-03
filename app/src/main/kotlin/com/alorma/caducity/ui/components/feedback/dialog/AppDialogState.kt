@@ -11,13 +11,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.DialogProperties
-import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.exposeResource
-import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.components.feedback.softColors
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -60,13 +58,12 @@ class AppDialogState() {
           override val title: @Composable () -> Unit = { Text(text = exposeResource(title)) }
           override val text: @Composable () -> Unit = { Text(text = exposeResource(text)) }
           override val positiveButton: @Composable (() -> Unit) = {
-            val containerColor = containerColor(type)
-            val contentColor = contentColor(type)
+            val colors = type.softColors()
 
             TextButton(
               colors = ButtonDefaults.textButtonColors(
-                containerColor = containerColor,
-                contentColor = contentColor,
+                containerColor = colors.container,
+                contentColor = colors.onContainer,
               ),
               onClick = { dismiss(DialogResult.Positive) },
               content = { Text(text = exposeResource(positiveButton)) },
@@ -74,13 +71,12 @@ class AppDialogState() {
           }
           override val negativeButton: @Composable (() -> Unit)? = if (negativeButton != null) {
             {
-              val containerColor = containerColor(type)
-              val contentColor = contentColor(type)
+              val colors = type.softColors()
 
               TextButton(
                 colors = ButtonDefaults.textButtonColors(
-                  containerColor = containerColor,
-                  contentColor = contentColor,
+                  containerColor = colors.container,
+                  contentColor = colors.onContainer,
                 ),
                 onClick = { dismiss(DialogResult.Negative) },
                 content = { Text(text = exposeResource(negativeButton)) },
@@ -128,46 +124,22 @@ fun AppDialogHost(hostState: AppDialogState) {
   val currentDialogData = hostState.dialogInfo
 
   if (currentDialogData != null) {
-    val containerColor = containerColor(currentDialogData.type)
-    val contentColor = contentColor(currentDialogData.type)
+
+    val colors = currentDialogData.type.softColors()
 
     AlertDialog(
       properties = currentDialogData.properties,
       onDismissRequest = { currentDialogData.dismiss(DialogResult.Dismissed) },
-      containerColor = containerColor,
-      iconContentColor = contentColor,
-      titleContentColor = contentColor,
-      textContentColor = contentColor,
+      containerColor = colors.container,
+      iconContentColor = colors.onContainer,
+      titleContentColor = colors.onContainer,
+      textContentColor = colors.onContainer,
       title = currentDialogData.title,
       text = currentDialogData.text,
       confirmButton = currentDialogData.positiveButton,
       dismissButton = currentDialogData.negativeButton,
     )
   }
-}
-
-@Suppress("ContentEmission")
-@Composable
-private fun containerColor(feedbackType: AppFeedbackType): Color = when (feedbackType) {
-  is AppFeedbackType.Status -> ExpirationDefaults.getSoftColors(
-    instanceStatus = feedbackType.status,
-  ).container
-
-  AppFeedbackType.Error -> CaducityTheme.colorScheme.errorContainer
-  AppFeedbackType.Info -> CaducityTheme.colorScheme.surfaceContainer
-  AppFeedbackType.Success -> CaducityTheme.colorScheme.primaryContainer
-}
-
-@Suppress("ContentEmission")
-@Composable
-private fun contentColor(feedbackType: AppFeedbackType): Color = when (feedbackType) {
-  is AppFeedbackType.Status -> ExpirationDefaults.getSoftColors(
-    instanceStatus = feedbackType.status,
-  ).onContainer
-
-  AppFeedbackType.Error -> CaducityTheme.colorScheme.onErrorContainer
-  AppFeedbackType.Info -> CaducityTheme.colorScheme.onSurface
-  AppFeedbackType.Success -> CaducityTheme.colorScheme.onPrimaryContainer
 }
 
 sealed interface DialogResult {
