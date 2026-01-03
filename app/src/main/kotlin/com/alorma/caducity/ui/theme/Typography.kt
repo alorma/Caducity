@@ -9,49 +9,49 @@ val TYPOGRAPHY = Typography()
 
 val caducityTypography = Typography(
   displayLarge = TYPOGRAPHY.displayLarge.copy(
-    fontFamily = AppFonts.googleFlex600,
+    //fontFamily = AppFonts.googleFlex600,
   ),
   displayMedium = TYPOGRAPHY.displayMedium.copy(
-    fontFamily = AppFonts.googleFlex600,
+    //fontFamily = AppFonts.googleFlex600,
   ),
   displaySmall = TYPOGRAPHY.displaySmall.copy(
-    fontFamily = AppFonts.googleFlex600,
+    //fontFamily = AppFonts.googleFlex600,
   ),
   headlineLarge = TYPOGRAPHY.headlineLarge.copy(
-    fontFamily = AppFonts.roboto,
+    //fontFamily = AppFonts.roboto,
   ),
   headlineMedium = TYPOGRAPHY.headlineMedium.copy(
-    fontFamily = AppFonts.roboto,
+    //fontFamily = AppFonts.roboto,
   ),
   headlineSmall = TYPOGRAPHY.headlineSmall.copy(
-    fontFamily = AppFonts.roboto,
+    //fontFamily = AppFonts.roboto,
   ),
   titleLarge = TYPOGRAPHY.titleLarge.copy(
-    fontFamily = AppFonts.roboto,
+    //fontFamily = AppFonts.roboto,
   ),
   titleMedium = TYPOGRAPHY.titleMedium.copy(
-    fontFamily = AppFonts.roboto,
+    //fontFamily = AppFonts.roboto,
   ),
   titleSmall = TYPOGRAPHY.titleSmall.copy(
-    fontFamily = AppFonts.roboto,
+    //fontFamily = AppFonts.roboto,
   ),
   bodyLarge = TYPOGRAPHY.bodyLarge.copy(
-    fontFamily = AppFonts.googleFlex400,
+    //fontFamily = AppFonts.googleFlex400,
   ),
   bodyMedium = TYPOGRAPHY.bodyMedium.copy(
-    fontFamily = AppFonts.googleFlex400,
+    //fontFamily = AppFonts.googleFlex400,
   ),
   bodySmall = TYPOGRAPHY.bodySmall.copy(
-    fontFamily = AppFonts.googleFlex400,
+    //fontFamily = AppFonts.googleFlex400,
   ),
   labelLarge = TYPOGRAPHY.labelLarge.copy(
-    fontFamily = AppFonts.googleFlex600,
+    //fontFamily = AppFonts.googleFlex600,
   ),
   labelMedium = TYPOGRAPHY.labelMedium.copy(
-    fontFamily = AppFonts.googleFlex600,
+    //fontFamily = AppFonts.googleFlex600,
   ),
   labelSmall = TYPOGRAPHY.labelSmall.copy(
-    fontFamily = AppFonts.googleFlex600,
+    //fontFamily = AppFonts.googleFlex600,
   )
 )
 
