@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
+import com.alorma.caducity.ui.theme.CaducityTheme
 
 @Composable
 fun DisclaimerOnboardingPage(modifier: Modifier = Modifier) {
@@ -31,7 +32,7 @@ fun DisclaimerOnboardingPage(modifier: Modifier = Modifier) {
   ) {
     Text(
       text = stringResource(R.string.onboarding_disclaimer_title),
-      style = MaterialTheme.typography.displaySmall,
+      style = CaducityTheme.typography.displaySmall,
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth(),
     )
@@ -40,9 +41,9 @@ fun DisclaimerOnboardingPage(modifier: Modifier = Modifier) {
 
     Text(
       text = stringResource(R.string.onboarding_disclaimer_message),
-      style = MaterialTheme.typography.bodyMedium,
+      style = CaducityTheme.typography.bodyMedium,
       textAlign = TextAlign.Start,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      color = CaducityTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier.fillMaxWidth(),
     )
   }

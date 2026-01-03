@@ -7,15 +7,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingButtons
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingPagerIndicator
 import com.alorma.caducity.ui.screen.onboarding.pages.DisclaimerOnboardingPage
@@ -28,11 +29,11 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun OnboardingScreen(
-  onCompleted: () -> Unit,
+  onComplete: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: OnboardingViewModel = koinViewModel(),
 ) {
-  val state by viewModel.state.collectAsState()
+  val state by viewModel.state.collectAsStateWithLifecycle()
   val pagerState = rememberPagerState(pageCount = { state.totalPages })
   val coroutineScope = rememberCoroutineScope()
 
@@ -50,64 +51,73 @@ fun OnboardingScreen(
   }
 
   // Handle completion
-  LaunchedEffect(state.isCompleted) {
+  LaunchedEffect(state.isCompleted, onComplete) {
     if (state.isCompleted) {
-      onCompleted()
+      onComplete()
     }
   }
 
-  Box(
+  Scaffold(
     modifier = modifier.fillMaxSize(),
-  ) {
-    Column(
-      modifier = Modifier.fillMaxSize(),
-    ) {
-      // Pager
-      HorizontalPager(
-        state = pagerState,
-        modifier = Modifier
-          .fillMaxWidth()
-          .weight(1f),
-      ) { page ->
-        when (page) {
-          0 -> WelcomeOnboardingPage()
-          1 -> FeaturesOnboardingPage()
-          2 -> PermissionsOnboardingPage()
-          3 -> TutorialOnboardingPage()
-          4 -> DisclaimerOnboardingPage()
-        }
+    bottomBar = {
+      BottomAppBar {
+        // Navigation Buttons
+        OnboardingButtons(
+          canSkip = state.canSkip,
+          isLastPage = state.isLastPage,
+          isFirstPage = state.isFirstPage,
+          onNext = {
+            coroutineScope.launch {
+              viewModel.nextPage()
+            }
+          },
+          onPrevious = {
+            coroutineScope.launch {
+              viewModel.previousPage()
+            }
+          },
+          onSkip = { viewModel.skipOnboarding() },
+          onComplete = { viewModel.acceptDisclaimer() },
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+        )
       }
-
-      // Page Indicator
-      OnboardingPagerIndicator(
-        pageCount = state.totalPages,
-        currentPage = state.currentPage,
-        modifier = Modifier
-          .align(Alignment.CenterHorizontally)
-          .padding(16.dp),
-      )
-
-      // Navigation Buttons
-      OnboardingButtons(
-        canSkip = state.canSkip,
-        isLastPage = state.isLastPage,
-        isFirstPage = state.isFirstPage,
-        onNext = {
-          coroutineScope.launch {
-            viewModel.nextPage()
+    },
+  ) { paddingValues ->
+    Box(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(paddingValues),
+    ) {
+      Column(
+        modifier = Modifier.fillMaxSize(),
+      ) {
+        // Pager
+        HorizontalPager(
+          state = pagerState,
+          modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f),
+        ) { page ->
+          when (page) {
+            0 -> WelcomeOnboardingPage()
+            1 -> FeaturesOnboardingPage()
+            2 -> PermissionsOnboardingPage()
+            3 -> TutorialOnboardingPage()
+            4 -> DisclaimerOnboardingPage()
           }
-        },
-        onPrevious = {
-          coroutineScope.launch {
-            viewModel.previousPage()
-          }
-        },
-        onSkip = { viewModel.skipOnboarding() },
-        onComplete = { viewModel.acceptDisclaimer() },
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(horizontal = 24.dp, vertical = 16.dp),
-      )
+        }
+
+        // Page Indicator
+        OnboardingPagerIndicator(
+          pageCount = state.totalPages,
+          currentPage = state.currentPage,
+          modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(16.dp),
+        )
+      }
     }
   }
 }

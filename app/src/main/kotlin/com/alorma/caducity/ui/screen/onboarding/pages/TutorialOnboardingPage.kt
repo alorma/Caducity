@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.ui.theme.CaducityTheme
 
 @Composable
 fun TutorialOnboardingPage(modifier: Modifier = Modifier) {
@@ -34,14 +35,14 @@ fun TutorialOnboardingPage(modifier: Modifier = Modifier) {
       imageVector = AppIcons.Add,
       contentDescription = null,
       modifier = Modifier.size(80.dp),
-      tint = MaterialTheme.colorScheme.primary,
+      tint = CaducityTheme.colorScheme.primary,
     )
 
     Spacer(modifier = Modifier.height(32.dp))
 
     Text(
       text = stringResource(R.string.onboarding_tutorial_title),
-      style = MaterialTheme.typography.displaySmall,
+      style = CaducityTheme.typography.displaySmall,
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth(),
     )
@@ -50,9 +51,9 @@ fun TutorialOnboardingPage(modifier: Modifier = Modifier) {
 
     Text(
       text = stringResource(R.string.onboarding_tutorial_message),
-      style = MaterialTheme.typography.bodyLarge,
+      style = CaducityTheme.typography.bodyLarge,
       textAlign = TextAlign.Center,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      color = CaducityTheme.colorScheme.onSurface,
       modifier = Modifier.fillMaxWidth(),
     )
   }

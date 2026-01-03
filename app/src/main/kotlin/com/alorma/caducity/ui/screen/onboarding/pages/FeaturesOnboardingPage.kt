@@ -25,6 +25,7 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.CalendarExpand
 import com.alorma.caducity.base.ui.icons.Dashboard
 import com.alorma.caducity.base.ui.icons.Notifications
+import com.alorma.caducity.ui.theme.CaducityTheme
 
 @Composable
 fun FeaturesOnboardingPage(modifier: Modifier = Modifier) {
@@ -37,7 +38,7 @@ fun FeaturesOnboardingPage(modifier: Modifier = Modifier) {
   ) {
     Text(
       text = stringResource(R.string.onboarding_features_title),
-      style = MaterialTheme.typography.displaySmall,
+      style = CaducityTheme.typography.displaySmall,
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth(),
     )
@@ -79,14 +80,14 @@ private fun FeatureItem(
       imageVector = icon,
       contentDescription = null,
       modifier = Modifier.size(48.dp),
-      tint = MaterialTheme.colorScheme.primary,
+      tint = CaducityTheme.colorScheme.primary,
     )
 
     Spacer(modifier = Modifier.width(16.dp))
 
     Text(
       text = text,
-      style = MaterialTheme.typography.bodyLarge,
+      style = CaducityTheme.typography.bodyLarge,
       modifier = Modifier.weight(1f),
     )
   }

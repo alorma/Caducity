@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -19,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Celebration
+import com.alorma.caducity.ui.theme.CaducityTheme
 
 @Composable
 fun WelcomeOnboardingPage(modifier: Modifier = Modifier) {
@@ -32,15 +32,15 @@ fun WelcomeOnboardingPage(modifier: Modifier = Modifier) {
     Icon(
       imageVector = AppIcons.Filled.Celebration,
       contentDescription = null,
-      modifier = Modifier.height(120.dp),
-      tint = MaterialTheme.colorScheme.primary,
+      modifier = Modifier.height(200.dp),
+      tint = CaducityTheme.colorScheme.primary,
     )
 
     Spacer(modifier = Modifier.height(32.dp))
 
     Text(
       text = stringResource(R.string.onboarding_welcome_title),
-      style = MaterialTheme.typography.displaySmall,
+      style = CaducityTheme.typography.displaySmall,
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth(),
     )
@@ -49,9 +49,8 @@ fun WelcomeOnboardingPage(modifier: Modifier = Modifier) {
 
     Text(
       text = stringResource(R.string.onboarding_welcome_message),
-      style = MaterialTheme.typography.bodyLarge,
+      style = CaducityTheme.typography.bodyLarge,
       textAlign = TextAlign.Center,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier.fillMaxWidth(),
     )
   }

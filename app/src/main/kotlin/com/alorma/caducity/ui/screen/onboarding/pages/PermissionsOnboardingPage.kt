@@ -23,6 +23,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Notifications
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
+import com.alorma.caducity.ui.theme.CaducityTheme
 import org.koin.compose.koinInject
 
 @Composable
@@ -45,14 +46,14 @@ fun PermissionsOnboardingPage(
       imageVector = AppIcons.Notifications,
       contentDescription = null,
       modifier = Modifier.size(80.dp),
-      tint = MaterialTheme.colorScheme.primary,
+      tint = CaducityTheme.colorScheme.primary,
     )
 
     Spacer(modifier = Modifier.height(32.dp))
 
     Text(
       text = stringResource(R.string.onboarding_permissions_title),
-      style = MaterialTheme.typography.displaySmall,
+      style = CaducityTheme.typography.displaySmall,
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth(),
     )
@@ -61,9 +62,9 @@ fun PermissionsOnboardingPage(
 
     Text(
       text = stringResource(R.string.onboarding_permissions_message),
-      style = MaterialTheme.typography.bodyLarge,
+      style = CaducityTheme.typography.bodyLarge,
       textAlign = TextAlign.Center,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      color = CaducityTheme.colorScheme.onSurface,
       modifier = Modifier.fillMaxWidth(),
     )
 
@@ -79,8 +80,8 @@ fun PermissionsOnboardingPage(
     } else {
       Text(
         text = stringResource(R.string.onboarding_permissions_granted),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.primary,
+        style = CaducityTheme.typography.bodyMedium,
+        color = CaducityTheme.colorScheme.primary,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth(),
       )
