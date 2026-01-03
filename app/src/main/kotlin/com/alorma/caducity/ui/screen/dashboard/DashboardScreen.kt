@@ -42,8 +42,7 @@ fun DashboardScreen(
   onNavigateToStatus: (InstanceStatus) -> Unit,
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
-  showExpiringOnly: Boolean = false,
-  viewModel: DashboardViewModel = koinViewModel { parametersOf(showExpiringOnly) }
+  viewModel: DashboardViewModel = koinViewModel(),
 ) {
   val dashboardState = viewModel.state.collectAsStateWithLifecycle()
 

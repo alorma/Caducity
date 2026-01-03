@@ -41,9 +41,6 @@ interface ExpirationNotificationHelper {
   fun showExpirationNotification(expiringProducts: List<ProductWithInstances>)
 
   companion object {
-    /**
-     * Intent extra key for filtering dashboard to show only expiring products.
-     */
-    const val EXTRA_SHOW_EXPIRING_ONLY = "show_expiring_only"
+
   }
 }

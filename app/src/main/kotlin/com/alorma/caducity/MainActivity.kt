@@ -17,16 +17,12 @@ class MainActivity : AppCompatActivity() {
     enableEdgeToEdge()
 
     // Check if we should show expiring products only (from notification tap)
-    val showExpiringOnly = intent?.getBooleanExtra(
-      ExpirationNotificationHelper.EXTRA_SHOW_EXPIRING_ONLY,
-      false
-    ) ?: false
 
     setContent {
       CompositionLocalProvider(
         LocalSystemBarsAppearance provides AndroidSystemBarsAppearance(this)
       ) {
-        App(showExpiringOnly = showExpiringOnly)
+        App()
       }
     }
   }

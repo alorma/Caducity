@@ -100,5 +100,26 @@
     <string name="error_cannot_freeze_expired">No se pueden congelar artículos caducados</string>
     <string name="error_cannot_consume_expired">No es seguro consumir productos caducados</string>
 
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Bienvenido a Caducity</string>
+    <string name="onboarding_welcome_message">Rastrea tus alimentos y reduce el desperdicio</string>
+    <string name="onboarding_features_title">Características Clave</string>
+    <string name="onboarding_features_track">Rastrea las fechas de caducidad de todos tus productos</string>
+    <string name="onboarding_features_notify">Recibe notificaciones antes de que caduquen los productos</string>
+    <string name="onboarding_features_dashboard">Visualiza estadísticas e información en tu panel</string>
+    <string name="onboarding_permissions_title">Mantente Informado</string>
+    <string name="onboarding_permissions_message">Permite las notificaciones para recibir alertas oportunas sobre productos que caducan</string>
+    <string name="onboarding_permissions_granted">Notificaciones activadas</string>
+    <string name="onboarding_permissions_automatic">Las notificaciones están activadas automáticamente</string>
+    <string name="onboarding_tutorial_title">Primeros Pasos</string>
+    <string name="onboarding_tutorial_message">Añade tu primer producto para empezar a rastrear fechas de caducidad</string>
+    <string name="onboarding_disclaimer_title">Aviso Importante</string>
+    <string name="onboarding_disclaimer_message">Esta aplicación ayuda a rastrear las fechas de caducidad de productos pero no sustituye las prácticas adecuadas de seguridad alimentaria. Usa siempre tu criterio y sigue las pautas de seguridad alimentaria. Los desarrolladores no son responsables de ningún problema de salud derivado del consumo de productos caducados.</string>
+    <string name="onboarding_button_next">Siguiente</string>
+    <string name="onboarding_button_skip">Omitir</string>
+    <string name="onboarding_button_previous">Anterior</string>
+    <string name="onboarding_button_understand">Entiendo</string>
+    <string name="onboarding_button_allow_notifications">Permitir Notificaciones</string>
+
     <string name="app_name">Caducity</string>
 </resources>
