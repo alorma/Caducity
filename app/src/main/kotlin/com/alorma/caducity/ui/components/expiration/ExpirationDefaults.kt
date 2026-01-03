@@ -7,7 +7,6 @@ import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.colors.ContainerColors
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.ExpirationColorsPalette
-import com.materialkolor.ktx.harmonize
 import com.materialkolor.ktx.isLight
 
 object ExpirationDefaults {
@@ -54,37 +53,26 @@ object ExpirationDefaults {
     )
   }
 
+  @Suppress("ContentEmission")
+  @ReadOnlyComposable
   @Composable
-  private fun harmonizedColor(
+  private fun contentColorForExpiration(
     color: Color,
-    matchSaturation: Boolean,
   ): Color {
-    return color.harmonize(
-      other = CaducityTheme.colorScheme.surfaceContainerHighest,
-      matchSaturation = matchSaturation,
-    )
-  }
-}
+    val darkMode = CaducityTheme.isDark
 
-@Suppress("ContentEmission")
-@ReadOnlyComposable
-@Composable
-private fun contentColorForExpiration(
-  color: Color,
-): Color {
-  val darkMode = CaducityTheme.isDark
-
-  return if (color.isLight()) {
-    if (darkMode) {
-      CaducityTheme.colorScheme.surface
+    return if (color.isLight()) {
+      if (darkMode) {
+        CaducityTheme.colorScheme.surface
+      } else {
+        CaducityTheme.colorScheme.onSurface
+      }
     } else {
-      CaducityTheme.colorScheme.onSurface
-    }
-  } else {
-    if (darkMode) {
-      CaducityTheme.colorScheme.onSurface
-    } else {
-      CaducityTheme.colorScheme.surface
+      if (darkMode) {
+        CaducityTheme.colorScheme.onSurface
+      } else {
+        CaducityTheme.colorScheme.surface
+      }
     }
   }
 }

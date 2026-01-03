@@ -6,8 +6,8 @@ import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import com.alorma.caducity.ui.theme.colors.DefaultExpirationColors
 import com.alorma.caducity.ui.theme.colors.ExpirationColors
-import com.alorma.caducity.ui.theme.colors.ExpirationColorsPalette
 import com.alorma.caducity.ui.theme.colors.SoftExpirationColors
 import com.alorma.caducity.ui.theme.colors.VibrantExpirationColors
 import com.alorma.caducity.ui.theme.colors.darkColorScheme
@@ -21,7 +21,6 @@ import org.koin.compose.koinInject
 @Composable
 fun AppTheme(
   themePreferences: ThemePreferences = koinInject(),
-  defaultExpirationColors: ExpirationColorsPalette = koinInject(),
   content: @Composable () -> Unit,
 ) {
   val systemInDarkTheme = isSystemInDarkTheme()
@@ -59,7 +58,6 @@ fun AppTheme(
       InternalTheme(
         dims = dims,
         darkMode = darkTheme,
-        defaultExpirationColors = defaultExpirationColors,
         content = content,
       )
     },
@@ -80,19 +78,24 @@ fun AppTheme(
 fun InternalTheme(
   dims: CaducityDims,
   darkMode: Boolean,
-  defaultExpirationColors: ExpirationColorsPalette,
   content: @Composable () -> Unit,
 ) {
   val colorScheme = CaducityTheme.colorScheme
 
+  val defaultExpirationColors = DefaultExpirationColors(
+    error = colorScheme.error,
+  )
+
+  val baseColor = colorScheme.surfaceContainerHighest
+
   val expirationColors = ExpirationColors(
     vibrant = VibrantExpirationColors(
       default = defaultExpirationColors,
-      baseColor = colorScheme.surfaceContainerHighest,
+      baseColor = baseColor,
     ),
     soft = SoftExpirationColors(
       default = defaultExpirationColors,
-      baseColor = colorScheme.surfaceContainerHighest,
+      baseColor = baseColor,
     ),
   )
 

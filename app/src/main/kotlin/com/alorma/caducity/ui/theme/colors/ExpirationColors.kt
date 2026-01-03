@@ -16,14 +16,15 @@ interface ExpirationColorsPalette {
   val consumed: Color
 }
 
-class DefaultExpirationColors : ExpirationColorsPalette {
+class DefaultExpirationColors(
+  val error: Color,
+) : ExpirationColorsPalette {
   override val fresh: Color = Color.Green
   override val expiringSoon: Color = Color(0xFFFFDE21)
-  override val expired: Color = Color.Red
+  override val expired: Color = error
   override val frozen: Color = Color.Cyan
   override val consumed: Color = Color.Green
 }
-
 
 class VibrantExpirationColors(
   default: ExpirationColorsPalette,
