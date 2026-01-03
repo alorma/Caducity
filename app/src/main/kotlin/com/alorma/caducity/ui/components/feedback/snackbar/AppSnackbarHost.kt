@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.components.snackbar
+package com.alorma.caducity.ui.components.feedback.snackbar
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.Animatable
@@ -33,8 +33,8 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.dismiss
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.delay
@@ -100,7 +100,7 @@ class AppSnackbarHostState {
     message: String,
     actionLabel: String? = null,
     duration: SnackbarDuration = SnackbarDuration.Short,
-    type: AppSnackbarType = AppSnackbarType.Info,
+    type: AppFeedbackType = AppFeedbackType.Info,
     layout: AppSnackbarLayout = AppSnackbarLayout.ActionLengthBased,
   ): AppSnackbarResult = mutex.withLock {
     try {
@@ -123,7 +123,7 @@ class AppSnackbarHostState {
     @StringRes message: Int,
     @StringRes actionLabel: Int? = null,
     duration: SnackbarDuration = SnackbarDuration.Short,
-    type: AppSnackbarType = AppSnackbarType.Info,
+    type: AppFeedbackType = AppFeedbackType.Info,
     layout: AppSnackbarLayout = AppSnackbarLayout.ActionLengthBased,
   ): AppSnackbarResult = mutex.withLock {
     try {
@@ -147,7 +147,7 @@ class AppSnackbarHostState {
     override val message: AppSnackbarResource,
     override val actionLabel: AppSnackbarResource?,
     override val duration: SnackbarDuration,
-    override val type: AppSnackbarType,
+    override val type: AppFeedbackType,
     private val continuation: CancellableContinuation<AppSnackbarResult>,
     override val layout: AppSnackbarLayout = AppSnackbarLayout.ActionLengthBased
   ) : AppSnackbarData {
@@ -213,31 +213,31 @@ fun AppSnackbar(
   val colorsScheme = CaducityTheme.colorScheme
 
   val snackbarBackgroundColor = when (val type = snackbarData.type) {
-    is AppSnackbarType.Status -> {
+    is AppFeedbackType.Status -> {
       val colors = ExpirationDefaults.getColors(type.status)
       colors.container
     }
 
-    AppSnackbarType.Success -> colorsScheme.primary
-    AppSnackbarType.Info -> colorsScheme.inverseSurface
-    AppSnackbarType.Error -> colorsScheme.error
+    AppFeedbackType.Success -> colorsScheme.primary
+    AppFeedbackType.Info -> colorsScheme.inverseSurface
+    AppFeedbackType.Error -> colorsScheme.error
   }
 
   val snackbarContentColor = when (val type = snackbarData.type) {
-    is AppSnackbarType.Status -> {
+    is AppFeedbackType.Status -> {
       val colors = ExpirationDefaults.getColors(type.status)
       colors.onContainer
     }
 
-    AppSnackbarType.Success -> colorsScheme.onPrimary
-    AppSnackbarType.Info -> colorsScheme.inverseOnSurface
-    AppSnackbarType.Error -> colorsScheme.onError
+    AppFeedbackType.Success -> colorsScheme.onPrimary
+    AppFeedbackType.Info -> colorsScheme.inverseOnSurface
+    AppFeedbackType.Error -> colorsScheme.onError
   }
   val snackbarActionColor = when (snackbarData.type) {
-    is AppSnackbarType.Status -> colorsScheme.inverseSurface
-    AppSnackbarType.Success -> colorsScheme.surface
-    AppSnackbarType.Info -> colorsScheme.inversePrimary
-    AppSnackbarType.Error -> colorsScheme.surface
+    is AppFeedbackType.Status -> colorsScheme.inverseSurface
+    AppFeedbackType.Success -> colorsScheme.surface
+    AppFeedbackType.Info -> colorsScheme.inversePrimary
+    AppFeedbackType.Error -> colorsScheme.surface
   }
   val colors = SnackbarColors(
     background = snackbarBackgroundColor,
@@ -299,7 +299,7 @@ interface AppSnackbarData {
   val message: AppSnackbarResource
   val actionLabel: AppSnackbarResource?
   val duration: SnackbarDuration
-  val type: AppSnackbarType
+  val type: AppFeedbackType
   val layout: AppSnackbarLayout
 
   /**
@@ -313,12 +313,6 @@ interface AppSnackbarData {
   fun dismiss()
 }
 
-sealed class AppSnackbarType {
-  data class Status(val status: InstanceStatus) : AppSnackbarType()
-  data object Success : AppSnackbarType()
-  data object Info : AppSnackbarType()
-  data object Error : AppSnackbarType()
-}
 
 /**
  * Possible results of the [AppSnackbarHostState.showSnackbar] call

@@ -30,8 +30,8 @@ import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.ui.components.StyledCenterAlignedTopAppBar
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.components.snackbar.AppSnackbarType
-import com.alorma.caducity.ui.components.snackbar.LocalAppSnackbarHostState
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.snackbar.LocalAppSnackbarHostState
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import kotlinx.coroutines.launch
@@ -68,7 +68,7 @@ fun BackupScreen(
           launch {
             snackbarHostState.showSnackbar(
               message = R.string.backup_export_success,
-              type = AppSnackbarType.Success,
+              type = AppFeedbackType.Success,
             )
           }
         }
@@ -77,7 +77,7 @@ fun BackupScreen(
           launch {
             snackbarHostState.showSnackbar(
               message = R.string.backup_restore_success,
-              type = AppSnackbarType.Success,
+              type = AppFeedbackType.Success,
             )
           }
         }
@@ -92,7 +92,7 @@ fun BackupScreen(
             }
             snackbarHostState.showSnackbar(
               message = errorMessage,
-              type = AppSnackbarType.Error,
+              type = AppFeedbackType.Error,
             )
           }
         }

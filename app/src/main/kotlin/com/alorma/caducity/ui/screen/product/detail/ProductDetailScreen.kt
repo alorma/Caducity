@@ -51,9 +51,9 @@ import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.snackbar.AppSnackbarHostState
-import com.alorma.caducity.ui.components.snackbar.AppSnackbarType
-import com.alorma.caducity.ui.components.snackbar.rememberAppSnackbarHostState
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
 import com.alorma.caducity.ui.screen.dashboard.CalendarMode
 import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
 import com.alorma.caducity.ui.screen.product.create.CreateInstanceBottomSheet
@@ -80,20 +80,21 @@ fun ProductDetailScreen(
   // Collect action errors and show them in snackbar
   LaunchedEffect(viewModel) {
     viewModel.actionError.collectLatest { error ->
-      val message = when (error) {
-        InstanceActionError.InstanceNotFound -> R.string.error_instance_not_found
-        InstanceActionError.CannotFreezeExpiredInstance -> R.string.error_cannot_freeze_expired
-        InstanceActionError.CannotConsumeExpiredInstance -> R.string.error_cannot_consume_expired
+
+      when (error) {
+        InstanceActionError.CannotConsumeExpiredInstance -> {
+
+        }
+
+        InstanceActionError.CannotFreezeExpiredInstance -> {
+          snackbarHostState.showSnackbar(
+            message = R.string.error_cannot_freeze_expired,
+            type = AppFeedbackType.Status(InstanceStatus.Expired),
+          )
+        }
+
+        InstanceActionError.InstanceNotFound -> {}
       }
-      val type = when (error) {
-        InstanceActionError.InstanceNotFound -> AppSnackbarType.Error
-        InstanceActionError.CannotConsumeExpiredInstance -> AppSnackbarType.Status(InstanceStatus.Expired)
-        InstanceActionError.CannotFreezeExpiredInstance -> AppSnackbarType.Status(InstanceStatus.Expired)
-      }
-      snackbarHostState.showSnackbar(
-        message = message,
-        type = type,
-      )
     }
   }
 
