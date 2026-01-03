@@ -133,5 +133,11 @@
     <string name="onboarding_button_understand">I Understand</string>
     <string name="onboarding_button_allow_notifications">Allow Notifications</string>
 
+    <!-- Disclaimer -->
+    <string name="disclaimer_brief_title">Use Your Judgment</string>
+    <string name="disclaimer_brief_message">Expiration dates are estimates. Always inspect products and follow food safety guidelines.</string>
+    <string name="settings_legal_title">Legal</string>
+    <string name="settings_legal_description">Disclaimer and terms</string>
+
     <string name="app_name">Caducity</string>
 </resources>
