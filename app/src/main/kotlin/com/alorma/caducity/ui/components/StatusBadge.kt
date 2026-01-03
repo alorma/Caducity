@@ -68,7 +68,7 @@ fun StatusBadge(
   modifier: Modifier = Modifier,
   size: StatusBadgeSize = StatusBadgeSize.Small,
 ) {
-  val colors = ExpirationDefaults.getColors(status)
+  val colors = ExpirationDefaults.getVibrantColors(status)
 
   Row(
     modifier = modifier

@@ -91,7 +91,7 @@ fun ProductsListItem(
               )
               Spacer(modifier = Modifier.width(8.dp))
 
-              val colors = ExpirationDefaults.getColors(instance.status)
+              val colors = ExpirationDefaults.getVibrantColors(instance.status)
 
               StatusBadge(status = instance.status)
             }

@@ -83,7 +83,7 @@ private fun SummaryStatusCard(
   onClick: (InstanceStatus) -> Unit,
   modifier: Modifier = Modifier
 ) {
-  val colors = ExpirationDefaults.getColors(status)
+  val colors = ExpirationDefaults.getVibrantColors(status)
 
   val dim = if (count > 0) {
     CaducityTheme.dims.noDim

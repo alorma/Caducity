@@ -215,7 +215,7 @@ fun AppSnackbar(
 
   val snackbarBackgroundColor = when (val type = snackbarData.type) {
     is AppFeedbackType.Status -> {
-      val colors = ExpirationDefaults.getColors(type.status)
+      val colors = ExpirationDefaults.getSoftColors(type.status)
       colors.container
     }
 
@@ -226,7 +226,9 @@ fun AppSnackbar(
 
   val snackbarContentColor = when (val type = snackbarData.type) {
     is AppFeedbackType.Status -> {
-      val colors = ExpirationDefaults.getColors(type.status)
+      val colors = ExpirationDefaults.getSoftColors(
+        instanceStatus = type.status,
+      )
       colors.onContainer
     }
 

@@ -11,17 +11,30 @@ import com.materialkolor.ktx.isLight
 object ExpirationDefaults {
 
   @Composable
-  fun getColors(
+  fun getVibrantColors(
     instanceStatus: InstanceStatus,
-    matchSaturation: Boolean = false,
   ): StatusColors {
     val expirationColors = CaducityTheme.expirationColors
     return when (instanceStatus) {
-      InstanceStatus.Fresh -> statusColors(expirationColors.fresh, matchSaturation)
-      InstanceStatus.ExpiringSoon -> statusColors(expirationColors.expiringSoon, matchSaturation)
-      InstanceStatus.Expired -> statusColors(expirationColors.expired, matchSaturation)
-      InstanceStatus.Frozen -> statusColors(expirationColors.frozen, matchSaturation)
-      InstanceStatus.Consumed -> statusColors(expirationColors.consumed, matchSaturation)
+      InstanceStatus.Fresh -> statusColors(expirationColors.fresh, false)
+      InstanceStatus.ExpiringSoon -> statusColors(expirationColors.expiringSoon, false)
+      InstanceStatus.Expired -> statusColors(expirationColors.expired, false)
+      InstanceStatus.Frozen -> statusColors(expirationColors.frozen, false)
+      InstanceStatus.Consumed -> statusColors(expirationColors.consumed, false)
+    }
+  }
+
+  @Composable
+  fun getSoftColors(
+    instanceStatus: InstanceStatus,
+  ): StatusColors {
+    val expirationColors = CaducityTheme.expirationColors
+    return when (instanceStatus) {
+      InstanceStatus.Fresh -> statusColors(expirationColors.fresh, true)
+      InstanceStatus.ExpiringSoon -> statusColors(expirationColors.expiringSoon, true)
+      InstanceStatus.Expired -> statusColors(expirationColors.expired, true)
+      InstanceStatus.Frozen -> statusColors(expirationColors.frozen, true)
+      InstanceStatus.Consumed -> statusColors(expirationColors.consumed, true)
     }
   }
 

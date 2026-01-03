@@ -149,7 +149,10 @@ fun AppDialogHost(hostState: AppDialogState) {
 @Suppress("ContentEmission")
 @Composable
 private fun containerColor(feedbackType: AppFeedbackType): Color = when (feedbackType) {
-  is AppFeedbackType.Status -> ExpirationDefaults.getColors(feedbackType.status).container
+  is AppFeedbackType.Status -> ExpirationDefaults.getSoftColors(
+    instanceStatus = feedbackType.status,
+  ).container
+
   AppFeedbackType.Error -> CaducityTheme.colorScheme.errorContainer
   AppFeedbackType.Info -> CaducityTheme.colorScheme.surfaceContainer
   AppFeedbackType.Success -> CaducityTheme.colorScheme.primaryContainer
@@ -158,9 +161,8 @@ private fun containerColor(feedbackType: AppFeedbackType): Color = when (feedbac
 @Suppress("ContentEmission")
 @Composable
 private fun contentColor(feedbackType: AppFeedbackType): Color = when (feedbackType) {
-  is AppFeedbackType.Status -> ExpirationDefaults.getColors(
+  is AppFeedbackType.Status -> ExpirationDefaults.getSoftColors(
     instanceStatus = feedbackType.status,
-    matchSaturation = true,
   ).onContainer
 
   AppFeedbackType.Error -> CaducityTheme.colorScheme.onErrorContainer

@@ -137,7 +137,7 @@ private fun CollapsedInstancesView(
     orderedStatuses.value.forEach { status ->
       // Safe to use getValue() because orderedStatuses is filtered by statusCounts.containsKey()
       val count = statusCounts.value.getValue(status)
-      val colors = ExpirationDefaults.getColors(status)
+      val colors = ExpirationDefaults.getVibrantColors(status)
 
       Box(
         modifier = Modifier
