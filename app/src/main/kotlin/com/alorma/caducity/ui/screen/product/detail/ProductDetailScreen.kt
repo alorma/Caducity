@@ -85,9 +85,14 @@ fun ProductDetailScreen(
         InstanceActionError.CannotFreezeExpiredInstance -> R.string.error_cannot_freeze_expired
         InstanceActionError.CannotConsumeExpiredInstance -> R.string.error_cannot_consume_expired
       }
+      val type = when (error) {
+        InstanceActionError.InstanceNotFound -> AppSnackbarType.Error
+        InstanceActionError.CannotConsumeExpiredInstance -> AppSnackbarType.Status(InstanceStatus.Expired)
+        InstanceActionError.CannotFreezeExpiredInstance -> AppSnackbarType.Status(InstanceStatus.Expired)
+      }
       snackbarHostState.showSnackbar(
         message = message,
-        type = AppSnackbarType.Error,
+        type = type,
       )
     }
   }
