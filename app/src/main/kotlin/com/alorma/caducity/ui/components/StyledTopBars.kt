@@ -66,7 +66,6 @@ fun StyledTopAppBar(
   )
 }
 
-@Suppress("PreviewVisibility")
 @PreviewLightDark
 @Composable
 fun StyledCenterAlignedTopAppBarPreview() {
@@ -77,7 +76,6 @@ fun StyledCenterAlignedTopAppBarPreview() {
   }
 }
 
-@Suppress("PreviewVisibility")
 @PreviewLightDark
 @Composable
 fun StyledTopAppBarPreview() {

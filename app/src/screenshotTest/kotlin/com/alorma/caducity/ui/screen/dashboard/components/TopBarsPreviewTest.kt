@@ -6,16 +6,18 @@ import com.alorma.caducity.ui.components.StyledCenterAlignedTopAppBarPreview
 import com.alorma.caducity.ui.components.StyledTopAppBarPreview
 import com.android.tools.screenshot.PreviewTest
 
-@PreviewTest
-@Preview
-@Composable
-fun StyledTopBarTest() {
-  StyledTopAppBarPreview()
-}
+class TopBarsPreviewTest {
+  @PreviewTest
+  @Preview
+  @Composable
+  fun StyledTopBarTest() {
+    StyledTopAppBarPreview()
+  }
 
-@PreviewTest
-@Preview
-@Composable
-fun StyledCenterAlignedTest() {
-  StyledCenterAlignedTopAppBarPreview()
+  @PreviewTest
+  @Preview
+  @Composable
+  fun StyledCenterAlignedTest() {
+    StyledCenterAlignedTopAppBarPreview()
+  }
 }
