@@ -16,9 +16,19 @@ class ConsumeInstanceUseCase(
 
     // Prevent consuming expired instances
     if (instance.status == InstanceStatus.Expired) {
-      return InstanceActionResult.Failure(InstanceActionError.CannotConsumeExpiredInstance)
+      return InstanceActionResult.Failure(InstanceActionError.CannotConsumeExpiredInstance(instanceId))
     }
 
+    productDataSource.markInstanceAsConsumed(instanceId)
+    return InstanceActionResult.Success(Unit)
+  }
+
+  suspend fun forceConsumeInstance(instanceId: String): InstanceActionResult<Unit> {
+    // Get the instance to verify it exists
+    val instance = productDataSource.getInstance(instanceId)
+      ?: return InstanceActionResult.Failure(InstanceActionError.InstanceNotFound)
+
+    // Force consume regardless of status
     productDataSource.markInstanceAsConsumed(instanceId)
     return InstanceActionResult.Success(Unit)
   }

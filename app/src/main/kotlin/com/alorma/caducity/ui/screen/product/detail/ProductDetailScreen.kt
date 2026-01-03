@@ -53,6 +53,7 @@ import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
+import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
@@ -87,14 +88,18 @@ fun ProductDetailScreen(
     viewModel.actionError.collectLatest { error ->
 
       when (error) {
-        InstanceActionError.CannotConsumeExpiredInstance -> {
-          dialogState.showAlertDialog(
-            title = AppFeedbackResource.AsString("Title"),
-            text = AppFeedbackResource.AsString("Message"),
-            positiveButton = AppFeedbackResource.AsString("Consume"),
-            negativeButton = AppFeedbackResource.AsString("Cancel"),
+        is InstanceActionError.CannotConsumeExpiredInstance -> {
+          val result = dialogState.showAlertDialog(
+            title = AppFeedbackResource.AsResource(R.string.warning_consume_expired_title),
+            text = AppFeedbackResource.AsResource(R.string.warning_consume_expired_message),
+            positiveButton = AppFeedbackResource.AsResource(R.string.warning_consume_expired_positive),
+            negativeButton = AppFeedbackResource.AsResource(R.string.warning_consume_expired_negative),
             type = AppFeedbackType.Status(InstanceStatus.Expired),
           )
+
+          if (result is DialogResult.Positive) {
+            viewModel.forceConsumeInstance(error.instanceId)
+          }
         }
 
         InstanceActionError.CannotFreezeExpiredInstance -> {

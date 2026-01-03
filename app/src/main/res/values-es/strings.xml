@@ -109,6 +109,10 @@
     <string name="error_instance_not_found">Instancia no encontrada</string>
     <string name="error_cannot_freeze_expired">No se pueden congelar artículos caducados</string>
     <string name="error_cannot_consume_expired">No es seguro consumir productos caducados</string>
+    <string name="warning_consume_expired_title">¿Consumir Artículo Caducado?</string>
+    <string name="warning_consume_expired_message">Este artículo ha caducado. No es seguro consumir productos caducados. ¿Estás seguro de que quieres marcarlo como consumido?</string>
+    <string name="warning_consume_expired_positive">Consumir de Todos Modos</string>
+    <string name="warning_consume_expired_negative">Cancelar</string>
 
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Bienvenido a Caducity</string>

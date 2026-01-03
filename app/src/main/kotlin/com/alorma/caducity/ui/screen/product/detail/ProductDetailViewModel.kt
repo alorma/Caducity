@@ -97,6 +97,12 @@ class ProductDetailViewModel(
     }
   }
 
+  fun forceConsumeInstance(instanceId: String) {
+    viewModelScope.launch {
+      consumeInstanceUseCase.forceConsumeInstance(instanceId)
+    }
+  }
+
   fun toggleFreezeInstance(instanceId: String, expirationDate: kotlin.time.Instant, isFrozen: Boolean) {
     viewModelScope.launch {
       if (isFrozen) {

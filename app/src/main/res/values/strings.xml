@@ -113,6 +113,10 @@
     <string name="error_instance_not_found">Instance not found</string>
     <string name="error_cannot_freeze_expired">Cannot freeze expired items</string>
     <string name="error_cannot_consume_expired">It is not safe to consume expired products</string>
+    <string name="warning_consume_expired_title">Consume Expired Item?</string>
+    <string name="warning_consume_expired_message">This item has expired. It is not safe to consume expired products. Are you sure you want to mark it as consumed?</string>
+    <string name="warning_consume_expired_positive">Consume Anyway</string>
+    <string name="warning_consume_expired_negative">Cancel</string>
 
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Welcome to Caducity</string>
