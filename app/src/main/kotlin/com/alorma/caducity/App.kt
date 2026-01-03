@@ -27,6 +27,7 @@ import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TooltipAnchorPosition
@@ -194,7 +195,9 @@ fun App(
             )
           }
           entry<ProductsListRoute>(
-            metadata = BottomSheetSceneStrategy.bottomSheet(),
+            metadata = BottomSheetSceneStrategy.bottomSheet(
+              sheetValue = SheetValue.PartiallyExpanded,
+            ),
           ) {
             ProductsListBottomSheet(
               filters = it.toFilter(),
