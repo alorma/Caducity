@@ -12,6 +12,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import com.alorma.caducity.ui.theme.preview.AppPreview
 
@@ -66,7 +67,7 @@ fun StyledTopAppBar(
 }
 
 @Suppress("PreviewVisibility")
-@Preview
+@PreviewLightDark
 @Composable
 fun StyledCenterAlignedTopAppBarPreview() {
   AppPreview {
@@ -77,7 +78,7 @@ fun StyledCenterAlignedTopAppBarPreview() {
 }
 
 @Suppress("PreviewVisibility")
-@Preview
+@PreviewLightDark
 @Composable
 fun StyledTopAppBarPreview() {
   AppPreview {
