@@ -50,10 +50,13 @@ import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.ui.components.StyledTopAppBar
-import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
+import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
+import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.screen.dashboard.CalendarMode
 import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
 import com.alorma.caducity.ui.screen.product.create.CreateInstanceBottomSheet
@@ -75,7 +78,9 @@ fun ProductDetailScreen(
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
   var showInstanceBottomSheet by remember { mutableStateOf(false) }
-  val snackbarHostState = rememberAppSnackbarHostState()
+
+  val dialogState = rememberAppDialogState()
+  val snackbarState = rememberAppSnackbarHostState()
 
   // Collect action errors and show them in snackbar
   LaunchedEffect(viewModel) {
@@ -83,11 +88,17 @@ fun ProductDetailScreen(
 
       when (error) {
         InstanceActionError.CannotConsumeExpiredInstance -> {
-
+          dialogState.showAlertDialog(
+            title = AppFeedbackResource.AsString("Title"),
+            text = AppFeedbackResource.AsString("Message"),
+            positiveButton = AppFeedbackResource.AsString("Consume"),
+            negativeButton = AppFeedbackResource.AsString("Cancel"),
+            type = AppFeedbackType.Status(InstanceStatus.Expired),
+          )
         }
 
         InstanceActionError.CannotFreezeExpiredInstance -> {
-          snackbarHostState.showSnackbar(
+          snackbarState.showSnackbar(
             message = R.string.error_cannot_freeze_expired,
             type = AppFeedbackType.Status(InstanceStatus.Expired),
           )
@@ -119,7 +130,8 @@ fun ProductDetailScreen(
     is ProductDetailState.Success -> {
       ProductDetailContent(
         product = currentState.product,
-        snackbarHostState = snackbarHostState,
+        snackbarHostState = snackbarState,
+        dialogState = dialogState,
         onBack = onBack,
         onAddInstance = { showInstanceBottomSheet = true },
         onDeleteInstance = { instanceId -> viewModel.deleteInstance(instanceId) },
@@ -171,6 +183,7 @@ fun ProductDetailScreen(
 private fun ProductDetailContent(
   product: ProductDetailUiModel,
   snackbarHostState: AppSnackbarHostState,
+  dialogState: AppDialogState,
   onBack: () -> Unit,
   onAddInstance: () -> Unit,
   onDeleteInstance: (String) -> Unit,
@@ -219,6 +232,7 @@ private fun ProductDetailContent(
       )
     },
     snackbarState = snackbarHostState,
+    dialogState = dialogState,
   ) { paddingValues ->
     LazyColumn(
       state = listState,
