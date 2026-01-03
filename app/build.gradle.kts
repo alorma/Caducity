@@ -39,14 +39,14 @@ android {
     buildConfig = true
   }
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
   }
 }
 
 kotlin {
   compilerOptions {
-    jvmTarget = JvmTarget.JVM_11
+    jvmTarget = JvmTarget.JVM_21
     optIn.add("kotlin.time.ExperimentalTime")
     optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
     optIn.add("androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")
