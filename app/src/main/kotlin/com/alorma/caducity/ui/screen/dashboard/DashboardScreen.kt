@@ -22,6 +22,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alorma.caducity.ui.components.DisclaimerBanner
 import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.CalendarCollapse
@@ -119,6 +120,18 @@ fun DashboardContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(bottom = 64.dp),
       ) {
+        // Show disclaimer banner if there are expired products
+        if (state.summary.expired > 0) {
+          item(
+            key = "disclaimer",
+            contentType = "disclaimer"
+          ) {
+            DisclaimerBanner(
+              modifier = Modifier.padding(horizontal = 16.dp)
+            )
+          }
+        }
+
         // Summary card showing up to 3 items: expired, expiring soon, fresh
         item(
           key = "summary",

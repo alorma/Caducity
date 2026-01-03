@@ -6,6 +6,7 @@ import com.alorma.caducity.config.clock.AppClock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration.Companion.days
 
 @OptIn(ExperimentalMaterial3Api::class)
 class FutureDateSelectableDates(
@@ -16,7 +17,7 @@ class FutureDateSelectableDates(
     val now = appClock.now()
     val today = now.toLocalDateTime(TimeZone.UTC).date
     val todayStart = today.atStartOfDayIn(TimeZone.UTC)
-    todayStart.toEpochMilliseconds()
+    todayStart.minus(3.days).toEpochMilliseconds()
   }
 
   override fun isSelectableDate(utcTimeMillis: Long): Boolean {

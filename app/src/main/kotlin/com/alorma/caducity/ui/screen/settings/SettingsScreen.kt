@@ -37,6 +37,7 @@ fun SettingsRootScreen(
   onNavigateToNotifications: () -> Unit,
   onNavigateToDebug: () -> Unit,
   onNavigateToAbout: () -> Unit,
+  onNavigateToLegal: () -> Unit,
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
   debugModeProvider: DebugModeProvider = koinInject(),
@@ -126,7 +127,7 @@ fun SettingsRootScreen(
         }
       }
 
-      // Group 3: About
+      // Group 3: About & Legal
       StyledSettingsGroup {
         StyledSettingsCard(
           icon = {
@@ -138,7 +139,20 @@ fun SettingsRootScreen(
           title = stringResource(R.string.settings_about_title),
           subtitle = stringResource(R.string.settings_about_description),
           onClick = onNavigateToAbout,
-          position = ShapePosition.Single,
+          position = ShapePosition.Start,
+        )
+
+        StyledSettingsCard(
+          icon = {
+            Icon(
+              imageVector = AppIcons.Info,
+              contentDescription = null,
+            )
+          },
+          title = stringResource(R.string.settings_legal_title),
+          subtitle = stringResource(R.string.settings_legal_description),
+          onClick = onNavigateToLegal,
+          position = ShapePosition.End,
         )
       }
     }

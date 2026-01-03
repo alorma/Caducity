@@ -17,6 +17,7 @@ import com.alorma.caducity.ui.screen.settings.about.AboutScreen
 import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScreen
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsScreen
 import com.alorma.caducity.ui.screen.settings.language.LanguageSettingsScreen
+import com.alorma.caducity.ui.screen.settings.legal.LegalScreen
 import com.alorma.caducity.ui.screen.settings.notifications.NotificationsSettingsScreen
 import org.koin.compose.koinInject
 
@@ -48,6 +49,7 @@ fun SettingsContainer(
           onNavigateToNotifications = { settingsBackStack.add(SettingsRoute.Notifications) },
           onNavigateToDebug = { settingsBackStack.add(SettingsRoute.Debug) },
           onNavigateToAbout = { settingsBackStack.add(SettingsRoute.About) },
+          onNavigateToLegal = { settingsBackStack.add(SettingsRoute.Legal) },
         )
       }
       entry<SettingsRoute.Appearance>(
@@ -76,6 +78,11 @@ fun SettingsContainer(
         metadata = BottomSheetSceneStrategy.bottomSheet(),
       ) {
         AboutScreen()
+      }
+      entry<SettingsRoute.Legal>(
+        metadata = BottomSheetSceneStrategy.bottomSheet(),
+      ) {
+        LegalScreen()
       }
     },
   )

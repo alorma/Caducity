@@ -122,5 +122,11 @@
     <string name="onboarding_button_understand">Entenc</string>
     <string name="onboarding_button_allow_notifications">Permetre Notificacions</string>
 
+    <!-- Disclaimer -->
+    <string name="disclaimer_brief_title">Utilitza el teu criteri</string>
+    <string name="disclaimer_brief_message">Les dates de caducitat són estimacions. Sempre inspecciona els productes i segueix les pautes de seguretat alimentària.</string>
+    <string name="settings_legal_title">Legal</string>
+    <string name="settings_legal_description">Avís legal i termes</string>
+
     <string name="app_name">Caducity</string>
 </resources>

@@ -121,5 +121,11 @@
     <string name="onboarding_button_understand">Entiendo</string>
     <string name="onboarding_button_allow_notifications">Permitir Notificaciones</string>
 
+    <!-- Disclaimer -->
+    <string name="disclaimer_brief_title">Usa tu criterio</string>
+    <string name="disclaimer_brief_message">Las fechas de caducidad son estimaciones. Siempre inspecciona los productos y sigue las pautas de seguridad alimentaria.</string>
+    <string name="settings_legal_title">Legal</string>
+    <string name="settings_legal_description">Aviso legal y términos</string>
+
     <string name="app_name">Caducity</string>
 </resources>
