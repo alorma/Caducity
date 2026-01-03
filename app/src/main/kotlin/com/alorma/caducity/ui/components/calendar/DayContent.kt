@@ -82,7 +82,7 @@ fun DayContent(
             shape = shape,
           )
           .clickable { onClick(date) }
-          .padding(6.dp),
+          .padding(4.dp),
         contentAlignment = Alignment.Center,
       ) {
         val internalShape = shapePosition.toCalendarShape(
