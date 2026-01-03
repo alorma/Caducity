@@ -32,8 +32,18 @@
     <string name="dashboard_section_empty">Vacío</string>
 
     <string  name="settings_screen_title">Configuración</string>
+    <string name="settings_appearance_title">Apariencia</string>
+    <string name="settings_appearance_description">Tema, colores y visualización</string>
     <string name="settings_language_title">Idioma</string>
     <string name="settings_language_description">Idioma de la aplicación</string>
+    <string name="settings_notifications_title">Notificaciones</string>
+    <string name="settings_notifications_description">Gestionar preferencias de notificaciones</string>
+    <string name="settings_debug_title">Depuración</string>
+    <string name="settings_debug_description">Herramientas de desarrollo y depuración</string>
+    <string name="settings_about_title">Acerca de</string>
+    <string name="settings_about_description">Información y créditos de la aplicación</string>
+    <string name="settings_backup_title">Respaldo</string>
+    <string name="settings_backup_description">Exportar y restaurar tus datos</string>
 
     <string name="settings_group_appearance">Apariencia</string>
     <string name="settings_theme_title">Tema</string>
@@ -120,6 +130,23 @@
     <string name="onboarding_button_previous">Anterior</string>
     <string name="onboarding_button_understand">Entiendo</string>
     <string name="onboarding_button_allow_notifications">Permitir Notificaciones</string>
+
+    <!-- Backup & Restore -->
+    <string name="backup_screen_title">Respaldo y Restauración</string>
+    <string name="backup_export_title">Exportar Respaldo</string>
+    <string name="backup_export_description">Guardar tus datos en un archivo</string>
+    <string name="backup_restore_title">Restaurar Respaldo</string>
+    <string name="backup_restore_description">Cargar datos desde un archivo de respaldo</string>
+    <string name="backup_restore_warning_title">¿Reemplazar Todos los Datos?</string>
+    <string name="backup_restore_warning_message">Esto eliminará todos los datos actuales y restaurará desde el respaldo. Esta acción no se puede deshacer.</string>
+    <string name="backup_restore_confirm">Restaurar</string>
+    <string name="backup_cancel">Cancelar</string>
+    <string name="backup_export_success">Respaldo exportado exitosamente</string>
+    <string name="backup_restore_success">Respaldo restaurado exitosamente</string>
+    <string name="backup_error_invalid_file">Archivo de respaldo inválido</string>
+    <string name="backup_error_version_mismatch">Versión de respaldo incompatible</string>
+    <string name="backup_error_export_failed">Error al exportar respaldo</string>
+    <string name="backup_error_restore_failed">Error al restaurar respaldo</string>
 
     <string name="app_name">Caducity</string>
 </resources>

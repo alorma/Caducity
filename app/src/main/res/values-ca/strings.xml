@@ -33,8 +33,18 @@
     <string name="dashboard_section_empty">Buit</string>
 
     <string  name="settings_screen_title">Configuració</string>
+    <string name="settings_appearance_title">Aparença</string>
+    <string name="settings_appearance_description">Tema, colors i visualització</string>
     <string name="settings_language_title">Idioma</string>
     <string name="settings_language_description">Idioma de l\'aplicació</string>
+    <string name="settings_notifications_title">Notificacions</string>
+    <string name="settings_notifications_description">Gestionar preferències de notificacions</string>
+    <string name="settings_debug_title">Depuració</string>
+    <string name="settings_debug_description">Eines de desenvolupament i depuració</string>
+    <string name="settings_about_title">Quant a</string>
+    <string name="settings_about_description">Informació i crèdits de l\'aplicació</string>
+    <string name="settings_backup_title">Còpia de seguretat</string>
+    <string name="settings_backup_description">Exportar i restaurar les teves dades</string>
 
     <string name="settings_group_appearance">Aparença</string>
     <string name="settings_theme_title">Tema</string>
@@ -121,6 +131,23 @@
     <string name="onboarding_button_previous">Anterior</string>
     <string name="onboarding_button_understand">Entenc</string>
     <string name="onboarding_button_allow_notifications">Permetre Notificacions</string>
+
+    <!-- Backup & Restore -->
+    <string name="backup_screen_title">Còpia de seguretat i Restauració</string>
+    <string name="backup_export_title">Exportar Còpia de seguretat</string>
+    <string name="backup_export_description">Desar les teves dades en un arxiu</string>
+    <string name="backup_restore_title">Restaurar Còpia de seguretat</string>
+    <string name="backup_restore_description">Carregar dades des d\'un arxiu de còpia de seguretat</string>
+    <string name="backup_restore_warning_title">Reemplaçar Totes les Dades?</string>
+    <string name="backup_restore_warning_message">Això eliminarà totes les dades actuals i restaurarà des de la còpia de seguretat. Aquesta acció no es pot desfer.</string>
+    <string name="backup_restore_confirm">Restaurar</string>
+    <string name="backup_cancel">Cancel·lar</string>
+    <string name="backup_export_success">Còpia de seguretat exportada amb èxit</string>
+    <string name="backup_restore_success">Còpia de seguretat restaurada amb èxit</string>
+    <string name="backup_error_invalid_file">Arxiu de còpia de seguretat invàlid</string>
+    <string name="backup_error_version_mismatch">Versió de còpia de seguretat incompatible</string>
+    <string name="backup_error_export_failed">Error en exportar còpia de seguretat</string>
+    <string name="backup_error_restore_failed">Error en restaurar còpia de seguretat</string>
 
     <string name="app_name">Caducity</string>
 </resources>

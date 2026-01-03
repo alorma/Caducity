@@ -37,6 +37,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.feature.barcode.BarcodeHandler
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.BarcodeScanner
+import com.alorma.caducity.config.ConfigQualifier
 import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -55,7 +56,7 @@ fun CreateInstanceBottomSheet(
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
   scannedBarcode: String? = null,
-  dateFormat: DateTimeFormat<LocalDate> = koinInject(),
+  dateFormat: DateTimeFormat<LocalDate> = koinInject(qualifier = ConfigQualifier.DateFormat.HumanReadable),
   selectableDates: FutureDateSelectableDates = koinInject(),
   barcodeHandler: BarcodeHandler = koinInject(),
 ) {

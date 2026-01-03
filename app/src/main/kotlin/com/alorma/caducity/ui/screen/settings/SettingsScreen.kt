@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.StyledCenterAlignedTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Backup
 import com.alorma.caducity.base.ui.icons.Palette
 import com.alorma.caducity.config.language.LanguageManager
 import com.alorma.caducity.feature.debug.DebugModeProvider
@@ -35,6 +36,7 @@ fun SettingsRootScreen(
   onNavigateToAppearance: () -> Unit,
   onNavigateToLanguage: () -> Unit,
   onNavigateToNotifications: () -> Unit,
+  onNavigateToBackup: () -> Unit,
   onNavigateToDebug: () -> Unit,
   onNavigateToAbout: () -> Unit,
   scrollConnection: NestedScrollConnection,
@@ -108,7 +110,23 @@ fun SettingsRootScreen(
         )
       }
 
-      // Group 2: Debug (only shown in debug mode)
+      // Group 2: Backup
+      StyledSettingsGroup {
+        StyledSettingsCard(
+          icon = {
+            Icon(
+              imageVector = AppIcons.Backup,
+              contentDescription = null,
+            )
+          },
+          title = stringResource(R.string.settings_backup_title),
+          subtitle = stringResource(R.string.settings_backup_description),
+          onClick = onNavigateToBackup,
+          position = ShapePosition.Single,
+        )
+      }
+
+      // Group 3: Debug (only shown in debug mode)
       if (debugModeProvider.isDebugMode()) {
         StyledSettingsGroup {
           StyledSettingsCard(
@@ -126,7 +144,7 @@ fun SettingsRootScreen(
         }
       }
 
-      // Group 3: About
+      // Group 4: About
       StyledSettingsGroup {
         StyledSettingsCard(
           icon = {

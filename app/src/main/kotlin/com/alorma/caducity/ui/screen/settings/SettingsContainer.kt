@@ -15,6 +15,7 @@ import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
 import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.ui.screen.settings.about.AboutScreen
 import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScreen
+import com.alorma.caducity.ui.screen.settings.backup.BackupScreen
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsScreen
 import com.alorma.caducity.ui.screen.settings.language.LanguageSettingsScreen
 import com.alorma.caducity.ui.screen.settings.notifications.NotificationsSettingsScreen
@@ -46,6 +47,7 @@ fun SettingsContainer(
           onNavigateToAppearance = { settingsBackStack.add(SettingsRoute.Appearance) },
           onNavigateToLanguage = { settingsBackStack.add(SettingsRoute.Language) },
           onNavigateToNotifications = { settingsBackStack.add(SettingsRoute.Notifications) },
+          onNavigateToBackup = { settingsBackStack.add(SettingsRoute.Backup) },
           onNavigateToDebug = { settingsBackStack.add(SettingsRoute.Debug) },
           onNavigateToAbout = { settingsBackStack.add(SettingsRoute.About) },
         )
@@ -64,6 +66,11 @@ fun SettingsContainer(
         metadata = BottomSheetSceneStrategy.bottomSheet(),
       ) {
         NotificationsSettingsScreen()
+      }
+      entry<SettingsRoute.Backup>(
+        metadata = BottomSheetSceneStrategy.bottomSheet(),
+      ) {
+        BackupScreen()
       }
       if (debugModeProvider.isDebugMode()) {
         entry<SettingsRoute.Debug>(

@@ -42,6 +42,8 @@
     <string name="settings_debug_description">Developer and debugging tools</string>
     <string name="settings_about_title">About</string>
     <string name="settings_about_description">App information and credits</string>
+    <string name="settings_backup_title">Backup</string>
+    <string name="settings_backup_description">Export and restore your data</string>
 
     <string name="settings_group_appearance">Appearance</string>
     <string name="settings_theme_title">Theme</string>
@@ -132,6 +134,23 @@
     <string name="onboarding_button_previous">Previous</string>
     <string name="onboarding_button_understand">I Understand</string>
     <string name="onboarding_button_allow_notifications">Allow Notifications</string>
+
+    <!-- Backup & Restore -->
+    <string name="backup_screen_title">Backup &amp; Restore</string>
+    <string name="backup_export_title">Export Backup</string>
+    <string name="backup_export_description">Save your data to a file</string>
+    <string name="backup_restore_title">Restore Backup</string>
+    <string name="backup_restore_description">Load data from a backup file</string>
+    <string name="backup_restore_warning_title">Replace All Data?</string>
+    <string name="backup_restore_warning_message">This will delete all current data and restore from backup. This action cannot be undone.</string>
+    <string name="backup_restore_confirm">Restore</string>
+    <string name="backup_cancel">Cancel</string>
+    <string name="backup_export_success">Backup exported successfully</string>
+    <string name="backup_restore_success">Backup restored successfully</string>
+    <string name="backup_error_invalid_file">Invalid backup file</string>
+    <string name="backup_error_version_mismatch">Incompatible backup version</string>
+    <string name="backup_error_export_failed">Failed to export backup</string>
+    <string name="backup_error_restore_failed">Failed to restore backup</string>
 
     <string name="app_name">Caducity</string>
 </resources>
