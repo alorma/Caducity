@@ -1,7 +1,6 @@
 package com.alorma.caducity.ui.theme
 
 import androidx.compose.material3.Typography
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import com.alorma.caducity.R
@@ -10,69 +9,54 @@ val TYPOGRAPHY = Typography()
 
 val caducityTypography = Typography(
   displayLarge = TYPOGRAPHY.displayLarge.copy(
-    fontFamily = AppFonts.googleSans,
-    fontFeatureSettings = "ss02"
+    fontFamily = AppFonts.googleFlex600,
   ),
   displayMedium = TYPOGRAPHY.displayMedium.copy(
-    fontFamily = AppFonts.googleSans,
-    fontFeatureSettings = "ss02"
+    fontFamily = AppFonts.googleFlex600,
   ),
   displaySmall = TYPOGRAPHY.displaySmall.copy(
-    fontFamily = AppFonts.googleSans,
-    fontFeatureSettings = "ss02"
+    fontFamily = AppFonts.googleFlex600,
   ),
   headlineLarge = TYPOGRAPHY.headlineLarge.copy(
     fontFamily = AppFonts.roboto,
-    fontFeatureSettings = "ss02"
   ),
   headlineMedium = TYPOGRAPHY.headlineMedium.copy(
     fontFamily = AppFonts.roboto,
-    fontFeatureSettings = "ss02"
   ),
   headlineSmall = TYPOGRAPHY.headlineSmall.copy(
     fontFamily = AppFonts.roboto,
-    fontFeatureSettings = "ss02"
   ),
   titleLarge = TYPOGRAPHY.titleLarge.copy(
     fontFamily = AppFonts.roboto,
-    fontFeatureSettings = "ss02"
   ),
   titleMedium = TYPOGRAPHY.titleMedium.copy(
     fontFamily = AppFonts.roboto,
-    fontFeatureSettings = "ss02"
   ),
   titleSmall = TYPOGRAPHY.titleSmall.copy(
     fontFamily = AppFonts.roboto,
-    fontFeatureSettings = "ss02"
   ),
   bodyLarge = TYPOGRAPHY.bodyLarge.copy(
-    fontFamily = AppFonts.googleSans,
-    fontFeatureSettings = "ss02"
+    fontFamily = AppFonts.googleFlex400,
   ),
   bodyMedium = TYPOGRAPHY.bodyMedium.copy(
-    fontFamily = AppFonts.googleSans,
-    fontFeatureSettings = "ss02"
+    fontFamily = AppFonts.googleFlex400,
   ),
   bodySmall = TYPOGRAPHY.bodySmall.copy(
-    fontFamily = AppFonts.googleSans,
-    fontFeatureSettings = "ss02"
+    fontFamily = AppFonts.googleFlex400,
   ),
   labelLarge = TYPOGRAPHY.labelLarge.copy(
-    fontFamily = AppFonts.googleSans,
-    fontFeatureSettings = "ss02"
+    fontFamily = AppFonts.googleFlex600,
   ),
   labelMedium = TYPOGRAPHY.labelMedium.copy(
-    fontFamily = AppFonts.googleSans,
-    fontFeatureSettings = "ss02"
+    fontFamily = AppFonts.googleFlex600,
   ),
   labelSmall = TYPOGRAPHY.labelSmall.copy(
-    fontFamily = AppFonts.googleSans,
-    fontFeatureSettings = "ss02"
+    fontFamily = AppFonts.googleFlex600,
   )
 )
 
-@OptIn(ExperimentalTextApi::class)
 object AppFonts {
-  val googleSans = FontFamily(Font(R.font.google_sans_flex))
+  val googleFlex400 = FontFamily(Font(R.font.google_sans_flex_400))
+  val googleFlex600 = FontFamily(Font(R.font.google_sans_flex_600))
   val roboto = FontFamily(Font(R.font.roboto_flex))
 }
