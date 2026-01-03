@@ -7,11 +7,11 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -25,10 +25,6 @@ import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -38,31 +34,35 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.model.InstanceActionError
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.ui.components.StyledTopAppBar
-import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.Back
-import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.snackbar.AppSnackbarHostState
+import com.alorma.caducity.ui.components.snackbar.AppSnackbarType
+import com.alorma.caducity.ui.components.snackbar.rememberAppSnackbarHostState
 import com.alorma.caducity.ui.screen.dashboard.CalendarMode
 import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
+import com.alorma.caducity.ui.screen.product.create.CreateInstanceBottomSheet
+import com.alorma.caducity.ui.theme.CaducityTheme
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
-import com.alorma.caducity.ui.screen.product.create.CreateInstanceBottomSheet
-import kotlinx.coroutines.launch
-import androidx.compose.ui.res.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -75,29 +75,29 @@ fun ProductDetailScreen(
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
   var showInstanceBottomSheet by remember { mutableStateOf(false) }
-  val snackbarHostState = remember { SnackbarHostState() }
-
-  // Error message strings
-  val errorInstanceNotFound = stringResource(R.string.error_instance_not_found)
-  val errorCannotFreezeExpired = stringResource(R.string.error_cannot_freeze_expired)
-  val errorCannotConsumeExpired = stringResource(R.string.error_cannot_consume_expired)
+  val snackbarHostState = rememberAppSnackbarHostState()
 
   // Collect action errors and show them in snackbar
   LaunchedEffect(viewModel) {
     viewModel.actionError.collectLatest { error ->
       val message = when (error) {
-        InstanceActionError.InstanceNotFound -> errorInstanceNotFound
-        InstanceActionError.CannotFreezeExpiredInstance -> errorCannotFreezeExpired
-        InstanceActionError.CannotConsumeExpiredInstance -> errorCannotConsumeExpired
+        InstanceActionError.InstanceNotFound -> R.string.error_instance_not_found
+        InstanceActionError.CannotFreezeExpiredInstance -> R.string.error_cannot_freeze_expired
+        InstanceActionError.CannotConsumeExpiredInstance -> R.string.error_cannot_consume_expired
       }
-      snackbarHostState.showSnackbar(message)
+      snackbarHostState.showSnackbar(
+        message = message,
+        type = AppSnackbarType.Error,
+      )
     }
   }
 
   when (val currentState = state.value) {
     is ProductDetailState.Loading -> {
       Box(
-        modifier = Modifier.fillMaxSize().then(modifier),
+        modifier = Modifier
+          .fillMaxSize()
+          .then(modifier),
         contentAlignment = Alignment.Center,
       ) {
         LoadingIndicator(
@@ -164,7 +164,7 @@ fun ProductDetailScreen(
 @Composable
 private fun ProductDetailContent(
   product: ProductDetailUiModel,
-  snackbarHostState: SnackbarHostState,
+  snackbarHostState: AppSnackbarHostState,
   onBack: () -> Unit,
   onAddInstance: () -> Unit,
   onDeleteInstance: (String) -> Unit,
@@ -198,7 +198,7 @@ private fun ProductDetailContent(
     }.toMap()
   }
 
-  Scaffold(
+  AppScaffold(
     topBar = {
       StyledTopAppBar(
         title = { Text(text = product.name) },
@@ -212,15 +212,7 @@ private fun ProductDetailContent(
         },
       )
     },
-    snackbarHost = {
-      SnackbarHost(hostState = snackbarHostState) { data ->
-        Snackbar(
-          snackbarData = data,
-          containerColor = CaducityTheme.colorScheme.errorContainer,
-          contentColor = CaducityTheme.colorScheme.onErrorContainer,
-        )
-      }
-    },
+    snackbarState = snackbarHostState,
   ) { paddingValues ->
     LazyColumn(
       state = listState,
