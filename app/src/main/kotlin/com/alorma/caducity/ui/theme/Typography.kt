@@ -10,15 +10,15 @@ val TYPOGRAPHY = Typography()
 
 val caducityTypography = Typography(
   displayLarge = TYPOGRAPHY.displayLarge.copy(
-    fontFamily = AppFonts.googleFlex600,
+    fontFamily = AppFonts.googleSans,
     fontFeatureSettings = "ss02"
   ),
   displayMedium = TYPOGRAPHY.displayMedium.copy(
-    fontFamily = AppFonts.googleFlex600,
+    fontFamily = AppFonts.googleSans,
     fontFeatureSettings = "ss02"
   ),
   displaySmall = TYPOGRAPHY.displaySmall.copy(
-    fontFamily = AppFonts.googleFlex600,
+    fontFamily = AppFonts.googleSans,
     fontFeatureSettings = "ss02"
   ),
   headlineLarge = TYPOGRAPHY.headlineLarge.copy(
@@ -46,36 +46,33 @@ val caducityTypography = Typography(
     fontFeatureSettings = "ss02"
   ),
   bodyLarge = TYPOGRAPHY.bodyLarge.copy(
-    fontFamily = AppFonts.googleFlex600,
+    fontFamily = AppFonts.googleSans,
     fontFeatureSettings = "ss02"
   ),
   bodyMedium = TYPOGRAPHY.bodyMedium.copy(
-    fontFamily = AppFonts.googleFlex400,
+    fontFamily = AppFonts.googleSans,
     fontFeatureSettings = "ss02"
   ),
   bodySmall = TYPOGRAPHY.bodySmall.copy(
-    fontFamily = AppFonts.googleFlex400,
+    fontFamily = AppFonts.googleSans,
     fontFeatureSettings = "ss02"
   ),
   labelLarge = TYPOGRAPHY.labelLarge.copy(
-    fontFamily = AppFonts.googleFlex600,
+    fontFamily = AppFonts.googleSans,
     fontFeatureSettings = "ss02"
   ),
   labelMedium = TYPOGRAPHY.labelMedium.copy(
-    fontFamily = AppFonts.googleFlex600,
+    fontFamily = AppFonts.googleSans,
     fontFeatureSettings = "ss02"
   ),
   labelSmall = TYPOGRAPHY.labelSmall.copy(
-    fontFamily = AppFonts.googleFlex600,
+    fontFamily = AppFonts.googleSans,
     fontFeatureSettings = "ss02"
   )
 )
 
 @OptIn(ExperimentalTextApi::class)
 object AppFonts {
-  val googleFlex400 = FontFamily(Font(R.font.google_sans_flex_400))
-
-  val googleFlex600 = FontFamily(Font(R.font.google_sans_flex_600))
-
-  val roboto = FontFamily(Font(R.font.roboto_flex_logo))
+  val googleSans = FontFamily(Font(R.font.google_sans_flex))
+  val roboto = FontFamily(Font(R.font.roboto_flex))
 }
