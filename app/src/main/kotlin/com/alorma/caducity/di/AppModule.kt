@@ -11,10 +11,12 @@ import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
+import com.alorma.caducity.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.dashboard.DashboardMapper
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfiguration
 import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfigurationImpl
 import com.alorma.caducity.ui.screen.dashboard.DashboardViewModel
+import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
 import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
 import com.alorma.caducity.ui.screen.product.create.FutureDateSelectableDates
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailMapper
@@ -41,6 +43,10 @@ val appModule = module {
   includes(fireAndForgetModule)
 
   single { Settings() }
+
+  // Onboarding
+  singleOf(::OnboardingFlag)
+  viewModelOf(::OnboardingViewModel)
 
   singleOf(::DashboardUiConfigurationImpl) bind DashboardUiConfiguration::class
 

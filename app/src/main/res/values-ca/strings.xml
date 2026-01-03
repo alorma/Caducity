@@ -101,5 +101,26 @@
     <string name="error_cannot_freeze_expired">No es poden congelar articles caducats</string>
     <string name="error_cannot_consume_expired">No és segur consumir productes caducats</string>
 
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Benvingut a Caducity</string>
+    <string name="onboarding_welcome_message">Controla els teus aliments i redueix el malbaratament</string>
+    <string name="onboarding_features_title">Característiques Clau</string>
+    <string name="onboarding_features_track">Controla les dates de caducitat de tots els teus productes</string>
+    <string name="onboarding_features_notify">Rep notificacions abans que caduquin els productes</string>
+    <string name="onboarding_features_dashboard">Visualitza estadístiques i informació al teu tauler</string>
+    <string name="onboarding_permissions_title">Mantingues-te Informat</string>
+    <string name="onboarding_permissions_message">Permet les notificacions per rebre alertes oportunes sobre productes que caduquen</string>
+    <string name="onboarding_permissions_granted">Notificacions activades</string>
+    <string name="onboarding_permissions_automatic">Les notificacions estan activades automàticament</string>
+    <string name="onboarding_tutorial_title">Primers Passos</string>
+    <string name="onboarding_tutorial_message">Afegeix el teu primer producte per començar a controlar dates de caducitat</string>
+    <string name="onboarding_disclaimer_title">Avís Important</string>
+    <string name="onboarding_disclaimer_message">Aquesta aplicació ajuda a controlar les dates de caducitat de productes però no substitueix les pràctiques adequades de seguretat alimentària. Utilitza sempre el teu criteri i segueix les pautes de seguretat alimentària. Els desenvolupadors no són responsables de cap problema de salut derivat del consum de productes caducats.</string>
+    <string name="onboarding_button_next">Següent</string>
+    <string name="onboarding_button_skip">Ometre</string>
+    <string name="onboarding_button_previous">Anterior</string>
+    <string name="onboarding_button_understand">Entenc</string>
+    <string name="onboarding_button_allow_notifications">Permetre Notificacions</string>
+
     <string name="app_name">Caducity</string>
 </resources>

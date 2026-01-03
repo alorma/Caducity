@@ -112,5 +112,26 @@
     <string name="error_cannot_freeze_expired">Cannot freeze expired items</string>
     <string name="error_cannot_consume_expired">It is not safe to consume expired products</string>
 
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Welcome to Caducity</string>
+    <string name="onboarding_welcome_message">Track your groceries and reduce food waste</string>
+    <string name="onboarding_features_title">Key Features</string>
+    <string name="onboarding_features_track">Track expiration dates for all your products</string>
+    <string name="onboarding_features_notify">Get notified before products expire</string>
+    <string name="onboarding_features_dashboard">View statistics and insights on your dashboard</string>
+    <string name="onboarding_permissions_title">Stay Informed</string>
+    <string name="onboarding_permissions_message">Allow notifications to get timely alerts about expiring products</string>
+    <string name="onboarding_permissions_granted">Notifications enabled</string>
+    <string name="onboarding_permissions_automatic">Notifications are automatically enabled</string>
+    <string name="onboarding_tutorial_title">Getting Started</string>
+    <string name="onboarding_tutorial_message">Add your first product to start tracking expiration dates</string>
+    <string name="onboarding_disclaimer_title">Important Disclaimer</string>
+    <string name="onboarding_disclaimer_message">This app helps track product expiration dates but is not a substitute for proper food safety practices. Always use your judgment and follow food safety guidelines. The developers are not responsible for any health issues arising from consuming expired products.</string>
+    <string name="onboarding_button_next">Next</string>
+    <string name="onboarding_button_skip">Skip</string>
+    <string name="onboarding_button_previous">Previous</string>
+    <string name="onboarding_button_understand">I Understand</string>
+    <string name="onboarding_button_allow_notifications">Allow Notifications</string>
+
     <string name="app_name">Caducity</string>
 </resources>

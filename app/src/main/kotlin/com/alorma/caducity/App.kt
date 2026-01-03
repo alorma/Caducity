@@ -43,6 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
+import com.alorma.caducity.onboarding.OnboardingFlag
+import com.alorma.caducity.ui.screen.onboarding.OnboardingRoute
+import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
@@ -74,12 +77,19 @@ import org.koin.compose.koinInject
 @Composable
 fun App(
   modifier: Modifier = Modifier,
-  showExpiringOnly: Boolean = false,
+  onboardingFlag: OnboardingFlag = koinInject(),
 ) {
   AppTheme(
     themePreferences = koinInject(),
   ) {
-    val topLevelBackStack = retain { TopLevelBackStack(TopLevelRoute.Dashboard) }
+    // Determine initial route based on onboarding status
+    val initialRoute = if (onboardingFlag.isEnabled()) {
+      OnboardingRoute
+    } else {
+      TopLevelRoute.Dashboard
+    }
+
+    val topLevelBackStack = retain { TopLevelBackStack(initialRoute) }
     val bottomSheetStrategy = remember { BottomSheetSceneStrategy<NavKey>() }
 
     val topLevelRoutes = persistentListOf(
@@ -144,9 +154,16 @@ fun App(
             .togetherWith(fadeOut(motionScheme.defaultEffectsSpec()))
         },
         entryProvider = entryProvider {
+          entry<OnboardingRoute> {
+            OnboardingScreen(
+              onComplete = {
+                // Navigate to Dashboard after onboarding
+                topLevelBackStack.add(TopLevelRoute.Dashboard)
+              }
+            )
+          }
           entry<TopLevelRoute.Dashboard> {
             DashboardScreen(
-              showExpiringOnly = showExpiringOnly,
               scrollConnection = exitAlwaysScrollBehavior,
               onNavigateToDate = { date ->
                 topLevelBackStack.add(ProductsListRoute.byDate(date))
