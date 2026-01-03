@@ -110,6 +110,10 @@
     <string name="error_instance_not_found">Instància no trobada</string>
     <string name="error_cannot_freeze_expired">No es poden congelar articles caducats</string>
     <string name="error_cannot_consume_expired">No és segur consumir productes caducats</string>
+    <string name="warning_consume_expired_title">Consumir Article Caducat?</string>
+    <string name="warning_consume_expired_message">Aquest article ha caducat. No és segur consumir productes caducats. Estàs segur que vols marcar-lo com a consumit?</string>
+    <string name="warning_consume_expired_positive">Consumir de Totes Maneres</string>
+    <string name="warning_consume_expired_negative">Cancel·lar</string>
 
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Benvingut a Caducity</string>
