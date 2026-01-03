@@ -83,4 +83,17 @@ interface ProductDao {
 
   @Query("DELETE FROM product_instances WHERE id = :instanceId")
   suspend fun deleteProductInstance(instanceId: String)
+
+  // Backup & Restore methods
+  @Query("SELECT * FROM products")
+  suspend fun getAllProductsSync(): List<ProductRoomEntity>
+
+  @Query("SELECT * FROM product_instances")
+  suspend fun getAllProductInstancesSync(): List<ProductInstanceRoomEntity>
+
+  @Query("DELETE FROM products")
+  suspend fun clearAllProducts()
+
+  @Query("DELETE FROM product_instances")
+  suspend fun clearAllProductInstances()
 }
