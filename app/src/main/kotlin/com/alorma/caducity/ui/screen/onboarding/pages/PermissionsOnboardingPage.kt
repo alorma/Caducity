@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +20,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Notifications
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
 import org.koin.compose.koinInject
 
@@ -42,7 +42,7 @@ fun PermissionsOnboardingPage(
     verticalArrangement = Arrangement.Center,
   ) {
     Icon(
-      imageVector = Icons.Default.Notifications,
+      imageVector = AppIcons.Notifications,
       contentDescription = null,
       modifier = Modifier.size(80.dp),
       tint = MaterialTheme.colorScheme.primary,

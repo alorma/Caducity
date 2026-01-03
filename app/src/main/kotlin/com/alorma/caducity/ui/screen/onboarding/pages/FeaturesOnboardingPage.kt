@@ -10,21 +10,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.CalendarExpand
+import com.alorma.caducity.base.ui.icons.Dashboard
+import com.alorma.caducity.base.ui.icons.Notifications
 
 @Composable
 fun FeaturesOnboardingPage(modifier: Modifier = Modifier) {
@@ -45,21 +45,21 @@ fun FeaturesOnboardingPage(modifier: Modifier = Modifier) {
     Spacer(modifier = Modifier.height(48.dp))
 
     FeatureItem(
-      icon = Icons.Default.CalendarMonth,
+      icon = AppIcons.CalendarExpand,
       text = stringResource(R.string.onboarding_features_track),
     )
 
     Spacer(modifier = Modifier.height(24.dp))
 
     FeatureItem(
-      icon = Icons.Default.Notifications,
+      icon = AppIcons.Notifications,
       text = stringResource(R.string.onboarding_features_notify),
     )
 
     Spacer(modifier = Modifier.height(24.dp))
 
     FeatureItem(
-      icon = Icons.Default.Dashboard,
+      icon = AppIcons.Filled.Dashboard,
       text = stringResource(R.string.onboarding_features_dashboard),
     )
   }

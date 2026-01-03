@@ -17,8 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
-import com.alorma.caducity.ui.icons.AppIcons
-import com.alorma.caducity.ui.icons.Caducity
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Celebration
 
 @Composable
 fun WelcomeOnboardingPage(modifier: Modifier = Modifier) {
@@ -30,7 +30,7 @@ fun WelcomeOnboardingPage(modifier: Modifier = Modifier) {
     verticalArrangement = Arrangement.Center,
   ) {
     Icon(
-      imageVector = AppIcons.Caducity,
+      imageVector = AppIcons.Filled.Celebration,
       contentDescription = null,
       modifier = Modifier.height(120.dp),
       tint = MaterialTheme.colorScheme.primary,
