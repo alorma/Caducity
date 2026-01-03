@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,7 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewDynamicColors
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
@@ -136,66 +138,78 @@ private fun DayText(
   )
 }
 
-@Preview
+@PreviewDynamicColors
+@PreviewLightDark
 @Composable
 private fun DayTodayWithStatusContentPreview() {
   AppPreview {
-    DayContent(
-      modifier = Modifier.size(56.dp),
-      date = LocalDate.now(),
-      today = LocalDate.now(),
-      status = InstanceStatus.Expired,
-      shapePosition = ShapePosition.Start,
-      isOutDay = false,
-      onClick = {},
-    )
+    Surface {
+      DayContent(
+        modifier = Modifier.size(56.dp),
+        date = LocalDate.now(),
+        today = LocalDate.now(),
+        status = InstanceStatus.Expired,
+        shapePosition = ShapePosition.Start,
+        isOutDay = false,
+        onClick = {},
+      )
+    }
   }
 }
 
-@Preview
+@PreviewDynamicColors
+@PreviewLightDark
 @Composable
 private fun DayTodayWithoutContentPreview() {
   AppPreview {
-    DayContent(
-      modifier = Modifier.size(56.dp),
-      date = LocalDate.now(),
-      today = LocalDate.now(),
-      status = null,
-      shapePosition = ShapePosition.Start,
-      isOutDay = false,
-      onClick = {},
-    )
+    Surface {
+      DayContent(
+        modifier = Modifier.size(56.dp),
+        date = LocalDate.now(),
+        today = LocalDate.now(),
+        status = null,
+        shapePosition = ShapePosition.Start,
+        isOutDay = false,
+        onClick = {},
+      )
+    }
   }
 }
 
-@Preview
+@PreviewDynamicColors
+@PreviewLightDark
 @Composable
 private fun DayWithStatusContentPreview() {
   AppPreview {
-    DayContent(
-      modifier = Modifier.size(56.dp),
-      date = LocalDate.now().plusDays(3),
-      today = LocalDate.now(),
-      status = InstanceStatus.Expired,
-      shapePosition = ShapePosition.Start,
-      isOutDay = false,
-      onClick = {},
-    )
+    Surface {
+      DayContent(
+        modifier = Modifier.size(56.dp),
+        date = LocalDate.now().plusDays(3),
+        today = LocalDate.now(),
+        status = InstanceStatus.Expired,
+        shapePosition = ShapePosition.Start,
+        isOutDay = false,
+        onClick = {},
+      )
+    }
   }
 }
 
-@Preview
+@PreviewDynamicColors
+@PreviewLightDark
 @Composable
 private fun DayWithoutContentPreview() {
   AppPreview {
-    DayContent(
-      modifier = Modifier.size(56.dp),
-      date = LocalDate.now().plusDays(3),
-      today = LocalDate.now(),
-      status = null,
-      shapePosition = ShapePosition.Start,
-      isOutDay = false,
-      onClick = {},
-    )
+    Surface {
+      DayContent(
+        modifier = Modifier.size(56.dp),
+        date = LocalDate.now().plusDays(3),
+        today = LocalDate.now(),
+        status = null,
+        shapePosition = ShapePosition.Start,
+        isOutDay = false,
+        onClick = {},
+      )
+    }
   }
 }
