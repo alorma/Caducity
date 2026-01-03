@@ -6,7 +6,7 @@ import com.alorma.caducity.domain.backup.BackupDataSource
 class ExportBackupUseCase(
   private val backupDataSource: BackupDataSource
 ) {
-  suspend operator fun invoke(): Result<BackupData> {
+  suspend fun export(): Result<BackupData> {
     return try {
       val backup = backupDataSource.exportBackup()
       Result.success(backup)
