@@ -6,7 +6,7 @@ import com.alorma.caducity.domain.backup.BackupDataSource
 class ImportBackupUseCase(
   private val backupDataSource: BackupDataSource
 ) {
-  suspend operator fun invoke(backup: BackupData): Result<Unit> {
+  suspend fun import(backup: BackupData): Result<Unit> {
     return try {
       // Validate backup first
       backupDataSource.validateBackup(backup).getOrElse {

@@ -29,7 +29,7 @@ class BackupViewModel(
     viewModelScope.launch {
       _uiState.value = BackupUiState.Loading
       try {
-        exportBackupUseCase().fold(
+        exportBackupUseCase.export().fold(
           onSuccess = { backupData ->
             backupFileHandler.writeBackupToUri(uri, backupData).fold(
               onSuccess = {
@@ -64,7 +64,7 @@ class BackupViewModel(
       try {
         backupFileHandler.readBackupFromUri(uri).fold(
           onSuccess = { backupData ->
-            importBackupUseCase(backupData).fold(
+            importBackupUseCase.import(backupData).fold(
               onSuccess = {
                 _uiState.value = BackupUiState.RestoreSuccess
                 pendingRestoreUri = null

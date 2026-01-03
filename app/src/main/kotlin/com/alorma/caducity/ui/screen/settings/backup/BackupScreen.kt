@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Backup
+import com.alorma.caducity.base.ui.icons.Restore
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.ui.components.StyledCenterAlignedTopAppBar
 import com.alorma.caducity.ui.components.shape.ShapePosition
@@ -131,7 +132,7 @@ fun BackupScreen(
           StyledSettingsCard(
             icon = {
               Icon(
-                imageVector = AppIcons.Backup,
+                imageVector = AppIcons.Restore,
                 contentDescription = null,
               )
             },
