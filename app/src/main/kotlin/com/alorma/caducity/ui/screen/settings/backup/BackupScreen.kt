@@ -12,15 +12,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -32,7 +28,9 @@ import com.alorma.caducity.base.ui.icons.Backup
 import com.alorma.caducity.base.ui.icons.Restore
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.ui.components.StyledCenterAlignedTopAppBar
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
+import com.alorma.caducity.ui.components.snackbar.rememberAppSnackbarHostState
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import org.koin.compose.koinInject
@@ -46,7 +44,7 @@ fun BackupScreen(
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val showRestoreDialog by viewModel.showRestoreDialog.collectAsStateWithLifecycle()
-  val snackbarHostState = remember { SnackbarHostState() }
+  val snackbarHostState = rememberAppSnackbarHostState()
 
   val exportBackupLauncher = rememberLauncherForActivityResult(
     contract = ActivityResultContracts.CreateDocument("application/json")
@@ -65,16 +63,18 @@ fun BackupScreen(
     when (uiState) {
       is BackupUiState.ExportSuccess -> {
         snackbarHostState.showSnackbar(
-          message = "Backup exported successfully" // Will be replaced by context.getString in production
+          message = "Backup exported successfully",
         )
         viewModel.onSuccessDismissed()
       }
+
       is BackupUiState.RestoreSuccess -> {
         snackbarHostState.showSnackbar(
           message = "Backup restored successfully"
         )
         viewModel.onSuccessDismissed()
       }
+
       is BackupUiState.Error -> {
         val errorMessage = when (val error = (uiState as BackupUiState.Error).error) {
           is BackupError.ExportFailed -> "Failed to export backup"
@@ -85,11 +85,12 @@ fun BackupScreen(
         snackbarHostState.showSnackbar(errorMessage)
         viewModel.onErrorDismissed()
       }
+
       else -> {}
     }
   }
 
-  Scaffold(
+  AppScaffold(
     modifier = modifier,
     topBar = {
       StyledCenterAlignedTopAppBar(
@@ -98,7 +99,7 @@ fun BackupScreen(
         },
       )
     },
-    snackbarHost = { SnackbarHost(snackbarHostState) }
+    snackbarState = snackbarHostState,
   ) { paddingValues ->
     Box(
       modifier = Modifier

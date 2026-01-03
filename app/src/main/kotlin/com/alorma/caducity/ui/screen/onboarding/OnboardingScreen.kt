@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingButtons
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingPagerIndicator
 import com.alorma.caducity.ui.screen.onboarding.pages.DisclaimerOnboardingPage
@@ -57,7 +58,7 @@ fun OnboardingScreen(
     }
   }
 
-  Scaffold(
+  AppScaffold(
     modifier = modifier.fillMaxSize(),
     bottomBar = {
       BottomAppBar {

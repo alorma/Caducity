@@ -29,6 +29,7 @@ import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import androidx.compose.ui.res.stringResource
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import org.koin.compose.koinInject
 
 @Composable
@@ -44,7 +45,7 @@ fun SettingsRootScreen(
   debugModeProvider: DebugModeProvider = koinInject(),
   languageManager: LanguageManager = koinInject(),
 ) {
-  Scaffold(
+  AppScaffold(
     modifier = Modifier
       .nestedScroll(scrollConnection)
       .then(modifier),

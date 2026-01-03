@@ -59,6 +59,7 @@ import com.alorma.caducity.config.navigation.TopLevelRoute
 import com.alorma.caducity.ui.theme.AppTheme
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.domain.usecase.ProductsListFilter
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
 import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
@@ -101,7 +102,7 @@ fun App(
     val exitAlwaysScrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
       exitDirection = FloatingToolbarExitDirection.Bottom,
     )
-    Scaffold(
+    AppScaffold(
       modifier = Modifier
         .fillMaxSize()
         .nestedScroll(exitAlwaysScrollBehavior)

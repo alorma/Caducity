@@ -33,6 +33,7 @@ import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
 import kotlinx.datetime.LocalDate
 import androidx.compose.ui.res.stringResource
 import com.alorma.caducity.R
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -84,7 +85,7 @@ fun DashboardContent(
   onToggleCalendarMode: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Scaffold(
+  AppScaffold(
     modifier = Modifier
       .nestedScroll(scrollConnection)
       .then(modifier),

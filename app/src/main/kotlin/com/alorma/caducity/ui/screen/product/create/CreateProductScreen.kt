@@ -43,6 +43,7 @@ import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.BarcodeScanner
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -147,7 +148,7 @@ private fun CreateProductPage(
   onErrorDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Scaffold(
+  AppScaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       StyledTopAppBar(

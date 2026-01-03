@@ -25,6 +25,7 @@ import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.domain.usecase.ProductsListFilter
 import androidx.compose.ui.res.stringResource
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -48,7 +49,7 @@ fun ProductsListScreen(
 
   val state by viewModel.state.collectAsStateWithLifecycle()
 
-  Scaffold(
+  AppScaffold(
     modifier = modifier
       .fillMaxSize()
       .nestedScroll(scrollConnection),
