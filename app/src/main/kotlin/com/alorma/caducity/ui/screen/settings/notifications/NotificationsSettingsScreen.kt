@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
-import com.alorma.caducity.ui.theme.preview.AppPreview
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
@@ -60,8 +60,8 @@ fun NotificationsSettingsScreen(
 
 @Preview
 @Composable
-private fun NotificationsSettingsScreenPreview() {
-  AppPreview(previewSettingsModule) {
+private fun NotificationsSettingsScreenPreviewTheme() {
+  PreviewTheme(previewSettingsModule) {
     NotificationsSettingsScreen()
   }
 }

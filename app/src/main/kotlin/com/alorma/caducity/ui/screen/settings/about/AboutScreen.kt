@@ -17,7 +17,7 @@ import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.previewSettingsModule
-import com.alorma.caducity.ui.theme.preview.AppPreview
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import org.koin.compose.koinInject
 
 @Composable
@@ -56,8 +56,8 @@ fun AboutScreen(
 
 @Preview
 @Composable
-private fun AboutScreenPreview() {
-  AppPreview(previewSettingsModule) {
+private fun AboutScreenPreviewTheme() {
+  PreviewTheme(previewSettingsModule) {
     AboutScreen()
   }
 }

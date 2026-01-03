@@ -24,7 +24,7 @@ import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.shape.toCalendarShape
 import com.alorma.caducity.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.theme.preview.AppPreview
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.kizitonwose.calendar.core.now
 import com.kizitonwose.calendar.core.plusDays
 import kotlinx.datetime.LocalDate
@@ -141,8 +141,8 @@ private fun DayText(
 @PreviewDynamicColors
 @PreviewLightDark
 @Composable
-private fun DayTodayWithStatusContentPreview() {
-  AppPreview {
+private fun DayTodayWithStatusContentPreviewTheme() {
+  PreviewTheme {
     Surface {
       DayContent(
         modifier = Modifier.size(56.dp),
@@ -160,8 +160,8 @@ private fun DayTodayWithStatusContentPreview() {
 @PreviewDynamicColors
 @PreviewLightDark
 @Composable
-private fun DayTodayWithoutContentPreview() {
-  AppPreview {
+private fun DayTodayWithoutContentPreviewTheme() {
+  PreviewTheme {
     Surface {
       DayContent(
         modifier = Modifier.size(56.dp),
@@ -179,8 +179,8 @@ private fun DayTodayWithoutContentPreview() {
 @PreviewDynamicColors
 @PreviewLightDark
 @Composable
-private fun DayWithStatusContentPreview() {
-  AppPreview {
+private fun DayWithStatusContentPreviewTheme() {
+  PreviewTheme {
     Surface {
       DayContent(
         modifier = Modifier.size(56.dp),
@@ -198,8 +198,8 @@ private fun DayWithStatusContentPreview() {
 @PreviewDynamicColors
 @PreviewLightDark
 @Composable
-private fun DayWithoutContentPreview() {
-  AppPreview {
+private fun DayWithoutContentPreviewTheme() {
+  PreviewTheme {
     Surface {
       DayContent(
         modifier = Modifier.size(56.dp),
