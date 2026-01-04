@@ -5,13 +5,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.format.MonthNames
 
@@ -78,4 +82,32 @@ private fun monthNameFromState(
   return LocalDate.Format {
     monthName(monthNames)
   }.format(yearMonth.firstDay)
+}
+
+@PreviewLightDark
+@Composable
+private fun CalendarYearMonthHeaderPreview() {
+  PreviewTheme {
+    Surface {
+      CalendarYearMonthHeader(
+        startYearMonth = YearMonth(2026, Month.JANUARY),
+        endYearMonth = YearMonth(2026, Month.JANUARY),
+        monthNames = MonthNames.ENGLISH_FULL,
+      )
+    }
+  }
+}
+
+@PreviewLightDark
+@Composable
+private fun CalendarYearMonthHeaderTwoMonthsPreview() {
+  PreviewTheme {
+    Surface {
+      CalendarYearMonthHeader(
+        startYearMonth = YearMonth(2025, Month.DECEMBER),
+        endYearMonth = YearMonth(2026, Month.JANUARY),
+        monthNames = MonthNames.ENGLISH_FULL,
+      )
+    }
+  }
 }
