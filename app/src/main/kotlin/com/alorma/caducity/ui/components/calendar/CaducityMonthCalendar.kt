@@ -16,6 +16,7 @@ import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.plusMonths
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minusMonth
 import kotlinx.datetime.yearMonth
@@ -38,10 +39,18 @@ fun CaducityMonthCalendar(
     contentPadding = PaddingValues(horizontal = 16.dp),
     monthHeader = { calendarMonth ->
       Column {
-        CalendarHeader(
+        CalendarYearMonthHeader(
           startYearMonth = calendarMonth.yearMonth,
           endYearMonth = calendarMonth.weekDays.last().last().date.yearMonth,
           monthNames = calendarState.monthNames,
+        )
+
+        CalendarWeekDaysHeader(
+          weekDays = calendarMonth.weekDays
+            .first()
+            .map { calendarDay -> calendarDay.date }
+            .toImmutableList(),
+          dayOfWeekNames = calendarState.daysOfWeekNames,
         )
       }
     },

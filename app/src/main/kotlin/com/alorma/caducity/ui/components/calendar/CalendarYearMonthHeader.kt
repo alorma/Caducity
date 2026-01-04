@@ -16,7 +16,7 @@ import kotlinx.datetime.YearMonth
 import kotlinx.datetime.format.MonthNames
 
 @Composable
-fun CalendarHeader(
+fun CalendarYearMonthHeader(
   startYearMonth: YearMonth,
   endYearMonth: YearMonth,
   monthNames: MonthNames,
