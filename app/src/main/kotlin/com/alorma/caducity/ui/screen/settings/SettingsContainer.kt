@@ -18,12 +18,14 @@ import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScree
 import com.alorma.caducity.ui.screen.settings.backup.BackupScreen
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsScreen
 import com.alorma.caducity.ui.screen.settings.notifications.NotificationsSettingsScreen
+import com.alorma.caducity.ui.theme.ThemePreferences
 import org.koin.compose.koinInject
 
 @Composable
 fun SettingsContainer(
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
+  themePreferences: ThemePreferences = koinInject(),
   debugModeProvider: DebugModeProvider = koinInject()
 ) {
   val settingsBackStack = retain {
@@ -57,7 +59,12 @@ fun SettingsContainer(
       entry<SettingsRoute.Appearance>(
         metadata = BottomSheetSceneStrategy.bottomSheet(),
       ) {
-        AppearanceSettingsScreen()
+        AppearanceSettingsScreen(
+          themeMode = themePreferences.themeMode.value,
+          useDynamicTheme = themePreferences.useDynamicColors.value,
+          onThemeModeChange = { themePreferences.setThemeModeState(it) },
+          onUseDynamicTheme = { themePreferences.setDynamicColorsEnabled(it) },
+        )
       }
       entry<SettingsRoute.Notifications>(
         metadata = BottomSheetSceneStrategy.bottomSheet(),

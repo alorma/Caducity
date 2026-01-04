@@ -1,11 +1,13 @@
 package com.alorma.caducity.ui.screen.settings.appearance
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -16,23 +18,22 @@ import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGro
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.theme.ThemeMode
-import com.alorma.caducity.ui.theme.ThemePreferences
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
-import org.koin.compose.koinInject
+import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 
 @Composable
 fun AppearanceSettingsScreen(
+  themeMode: ThemeMode,
+  onThemeModeChange: (ThemeMode) -> Unit,
+  useDynamicTheme: Boolean,
+  onUseDynamicTheme: (Boolean) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val themePreferences = koinInject<ThemePreferences>()
-
   // Load all string resources at composable level
   val themeLight = stringResource(R.string.settings_theme_light)
   val themeDark = stringResource(R.string.settings_theme_dark)
   val themeSystem = stringResource(R.string.settings_theme_system)
-
-  val colorSchemeVibrant = stringResource(R.string.settings_color_scheme_vibrant)
-  val colorSchemeHarmony = stringResource(R.string.settings_color_scheme_harmony)
 
   Column(
     modifier = Modifier
@@ -45,7 +46,7 @@ fun AppearanceSettingsScreen(
     StyledSettingsGroup {
       StyledSettingsButtonGroupCard(
         title = stringResource(R.string.settings_theme_title),
-        selectedItem = themePreferences.themeMode.value,
+        selectedItem = themeMode,
         position = ShapePosition.Start,
         items = ThemeMode.entries,
         itemTitleMap = { themeMode ->
@@ -55,16 +56,36 @@ fun AppearanceSettingsScreen(
             ThemeMode.SYSTEM -> themeSystem
           }
         },
-        onItemSelected = { themePreferences.setThemeModeState(it) },
+        onItemSelected = { onThemeModeChange(it) },
       )
       if (supportsDynamicColors()) {
         StyledSettingsSwitchCard(
           title = stringResource(R.string.settings_dynamic_colors),
-          state = themePreferences.useDynamicColors.value,
+          state = useDynamicTheme,
           position = ShapePosition.End,
-          onCheckedChange = { themePreferences.setDynamicColorsEnabled(it) },
+          onCheckedChange = { onUseDynamicTheme(it) },
         )
       }
+    }
+  }
+}
+
+@PreviewDynamicLightDark
+@Composable
+fun AppearanceSettingsScreenPreview() {
+  PreviewTheme {
+    Surface {
+      val themeMode = if (isSystemInDarkTheme()) {
+        ThemeMode.DARK
+      } else {
+        ThemeMode.LIGHT
+      }
+      AppearanceSettingsScreen(
+        themeMode = themeMode,
+        useDynamicTheme = true,
+        onThemeModeChange = {},
+        onUseDynamicTheme = {},
+      )
     }
   }
 }
