@@ -45,6 +45,7 @@ fun SettingsContainer(
     entryProvider = entryProvider {
       entry<SettingsRoute.Root> {
         SettingsRootScreen(
+          isDebug = debugModeProvider.isDebugMode(),
           scrollConnection = scrollConnection,
           onNavigateToAppearance = { settingsBackStack.add(SettingsRoute.Appearance) },
           onNavigateToNotifications = { settingsBackStack.add(SettingsRoute.Notifications) },

@@ -6,13 +6,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
@@ -21,16 +25,17 @@ import com.alorma.caducity.base.ui.icons.Info
 import com.alorma.caducity.base.ui.icons.Notifications
 import com.alorma.caducity.base.ui.icons.Palette
 import com.alorma.caducity.base.ui.icons.outlined.Settings
-import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.ui.components.StyledCenterAlignedTopAppBar
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
-import org.koin.compose.koinInject
+import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 
 @Composable
 fun SettingsRootScreen(
+  isDebug: Boolean,
   onNavigateToAppearance: () -> Unit,
   onNavigateToNotifications: () -> Unit,
   onNavigateToBackup: () -> Unit,
@@ -38,7 +43,6 @@ fun SettingsRootScreen(
   onNavigateToAbout: () -> Unit,
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
-  debugModeProvider: DebugModeProvider = koinInject(),
 ) {
   AppScaffold(
     modifier = Modifier
@@ -108,7 +112,7 @@ fun SettingsRootScreen(
       }
 
       // Group 3: Debug (only shown in debug mode)
-      if (debugModeProvider.isDebugMode()) {
+      if (isDebug) {
         StyledSettingsGroup {
           StyledSettingsCard(
             icon = {
@@ -144,3 +148,22 @@ fun SettingsRootScreen(
   }
 }
 
+@PreviewDynamicLightDark
+@Composable
+fun SettingsScreenPreview() {
+  PreviewTheme {
+    Surface {
+      SettingsRootScreen(
+        isDebug = true,
+        onNavigateToAppearance = {},
+        onNavigateToNotifications = {},
+        onNavigateToBackup = {},
+        onNavigateToDebug = {},
+        onNavigateToAbout = {},
+        scrollConnection = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
+          exitDirection = FloatingToolbarExitDirection.Bottom,
+        ),
+      )
+    }
+  }
+}
