@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -15,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.ui.components.StyledCenterAlignedTopAppBar
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
@@ -27,6 +31,7 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 fun NotificationsSettingsScreen(
   areNotificationsEnabled: Boolean,
   onNotificationStateChange: (Boolean) -> Unit,
+  onClose: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   AppScaffold(
@@ -37,6 +42,16 @@ fun NotificationsSettingsScreen(
         colors = TopAppBarDefaults.topAppBarColors(
           containerColor = BottomSheetDefaults.ContainerColor,
         ),
+        navigationIcon = {
+          IconButton(
+            onClick = onClose,
+          ) {
+            Icon(
+              imageVector = AppIcons.Back,
+              contentDescription = null,
+            )
+          }
+        },
         title = {
           Text(
             text = stringResource(R.string.settings_notifications_title),
@@ -73,6 +88,7 @@ fun NotificationsSettingsScreenPreview() {
       NotificationsSettingsScreen(
         areNotificationsEnabled = true,
         onNotificationStateChange = {},
+        onClose = {},
       )
     }
   }

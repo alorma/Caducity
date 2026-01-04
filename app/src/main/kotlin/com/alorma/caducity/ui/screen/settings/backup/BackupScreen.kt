@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.Backup
 import com.alorma.caducity.base.ui.icons.Restore
 import com.alorma.caducity.feature.backup.BackupFileHandler
@@ -46,6 +48,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun BackupScreen(
+  onClose: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: BackupViewModel = koinViewModel(),
   backupFileHandler: BackupFileHandler = koinInject()
@@ -126,6 +129,7 @@ fun BackupScreen(
         snackbarHostState = snackbarHostState,
         onExport = { backupFileHandler.createBackup() },
         onRestore = { backupFileHandler.selectBackup() },
+        onClose = onClose,
       )
     }
   }
@@ -137,6 +141,7 @@ private fun BackupScreenContent(
   snackbarHostState: AppSnackbarHostState,
   onExport: () -> Unit,
   onRestore: () -> Unit,
+  onClose: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   AppScaffold(
@@ -149,6 +154,16 @@ private fun BackupScreenContent(
         colors = TopAppBarDefaults.topAppBarColors(
           containerColor = BottomSheetDefaults.ContainerColor,
         ),
+        navigationIcon = {
+          IconButton(
+            onClick = onClose,
+          ) {
+            Icon(
+              imageVector = AppIcons.Back,
+              contentDescription = null,
+            )
+          }
+        },
         title = {
           Text(
             text = stringResource(R.string.settings_backup_title),
@@ -207,6 +222,7 @@ fun BackupScreenContentPreview() {
         snackbarHostState = rememberAppSnackbarHostState(),
         onExport = {},
         onRestore = {},
+        onClose = {},
       )
     }
   }
