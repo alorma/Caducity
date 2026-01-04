@@ -1,15 +1,19 @@
 package com.alorma.caducity.ui.components.calendar
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.dashboard.CalendarState
+import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
-import kotlinx.collections.immutable.toImmutableList
+import com.kizitonwose.calendar.core.minusDays
+import com.kizitonwose.calendar.core.plusDays
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -20,8 +24,8 @@ fun CaducityWeekCalendar(
 ) {
 
   val weekCalendarState = rememberWeekCalendarState(
-    startDate = calendarState.startMonth.firstDay,
-    endDate = calendarState.endMonth.lastDay,
+    startDate = calendarState.today,
+    endDate = calendarState.today.plusDays(15),
     firstDayOfWeek = calendarState.today.dayOfWeek,
   )
 
@@ -29,18 +33,6 @@ fun CaducityWeekCalendar(
     modifier = modifier,
     state = weekCalendarState,
     contentPadding = PaddingValues(horizontal = 16.dp),
-    weekHeader = { week ->
-      val daysOfWeek = remember {
-        week.days.map { weekDay ->
-          weekDay.date.dayOfWeek
-        }.toImmutableList()
-      }
-
-      CalendarHeader(
-        calendarState = calendarState,
-        daysOfWeek = daysOfWeek,
-      )
-    },
     dayContent = { weekDay ->
       val date = weekDay.date
       val dateInfo = calendarState.calendarData.productsByDate[date]
@@ -55,4 +47,19 @@ fun CaducityWeekCalendar(
       )
     },
   )
+}
+
+@PreviewDynamicLightDark
+@Composable
+fun CaducityWeekCalendarPreview(
+  @PreviewParameter(provider = CalendarStateProvider::class) calendarState: CalendarState,
+) {
+  PreviewTheme {
+    Surface {
+      CaducityWeekCalendar(
+        calendarState = calendarState,
+        onDateClick = {},
+      )
+    }
+  }
 }

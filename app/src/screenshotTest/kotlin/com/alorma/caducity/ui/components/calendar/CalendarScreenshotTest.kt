@@ -6,8 +6,7 @@ import com.alorma.caducity.ui.screen.dashboard.CalendarState
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.android.tools.screenshot.PreviewTest
 
-class CaducityMonthCalendarScreenshotTest {
-
+class CalendarScreenshotTest {
 
   @PreviewTest
   @PreviewDynamicLightDark
@@ -16,6 +15,15 @@ class CaducityMonthCalendarScreenshotTest {
     @PreviewParameter(provider = CalendarStateProvider::class) calendarState: CalendarState,
   ) {
     CaducityMonthCalendarPreview(calendarState)
+  }
+
+  @PreviewTest
+  @PreviewDynamicLightDark
+  @Composable
+  fun CaducityWeekCalendarTest(
+    @PreviewParameter(provider = CalendarStateProvider::class) calendarState: CalendarState,
+  ) {
+    CaducityWeekCalendarPreview(calendarState)
   }
 
 }

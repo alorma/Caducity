@@ -185,10 +185,6 @@ class DashboardMapper(
     val calendarData = CalendarData(dateWithShapes)
 
     return CalendarState(
-      startMonth = startMonth,
-      startMonthName = localizedDateFormatter.getMonthName(startMonth.month),
-      endMonth = endMonth,
-      endMonthName = localizedDateFormatter.getMonthName(endMonth.month),
       today = today,
       calendarData = calendarData,
       daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
