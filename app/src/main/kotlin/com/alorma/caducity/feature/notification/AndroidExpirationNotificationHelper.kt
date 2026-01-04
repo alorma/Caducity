@@ -19,6 +19,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * Android implementation of ExpirationNotificationHelper.
@@ -39,6 +40,22 @@ class AndroidExpirationNotificationHelper(
     return context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
         PackageManager.PERMISSION_GRANTED
   }
+
+  override val result: MutableSharedFlow<Any> = MutableSharedFlow()
+  private lateinit var permissionsLauncher: ActivityResultLauncher<String>
+
+  @Suppress("ModifierRequired")
+  @Composable
+  override fun registerContracts() {
+    permissionsLauncher = rememberLauncherForActivityResult(
+      ActivityResultContracts.RequestPermission()
+    ) { granted ->
+      if (granted) {
+        setNotificationsEnabled(true)
+      }
+    }
+  }
+
 
   override fun areNotificationsEnabled(): MutableState<Boolean> {
     // Sync state with permission status
@@ -121,22 +138,21 @@ class AndroidExpirationNotificationHelper(
     }
   }
 
-  private lateinit var permissionsLauncher: ActivityResultLauncher<String>
-
-  @Suppress("ModifierRequired")
-  @Composable
-  override fun registerContract() {
-    permissionsLauncher = rememberLauncherForActivityResult(
-      ActivityResultContracts.RequestPermission()
-    ) { granted ->
-      if (granted) {
-        setNotificationsEnabled(true)
-      }
-    }
-  }
-
   override fun launch() {
     permissionsLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+  }
+
+  override fun changeState(enabled: Boolean) {
+    if (enabled) {
+      // Check if we need to request permission
+      if (!hasNotificationPermission()) {
+        launch()
+      } else {
+        setNotificationsEnabled(true)
+      }
+    } else {
+      setNotificationsEnabled(false)
+    }
   }
 
   companion object {

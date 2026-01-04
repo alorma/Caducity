@@ -31,7 +31,7 @@ fun PermissionsOnboardingPage(
   modifier: Modifier = Modifier,
   notificationHelper: ExpirationNotificationHelper = koinInject(),
 ) {
-  notificationHelper.registerContract()
+  notificationHelper.registerContracts()
 
   val hasPermission by notificationHelper.areNotificationsEnabled()
 
