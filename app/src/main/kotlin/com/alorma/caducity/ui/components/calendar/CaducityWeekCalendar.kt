@@ -26,6 +26,7 @@ fun CaducityWeekCalendar(
   val weekCalendarState = rememberWeekCalendarState(
     startDate = calendarState.today.minusMonths(1),
     endDate = calendarState.today.plusMonths(3),
+    firstVisibleWeekDate = calendarState.today,
     firstDayOfWeek = calendarState.today.dayOfWeek,
   )
 

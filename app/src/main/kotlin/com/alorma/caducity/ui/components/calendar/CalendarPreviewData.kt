@@ -7,10 +7,10 @@ import com.alorma.caducity.ui.screen.dashboard.CalendarData
 import com.alorma.caducity.ui.screen.dashboard.CalendarDateInfo
 import com.alorma.caducity.ui.screen.dashboard.CalendarState
 import com.alorma.caducity.ui.screen.dashboard.DaysOfWeekNames
-import com.kizitonwose.calendar.core.minusDays
 import com.kizitonwose.calendar.core.plusDays
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
 
 private val daysOfWeekNames = DaysOfWeekNames(
@@ -23,8 +23,8 @@ private val daysOfWeekNames = DaysOfWeekNames(
   sunday = "sun",
 )
 
-private val month = YearMonth(2026, 2)
-private val today = LocalDate(month.year, month.month, 6)
+private val month = YearMonth(2026, Month.FEBRUARY)
+private val today = LocalDate(month.year, month.month, 9)
 
 class CalendarStateProvider : CollectionPreviewParameterProvider<CalendarState>(
   listOf(
@@ -49,7 +49,7 @@ class CalendarStateProvider : CollectionPreviewParameterProvider<CalendarState>(
             status = InstanceStatus.Frozen, shapePosition = ShapePosition.Middle,
           ),
           today.plusDays(3) to CalendarDateInfo(
-            status = InstanceStatus.Fresh, shapePosition = ShapePosition.End,
+            status = InstanceStatus.Frozen, shapePosition = ShapePosition.End,
           ),
           today.plusDays(5) to CalendarDateInfo(
             status = InstanceStatus.Fresh, shapePosition = ShapePosition.Single,
