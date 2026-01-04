@@ -26,7 +26,7 @@ import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.Backup
 import com.alorma.caducity.base.ui.icons.Restore
 import com.alorma.caducity.feature.backup.BackupFileHandler
-import com.alorma.caducity.ui.components.StyledCenterAlignedTopAppBar
+import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
@@ -150,7 +150,7 @@ private fun BackupScreenContent(
     snackbarState = snackbarHostState,
     containerColor = BottomSheetDefaults.ContainerColor,
     topBar = {
-      StyledCenterAlignedTopAppBar(
+      StyledTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
           containerColor = BottomSheetDefaults.ContainerColor,
         ),

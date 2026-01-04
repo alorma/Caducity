@@ -2,13 +2,14 @@ package com.alorma.caducity.feature.notification
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import com.alorma.caducity.config.navigation.ComposeNavigator
 import com.alorma.caducity.domain.model.ProductWithInstances
 
 /**
  * Interface for showing expiration notifications.
  * Platform-specific implementations handle the notification display.
  */
-interface ExpirationNotificationHelper {
+interface ExpirationNotificationHelper: ComposeNavigator<Any> {
 
   /**
    * Returns a MutableState reflecting whether notifications are enabled.
@@ -28,10 +29,8 @@ interface ExpirationNotificationHelper {
    */
   fun hasNotificationPermission(): Boolean
 
-  @Composable
-  fun registerContract()
-
   fun launch()
+  fun changeState(enabled: Boolean)
 
   /**
    * Shows a notification for expiring products.
@@ -39,8 +38,4 @@ interface ExpirationNotificationHelper {
    * @param expiringProducts List of products that are expiring soon
    */
   fun showExpirationNotification(expiringProducts: List<ProductWithInstances>)
-
-  companion object {
-
-  }
 }

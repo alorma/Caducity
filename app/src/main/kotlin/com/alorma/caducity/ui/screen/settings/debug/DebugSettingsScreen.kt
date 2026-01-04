@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
-import com.alorma.caducity.ui.components.StyledCenterAlignedTopAppBar
+import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
@@ -37,7 +37,7 @@ fun DebugSettingsScreen(
     modifier = Modifier.then(modifier),
     containerColor = BottomSheetDefaults.ContainerColor,
     topBar = {
-      StyledCenterAlignedTopAppBar(
+      StyledTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
           containerColor = BottomSheetDefaults.ContainerColor,
         ),
