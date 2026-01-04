@@ -6,12 +6,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.retain.retain
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
+import com.alorma.caducity.config.version.AppVersionProvider
 import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
 import com.alorma.caducity.feature.notification.NotificationDebugHelper
@@ -31,6 +33,7 @@ fun SettingsContainer(
   notificationHelper: ExpirationNotificationHelper = koinInject(),
   debugModeProvider: DebugModeProvider = koinInject(),
   debugHelper: NotificationDebugHelper = koinInject(),
+  versionProvider: AppVersionProvider = koinInject(),
 ) {
   val settingsBackStack = retain {
     mutableStateListOf<NavKey>(SettingsRoute.Root)
@@ -108,7 +111,14 @@ fun SettingsContainer(
       entry<SettingsRoute.About>(
         metadata = BottomSheetSceneStrategy.bottomSheet(),
       ) {
-        AboutScreen()
+        val localUriHandler = LocalUriHandler.current
+
+        AboutScreen(
+          appVersion = versionProvider.getVersionName(),
+          onNavigateToRepo = {
+            localUriHandler.openUri("https://github.com/alorma/caducity")
+          },
+        )
       }
     },
   )
