@@ -278,53 +278,6 @@ private fun ProductDetailContent(
         }
       }
 
-      // Calendar section
-      if (product.instances.isNotEmpty()) {
-        item {
-          val calendarState = remember(product.instances, today) {
-            product.instances.toCalendarState(today = today, hideConsumed = true)
-          }
-
-          Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-              containerColor = CaducityTheme.colorScheme.surfaceContainer,
-            ),
-            shape = MaterialTheme.shapes.largeIncreased,
-          ) {
-            Column(
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-              verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-              Text(
-                text = "Expiration Timeline",
-                style = MaterialTheme.typography.titleLarge,
-                color = CaducityTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(horizontal = 16.dp),
-              )
-              ProductsCalendar(
-                calendarState = calendarState,
-                calendarMode = CalendarMode.WEEK,
-                onDateClick = { date ->
-                  // Find the first instance with this expiration date
-                  val instance = product.instances.firstOrNull { it.expirationDate == date }
-                  if (instance != null) {
-                    val index = instanceIndexMap[instance.id]
-                    if (index != null) {
-                      coroutineScope.launch {
-                        listState.animateScrollToItem(index)
-                      }
-                    }
-                  }
-                },
-              )
-            }
-          }
-        }
-      }
-
       // Instances section header
       item {
         Text(

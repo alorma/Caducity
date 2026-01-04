@@ -65,6 +65,7 @@ val appModule = module {
     DashboardMapper(
       appClock = get(),
       dateFormat = get(qualifier = ConfigQualifier.DateFormat.HumanReadable),
+      localizedDateFormatter = get(),
     )
   }
   viewModelOf(::DashboardViewModel)
