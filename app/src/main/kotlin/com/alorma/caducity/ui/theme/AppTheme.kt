@@ -150,7 +150,7 @@ fun InternalTheme(
 @Suppress("ModifierRequired")
 @PreviewDynamicLightDark
 @Composable
-private fun MaterialColorsPreviewTheme() {
+fun MaterialColorsPreviewTheme() {
   PreviewTheme {
     Surface {
       Column(
@@ -179,7 +179,7 @@ private fun MaterialColorsPreviewTheme() {
 @Suppress("ModifierRequired")
 @PreviewDynamicLightDark
 @Composable
-private fun ExpirationColorsVibrantPreviewTheme() {
+fun ExpirationColorsVibrantPreviewTheme() {
   PreviewTheme {
     Surface {
       Column(
@@ -207,7 +207,7 @@ private fun ExpirationColorsVibrantPreviewTheme() {
 @Suppress("ModifierRequired")
 @PreviewDynamicLightDark
 @Composable
-private fun ExpirationColorsSoftPreviewTheme() {
+fun ExpirationColorsSoftPreviewTheme() {
   PreviewTheme {
     Surface {
       Column(
