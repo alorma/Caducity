@@ -4,10 +4,9 @@ import kotlinx.datetime.Month
 import kotlinx.datetime.format.DayOfWeekNames
 import kotlinx.datetime.format.MonthNames
 import java.time.format.TextStyle
+import java.util.Locale
 
-class LocalizedDateFormatter(
-  private val languageManager: LanguageManager,
-) {
+class LocalizedDateFormatter {
 
   fun getMonthNames(): MonthNames {
     return MonthNames(
@@ -27,7 +26,7 @@ class LocalizedDateFormatter(
   }
 
   private fun getMonthName(month: Month): String {
-    val locale = languageManager.getLocale()
+    val locale = Locale.getDefault()
     val javaMonth = java.time.Month.of(month.ordinal + 1)
     return javaMonth.getDisplayName(
       TextStyle.FULL_STANDALONE,
@@ -48,7 +47,7 @@ class LocalizedDateFormatter(
   }
 
   private fun dayOfWeekName(javaDayOfWeek: java.time.DayOfWeek): String {
-    val locale = languageManager.getLocale()
+    val locale = Locale.getDefault()
     return javaDayOfWeek.getDisplayName(
       TextStyle.SHORT,
       locale

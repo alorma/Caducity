@@ -11,9 +11,6 @@ sealed interface SettingsRoute : NavKey {
   data object Appearance : SettingsRoute
 
   @Serializable
-  data object Language : SettingsRoute
-
-  @Serializable
   data object Notifications : SettingsRoute
 
   @Serializable
