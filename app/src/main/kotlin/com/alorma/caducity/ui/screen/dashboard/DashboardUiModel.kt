@@ -53,10 +53,6 @@ data class CalendarDateInfo(
 
 @Stable
 data class CalendarState(
-  val startMonth: YearMonth,
-  val startMonthName: String,
-  val endMonth: YearMonth,
-  val endMonthName: String,
   val today: LocalDate,
   val calendarData: CalendarData,
   val daysOfWeekNames: DaysOfWeekNames,
