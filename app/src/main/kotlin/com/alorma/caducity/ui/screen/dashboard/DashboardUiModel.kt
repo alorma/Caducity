@@ -6,7 +6,8 @@ import com.alorma.caducity.ui.components.shape.ShapePosition
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.YearMonth
+import kotlinx.datetime.format.DayOfWeekNames
+import kotlinx.datetime.format.MonthNames
 
 @Stable
 sealed interface ProductUiModel {
@@ -55,15 +56,6 @@ data class CalendarDateInfo(
 data class CalendarState(
   val today: LocalDate,
   val calendarData: CalendarData,
-  val daysOfWeekNames: DaysOfWeekNames,
-)
-
-data class DaysOfWeekNames(
-  val monday: String,
-  val tuesday: String,
-  val wednesday: String,
-  val thursday: String,
-  val friday: String,
-  val saturday: String,
-  val sunday: String,
+  val monthNames: MonthNames,
+  val daysOfWeekNames: DayOfWeekNames,
 )
