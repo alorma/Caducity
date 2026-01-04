@@ -38,4 +38,8 @@ interface ExpirationNotificationHelper: ComposeNavigator<Any> {
    * @param expiringProducts List of products that are expiring soon
    */
   fun showExpirationNotification(expiringProducts: List<ProductWithInstances>)
+
+  companion object {
+    const val Destiation = "Destination"
+  }
 }
