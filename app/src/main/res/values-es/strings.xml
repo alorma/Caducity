@@ -34,8 +34,6 @@
     <string  name="settings_screen_title">Configuración</string>
     <string name="settings_appearance_title">Apariencia</string>
     <string name="settings_appearance_description">Tema, colores y visualización</string>
-    <string name="settings_language_title">Idioma</string>
-    <string name="settings_language_description">Idioma de la aplicación</string>
     <string name="settings_notifications_title">Notificaciones</string>
     <string name="settings_notifications_description">Gestionar preferencias de notificaciones</string>
     <string name="settings_debug_title">Depuración</string>
