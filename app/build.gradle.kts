@@ -9,6 +9,8 @@ plugins {
   alias(libs.plugins.google.ksp)
   alias(libs.plugins.jetbrains.kotlin.serialization)
 
+  alias(libs.plugins.jetbrains.kotlin.parcelize)
+
   alias(libs.plugins.compose.screenshot)
 }
 

@@ -14,8 +14,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
+import androidx.core.os.bundleOf
 import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
+import com.alorma.caducity.config.navigation.TopLevelDestinationsParam
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
@@ -99,6 +101,11 @@ class AndroidExpirationNotificationHelper(
     // Create intent to open app with filtered view
     val intent = Intent(context, MainActivity::class.java).apply {
       flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+      putExtras(
+        bundleOf(
+          ExpirationNotificationHelper.Destiation to TopLevelDestinationsParam.Products
+        )
+      )
     }
 
     val pendingIntent = PendingIntent.getActivity(

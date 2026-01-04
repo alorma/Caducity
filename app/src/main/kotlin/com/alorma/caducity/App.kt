@@ -26,7 +26,6 @@ import androidx.compose.material3.FloatingToolbarScrollBehavior
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.PlainTooltip
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
@@ -44,9 +43,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
-import com.alorma.caducity.onboarding.OnboardingFlag
-import com.alorma.caducity.ui.screen.onboarding.OnboardingRoute
-import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
@@ -57,11 +53,12 @@ import com.alorma.caducity.config.navigation.Icon
 import com.alorma.caducity.config.navigation.Label
 import com.alorma.caducity.config.navigation.TopLevelBackStack
 import com.alorma.caducity.config.navigation.TopLevelRoute
-import com.alorma.caducity.ui.theme.AppTheme
-import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.domain.usecase.ProductsListFilter
+import com.alorma.caducity.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
+import com.alorma.caducity.ui.screen.onboarding.OnboardingRoute
+import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
 import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailRoute
@@ -70,6 +67,8 @@ import com.alorma.caducity.ui.screen.products.ProductsListBottomSheet
 import com.alorma.caducity.ui.screen.products.ProductsListRoute
 import com.alorma.caducity.ui.screen.products.ProductsListScreen
 import com.alorma.caducity.ui.screen.settings.SettingsContainer
+import com.alorma.caducity.ui.theme.AppTheme
+import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.koin.compose.koinInject
@@ -78,14 +77,15 @@ import org.koin.compose.koinInject
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun App(
+  initialDestination: TopLevelRoute?,
   modifier: Modifier = Modifier,
   onboardingFlag: OnboardingFlag = koinInject(),
 ) {
   AppTheme(
     themePreferences = koinInject(),
   ) {
-    // Determine initial route based on onboarding status
-    val initialRoute = if (onboardingFlag.isEnabled()) {
+    // Determine initial route based on explicit destination, onboarding status, or default to Dashboard
+    val initialRoute = initialDestination ?: if (onboardingFlag.isEnabled()) {
       OnboardingRoute
     } else {
       TopLevelRoute.Dashboard
