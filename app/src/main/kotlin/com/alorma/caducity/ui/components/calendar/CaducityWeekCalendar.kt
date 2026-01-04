@@ -36,25 +36,9 @@ fun CaducityWeekCalendar(
         }.toImmutableList()
       }
 
-      val weekDates = remember {
-        week.days.map { weekDay ->
-          weekDay.date
-        }.toImmutableList()
-      }
-
-      val firstMonth = week.days.first().date.month
-      val lastMonth = week.days.last().date.month
-      val firstYear = week.days.first().date.year
-      val lastYear = week.days.last().date.year
-
       CalendarHeader(
-        firstMonth = firstMonth,
-        secondMonth = lastMonth,
+        calendarState = calendarState,
         daysOfWeek = daysOfWeek,
-        weekDates = weekDates,
-        highlightToday = true,
-        firstYear = firstYear,
-        secondYear = lastYear,
       )
     },
     dayContent = { weekDay ->

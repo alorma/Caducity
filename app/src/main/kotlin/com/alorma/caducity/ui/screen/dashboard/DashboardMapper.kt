@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.dashboard
 
 import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.ui.components.shape.ShapePosition
@@ -18,6 +19,7 @@ import kotlinx.datetime.toLocalDateTime
 class DashboardMapper(
   private val appClock: AppClock,
   private val dateFormat: DateTimeFormat<LocalDate>,
+  private val localizedDateFormatter: LocalizedDateFormatter,
 ) {
   data class DashboardData(
     val items: ImmutableList<ProductUiModel>,
@@ -184,9 +186,12 @@ class DashboardMapper(
 
     return CalendarState(
       startMonth = startMonth,
+      startMonthName = localizedDateFormatter.getMonthName(startMonth.month),
       endMonth = endMonth,
+      endMonthName = localizedDateFormatter.getMonthName(endMonth.month),
       today = today,
       calendarData = calendarData,
+      daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
     )
   }
 
