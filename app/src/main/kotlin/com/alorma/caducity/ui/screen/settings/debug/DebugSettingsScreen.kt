@@ -28,7 +28,6 @@ fun DebugSettingsScreen(
   modifier: Modifier = Modifier,
   triggerNotificationCheck: () -> Unit,
 ) {
-
   AppScaffold(
     modifier = Modifier.then(modifier),
     containerColor = BottomSheetDefaults.ContainerColor,
