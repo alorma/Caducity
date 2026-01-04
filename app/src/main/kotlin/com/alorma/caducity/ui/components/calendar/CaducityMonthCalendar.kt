@@ -14,6 +14,7 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.DayPosition
+import com.kizitonwose.calendar.core.plusMonths
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minusMonth
 import kotlinx.datetime.plusMonth
@@ -27,7 +28,7 @@ fun CaducityMonthCalendar(
 ) {
   val monthCalendarState = rememberCalendarState(
     startMonth = calendarState.today.yearMonth.minusMonth(),
-    endMonth = calendarState.today.yearMonth.plusMonth(),
+    endMonth = calendarState.today.yearMonth.plusMonths(3),
     firstVisibleMonth = calendarState.today.yearMonth,
   )
 

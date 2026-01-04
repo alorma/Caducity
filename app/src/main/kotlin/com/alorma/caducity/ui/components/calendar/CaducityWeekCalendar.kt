@@ -12,8 +12,8 @@ import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.kizitonwose.calendar.compose.WeekCalendar
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
-import com.kizitonwose.calendar.core.minusDays
-import com.kizitonwose.calendar.core.plusDays
+import com.kizitonwose.calendar.core.minusMonths
+import com.kizitonwose.calendar.core.plusMonths
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -24,8 +24,8 @@ fun CaducityWeekCalendar(
 ) {
 
   val weekCalendarState = rememberWeekCalendarState(
-    startDate = calendarState.today,
-    endDate = calendarState.today.plusDays(15),
+    startDate = calendarState.today.minusMonths(1),
+    endDate = calendarState.today.plusMonths(3),
     firstDayOfWeek = calendarState.today.dayOfWeek,
   )
 
