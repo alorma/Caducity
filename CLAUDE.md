@@ -48,6 +48,12 @@ Caducity is an Android grocery expiration tracker application built with Jetpack
 
 # Lint
 ./gradlew lint
+
+# Screenshot tests (Compose Preview Screenshot Testing)
+./gradlew updateDebugScreenshotTest     # Generate golden images (first run)
+./gradlew testDebugScreenshotTest       # Validate against golden images
+./gradlew validateDebugScreenshotTest   # Verify screenshots after changes
+./gradlew cleanDebugScreenshotTest      # Clean screenshot test cache
 ```
 
 ### Installation

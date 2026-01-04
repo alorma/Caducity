@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.theme
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import com.russhwolf.settings.Settings
@@ -12,6 +13,7 @@ class ThemePreferencesImpl(private val settings: Settings) : ThemePreferences {
 
   override val themeMode = mutableStateOf(loadThemeMode())
   override val useDynamicColors = mutableStateOf(loadUseDynamicColors())
+  override val useAppFonts: MutableState<Boolean> = mutableStateOf(true)
 
   override fun loadThemeMode(): ThemeMode {
     val savedValue = settings.getStringOrNull(KEY_THEME_MODE)

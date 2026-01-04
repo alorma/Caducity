@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.theme.preview.AppPreview
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
@@ -161,8 +161,8 @@ private fun CollapsedInstancesView(
 
 @Preview
 @Composable
-private fun ProductItemPreview() {
-  AppPreview {
+private fun ProductItemPreviewTheme() {
+  PreviewTheme {
     Surface {
       ProductItem(
         product = productWithInstancesPreview,

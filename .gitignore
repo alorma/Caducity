@@ -16,3 +16,6 @@ xcuserdata/
 contents.xcworkspacedata
 deployment/
 .claude/*.local.*
+
+# Screenshot test outputs
+**/screenshotTest/outputs/

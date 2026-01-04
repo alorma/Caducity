@@ -20,7 +20,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.theme.preview.AppPreview
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.alorma.caducity.ui.screen.dashboard.DashboardSummary
 
 @Composable
@@ -134,8 +134,8 @@ private fun SummaryStatusCard(
 
 @Preview
 @Composable
-private fun DashboardSummaryCardPreview() {
-  AppPreview {
+private fun DashboardSummaryCardPreviewTheme() {
+  PreviewTheme {
     Surface {
       Row {
         DashboardSummaryCard(
