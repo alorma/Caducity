@@ -187,6 +187,7 @@ class DashboardMapper(
     return CalendarState(
       today = today,
       calendarData = calendarData,
+      monthNames = localizedDateFormatter.getMonthNames(),
       daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
     )
   }

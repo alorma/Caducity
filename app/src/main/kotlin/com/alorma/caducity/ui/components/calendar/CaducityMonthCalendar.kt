@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.components.calendar
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Surface
@@ -17,7 +18,6 @@ import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.plusMonths
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minusMonth
-import kotlinx.datetime.plusMonth
 import kotlinx.datetime.yearMonth
 
 @Composable
@@ -36,6 +36,15 @@ fun CaducityMonthCalendar(
     modifier = modifier.fillMaxWidth(),
     state = monthCalendarState,
     contentPadding = PaddingValues(horizontal = 16.dp),
+    monthHeader = { calendarMonth ->
+      Column {
+        CalendarHeader(
+          startYearMonth = calendarMonth.yearMonth,
+          endYearMonth = calendarMonth.weekDays.last().last().date.yearMonth,
+          monthNames = calendarState.monthNames,
+        )
+      }
+    },
     dayContent = { calendarDay ->
       val date = calendarDay.date
       val dateInfo = calendarState.calendarData.productsByDate[date]
