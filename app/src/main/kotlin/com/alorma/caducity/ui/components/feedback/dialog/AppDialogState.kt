@@ -124,7 +124,6 @@ fun AppDialogHost(hostState: AppDialogState) {
   val currentDialogData = hostState.dialogInfo
 
   if (currentDialogData != null) {
-
     val colors = currentDialogData.type.softColors()
 
     AlertDialog(

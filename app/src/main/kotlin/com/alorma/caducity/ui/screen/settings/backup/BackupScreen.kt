@@ -1,7 +1,5 @@
 package com.alorma.caducity.ui.screen.settings.backup
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,15 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -28,12 +23,21 @@ import com.alorma.caducity.base.ui.icons.Backup
 import com.alorma.caducity.base.ui.icons.Restore
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.ui.components.StyledCenterAlignedTopAppBar
+import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
+import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
+import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
+import com.alorma.caducity.ui.components.feedback.snackbar.LocalAppSnackbarHostState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
+import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.LocalAppSnackbarHostState
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
+import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -45,20 +49,17 @@ fun BackupScreen(
   backupFileHandler: BackupFileHandler = koinInject()
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-  val showRestoreDialog by viewModel.showRestoreDialog.collectAsStateWithLifecycle()
+
+  backupFileHandler.registerContracts()
+
+  LaunchedEffect(backupFileHandler.result) {
+    backupFileHandler.result.collect { result ->
+      viewModel.onBackupResult(result)
+    }
+  }
+
+  val dialogState = rememberAppDialogState()
   val snackbarHostState = LocalAppSnackbarHostState.current
-
-  val exportBackupLauncher = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.CreateDocument("application/json")
-  ) { uri ->
-    uri?.let { viewModel.onExportBackup(it) }
-  }
-
-  val restoreBackupLauncher = rememberLauncherForActivityResult(
-    contract = ActivityResultContracts.OpenDocument()
-  ) { uri ->
-    uri?.let { viewModel.onRestoreBackupRequest(it) }
-  }
 
   // Handle side effects (success/error messages)
   LaunchedEffect(viewModel.sideEffect) {
@@ -96,99 +97,111 @@ fun BackupScreen(
             )
           }
         }
+
+        is BackupSideEffect.ConfirmRestore -> {
+          val result = dialogState.showAlertDialog(
+            type = AppFeedbackType.Success,
+            title = AppFeedbackResource.AsResource(R.string.backup_restore_warning_title),
+            text = AppFeedbackResource.AsResource(R.string.backup_restore_warning_message),
+            positiveButton = AppFeedbackResource.AsResource(R.string.backup_restore_confirm),
+            negativeButton = AppFeedbackResource.AsResource(R.string.backup_cancel),
+          )
+
+          if (result is DialogResult.Positive) {
+            viewModel.onRestoreConfirmed(sideEffect.uri)
+          }
+        }
       }
     }
   }
 
+
+  Box(modifier) {
+    when (uiState) {
+      BackupUiState.Loading -> FullscreenLoading()
+      BackupUiState.Idle -> BackupScreenContent(
+        dialogState = dialogState,
+        snackbarHostState = snackbarHostState,
+        onExport = { backupFileHandler.createBackup() },
+        onRestore = { backupFileHandler.selectBackup() },
+      )
+    }
+  }
+}
+
+@Composable
+private fun BackupScreenContent(
+  dialogState: AppDialogState,
+  snackbarHostState: AppSnackbarHostState,
+  onExport: () -> Unit,
+  onRestore: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   AppScaffold(
-    modifier = modifier,
+    modifier = Modifier.then(modifier),
+    dialogState = dialogState,
+    snackbarState = snackbarHostState,
     topBar = {
       StyledCenterAlignedTopAppBar(
         title = {
-          Text(text = stringResource(R.string.backup_screen_title))
+          Text(
+            text = stringResource(R.string.settings_backup_title),
+          )
         },
       )
     },
-    snackbarState = snackbarHostState,
   ) { paddingValues ->
-    Box(
+    Column(
       modifier = Modifier
         .fillMaxSize()
+        .verticalScroll(rememberScrollState())
         .padding(paddingValues)
+        .padding(horizontal = 16.dp),
+      verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-      Column(
-        modifier = Modifier
-          .fillMaxSize()
-          .verticalScroll(rememberScrollState())
-          .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-      ) {
-        // Export & Restore Group
-        StyledSettingsGroup {
-          StyledSettingsCard(
-            icon = {
-              Icon(
-                imageVector = AppIcons.Backup,
-                contentDescription = null,
-              )
-            },
-            title = stringResource(R.string.backup_export_title),
-            subtitle = stringResource(R.string.backup_export_description),
-            onClick = {
-              exportBackupLauncher.launch(backupFileHandler.generateBackupFileName())
-            },
-            position = ShapePosition.Start,
-          )
+      // Export & Restore Group
+      StyledSettingsGroup {
+        StyledSettingsCard(
+          icon = {
+            Icon(
+              imageVector = AppIcons.Backup,
+              contentDescription = null,
+            )
+          },
+          title = stringResource(R.string.backup_export_title),
+          subtitle = stringResource(R.string.backup_export_description),
+          onClick = onExport,
+          position = ShapePosition.Start,
+        )
 
-          StyledSettingsCard(
-            icon = {
-              Icon(
-                imageVector = AppIcons.Restore,
-                contentDescription = null,
-              )
-            },
-            title = stringResource(R.string.backup_restore_title),
-            subtitle = stringResource(R.string.backup_restore_description),
-            onClick = {
-              restoreBackupLauncher.launch(arrayOf("application/json"))
-            },
-            position = ShapePosition.End,
-          )
-        }
-      }
-
-      // Loading indicator
-      if (uiState is BackupUiState.Loading) {
-        Box(
-          modifier = Modifier.fillMaxSize(),
-          contentAlignment = Alignment.Center
-        ) {
-          CircularProgressIndicator()
-        }
+        StyledSettingsCard(
+          icon = {
+            Icon(
+              imageVector = AppIcons.Restore,
+              contentDescription = null,
+            )
+          },
+          title = stringResource(R.string.backup_restore_title),
+          subtitle = stringResource(R.string.backup_restore_description),
+          onClick = onRestore,
+          position = ShapePosition.End,
+        )
       }
     }
   }
+}
 
-  // Restore confirmation dialog
-  if (showRestoreDialog) {
-    AlertDialog(
-      onDismissRequest = { viewModel.onRestoreCancelled() },
-      title = {
-        Text(text = stringResource(R.string.backup_restore_warning_title))
-      },
-      text = {
-        Text(text = stringResource(R.string.backup_restore_warning_message))
-      },
-      confirmButton = {
-        TextButton(onClick = { viewModel.onRestoreConfirmed() }) {
-          Text(text = stringResource(R.string.backup_restore_confirm))
-        }
-      },
-      dismissButton = {
-        TextButton(onClick = { viewModel.onRestoreCancelled() }) {
-          Text(text = stringResource(R.string.backup_cancel))
-        }
-      }
-    )
+@PreviewDynamicLightDark
+@Composable
+fun BackupScreenContentPreview() {
+  PreviewTheme {
+    Surface {
+      BackupScreenContent(
+        dialogState = rememberAppDialogState(),
+        snackbarHostState = rememberAppSnackbarHostState(),
+        onExport = {},
+        onRestore = {},
+      )
+    }
   }
 }

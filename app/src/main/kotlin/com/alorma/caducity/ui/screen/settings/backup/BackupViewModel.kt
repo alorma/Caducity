@@ -26,11 +26,6 @@ class BackupViewModel(
   private val _sideEffect = MutableSharedFlow<BackupSideEffect>()
   val sideEffect: SharedFlow<BackupSideEffect> = _sideEffect.asSharedFlow()
 
-  private val _showRestoreDialog = MutableStateFlow(false)
-  val showRestoreDialog: StateFlow<Boolean> = _showRestoreDialog.asStateFlow()
-
-  private var pendingRestoreUri: Uri? = null
-
   fun onExportBackup(uri: Uri) {
     viewModelScope.launch {
       _uiState.value = BackupUiState.Loading
@@ -60,14 +55,7 @@ class BackupViewModel(
     }
   }
 
-  fun onRestoreBackupRequest(uri: Uri) {
-    pendingRestoreUri = uri
-    _showRestoreDialog.value = true
-  }
-
-  fun onRestoreConfirmed() {
-    _showRestoreDialog.value = false
-    val uri = pendingRestoreUri ?: return
+  fun onRestoreConfirmed(uri: Uri) {
 
     viewModelScope.launch {
       _uiState.value = BackupUiState.Loading
@@ -78,38 +66,44 @@ class BackupViewModel(
               onSuccess = {
                 _uiState.value = BackupUiState.Idle
                 _sideEffect.emit(BackupSideEffect.RestoreSuccess)
-                pendingRestoreUri = null
               },
               onFailure = { error ->
                 _uiState.value = BackupUiState.Idle
                 val backupError = when {
                   error.message?.contains("version", ignoreCase = true) == true ->
                     BackupError.VersionMismatch
+
                   else ->
                     BackupError.RestoreFailed(error.message)
                 }
                 _sideEffect.emit(BackupSideEffect.Error(backupError))
-                pendingRestoreUri = null
               }
             )
           },
           onFailure = { error ->
             _uiState.value = BackupUiState.Idle
             _sideEffect.emit(BackupSideEffect.Error(BackupError.InvalidFile(error.message)))
-            pendingRestoreUri = null
           }
         )
       } catch (e: Exception) {
         _uiState.value = BackupUiState.Idle
         _sideEffect.emit(BackupSideEffect.Error(BackupError.InvalidFile(e.message)))
-        pendingRestoreUri = null
       }
     }
   }
 
-  fun onRestoreCancelled() {
-    _showRestoreDialog.value = false
-    pendingRestoreUri = null
+  fun onBackupResult(result: BackupFileHandler.BackupResult) {
+    when (result) {
+      is BackupFileHandler.BackupResult.ExportUriObtained -> {
+        onExportBackup(result.uri)
+      }
+
+      is BackupFileHandler.BackupResult.RestoreUriObtained -> {
+        viewModelScope.launch {
+          _sideEffect.emit(BackupSideEffect.ConfirmRestore(uri = result.uri))
+        }
+      }
+    }
   }
 }
 
@@ -122,6 +116,7 @@ sealed interface BackupSideEffect {
   data object ExportSuccess : BackupSideEffect
   data object RestoreSuccess : BackupSideEffect
   data class Error(val error: BackupError) : BackupSideEffect
+  data class ConfirmRestore(val uri: Uri) : BackupSideEffect
 }
 
 sealed interface BackupError {
