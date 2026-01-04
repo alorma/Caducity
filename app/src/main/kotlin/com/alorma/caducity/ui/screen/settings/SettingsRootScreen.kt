@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -47,8 +49,12 @@ fun SettingsRootScreen(
     modifier = Modifier
       .nestedScroll(scrollConnection)
       .then(modifier),
+    containerColor = BottomSheetDefaults.ContainerColor,
     topBar = {
       StyledCenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+          containerColor = BottomSheetDefaults.ContainerColor,
+        ),
         title = {
           Text(
             text = stringResource(R.string.settings_screen_title),
