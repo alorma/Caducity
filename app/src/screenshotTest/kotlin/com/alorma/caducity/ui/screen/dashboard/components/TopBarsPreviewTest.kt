@@ -1,9 +1,8 @@
 package com.alorma.caducity.ui.screen.dashboard.components
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import com.alorma.caducity.ui.components.StyledCenterAlignedTopBarPreviewTheme
-import com.alorma.caducity.ui.components.StyledTopBarPreviewTheme
+import com.alorma.caducity.ui.components.StyledCenterAlignedTopBarScreenshot
+import com.alorma.caducity.ui.components.StyledTopBarScreenshot
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.android.tools.screenshot.PreviewTest
 
@@ -12,13 +11,13 @@ class TopBarsPreviewTest {
   @PreviewDynamicLightDark
   @Composable
   fun StyledTopBarTest() {
-    StyledTopBarPreviewTheme()
+    StyledCenterAlignedTopBarScreenshot()
   }
 
   @PreviewTest
   @PreviewDynamicLightDark
   @Composable
   fun StyledCenterAlignedTest() {
-    StyledCenterAlignedTopBarPreviewTheme()
+    StyledTopBarScreenshot()
   }
 }

@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import com.alorma.caducity.ui.theme.preview.ScreenshotPreviewTheme
 
 @Composable
 fun StyledCenterAlignedTopAppBar(
@@ -67,20 +68,44 @@ fun StyledTopAppBar(
 
 @PreviewLightDark
 @Composable
-fun StyledCenterAlignedTopBarPreviewTheme() {
+private fun StyledCenterAlignedTopBarPreview() {
   PreviewTheme {
-    StyledCenterAlignedTopAppBar(
-      title = { Text(text = "Preview") },
-    )
+    StyledCenterAlignedTopBarPreviewContent()
   }
+}
+
+@Composable
+fun StyledCenterAlignedTopBarScreenshot() {
+  PreviewTheme {
+    StyledCenterAlignedTopBarPreviewContent()
+  }
+}
+
+@Composable
+fun StyledCenterAlignedTopBarPreviewContent() {
+  StyledCenterAlignedTopAppBar(
+    title = { Text(text = "Preview") },
+  )
 }
 
 @PreviewLightDark
 @Composable
-fun StyledTopBarPreviewTheme() {
+private fun StyledTopBarPreview() {
   PreviewTheme {
-    StyledTopAppBar(
-      title = { Text(text = "Preview") },
-    )
+    StyledTopAppBarPreviewContent()
   }
+}
+
+@Composable
+ fun StyledTopBarScreenshot() {
+  PreviewTheme {
+    StyledTopAppBarPreviewContent()
+  }
+}
+
+@Composable
+fun StyledTopAppBarPreviewContent() {
+  StyledTopAppBar(
+    title = { Text(text = "Preview") },
+  )
 }

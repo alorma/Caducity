@@ -11,19 +11,21 @@ class AppThemeTest {
   @PreviewDynamicLightDark
   @Composable
   fun MaterialColorsPreviewTheme() {
-
+    MaterialColorsScreenshot()
   }
+
   @PreviewTest
   @PreviewDynamicLightDark
   @Composable
   fun ExpirationColorsVibrantPreviewTheme() {
-
+    ExpirationColorsVibrantScreenshot()
   }
+
   @PreviewTest
   @PreviewDynamicLightDark
   @Composable
   fun ExpirationColorsSoftPreviewTheme() {
-
+    ExpirationColorsSoftScreenshot()
   }
 
 }
