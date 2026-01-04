@@ -25,8 +25,12 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: adopt
-          java-version: 17
+          java-version: 21
 
       - name: Build Android - PR
         continue-on-error: false
         run: ./gradlew :app:assembleDebug
+
+      - name: Validate Screenshot Tests
+        continue-on-error: false
+        run: ./gradlew validateDebugScreenshotTest
