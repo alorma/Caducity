@@ -2,8 +2,16 @@ package com.alorma.caducity.feature.backup
 
 import android.content.Context
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.data.backup.BackupData
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat
@@ -19,6 +27,36 @@ class AndroidBackupFileHandler(
   private val json = Json {
     prettyPrint = true
     ignoreUnknownKeys = true
+  }
+
+  override val result: MutableSharedFlow<BackupFileHandler.BackupResult> = MutableSharedFlow()
+
+  private lateinit var exportBackupLauncher: ActivityResultLauncher<String>
+  private lateinit var restoreBackupLauncher: ActivityResultLauncher<Array<String>>
+
+  @Composable
+  override fun registerContracts() {
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    exportBackupLauncher = rememberLauncherForActivityResult(
+      contract = ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+      uri?.let {
+        lifecycleOwner.lifecycleScope.launch {
+          result.emit(BackupFileHandler.BackupResult.ExportUriObtained(it))
+        }
+      }
+    }
+
+    restoreBackupLauncher = rememberLauncherForActivityResult(
+      contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+      uri?.let {
+        lifecycleOwner.lifecycleScope.launch {
+          result.emit(BackupFileHandler.BackupResult.RestoreUriObtained(it))
+        }
+      }
+    }
   }
 
   override suspend fun writeBackupToUri(uri: Uri, data: BackupData): Result<Unit> {
@@ -54,5 +92,13 @@ class AndroidBackupFileHandler(
     val dateFormatted = dateFilenameFormat.format(localDateTime)
 
     return "caducity_backup_${dateFormatted}.json"
+  }
+
+  override fun createBackup() {
+    exportBackupLauncher.launch(generateBackupFileName())
+  }
+
+  override fun selectBackup() {
+    restoreBackupLauncher.launch(arrayOf("application/json"))
   }
 }

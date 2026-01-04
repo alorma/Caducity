@@ -13,6 +13,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
 import com.alorma.caducity.feature.debug.DebugModeProvider
+import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
 import com.alorma.caducity.ui.screen.settings.about.AboutScreen
 import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScreen
 import com.alorma.caducity.ui.screen.settings.backup.BackupScreen
@@ -26,6 +27,7 @@ fun SettingsContainer(
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
   themePreferences: ThemePreferences = koinInject(),
+  notificationHelper: ExpirationNotificationHelper = koinInject(),
   debugModeProvider: DebugModeProvider = koinInject()
 ) {
   val settingsBackStack = retain {
@@ -35,6 +37,8 @@ fun SettingsContainer(
   val bottomSheetStrategy = remember {
     BottomSheetSceneStrategy<NavKey>()
   }
+
+  notificationHelper.registerContract()
 
   NavDisplay(
     modifier = modifier,
@@ -69,7 +73,21 @@ fun SettingsContainer(
       entry<SettingsRoute.Notifications>(
         metadata = BottomSheetSceneStrategy.bottomSheet(),
       ) {
-        NotificationsSettingsScreen()
+        NotificationsSettingsScreen(
+          areNotificationsEnabled = notificationHelper.areNotificationsEnabled().value,
+          onNotificationStateChange = { enabled ->
+            if (enabled) {
+              // Check if we need to request permission
+              if (!notificationHelper.hasNotificationPermission()) {
+                notificationHelper.launch()
+              } else {
+                notificationHelper.setNotificationsEnabled(true)
+              }
+            } else {
+              notificationHelper.setNotificationsEnabled(false)
+            }
+          }
+        )
       }
       entry<SettingsRoute.Backup>(
         metadata = BottomSheetSceneStrategy.bottomSheet(),

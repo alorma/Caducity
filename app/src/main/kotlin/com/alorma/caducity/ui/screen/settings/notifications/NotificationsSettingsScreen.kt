@@ -6,50 +6,67 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
-import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
+import com.alorma.caducity.ui.components.StyledCenterAlignedTopAppBar
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
-import org.koin.compose.koinInject
+import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 
 @Composable
 fun NotificationsSettingsScreen(
+  areNotificationsEnabled: Boolean,
+  onNotificationStateChange: (Boolean) -> Unit,
   modifier: Modifier = Modifier,
-  notificationHelper: ExpirationNotificationHelper = koinInject(),
 ) {
-
-  notificationHelper.registerContract()
-
-  Column(
-    modifier = Modifier
-      .fillMaxSize()
-      .verticalScroll(rememberScrollState())
-      .padding(horizontal = 16.dp)
-      .then(modifier),
-    verticalArrangement = Arrangement.spacedBy(24.dp),
-  ) {
-    StyledSettingsGroup {
-      StyledSettingsSwitchCard(
-        title = stringResource(R.string.settings_enable_notifications),
-        state = notificationHelper.areNotificationsEnabled().value,
-        position = ShapePosition.Single,
-        onCheckedChange = { enabled ->
-          if (enabled) {
-            // Check if we need to request permission
-            if (!notificationHelper.hasNotificationPermission()) {
-              notificationHelper.launch()
-            } else {
-              notificationHelper.setNotificationsEnabled(true)
-            }
-          } else {
-            notificationHelper.setNotificationsEnabled(false)
-          }
+  AppScaffold(
+    modifier = Modifier.then(modifier),
+    topBar = {
+      StyledCenterAlignedTopAppBar(
+        title = {
+          Text(
+            text = stringResource(R.string.settings_notifications_title),
+          )
         },
+      )
+    },
+  ) { paddingValues ->
+    Column(
+      modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())
+        .padding(paddingValues)
+        .padding(horizontal = 16.dp),
+      verticalArrangement = Arrangement.spacedBy(24.dp),
+    ) {
+      StyledSettingsGroup {
+        StyledSettingsSwitchCard(
+          title = stringResource(R.string.settings_enable_notifications),
+          state = areNotificationsEnabled,
+          position = ShapePosition.Single,
+          onCheckedChange = onNotificationStateChange,
+        )
+      }
+    }
+  }
+}
+
+@PreviewDynamicLightDark
+@Composable
+fun NotificationsSettingsScreenPreview() {
+  PreviewTheme {
+    Surface {
+      NotificationsSettingsScreen(
+        areNotificationsEnabled = true,
+        onNotificationStateChange = {},
       )
     }
   }
