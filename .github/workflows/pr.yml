@@ -30,3 +30,7 @@ jobs:
       - name: Build Android - PR
         continue-on-error: false
         run: ./gradlew :app:assembleDebug
+
+      - name: Validate Screenshot Tests
+        continue-on-error: false
+        run: ./gradlew validateDebugScreenshotTest
