@@ -16,6 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewDynamicColors
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
@@ -26,6 +30,8 @@ import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.kizitonwose.calendar.core.now
 import com.kizitonwose.calendar.core.plusDays
+import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -137,122 +143,100 @@ private fun DayText(
   )
 }
 
-@PreviewDynamicLightDark
-@Composable
-private fun DayTodayWithStatusPreview() {
-  PreviewTheme {
-    DayTodayWithStatusPreviewContent()
-  }
-}
+class DayContentPreviewContentProvider :
+  CollectionPreviewParameterProvider<DayContentPreviewContent>(
+    listOf(
+      // Today - no status
+      DayContentPreviewContent(
+        date = LocalDate(2026, 2, 15),
+        today = LocalDate(2026, 2, 15),
+        status = null,
+        shapePosition = ShapePosition.None,
+        isOutDay = false,
+      ),
+      // Today - with Expired status (single item)
+      DayContentPreviewContent(
+        date = LocalDate(2026, 2, 15),
+        today = LocalDate(2026, 2, 15),
+        status = InstanceStatus.Expired,
+        shapePosition = ShapePosition.Single,
+        isOutDay = false,
+      ),
+      // Today - with ExpiringSoon status (start of range)
+      DayContentPreviewContent(
+        date = LocalDate(2026, 2, 15),
+        today = LocalDate(2026, 2, 15),
+        status = InstanceStatus.ExpiringSoon,
+        shapePosition = ShapePosition.Start,
+        isOutDay = false,
+      ),
+      // Regular day - Fresh status (middle of range)
+      DayContentPreviewContent(
+        date = LocalDate(2026, 2, 20),
+        today = LocalDate(2026, 2, 15),
+        status = InstanceStatus.Fresh,
+        shapePosition = ShapePosition.Middle,
+        isOutDay = false,
+      ),
+      // Regular day - Frozen status (end of range)
+      DayContentPreviewContent(
+        date = LocalDate(2026, 2, 28),
+        today = LocalDate(2026, 2, 15),
+        status = InstanceStatus.Frozen,
+        shapePosition = ShapePosition.End,
+        isOutDay = false,
+      ),
+      // Regular day - Consumed status
+      DayContentPreviewContent(
+        date = LocalDate(2026, 2, 10),
+        today = LocalDate(2026, 2, 15),
+        status = InstanceStatus.Consumed,
+        shapePosition = ShapePosition.Single,
+        isOutDay = false,
+      ),
+      // Out of month day - with status (dimmed)
+      DayContentPreviewContent(
+        date = LocalDate(2026, 1, 31),
+        today = LocalDate(2026, 2, 15),
+        status = InstanceStatus.Expired,
+        shapePosition = ShapePosition.Single,
+        isOutDay = true,
+      ),
+      // Out of month day - no status (dimmed)
+      DayContentPreviewContent(
+        date = LocalDate(2026, 3, 1),
+        today = LocalDate(2026, 2, 15),
+        status = null,
+        shapePosition = ShapePosition.None,
+        isOutDay = true,
+      ),
+    ),
+  )
 
-@Composable
-fun DayTodayWithStatusScreenshot() {
-  PreviewTheme {
-    DayTodayWithStatusPreviewContent()
-  }
-}
-
-@Composable
-fun DayTodayWithStatusPreviewContent() {
-  Surface {
-    DayContent(
-      modifier = Modifier.size(56.dp),
-      date = LocalDate.now(),
-      today = LocalDate.now(),
-      status = InstanceStatus.Expired,
-      shapePosition = ShapePosition.Start,
-      isOutDay = false,
-      onClick = {},
-    )
-  }
-}
-
-@PreviewDynamicLightDark
-@Composable
-private fun DayTodayWithoutStatusPreview() {
-  PreviewTheme {
-    DayTodayWithoutStatusPreviewContent()
-  }
-}
-
-@Composable
-fun DayTodayWithoutStatusScreenshot() {
-  PreviewTheme {
-    DayTodayWithoutStatusPreviewContent()
-  }
-}
-
-@Composable
-fun DayTodayWithoutStatusPreviewContent() {
-  Surface {
-    DayContent(
-      modifier = Modifier.size(56.dp),
-      date = LocalDate.now(),
-      today = LocalDate.now(),
-      status = null,
-      shapePosition = ShapePosition.Start,
-      isOutDay = false,
-      onClick = {},
-    )
-  }
-}
-
-@PreviewDynamicLightDark
-@Composable
-private fun DayWithStatusPreview() {
-  PreviewTheme {
-    DayWithStatusPreviewContent()
-  }
-}
-
-@Composable
-fun DayWithStatusScreenshot() {
-  PreviewTheme {
-    DayWithStatusPreviewContent()
-  }
-}
-
-@Composable
-fun DayWithStatusPreviewContent() {
-  Surface {
-    DayContent(
-      modifier = Modifier.size(56.dp),
-      date = LocalDate.now().plusDays(3),
-      today = LocalDate.now(),
-      status = InstanceStatus.Expired,
-      shapePosition = ShapePosition.Start,
-      isOutDay = false,
-      onClick = {},
-    )
-  }
-}
+data class DayContentPreviewContent(
+  val date: LocalDate,
+  val today: LocalDate,
+  val status: InstanceStatus?,
+  val shapePosition: ShapePosition,
+  val isOutDay: Boolean,
+)
 
 @PreviewDynamicLightDark
 @Composable
-private fun DayWithoutStatusPreview() {
+fun DayContentPreview(
+  @PreviewParameter(provider = DayContentPreviewContentProvider::class) content: DayContentPreviewContent,
+) {
   PreviewTheme {
-    DayWithoutStatusPreviewContent()
-  }
-}
-
-@Composable
-fun DayWithoutStatusScreenshot() {
-  PreviewTheme {
-    DayWithoutStatusPreviewContent()
-  }
-}
-
-@Composable
-fun DayWithoutStatusPreviewContent() {
-  Surface {
-    DayContent(
-      modifier = Modifier.size(56.dp),
-      date = LocalDate.now().plusDays(3),
-      today = LocalDate.now(),
-      status = null,
-      shapePosition = ShapePosition.Start,
-      isOutDay = false,
-      onClick = {},
-    )
+    Surface {
+      DayContent(
+        modifier = Modifier.size(56.dp),
+        date = content.date,
+        today = content.today,
+        status = content.status,
+        shapePosition = content.shapePosition,
+        isOutDay = content.isOutDay,
+        onClick = {},
+      )
+    }
   }
 }
