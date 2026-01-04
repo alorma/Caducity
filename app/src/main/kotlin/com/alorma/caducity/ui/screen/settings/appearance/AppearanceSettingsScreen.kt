@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -20,6 +22,7 @@ import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
+import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.ThemeMode
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
@@ -35,8 +38,12 @@ fun AppearanceSettingsScreen(
 ) {
   AppScaffold(
     modifier = Modifier.then(modifier),
+    containerColor = BottomSheetDefaults.ContainerColor,
     topBar = {
       StyledCenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+          containerColor = BottomSheetDefaults.ContainerColor,
+        ),
         title = {
           Text(
             text = stringResource(R.string.settings_appearance_title),

@@ -14,6 +14,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
 import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
+import com.alorma.caducity.feature.notification.NotificationDebugHelper
 import com.alorma.caducity.ui.screen.settings.about.AboutScreen
 import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScreen
 import com.alorma.caducity.ui.screen.settings.backup.BackupScreen
@@ -28,7 +29,8 @@ fun SettingsContainer(
   modifier: Modifier = Modifier,
   themePreferences: ThemePreferences = koinInject(),
   notificationHelper: ExpirationNotificationHelper = koinInject(),
-  debugModeProvider: DebugModeProvider = koinInject()
+  debugModeProvider: DebugModeProvider = koinInject(),
+  debugHelper: NotificationDebugHelper = koinInject(),
 ) {
   val settingsBackStack = retain {
     mutableStateListOf<NavKey>(SettingsRoute.Root)
@@ -98,7 +100,9 @@ fun SettingsContainer(
         entry<SettingsRoute.Debug>(
           metadata = BottomSheetSceneStrategy.bottomSheet(),
         ) {
-          DebugSettingsScreen()
+          DebugSettingsScreen(
+            triggerNotificationCheck = { debugHelper.triggerImmediateCheck() },
+          )
         }
       }
       entry<SettingsRoute.About>(
