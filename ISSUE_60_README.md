@@ -2,66 +2,102 @@
 
 ## TL;DR
 
-**Key Finding**: The "product variants" functionality requested in issue #60 **already exists** in the codebase using the `identifier` field.
+**Decision by @alorma**: Implement **Interpretation 3 - Variants as Separate Entity**
 
-**Recommendation**: Enhance the existing system with a dropdown/autocomplete UI (~4-6 hours effort).
+Variants will be a different entity that can be created independently. When creating instances, it will propose a list of variants or allow creating a new one.
 
 ## What You Have Now
 
-Two comprehensive documents have been created:
+Three comprehensive documents have been created:
 
-### 1. ISSUE_60_REFINEMENT.md
+### 1. ISSUE_60_VARIANT_ENTITY_PLAN.md ⭐ **CURRENT PLAN**
+**Detailed implementation plan for Variant entity approach**
+- Complete architecture overview
+- Database schema with migration strategy
+- New domain models (Variant, ProductWithVariants)
+- Data access layer (VariantDao, VariantDataSource)
+- Use cases for variant management
+- UI components (VariantsScreen, CreateVariantDialog)
+- 2-3 week implementation timeline
+- Phase-by-phase breakdown
+
+### 2. ISSUE_60_REFINEMENT.md
 **Full analysis and refinement document**
 - User story and technical context
 - Current implementation analysis  
 - Three possible interpretations of the issue
 - Detailed implementation guidance with code samples
 - Acceptance criteria
-- Out of scope items
 
-### 2. ISSUE_60_IMPLEMENTATION_PLAN.md
-**Ready-to-execute implementation plan**
-- Executive summary with decision matrix
-- Step-by-step checklist
-- Effort estimates
-- Files to modify
-- Questions needing answers before implementation
+### 3. ISSUE_60_IMPLEMENTATION_PLAN.md
+**Alternative approach (dropdown enhancement)**
+- Lighter-weight solution (not chosen)
+- Kept for reference
 
-## Quick Decision Guide
+## Decision Made: Variant as Separate Entity ✅
 
-### Option 1: Enhanced Dropdown (⭐ Recommended)
-- **Effort**: 4-6 hours
-- **What**: Add autocomplete dropdown for variant/identifier selection
-- **Why**: Better UX, reduced typos, faster input
-- **Risk**: Low
+**Chosen Approach**: Option 3 - New Variant Entity
 
-### Option 2: Terminology Only
-- **Effort**: 1-2 hours  
-- **What**: Rename "Identifier" to "Variant" in UI
-- **Why**: Clarify existing feature
-- **Risk**: None
+### What This Means
 
-### Option 3: New Variant Entity
-- **Effort**: 1-2 weeks
-- **What**: Create separate database table for variants
-- **Why**: More structured approach
-- **Risk**: High (not recommended - over-engineering)
+**Architecture**:
+```
+Product (1) -----> (*) Variant (1) -----> (*) ProductInstance
+```
+
+**Example**:
+- Product: "Yogurt"
+  - Variant: "Strawberry" (can be created independently)
+    - Instance 1: Expires Jan 15
+    - Instance 2: Expires Jan 20
+  - Variant: "Greek"
+    - Instance 1: Expires Jan 18
+
+### Key Features
+
+1. **Independent Variant Creation**: Create variants before any instances exist
+2. **Variant Management UI**: Dedicated screen to manage variants
+3. **Smart Instance Creation**: Select from existing variants or create new ones
+4. **Backward Compatible**: Existing instances migrate to auto-created variants
+5. **Proper Data Model**: Variants as first-class entities in database
+
+### Implementation Effort
+
+- **Timeline**: 2-3 weeks
+- **Complexity**: High (database migration, new entities, UI screens)
+- **Risk**: Medium (requires careful migration testing)
+- **Value**: High (proper architecture for long-term growth)
 
 ## Next Steps
 
-### For Product Owner
-Answer these questions in ISSUE_60_IMPLEMENTATION_PLAN.md:
-1. Which option above do you prefer?
-2. Should we say "Variant" or "Identifier" in the UI?
-3. What's the priority/timeline?
-4. Any specific UX requirements?
-
 ### For Developer
-If Option 1 (Enhanced Dropdown) is chosen:
-1. Review the implementation checklist in ISSUE_60_IMPLEMENTATION_PLAN.md
-2. Follow the code samples in ISSUE_60_REFINEMENT.md Phase 1-5
-3. Estimate: ~4-6 focused hours
-4. Files to modify are clearly listed
+
+Follow the detailed plan in `ISSUE_60_VARIANT_ENTITY_PLAN.md`:
+
+**Phase 1: Database & Domain (Week 1)**
+- Create VariantRoomEntity and VariantDao
+- Write database migration
+- Update ProductInstanceRoomEntity with variantId
+- Create Variant domain model
+- Implement VariantDataSource
+
+**Phase 2: Use Cases (Week 1-2)**
+- Create variant management use cases
+- Update AddInstanceToProductUseCase
+- Update grouping logic
+
+**Phase 3: UI Components (Week 2)**
+- Create VariantsScreen
+- Create CreateVariantDialog
+- Update CreateInstanceBottomSheet
+
+**Phase 4-5: Testing & Polish (Week 2-3)**
+- Integration testing
+- Migration testing
+- Localization
+- QA and refinement
+
+See `ISSUE_60_VARIANT_ENTITY_PLAN.md` for complete details.
 
 ## Code Location Reference
 
@@ -80,7 +116,7 @@ If Option 1 (Enhanced Dropdown) is chosen:
 
 ## Visual Mockup
 
-### Current UI
+### Current UI (Identifier Field)
 ```
 ┌─────────────────────────────┐
 │ Identifier                  │
@@ -88,41 +124,61 @@ If Option 1 (Enhanced Dropdown) is chosen:
 └─────────────────────────────┘
 ```
 
-### Proposed UI (Option 1)
+### New UI (Variant Selection)
 ```
 ┌─────────────────────────────┐
 │ Variant                     │
-│ [Select or type... ▼]      │ ← Dropdown with autocomplete
+│ [Select variant... ▼]      │ ← Dropdown with variants
 │  ┌────────────────────────┐│
-│  │ → Strawberry (3 items) ││
-│  │ → Greek (2 items)      ││
-│  │ → Vanilla (1 item)     ││
-│  │ → [or type new...]     ││
+│  │ Strawberry (3 items)   ││ ← Existing variants
+│  │ Greek (2 items)        ││
+│  │ Vanilla (1 item)       ││
+│  │ ─────────────────────  ││
+│  │ + Create new variant   ││ ← Opens dialog
 │  └────────────────────────┘│
 └─────────────────────────────┘
+```
+
+### Variant Management Screen (NEW)
+```
+┌─────────────────────────────────────┐
+│ Variants for "Yogurt"               │
+│                                     │
+│ ┌─────────────────────────────────┐│
+│ │ Strawberry          3 items  [×]││
+│ │ Greek               2 items  [×]││
+│ │ Vanilla             1 item   [×]││
+│ └─────────────────────────────────┘│
+│                                     │
+│ [+ Add Variant]                     │
+└─────────────────────────────────────┘
 ```
 
 ## How This Helps Users
 
 **Before**: 
 - User types "strawberry", "Strawberry", "STRAWBERRY" → Creates 3 separate groups
-- No visibility into existing variants
-- Slower data entry
+- No way to manage variants
+- Variants tied to instances (can't pre-create)
 
-**After**:
-- Dropdown shows existing "Strawberry" → User selects it
-- Consistent naming across all instances
-- Faster data entry with autocomplete
-- Better understanding of product organization
+**After (Variant Entity)**:
+- User creates "Strawberry" variant once
+- Variant persists even with zero instances
+- Clear variant management interface
+- Select from existing variants when adding instances
+- Proper data organization and consistency
+- Can delete unused variants
 
 ## Questions?
 
 Refer to the detailed documents:
+- **Implementation details?** → `ISSUE_60_VARIANT_ENTITY_PLAN.md` (PRIMARY)
 - Questions about the analysis? → `ISSUE_60_REFINEMENT.md`
-- Questions about implementation? → `ISSUE_60_IMPLEMENTATION_PLAN.md`
 - Questions about current code? → See "Code Location Reference" above
 
 ---
 
 **Created**: 2026-01-05  
-**Status**: Awaiting product owner decision on approach
+**Updated**: 2026-01-05  
+**Status**: Decision made - Implementing Variant as separate entity  
+**Decision by**: @alorma
