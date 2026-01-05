@@ -96,16 +96,23 @@ fun ProductsListItem(
           Row(
             modifier = Modifier
               .fillMaxWidth()
-              .height(24.dp)
-              .clip(ShapePosition.Single.toHorizontalShape()),
+              .height(24.dp),
             horizontalArrangement = Arrangement.spacedBy(2.dp),
           ) {
-            group.instances.forEach { instance ->
+            val groupSize = group.instances.size
+            group.instances.forEachIndexed { index, instance ->
               val colors = ExpirationDefaults.getVibrantColors(instance.status)
+              val shape = when {
+                groupSize == 1 -> ShapePosition.Single
+                index == 0 -> ShapePosition.Start
+                index == groupSize - 1 -> ShapePosition.End
+                else -> ShapePosition.Middle
+              }
               Box(
                 modifier = Modifier
                   .fillMaxHeight()
                   .weight(1f)
+                  .clip(shape.toHorizontalShape())
                   .background(colors.container),
               )
             }
