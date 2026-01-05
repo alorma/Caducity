@@ -18,8 +18,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.shape.ShapePosition
@@ -76,6 +78,7 @@ fun ProductsListItem(
           }
 
           // Group header with identifier and count
+          val totalCount = group.statusGroups.sumOf { it.count } + group.frozenCount
           Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -87,35 +90,48 @@ fun ProductsListItem(
               modifier = Modifier.padding(end = 8.dp)
             )
             Text(
-              text = "${group.identifier} (${group.instances.size})",
+              text = "${group.identifier} ($totalCount)",
               style = MaterialTheme.typography.labelLarge,
               color = CaducityTheme.colorScheme.onSurface,
             )
           }
 
-          Row(
-            modifier = Modifier
-              .fillMaxWidth()
-              .height(24.dp),
-            horizontalArrangement = Arrangement.spacedBy(2.dp),
-          ) {
-            val groupSize = group.instances.size
-            group.instances.forEachIndexed { index, instance ->
-              val colors = ExpirationDefaults.getVibrantColors(instance.status)
-              val shape = when {
-                groupSize == 1 -> ShapePosition.Single
-                index == 0 -> ShapePosition.Start
-                index == groupSize - 1 -> ShapePosition.End
-                else -> ShapePosition.Middle
+          // Status color bars (excluding frozen)
+          if (group.statusGroups.isNotEmpty()) {
+            Row(
+              modifier = Modifier
+                .fillMaxWidth()
+                .height(24.dp),
+              horizontalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+              val groupSize = group.statusGroups.size
+              group.statusGroups.forEachIndexed { index, statusGroup ->
+                val colors = ExpirationDefaults.getVibrantColors(statusGroup.status)
+                val shape = when {
+                  groupSize == 1 -> ShapePosition.Single
+                  index == 0 -> ShapePosition.Start
+                  index == groupSize - 1 -> ShapePosition.End
+                  else -> ShapePosition.Middle
+                }
+                Box(
+                  modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(statusGroup.count.toFloat())
+                    .clip(shape.toHorizontalShape())
+                    .background(colors.container),
+                )
               }
-              Box(
-                modifier = Modifier
-                  .fillMaxHeight()
-                  .weight(1f)
-                  .clip(shape.toHorizontalShape())
-                  .background(colors.container),
-              )
             }
+          }
+
+          // Show frozen count as text
+          if (group.frozenCount > 0) {
+            Text(
+              text = stringResource(R.string.products_list_items_frozen, group.frozenCount),
+              style = MaterialTheme.typography.bodySmall,
+              color = CaducityTheme.colorScheme.onSurfaceVariant,
+              modifier = Modifier.padding(top = 4.dp)
+            )
           }
         }
       }

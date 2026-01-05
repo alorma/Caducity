@@ -34,46 +34,6 @@ Refactor the UI to group product instances by their `identifier` field, creating
 
 ## Implementation Tasks
 
-### Phase 1: Database Schema Migration
-
-#### Task 1.1: Add SKU Column
-**Files**: `ProductInstanceRoomEntity.kt`, `AppDatabase.kt`
-
-**Changes**:
-1. Add `sku: String?` field to `ProductInstanceRoomEntity` (nullable)
-2. Update Room schema version (increment by 1)
-3. Create migration:
-   ```kotlin
-   val MIGRATION_X_Y = object : Migration(X, Y) {
-     override fun migrate(database: SupportSQLiteDatabase) {
-       database.execSQL("ALTER TABLE product_instances ADD COLUMN sku TEXT")
-     }
-   }
-   ```
-4. Add migration to `AppDatabase.kt`
-
-**Acceptance Criteria**:
-- Migration runs successfully on app upgrade
-- No data loss
-- `sku` column is nullable and defaults to null
-
----
-
-#### Task 1.2: Update Domain Model
-**Files**: `ProductInstance.kt`, `RoomEntityMapper.kt`
-
-**Changes**:
-1. Add `sku: String?` parameter to `ProductInstance` data class
-2. Update `toModel()` mapper to include `sku`
-3. Update `toRoomEntity()` mapper to include `sku`
-
-**Acceptance Criteria**:
-- Domain model includes `sku` field
-- Mappers preserve `sku` data
-- No compilation errors
-
----
-
 ### Phase 2: UI Models with Grouping
 
 #### Task 2.1: Create Grouped UI Model

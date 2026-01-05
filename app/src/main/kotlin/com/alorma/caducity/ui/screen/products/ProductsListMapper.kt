@@ -31,27 +31,25 @@ class ProductsListMapper(
       name = product.name,
       description = product.description,
       groups = groups.map { group ->
+        // Separate frozen items from others
+        val frozenCount = group.instances.count { it.status == com.alorma.caducity.domain.model.InstanceStatus.Frozen }
+
+        // Group non-frozen instances by status and count them
+        val statusGroups = group.instances
+          .filter { it.status != com.alorma.caducity.domain.model.InstanceStatus.Frozen }
+          .groupBy { it.status }
+          .map { (status, instances) ->
+            ProductInstanceStatusGroup(
+              status = status,
+              count = instances.size,
+            )
+          }
+          .toImmutableList()
+
         ProductInstanceGroupUiModel(
           identifier = group.identifier,
-          instances = group.instances
-            .map { instance ->
-              // Use displayDate for frozen items (pausedDate) or expirationDate for others
-              val displayLocalDate = instance
-                .displayDate
-                .toLocalDateTime(TimeZone.currentSystemDefault())
-                .date
-
-              val status = instance.status
-
-              ProductsListInstanceUiModel(
-                id = instance.id,
-                identifier = instance.identifier,
-                status = status,
-                expirationDate = displayLocalDate,
-                expirationDateText = dateFormat.format(displayLocalDate),
-              )
-            }
-            .toImmutableList()
+          statusGroups = statusGroups,
+          frozenCount = frozenCount,
         )
       }.toImmutableList()
     )

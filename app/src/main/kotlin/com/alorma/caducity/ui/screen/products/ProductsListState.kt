@@ -43,14 +43,12 @@ sealed interface ProductsListUiModel {
 @Stable
 data class ProductInstanceGroupUiModel(
   val identifier: String,
-  val instances: ImmutableList<ProductsListInstanceUiModel>,
+  val statusGroups: ImmutableList<ProductInstanceStatusGroup>,
+  val frozenCount: Int,
 )
 
 @Stable
-data class ProductsListInstanceUiModel(
-  val id: String,
-  val identifier: String,
+data class ProductInstanceStatusGroup(
   val status: InstanceStatus,
-  val expirationDate: LocalDate,
-  val expirationDateText: String,
+  val count: Int,
 )
