@@ -31,6 +31,8 @@
     <string name="dashboard_section_frozen">Frozen</string>
     <string name="dashboard_section_empty">Empty</string>
 
+    <string name="products_list_items_frozen">%1$d items frozen</string>
+
     <string name="settings_screen_title">Settings</string>
     <string name="settings_appearance_title">Appearance</string>
     <string name="settings_appearance_description">Theme, colors, and display</string>

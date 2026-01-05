@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.config.clock.AppClock
@@ -50,6 +52,7 @@ import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.ui.components.StyledTopAppBar
+import com.alorma.caducity.ui.screen.products.components.StatusBarsRow
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
@@ -79,6 +82,7 @@ fun ProductDetailScreen(
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
   var showInstanceBottomSheet by remember { mutableStateOf(false) }
+  var addToGroupIdentifier by remember { mutableStateOf<String?>(null) }
 
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarHostState()
@@ -138,11 +142,18 @@ fun ProductDetailScreen(
         snackbarHostState = snackbarState,
         dialogState = dialogState,
         onBack = onBack,
-        onAddInstance = { showInstanceBottomSheet = true },
+        onAddInstance = {
+          addToGroupIdentifier = null
+          showInstanceBottomSheet = true
+        },
         onDeleteInstance = { instanceId -> viewModel.deleteInstance(instanceId) },
         onConsumeInstance = { instanceId -> viewModel.consumeInstance(instanceId) },
         onToggleFreezeInstance = { instanceId, expirationInstant, isFrozen ->
           viewModel.toggleFreezeInstance(instanceId, expirationInstant, isFrozen)
+        },
+        onAddMoreToGroup = { identifier ->
+          addToGroupIdentifier = identifier
+          showInstanceBottomSheet = true
         },
       )
     }
@@ -163,21 +174,37 @@ fun ProductDetailScreen(
 
   // Instance Bottom Sheet
   if (showInstanceBottomSheet) {
+    val currentState = state.value
+    val groupToAddTo = if (currentState is ProductDetailState.Success && addToGroupIdentifier != null) {
+      currentState.product.groups.find { it.identifier == addToGroupIdentifier }
+    } else {
+      null
+    }
+
     CreateInstanceBottomSheet(
       instanceId = null,
       instance = null,
+      currentGroupCount = groupToAddTo?.instances?.size ?: 1,
+      groupExpirationDates = groupToAddTo?.instances
+        ?.map { it.expirationDateText }
+        ?.distinct()
+        ?.sorted()
+        ?: emptyList(),
+      scannedBarcode = groupToAddTo?.identifier,
       onSave = { identifier, expirationDate, quantity ->
         // For product detail screen, create instances one by one
         repeat(quantity) {
           viewModel.addInstance(identifier, expirationDate) {
             if (it == quantity - 1) {
               showInstanceBottomSheet = false
+              addToGroupIdentifier = null
             }
           }
         }
       },
       onDismiss = {
         showInstanceBottomSheet = false
+        addToGroupIdentifier = null
       }
     )
   }
@@ -194,6 +221,7 @@ private fun ProductDetailContent(
   onDeleteInstance: (String) -> Unit,
   onConsumeInstance: (String) -> Unit,
   onToggleFreezeInstance: (String, kotlin.time.Instant, Boolean) -> Unit,
+  onAddMoreToGroup: (String) -> Unit,
   appClock: AppClock = koinInject(),
 ) {
   val listState = rememberLazyListState()
@@ -297,14 +325,94 @@ private fun ProductDetailContent(
         }
       }
 
-      // Instance cards
-      items(product.instances) { instance ->
-        InstanceCard(
-          instance = instance,
+      // Groups with status bars and instances
+      items(product.groups.toList()) { group ->
+        InstanceGroupCard(
+          group = group,
           onDeleteInstance = onDeleteInstance,
           onConsumeInstance = onConsumeInstance,
           onToggleFreezeInstance = onToggleFreezeInstance,
+          onAddMoreToGroup = onAddMoreToGroup,
         )
+      }
+    }
+  }
+}
+
+@Composable
+private fun InstanceGroupCard(
+  group: ProductInstanceDetailGroup,
+  onDeleteInstance: (String) -> Unit,
+  onConsumeInstance: (String) -> Unit,
+  onToggleFreezeInstance: (String, kotlin.time.Instant, Boolean) -> Unit,
+  onAddMoreToGroup: (String) -> Unit = {},
+) {
+  Card(
+    modifier = Modifier.fillMaxWidth(),
+    colors = CardDefaults.cardColors(
+      containerColor = CaducityTheme.colorScheme.surfaceContainer,
+    ),
+    shape = MaterialTheme.shapes.largeIncreased,
+    elevation = CardDefaults.cardElevation(
+      defaultElevation = 2.dp,
+    ),
+  ) {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+      // Group header with identifier and count
+      val totalCount = group.statusGroups.sumOf { it.count } + group.frozenCount
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+          text = "${group.identifier} ($totalCount)",
+          style = MaterialTheme.typography.titleLarge.copy(
+            fontWeight = FontWeight.SemiBold,
+          ),
+          color = CaducityTheme.colorScheme.onSurface,
+        )
+
+        // Add more items button
+        IconButton(
+          onClick = { onAddMoreToGroup(group.identifier) }
+        ) {
+          Icon(
+            imageVector = AppIcons.Add,
+            contentDescription = stringResource(R.string.create_product_add_instance),
+          )
+        }
+      }
+
+      // Status bars row
+      StatusBarsRow(statusGroups = group.statusGroups)
+
+      // Frozen count text
+      if (group.frozenCount > 0) {
+        Text(
+          text = stringResource(com.alorma.caducity.R.string.products_list_items_frozen, group.frozenCount),
+          style = MaterialTheme.typography.bodySmall,
+          color = CaducityTheme.colorScheme.onSurfaceVariant,
+        )
+      }
+
+      // Horizontal LazyRow of instance cards
+      androidx.compose.foundation.lazy.LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        items(group.instances.toList()) { instance ->
+          InstanceCard(
+            instance = instance,
+            onDeleteInstance = onDeleteInstance,
+            onConsumeInstance = onConsumeInstance,
+            onToggleFreezeInstance = onToggleFreezeInstance,
+          )
+        }
       }
     }
   }
@@ -319,13 +427,13 @@ private fun InstanceCard(
 ) {
   var showDeleteConfirmation by remember { mutableStateOf(false) }
   Card(
-    modifier = Modifier.fillMaxWidth(),
+    modifier = Modifier.width(280.dp),
     colors = CardDefaults.cardColors(
-      containerColor = CaducityTheme.colorScheme.surfaceContainer,
+      containerColor = CaducityTheme.colorScheme.surfaceContainerHighest,
     ),
-    shape = MaterialTheme.shapes.largeIncreased,
+    shape = MaterialTheme.shapes.medium,
     elevation = CardDefaults.cardElevation(
-      defaultElevation = 2.dp,
+      defaultElevation = 1.dp,
     ),
   ) {
     Column(

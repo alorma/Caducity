@@ -32,6 +32,8 @@
     <string name="dashboard_section_frozen">Congelat</string>
     <string name="dashboard_section_empty">Buit</string>
 
+    <string name="products_list_items_frozen">%1$d articles congelats</string>
+
     <string  name="settings_screen_title">Configuració</string>
     <string name="settings_appearance_title">Aparença</string>
     <string name="settings_appearance_description">Tema, colors i visualització</string>

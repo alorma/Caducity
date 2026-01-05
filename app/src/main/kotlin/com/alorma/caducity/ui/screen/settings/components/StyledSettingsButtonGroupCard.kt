@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.components.shape.toCardShape
+import com.alorma.caducity.ui.components.shape.toVerticalShape
 import com.alorma.compose.settings.ui.expressive.SettingsButtonGroup
 
 @Composable
@@ -23,7 +23,7 @@ fun <T> StyledSettingsButtonGroupCard(
 ) {
   SettingsButtonGroup(
     modifier = modifier.fillMaxWidth(),
-    shape = position.toCardShape(),
+    shape = position.toVerticalShape(),
     icon = icon,
     title = {
       Text(

@@ -31,6 +31,8 @@
     <string name="dashboard_section_frozen">Congelado</string>
     <string name="dashboard_section_empty">Vacío</string>
 
+    <string name="products_list_items_frozen">%1$d artículos congelados</string>
+
     <string  name="settings_screen_title">Configuración</string>
     <string name="settings_appearance_title">Apariencia</string>
     <string name="settings_appearance_description">Tema, colores y visualización</string>

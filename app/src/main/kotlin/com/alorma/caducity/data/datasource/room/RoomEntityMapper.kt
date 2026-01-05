@@ -48,9 +48,12 @@ fun ProductWithInstancesRoomEntity.toModel(
   appClock: AppClock,
   expirationThresholds: ExpirationThresholds
 ): ProductWithInstances {
+  val instancesModel = instances.map { it.toModel(appClock, expirationThresholds) }.toImmutableList()
+
   return ProductWithInstances(
     product = product.toModel(),
-    instances = instances.map { it.toModel(appClock, expirationThresholds) }.toImmutableList(),
+    instances = instancesModel,
+    groups = emptyList<com.alorma.caducity.domain.model.ProductInstanceGroup>().toImmutableList(), // Groups will be computed in the use case
   )
 }
 
