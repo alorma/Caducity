@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.config.clock.AppClock
@@ -81,6 +82,7 @@ fun ProductDetailScreen(
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
   var showInstanceBottomSheet by remember { mutableStateOf(false) }
+  var addToGroupIdentifier by remember { mutableStateOf<String?>(null) }
 
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarHostState()
@@ -140,11 +142,18 @@ fun ProductDetailScreen(
         snackbarHostState = snackbarState,
         dialogState = dialogState,
         onBack = onBack,
-        onAddInstance = { showInstanceBottomSheet = true },
+        onAddInstance = {
+          addToGroupIdentifier = null
+          showInstanceBottomSheet = true
+        },
         onDeleteInstance = { instanceId -> viewModel.deleteInstance(instanceId) },
         onConsumeInstance = { instanceId -> viewModel.consumeInstance(instanceId) },
         onToggleFreezeInstance = { instanceId, expirationInstant, isFrozen ->
           viewModel.toggleFreezeInstance(instanceId, expirationInstant, isFrozen)
+        },
+        onAddMoreToGroup = { identifier ->
+          addToGroupIdentifier = identifier
+          showInstanceBottomSheet = true
         },
       )
     }
@@ -165,21 +174,37 @@ fun ProductDetailScreen(
 
   // Instance Bottom Sheet
   if (showInstanceBottomSheet) {
+    val currentState = state.value
+    val groupToAddTo = if (currentState is ProductDetailState.Success && addToGroupIdentifier != null) {
+      currentState.product.groups.find { it.identifier == addToGroupIdentifier }
+    } else {
+      null
+    }
+
     CreateInstanceBottomSheet(
       instanceId = null,
       instance = null,
+      currentGroupCount = groupToAddTo?.instances?.size ?: 1,
+      groupExpirationDates = groupToAddTo?.instances
+        ?.map { it.expirationDateText }
+        ?.distinct()
+        ?.sorted()
+        ?: emptyList(),
+      scannedBarcode = groupToAddTo?.identifier,
       onSave = { identifier, expirationDate, quantity ->
         // For product detail screen, create instances one by one
         repeat(quantity) {
           viewModel.addInstance(identifier, expirationDate) {
             if (it == quantity - 1) {
               showInstanceBottomSheet = false
+              addToGroupIdentifier = null
             }
           }
         }
       },
       onDismiss = {
         showInstanceBottomSheet = false
+        addToGroupIdentifier = null
       }
     )
   }
@@ -196,6 +221,7 @@ private fun ProductDetailContent(
   onDeleteInstance: (String) -> Unit,
   onConsumeInstance: (String) -> Unit,
   onToggleFreezeInstance: (String, kotlin.time.Instant, Boolean) -> Unit,
+  onAddMoreToGroup: (String) -> Unit,
   appClock: AppClock = koinInject(),
 ) {
   val listState = rememberLazyListState()
@@ -306,6 +332,7 @@ private fun ProductDetailContent(
           onDeleteInstance = onDeleteInstance,
           onConsumeInstance = onConsumeInstance,
           onToggleFreezeInstance = onToggleFreezeInstance,
+          onAddMoreToGroup = onAddMoreToGroup,
         )
       }
     }
@@ -318,6 +345,7 @@ private fun InstanceGroupCard(
   onDeleteInstance: (String) -> Unit,
   onConsumeInstance: (String) -> Unit,
   onToggleFreezeInstance: (String, kotlin.time.Instant, Boolean) -> Unit,
+  onAddMoreToGroup: (String) -> Unit = {},
 ) {
   Card(
     modifier = Modifier.fillMaxWidth(),
@@ -349,6 +377,16 @@ private fun InstanceGroupCard(
           ),
           color = CaducityTheme.colorScheme.onSurface,
         )
+
+        // Add more items button
+        IconButton(
+          onClick = { onAddMoreToGroup(group.identifier) }
+        ) {
+          Icon(
+            imageVector = AppIcons.Add,
+            contentDescription = stringResource(R.string.create_product_add_instance),
+          )
+        }
       }
 
       // Status bars row
