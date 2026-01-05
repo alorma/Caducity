@@ -3,37 +3,30 @@ package com.alorma.caducity.ui.screen.products
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.ui.components.StatusBadge
+import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.shape.toHorizontalShape
-import com.alorma.caducity.ui.components.shape.toVerticalShape
 import com.alorma.caducity.ui.screen.dashboard.components.productListWithInstancesPreview
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
@@ -54,8 +47,6 @@ fun ProductsListItem(
   Column(
     modifier = Modifier
       .fillMaxWidth()
-      .clip(MaterialTheme.shapes.medium)
-      .background(CaducityTheme.colorScheme.surfaceContainer)
       .clickable(onClick = onClick)
       .padding(16.dp)
       .then(modifier),
@@ -102,35 +93,20 @@ fun ProductsListItem(
             )
           }
 
-          val instanceGroupSize = group.instances.size
-
-          LazyRow(
+          Row(
             modifier = Modifier
               .fillMaxWidth()
-              .padding(start = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+              .height(24.dp)
+              .clip(ShapePosition.Single.toHorizontalShape()),
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
           ) {
-            items(group.instances.toList()) { instance ->
-              val index = group.instances.indexOf(instance)
-              val shapePosition = when {
-                instanceGroupSize == 1 -> ShapePosition.Single
-                index == 0 -> ShapePosition.Start
-                index == instanceGroupSize - 1 -> ShapePosition.End
-                else -> ShapePosition.Middle
-              }
-
-              val itemModifier = if (instanceGroupSize > 1) {
-                Modifier.fillParentMaxWidth(0.80f)
-              } else {
-                Modifier.fillParentMaxWidth()
-              }
-
-              ProductInstanceCard(
-                modifier = itemModifier,
-                instance = instance,
-                today = today,
-                relativeTimeFormatter = relativeTimeFormatter,
-                shapePosition = shapePosition,
+            group.instances.forEach { instance ->
+              val colors = ExpirationDefaults.getVibrantColors(instance.status)
+              Box(
+                modifier = Modifier
+                  .fillMaxHeight()
+                  .weight(1f)
+                  .background(colors.container),
               )
             }
           }
@@ -145,48 +121,6 @@ fun ProductsListItem(
           color = CaducityTheme.colorScheme.onSurfaceVariant,
         )
       }
-    }
-  }
-}
-
-@Composable
-private fun ProductInstanceCard(
-  instance: ProductsListInstanceUiModel,
-  today: LocalDate,
-  relativeTimeFormatter: RelativeTimeFormatter,
-  shapePosition: ShapePosition,
-  modifier: Modifier = Modifier,
-) {
-  var relativeTimeText by remember { mutableStateOf("") }
-
-  LaunchedEffect(instance.expirationDate, today) {
-    relativeTimeText = relativeTimeFormatter.format(today, instance.expirationDate)
-  }
-
-  Column(
-    modifier = modifier
-      .width(120.dp)
-      .clip(shapePosition.toHorizontalShape())
-      .background(CaducityTheme.colorScheme.surfaceContainerHighest)
-      .padding(12.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.spacedBy(8.dp)
-  ) {
-    StatusBadge(status = instance.status)
-
-    Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-      Text(
-        text = relativeTimeText,
-        style = MaterialTheme.typography.bodySmall,
-        color = CaducityTheme.colorScheme.onSurface,
-      )
-      Text(
-        text = instance.expirationDateText,
-        style = MaterialTheme.typography.labelSmall,
-        color = CaducityTheme.colorScheme.onSurfaceVariant,
-      )
     }
   }
 }
