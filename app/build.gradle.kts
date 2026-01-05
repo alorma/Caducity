@@ -31,6 +31,22 @@ android {
     }
   }
   signingConfigs {
+    register("release") {
+      val realKeystoreFile = file("../certs/release.keystore")
+      val fakeKeystoreFile = file("../certs/fakeRelease.keystore")
+
+      if (realKeystoreFile.exists() && System.getenv("KEYSTORE_PASSWORD") != null) {
+        storeFile = realKeystoreFile
+        storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "no_value"
+        keyAlias = System.getenv("KEY_ALIAS") ?: "no_value"
+        keyPassword = System.getenv("KEY_PASSWORD") ?: "no_value"
+      } else {
+        storeFile = fakeKeystoreFile
+        storePassword = "caducity"
+        keyAlias = "caducity"
+        keyPassword = "caducity"
+      }
+    }
     named("debug") {
       storeFile = file("../certs/debug.keystore")
     }
@@ -38,6 +54,7 @@ android {
   buildTypes {
     release {
       isMinifyEnabled = false
+      signingConfig = signingConfigs["release"]
     }
     debug {
       applicationIdSuffix = ".dev"
