@@ -50,12 +50,33 @@ fun ProductWithInstancesRoomEntity.toModel(
   appClock: AppClock,
   expirationThresholds: ExpirationThresholds
 ): ProductWithInstances {
-  val instancesModel = instances.map { it.toModel(appClock, expirationThresholds) }.toImmutableList()
+  val instancesModel = instances.map { it.toModel(appClock, expirationThresholds) }
+
+  // Build variant map for quick lookup
+  val variantMap = variants.associateBy { it.id }
+
+  // Group instances by variant
+  val variantsWithInstances = instancesModel
+    .filter { it.variantId != null }
+    .groupBy { it.variantId!! }
+    .mapNotNull { (variantId, variantInstances) ->
+      val variant = variantMap[variantId] ?: return@mapNotNull null
+      com.alorma.caducity.domain.model.VariantWithInstances(
+        variant = variant.toModel(),
+        instances = variantInstances.toImmutableList()
+      )
+    }
+    .toImmutableList()
+
+  // Get standalone instances (no variantId)
+  val standaloneInstancesModel = instancesModel
+    .filter { it.variantId == null }
+    .toImmutableList()
 
   return ProductWithInstances(
     product = product.toModel(),
-    instances = instancesModel,
-    groups = emptyList<com.alorma.caducity.domain.model.ProductInstanceGroup>().toImmutableList(), // Groups will be computed in the use case
+    variants = variantsWithInstances,
+    standaloneInstances = standaloneInstancesModel,
   )
 }
 

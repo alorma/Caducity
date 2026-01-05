@@ -18,7 +18,9 @@ class ProductsListMapper(
   }
 
   private fun ProductWithInstances.toUiModel(): ProductsListUiModel {
-    if (instances.isEmpty()) {
+    val allInstances = variants.flatMap { it.instances } + standaloneInstances
+
+    if (allInstances.isEmpty()) {
       return ProductsListUiModel.Empty(
         id = product.id,
         name = product.name,
@@ -30,24 +32,26 @@ class ProductsListMapper(
       id = product.id,
       name = product.name,
       description = product.description,
-      groups = groups.map { group ->
+      groups = variants.map { variantWithInstances ->
+        val instances = variantWithInstances.instances
+
         // Separate frozen items from others
-        val frozenCount = group.instances.count { it.status == com.alorma.caducity.domain.model.InstanceStatus.Frozen }
+        val frozenCount = instances.count { it.status == com.alorma.caducity.domain.model.InstanceStatus.Frozen }
 
         // Group non-frozen instances by status and count them
-        val statusGroups = group.instances
+        val statusGroups = instances
           .filter { it.status != com.alorma.caducity.domain.model.InstanceStatus.Frozen }
           .groupBy { it.status }
-          .map { (status, instances) ->
+          .map { (status, instancesList) ->
             ProductInstanceStatusGroup(
               status = status,
-              count = instances.size,
+              count = instancesList.size,
             )
           }
           .toImmutableList()
 
         ProductInstanceGroupUiModel(
-          identifier = group.identifier,
+          identifier = variantWithInstances.variant.name,
           statusGroups = statusGroups,
           frozenCount = frozenCount,
         )

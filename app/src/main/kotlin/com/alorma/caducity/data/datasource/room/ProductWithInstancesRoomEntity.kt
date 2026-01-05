@@ -11,7 +11,13 @@ data class ProductWithInstancesRoomEntity(
     parentColumn = "id",
     entityColumn = "productId"
   )
-  val instances: List<ProductInstanceRoomEntity>
+  val instances: List<ProductInstanceRoomEntity>,
+
+  @Relation(
+    parentColumn = "id",
+    entityColumn = "productId"
+  )
+  val variants: List<VariantRoomEntity> = emptyList()
 ) {
   // Filter consumed instances in memory (Room @Relation doesn't support WHERE clauses well)
   fun filterConsumed(): ProductWithInstancesRoomEntity {

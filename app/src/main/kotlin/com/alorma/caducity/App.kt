@@ -61,8 +61,8 @@ import com.alorma.caducity.ui.screen.onboarding.OnboardingRoute
 import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
 import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
+import com.alorma.caducity.ui.screen.product.detail.ProductDetailContainer
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailRoute
-import com.alorma.caducity.ui.screen.product.detail.ProductDetailScreen
 import com.alorma.caducity.ui.screen.products.ProductsListBottomSheet
 import com.alorma.caducity.ui.screen.products.ProductsListRoute
 import com.alorma.caducity.ui.screen.products.ProductsListScreen
@@ -180,7 +180,7 @@ fun App(
               filters = ProductsListFilter.All,
               scrollConnection = exitAlwaysScrollBehavior,
               onNavigateToProductDetail = { productId ->
-                topLevelBackStack.add(ProductDetailRoute(productId))
+                topLevelBackStack.add(ProductDetailRoute.Root(productId))
               },
             )
           }
@@ -194,7 +194,7 @@ fun App(
               onBack = { topLevelBackStack.removeLast() },
               onProductCreated = { productId ->
                 topLevelBackStack.removeLast() // Remove create screen
-                topLevelBackStack.add(ProductDetailRoute(productId)) // Navigate to detail
+                topLevelBackStack.add(ProductDetailRoute.Root(productId)) // Navigate to detail
               }
             )
           }
@@ -209,12 +209,12 @@ fun App(
                 if (topLevelBackStack.backStack.last() is ProductsListRoute) {
                   topLevelBackStack.removeLast()
                 }
-                topLevelBackStack.add(ProductDetailRoute(productId))
+                topLevelBackStack.add(ProductDetailRoute.Root(productId))
               }
             )
           }
           entry<ProductDetailRoute> {
-            ProductDetailScreen(
+            ProductDetailContainer(
               productId = it.productId,
               onBack = { topLevelBackStack.removeLast() }
             )

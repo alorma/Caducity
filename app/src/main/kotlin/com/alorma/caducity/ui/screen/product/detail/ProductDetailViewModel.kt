@@ -2,38 +2,18 @@ package com.alorma.caducity.ui.screen.product.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alorma.caducity.domain.model.InstanceActionError
-import com.alorma.caducity.domain.model.InstanceActionResult
-import com.alorma.caducity.domain.usecase.AddInstanceToProductUseCase
-import com.alorma.caducity.domain.usecase.ConsumeInstanceUseCase
-import com.alorma.caducity.domain.usecase.DeleteInstanceUseCase
-import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
 
 class ProductDetailViewModel(
-  private val productId: String,
+  productId: String,
   obtainProductDetailUseCase: ObtainProductDetailUseCase,
   productDetailMapper: ProductDetailMapper,
-  private val addInstanceToProductUseCase: AddInstanceToProductUseCase,
-  private val deleteInstanceUseCase: DeleteInstanceUseCase,
-  private val consumeInstanceUseCase: ConsumeInstanceUseCase,
-  private val freezeInstanceUseCase: FreezeInstanceUseCase,
 ) : ViewModel() {
-
-  private val _actionError = MutableSharedFlow<InstanceActionError>()
-  val actionError: SharedFlow<InstanceActionError> = _actionError.asSharedFlow()
 
   val state: StateFlow<ProductDetailState> = obtainProductDetailUseCase
     .obtainProductDetail(productId)
@@ -56,63 +36,4 @@ class ProductDetailViewModel(
       SharingStarted.WhileSubscribed(5000),
       ProductDetailState.Loading
     )
-
-  fun addInstance(
-    identifier: String,
-    expirationDate: LocalDate,
-    onSuccess: () -> Unit,
-  ) {
-    viewModelScope.launch {
-      val instant = expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault())
-      val result = addInstanceToProductUseCase.addInstance(
-        productId = productId,
-        identifier = identifier,
-        expirationDate = instant,
-      )
-
-      result.fold(
-        onSuccess = {
-          onSuccess()
-        },
-        onFailure = { error ->
-          // Error handling can be enhanced later if needed
-          println("Failed to add instance: ${error.message}")
-        }
-      )
-    }
-  }
-
-  fun deleteInstance(instanceId: String) {
-    viewModelScope.launch {
-      deleteInstanceUseCase.deleteInstance(instanceId)
-    }
-  }
-
-  fun consumeInstance(instanceId: String) {
-    viewModelScope.launch {
-      val result = consumeInstanceUseCase.consumeInstance(instanceId)
-      if (result is InstanceActionResult.Failure) {
-        _actionError.emit(result.error)
-      }
-    }
-  }
-
-  fun forceConsumeInstance(instanceId: String) {
-    viewModelScope.launch {
-      consumeInstanceUseCase.forceConsumeInstance(instanceId)
-    }
-  }
-
-  fun toggleFreezeInstance(instanceId: String, expirationDate: kotlin.time.Instant, isFrozen: Boolean) {
-    viewModelScope.launch {
-      if (isFrozen) {
-        freezeInstanceUseCase.unfreezeInstance(instanceId)
-      } else {
-        val result = freezeInstanceUseCase.freezeInstance(instanceId, expirationDate)
-        if (result is InstanceActionResult.Failure) {
-          _actionError.emit(result.error)
-        }
-      }
-    }
-  }
 }

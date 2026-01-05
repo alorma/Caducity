@@ -193,7 +193,9 @@ class DashboardMapper(
   }
 
   private fun ProductWithInstances.toUiModel(): ProductUiModel {
-    if (instances.isEmpty()) {
+    val allInstances = variants.flatMap { it.instances } + standaloneInstances
+
+    if (allInstances.isEmpty()) {
       return ProductUiModel.Empty(
         id = product.id,
         name = product.name,
@@ -212,7 +214,7 @@ class DashboardMapper(
       name = product.name,
       description = product.description,
       today = dateFormat.format(today),
-      instances = instances.map { instance ->
+      instances = allInstances.map { instance ->
         // Use displayDate for frozen items (pausedDate) or expirationDate for others
         val displayLocalDate = instance
           .displayDate

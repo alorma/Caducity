@@ -84,7 +84,9 @@ class RoomProductDataSource(
       val filtered = if (filter is ProductsListFilter.ByStatus && filter.statuses.size > 1) {
         products.filter { productWithInstances ->
           // Keep product if it has at least one instance with the requested status
-          productWithInstances.instances.any { instance ->
+          val allInstances = productWithInstances.variants.flatMap { it.instances } +
+                           productWithInstances.standaloneInstances
+          allInstances.any { instance ->
             instance.status in filter.statuses
           }
         }

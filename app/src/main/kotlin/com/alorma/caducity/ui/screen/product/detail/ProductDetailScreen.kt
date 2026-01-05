@@ -1,75 +1,29 @@
 package com.alorma.caducity.ui.screen.product.detail
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.alorma.caducity.R
-import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
-import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.domain.model.InstanceActionError
-import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.ui.components.StatusBadge
-import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.ui.components.StyledTopAppBar
-import com.alorma.caducity.ui.screen.products.components.StatusBarsRow
-import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
-import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
-import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.screen.dashboard.CalendarMode
-import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
-import com.alorma.caducity.ui.screen.product.create.CreateInstanceBottomSheet
 import com.alorma.caducity.ui.theme.CaducityTheme
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -81,42 +35,9 @@ fun ProductDetailScreen(
   viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
-  var showInstanceBottomSheet by remember { mutableStateOf(false) }
-  var addToGroupIdentifier by remember { mutableStateOf<String?>(null) }
 
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarHostState()
-
-  // Collect action errors and show them in snackbar
-  LaunchedEffect(viewModel) {
-    viewModel.actionError.collectLatest { error ->
-
-      when (error) {
-        is InstanceActionError.CannotConsumeExpiredInstance -> {
-          val result = dialogState.showAlertDialog(
-            title = AppFeedbackResource.AsResource(R.string.warning_consume_expired_title),
-            text = AppFeedbackResource.AsResource(R.string.warning_consume_expired_message),
-            positiveButton = AppFeedbackResource.AsResource(R.string.warning_consume_expired_positive),
-            negativeButton = AppFeedbackResource.AsResource(R.string.warning_consume_expired_negative),
-            type = AppFeedbackType.Status(InstanceStatus.Expired),
-          )
-
-          if (result is DialogResult.Positive) {
-            viewModel.forceConsumeInstance(error.instanceId)
-          }
-        }
-
-        InstanceActionError.CannotFreezeExpiredInstance -> {
-          snackbarState.showSnackbar(
-            message = R.string.error_cannot_freeze_expired,
-            type = AppFeedbackType.Status(InstanceStatus.Expired),
-          )
-        }
-
-        InstanceActionError.InstanceNotFound -> {}
-      }
-    }
-  }
 
   when (val currentState = state.value) {
     is ProductDetailState.Loading -> {
@@ -142,19 +63,6 @@ fun ProductDetailScreen(
         snackbarHostState = snackbarState,
         dialogState = dialogState,
         onBack = onBack,
-        onAddInstance = {
-          addToGroupIdentifier = null
-          showInstanceBottomSheet = true
-        },
-        onDeleteInstance = { instanceId -> viewModel.deleteInstance(instanceId) },
-        onConsumeInstance = { instanceId -> viewModel.consumeInstance(instanceId) },
-        onToggleFreezeInstance = { instanceId, expirationInstant, isFrozen ->
-          viewModel.toggleFreezeInstance(instanceId, expirationInstant, isFrozen)
-        },
-        onAddMoreToGroup = { identifier ->
-          addToGroupIdentifier = identifier
-          showInstanceBottomSheet = true
-        },
       )
     }
 
@@ -171,43 +79,6 @@ fun ProductDetailScreen(
       }
     }
   }
-
-  // Instance Bottom Sheet
-  if (showInstanceBottomSheet) {
-    val currentState = state.value
-    val groupToAddTo = if (currentState is ProductDetailState.Success && addToGroupIdentifier != null) {
-      currentState.product.groups.find { it.identifier == addToGroupIdentifier }
-    } else {
-      null
-    }
-
-    CreateInstanceBottomSheet(
-      instanceId = null,
-      instance = null,
-      currentGroupCount = groupToAddTo?.instances?.size ?: 1,
-      groupExpirationDates = groupToAddTo?.instances
-        ?.map { it.expirationDateText }
-        ?.distinct()
-        ?.sorted()
-        ?: emptyList(),
-      scannedBarcode = groupToAddTo?.identifier,
-      onSave = { identifier, expirationDate, quantity ->
-        // For product detail screen, create instances one by one
-        repeat(quantity) {
-          viewModel.addInstance(identifier, expirationDate) {
-            if (it == quantity - 1) {
-              showInstanceBottomSheet = false
-              addToGroupIdentifier = null
-            }
-          }
-        }
-      },
-      onDismiss = {
-        showInstanceBottomSheet = false
-        addToGroupIdentifier = null
-      }
-    )
-  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -217,39 +88,7 @@ private fun ProductDetailContent(
   snackbarHostState: AppSnackbarHostState,
   dialogState: AppDialogState,
   onBack: () -> Unit,
-  onAddInstance: () -> Unit,
-  onDeleteInstance: (String) -> Unit,
-  onConsumeInstance: (String) -> Unit,
-  onToggleFreezeInstance: (String, kotlin.time.Instant, Boolean) -> Unit,
-  onAddMoreToGroup: (String) -> Unit,
-  appClock: AppClock = koinInject(),
 ) {
-  val listState = rememberLazyListState()
-  val coroutineScope = rememberCoroutineScope()
-  val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-
-  // Map instance IDs to their positions in the LazyColumn
-  // Position 0: Description (if present)
-  // Position 1: Calendar (if instances present)
-  // Position 2: Instances header
-  // Position 3: Add Instance button
-  // Position 4+: Instance cards
-  val instanceIndexMap = remember(product.instances) {
-    val hasDescription = product.description.isNotEmpty()
-    val hasCalendar = product.instances.isNotEmpty()
-
-    val baseIndex = listOf(
-      hasDescription, // 0 or not present
-      hasCalendar,    // 1 or not present
-      true,           // 2: header
-      true,           // 3: add button
-    ).count { it }
-
-    product.instances.mapIndexed { index, instance ->
-      instance.id to (baseIndex + index)
-    }.toMap()
-  }
-
   AppScaffold(
     topBar = {
       StyledTopAppBar(
@@ -267,325 +106,10 @@ private fun ProductDetailContent(
     snackbarState = snackbarHostState,
     dialogState = dialogState,
   ) { paddingValues ->
-    LazyColumn(
-      state = listState,
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues),
-      contentPadding = PaddingValues(16.dp),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-      // Product description section
-      if (product.description.isNotEmpty()) {
-        item {
-          Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-              containerColor = CaducityTheme.colorScheme.surfaceContainer,
-            ),
-            shape = MaterialTheme.shapes.largeIncreased,
-          ) {
-            Column(
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-              verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-              Text(
-                text = "Description",
-                style = MaterialTheme.typography.titleLarge,
-                color = CaducityTheme.colorScheme.onSurface,
-              )
-              Text(
-                text = product.description,
-                style = MaterialTheme.typography.bodyLarge,
-                color = CaducityTheme.colorScheme.onSurfaceVariant,
-              )
-            }
-          }
-        }
-      }
-
-      // Instances section header
-      item {
-        Text(
-          text = "Instances (${product.instances.size})",
-          style = MaterialTheme.typography.headlineSmall,
-          color = CaducityTheme.colorScheme.onSurface,
-        )
-      }
-
-      // Add Instance button
-      item {
-        OutlinedButton(
-          onClick = onAddInstance,
-          modifier = Modifier.fillMaxWidth(),
-        ) {
-          Text(stringResource(R.string.create_product_add_instance))
-        }
-      }
-
-      // Groups with status bars and instances
-      items(product.groups.toList()) { group ->
-        InstanceGroupCard(
-          group = group,
-          onDeleteInstance = onDeleteInstance,
-          onConsumeInstance = onConsumeInstance,
-          onToggleFreezeInstance = onToggleFreezeInstance,
-          onAddMoreToGroup = onAddMoreToGroup,
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun InstanceGroupCard(
-  group: ProductInstanceDetailGroup,
-  onDeleteInstance: (String) -> Unit,
-  onConsumeInstance: (String) -> Unit,
-  onToggleFreezeInstance: (String, kotlin.time.Instant, Boolean) -> Unit,
-  onAddMoreToGroup: (String) -> Unit = {},
-) {
-  Card(
-    modifier = Modifier.fillMaxWidth(),
-    colors = CardDefaults.cardColors(
-      containerColor = CaducityTheme.colorScheme.surfaceContainer,
-    ),
-    shape = MaterialTheme.shapes.largeIncreased,
-    elevation = CardDefaults.cardElevation(
-      defaultElevation = 2.dp,
-    ),
-  ) {
     Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
-      verticalArrangement = Arrangement.spacedBy(12.dp),
+      modifier = Modifier.padding(paddingValues),
     ) {
-      // Group header with identifier and count
-      val totalCount = group.statusGroups.sumOf { it.count } + group.frozenCount
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Text(
-          text = "${group.identifier} ($totalCount)",
-          style = MaterialTheme.typography.titleLarge.copy(
-            fontWeight = FontWeight.SemiBold,
-          ),
-          color = CaducityTheme.colorScheme.onSurface,
-        )
 
-        // Add more items button
-        IconButton(
-          onClick = { onAddMoreToGroup(group.identifier) }
-        ) {
-          Icon(
-            imageVector = AppIcons.Add,
-            contentDescription = stringResource(R.string.create_product_add_instance),
-          )
-        }
-      }
-
-      // Status bars row
-      StatusBarsRow(statusGroups = group.statusGroups)
-
-      // Frozen count text
-      if (group.frozenCount > 0) {
-        Text(
-          text = stringResource(com.alorma.caducity.R.string.products_list_items_frozen, group.frozenCount),
-          style = MaterialTheme.typography.bodySmall,
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
-        )
-      }
-
-      // Horizontal LazyRow of instance cards
-      androidx.compose.foundation.lazy.LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        items(group.instances.toList()) { instance ->
-          InstanceCard(
-            instance = instance,
-            onDeleteInstance = onDeleteInstance,
-            onConsumeInstance = onConsumeInstance,
-            onToggleFreezeInstance = onToggleFreezeInstance,
-          )
-        }
-      }
-    }
-  }
-}
-
-@Composable
-private fun InstanceCard(
-  instance: ProductInstanceDetailUiModel,
-  onDeleteInstance: (String) -> Unit,
-  onConsumeInstance: (String) -> Unit,
-  onToggleFreezeInstance: (String, kotlin.time.Instant, Boolean) -> Unit,
-) {
-  var showDeleteConfirmation by remember { mutableStateOf(false) }
-  Card(
-    modifier = Modifier.width(280.dp),
-    colors = CardDefaults.cardColors(
-      containerColor = CaducityTheme.colorScheme.surfaceContainerHighest,
-    ),
-    shape = MaterialTheme.shapes.medium,
-    elevation = CardDefaults.cardElevation(
-      defaultElevation = 1.dp,
-    ),
-  ) {
-    Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
-      verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-      // Instance identifier and status indicator
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Text(
-          text = instance.identifier,
-          style = MaterialTheme.typography.titleLarge.copy(
-            fontWeight = FontWeight.SemiBold,
-          ),
-          color = CaducityTheme.colorScheme.onSurface,
-        )
-
-        StatusBadge(
-          status = instance.status,
-          size = StatusBadgeSize.Medium,
-        )
-      }
-
-      // Expiration date
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Text(
-          text = "Expires: ",
-          style = MaterialTheme.typography.bodyMedium,
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-          text = instance.expirationDateText,
-          style = MaterialTheme.typography.bodyMedium,
-          color = CaducityTheme.colorScheme.onSurface,
-        )
-      }
-
-      // Action buttons
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        // Delete button
-        ActionButton(
-          text = "Delete",
-          modifier = Modifier.weight(1f),
-          onClick = { showDeleteConfirmation = true },
-        )
-
-        // Consume button
-        ActionButton(
-          text = "Consume",
-          modifier = Modifier.weight(1f),
-          onClick = { onConsumeInstance(instance.id) },
-        )
-
-        // Freeze/Unfreeze button
-        val isFrozen = instance.status == InstanceStatus.Frozen
-        ActionButton(
-          text = if (isFrozen) "Unfreeze" else "Freeze",
-          modifier = Modifier.weight(1f),
-          onClick = {
-            onToggleFreezeInstance(instance.id, instance.expirationInstant, isFrozen)
-          },
-        )
-      }
-    }
-  }
-
-  // Delete confirmation dialog
-  if (showDeleteConfirmation) {
-    AlertDialog(
-      onDismissRequest = { showDeleteConfirmation = false },
-      title = { Text("Delete Instance?") },
-      text = { Text("Are you sure you want to delete \"${instance.identifier}\"? This action cannot be undone.") },
-      confirmButton = {
-        TextButton(
-          onClick = {
-            onDeleteInstance(instance.id)
-            showDeleteConfirmation = false
-          }
-        ) {
-          Text("Delete")
-        }
-      },
-      dismissButton = {
-        TextButton(
-          onClick = { showDeleteConfirmation = false }
-        ) {
-          Text("Cancel")
-        }
-      }
-    )
-  }
-}
-
-@Composable
-private fun ActionButton(
-  text: String,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  val interactionSource = remember { MutableInteractionSource() }
-  val isPressed by interactionSource.collectIsPressedAsState()
-
-  // Expressive spring animation for press effect
-  val scale by animateFloatAsState(
-    targetValue = if (isPressed) 0.95f else 1f,
-    animationSpec = spring(
-      dampingRatio = 0.6f,
-      stiffness = 400f,
-    ),
-    label = "button_press_scale"
-  )
-
-  Card(
-    modifier = modifier.graphicsLayer {
-      scaleX = scale
-      scaleY = scale
-    },
-    colors = CardDefaults.cardColors(
-      containerColor = CaducityTheme.colorScheme.secondaryContainer,
-    ),
-    shape = MaterialTheme.shapes.medium,
-    onClick = onClick,
-    interactionSource = interactionSource,
-    elevation = CardDefaults.cardElevation(
-      defaultElevation = 1.dp,
-      pressedElevation = 2.dp,
-    ),
-  ) {
-    Box(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 8.dp),
-      contentAlignment = Alignment.Center,
-    ) {
-      Text(
-        text = text,
-        style = MaterialTheme.typography.labelLarge.copy(
-          fontWeight = FontWeight.Medium,
-        ),
-        color = CaducityTheme.colorScheme.onSecondaryContainer,
-      )
     }
   }
 }
