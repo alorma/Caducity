@@ -80,7 +80,6 @@ val appModule = module {
   // Products list
   single {
     ProductsListMapper(
-      appClock = get(),
       dateFormat = get(qualifier = ConfigQualifier.DateFormat.HumanReadable),
     )
   }

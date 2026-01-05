@@ -73,35 +73,37 @@ fun ProductsListItem(
     when (product) {
       is ProductsListUiModel.WithInstances -> {
         Spacer(modifier = Modifier.height(12.dp))
-        product.instances.forEach { instance ->
-          Row(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(vertical = 4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
+        product.groups.forEach { group ->
+          group.instances.forEach { instance ->
             Row(
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+              horizontalArrangement = Arrangement.SpaceBetween,
               verticalAlignment = Alignment.CenterVertically,
             ) {
-              Text(
-                text = instance.identifier,
-                style = MaterialTheme.typography.bodyMedium,
-                color = CaducityTheme.colorScheme.onSurface,
+              Row(
+                verticalAlignment = Alignment.CenterVertically,
+              ) {
+                Text(
+                  text = instance.identifier,
+                  style = MaterialTheme.typography.bodyMedium,
+                  color = CaducityTheme.colorScheme.onSurface,
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+
+                val colors = ExpirationDefaults.getVibrantColors(instance.status)
+
+                StatusBadge(status = instance.status)
+              }
+
+              ProductInstanceRelativeTime(
+                expirationDate = instance.expirationDate,
+                expirationDateText = instance.expirationDateText,
+                today = today,
+                relativeTimeFormatter = relativeTimeFormatter,
               )
-              Spacer(modifier = Modifier.width(8.dp))
-
-              val colors = ExpirationDefaults.getVibrantColors(instance.status)
-
-              StatusBadge(status = instance.status)
             }
-
-            ProductInstanceRelativeTime(
-              expirationDate = instance.expirationDate,
-              expirationDateText = instance.expirationDateText,
-              today = today,
-              relativeTimeFormatter = relativeTimeFormatter,
-            )
           }
         }
       }
