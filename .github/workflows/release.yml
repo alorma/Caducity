@@ -1,0 +1,130 @@
+name: Generate Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  get-version:
+    name: Get Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Get current version
+        id: get_version
+        run: |
+          CURRENT_VERSION=$(grep "^appVersion=" gradle.properties | cut -d'=' -f2)
+          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "Current version to publish: $CURRENT_VERSION"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: wrapper
+          cache-read-only: false
+
+      - name: Decode Keystore
+        run: |
+          mkdir -p certs
+          echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > certs/release.keystore
+
+      - name: Build release AAB
+        run: ./gradlew :app:bundleRelease
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+  # Add release trigger
+
+  create-release-and-update-version:
+    name: Create Release and Update Version
+    needs: [ check-sign, get-version ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: adopt
+          java-version: 17
+
+      - name: Create tag and release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.get-version.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          TAG_NAME="${VERSION}"
+          echo "Creating tag: $TAG_NAME"
+          
+          # Create and push tag
+          git tag -a "$TAG_NAME" -m "$TAG_NAME"
+          git push origin "$TAG_NAME"
+          
+          # Create release with auto-generated notes
+          gh release create "$TAG_NAME" \
+            --title "Release $TAG_NAME" \
+            --generate-notes \
+            --target main
+
+      - name: Calculate next version
+        id: next_version
+        run: |
+          CURRENT_VERSION="${{ needs.get-version.outputs.version }}"
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Parse semantic version (major.minor.patch), removing any pre-release or build metadata
+          BASE_VERSION=$(echo "$CURRENT_VERSION" | sed 's/[-+].*//')
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE_VERSION"
+          
+          # Increment minor version and reset patch to 0
+          NEXT_MINOR=$((MINOR + 1))
+          NEXT_VERSION="${MAJOR}.${NEXT_MINOR}.0"
+          
+          echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+          echo "Next version: $NEXT_VERSION"
+
+      - name: Update version in gradle.properties
+        run: |
+          NEXT_VERSION="${{ steps.next_version.outputs.next_version }}"
+          echo "Updating gradle.properties to version: $NEXT_VERSION"
+          sed -i "s/^libVersion=.*/libVersion=$NEXT_VERSION/" gradle.properties
+          
+          # Verify the change
+          echo "Updated version:"
+          grep "^libVersion=" gradle.properties
+
+      - name: Commit and push version update
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          NEXT_VERSION="${{ steps.next_version.outputs.next_version }}"
+          
+          git add gradle.properties
+          git commit -m "Bump version to $NEXT_VERSION"
+          git push origin main
