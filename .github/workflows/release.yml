@@ -132,7 +132,7 @@ jobs:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: com.alorma.caducity
           releaseFiles: artifacts/aab/app-release.aab
-          track: qa
+          track: internal
           releaseName: "${{ needs.get-version.outputs.version }}"
           mappingFile: artifacts/aab/mapping.txt
 
