@@ -23,6 +23,13 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Disable snapshot before release
+        run: |
+          echo "Setting snapshot to false in version.properties"
+          sed -i "s/^snapshot=.*/snapshot=false/" version.properties
+          echo "Updated version.properties:"
+          cat version.properties
+
       - name: Get current version
         id: get_version
         run: |
