@@ -27,6 +27,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.ui.components.StatusBadge
+import com.alorma.caducity.ui.components.shape.ShapePosition
+import com.alorma.caducity.ui.components.shape.toHorizontalShape
+import com.alorma.caducity.ui.components.shape.toVerticalShape
 import com.alorma.caducity.ui.screen.dashboard.components.productListWithInstancesPreview
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
@@ -108,16 +111,26 @@ fun ProductsListItem(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
           ) {
             items(group.instances.toList()) { instance ->
+              val index = group.instances.indexOf(instance)
+              val shapePosition = when {
+                instanceGroupSize == 1 -> ShapePosition.Single
+                index == 0 -> ShapePosition.Start
+                index == instanceGroupSize - 1 -> ShapePosition.End
+                else -> ShapePosition.Middle
+              }
+
               val itemModifier = if (instanceGroupSize > 1) {
                 Modifier.fillParentMaxWidth(0.80f)
               } else {
                 Modifier.fillParentMaxWidth()
               }
+
               ProductInstanceCard(
                 modifier = itemModifier,
                 instance = instance,
                 today = today,
                 relativeTimeFormatter = relativeTimeFormatter,
+                shapePosition = shapePosition,
               )
             }
           }
@@ -141,6 +154,7 @@ private fun ProductInstanceCard(
   instance: ProductsListInstanceUiModel,
   today: LocalDate,
   relativeTimeFormatter: RelativeTimeFormatter,
+  shapePosition: ShapePosition,
   modifier: Modifier = Modifier,
 ) {
   var relativeTimeText by remember { mutableStateOf("") }
@@ -152,7 +166,7 @@ private fun ProductInstanceCard(
   Column(
     modifier = modifier
       .width(120.dp)
-      .clip(MaterialTheme.shapes.small)
+      .clip(shapePosition.toHorizontalShape())
       .background(CaducityTheme.colorScheme.surfaceContainerHighest)
       .padding(12.dp),
     horizontalAlignment = Alignment.CenterHorizontally,

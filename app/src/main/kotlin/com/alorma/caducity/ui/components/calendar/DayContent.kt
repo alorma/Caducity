@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.components.shape.toCalendarShape
+import com.alorma.caducity.ui.components.shape.toHorizontalShape
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
@@ -64,7 +64,7 @@ fun DayContent(
   }
 
   Box(modifier = modifier) {
-    val shape = shapePosition.toCalendarShape()
+    val shape = shapePosition.toHorizontalShape()
 
     if (today == date) {
       val borderColor = if (status == null) {
@@ -86,7 +86,7 @@ fun DayContent(
           .padding(4.dp),
         contentAlignment = Alignment.Center,
       ) {
-        val internalShape = shapePosition.toCalendarShape(
+        val internalShape = shapePosition.toHorizontalShape(
           externalBaseShape = CaducityTheme.shapes.medium,
           internalBaseShape = RoundedCornerShape(2.dp),
         )

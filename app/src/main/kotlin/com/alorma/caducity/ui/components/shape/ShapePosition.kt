@@ -17,7 +17,7 @@ enum class ShapePosition {
 
 @Suppress("ContentEmission")
 @Composable
-fun ShapePosition.toCardShape(): Shape {
+fun ShapePosition.toVerticalShape(): Shape {
   val largeShape = CaducityTheme.shapes.large
   val smallShape = CaducityTheme.shapes.extraSmall
 
@@ -43,7 +43,7 @@ fun ShapePosition.toCardShape(): Shape {
 
 @Suppress("ContentEmission")
 @Composable
-fun ShapePosition.toCalendarShape(
+fun ShapePosition.toHorizontalShape(
   externalBaseShape: CornerBasedShape = CaducityTheme.shapes.large,
   internalBaseShape: CornerBasedShape = CaducityTheme.shapes.extraSmall,
 ): CornerBasedShape {
