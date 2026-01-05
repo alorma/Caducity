@@ -92,13 +92,17 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
+      - name: Prepare artifacts for upload
+        run: |
+          mkdir -p artifacts/aab
+          cp app/build/outputs/bundle/release/app-release.aab artifacts/aab/
+          cp app/build/outputs/mapping/release/mapping.txt artifacts/aab/
+
       - name: Upload AAB artifact
         uses: actions/upload-artifact@v4
         with:
           name: release-aab
-          path: |
-            app/build/outputs/bundle/release/app-release.aab
-            app/build/outputs/mapping/release/mapping.txt
+          path: artifacts/aab/
           retention-days: 30
 
       - name: Upload APK artifact
