@@ -20,3 +20,5 @@ dependencyResolutionManagement {
 
 include(":app")
 include(":icons")
+include(":feature:barcode_base")
+include(":feature:barcode")

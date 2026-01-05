@@ -1,4 +1,4 @@
-package com.alorma.caducity.feature.barcode
+package com.alorma.caducity.barcode.base
 
 import androidx.compose.runtime.Composable
 

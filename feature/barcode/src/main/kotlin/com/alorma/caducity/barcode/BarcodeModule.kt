@@ -1,5 +1,6 @@
-package com.alorma.caducity.feature.barcode
+package com.alorma.caducity.barcode
 
+import com.alorma.caducity.barcode.base.BarcodeHandler
 import de.tillhub.scanengine.ScanEngine
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.bind

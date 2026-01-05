@@ -141,8 +141,6 @@ dependencies {
   implementation(libs.androidx.work.runtime.ktx)
   implementation(libs.koin.androidx.workmanager)
 
-  implementation(libs.scan.engine)
-
   // Screenshot testing
   screenshotTestImplementation(libs.screenshot.validation.api)
 
@@ -151,4 +149,6 @@ dependencies {
   screenshotTestImplementation(libs.androidx.compose.ui.test.manifest)
   screenshotTestImplementation(libs.androidx.compose.ui.tooling)
   screenshotTestImplementation(libs.androidx.compose.ui)
+
+  implementation(projects.feature.barcodeBase)
 }

@@ -1,5 +1,6 @@
-package com.alorma.caducity.feature.barcode
+package com.alorma.caducity.barcode
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -25,7 +26,7 @@ class BarcodeActivity : ComponentActivity() {
         when (scanEvent) {
           is ScannerEvent.Camera.InProgress -> {}
           ScannerEvent.Camera.Canceled -> {
-            setResult(RESULT_CANCELED)
+            setResult(Activity.RESULT_CANCELED)
             finish()
           }
           ScannerEvent.External.Connected -> {}
