@@ -102,6 +102,10 @@ material-kolor = { group = "com.materialkolor", name = "material-kolor", version
 
 scan-engine = { group = "com.github.tillhub", name = "scan-engine", version.ref = "scanEngine" }
 
+# Plugins
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }

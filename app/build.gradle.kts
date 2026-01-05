@@ -12,6 +12,8 @@ plugins {
   alias(libs.plugins.jetbrains.kotlin.parcelize)
 
   alias(libs.plugins.compose.screenshot)
+
+  id("caducity.version")
 }
 
 android {
@@ -22,9 +24,6 @@ android {
     applicationId = "com.alorma.caducity"
     minSdk = libs.versions.android.minSdk.get().toInt()
     targetSdk = libs.versions.android.targetSdk.get().toInt()
-
-    versionCode = VersionConfig.versionCode
-    versionName = VersionConfig.versionName
   }
   packaging {
     resources {
