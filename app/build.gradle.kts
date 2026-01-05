@@ -34,6 +34,10 @@ android {
     getByName("release") {
       isMinifyEnabled = false
     }
+    getByName("debug") {
+      isMinifyEnabled = false
+      applicationIdSuffix = ".dev"
+    }
   }
   buildFeatures {
     buildConfig = true
