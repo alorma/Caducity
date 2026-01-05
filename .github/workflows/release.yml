@@ -125,110 +125,110 @@ jobs:
       - name: Upload to Google Play Production Track
         uses: r0adkll/upload-google-play@v1
         with:
-          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
           packageName: com.alorma.caducity
           releaseFiles: artifacts/aab/app-release.aab
-          track: internal
+          track: qa
           releaseName: "${{ needs.get-version.outputs.version }}"
           mappingFile: artifacts/aab/mapping.txt
 
-  create-github-release:
-    name: Create GitHub Release
-    runs-on: ubuntu-latest
-    needs: [ get-version, build ]
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Download APK artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: release-apk
-          path: artifacts/apk
-
-      - name: Create tag and GitHub release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ needs.get-version.outputs.version }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          TAG_NAME="${VERSION}"
-          echo "Creating tag: $TAG_NAME"
-
-          # Create and push tag
-          git tag -a "$TAG_NAME" -m "$TAG_NAME"
-          git push origin "$TAG_NAME"
-
-          # Create release with auto-generated notes and attach APK
-          gh release create "$TAG_NAME" \
-            --title "Release $TAG_NAME" \
-            --generate-notes \
-            --target main \
-            artifacts/apk/app-release.apk
-
-  update-version:
-    name: Update Version for Next Release
-    runs-on: ubuntu-latest
-    needs: [ get-version, deploy-google-play, create-github-release ]
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Calculate next version
-        id: next_version
-        run: |
-          CURRENT_VERSION="${{ needs.get-version.outputs.version }}"
-          echo "Current version: $CURRENT_VERSION"
-
-          # Parse semantic version (major.minor.patch), removing any pre-release or build metadata
-          BASE_VERSION=$(echo "$CURRENT_VERSION" | sed 's/[-+].*//')
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE_VERSION"
-
-          # Increment minor version and reset patch to 0
-          NEXT_MINOR=$((MINOR + 1))
-          NEXT_VERSION="${MAJOR}.${NEXT_MINOR}.0"
-
-          echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
-          echo "Next version: $NEXT_VERSION"
-
-      - name: Update version in version.properties
-        run: |
-          NEXT_VERSION="${{ steps.next_version.outputs.next_version }}"
-          echo "Updating version.properties to version: $NEXT_VERSION"
-
-          # Parse the next version into components
-          IFS='.' read -r NEXT_MAJOR NEXT_MINOR NEXT_PATCH <<< "$NEXT_VERSION"
-
-          # Update version.properties
-          sed -i "s/^major=.*/major=$NEXT_MAJOR/" version.properties
-          sed -i "s/^minor=.*/minor=$NEXT_MINOR/" version.properties
-          sed -i "s/^patch=.*/patch=$NEXT_PATCH/" version.properties
-          sed -i "s/^snapshot=.*/snapshot=true/" version.properties
-
-          # Verify the change
-          echo "Updated version:"
-          cat version.properties
-
-      - name: Commit and push version update
-        run: |
-          NEXT_VERSION="${{ steps.next_version.outputs.next_version }}"
-
-          git add version.properties
-          git commit -m "Bump version to $NEXT_VERSION"
-          git push origin main
+###  create-github-release:
+###    name: Create GitHub Release
+###    runs-on: ubuntu-latest
+###    needs: [ get-version, build ]
+###    permissions:
+###      contents: write
+###
+###    steps:
+###      - name: Checkout repository
+###        uses: actions/checkout@v4
+###        with:
+###          ref: main
+###          fetch-depth: 0
+###          token: ${{ secrets.GITHUB_TOKEN }}
+###
+###      - name: Download APK artifact
+###        uses: actions/download-artifact@v4
+###        with:
+###          name: release-apk
+###          path: artifacts/apk
+###
+###      - name: Create tag and GitHub release
+###        env:
+###          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+###          VERSION: ${{ needs.get-version.outputs.version }}
+###        run: |
+###          git config user.name "github-actions[bot]"
+###          git config user.email "github-actions[bot]@users.noreply.github.com"
+###
+###          TAG_NAME="${VERSION}"
+###          echo "Creating tag: $TAG_NAME"
+###
+###          # Create and push tag
+###          git tag -a "$TAG_NAME" -m "$TAG_NAME"
+###          git push origin "$TAG_NAME"
+###
+###          # Create release with auto-generated notes and attach APK
+###          gh release create "$TAG_NAME" \
+###            --title "Release $TAG_NAME" \
+###            --generate-notes \
+###            --target main \
+###            artifacts/apk/app-release.apk
+###
+###  update-version:
+###    name: Update Version for Next Release
+###    runs-on: ubuntu-latest
+###    needs: [ get-version, deploy-google-play, create-github-release ]
+###    permissions:
+###      contents: write
+###
+###    steps:
+###      - name: Checkout repository
+###        uses: actions/checkout@v4
+###        with:
+###          ref: main
+###          fetch-depth: 0
+###          token: ${{ secrets.GITHUB_TOKEN }}
+###
+###      - name: Calculate next version
+###        id: next_version
+###        run: |
+###          CURRENT_VERSION="${{ needs.get-version.outputs.version }}"
+###          echo "Current version: $CURRENT_VERSION"
+###
+###          # Parse semantic version (major.minor.patch), removing any pre-release or build metadata
+###          BASE_VERSION=$(echo "$CURRENT_VERSION" | sed 's/[-+].*//')
+###          IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE_VERSION"
+###
+###          # Increment minor version and reset patch to 0
+###          NEXT_MINOR=$((MINOR + 1))
+###          NEXT_VERSION="${MAJOR}.${NEXT_MINOR}.0"
+###
+###          echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+###          echo "Next version: $NEXT_VERSION"
+###
+###      - name: Update version in version.properties
+###        run: |
+###          NEXT_VERSION="${{ steps.next_version.outputs.next_version }}"
+###          echo "Updating version.properties to version: $NEXT_VERSION"
+###
+###          # Parse the next version into components
+###          IFS='.' read -r NEXT_MAJOR NEXT_MINOR NEXT_PATCH <<< "$NEXT_VERSION"
+###
+###          # Update version.properties
+###          sed -i "s/^major=.*/major=$NEXT_MAJOR/" version.properties
+###          sed -i "s/^minor=.*/minor=$NEXT_MINOR/" version.properties
+###          sed -i "s/^patch=.*/patch=$NEXT_PATCH/" version.properties
+###          sed -i "s/^snapshot=.*/snapshot=true/" version.properties
+###
+###          # Verify the change
+###          echo "Updated version:"
+###          cat version.properties
+###
+###      - name: Commit and push version update
+###        run: |
+###          NEXT_VERSION="${{ steps.next_version.outputs.next_version }}"
+###
+###          git add version.properties
+###          git commit -m "Bump version to $NEXT_VERSION"
+###          git push origin main
