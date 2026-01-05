@@ -10,23 +10,32 @@ Based on feedback from @alorma, we will implement **Interpretation 3: Separate V
 
 ```
 Product (1) -----> (*) Variant (1) -----> (*) ProductInstance
+           \___________________________/
+              (standalone instances)
 ```
 
-**Example:**
-- Product: "Yogurt"
-  - Variant: "Strawberry"
+**Example from @alorma:**
+- Product: "Drinks"
+  - Variant: "Fanta"
     - Instance 1: Expires Jan 15
     - Instance 2: Expires Jan 20
-  - Variant: "Greek"
+    - Instance 3: Expires Jan 22
+  - Variant: "Coke"
     - Instance 1: Expires Jan 18
-  - Variant: "Vanilla"
-    - Instance 1: Expires Jan 22
+    - Instance 2: Expires Jan 25
+    - Instance 3: Expires Jan 30
+    - Instance 4: Expires Feb 2
+  - Variant: "Beer" (no instances yet - variant exists independently)
+  - **Standalone Instance**: "Wine" (no variant - just identifier)
+    - Instance 1: Expires Jan 28
 
 ### Key Characteristics
 
-1. **Variants are independent**: Can be created before any instances exist
+1. **Variants are independent**: Can be created before any instances exist (e.g., "Beer" variant with zero instances)
 2. **Variants belong to products**: Each variant is associated with one product
-3. **Instances reference variants**: Each instance has a `variantId` (optional - instances can exist without variants)
+3. **Instances can use variants OR standalone identifiers**: 
+   - **With variant**: Instance has `variantId` set, `identifier` matches variant name
+   - **Standalone**: Instance has `variantId = null`, uses `identifier` directly (e.g., "Wine")
 4. **Backward compatible**: Existing instances with identifiers can be migrated
 
 ## Database Schema Changes
@@ -408,7 +417,7 @@ Create a screen to manage variants for a product:
 
 **File**: `app/src/main/kotlin/com/alorma/caducity/ui/screen/product/create/CreateInstanceBottomSheet.kt`
 
-Update to show variant selection:
+Update to support both variant selection AND standalone identifier input:
 
 ```kotlin
 @Composable
@@ -420,60 +429,117 @@ fun CreateInstanceBottomSheet(
   onDismiss: () -> Unit,
   // ... other parameters
 ) {
+  var useVariant by remember { mutableStateOf(true) }  // Toggle between variant and standalone
   var selectedVariantId by remember { mutableStateOf<String?>(null) }
   var identifier by remember { mutableStateOf("") }
   
-  // Variant selection dropdown
-  ExposedDropdownMenuBox(
-    expanded = expanded,
-    onExpandedChange = { expanded = it }
+  // Mode selection: Variant or Standalone
+  Row(
+    modifier = Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.spacedBy(8.dp)
   ) {
-    TextField(
-      value = selectedVariant?.name ?: "Select variant",
-      label = { Text("Variant") },
-      trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-      readOnly = true,
-      modifier = Modifier.fillMaxWidth().menuAnchor()
+    FilterChip(
+      selected = useVariant,
+      onClick = { useVariant = true },
+      label = { Text("Use Variant") }
     )
-    
-    ExposedDropdownMenu(
+    FilterChip(
+      selected = !useVariant,
+      onClick = { 
+        useVariant = false
+        selectedVariantId = null
+      },
+      label = { Text("Standalone") }
+    )
+  }
+  
+  if (useVariant) {
+    // Variant selection dropdown
+    ExposedDropdownMenuBox(
       expanded = expanded,
-      onDismissRequest = { expanded = false }
+      onExpandedChange = { expanded = it }
     ) {
-      // Existing variants
-      availableVariants.forEach { variant ->
+      TextField(
+        value = selectedVariant?.name ?: "Select variant",
+        label = { Text("Variant") },
+        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+        readOnly = true,
+        modifier = Modifier.fillMaxWidth().menuAnchor()
+      )
+      
+      ExposedDropdownMenu(
+        expanded = expanded,
+        onDismissRequest = { expanded = false }
+      ) {
+        // Existing variants
+        availableVariants.forEach { variant ->
+          DropdownMenuItem(
+            text = { Text("${variant.name} (${variant.instanceCount})") },
+            onClick = {
+              selectedVariantId = variant.id
+              identifier = variant.name
+              expanded = false
+            }
+          )
+        }
+        
+        Divider()
+        
+        // Create new variant option
         DropdownMenuItem(
-          text = { Text("${variant.name} (${variant.instanceCount})") },
+          text = { 
+            Row {
+              Icon(Icons.Default.Add, contentDescription = null)
+              Spacer(Modifier.width(8.dp))
+              Text("Create new variant")
+            }
+          },
           onClick = {
-            selectedVariantId = variant.id
-            identifier = variant.name
             expanded = false
+            onCreateVariant()
           }
         )
       }
-      
-      Divider()
-      
-      // Create new variant option
-      DropdownMenuItem(
-        text = { 
-          Row {
-            Icon(Icons.Default.Add, contentDescription = null)
-            Spacer(Modifier.width(8.dp))
-            Text("Create new variant")
-          }
-        },
-        onClick = {
-          expanded = false
-          onCreateVariant()
-        }
-      )
     }
+  } else {
+    // Standalone identifier input
+    TextField(
+      value = identifier,
+      onValueChange = { identifier = it },
+      label = { Text("Identifier") },
+      placeholder = { Text("e.g., Wine, Special item") },
+      supportingText = { Text("This instance won't be grouped with variants") },
+      modifier = Modifier.fillMaxWidth()
+    )
   }
   
   // ... rest of form (expiration date, quantity, etc.)
+  
+  // Save button
+  Button(
+    onClick = {
+      expirationDate?.let { date ->
+        val quantityValue = quantity.toIntOrNull()?.coerceIn(1, 99) ?: 1
+        onSave(
+          selectedVariantId,  // null if standalone mode
+          identifier,
+          date,
+          quantityValue
+        )
+      }
+    },
+    enabled = identifier.isNotBlank() && expirationDate != null
+  ) {
+    Text("Save")
+  }
 }
 ```
+
+**Key UX Features**:
+- **Mode toggle**: User chooses between "Use Variant" or "Standalone"
+- **Variant mode**: Dropdown with existing variants + "Create new" option
+- **Standalone mode**: Simple text field for identifier (e.g., "Wine")
+- **Clear indication**: Supporting text explains standalone instances won't be grouped
 
 ### Create Variant Dialog (NEW)
 
@@ -527,35 +593,43 @@ fun CreateVariantDialog(
 
 **File**: `app/src/main/kotlin/com/alorma/caducity/domain/model/ProductInstanceGroup.kt`
 
-Add variant reference:
+Add variant reference and type:
 ```kotlin
 data class ProductInstanceGroup(
-  val identifier: String,  // Keep for backward compatibility
-  val variantId: String? = null,  // NEW
-  val variantName: String? = null,  // NEW - for display
+  val identifier: String,  // Display name: variant name or standalone identifier
+  val variantId: String? = null,  // NEW - null for standalone instances
+  val variantName: String? = null,  // NEW - for display (same as identifier if from variant)
+  val isStandalone: Boolean,  // NEW - true if instances don't use a variant
   val instances: ImmutableList<ProductInstance>,
 )
 ```
 
 ### Update Use Cases
 
-Modify `ObtainDashboardProductsUseCase` and `ObtainProductDetailUseCase` to group by `variantId` first, falling back to `identifier` for backward compatibility:
+Modify `ObtainDashboardProductsUseCase` and `ObtainProductDetailUseCase` to handle both variant-based and standalone instances:
 
 ```kotlin
 val groups = productWithInstances.instances
   .groupBy { instance -> 
-    // Group by variantId if present, otherwise by identifier
-    instance.variantId ?: instance.identifier
+    // Group by variantId if present, otherwise by identifier for standalone instances
+    instance.variantId ?: "standalone_${instance.identifier}"
   }
   .map { (key, instancesInGroup) ->
     val firstInstance = instancesInGroup.first()
+    val isVariantBased = firstInstance.variantId != null
+    
     ProductInstanceGroup(
       identifier = firstInstance.identifier,
       variantId = firstInstance.variantId,
-      variantName = firstInstance.variantId?.let { 
+      variantName = if (isVariantBased) {
         // Fetch variant name from variant entity
-        variantDataSource.getVariant(it)?.name 
+        firstInstance.variantId?.let { 
+          variantDataSource.getVariant(it)?.name 
+        }
+      } else {
+        null
       },
+      isStandalone = !isVariantBased,
       instances = instancesInGroup
         .sortedWith(instanceComparator)
         .toImmutableList()
@@ -564,6 +638,12 @@ val groups = productWithInstances.instances
   .sortedWith(groupComparator)
   .toImmutableList()
 ```
+
+**Grouping Behavior**:
+- **Variant-based instances**: Grouped by `variantId` (e.g., all "Fanta" instances together)
+- **Standalone instances**: Each unique identifier creates its own group (e.g., "Wine" instances)
+- **Display**: Variant groups show variant name, standalone groups show identifier
+- **Visual distinction**: UI can show different styling for standalone groups
 
 ## Dependency Injection
 
@@ -617,9 +697,101 @@ startKoin {
 <string name="variant_instance_count">%1$d items</string>
 <string name="variant_manage_title">Manage Variants</string>
 <string name="variant_empty_state">No variants yet. Create one to organize your instances.</string>
+
+<!-- Instance Creation Modes -->
+<string name="instance_mode_use_variant">Use Variant</string>
+<string name="instance_mode_standalone">Standalone</string>
+<string name="instance_standalone_label">Identifier</string>
+<string name="instance_standalone_placeholder">e.g., Wine, Special item</string>
+<string name="instance_standalone_description">This instance won\'t be grouped with variants</string>
+
+<!-- Product List Display -->
+<string name="group_standalone_badge">Standalone</string>
+<string name="group_variant_badge">Variant</string>
 ```
 
 Translate to Spanish (es) and Catalan (ca).
+
+## Visual Mockups
+
+### Product List Display
+
+**Product: Drinks**
+
+```
+┌─────────────────────────────────────────┐
+│ Drinks                                  │
+│ Fresh groceries                         │
+│                                         │
+│ — Fanta (3) [Variant]                  │
+│ ▓▓▓░░ Fresh: 2, Expiring Soon: 1       │
+│                                         │
+│ — Coke (4) [Variant]                   │
+│ ▓▓▓▓ Fresh: 4                           │
+│                                         │
+│ — Beer (0) [Variant]                   │
+│ (No instances yet)                      │
+│                                         │
+│ — Wine (1) [Standalone]                │
+│ ░ Expiring Soon: 1                      │
+└─────────────────────────────────────────┘
+```
+
+**Visual Distinction**:
+- Variant groups: Show "[Variant]" badge
+- Standalone groups: Show "[Standalone]" badge with different styling
+- Empty variants: Shown with "(No instances yet)"
+
+### Instance Creation Sheet
+
+**Mode: Use Variant**
+```
+┌─────────────────────────────────────────┐
+│ Add Instance                            │
+│                                         │
+│ [Use Variant] [Standalone]             │ ← Mode toggle
+│    ^^^^^^^^                             │
+│                                         │
+│ Variant                                 │
+│ [Select variant...        ▼]           │
+│  ┌───────────────────────────────────┐ │
+│  │ Fanta (3 items)                   │ │
+│  │ Coke (4 items)                    │ │
+│  │ Beer (0 items)                    │ │
+│  │ ───────────────────────────────── │ │
+│  │ + Create new variant              │ │
+│  └───────────────────────────────────┘ │
+│                                         │
+│ Expiration Date                         │
+│ [Select date...]                        │
+│                                         │
+│ Quantity: [1]                          │
+│                                         │
+│ [Cancel]              [Save]           │
+└─────────────────────────────────────────┘
+```
+
+**Mode: Standalone**
+```
+┌─────────────────────────────────────────┐
+│ Add Instance                            │
+│                                         │
+│ [Use Variant] [Standalone]             │ ← Mode toggle
+│                ^^^^^^^^^^               │
+│                                         │
+│ Identifier                              │
+│ [e.g., Wine, Special item         ]    │
+│ This instance won't be grouped with     │
+│ variants                                │
+│                                         │
+│ Expiration Date                         │
+│ [Select date...]                        │
+│                                         │
+│ Quantity: [1]                          │
+│                                         │
+│ [Cancel]              [Save]           │
+└─────────────────────────────────────────┘
+```
 
 ## Testing Strategy
 
@@ -648,23 +820,37 @@ Translate to Spanish (es) and Catalan (ca).
    - VariantId populated correctly
    - Backward compatibility maintained
 
-2. **End-to-end flow**:
+2. **End-to-end flow with variants**:
    - Create product
    - Create variant
    - Create instance with variant
    - View grouped instances
+
+3. **End-to-end flow with standalone**:
+   - Create product
+   - Create instance without variant (standalone mode)
+   - Verify standalone grouping
+   - Mix variant and standalone instances
 
 ### UI Tests
 
 1. **Variant management screen**:
    - List variants
    - Create variant
-   - Delete variant
+   - Delete variant (with and without instances)
 
 2. **Instance creation**:
+   - Toggle between variant and standalone modes
    - Select existing variant
    - Create new variant inline
-   - Backward compatibility (instances without variants)
+   - Create standalone instance
+   - Verify mode switching clears selection
+
+3. **Product list display**:
+   - Verify variant groups show "[Variant]" badge
+   - Verify standalone groups show "[Standalone]" badge
+   - Verify empty variants display correctly
+   - Verify mixed groups display correctly
 
 ## Migration Strategy
 

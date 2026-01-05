@@ -4,7 +4,7 @@
 
 **Decision by @alorma**: Implement **Interpretation 3 - Variants as Separate Entity**
 
-Variants will be a different entity that can be created independently. When creating instances, it will propose a list of variants or allow creating a new one.
+Variants will be a different entity that can be created independently. When creating instances, it will propose a list of variants or allow creating a new one. **Instances can also be created without variants using standalone identifiers.**
 
 ## What You Have Now
 
@@ -43,23 +43,25 @@ Three comprehensive documents have been created:
 **Architecture**:
 ```
 Product (1) -----> (*) Variant (1) -----> (*) ProductInstance
+           \___________________________/
+              (standalone instances)
 ```
 
-**Example**:
-- Product: "Yogurt"
-  - Variant: "Strawberry" (can be created independently)
-    - Instance 1: Expires Jan 15
-    - Instance 2: Expires Jan 20
-  - Variant: "Greek"
-    - Instance 1: Expires Jan 18
+**Example from @alorma**:
+- Product: "Drinks"
+  - Variant: "Fanta" (3 instances)
+  - Variant: "Coke" (4 instances)
+  - Variant: "Beer" (0 instances - variant exists independently)
+  - **Standalone**: "Wine" (1 instance - no variant, just identifier)
 
 ### Key Features
 
 1. **Independent Variant Creation**: Create variants before any instances exist
 2. **Variant Management UI**: Dedicated screen to manage variants
-3. **Smart Instance Creation**: Select from existing variants or create new ones
-4. **Backward Compatible**: Existing instances migrate to auto-created variants
-5. **Proper Data Model**: Variants as first-class entities in database
+3. **Smart Instance Creation**: Select from existing variants, create new variants, OR use standalone identifiers
+4. **Standalone Instances**: Instances can exist without variants (e.g., "Wine" in Drinks product)
+5. **Backward Compatible**: Existing instances migrate to auto-created variants
+6. **Proper Data Model**: Variants as first-class entities in database
 
 ### Implementation Effort
 
@@ -124,31 +126,48 @@ See `ISSUE_60_VARIANT_ENTITY_PLAN.md` for complete details.
 └─────────────────────────────┘
 ```
 
-### New UI (Variant Selection)
+### New UI (Variant or Standalone Selection)
 ```
-┌─────────────────────────────┐
-│ Variant                     │
-│ [Select variant... ▼]      │ ← Dropdown with variants
-│  ┌────────────────────────┐│
-│  │ Strawberry (3 items)   ││ ← Existing variants
-│  │ Greek (2 items)        ││
-│  │ Vanilla (1 item)       ││
-│  │ ─────────────────────  ││
-│  │ + Create new variant   ││ ← Opens dialog
-│  └────────────────────────┘│
-└─────────────────────────────┘
+┌─────────────────────────────────┐
+│ [Use Variant] [Standalone]     │ ← Mode toggle
+│    ^^^^^^^^                     │
+│                                 │
+│ Variant                         │
+│ [Select variant... ▼]          │ ← Dropdown with variants
+│  ┌────────────────────────────┐│
+│  │ Fanta (3 items)            ││ ← Existing variants
+│  │ Coke (4 items)             ││
+│  │ Beer (0 items)             ││
+│  │ ─────────────────────      ││
+│  │ + Create new variant       ││ ← Opens dialog
+│  └────────────────────────────┘│
+└─────────────────────────────────┘
+
+OR (when Standalone mode selected):
+
+┌─────────────────────────────────┐
+│ [Use Variant] [Standalone]     │ ← Mode toggle
+│                ^^^^^^^^^^       │
+│                                 │
+│ Identifier                      │
+│ [e.g., Wine...            ]    │ ← Free text input
+│ Won't be grouped with variants  │
+└─────────────────────────────────┘
 ```
 
 ### Variant Management Screen (NEW)
 ```
 ┌─────────────────────────────────────┐
-│ Variants for "Yogurt"               │
+│ Variants for "Drinks"               │
 │                                     │
 │ ┌─────────────────────────────────┐│
-│ │ Strawberry          3 items  [×]││
-│ │ Greek               2 items  [×]││
-│ │ Vanilla             1 item   [×]││
+│ │ Fanta               3 items  [×]││
+│ │ Coke                4 items  [×]││
+│ │ Beer                0 items  [×]││
 │ └─────────────────────────────────┘│
+│                                     │
+│ Standalone instances:               │
+│ — Wine (1 item)                     │
 │                                     │
 │ [+ Add Variant]                     │
 └─────────────────────────────────────┘
@@ -160,13 +179,15 @@ See `ISSUE_60_VARIANT_ENTITY_PLAN.md` for complete details.
 - User types "strawberry", "Strawberry", "STRAWBERRY" → Creates 3 separate groups
 - No way to manage variants
 - Variants tied to instances (can't pre-create)
+- No flexibility for one-off items
 
-**After (Variant Entity)**:
-- User creates "Strawberry" variant once
+**After (Variant Entity with Standalone Support)**:
+- User creates "Strawberry" variant once for organized items
+- Can also add standalone items like "Wine" without creating a variant
 - Variant persists even with zero instances
 - Clear variant management interface
-- Select from existing variants when adding instances
-- Proper data organization and consistency
+- Select from existing variants or use standalone mode
+- Proper data organization with flexibility
 - Can delete unused variants
 
 ## Questions?
