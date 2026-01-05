@@ -1,4 +1,4 @@
-package com.alorma.caducity.feature.barcode
+package com.alorma.caducity.barcode
 
 import android.Manifest
 import android.content.Context
@@ -7,6 +7,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import com.alorma.caducity.barcode.base.BarcodeHandler
+import com.alorma.caducity.barcode.base.BarcodeModel
 
 class AndroidBarcodeHandler(
   private val context: Context,
@@ -18,7 +20,7 @@ class AndroidBarcodeHandler(
   private lateinit var barcodeLauncher: ActivityResultLauncher<Unit>
   private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
-  override fun hasBarcodeCapability(): Boolean = true
+  override fun hasBarcodeCapability(): Boolean = false
 
   override fun hasCameraPermission(): Boolean {
     return context.checkSelfPermission(Manifest.permission.CAMERA) ==

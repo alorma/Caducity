@@ -1,5 +1,7 @@
 package com.alorma.caducity.di
 
+import com.alorma.caducity.barcode.base.BarcodeHandler
+import com.alorma.caducity.barcode.base.BarcodeHandlerNoOp
 import com.alorma.caducity.config.ConfigQualifier
 import com.alorma.caducity.config.configModule
 import com.alorma.caducity.data.dataModule
@@ -34,6 +36,7 @@ import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
+import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
@@ -48,6 +51,10 @@ val appModule = module {
   includes(dataModule)
   includes(domainModule)
   includes(fireAndForgetModule)
+
+  factoryOf(::BarcodeHandlerNoOp) {
+    bind<BarcodeHandler>()
+  }
 
   single { Settings() }
 
