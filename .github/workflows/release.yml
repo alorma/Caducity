@@ -26,10 +26,13 @@ jobs:
       - name: Get current version
         id: get_version
         run: |
-          CURRENT_VERSION=$(grep "^appVersion=" gradle.properties | cut -d'=' -f2)
+          MAJOR=$(grep "^major=" version.properties | cut -d'=' -f2)
+          MINOR=$(grep "^minor=" version.properties | cut -d'=' -f2)
+          PATCH=$(grep "^patch=" version.properties | cut -d'=' -f2)
+          CURRENT_VERSION="${MAJOR}.${MINOR}.${PATCH}"
           echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "Current version to publish: $CURRENT_VERSION"
-          
+
           echo "**Version from:** \`$CURRENT_VERSION\`" >> $GITHUB_STEP_SUMMARY
 
   build:
@@ -121,15 +124,22 @@ jobs:
           echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
           echo "Next version: $NEXT_VERSION"
 
-      - name: Update version in gradle.properties
+      - name: Update version in version.properties
         run: |
           NEXT_VERSION="${{ steps.next_version.outputs.next_version }}"
-          echo "Updating gradle.properties to version: $NEXT_VERSION"
-          sed -i "s/^libVersion=.*/libVersion=$NEXT_VERSION/" gradle.properties
-          
+          echo "Updating version.properties to version: $NEXT_VERSION"
+
+          # Parse the next version into components
+          IFS='.' read -r NEXT_MAJOR NEXT_MINOR NEXT_PATCH <<< "$NEXT_VERSION"
+
+          # Update version.properties
+          sed -i "s/^major=.*/major=$NEXT_MAJOR/" version.properties
+          sed -i "s/^minor=.*/minor=$NEXT_MINOR/" version.properties
+          sed -i "s/^patch=.*/patch=$NEXT_PATCH/" version.properties
+
           # Verify the change
           echo "Updated version:"
-          grep "^libVersion=" gradle.properties
+          cat version.properties
 
       - name: Commit and push version update
         env:
@@ -137,9 +147,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           NEXT_VERSION="${{ steps.next_version.outputs.next_version }}"
-          
-          git add gradle.properties
+
+          git add version.properties
           git commit -m "Bump version to $NEXT_VERSION"
           git push origin main
