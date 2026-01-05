@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -50,6 +51,7 @@ import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.ui.components.StyledTopAppBar
+import com.alorma.caducity.ui.screen.products.components.StatusBarsRow
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
@@ -297,14 +299,82 @@ private fun ProductDetailContent(
         }
       }
 
-      // Instance cards
-      items(product.instances) { instance ->
-        InstanceCard(
-          instance = instance,
+      // Groups with status bars and instances
+      items(product.groups.toList()) { group ->
+        InstanceGroupCard(
+          group = group,
           onDeleteInstance = onDeleteInstance,
           onConsumeInstance = onConsumeInstance,
           onToggleFreezeInstance = onToggleFreezeInstance,
         )
+      }
+    }
+  }
+}
+
+@Composable
+private fun InstanceGroupCard(
+  group: ProductInstanceDetailGroup,
+  onDeleteInstance: (String) -> Unit,
+  onConsumeInstance: (String) -> Unit,
+  onToggleFreezeInstance: (String, kotlin.time.Instant, Boolean) -> Unit,
+) {
+  Card(
+    modifier = Modifier.fillMaxWidth(),
+    colors = CardDefaults.cardColors(
+      containerColor = CaducityTheme.colorScheme.surfaceContainer,
+    ),
+    shape = MaterialTheme.shapes.largeIncreased,
+    elevation = CardDefaults.cardElevation(
+      defaultElevation = 2.dp,
+    ),
+  ) {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+      // Group header with identifier and count
+      val totalCount = group.statusGroups.sumOf { it.count } + group.frozenCount
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+          text = "${group.identifier} ($totalCount)",
+          style = MaterialTheme.typography.titleLarge.copy(
+            fontWeight = FontWeight.SemiBold,
+          ),
+          color = CaducityTheme.colorScheme.onSurface,
+        )
+      }
+
+      // Status bars row
+      StatusBarsRow(statusGroups = group.statusGroups)
+
+      // Frozen count text
+      if (group.frozenCount > 0) {
+        Text(
+          text = stringResource(com.alorma.caducity.R.string.products_list_items_frozen, group.frozenCount),
+          style = MaterialTheme.typography.bodySmall,
+          color = CaducityTheme.colorScheme.onSurfaceVariant,
+        )
+      }
+
+      // Horizontal LazyRow of instance cards
+      androidx.compose.foundation.lazy.LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        items(group.instances.toList()) { instance ->
+          InstanceCard(
+            instance = instance,
+            onDeleteInstance = onDeleteInstance,
+            onConsumeInstance = onConsumeInstance,
+            onToggleFreezeInstance = onToggleFreezeInstance,
+          )
+        }
       }
     }
   }
@@ -319,13 +389,13 @@ private fun InstanceCard(
 ) {
   var showDeleteConfirmation by remember { mutableStateOf(false) }
   Card(
-    modifier = Modifier.fillMaxWidth(),
+    modifier = Modifier.width(280.dp),
     colors = CardDefaults.cardColors(
-      containerColor = CaducityTheme.colorScheme.surfaceContainer,
+      containerColor = CaducityTheme.colorScheme.surfaceContainerHighest,
     ),
-    shape = MaterialTheme.shapes.largeIncreased,
+    shape = MaterialTheme.shapes.medium,
     elevation = CardDefaults.cardElevation(
-      defaultElevation = 2.dp,
+      defaultElevation = 1.dp,
     ),
   ) {
     Column(

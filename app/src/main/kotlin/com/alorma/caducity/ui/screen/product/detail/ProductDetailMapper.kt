@@ -2,6 +2,8 @@ package com.alorma.caducity.ui.screen.product.detail
 
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.ui.screen.products.ProductInstanceStatusGroup
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat
@@ -45,11 +47,52 @@ class ProductDetailMapper(
       }.thenBy { it.expirationDate }
     )
 
+    // Create groups from the domain groups
+    val groups = productWithInstances.groups.map { group ->
+      // Map instances for this group
+      val groupInstances = group.instances.map { instance ->
+        val displayLocalDate = instance
+          .displayDate
+          .toLocalDateTime(TimeZone.currentSystemDefault())
+          .date
+
+        ProductInstanceDetailUiModel(
+          id = instance.id,
+          identifier = instance.identifier,
+          status = instance.status,
+          expirationDate = displayLocalDate,
+          expirationDateText = dateFormat.format(displayLocalDate),
+          expirationInstant = instance.expirationDate,
+        )
+      }.toImmutableList()
+
+      // Calculate status groups (excluding frozen)
+      val frozenCount = groupInstances.count { it.status == InstanceStatus.Frozen }
+      val statusGroups = groupInstances
+        .filter { it.status != InstanceStatus.Frozen }
+        .groupBy { it.status }
+        .map { (status, statusInstances) ->
+          ProductInstanceStatusGroup(
+            status = status,
+            count = statusInstances.size,
+          )
+        }
+        .toImmutableList()
+
+      ProductInstanceDetailGroup(
+        identifier = group.identifier,
+        statusGroups = statusGroups,
+        frozenCount = frozenCount,
+        instances = groupInstances,
+      )
+    }.toImmutableList()
+
     return ProductDetailUiModel(
       id = productWithInstances.product.id,
       name = productWithInstances.product.name,
       description = productWithInstances.product.description,
       instances = sortedInstances,
+      groups = groups,
     )
   }
 }

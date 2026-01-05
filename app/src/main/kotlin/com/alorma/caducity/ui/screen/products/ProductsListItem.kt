@@ -23,10 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
-import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.components.shape.toHorizontalShape
 import com.alorma.caducity.ui.screen.dashboard.components.productListWithInstancesPreview
+import com.alorma.caducity.ui.screen.products.components.StatusBarsRow
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.datetime.TimeZone
@@ -97,32 +95,7 @@ fun ProductsListItem(
           }
 
           // Status color bars (excluding frozen)
-          if (group.statusGroups.isNotEmpty()) {
-            Row(
-              modifier = Modifier
-                .fillMaxWidth()
-                .height(24.dp),
-              horizontalArrangement = Arrangement.spacedBy(2.dp),
-            ) {
-              val groupSize = group.statusGroups.size
-              group.statusGroups.forEachIndexed { index, statusGroup ->
-                val colors = ExpirationDefaults.getVibrantColors(statusGroup.status)
-                val shape = when {
-                  groupSize == 1 -> ShapePosition.Single
-                  index == 0 -> ShapePosition.Start
-                  index == groupSize - 1 -> ShapePosition.End
-                  else -> ShapePosition.Middle
-                }
-                Box(
-                  modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(statusGroup.count.toFloat())
-                    .clip(shape.toHorizontalShape())
-                    .background(colors.container),
-                )
-              }
-            }
-          }
+          StatusBarsRow(statusGroups = group.statusGroups)
 
           // Show frozen count as text
           if (group.frozenCount > 0) {
