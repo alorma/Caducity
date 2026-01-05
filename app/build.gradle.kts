@@ -30,13 +30,18 @@ android {
       excludes += "/META-INF/{AL2.0,LGPL2.1}"
     }
   }
+  signingConfigs {
+    named("debug") {
+      storeFile = file("../certs/debug.keystore")
+    }
+  }
   buildTypes {
-    getByName("release") {
+    release {
       isMinifyEnabled = false
     }
-    getByName("debug") {
-      isMinifyEnabled = false
+    debug {
       applicationIdSuffix = ".dev"
+      signingConfig = signingConfigs["debug"]
     }
   }
   buildFeatures {
