@@ -29,7 +29,7 @@ sealed interface ProductsListUiModel {
     override val id: String,
     override val name: String,
     override val description: String,
-    val instances: ImmutableList<ProductsListInstanceUiModel>,
+    val groups: ImmutableList<ProductInstanceGroupUiModel>,
   ) : ProductsListUiModel
 
   @Stable
@@ -41,10 +41,14 @@ sealed interface ProductsListUiModel {
 }
 
 @Stable
-data class ProductsListInstanceUiModel(
-  val id: String,
+data class ProductInstanceGroupUiModel(
   val identifier: String,
+  val statusGroups: ImmutableList<ProductInstanceStatusGroup>,
+  val frozenCount: Int,
+)
+
+@Stable
+data class ProductInstanceStatusGroup(
   val status: InstanceStatus,
-  val expirationDate: LocalDate,
-  val expirationDateText: String,
+  val count: Int,
 )

@@ -191,7 +191,11 @@ fun App(
           }
           entry<CreateProductRoute> {
             CreateProductScreen(
-              onBack = { topLevelBackStack.removeLast() }
+              onBack = { topLevelBackStack.removeLast() },
+              onProductCreated = { productId ->
+                topLevelBackStack.removeLast() // Remove create screen
+                topLevelBackStack.add(ProductDetailRoute(productId)) // Navigate to detail
+              }
             )
           }
           entry<ProductsListRoute>(

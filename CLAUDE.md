@@ -242,6 +242,74 @@ The following experimental APIs are enabled project-wide:
 - `androidx.compose.material3.ExperimentalMaterial3Api`
 - `androidx.compose.material3.ExperimentalMaterial3ExpressiveApi`
 
+### UI Design Language
+
+#### Connected Groups with ShapePosition
+All lists displaying multiple items should use the `ShapePosition` pattern to create visually connected groups, unless explicitly specified otherwise. This creates a cohesive visual flow that matches the app's design language.
+
+**Pattern**: Use `ShapePosition` enum with appropriate shape helpers:
+- `.toHorizontalShape()` - For horizontal lists (LazyRow) - rounds left/right edges
+- `.toVerticalShape()` - For vertical lists (LazyColumn) - rounds top/bottom edges
+
+**ShapePosition Values**:
+- `ShapePosition.Single` - Item stands alone: Large rounded corners on all sides
+- `ShapePosition.Start` - First item in group: Large corners on leading edge, small on trailing edge
+- `ShapePosition.Middle` - Middle items in group: Small corners on all sides
+- `ShapePosition.End` - Last item in group: Small corners on leading edge, large on trailing edge
+
+**Horizontal List Implementation** (LazyRow):
+```kotlin
+LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+  items(items) { item ->
+    val index = items.indexOf(item)
+    val shapePosition = when {
+      items.size == 1 -> ShapePosition.Single
+      index == 0 -> ShapePosition.Start
+      index == items.size - 1 -> ShapePosition.End
+      else -> ShapePosition.Middle
+    }
+
+    Card(
+      modifier = Modifier.clip(shapePosition.toHorizontalShape())
+    ) {
+      // Card content
+    }
+  }
+}
+```
+
+**Vertical List Implementation** (LazyColumn):
+```kotlin
+LazyColumn(verticalArrangement = Arrangement.spacedBy(0.dp)) {
+  items(items) { item ->
+    val index = items.indexOf(item)
+    val shapePosition = when {
+      items.size == 1 -> ShapePosition.Single
+      index == 0 -> ShapePosition.Start
+      index == items.size - 1 -> ShapePosition.End
+      else -> ShapePosition.Middle
+    }
+
+    Card(
+      modifier = Modifier.clip(shapePosition.toVerticalShape())
+    ) {
+      // Card content
+    }
+  }
+}
+```
+
+**Where to Use**:
+- Horizontal scrolling lists (`LazyRow`) - Use `.toHorizontalShape()`
+- Vertical grouped lists (`LazyColumn` sections) - Use `.toVerticalShape()`
+- Settings menu groups (vertical)
+- Instance cards within product groups (horizontal)
+- Any UI showing related items in sequence
+
+**Reference Implementations**:
+- Horizontal: `ProductInstanceCard` in `ProductsListItem.kt` (uses `.toHorizontalShape()`)
+- Vertical: `StyledSettingsCard` in settings components (uses `.toVerticalShape()`)
+
 ### Date/Time Handling
 - Use `kotlinx-datetime` for all date/time operations
 - Store timestamps as `Long` (Unix epoch milliseconds)

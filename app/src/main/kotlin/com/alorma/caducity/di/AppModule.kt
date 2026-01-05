@@ -80,7 +80,6 @@ val appModule = module {
   // Products list
   single {
     ProductsListMapper(
-      appClock = get(),
       dateFormat = get(qualifier = ConfigQualifier.DateFormat.HumanReadable),
     )
   }
@@ -101,13 +100,7 @@ val appModule = module {
 
   // Create product
   singleOf(::CreateProductUseCase)
-  viewModel {
-    CreateProductViewModel(
-      createProductUseCase = get(),
-      dateFormat = get(qualifier = ConfigQualifier.DateFormat.HumanReadable),
-      selectableDates = get(),
-    )
-  }
+  viewModelOf(::CreateProductViewModel)
 
   singleOf(::FutureDateSelectableDates)
 

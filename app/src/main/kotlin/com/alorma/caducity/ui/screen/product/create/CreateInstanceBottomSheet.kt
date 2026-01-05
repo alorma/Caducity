@@ -52,6 +52,8 @@ import kotlin.time.Instant
 fun CreateInstanceBottomSheet(
   instanceId: String?,
   instance: ProductInstanceInput?,
+  currentGroupCount: Int = 1,
+  groupExpirationDates: List<String> = emptyList(),
   onSave: (String, LocalDate, Int) -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
@@ -69,7 +71,9 @@ fun CreateInstanceBottomSheet(
       instance?.expirationDateText ?: ""
     )
   }
-  var quantity by remember(instanceId) { mutableStateOf("1") }
+  var quantity by remember(instanceId, currentGroupCount) {
+    mutableStateOf(if (instanceId != null) currentGroupCount.toString() else "1")
+  }
   var showDatePicker by remember { mutableStateOf(false) }
 
   // Register permission contract for barcode scanning

@@ -3,7 +3,8 @@ package com.alorma.caducity.ui.screen.dashboard.components
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.screen.dashboard.ProductInstanceUiModel
 import com.alorma.caducity.ui.screen.dashboard.ProductUiModel
-import com.alorma.caducity.ui.screen.products.ProductsListInstanceUiModel
+import com.alorma.caducity.ui.screen.products.ProductInstanceGroupUiModel
+import com.alorma.caducity.ui.screen.products.ProductInstanceStatusGroup
 import com.alorma.caducity.ui.screen.products.ProductsListUiModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DateTimeUnit
@@ -90,60 +91,29 @@ val productListWithInstancesPreview: ProductsListUiModel.WithInstances
     val inOneWeek = today.plus(7, DateTimeUnit.DAY)
     val inTwoWeeks = today.plus(14, DateTimeUnit.DAY)
 
+    // Create groups with status counts
+    val groups = listOf(
+      ProductInstanceGroupUiModel(
+        identifier = "Bottle A",
+        statusGroups = listOf(
+          ProductInstanceStatusGroup(status = InstanceStatus.Expired, count = 3),
+          ProductInstanceStatusGroup(status = InstanceStatus.ExpiringSoon, count = 2),
+        ).toImmutableList(),
+        frozenCount = 1,
+      ),
+      ProductInstanceGroupUiModel(
+        identifier = "Bottle B",
+        statusGroups = listOf(
+          ProductInstanceStatusGroup(status = InstanceStatus.Fresh, count = 2),
+        ).toImmutableList(),
+        frozenCount = 0,
+      ),
+    ).toImmutableList()
+
     return ProductsListUiModel.WithInstances(
       id = "preview-product-1",
       name = "Organic Milk",
       description = "Fresh organic whole milk",
-      instances = listOf(
-        ProductsListInstanceUiModel(
-          id = "instance-0",
-          identifier = "Bottle #0",
-          status = InstanceStatus.Expired,
-          expirationDate = today,
-          expirationDateText = today.toString(),
-        ),
-        ProductsListInstanceUiModel(
-          id = "instance-1",
-          identifier = "Bottle #1",
-          status = InstanceStatus.Expired,
-          expirationDate = yesterday,
-          expirationDateText = yesterday.toString(),
-        ),
-        ProductsListInstanceUiModel(
-          id = "instance-2",
-          identifier = "Bottle #2",
-          status = InstanceStatus.Expired,
-          expirationDate = yesterday,
-          expirationDateText = yesterday.toString(),
-        ),
-        ProductsListInstanceUiModel(
-          id = "instance-3",
-          identifier = "Bottle #3",
-          status = InstanceStatus.ExpiringSoon,
-          expirationDate = tomorrow,
-          expirationDateText = tomorrow.toString(),
-        ),
-        ProductsListInstanceUiModel(
-          id = "instance-4",
-          identifier = "Bottle #4",
-          status = InstanceStatus.ExpiringSoon,
-          expirationDate = inThreeDays,
-          expirationDateText = inThreeDays.toString(),
-        ),
-        ProductsListInstanceUiModel(
-          id = "instance-5",
-          identifier = "Bottle #5",
-          status = InstanceStatus.Fresh,
-          expirationDate = inOneWeek,
-          expirationDateText = inOneWeek.toString(),
-        ),
-        ProductsListInstanceUiModel(
-          id = "instance-6",
-          identifier = "Bottle #6",
-          status = InstanceStatus.Fresh,
-          expirationDate = inTwoWeeks,
-          expirationDateText = inTwoWeeks.toString(),
-        ),
-      ).toImmutableList(),
+      groups = groups,
     )
   }

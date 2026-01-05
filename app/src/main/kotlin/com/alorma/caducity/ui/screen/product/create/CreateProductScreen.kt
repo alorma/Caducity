@@ -50,85 +50,21 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun CreateProductScreen(
   onBack: () -> Unit,
+  onProductCreated: (String) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: CreateProductViewModel = koinViewModel(),
-  barcodeHandler: BarcodeHandler = koinInject(),
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
-  var showInstanceBottomSheet by remember { mutableStateOf(false) }
-  var editingInstanceId by remember { mutableStateOf<String?>(null) }
-  var scannedBarcode by remember { mutableStateOf<String?>(null) }
-  val coroutineScope = rememberCoroutineScope()
-
-  // Register permission contract for barcode scanning
-  barcodeHandler.registerPermissionContract()
 
   CreateProductPage(
     state = state.value,
     onNameChange = viewModel::updateName,
     onDescriptionChange = viewModel::updateDescription,
-    onAddInstance = {
-      editingInstanceId = null
-      scannedBarcode = null
-      showInstanceBottomSheet = true
-    },
-    onScanBarcode = {
-      coroutineScope.launch {
-        barcodeHandler.scan { barcode ->
-          editingInstanceId = null
-          scannedBarcode = barcode.data
-          showInstanceBottomSheet = true
-        }
-      }
-    },
-    hasBarcodeCapability = barcodeHandler.hasBarcodeCapability(),
-    onEditInstance = { instanceId ->
-      editingInstanceId = instanceId
-      scannedBarcode = null
-      showInstanceBottomSheet = true
-    },
-    onRemoveInstance = viewModel::removeInstance,
-    onCreateClick = { viewModel.createProduct(onBack) },
+    onCreateClick = { viewModel.createProduct(onProductCreated) },
     onBackClick = onBack,
     onErrorDismiss = viewModel::clearError,
     modifier = modifier,
   )
-
-  // Instance Bottom Sheet
-  if (showInstanceBottomSheet) {
-    val instance = state.value.instances.firstOrNull { it.id == editingInstanceId }
-
-    CreateInstanceBottomSheet(
-      instanceId = editingInstanceId,
-      instance = instance,
-      scannedBarcode = scannedBarcode,
-      onSave = { identifier, expirationDate, quantity ->
-        if (editingInstanceId != null) {
-          // Editing existing instance - quantity is ignored
-          viewModel.updateInstanceIdentifier(editingInstanceId!!, identifier)
-          viewModel.updateInstanceExpirationDate(editingInstanceId!!, expirationDate)
-        } else {
-          // Creating new instance(s)
-          if (quantity > 1) {
-            // Create multiple instances
-            viewModel.addInstances(quantity, identifier, expirationDate)
-          } else {
-            // Create single instance
-            viewModel.addInstance()
-            val newInstance = viewModel.state.value.instances.last()
-            viewModel.updateInstanceIdentifier(newInstance.id, identifier)
-            viewModel.updateInstanceExpirationDate(newInstance.id, expirationDate)
-          }
-        }
-        scannedBarcode = null
-        showInstanceBottomSheet = false
-      },
-      onDismiss = {
-        scannedBarcode = null
-        showInstanceBottomSheet = false
-      }
-    )
-  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -137,11 +73,6 @@ private fun CreateProductPage(
   state: CreateProductState,
   onNameChange: (String) -> Unit,
   onDescriptionChange: (String) -> Unit,
-  onAddInstance: () -> Unit,
-  onScanBarcode: () -> Unit,
-  hasBarcodeCapability: Boolean,
-  onEditInstance: (String) -> Unit,
-  onRemoveInstance: (String) -> Unit,
   onCreateClick: () -> Unit,
   onBackClick: () -> Unit,
   onErrorDismiss: () -> Unit,
@@ -227,52 +158,6 @@ private fun CreateProductPage(
         enabled = !state.isLoading,
       )
 
-      // Instances Section
-      Text(
-        text = stringResource(R.string.create_product_instances_title),
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.padding(top = 8.dp)
-      )
-
-      // Instance List
-      state.instances.forEachIndexed { index, instance ->
-        ProductInstanceCard(
-          instance = instance,
-          instanceNumber = index + 1,
-          canRemove = state.instances.size > 1,
-          isLoading = state.isLoading,
-          onEdit = { onEditInstance(instance.id) },
-          onRemove = { onRemoveInstance(instance.id) },
-        )
-      }
-
-      // Add Instance Buttons
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        OutlinedButton(
-          onClick = onAddInstance,
-          modifier = Modifier.weight(1f),
-          enabled = !state.isLoading,
-        ) {
-          Text(stringResource(R.string.create_product_add_instance))
-        }
-
-        if (hasBarcodeCapability) {
-          OutlinedIconButton(
-            onClick = onScanBarcode,
-            enabled = !state.isLoading,
-          ) {
-            Icon(
-              imageVector = AppIcons.BarcodeScanner,
-              contentDescription = "Scan barcode",
-            )
-          }
-        }
-      }
-
       // Error Message
       if (state.error != null) {
         Text(
@@ -287,6 +172,98 @@ private fun CreateProductPage(
       }
 
       Spacer(modifier = Modifier.height(16.dp))
+    }
+  }
+}
+
+@Composable
+private fun ProductInstanceGroupCard(
+  group: ProductInstanceGroupInput,
+  isLoading: Boolean,
+  onEditInstance: (String) -> Unit,
+  onRemoveInstance: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Card(
+    modifier = modifier.fillMaxWidth(),
+    colors = CardDefaults.cardColors(
+      containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+    )
+  ) {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+      // Group header with identifier and count
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        Column {
+          Text(
+            text = group.identifier,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary,
+          )
+          Text(
+            text = "${group.instances.size} items",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+      }
+
+      // Expiration dates
+      if (group.expirationDates.isNotEmpty()) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+          Text(
+            text = "Expiration dates:",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+          group.expirationDates.forEach { dateText ->
+            Text(
+              text = "• $dateText",
+              style = MaterialTheme.typography.bodyMedium,
+            )
+          }
+        }
+      }
+
+      // Edit/Remove actions for instances
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        OutlinedButton(
+          onClick = { onEditInstance(group.instances.first().id) },
+          modifier = Modifier.weight(1f),
+          enabled = !isLoading,
+        ) {
+          Text("Edit")
+        }
+
+        if (group.instances.size > 1) {
+          OutlinedButton(
+            onClick = { onRemoveInstance(group.instances.last().id) },
+            modifier = Modifier.weight(1f),
+            enabled = !isLoading,
+          ) {
+            Text("Remove one")
+          }
+        } else {
+          TextButton(
+            onClick = { onRemoveInstance(group.instances.first().id) },
+            modifier = Modifier.weight(1f),
+            enabled = !isLoading,
+          ) {
+            Text("Remove")
+          }
+        }
+      }
     }
   }
 }

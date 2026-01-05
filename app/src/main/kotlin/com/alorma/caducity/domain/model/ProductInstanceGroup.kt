@@ -2,8 +2,7 @@ package com.alorma.caducity.domain.model
 
 import kotlinx.collections.immutable.ImmutableList
 
-data class ProductWithInstances(
-  val product: Product,
+data class ProductInstanceGroup(
+  val identifier: String,
   val instances: ImmutableList<ProductInstance>,
-  val groups: ImmutableList<ProductInstanceGroup>,
 )
