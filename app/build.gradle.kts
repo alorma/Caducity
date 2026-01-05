@@ -22,8 +22,9 @@ android {
     applicationId = "com.alorma.caducity"
     minSdk = libs.versions.android.minSdk.get().toInt()
     targetSdk = libs.versions.android.targetSdk.get().toInt()
-    versionCode = 1
-    versionName = "1.0"
+
+    versionCode = VersionConfig.versionCode
+    versionName = VersionConfig.versionName
   }
   packaging {
     resources {
