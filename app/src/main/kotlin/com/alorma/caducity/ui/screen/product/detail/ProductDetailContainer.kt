@@ -19,7 +19,7 @@ fun ProductDetailContainer(
   modifier: Modifier = Modifier,
 ) {
   val productDetailBackStack = retain {
-    mutableStateListOf<NavKey>(ProductDetailRoute.Root(productId))
+    mutableStateListOf<NavKey>(ProductDetailRoutes.Root(productId))
   }
 
   val bottomSheetStrategy = remember {
@@ -35,7 +35,7 @@ fun ProductDetailContainer(
       rememberViewModelStoreNavEntryDecorator(),
     ),
     entryProvider = entryProvider {
-      entry<ProductDetailRoute.Root> {
+      entry<ProductDetailRoutes.Root> {
         ProductDetailScreen(
           productId = it.productId,
           onBack = onBack,

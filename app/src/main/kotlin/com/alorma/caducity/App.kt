@@ -180,7 +180,7 @@ fun App(
               filters = ProductsListFilter.All,
               scrollConnection = exitAlwaysScrollBehavior,
               onNavigateToProductDetail = { productId ->
-                topLevelBackStack.add(ProductDetailRoute.Root(productId))
+                topLevelBackStack.add(ProductDetailRoute(productId))
               },
             )
           }
@@ -194,7 +194,7 @@ fun App(
               onBack = { topLevelBackStack.removeLast() },
               onProductCreated = { productId ->
                 topLevelBackStack.removeLast() // Remove create screen
-                topLevelBackStack.add(ProductDetailRoute.Root(productId)) // Navigate to detail
+                topLevelBackStack.add(ProductDetailRoute(productId)) // Navigate to detail
               }
             )
           }
@@ -209,7 +209,7 @@ fun App(
                 if (topLevelBackStack.backStack.last() is ProductsListRoute) {
                   topLevelBackStack.removeLast()
                 }
-                topLevelBackStack.add(ProductDetailRoute.Root(productId))
+                topLevelBackStack.add(ProductDetailRoute(productId))
               }
             )
           }
