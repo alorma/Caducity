@@ -23,6 +23,18 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: adopt
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: wrapper
+          cache-read-only: false
+
       - name: Disable snapshot before release
         run: |
           echo "Setting snapshot to false in version.properties"
@@ -33,10 +45,7 @@ jobs:
       - name: Get current version
         id: get_version
         run: |
-          MAJOR=$(grep "^major=" version.properties | cut -d'=' -f2)
-          MINOR=$(grep "^minor=" version.properties | cut -d'=' -f2)
-          PATCH=$(grep "^patch=" version.properties | cut -d'=' -f2)
-          CURRENT_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          CURRENT_VERSION=$(./gradlew -q printVersionName)
           echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "Current version to publish: $CURRENT_VERSION"
 

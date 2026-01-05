@@ -15,6 +15,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  get-version:
+    name: Get Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: adopt
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: wrapper
+          cache-read-only: false
+
+      - name: Get current version
+        id: get_version
+        run: |
+          VERSION_NAME=$(./gradlew -q printVersionName)
+          VERSION_CODE=$(./gradlew -q printVersionCode)
+          echo "Building version: $VERSION_NAME (code: $VERSION_CODE)"
+
+          echo "**Building Version:** \`$VERSION_NAME\` **(code: $VERSION_CODE)**" >> $GITHUB_STEP_SUMMARY
+
   build-debug:
     name: Build Android - Main
     runs-on: ubuntu-latest

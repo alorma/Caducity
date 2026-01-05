@@ -38,6 +38,29 @@ class VersionPlugin : Plugin<Project> {
       }
     }
 
+    // Register tasks for CI/CD use
+    target.tasks.register("printVersionName") {
+      group = "help"
+      description = "Prints the version name (for CI/CD)"
+
+      val versionName = extension.versionName
+
+      doLast {
+        println(versionName)
+      }
+    }
+
+    target.tasks.register("printVersionCode") {
+      group = "help"
+      description = "Prints the version code (for CI/CD)"
+
+      val versionCode = extension.versionCode
+
+      doLast {
+        println(versionCode)
+      }
+    }
+
     // Automatically configure Android version when the Android plugin is applied
     target.plugins.withId("com.android.application") {
       val android = target.extensions.getByType(ApplicationExtension::class.java)

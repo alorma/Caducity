@@ -68,6 +68,10 @@ Caducity is an Android grocery expiration tracker application built with Jetpack
 ```bash
 # Display current version information
 ./gradlew version         # Shows versionName, versionCode, and components
+
+# CI/CD tasks (output plain values)
+./gradlew -q printVersionName  # Prints only the version name (e.g., "0.0.2")
+./gradlew -q printVersionCode  # Prints only the version code (e.g., "20")
 ```
 
 ## Architecture
