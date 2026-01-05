@@ -98,15 +98,53 @@ fun CreateProductScreen(
   if (showInstanceBottomSheet) {
     val instance = state.value.instances.firstOrNull { it.id == editingInstanceId }
 
+    // Find the group this instance belongs to (if editing)
+    val group = if (editingInstanceId != null && instance != null) {
+      state.value.groups.firstOrNull { group ->
+        group.instances.any { it.id == editingInstanceId }
+      }
+    } else null
+
     CreateInstanceBottomSheet(
       instanceId = editingInstanceId,
       instance = instance,
+      currentGroupCount = group?.instances?.size ?: 1,
       scannedBarcode = scannedBarcode,
       onSave = { identifier, expirationDate, quantity ->
         if (editingInstanceId != null) {
-          // Editing existing instance - quantity is ignored
-          viewModel.updateInstanceIdentifier(editingInstanceId!!, identifier)
-          viewModel.updateInstanceExpirationDate(editingInstanceId!!, expirationDate)
+          // Editing existing instance/group
+          val currentGroup = state.value.groups.firstOrNull { g ->
+            g.instances.any { it.id == editingInstanceId }
+          }
+
+          if (currentGroup != null) {
+            val currentCount = currentGroup.instances.size
+            val diff = quantity - currentCount
+
+            // Update identifier and date for all instances in the group
+            currentGroup.instances.forEach { inst ->
+              viewModel.updateInstanceIdentifier(inst.id, identifier)
+              viewModel.updateInstanceExpirationDate(inst.id, expirationDate)
+            }
+
+            // Add or remove instances to match the new quantity
+            when {
+              diff > 0 -> {
+                // Add more instances
+                viewModel.addInstances(diff, identifier, expirationDate)
+              }
+              diff < 0 -> {
+                // Remove instances (from the end)
+                currentGroup.instances.takeLast(-diff).forEach { inst ->
+                  viewModel.removeInstance(inst.id)
+                }
+              }
+            }
+          } else {
+            // Single instance not in a group
+            viewModel.updateInstanceIdentifier(editingInstanceId!!, identifier)
+            viewModel.updateInstanceExpirationDate(editingInstanceId!!, expirationDate)
+          }
         } else {
           // Creating new instance(s)
           if (quantity > 1) {
@@ -234,16 +272,29 @@ private fun CreateProductPage(
         modifier = Modifier.padding(top = 8.dp)
       )
 
-      // Instance List
-      state.instances.forEachIndexed { index, instance ->
-        ProductInstanceCard(
-          instance = instance,
-          instanceNumber = index + 1,
-          canRemove = state.instances.size > 1,
-          isLoading = state.isLoading,
-          onEdit = { onEditInstance(instance.id) },
-          onRemove = { onRemoveInstance(instance.id) },
-        )
+      // Show groups if available, otherwise show individual instances
+      if (state.groups.isNotEmpty()) {
+        // Grouped display
+        state.groups.forEach { group ->
+          ProductInstanceGroupCard(
+            group = group,
+            isLoading = state.isLoading,
+            onEditInstance = onEditInstance,
+            onRemoveInstance = onRemoveInstance,
+          )
+        }
+      } else {
+        // Individual instance display (for incomplete instances)
+        state.instances.forEachIndexed { index, instance ->
+          ProductInstanceCard(
+            instance = instance,
+            instanceNumber = index + 1,
+            canRemove = state.instances.size > 1,
+            isLoading = state.isLoading,
+            onEdit = { onEditInstance(instance.id) },
+            onRemove = { onRemoveInstance(instance.id) },
+          )
+        }
       }
 
       // Add Instance Buttons
@@ -287,6 +338,98 @@ private fun CreateProductPage(
       }
 
       Spacer(modifier = Modifier.height(16.dp))
+    }
+  }
+}
+
+@Composable
+private fun ProductInstanceGroupCard(
+  group: ProductInstanceGroupInput,
+  isLoading: Boolean,
+  onEditInstance: (String) -> Unit,
+  onRemoveInstance: (String) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Card(
+    modifier = modifier.fillMaxWidth(),
+    colors = CardDefaults.cardColors(
+      containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+    )
+  ) {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+      // Group header with identifier and count
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        Column {
+          Text(
+            text = group.identifier,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary,
+          )
+          Text(
+            text = "${group.instances.size} items",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+      }
+
+      // Expiration dates
+      if (group.expirationDates.isNotEmpty()) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+          Text(
+            text = "Expiration dates:",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+          group.expirationDates.forEach { dateText ->
+            Text(
+              text = "• $dateText",
+              style = MaterialTheme.typography.bodyMedium,
+            )
+          }
+        }
+      }
+
+      // Edit/Remove actions for instances
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        OutlinedButton(
+          onClick = { onEditInstance(group.instances.first().id) },
+          modifier = Modifier.weight(1f),
+          enabled = !isLoading,
+        ) {
+          Text("Edit")
+        }
+
+        if (group.instances.size > 1) {
+          OutlinedButton(
+            onClick = { onRemoveInstance(group.instances.last().id) },
+            modifier = Modifier.weight(1f),
+            enabled = !isLoading,
+          ) {
+            Text("Remove one")
+          }
+        } else {
+          TextButton(
+            onClick = { onRemoveInstance(group.instances.first().id) },
+            modifier = Modifier.weight(1f),
+            enabled = !isLoading,
+          ) {
+            Text("Remove")
+          }
+        }
+      }
     }
   }
 }

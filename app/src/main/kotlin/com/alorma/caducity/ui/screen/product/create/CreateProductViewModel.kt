@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.product.create
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -43,7 +44,10 @@ class CreateProductViewModel(
           instance
         }
       }
-      currentState.copy(instances = updatedInstances)
+      currentState.copy(
+        instances = updatedInstances,
+        groups = computeGroups(updatedInstances)
+      )
     }
   }
 
@@ -59,8 +63,30 @@ class CreateProductViewModel(
           instance
         }
       }
-      currentState.copy(instances = updatedInstances)
+      currentState.copy(
+        instances = updatedInstances,
+        groups = computeGroups(updatedInstances)
+      )
     }
+  }
+
+  private fun computeGroups(instances: List<ProductInstanceInput>): kotlinx.collections.immutable.ImmutableList<ProductInstanceGroupInput> {
+    return instances
+      .filter { it.identifier.isNotBlank() && it.expirationDateText != null }
+      .groupBy { it.identifier }
+      .map { (identifier, groupInstances) ->
+        ProductInstanceGroupInput(
+          identifier = identifier,
+          instances = groupInstances.toImmutableList(),
+          expirationDates = groupInstances
+            .mapNotNull { it.expirationDateText }
+            .distinct()
+            .sorted()
+            .toImmutableList()
+        )
+      }
+      .sortedBy { it.identifier }
+      .toImmutableList()
   }
 
   fun showDatePickerForInstance(instanceId: String) {
@@ -77,7 +103,11 @@ class CreateProductViewModel(
       val newInstance = ProductInstanceInput(
         id = Uuid.random().toString()
       )
-      currentState.copy(instances = currentState.instances + newInstance)
+      val updatedInstances = currentState.instances + newInstance
+      currentState.copy(
+        instances = updatedInstances,
+        groups = computeGroups(updatedInstances)
+      )
     }
   }
 
@@ -92,14 +122,22 @@ class CreateProductViewModel(
           expirationDateText = dateFormat.format(expirationDate)
         )
       }
-      currentState.copy(instances = currentState.instances + newInstances)
+      val updatedInstances = currentState.instances + newInstances
+      currentState.copy(
+        instances = updatedInstances,
+        groups = computeGroups(updatedInstances)
+      )
     }
   }
 
   fun removeInstance(instanceId: String) {
     _state.update { currentState ->
       if (currentState.instances.size > 1) {
-        currentState.copy(instances = currentState.instances.filter { it.id != instanceId })
+        val updatedInstances = currentState.instances.filter { it.id != instanceId }
+        currentState.copy(
+          instances = updatedInstances,
+          groups = computeGroups(updatedInstances)
+        )
       } else {
         currentState
       }
