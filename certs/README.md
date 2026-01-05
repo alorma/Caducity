@@ -4,6 +4,31 @@ This information has been extracted using the command:
 $ keytool -list -v -keystore <keystore_file>
 ```
 
+## Fake release
+
+```
+Tipo de Almacén de Claves: PKCS12
+Proveedor de Almacén de Claves: SUN
+
+Su almacén de claves contiene 1 entrada
+
+Nombre de Alias: caducity
+Fecha de Creación: 5 ene 2026
+Tipo de Entrada: PrivateKeyEntry
+Longitud de la Cadena de Certificado: 1
+Certificado[1]:
+Propietario: CN=Bernat Borrás Paronella
+Emisor: CN=Bernat Borrás Paronella
+Número de serie: 1
+Válido desde: Mon Jan 05 10:59:59 CET 2026 hasta: Fri Dec 30 10:59:59 CET 2050
+Huellas digitales del certificado:
+         SHA1: FA:3B:01:35:3E:07:64:8B:9D:82:4F:69:B2:F6:9B:24:64:59:6B:5B
+         SHA256: E7:05:C0:38:92:6D:FA:26:1B:E5:DA:F7:36:60:A6:55:58:D1:94:CB:A5:6A:57:86:60:D0:44:7D:7B:C4:2A:80
+Nombre del algoritmo de firma: SHA256withRSA
+Algoritmo de clave pública de asunto: Clave RSA de 2048 bits
+Versión: 1
+```
+
 ## Debug
 
 ```
