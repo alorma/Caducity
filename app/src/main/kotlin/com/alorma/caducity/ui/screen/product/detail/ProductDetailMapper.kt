@@ -66,7 +66,7 @@ class ProductDetailMapper(
         )
       }.toImmutableList()
 
-      // Calculate status groups (excluding frozen)
+      // Calculate status groups (excluding frozen for the bars)
       val frozenCount = groupInstances.count { it.status == InstanceStatus.Frozen }
       val statusGroups = groupInstances
         .filter { it.status != InstanceStatus.Frozen }
@@ -79,11 +79,12 @@ class ProductDetailMapper(
         }
         .toImmutableList()
 
+      // Keep ALL instances (including frozen) for display in the LazyRow
       ProductInstanceDetailGroup(
         identifier = group.identifier,
         statusGroups = statusGroups,
         frozenCount = frozenCount,
-        instances = groupInstances,
+        instances = groupInstances, // All instances, frozen included
       )
     }.toImmutableList()
 
