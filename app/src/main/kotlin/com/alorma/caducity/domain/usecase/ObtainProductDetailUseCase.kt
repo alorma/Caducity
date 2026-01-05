@@ -17,12 +17,21 @@ class ObtainProductDetailUseCase(
     return productDataSource.getProduct(productId)
       .map { result ->
         result.map { productWithInstances ->
-          // Group instances by identifier (same logic as ObtainDashboardProductsUseCase)
+          // Group instances by variantId if present, otherwise by identifier for standalone instances
           val groups = productWithInstances.instances
-            .groupBy { it.identifier }
-            .map { (identifier, instancesInGroup) ->
+            .groupBy { instance ->
+              // Group by variantId if present, otherwise create a unique key for standalone instances
+              instance.variantId ?: "standalone_${instance.identifier}"
+            }
+            .map { (key, instancesInGroup) ->
+              val firstInstance = instancesInGroup.first()
+              val isVariantBased = firstInstance.variantId != null
+
               ProductInstanceGroup(
-                identifier = identifier,
+                identifier = firstInstance.identifier,
+                variantId = firstInstance.variantId,
+                variantName = if (isVariantBased) firstInstance.identifier else null,
+                isStandalone = !isVariantBased,
                 instances = instancesInGroup
                   .sortedWith(instanceComparator)
                   .toImmutableList()

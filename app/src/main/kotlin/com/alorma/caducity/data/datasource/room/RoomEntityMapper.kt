@@ -3,6 +3,7 @@ package com.alorma.caducity.data.datasource.room
 import com.alorma.caducity.domain.model.Product
 import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
+import com.alorma.caducity.domain.model.Variant
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.model.InstanceStatus
@@ -38,6 +39,7 @@ fun ProductInstanceRoomEntity.toModel(
   return ProductInstance(
     id = id,
     identifier = identifier,
+    variantId = variantId,
     expirationDate = expirationInstant,
     status = status,
     pausedDate = pausedInstant,
@@ -74,5 +76,23 @@ fun ProductInstance.toRoomEntity(productId: String): ProductInstanceRoomEntity {
     pausedDate = null,
     remainingDays = null,
     consumedDate = null,
+  )
+}
+
+fun VariantRoomEntity.toModel(): Variant {
+  return Variant(
+    id = id,
+    productId = productId,
+    name = name,
+    createdAt = Instant.fromEpochMilliseconds(createdAt),
+  )
+}
+
+fun Variant.toRoomEntity(): VariantRoomEntity {
+  return VariantRoomEntity(
+    id = id,
+    productId = productId,
+    name = name,
+    createdAt = createdAt.toEpochMilliseconds(),
   )
 }

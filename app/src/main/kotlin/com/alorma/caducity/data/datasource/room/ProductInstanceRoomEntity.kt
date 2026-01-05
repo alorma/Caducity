@@ -13,15 +13,22 @@ import androidx.room.PrimaryKey
       parentColumns = ["id"],
       childColumns = ["productId"],
       onDelete = ForeignKey.CASCADE
+    ),
+    ForeignKey(
+      entity = VariantRoomEntity::class,
+      parentColumns = ["id"],
+      childColumns = ["variantId"],
+      onDelete = ForeignKey.SET_NULL
     )
   ],
-  indices = [Index("productId")]
+  indices = [Index("productId"), Index("variantId")]
 )
 data class ProductInstanceRoomEntity(
   @PrimaryKey
   val id: String,
   val productId: String,
   val identifier: String,
+  val variantId: String? = null,
   val expirationDate: Long,
   val pausedDate: Long? = null, // When frozen - null means not frozen
   val remainingDays: Int? = null, // Days remaining when frozen
