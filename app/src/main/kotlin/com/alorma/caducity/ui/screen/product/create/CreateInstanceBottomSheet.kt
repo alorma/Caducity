@@ -53,6 +53,7 @@ fun CreateInstanceBottomSheet(
   instanceId: String?,
   instance: ProductInstanceInput?,
   currentGroupCount: Int = 1,
+  groupExpirationDates: List<String> = emptyList(),
   onSave: (String, LocalDate, Int) -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
@@ -74,6 +75,10 @@ fun CreateInstanceBottomSheet(
     mutableStateOf(if (instanceId != null) currentGroupCount.toString() else "1")
   }
   var showDatePicker by remember { mutableStateOf(false) }
+  var editingDateIndex by remember { mutableStateOf<Int?>(null) }
+
+  // For groups with multiple dates
+  val hasMultipleDates = groupExpirationDates.size > 1
 
   // Register permission contract for barcode scanning
   barcodeHandler.registerPermissionContract()
@@ -160,37 +165,67 @@ fun CreateInstanceBottomSheet(
         }
       }
 
-      // Instance Expiration Date Field
-      TextField(
-        modifier = Modifier
-          .fillMaxWidth()
-          .clickable { showDatePicker = true },
-        value = expirationDateText,
-        onValueChange = {},
-        label = { Text(stringResource(R.string.create_product_expiration_date_label)) },
-        placeholder = { Text(stringResource(R.string.create_product_expiration_date_placeholder)) },
-        enabled = false,
-        readOnly = true,
-        colors = TextFieldDefaults.colors(
-          focusedContainerColor = TextFieldDefaults.colors().containerColor(
-            enabled = true,
-            isError = false,
-            focused = true,
+      // Instance Expiration Date Field(s)
+      if (hasMultipleDates) {
+        // Show multiple dates with edit icons
+        Text(
+          text = "Expiration dates:",
+          style = MaterialTheme.typography.labelLarge,
+          color = MaterialTheme.colorScheme.onSurface,
+        )
+        groupExpirationDates.forEachIndexed { index, dateText ->
+          Row(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(vertical = 4.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Text(
+              text = "• $dateText",
+              style = MaterialTheme.typography.bodyLarge,
+            )
+            TextButton(onClick = {
+              editingDateIndex = index
+              showDatePicker = true
+            }) {
+              Text("Edit")
+            }
+          }
+        }
+      } else {
+        // Single date field
+        TextField(
+          modifier = Modifier
+            .fillMaxWidth()
+            .clickable { showDatePicker = true },
+          value = expirationDateText,
+          onValueChange = {},
+          label = { Text(stringResource(R.string.create_product_expiration_date_label)) },
+          placeholder = { Text(stringResource(R.string.create_product_expiration_date_placeholder)) },
+          enabled = false,
+          readOnly = true,
+          colors = TextFieldDefaults.colors(
+            focusedContainerColor = TextFieldDefaults.colors().containerColor(
+              enabled = true,
+              isError = false,
+              focused = true,
+            ),
+            unfocusedContainerColor = TextFieldDefaults.colors().containerColor(
+              enabled = true,
+              isError = false,
+              focused = true,
+            ),
+            disabledTextColor = CaducityTheme.colorScheme.onSurface,
+            disabledContainerColor = TextFieldDefaults.colors().containerColor(
+              enabled = true,
+              isError = false,
+              focused = false,
+            ),
+            disabledLabelColor = CaducityTheme.colorScheme.onSurfaceVariant,
           ),
-          unfocusedContainerColor = TextFieldDefaults.colors().containerColor(
-            enabled = true,
-            isError = false,
-            focused = true,
-          ),
-          disabledTextColor = CaducityTheme.colorScheme.onSurface,
-          disabledContainerColor = TextFieldDefaults.colors().containerColor(
-            enabled = true,
-            isError = false,
-            focused = false,
-          ),
-          disabledLabelColor = CaducityTheme.colorScheme.onSurfaceVariant,
-        ),
-      )
+        )
+      }
 
       Spacer(modifier = Modifier.height(16.dp))
 

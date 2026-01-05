@@ -50,123 +50,21 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun CreateProductScreen(
   onBack: () -> Unit,
+  onProductCreated: (String) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: CreateProductViewModel = koinViewModel(),
-  barcodeHandler: BarcodeHandler = koinInject(),
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
-  var showInstanceBottomSheet by remember { mutableStateOf(false) }
-  var editingInstanceId by remember { mutableStateOf<String?>(null) }
-  var scannedBarcode by remember { mutableStateOf<String?>(null) }
-  val coroutineScope = rememberCoroutineScope()
-
-  // Register permission contract for barcode scanning
-  barcodeHandler.registerPermissionContract()
 
   CreateProductPage(
     state = state.value,
     onNameChange = viewModel::updateName,
     onDescriptionChange = viewModel::updateDescription,
-    onAddInstance = {
-      editingInstanceId = null
-      scannedBarcode = null
-      showInstanceBottomSheet = true
-    },
-    onScanBarcode = {
-      coroutineScope.launch {
-        barcodeHandler.scan { barcode ->
-          editingInstanceId = null
-          scannedBarcode = barcode.data
-          showInstanceBottomSheet = true
-        }
-      }
-    },
-    hasBarcodeCapability = barcodeHandler.hasBarcodeCapability(),
-    onEditInstance = { instanceId ->
-      editingInstanceId = instanceId
-      scannedBarcode = null
-      showInstanceBottomSheet = true
-    },
-    onRemoveInstance = viewModel::removeInstance,
-    onCreateClick = { viewModel.createProduct(onBack) },
+    onCreateClick = { viewModel.createProduct(onProductCreated) },
     onBackClick = onBack,
     onErrorDismiss = viewModel::clearError,
     modifier = modifier,
   )
-
-  // Instance Bottom Sheet
-  if (showInstanceBottomSheet) {
-    val instance = state.value.instances.firstOrNull { it.id == editingInstanceId }
-
-    // Find the group this instance belongs to (if editing)
-    val group = if (editingInstanceId != null && instance != null) {
-      state.value.groups.firstOrNull { group ->
-        group.instances.any { it.id == editingInstanceId }
-      }
-    } else null
-
-    CreateInstanceBottomSheet(
-      instanceId = editingInstanceId,
-      instance = instance,
-      currentGroupCount = group?.instances?.size ?: 1,
-      scannedBarcode = scannedBarcode,
-      onSave = { identifier, expirationDate, quantity ->
-        if (editingInstanceId != null) {
-          // Editing existing instance/group
-          val currentGroup = state.value.groups.firstOrNull { g ->
-            g.instances.any { it.id == editingInstanceId }
-          }
-
-          if (currentGroup != null) {
-            val currentCount = currentGroup.instances.size
-            val diff = quantity - currentCount
-
-            // Update identifier and date for all instances in the group
-            currentGroup.instances.forEach { inst ->
-              viewModel.updateInstanceIdentifier(inst.id, identifier)
-              viewModel.updateInstanceExpirationDate(inst.id, expirationDate)
-            }
-
-            // Add or remove instances to match the new quantity
-            when {
-              diff > 0 -> {
-                // Add more instances
-                viewModel.addInstances(diff, identifier, expirationDate)
-              }
-              diff < 0 -> {
-                // Remove instances (from the end)
-                currentGroup.instances.takeLast(-diff).forEach { inst ->
-                  viewModel.removeInstance(inst.id)
-                }
-              }
-            }
-          } else {
-            // Single instance not in a group
-            viewModel.updateInstanceIdentifier(editingInstanceId!!, identifier)
-            viewModel.updateInstanceExpirationDate(editingInstanceId!!, expirationDate)
-          }
-        } else {
-          // Creating new instance(s)
-          if (quantity > 1) {
-            // Create multiple instances
-            viewModel.addInstances(quantity, identifier, expirationDate)
-          } else {
-            // Create single instance
-            viewModel.addInstance()
-            val newInstance = viewModel.state.value.instances.last()
-            viewModel.updateInstanceIdentifier(newInstance.id, identifier)
-            viewModel.updateInstanceExpirationDate(newInstance.id, expirationDate)
-          }
-        }
-        scannedBarcode = null
-        showInstanceBottomSheet = false
-      },
-      onDismiss = {
-        scannedBarcode = null
-        showInstanceBottomSheet = false
-      }
-    )
-  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -175,11 +73,6 @@ private fun CreateProductPage(
   state: CreateProductState,
   onNameChange: (String) -> Unit,
   onDescriptionChange: (String) -> Unit,
-  onAddInstance: () -> Unit,
-  onScanBarcode: () -> Unit,
-  hasBarcodeCapability: Boolean,
-  onEditInstance: (String) -> Unit,
-  onRemoveInstance: (String) -> Unit,
   onCreateClick: () -> Unit,
   onBackClick: () -> Unit,
   onErrorDismiss: () -> Unit,
@@ -264,65 +157,6 @@ private fun CreateProductPage(
         minLines = 3,
         enabled = !state.isLoading,
       )
-
-      // Instances Section
-      Text(
-        text = stringResource(R.string.create_product_instances_title),
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.padding(top = 8.dp)
-      )
-
-      // Show groups if available, otherwise show individual instances
-      if (state.groups.isNotEmpty()) {
-        // Grouped display
-        state.groups.forEach { group ->
-          ProductInstanceGroupCard(
-            group = group,
-            isLoading = state.isLoading,
-            onEditInstance = onEditInstance,
-            onRemoveInstance = onRemoveInstance,
-          )
-        }
-      } else {
-        // Individual instance display (for incomplete instances)
-        state.instances.forEachIndexed { index, instance ->
-          ProductInstanceCard(
-            instance = instance,
-            instanceNumber = index + 1,
-            canRemove = state.instances.size > 1,
-            isLoading = state.isLoading,
-            onEdit = { onEditInstance(instance.id) },
-            onRemove = { onRemoveInstance(instance.id) },
-          )
-        }
-      }
-
-      // Add Instance Buttons
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        OutlinedButton(
-          onClick = onAddInstance,
-          modifier = Modifier.weight(1f),
-          enabled = !state.isLoading,
-        ) {
-          Text(stringResource(R.string.create_product_add_instance))
-        }
-
-        if (hasBarcodeCapability) {
-          OutlinedIconButton(
-            onClick = onScanBarcode,
-            enabled = !state.isLoading,
-          ) {
-            Icon(
-              imageVector = AppIcons.BarcodeScanner,
-              contentDescription = "Scan barcode",
-            )
-          }
-        }
-      }
 
       // Error Message
       if (state.error != null) {

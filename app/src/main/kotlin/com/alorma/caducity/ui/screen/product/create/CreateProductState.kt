@@ -18,14 +18,9 @@ data class ProductInstanceGroupInput(
   val expirationDates: ImmutableList<String>, // Sorted list of unique expiration date texts
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 data class CreateProductState(
   val name: String = "",
   val description: String = "",
-  val instances: List<ProductInstanceInput> = listOf(),
-  val groups: ImmutableList<ProductInstanceGroupInput> = kotlinx.collections.immutable.persistentListOf(),
-  val showDatePickerForInstanceId: String? = null,
-  val selectableDates: SelectableDates,
   val isLoading: Boolean = false,
   val error: String? = null,
 )
