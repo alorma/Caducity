@@ -9,6 +9,35 @@ class VersionPlugin : Plugin<Project> {
     val extension = target.extensions.create("appVersion", VersionExtension::class.java, target)
     target.extensions.add("versionConfig", extension)
 
+    // Register the version task
+    target.tasks.register("version") {
+      group = "help"
+      description = "Displays the current version information"
+
+      // Capture values at configuration time to avoid configuration cache issues
+      val versionName = extension.versionName
+      val versionCode = extension.versionCode
+      val major = extension.major
+      val minor = extension.minor
+      val patch = extension.patch
+      val snapshot = extension.snapshot
+
+      doLast {
+        println("====================================")
+        println("  App Version Information")
+        println("====================================")
+        println("Version Name: $versionName")
+        println("Version Code: $versionCode")
+        println()
+        println("Components:")
+        println("  Major:    $major")
+        println("  Minor:    $minor")
+        println("  Patch:    $patch")
+        println("  Snapshot: $snapshot")
+        println("====================================")
+      }
+    }
+
     // Automatically configure Android version when the Android plugin is applied
     target.plugins.withId("com.android.application") {
       val android = target.extensions.getByType(ApplicationExtension::class.java)
