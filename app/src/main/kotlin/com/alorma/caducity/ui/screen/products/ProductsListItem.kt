@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,12 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.ui.components.StatusBadge
-import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
+import com.alorma.caducity.ui.screen.dashboard.components.productListWithInstancesPreview
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
-import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.ui.screen.dashboard.components.productListWithInstancesPreview
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
@@ -73,33 +75,47 @@ fun ProductsListItem(
     when (product) {
       is ProductsListUiModel.WithInstances -> {
         Spacer(modifier = Modifier.height(12.dp))
-        product.groups.forEach { group ->
-          group.instances.forEach { instance ->
-            Row(
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-              horizontalArrangement = Arrangement.SpaceBetween,
-              verticalAlignment = Alignment.CenterVertically,
-            ) {
-              Row(
-                verticalAlignment = Alignment.CenterVertically,
-              ) {
-                Text(
-                  text = instance.identifier,
-                  style = MaterialTheme.typography.bodyMedium,
-                  color = CaducityTheme.colorScheme.onSurface,
-                )
-                Spacer(modifier = Modifier.width(8.dp))
+        product.groups.forEachIndexed { groupIndex, group ->
+          // Add spacing between groups (except before the first one)
+          if (groupIndex > 0) {
+            Spacer(modifier = Modifier.height(12.dp))
+          }
 
-                val colors = ExpirationDefaults.getVibrantColors(instance.status)
+          // Group header with identifier and count
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 8.dp)
+          ) {
+            Text(
+              text = "—",
+              style = MaterialTheme.typography.labelLarge,
+              color = CaducityTheme.colorScheme.onSurfaceVariant,
+              modifier = Modifier.padding(end = 8.dp)
+            )
+            Text(
+              text = "${group.identifier} (${group.instances.size})",
+              style = MaterialTheme.typography.labelLarge,
+              color = CaducityTheme.colorScheme.onSurface,
+            )
+          }
 
-                StatusBadge(status = instance.status)
+          val instanceGroupSize = group.instances.size
+
+          LazyRow(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(start = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+          ) {
+            items(group.instances.toList()) { instance ->
+              val itemModifier = if (instanceGroupSize > 1) {
+                Modifier.fillParentMaxWidth(0.80f)
+              } else {
+                Modifier.fillParentMaxWidth()
               }
-
-              ProductInstanceRelativeTime(
-                expirationDate = instance.expirationDate,
-                expirationDateText = instance.expirationDateText,
+              ProductInstanceCard(
+                modifier = itemModifier,
+                instance = instance,
                 today = today,
                 relativeTimeFormatter = relativeTimeFormatter,
               )
@@ -121,31 +137,43 @@ fun ProductsListItem(
 }
 
 @Composable
-private fun ProductInstanceRelativeTime(
-  expirationDate: kotlinx.datetime.LocalDate,
-  expirationDateText: String,
-  today: kotlinx.datetime.LocalDate,
+private fun ProductInstanceCard(
+  instance: ProductsListInstanceUiModel,
+  today: LocalDate,
   relativeTimeFormatter: RelativeTimeFormatter,
+  modifier: Modifier = Modifier,
 ) {
   var relativeTimeText by remember { mutableStateOf("") }
 
-  LaunchedEffect(expirationDate, today) {
-    relativeTimeText = relativeTimeFormatter.format(today, expirationDate)
+  LaunchedEffect(instance.expirationDate, today) {
+    relativeTimeText = relativeTimeFormatter.format(today, instance.expirationDate)
   }
 
   Column(
-    horizontalAlignment = Alignment.End,
+    modifier = modifier
+      .width(120.dp)
+      .clip(MaterialTheme.shapes.small)
+      .background(CaducityTheme.colorScheme.surfaceContainerHighest)
+      .padding(12.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(8.dp)
   ) {
-    Text(
-      text = relativeTimeText,
-      style = MaterialTheme.typography.bodyMedium,
-      color = CaducityTheme.colorScheme.onSurface,
-    )
-    Text(
-      text = expirationDateText,
-      style = MaterialTheme.typography.bodySmall,
-      color = CaducityTheme.colorScheme.onSurfaceVariant,
-    )
+    StatusBadge(status = instance.status)
+
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      Text(
+        text = relativeTimeText,
+        style = MaterialTheme.typography.bodySmall,
+        color = CaducityTheme.colorScheme.onSurface,
+      )
+      Text(
+        text = instance.expirationDateText,
+        style = MaterialTheme.typography.labelSmall,
+        color = CaducityTheme.colorScheme.onSurfaceVariant,
+      )
+    }
   }
 }
 
