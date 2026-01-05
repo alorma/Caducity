@@ -29,6 +29,8 @@ jobs:
           CURRENT_VERSION=$(grep "^appVersion=" gradle.properties | cut -d'=' -f2)
           echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "Current version to publish: $CURRENT_VERSION"
+          
+          echo "**Version from:** \`$CURRENT_VERSION\`" >> $GITHUB_STEP_SUMMARY
 
   build:
     name: Build Release AAB
