@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
@@ -15,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.ui.components.StyledTopAppBar
@@ -22,6 +24,7 @@ import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
+import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.theme.CaducityTheme
 import org.koin.compose.viewmodel.koinViewModel
@@ -31,6 +34,7 @@ import org.koin.core.parameter.parametersOf
 fun ProductDetailScreen(
   productId: String,
   onBack: () -> Unit,
+  onNavigateToAddInstance: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
 ) {
@@ -47,13 +51,7 @@ fun ProductDetailScreen(
           .then(modifier),
         contentAlignment = Alignment.Center,
       ) {
-        LoadingIndicator(
-          color = CaducityTheme.colorScheme.secondary,
-          polygons = listOf(
-            MaterialShapes.Cookie4Sided,
-            MaterialShapes.Cookie6Sided,
-          ),
-        )
+        WavyLoadingIndicator()
       }
     }
 
@@ -63,6 +61,7 @@ fun ProductDetailScreen(
         snackbarHostState = snackbarState,
         dialogState = dialogState,
         onBack = onBack,
+        onNavigateToAddInstance = onNavigateToAddInstance,
       )
     }
 
@@ -88,6 +87,7 @@ private fun ProductDetailContent(
   snackbarHostState: AppSnackbarHostState,
   dialogState: AppDialogState,
   onBack: () -> Unit,
+  onNavigateToAddInstance: () -> Unit,
 ) {
   AppScaffold(
     topBar = {
@@ -102,6 +102,14 @@ private fun ProductDetailContent(
           }
         },
       )
+    },
+    floatingActionButton = {
+      FloatingActionButton(onClick = onNavigateToAddInstance) {
+        Icon(
+          imageVector = AppIcons.Add,
+          contentDescription = "Add Instance",
+        )
+      }
     },
     snackbarState = snackbarHostState,
     dialogState = dialogState,
