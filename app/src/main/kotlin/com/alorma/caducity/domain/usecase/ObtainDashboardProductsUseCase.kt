@@ -1,83 +1,24 @@
 package com.alorma.caducity.domain.usecase
 
-import com.alorma.caducity.domain.ProductDataSource
+import com.alorma.caducity.domain.InstanceDataSource
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.ProductInstance
-import com.alorma.caducity.domain.model.ProductInstanceGroup
-import com.alorma.caducity.domain.model.ProductWithInstances
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class ObtainDashboardProductsUseCase(
-  private val productDataSource: ProductDataSource,
+  private val instanceDataSource: InstanceDataSource,
 ) {
 
-  fun obtainProducts(
-    filter: ProductsListFilter,
-  ): Flow<ImmutableList<ProductWithInstances>> {
-    return productDataSource
-      .getProducts(filter)
-      .map { products ->
-        products
-          .map { productWithInstances ->
-            // Group instances by identifier
-            val groups = productWithInstances.instances
-              .groupBy { it.identifier }
-              .map { (identifier, instancesInGroup) ->
-                ProductInstanceGroup(
-                  identifier = identifier,
-                  instances = instancesInGroup
-                    .sortedWith(instanceComparator)
-                    .toImmutableList()
-                )
-              }
-              .sortedWith(groupComparator)
-              .toImmutableList()
-
-            productWithInstances.copy(groups = groups)
-          }
-          .sortedBy { product ->
-            product.instances.minOfOrNull { instance -> instance.expirationDate }
-          }
+  fun obtainProducts(): Flow<ImmutableList<ProductInstance>> {
+    return instanceDataSource.getAllInstances()
+      .map { instances ->
+        instances
+          .filterNot { instance -> instance.status == InstanceStatus.Consumed }
+          .sortedBy { instance -> instance.expirationDate }
           .toImmutableList()
       }
-  }
-
-  companion object {
-    // Sort instances by status priority, then by expiration date
-    private val instanceComparator = compareBy<ProductInstance>(
-      { instance ->
-        when (instance.status) {
-          InstanceStatus.Expired -> 0
-          InstanceStatus.ExpiringSoon -> 1
-          InstanceStatus.Fresh -> 2
-          InstanceStatus.Frozen -> 3
-          InstanceStatus.Consumed -> 4
-        }
-      },
-      { instance -> instance.expirationDate }
-    )
-
-    // Sort groups by most urgent status in the group, then by earliest expiration date
-    private val groupComparator = compareBy<ProductInstanceGroup>(
-      { group ->
-        // Find the most urgent status in the group
-        group.instances.minOfOrNull { instance ->
-          when (instance.status) {
-            InstanceStatus.Expired -> 0
-            InstanceStatus.ExpiringSoon -> 1
-            InstanceStatus.Fresh -> 2
-            InstanceStatus.Frozen -> 3
-            InstanceStatus.Consumed -> 4
-          }
-        } ?: Int.MAX_VALUE
-      },
-      { group ->
-        // Find the earliest expiration date in the group
-        group.instances.minOfOrNull { instance -> instance.expirationDate }
-      }
-    )
   }
 }

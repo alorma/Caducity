@@ -12,7 +12,7 @@ enum class ShapePosition {
   Single,
   Start,
   Middle,
-  End
+  End;
 }
 
 @Suppress("ContentEmission")

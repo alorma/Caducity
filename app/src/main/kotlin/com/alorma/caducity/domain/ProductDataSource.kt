@@ -1,5 +1,6 @@
 package com.alorma.caducity.domain
 
+import com.alorma.caducity.domain.model.NewProductInstance
 import com.alorma.caducity.domain.model.Product
 import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
@@ -14,7 +15,7 @@ interface ProductDataSource {
 
   suspend fun createProduct(product: Product, instances: ImmutableList<ProductInstance>)
 
-  suspend fun addInstance(productId: String, instance: ProductInstance)
+  suspend fun addInstance(productId: String, instance: NewProductInstance): String
 
   suspend fun deleteInstance(instanceId: String)
 

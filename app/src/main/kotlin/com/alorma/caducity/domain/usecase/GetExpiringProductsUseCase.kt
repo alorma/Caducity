@@ -28,15 +28,28 @@ class GetExpiringProductsUseCase(
     return filteredProducts
       .map { productWithInstances ->
         // For each product, only include instances that are expiring or expired
+        val filteredVariants = productWithInstances.variants.map { variantWithInstances ->
+          variantWithInstances.copy(
+            instances = variantWithInstances.instances.filter { instance ->
+              instance.status == InstanceStatus.ExpiringSoon || instance.status == InstanceStatus.Expired
+            }.toImmutableList()
+          )
+        }.filter { it.instances.isNotEmpty() }.toImmutableList()
+
+        val filteredStandaloneInstances = productWithInstances.standaloneInstances.filter { instance ->
+          instance.status == InstanceStatus.ExpiringSoon || instance.status == InstanceStatus.Expired
+        }.toImmutableList()
+
         productWithInstances.copy(
-          instances = productWithInstances.instances.filter { instance ->
-            instance.status == InstanceStatus.ExpiringSoon || instance.status == InstanceStatus.Expired
-          }.toImmutableList()
+          variants = filteredVariants,
+          standaloneInstances = filteredStandaloneInstances
         )
       }
       .sortedBy { productWithInstances ->
-        // Sort by earliest expiration date
-        productWithInstances.instances.minOfOrNull { it.expirationDate }
+        // Sort by earliest expiration date across all instances
+        val allInstances = productWithInstances.variants.flatMap { it.instances } +
+                         productWithInstances.standaloneInstances
+        allInstances.minOfOrNull { it.expirationDate }
       }
   }
 }

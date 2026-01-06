@@ -3,42 +3,27 @@ package com.alorma.caducity.ui.screen.dashboard
 import androidx.compose.runtime.Stable
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DayOfWeekNames
 import kotlinx.datetime.format.MonthNames
 
 @Stable
-sealed interface ProductUiModel {
-  val id: String
-  val name: String
-  val description: String
-
-  @Stable
-  data class WithInstances(
-    override val id: String,
-    override val name: String,
-    override val description: String,
-    val today: String,
-    val instances: ImmutableList<ProductInstanceUiModel>,
-  ) : ProductUiModel
-
-  @Stable
-  data class Empty(
-    override val id: String,
-    override val name: String,
-    override val description: String,
-  ) : ProductUiModel
-}
+data class DashboardSummary(
+  val expired: Int,
+  val expiringSoon: Int,
+  val fresh: Int,
+  val frozen: Int,
+)
 
 @Stable
-data class ProductInstanceUiModel(
-  val id: String,
-  val identifier: String,
-  val status: InstanceStatus,
-  val expirationDate: LocalDate,
-  val expirationDateText: String,
+data class CalendarState(
+  val today: LocalDate,
+  val startLocalDate: LocalDate,
+  val endLocalDate: LocalDate,
+  val content: ImmutableMap<LocalDate, CalendarDateInfo>,
+  val monthNames: MonthNames,
+  val daysOfWeekNames: DayOfWeekNames,
 )
 
 @Stable
@@ -50,12 +35,4 @@ data class CalendarData(
 data class CalendarDateInfo(
   val status: InstanceStatus?,
   val shapePosition: ShapePosition,
-)
-
-@Stable
-data class CalendarState(
-  val today: LocalDate,
-  val calendarData: CalendarData,
-  val monthNames: MonthNames,
-  val daysOfWeekNames: DayOfWeekNames,
 )

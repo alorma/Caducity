@@ -1,16 +1,15 @@
 package com.alorma.caducity.ui.screen.products
 
 import androidx.compose.runtime.Stable
-import com.alorma.caducity.domain.usecase.ProductsListFilter
 import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.usecase.ProductsListFilter
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.datetime.LocalDate
 
 sealed class ProductsListState {
   data object Loading : ProductsListState()
 
   data class Success(
-    val items: ImmutableList<ProductsListUiModel>,
+    val items: ImmutableList<ProductListUiModel>,
   ) : ProductsListState()
 
   data class Empty(
@@ -19,36 +18,41 @@ sealed class ProductsListState {
 }
 
 @Stable
-sealed interface ProductsListUiModel {
+sealed interface ProductListUiModel {
   val id: String
   val name: String
-  val description: String
 
   @Stable
-  data class WithInstances(
+  data class WithContent(
     override val id: String,
     override val name: String,
-    override val description: String,
-    val groups: ImmutableList<ProductInstanceGroupUiModel>,
-  ) : ProductsListUiModel
+    val variants: ImmutableList<ProductInstanceVariant>,
+    val standaloneInstances: ImmutableList<ProductListStandaloneInstance>,
+  ) : ProductListUiModel
 
   @Stable
   data class Empty(
     override val id: String,
     override val name: String,
-    override val description: String,
-  ) : ProductsListUiModel
+  ) : ProductListUiModel
 }
 
 @Stable
-data class ProductInstanceGroupUiModel(
-  val identifier: String,
-  val statusGroups: ImmutableList<ProductInstanceStatusGroup>,
+data class ProductInstanceVariant(
+  val id: String,
+  val name: String,
+  val statusGroups: ImmutableList<ProductInstanceVariantGroup>,
   val frozenCount: Int,
 )
 
 @Stable
-data class ProductInstanceStatusGroup(
+data class ProductInstanceVariantGroup(
   val status: InstanceStatus,
   val count: Int,
+)
+
+@Stable
+data class ProductListStandaloneInstance(
+  val name: String,
+  val status: InstanceStatus,
 )

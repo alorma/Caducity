@@ -61,8 +61,8 @@ import com.alorma.caducity.ui.screen.onboarding.OnboardingRoute
 import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
 import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
+import com.alorma.caducity.ui.screen.product.detail.ProductDetailContainer
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailRoute
-import com.alorma.caducity.ui.screen.product.detail.ProductDetailScreen
 import com.alorma.caducity.ui.screen.products.ProductsListBottomSheet
 import com.alorma.caducity.ui.screen.products.ProductsListRoute
 import com.alorma.caducity.ui.screen.products.ProductsListScreen
@@ -214,7 +214,7 @@ fun App(
             )
           }
           entry<ProductDetailRoute> {
-            ProductDetailScreen(
+            ProductDetailContainer(
               productId = it.productId,
               onBack = { topLevelBackStack.removeLast() }
             )

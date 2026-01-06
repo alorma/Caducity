@@ -14,32 +14,27 @@ import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DeleteInstanceUseCase
 import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringProductsUseCase
-import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.onboarding.OnboardingFlag
-import com.alorma.caducity.ui.screen.dashboard.DashboardMapper
-import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfiguration
-import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfigurationImpl
-import com.alorma.caducity.ui.screen.dashboard.DashboardViewModel
+import com.alorma.caducity.ui.screen.dashboard.dashboardModule
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
 import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
 import com.alorma.caducity.ui.screen.product.create.FutureDateSelectableDates
+import com.alorma.caducity.ui.screen.product.detail.ProductDetailAddInstanceViewModel
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailMapper
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailViewModel
-import com.alorma.caducity.ui.screen.products.ProductsListMapper
-import com.alorma.caducity.ui.screen.products.ProductsListViewModel
 import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
+import com.alorma.caducity.ui.screen.products.productsListModule
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -52,6 +47,9 @@ val appModule = module {
   includes(domainModule)
   includes(fireAndForgetModule)
 
+  includes(dashboardModule)
+  includes(productsListModule)
+
   factoryOf(::BarcodeHandlerNoOp) {
     bind<BarcodeHandler>()
   }
@@ -61,29 +59,9 @@ val appModule = module {
   // Onboarding
   singleOf(::OnboardingFlag)
   viewModelOf(::OnboardingViewModel)
-
-  singleOf(::DashboardUiConfigurationImpl) bind DashboardUiConfiguration::class
+  singleOf(::GetExpiringProductsUseCase)
 
   factoryOf(::RelativeTimeFormatter)
-
-  singleOf(::ObtainDashboardProductsUseCase)
-  singleOf(::GetExpiringProductsUseCase)
-  single {
-    DashboardMapper(
-      appClock = get(),
-      dateFormat = get(qualifier = ConfigQualifier.DateFormat.HumanReadable),
-      localizedDateFormatter = get(),
-    )
-  }
-  viewModelOf(::DashboardViewModel)
-
-  // Products list
-  single {
-    ProductsListMapper(
-      dateFormat = get(qualifier = ConfigQualifier.DateFormat.HumanReadable),
-    )
-  }
-  viewModelOf(::ProductsListViewModel)
 
   // Product detail
   singleOf(::ObtainProductDetailUseCase)
@@ -97,6 +75,7 @@ val appModule = module {
     )
   }
   viewModelOf(::ProductDetailViewModel)
+  viewModelOf(::ProductDetailAddInstanceViewModel)
 
   // Create product
   singleOf(::CreateProductUseCase)
