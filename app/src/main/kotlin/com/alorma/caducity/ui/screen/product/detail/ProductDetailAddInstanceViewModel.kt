@@ -80,11 +80,7 @@ class ProductDetailAddInstanceViewModel(
     viewModelScope.launch {
       val currentFormState = _formState.value
       val variantText = currentFormState.variantText.text.trim()
-
-      if (variantText.isEmpty()) {
-        return@launch
-      }
-
+      
       try {
         // Determine variant ID (use existing or create new)
         val variantId = if (variantText.isEmpty()) {
