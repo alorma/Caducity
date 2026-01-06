@@ -1,16 +1,17 @@
 package com.alorma.caducity.data.datasource
 
+import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.toModel
 import com.alorma.caducity.data.datasource.room.toRoomEntity
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.NewProductInstance
 import com.alorma.caducity.domain.model.Product
 import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.ProductsListFilter
-import com.alorma.caducity.config.clock.AppClock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
+import java.util.UUID
 import kotlin.time.Duration.Companion.days
 
 class RoomProductDataSource(
@@ -85,7 +87,7 @@ class RoomProductDataSource(
         products.filter { productWithInstances ->
           // Keep product if it has at least one instance with the requested status
           val allInstances = productWithInstances.variants.flatMap { it.instances } +
-                           productWithInstances.standaloneInstances
+              productWithInstances.standaloneInstances
           allInstances.any { instance ->
             instance.status in filter.statuses
           }
@@ -156,8 +158,16 @@ class RoomProductDataSource(
     }
   }
 
-  override suspend fun addInstance(productId: String, instance: ProductInstance) {
-    productDao.insertProductInstance(instance.toRoomEntity(productId))
+  override suspend fun addInstance(
+    productId: String,
+    instance: NewProductInstance
+  ): String {
+    val id = UUID.randomUUID().toString()
+
+    productDao.insertProductInstance(
+      instance.toRoomEntity(id = id, productId = productId),
+    )
+    return id
   }
 
   override suspend fun deleteInstance(instanceId: String) {

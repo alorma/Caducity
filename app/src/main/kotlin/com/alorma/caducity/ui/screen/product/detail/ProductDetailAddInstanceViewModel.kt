@@ -4,15 +4,22 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.domain.usecase.AddInstanceToProductUseCase
+import com.alorma.caducity.domain.usecase.CreateVariantUseCase
 import com.alorma.caducity.domain.usecase.GetProductVariantsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.days
 
 class ProductDetailAddInstanceViewModel(
   private val productId: String,
   private val getProductVariantsUseCase: GetProductVariantsUseCase,
+  private val createVariantUseCase: CreateVariantUseCase,
+  private val addInstanceToProductUseCase: AddInstanceToProductUseCase,
+  private val appClock: AppClock,
 ) : ViewModel() {
 
   private val _state =
@@ -67,6 +74,46 @@ class ProductDetailAddInstanceViewModel(
     val query = _formState.value.variantText.text.lowercase()
     if (query.isEmpty()) return allVariants
     return allVariants.filter { it.name.lowercase().contains(query) }
+  }
+
+  fun save(onSuccess: () -> Unit) {
+    viewModelScope.launch {
+      val currentFormState = _formState.value
+      val variantText = currentFormState.variantText.text.trim()
+
+      if (variantText.isEmpty()) {
+        return@launch
+      }
+
+      try {
+        // Determine variant ID (use existing or create new)
+        val variantId = if (variantText.isEmpty()) {
+          null
+        } else if (currentFormState.selectedVariantId != null) {
+          currentFormState.selectedVariantId
+        } else {
+          // Create new variant
+          val result = createVariantUseCase.create(productId, variantText)
+          result.getOrThrow().id
+        }
+
+        // Create instance with fake data
+        val fakeExpirationDate = appClock.now().plus(30.days)
+        val fakeIdentifier = "" // Empty identifier for variant-based instances
+
+        addInstanceToProductUseCase.addInstance(
+          productId = productId,
+          identifier = fakeIdentifier,
+          variantId = variantId,
+          expirationDate = fakeExpirationDate,
+        )
+
+        onSuccess()
+      } catch (e: Exception) {
+        // TODO: Handle error
+        e.printStackTrace()
+      }
+    }
   }
 }
 

@@ -6,7 +6,7 @@ import com.alorma.caducity.domain.model.Variant
 class CreateVariantUseCase(
   private val variantDataSource: VariantDataSource,
 ) {
-  suspend operator fun invoke(productId: String, name: String): Result<Variant> {
+  suspend fun create(productId: String, name: String): Result<Variant> {
     if (name.isBlank()) {
       return Result.failure(IllegalArgumentException("Variant name cannot be blank"))
     }

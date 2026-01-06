@@ -1,10 +1,9 @@
 package com.alorma.caducity.domain.usecase
 
+import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.VariantDataSource
-import com.alorma.caducity.domain.model.ProductInstance
-import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.NewProductInstance
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -24,31 +23,14 @@ class AddInstanceToProductUseCase(
     expirationDate: Instant,
   ): Result<String> {
     return try {
-      // Verify variant exists if provided
-      if (variantId != null) {
-        val variant = variantDataSource.getVariant(variantId)
-        if (variant == null) {
-          return Result.failure(IllegalArgumentException("Variant not found"))
-        }
-      }
-
-      val instanceId = Uuid.random().toString()
-      val now = appClock.now()
-
-      val instance = ProductInstance(
-        id = instanceId,
+      val instance = NewProductInstance(
         identifier = identifier,
         variantId = variantId,
         expirationDate = expirationDate,
-        status = InstanceStatus.calculateStatus(
-          expirationDate = expirationDate,
-          now = now,
-          soonExpiringThreshold = expirationThresholds.soonExpiringThreshold
-        ),
       )
 
-      productDataSource.addInstance(productId, instance)
-      Result.success(instanceId)
+      val createdInstance = productDataSource.addInstance(productId, instance)
+      Result.success(createdInstance)
     } catch (e: Exception) {
       Result.failure(e)
     }

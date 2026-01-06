@@ -16,8 +16,8 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
+import com.alorma.caducity.base.ui.icons.Check
 import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -59,6 +60,18 @@ fun ProductDetailAddInstanceScreen(
             Icon(
               imageVector = AppIcons.Back,
               contentDescription = stringResource(R.string.product_detail_add_instance_back),
+            )
+          }
+        },
+        actions = {
+          IconButton(
+            onClick = {
+              viewModel.save(onSuccess = onClose)
+            }
+          ) {
+            Icon(
+              imageVector = AppIcons.Check,
+              contentDescription = stringResource(R.string.product_detail_add_instance_save),
             )
           }
         },
@@ -93,9 +106,10 @@ fun ProductDetailAddInstanceScreen(
             expanded = expanded,
             onExpandedChange = { expanded = it },
           ) {
-            TextField(
+            OutlinedTextField(
               value = formState.value.variantText,
               onValueChange = { viewModel.onVariantTextChanged(it) },
+              shape = CaducityTheme.shapes.medium,
               label = { Text(stringResource(R.string.product_detail_add_instance_variant_label)) },
               placeholder = { Text(stringResource(R.string.product_detail_add_instance_variant_placeholder)) },
               trailingIcon = {
@@ -103,7 +117,7 @@ fun ProductDetailAddInstanceScreen(
               },
               modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true),
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true),
               singleLine = true,
             )
 
