@@ -29,6 +29,7 @@ class RoomProductDataSource(
 ) : ProductDataSource {
 
   private val productDao = database.productDao()
+  private val instanceDao = database.instanceDao()
 
   override fun getProducts(filter: ProductsListFilter): Flow<ImmutableList<ProductWithInstances>> {
     val daoFlow = when (filter) {
@@ -154,7 +155,7 @@ class RoomProductDataSource(
   ) {
     productDao.insertProduct(product.toRoomEntity())
     instances.forEach { instance ->
-      productDao.insertProductInstance(instance.toRoomEntity(product.id))
+      instanceDao.insertProductInstance(instance.toRoomEntity(product.id))
     }
   }
 
@@ -164,43 +165,43 @@ class RoomProductDataSource(
   ): String {
     val id = UUID.randomUUID().toString()
 
-    productDao.insertProductInstance(
+    instanceDao.insertProductInstance(
       instance.toRoomEntity(id = id, productId = productId),
     )
     return id
   }
 
   override suspend fun deleteInstance(instanceId: String) {
-    productDao.deleteProductInstance(instanceId)
+    instanceDao.deleteProductInstance(instanceId)
   }
 
   override suspend fun getInstance(instanceId: String): ProductInstance? {
-    return productDao.getProductInstance(instanceId)?.toModel(appClock, expirationThresholds)
+    return instanceDao.getProductInstance(instanceId)?.toModel(appClock, expirationThresholds)
   }
 
   override suspend fun markInstanceAsConsumed(instanceId: String) {
-    productDao.getProductInstance(instanceId)?.let { instance ->
+    instanceDao.getProductInstance(instanceId)?.let { instance ->
       val updatedInstance = instance.copy(
         consumedDate = appClock.now().toEpochMilliseconds(),
         pausedDate = null, // Clear frozen state if it was frozen
         remainingDays = null
       )
-      productDao.updateProductInstance(updatedInstance)
+      instanceDao.updateProductInstance(updatedInstance)
     }
   }
 
   override suspend fun freezeInstance(instanceId: String, remainingDays: Int) {
-    productDao.getProductInstance(instanceId)?.let { instance ->
+    instanceDao.getProductInstance(instanceId)?.let { instance ->
       val updatedInstance = instance.copy(
         pausedDate = appClock.now().toEpochMilliseconds(),
         remainingDays = remainingDays
       )
-      productDao.updateProductInstance(updatedInstance)
+      instanceDao.updateProductInstance(updatedInstance)
     }
   }
 
   override suspend fun unfreezeInstance(instanceId: String) {
-    productDao.getProductInstance(instanceId)?.let { instance ->
+    instanceDao.getProductInstance(instanceId)?.let { instance ->
       val pausedDate = instance.pausedDate
       val remainingDays = instance.remainingDays
 
@@ -214,7 +215,7 @@ class RoomProductDataSource(
           pausedDate = null,
           remainingDays = null
         )
-        productDao.updateProductInstance(updatedInstance)
+        instanceDao.updateProductInstance(updatedInstance)
       }
     }
   }

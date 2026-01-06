@@ -14,5 +14,6 @@ import androidx.room.RoomDatabase
 )
 abstract class AppDatabase : RoomDatabase() {
   abstract fun productDao(): ProductDao
+  abstract fun instanceDao(): InstanceDao
   abstract fun variantDao(): VariantDao
 }

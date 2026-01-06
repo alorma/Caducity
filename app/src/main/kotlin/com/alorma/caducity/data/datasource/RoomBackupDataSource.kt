@@ -16,10 +16,11 @@ class RoomBackupDataSource(
 ) : BackupDataSource {
 
   private val productDao = database.productDao()
+  private val instanceDao = database.instanceDao()
 
   override suspend fun exportBackup(): BackupData {
     val products = productDao.getAllProductsSync()
-    val instances = productDao.getAllProductInstancesSync()
+    val instances = instanceDao.getAllProductInstancesSync()
 
     // Group instances by product ID
     val instancesByProduct = instances.groupBy { it.productId }
@@ -75,7 +76,7 @@ class RoomBackupDataSource(
           )
         }
         if (instances.isNotEmpty()) {
-          productDao.insertProductInstances(instances)
+          instanceDao.insertProductInstances(instances)
         }
       }
     }
@@ -83,7 +84,7 @@ class RoomBackupDataSource(
 
   override suspend fun clearAllData() {
     // Delete instances first due to foreign key constraint
-    productDao.clearAllProductInstances()
+    instanceDao.clearAllProductInstances()
     productDao.clearAllProducts()
   }
 
