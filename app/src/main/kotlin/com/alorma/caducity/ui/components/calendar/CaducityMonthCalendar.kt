@@ -56,7 +56,7 @@ fun CaducityMonthCalendar(
     },
     dayContent = { calendarDay ->
       val date = calendarDay.date
-      val dateInfo = calendarState.calendarData.productsByDate[date]
+      val dateInfo = calendarState.content.productsByDate[date]
 
       DayContent(
         today = calendarState.today,

@@ -33,6 +33,7 @@ fun NewProductInstance.toRoomEntity(id: String, productId: String): ProductInsta
   )
 }
 
+@Deprecated("Use mapper")
 fun ProductInstanceRoomEntity.toModel(
   appClock: AppClock,
   expirationThresholds: ExpirationThresholds

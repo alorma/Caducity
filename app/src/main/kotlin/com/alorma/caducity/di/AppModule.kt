@@ -22,8 +22,6 @@ import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.dashboard.DashboardMapper
-import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfiguration
-import com.alorma.caducity.ui.screen.dashboard.DashboardUiConfigurationImpl
 import com.alorma.caducity.ui.screen.dashboard.DashboardViewModel
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
 import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
@@ -40,7 +38,6 @@ import com.russhwolf.settings.Settings
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -62,8 +59,6 @@ val appModule = module {
   // Onboarding
   singleOf(::OnboardingFlag)
   viewModelOf(::OnboardingViewModel)
-
-  singleOf(::DashboardUiConfigurationImpl) bind DashboardUiConfiguration::class
 
   factoryOf(::RelativeTimeFormatter)
 

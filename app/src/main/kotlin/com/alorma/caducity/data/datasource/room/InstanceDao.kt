@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface InstanceDao {
 
+  @Query("SELECT * FROM product_instances")
+  fun getAllInstances(): Flow<List<ProductInstanceRoomEntity>>
+
   @Query("SELECT * FROM product_instances WHERE productId = :productId")
   fun getProductInstances(productId: String): Flow<List<ProductInstanceRoomEntity>>
 
