@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.products
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
+import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.screen.products.components.StatusBarsRow
 import com.alorma.caducity.ui.theme.CaducityTheme
 
@@ -82,11 +84,16 @@ fun ProductsListItem(
               verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
               product.standaloneInstances.forEach { instance ->
-                Text(
-                  text = "—\t${instance.name}",
-                  style = MaterialTheme.typography.labelLarge,
-                  color = CaducityTheme.colorScheme.onSurface,
-                )
+                Row(
+                  horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                  Text(
+                    text = "—\t${instance.name}",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = CaducityTheme.colorScheme.onSurface,
+                  )
+                  StatusBadge(instance.status)
+                }
               }
             }
           }
