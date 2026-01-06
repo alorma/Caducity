@@ -14,15 +14,13 @@ import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DeleteInstanceUseCase
 import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringProductsUseCase
-import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.onboarding.OnboardingFlag
-import com.alorma.caducity.ui.screen.dashboard.DashboardMapper
-import com.alorma.caducity.ui.screen.dashboard.DashboardViewModel
+import com.alorma.caducity.ui.screen.dashboard.dashboardModule
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
 import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
 import com.alorma.caducity.ui.screen.product.create.FutureDateSelectableDates
@@ -50,6 +48,8 @@ val appModule = module {
   includes(domainModule)
   includes(fireAndForgetModule)
 
+  includes(dashboardModule)
+
   factoryOf(::BarcodeHandlerNoOp) {
     bind<BarcodeHandler>()
   }
@@ -59,19 +59,9 @@ val appModule = module {
   // Onboarding
   singleOf(::OnboardingFlag)
   viewModelOf(::OnboardingViewModel)
+  singleOf(::GetExpiringProductsUseCase)
 
   factoryOf(::RelativeTimeFormatter)
-
-  singleOf(::ObtainDashboardProductsUseCase)
-  singleOf(::GetExpiringProductsUseCase)
-  single {
-    DashboardMapper(
-      appClock = get(),
-      dateFormat = get(qualifier = ConfigQualifier.DateFormat.HumanReadable),
-      localizedDateFormatter = get(),
-    )
-  }
-  viewModelOf(::DashboardViewModel)
 
   // Products list
   single {

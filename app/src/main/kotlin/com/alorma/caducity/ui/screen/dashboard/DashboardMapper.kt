@@ -4,16 +4,20 @@ import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.ProductInstance
+import com.alorma.caducity.ui.components.shape.ShapePosition
+import com.kizitonwose.calendar.core.minusMonths
+import com.kizitonwose.calendar.core.plusMonths
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
 class DashboardMapper(
   private val appClock: AppClock,
-  private val dateFormat: DateTimeFormat<LocalDate>,
   private val localizedDateFormatter: LocalizedDateFormatter,
 ) {
 
@@ -22,21 +26,8 @@ class DashboardMapper(
   ): DashboardState {
     val summary = calculateSummary(instances)
 
-    val startDate = instances.minBy { instance ->
-      instance.expirationDate
-    }.expirationDate
-
-    val endDate = instances.maxBy { instance ->
-      instance.expirationDate
-    }.expirationDate
-
-    val calendarState = CalendarState(
-      today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
-      startLocalDate = startDate.toLocalDateTime(TimeZone.currentSystemDefault()).date,
-      endLocalDate = endDate.toLocalDateTime(TimeZone.currentSystemDefault()).date,
-      content = CalendarData(persistentMapOf()),
-      monthNames = localizedDateFormatter.getMonthNames(),
-      daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
+    val calendarState = calculateCalendarState(
+      instances = instances,
     )
 
     return DashboardState.Success(
@@ -46,18 +37,9 @@ class DashboardMapper(
   }
 
   private fun calculateSummary(instances: List<ProductInstance>): DashboardSummary {
-    val expiredCount = instances
-      .filter { instance ->
-        instance.status is InstanceStatus.Expired
-      }.size
-    val expiringSoonCount = instances
-      .filter { instance ->
-        instance.status is InstanceStatus.ExpiringSoon
-      }.size
-    val freshCount = instances
-      .filter { instance ->
-        instance.status is InstanceStatus.Fresh
-      }.size
+    val expiredCount = getStatusCount(instances, InstanceStatus.Expired)
+    val expiringSoonCount = getStatusCount(instances, InstanceStatus.ExpiringSoon)
+    val freshCount = getStatusCount(instances, InstanceStatus.Fresh)
     val frozenCount = getStatusCount(instances, InstanceStatus.Frozen)
 
     return DashboardSummary(
@@ -70,75 +52,51 @@ class DashboardMapper(
 
   private fun getStatusCount(
     instances: List<ProductInstance>,
-    status: InstanceStatus.Frozen,
+    status: InstanceStatus,
   ): Int {
     return instances
       .filter { instance -> instance.status == status }
       .size
   }
-  /*
-    private fun calculateCalendarState(
-      products: List<ProductUiModel>,
-    ): CalendarState {
-      val today = appClock.now()
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-        .date
 
-      // Calculate start and end months for calendar range
-      val currentMonth = YearMonth(today.year, today.month)
-      val currentMonthNum = today.month.ordinal + 1 // Month ordinal is 0-based
+  private fun calculateCalendarState(
+    instances: List<ProductInstance>,
+  ): CalendarState {
+    val startDate = instances
+      .minBy { instance -> instance.expirationDate }
+      .expirationDate
+      .toLocalDateTime(TimeZone.currentSystemDefault())
+      .date
 
-      val startMonthNum = currentMonthNum - 1
-      val startMonth = if (startMonthNum >= 1) {
-        YearMonth(today.year, startMonthNum)
-      } else {
-        YearMonth(today.year - 1, 12)
-      }
+    val endDate = instances
+      .maxBy { instance -> instance.expirationDate }
+      .expirationDate
+      .toLocalDateTime(TimeZone.currentSystemDefault())
+      .date
 
-      val endMonthNum = currentMonthNum + 3
-      val endMonth = if (endMonthNum <= 12) {
-        YearMonth(today.year, endMonthNum)
-      } else {
-        YearMonth(today.year + 1, endMonthNum - 12)
-      }
+    val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
-      // Group products by date with most critical status
-      val productsByDate = buildMap {
-        products.forEach { product ->
-          if (product is ProductUiModel.WithInstances) {
-            product.instances.forEach { instance ->
-              // Use expirationDate here as UI model already converted to correct display date
-              // For frozen items: expirationDate field already contains the pausedDate
-              // For normal items: expirationDate contains the expiration date
-              val date = instance.expirationDate
-              val currentStatus = get(date)
+    val dateWithShapes = getDateWithShapes(instances, today)
 
-              // Keep the most critical status (Expired > ExpiringSoon > Frozen > Fresh)
-              val newStatus = when {
-                currentStatus == InstanceStatus.Expired -> InstanceStatus.Expired
-                instance.status == InstanceStatus.Expired -> InstanceStatus.Expired
-                currentStatus == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
-                instance.status == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
-                currentStatus == InstanceStatus.Frozen -> InstanceStatus.Frozen
-                instance.status == InstanceStatus.Frozen -> InstanceStatus.Frozen
-                else -> InstanceStatus.Fresh
-              }
+    return CalendarState(
+      today = today,
+      startLocalDate = startDate.minusMonths(1),
+      endLocalDate = endDate.plusMonths(1),
+      content = dateWithShapes,
+      monthNames = localizedDateFormatter.getMonthNames(),
+      daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
+    )
+  }
 
-              put(date, newStatus)
-            }
-          }
-        }
-
-        // Ensure today is always in the map, even if no products
-        if (!containsKey(today)) {
-          put(today, null)
-        }
-      }
-
-      // Calculate shape position for each date
-      val dateWithShapes = productsByDate.mapValues { (date, status) ->
-        val hasPrevDay = productsByDate.containsKey(date.plus(-1, DateTimeUnit.DAY))
-        val hasNextDay = productsByDate.containsKey(date.plus(1, DateTimeUnit.DAY))
+  private fun getDateWithShapes(
+    instances: List<ProductInstance>,
+    today: LocalDate
+  ): ImmutableMap<LocalDate, CalendarDateInfo> {
+    val instancesStatusByDate = instancesStatusByDate(instances, today)
+    return instancesStatusByDate
+      .mapValues { (date, status) ->
+        val hasPrevDay = instancesStatusByDate.containsKey(date.plus(-1, DateTimeUnit.DAY))
+        val hasNextDay = instancesStatusByDate.containsKey(date.plus(1, DateTimeUnit.DAY))
 
         val shapePosition = when {
           date == today && !hasPrevDay && !hasNextDay -> ShapePosition.Single
@@ -151,15 +109,35 @@ class DashboardMapper(
 
         CalendarDateInfo(status, shapePosition)
       }.toImmutableMap()
+  }
 
-      val calendarData = CalendarData(dateWithShapes)
+  private fun instancesStatusByDate(
+    instances: List<ProductInstance>,
+    today: LocalDate
+  ): Map<LocalDate, InstanceStatus?> {
+    return buildMap<LocalDate, InstanceStatus?> {
+      instances.forEach { instance ->
+        val date = instance.expirationDate.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val currentStatus = get(date)
 
-      return CalendarState(
-        today = today,
-        content = calendarData,
-        monthNames = localizedDateFormatter.getMonthNames(),
-        daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
-      )
+        // Keep the most critical status (Expired > ExpiringSoon > Frozen > Fresh)
+        val newStatus = when {
+          currentStatus == InstanceStatus.Expired -> InstanceStatus.Expired
+          instance.status == InstanceStatus.Expired -> InstanceStatus.Expired
+          currentStatus == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
+          instance.status == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
+          currentStatus == InstanceStatus.Frozen -> InstanceStatus.Frozen
+          instance.status == InstanceStatus.Frozen -> InstanceStatus.Frozen
+          else -> InstanceStatus.Fresh
+        }
+
+        put(date, newStatus)
+      }
+
+      // Ensure today is always in the map, even if no products
+      if (!containsKey(today)) {
+        put(today, null)
+      }
     }
-  */
+  }
 }

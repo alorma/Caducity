@@ -21,7 +21,7 @@ data class CalendarState(
   val today: LocalDate,
   val startLocalDate: LocalDate,
   val endLocalDate: LocalDate,
-  val content: CalendarData,
+  val content: ImmutableMap<LocalDate, CalendarDateInfo>,
   val monthNames: MonthNames,
   val daysOfWeekNames: DayOfWeekNames,
 )
