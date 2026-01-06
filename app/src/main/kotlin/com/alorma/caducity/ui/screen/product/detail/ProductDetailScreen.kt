@@ -115,10 +115,27 @@ private fun ProductDetailContent(
     Column(
       modifier = Modifier.padding(paddingValues),
     ) {
+      Text(
+        text = "Variants",
+        style = CaducityTheme.typography.headlineSmall,
+      )
       state.variants.forEach { variant ->
         Text(text = variant.name)
+        Column {
+          variant.instances.forEachIndexed { index, instance ->
+            if (instance.identifier.isEmpty()) {
+              Text(text = "\tInstance $index")
+            } else {
+              Text(text = "\t${instance.identifier}")
+            }
+          }
+        }
       }
 
+      Text(
+        text = "Standalone instances",
+        style = CaducityTheme.typography.headlineSmall,
+      )
       state.standaloneInstances.forEach { instance ->
         if (instance.identifier.isEmpty()) {
           Text(text = "No identifier")

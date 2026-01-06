@@ -147,6 +147,10 @@ fun ProductDetailAddInstanceScreen(
             shape = CaducityTheme.shapes.medium,
             label = { Text(stringResource(R.string.product_detail_add_instance_identifier_label)) },
             placeholder = { Text(stringResource(R.string.product_detail_add_instance_identifier_placeholder)) },
+            isError = formState.value.identifierError != null,
+            supportingText = formState.value.identifierError?.let { error ->
+              { Text(text = error) }
+            },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
           )

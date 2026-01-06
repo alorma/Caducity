@@ -22,8 +22,9 @@ class ProductDetailAddInstanceViewModel(
   private val appClock: AppClock,
 ) : ViewModel() {
 
-  private val _state =
-    MutableStateFlow<ProductDetailAddInstanceState>(ProductDetailAddInstanceState.Loading)
+  private val _state = MutableStateFlow<ProductDetailAddInstanceState>(
+    ProductDetailAddInstanceState.Loading
+  )
   val state: StateFlow<ProductDetailAddInstanceState> = _state.asStateFlow()
 
   private val _formState = MutableStateFlow(FormState())
@@ -77,7 +78,10 @@ class ProductDetailAddInstanceViewModel(
   }
 
   fun onIdentifierTextChanged(text: TextFieldValue) {
-    _formState.value = _formState.value.copy(identifierText = text)
+    _formState.value = _formState.value.copy(
+      identifierText = text,
+      identifierError = null // Clear error when user types
+    )
   }
 
   fun save(onSuccess: () -> Unit) {
@@ -85,6 +89,14 @@ class ProductDetailAddInstanceViewModel(
       val currentFormState = _formState.value
       val variantText = currentFormState.variantText.text.trim()
       val identifierText = currentFormState.identifierText.text.trim()
+
+      // Validation: Either variant or identifier must be provided
+      if (variantText.isEmpty() && identifierText.isEmpty()) {
+        _formState.value = currentFormState.copy(
+          identifierError = "Either variant or identifier must be provided"
+        )
+        return@launch
+      }
 
       try {
         // Determine variant ID (use existing or create new)
@@ -98,13 +110,13 @@ class ProductDetailAddInstanceViewModel(
           result.getOrThrow().id
         }
 
-        // Validation: If no variant, identifier is mandatory
+        // Determine identifier
         val identifier = if (variantId != null) {
           // Variant selected: identifier can be empty or use provided value
           identifierText.ifEmpty { "" }
         } else {
-          // No variant: identifier is mandatory, use provided or generate fake
-          identifierText.ifEmpty { "Instance ${System.currentTimeMillis() % 1000}" }
+          // No variant: use provided identifier (we validated it's not empty above)
+          identifierText
         }
 
         // Create instance with data
@@ -130,6 +142,7 @@ data class FormState(
   val variantText: TextFieldValue = TextFieldValue(),
   val selectedVariantId: String? = null,
   val identifierText: TextFieldValue = TextFieldValue(),
+  val identifierError: String? = null,
 )
 
 sealed interface ProductDetailAddInstanceState {
