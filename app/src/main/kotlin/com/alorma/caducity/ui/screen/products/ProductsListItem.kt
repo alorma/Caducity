@@ -30,7 +30,6 @@ fun ProductsListItem(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   appClock: AppClock = koinInject(),
-  relativeTimeFormatter: RelativeTimeFormatter = koinInject(),
 ) {
   val today = remember(appClock) {
     appClock.now()

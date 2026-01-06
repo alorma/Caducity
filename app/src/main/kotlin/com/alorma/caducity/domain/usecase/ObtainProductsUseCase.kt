@@ -1,18 +1,16 @@
 package com.alorma.caducity.domain.usecase
 
-import com.alorma.caducity.domain.model.ProductListItem
+import com.alorma.caducity.domain.ProductDataSource
+import com.alorma.caducity.domain.model.ProductWithInstances
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flow
 
-class ObtainProductsUseCase {
+class ObtainProductsUseCase(
+  private val productDataSource: ProductDataSource,
+) {
 
-  fun obtain(): Flow<ImmutableList<ProductListItem>> {
-    return flow {
-      emit(persistentListOf())
-    }
+  fun obtain(filter: ProductsListFilter): Flow<ImmutableList<ProductWithInstances>> {
+    return productDataSource.getProducts(filter)
   }
 
 }

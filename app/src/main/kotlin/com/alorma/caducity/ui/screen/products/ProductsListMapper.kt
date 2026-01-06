@@ -1,9 +1,8 @@
 package com.alorma.caducity.ui.screen.products
 
 import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.domain.model.ProductListItem
+import com.alorma.caducity.domain.model.ProductWithInstances
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
@@ -12,7 +11,7 @@ class ProductsListMapper(
   private val dateFormat: DateTimeFormat<LocalDate>,
 ) {
   fun mapToProductsList(
-    products: ImmutableList<ProductListItem>,
+    products: ImmutableList<ProductWithInstances>,
   ): ImmutableList<ProductListUiModel> {
     return products
       .map { product -> toUiModel(product) }
@@ -20,7 +19,7 @@ class ProductsListMapper(
   }
 
   private fun toUiModel(
-    product: ProductListItem,
+    product: ProductWithInstances,
   ): ProductListUiModel {
     return if (product.variants.isEmpty() && product.standaloneInstances.isEmpty()) {
       ProductListUiModel.Empty(
@@ -28,7 +27,6 @@ class ProductsListMapper(
         name = product.product.name
       )
     } else {
-
       val standaloneInstances = product
         .standaloneInstances
         .map { instance ->
@@ -37,7 +35,6 @@ class ProductsListMapper(
             status = instance.status,
           )
         }
-        .toImmutableList()
 
       val variants = product
         .variants
@@ -66,8 +63,8 @@ class ProductsListMapper(
       ProductListUiModel.WithContent(
         id = product.product.id,
         name = product.product.name,
-        variants = persistentListOf(),
-        standaloneInstances = persistentListOf(),
+        variants = variants.toImmutableList(),
+        standaloneInstances = standaloneInstances.toImmutableList(),
       )
     }
   }

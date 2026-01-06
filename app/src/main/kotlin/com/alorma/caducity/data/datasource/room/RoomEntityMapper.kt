@@ -7,7 +7,7 @@ import com.alorma.caducity.domain.model.Product
 import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.model.Variant
-import com.alorma.caducity.domain.model.VariantWithInstances
+import com.alorma.caducity.domain.model.ProductVariant
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import kotlinx.collections.immutable.toImmutableList
 import kotlin.time.Instant
@@ -77,7 +77,7 @@ fun ProductWithInstancesRoomEntity.toModel(
     .groupBy { it.variantId!! }
     .mapNotNull { (variantId, variantInstances) ->
       val variant = variantMap[variantId] ?: return@mapNotNull null
-      VariantWithInstances(
+      ProductVariant(
         variant = variant.toModel(),
         instances = variantInstances.toImmutableList()
       )

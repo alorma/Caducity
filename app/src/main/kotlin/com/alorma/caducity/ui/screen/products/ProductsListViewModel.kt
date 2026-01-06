@@ -19,8 +19,7 @@ class ProductsListViewModel(
   private val productsListMapper: ProductsListMapper,
 ) : ViewModel() {
 
-  val state: StateFlow<ProductsListState> =
-    obtainProductsUseCase.obtain()
+  val state: StateFlow<ProductsListState> = obtainProductsUseCase.obtain(filtersParam)
       .map { items ->
         if (items.isEmpty()) {
           ProductsListState.Empty(filtersParam)
