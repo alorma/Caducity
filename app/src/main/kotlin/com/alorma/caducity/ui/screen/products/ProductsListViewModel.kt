@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class ProductsListViewModel(
   filtersParam: ProductsListFilter,
-  private val obtainProductsUseCase: ObtainProductsUseCase,
+  obtainProductsUseCase: ObtainProductsUseCase,
   private val productsListMapper: ProductsListMapper,
 ) : ViewModel() {
 
@@ -26,7 +26,7 @@ class ProductsListViewModel(
           ProductsListState.Empty(filtersParam)
         } else {
           ProductsListState.Success(
-            items = persistentListOf(),
+            items = productsListMapper.mapToProductsList(items),
           )
         }
       }
@@ -36,8 +36,4 @@ class ProductsListViewModel(
         started = SharingStarted.WhileSubscribed(5.seconds),
         initialValue = ProductsListState.Loading,
       )
-
-  fun onFiltersUpdate(newFilters: ProductsListFilter) {
-
-  }
 }

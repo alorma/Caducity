@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.products
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,7 +26,7 @@ import org.koin.compose.koinInject
 
 @Composable
 fun ProductsListItem(
-  product: ProductsListUiModel,
+  product: ProductListUiModel,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   appClock: AppClock = koinInject(),
@@ -49,59 +50,52 @@ fun ProductsListItem(
       color = CaducityTheme.colorScheme.onSurface,
     )
 
-    if (product.description.isNotBlank()) {
-      Spacer(modifier = Modifier.height(4.dp))
-      Text(
-        text = product.description,
-        style = MaterialTheme.typography.bodySmall,
-        color = CaducityTheme.colorScheme.onSurfaceVariant,
-      )
-    }
-
     when (product) {
-      is ProductsListUiModel.WithInstances -> {
+      is ProductListUiModel.WithContent -> {
         Spacer(modifier = Modifier.height(12.dp))
-        product.groups.forEachIndexed { groupIndex, group ->
-          // Add spacing between groups (except before the first one)
-          if (groupIndex > 0) {
-            Spacer(modifier = Modifier.height(12.dp))
-          }
 
-          // Group header with identifier and count
-          val totalCount = group.statusGroups.sumOf { it.count } + group.frozenCount
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = 8.dp)
-          ) {
-            Text(
-              text = "—",
-              style = MaterialTheme.typography.labelLarge,
-              color = CaducityTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.padding(end = 8.dp)
-            )
-            Text(
-              text = "${group.identifier} ($totalCount)",
-              style = MaterialTheme.typography.labelLarge,
-              color = CaducityTheme.colorScheme.onSurface,
-            )
-          }
+        Column(
+          verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+          product.variants.forEach { variant ->
 
-          // Status color bars (excluding frozen)
-          StatusBarsRow(statusGroups = group.statusGroups)
+            val totalCount = remember(variant.id) {
+              variant.statusGroups.sumOf { it.count } + variant.frozenCount
+            }
 
-          // Show frozen count as text
-          if (group.frozenCount > 0) {
-            Text(
-              text = stringResource(R.string.products_list_items_frozen, group.frozenCount),
-              style = MaterialTheme.typography.bodySmall,
-              color = CaducityTheme.colorScheme.onSurfaceVariant,
-              modifier = Modifier.padding(top = 4.dp)
-            )
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              modifier = Modifier.padding(bottom = 8.dp)
+            ) {
+              Text(
+                text = "—",
+                style = MaterialTheme.typography.labelLarge,
+                color = CaducityTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(end = 8.dp)
+              )
+              Text(
+                text = "${variant.name} ($totalCount)",
+                style = MaterialTheme.typography.labelLarge,
+                color = CaducityTheme.colorScheme.onSurface,
+              )
+            }
+
+            StatusBarsRow(statusGroups = variant.statusGroups)
+
+            // Show frozen count as text
+            if (variant.frozenCount > 0) {
+              Text(
+                text = stringResource(R.string.products_list_items_frozen, variant.frozenCount),
+                style = MaterialTheme.typography.bodySmall,
+                color = CaducityTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp)
+              )
+            }
           }
         }
       }
 
-      is ProductsListUiModel.Empty -> {
+      is ProductListUiModel.Empty -> {
         Spacer(modifier = Modifier.height(8.dp))
         Text(
           text = "No instances",

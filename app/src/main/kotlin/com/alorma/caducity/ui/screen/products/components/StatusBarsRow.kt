@@ -14,12 +14,12 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.shape.toHorizontalShape
-import com.alorma.caducity.ui.screen.products.ProductInstanceStatusGroup
+import com.alorma.caducity.ui.screen.products.ProductInstanceVariantGroup
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun StatusBarsRow(
-  statusGroups: ImmutableList<ProductInstanceStatusGroup>,
+  statusGroups: ImmutableList<ProductInstanceVariantGroup>,
   modifier: Modifier = Modifier,
 ) {
   if (statusGroups.isEmpty()) return
