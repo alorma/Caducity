@@ -36,7 +36,7 @@ fun StatusBarsRow(
       val shape = when {
         groupSize == 1 -> ShapePosition.Single
         index == 0 -> ShapePosition.Start
-        index == groupSize - 1 -> ShapePosition.End
+        index == statusGroups.lastIndex -> ShapePosition.End
         else -> ShapePosition.Middle
       }
       Box(

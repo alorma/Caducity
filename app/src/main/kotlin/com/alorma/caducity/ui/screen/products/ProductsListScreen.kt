@@ -9,8 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,6 +28,8 @@ import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.shape.ShapePosition
+import com.alorma.caducity.ui.components.shape.toVerticalShape
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -148,13 +151,26 @@ private fun ProductsListSuccess(
 ) {
   LazyColumn(
     contentPadding = PaddingValues(bottom = 16.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
+    verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
-    items(state.items, key = { it.id }) { product ->
-      ProductsListItem(
-        product = product,
-        onClick = { onNavigateToProductDetail(product.id) },
-      )
+    itemsIndexed(state.items, key = { index, product -> product.id }) { index, product ->
+
+      val shape = when {
+        state.items.size == 1 -> ShapePosition.Single
+        index == 0 -> ShapePosition.Start
+        index == state.items.lastIndex -> ShapePosition.End
+        else -> ShapePosition.Middle
+      }
+
+      Surface(
+        shape = shape.toVerticalShape(),
+        tonalElevation = 4.dp,
+      ) {
+        ProductsListItem(
+          product = product,
+          onClick = { onNavigateToProductDetail(product.id) },
+        )
+      }
     }
   }
 }
