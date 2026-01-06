@@ -76,11 +76,16 @@ class ProductDetailAddInstanceViewModel(
     return allVariants.filter { it.name.lowercase().contains(query) }
   }
 
+  fun onIdentifierTextChanged(text: TextFieldValue) {
+    _formState.value = _formState.value.copy(identifierText = text)
+  }
+
   fun save(onSuccess: () -> Unit) {
     viewModelScope.launch {
       val currentFormState = _formState.value
       val variantText = currentFormState.variantText.text.trim()
-      
+      val identifierText = currentFormState.identifierText.text.trim()
+
       try {
         // Determine variant ID (use existing or create new)
         val variantId = if (variantText.isEmpty()) {
@@ -93,13 +98,21 @@ class ProductDetailAddInstanceViewModel(
           result.getOrThrow().id
         }
 
-        // Create instance with fake data
+        // Validation: If no variant, identifier is mandatory
+        val identifier = if (variantId != null) {
+          // Variant selected: identifier can be empty or use provided value
+          identifierText.ifEmpty { "" }
+        } else {
+          // No variant: identifier is mandatory, use provided or generate fake
+          identifierText.ifEmpty { "Instance ${System.currentTimeMillis() % 1000}" }
+        }
+
+        // Create instance with data
         val fakeExpirationDate = appClock.now().plus(30.days)
-        val fakeIdentifier = "" // Empty identifier for variant-based instances
 
         addInstanceToProductUseCase.addInstance(
           productId = productId,
-          identifier = fakeIdentifier,
+          identifier = identifier,
           variantId = variantId,
           expirationDate = fakeExpirationDate,
         )
@@ -116,6 +129,7 @@ class ProductDetailAddInstanceViewModel(
 data class FormState(
   val variantText: TextFieldValue = TextFieldValue(),
   val selectedVariantId: String? = null,
+  val identifierText: TextFieldValue = TextFieldValue(),
 )
 
 sealed interface ProductDetailAddInstanceState {

@@ -139,6 +139,17 @@ fun ProductDetailAddInstanceScreen(
               }
             }
           }
+
+          // Identifier field
+          OutlinedTextField(
+            value = formState.value.identifierText,
+            onValueChange = { viewModel.onIdentifierTextChanged(it) },
+            shape = CaducityTheme.shapes.medium,
+            label = { Text(stringResource(R.string.product_detail_add_instance_identifier_label)) },
+            placeholder = { Text(stringResource(R.string.product_detail_add_instance_identifier_placeholder)) },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+          )
         }
       }
 
