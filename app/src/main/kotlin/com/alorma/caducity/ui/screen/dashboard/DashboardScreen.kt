@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,8 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.FloatingToolbarExitDirection
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,15 +21,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
-import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.CalendarCollapse
-import com.alorma.caducity.base.ui.icons.CalendarExpand
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StyledTopAppBar
+import com.alorma.caducity.ui.components.calendar.CaducityMonthCalendar
+import com.alorma.caducity.ui.components.calendar.calendarData
+import com.alorma.caducity.ui.components.calendar.daysOfWeekNames
+import com.alorma.caducity.ui.components.calendar.monthNames
+import com.alorma.caducity.ui.components.calendar.today
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardSummaryCard
-import com.alorma.caducity.ui.screen.dashboard.components.ProductsCalendar
+import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import com.kizitonwose.calendar.core.minusMonths
+import com.kizitonwose.calendar.core.plusMonths
 import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -41,15 +48,16 @@ fun DashboardScreen(
 ) {
   val dashboardState = viewModel.state.collectAsStateWithLifecycle()
 
-  when (val state = dashboardState.value) {
-    is DashboardState.Loading -> FullscreenLoading()
-    is DashboardState.Success -> DashboardContent(
-      state = state,
-      scrollConnection = scrollConnection,
-      onNavigateToDate = onNavigateToDate,
-      onNavigateToStatus = onNavigateToStatus,
-      onToggleCalendarMode = { viewModel.toggleCalendarMode() },
-    )
+  Box(modifier) {
+    when (val state = dashboardState.value) {
+      is DashboardState.Loading -> FullscreenLoading()
+      is DashboardState.Success -> DashboardContent(
+        state = state,
+        scrollConnection = scrollConnection,
+        onNavigateToDate = onNavigateToDate,
+        onNavigateToStatus = onNavigateToStatus,
+      )
+    }
   }
 }
 
@@ -60,7 +68,6 @@ fun DashboardContent(
   scrollConnection: NestedScrollConnection,
   onNavigateToDate: (LocalDate) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
-  onToggleCalendarMode: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   AppScaffold(
@@ -71,20 +78,6 @@ fun DashboardContent(
       StyledTopAppBar(
         title = {
           Text(text = stringResource(R.string.dashboard_screen_title))
-        },
-        actions = {
-          IconButton(onClick = onToggleCalendarMode) {
-            Icon(
-              imageVector = when (state.config.calendarMode) {
-                CalendarMode.MONTH -> AppIcons.CalendarCollapse
-                CalendarMode.WEEK -> AppIcons.CalendarExpand
-              },
-              contentDescription = when (state.config.calendarMode) {
-                CalendarMode.MONTH -> "Switch to week view"
-                CalendarMode.WEEK -> "Switch to month view"
-              }
-            )
-          }
         },
       )
     },
@@ -98,7 +91,7 @@ fun DashboardContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(bottom = 64.dp),
       ) {
-        // Summary card showing up to 3 items: expired, expiring soon, fresh
+
         item(
           key = "summary",
           contentType = "summary"
@@ -110,10 +103,9 @@ fun DashboardContent(
         }
 
         item(contentType = "calendar") {
-          ProductsCalendar(
+          CaducityMonthCalendar(
             calendarState = state.calendarState,
             onDateClick = onNavigateToDate,
-            calendarMode = state.config.calendarMode,
           )
         }
       }
@@ -121,3 +113,34 @@ fun DashboardContent(
   }
 }
 
+@PreviewDynamicLightDark
+@Composable
+fun DashboardContentPreview() {
+  PreviewTheme {
+    Surface {
+      DashboardContent(
+        state = DashboardState.Success(
+          summary = DashboardSummary(
+            expired = 6,
+            expiringSoon = 1,
+            fresh = 9,
+            frozen = 8,
+          ),
+          calendarState = CalendarState(
+            today = today,
+            startLocalDate = today.minusMonths(2),
+            endLocalDate = today.plusMonths(2),
+            content = calendarData,
+            monthNames = monthNames,
+            daysOfWeekNames = daysOfWeekNames,
+          ),
+        ),
+        scrollConnection = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
+          exitDirection = FloatingToolbarExitDirection.Bottom,
+        ),
+        onNavigateToDate = {},
+        onNavigateToStatus = {},
+      )
+    }
+  }
+}

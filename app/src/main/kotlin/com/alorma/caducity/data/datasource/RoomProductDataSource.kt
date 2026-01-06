@@ -1,16 +1,17 @@
 package com.alorma.caducity.data.datasource
 
+import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.toModel
 import com.alorma.caducity.data.datasource.room.toRoomEntity
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.NewProductInstance
 import com.alorma.caducity.domain.model.Product
 import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.ProductsListFilter
-import com.alorma.caducity.config.clock.AppClock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
+import java.util.UUID
 import kotlin.time.Duration.Companion.days
 
 class RoomProductDataSource(
@@ -27,6 +29,7 @@ class RoomProductDataSource(
 ) : ProductDataSource {
 
   private val productDao = database.productDao()
+  private val instanceDao = database.instanceDao()
 
   override fun getProducts(filter: ProductsListFilter): Flow<ImmutableList<ProductWithInstances>> {
     val daoFlow = when (filter) {
@@ -84,7 +87,9 @@ class RoomProductDataSource(
       val filtered = if (filter is ProductsListFilter.ByStatus && filter.statuses.size > 1) {
         products.filter { productWithInstances ->
           // Keep product if it has at least one instance with the requested status
-          productWithInstances.instances.any { instance ->
+          val allInstances = productWithInstances.variants.flatMap { it.instances } +
+              productWithInstances.standaloneInstances
+          allInstances.any { instance ->
             instance.status in filter.statuses
           }
         }
@@ -150,45 +155,53 @@ class RoomProductDataSource(
   ) {
     productDao.insertProduct(product.toRoomEntity())
     instances.forEach { instance ->
-      productDao.insertProductInstance(instance.toRoomEntity(product.id))
+      instanceDao.insertProductInstance(instance.toRoomEntity(product.id))
     }
   }
 
-  override suspend fun addInstance(productId: String, instance: ProductInstance) {
-    productDao.insertProductInstance(instance.toRoomEntity(productId))
+  override suspend fun addInstance(
+    productId: String,
+    instance: NewProductInstance
+  ): String {
+    val id = UUID.randomUUID().toString()
+
+    instanceDao.insertProductInstance(
+      instance.toRoomEntity(id = id, productId = productId),
+    )
+    return id
   }
 
   override suspend fun deleteInstance(instanceId: String) {
-    productDao.deleteProductInstance(instanceId)
+    instanceDao.deleteProductInstance(instanceId)
   }
 
   override suspend fun getInstance(instanceId: String): ProductInstance? {
-    return productDao.getProductInstance(instanceId)?.toModel(appClock, expirationThresholds)
+    return instanceDao.getProductInstance(instanceId)?.toModel(appClock, expirationThresholds)
   }
 
   override suspend fun markInstanceAsConsumed(instanceId: String) {
-    productDao.getProductInstance(instanceId)?.let { instance ->
+    instanceDao.getProductInstance(instanceId)?.let { instance ->
       val updatedInstance = instance.copy(
         consumedDate = appClock.now().toEpochMilliseconds(),
         pausedDate = null, // Clear frozen state if it was frozen
         remainingDays = null
       )
-      productDao.updateProductInstance(updatedInstance)
+      instanceDao.updateProductInstance(updatedInstance)
     }
   }
 
   override suspend fun freezeInstance(instanceId: String, remainingDays: Int) {
-    productDao.getProductInstance(instanceId)?.let { instance ->
+    instanceDao.getProductInstance(instanceId)?.let { instance ->
       val updatedInstance = instance.copy(
         pausedDate = appClock.now().toEpochMilliseconds(),
         remainingDays = remainingDays
       )
-      productDao.updateProductInstance(updatedInstance)
+      instanceDao.updateProductInstance(updatedInstance)
     }
   }
 
   override suspend fun unfreezeInstance(instanceId: String) {
-    productDao.getProductInstance(instanceId)?.let { instance ->
+    instanceDao.getProductInstance(instanceId)?.let { instance ->
       val pausedDate = instance.pausedDate
       val remainingDays = instance.remainingDays
 
@@ -202,7 +215,7 @@ class RoomProductDataSource(
           pausedDate = null,
           remainingDays = null
         )
-        productDao.updateProductInstance(updatedInstance)
+        instanceDao.updateProductInstance(updatedInstance)
       }
     }
   }
