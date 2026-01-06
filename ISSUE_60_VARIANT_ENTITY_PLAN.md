@@ -994,3 +994,475 @@ Translate to Spanish (es) and Catalan (ca).
 3. 🔜 FUTURE: Polish UI/UX
 4. 🔜 FUTURE: Add translations
 5. 🔜 FUTURE: Add variant management screen
+
+---
+
+## Phase 6: Dashboard Variant Display Plans (NEW)
+
+### Overview
+
+The dashboard will support two different display configurations to provide users with different levels of detail when viewing their products and variants.
+
+### Configuration 1: Simple View (Current)
+
+**Description**: The current simplified dashboard showing aggregate data across all products and instances.
+
+**Components**:
+1. **Summary Cards**: Display high-level statistics
+   - Expired count
+   - Expiring soon count
+   - Fresh count
+   - Frozen count
+
+2. **Unified Calendar**: Single calendar showing ALL instances across all products
+   - Month view or Week view toggle
+   - Color-coded by instance status (Expired, Expiring Soon, Fresh, Frozen)
+   - Click on date to see instances expiring on that day
+   - Shows consolidated view of all products
+
+**Use Case**: Quick overview of entire inventory at a glance. Ideal for users who want to see the big picture without drilling down into specific products or variants.
+
+**Implementation Status**: ✅ ALREADY IMPLEMENTED
+
+### Configuration 2: Complex View (Product/Variant Week Calendars)
+
+**Description**: Detailed view showing products grouped with their variants, each variant having its own week calendar of instances.
+
+**Components**:
+
+1. **Product List with Variant Sections**:
+   - Display all products as expandable/collapsible sections
+   - Each product shows:
+     - Product name and description
+     - List of variants belonging to that product
+     - Standalone instances section (if any)
+
+2. **Variant Week Calendars**:
+   - For each variant, display a dedicated week calendar
+   - Week calendar shows instances of that specific variant
+   - Visual timeline of when variant instances expire
+   - Color-coded by status (same as unified calendar)
+   - Compact week view optimized for showing multiple calendars on screen
+
+3. **Standalone Instances Calendar**:
+   - Products with standalone instances (no variant) get a separate calendar
+   - Grouped together next to the variant calendars
+   - Same week calendar format
+   - Clearly labeled as "Standalone" or "Other Items"
+
+**Layout Structure**:
+```
+┌─────────────────────────────────────────┐
+│ Dashboard - Complex View                │
+├─────────────────────────────────────────┤
+│                                         │
+│ Product: Drinks                         │
+│ ├─ Variant: Fanta                      │
+│ │  [Week Calendar showing 3 instances] │
+│ │  Jan 15 | Jan 20 | Jan 22            │
+│ │                                       │
+│ ├─ Variant: Coke                       │
+│ │  [Week Calendar showing 4 instances] │
+│ │  Jan 18 | Jan 25 | Jan 30 | Feb 2    │
+│ │                                       │
+│ ├─ Variant: Beer                       │
+│ │  [Empty week calendar]                │
+│ │  (No instances)                       │
+│ │                                       │
+│ └─ Standalone Instances                │
+│    [Week Calendar showing 1 instance]   │
+│    Jan 28 (Wine)                        │
+│                                         │
+│ Product: Dairy                          │
+│ ├─ Variant: Whole Milk                 │
+│ │  [Week Calendar...]                   │
+│ └─ ...                                  │
+└─────────────────────────────────────────┘
+```
+
+**Use Case**: Detailed inventory management. Ideal for users who want to:
+- See how each variant's instances are distributed over time
+- Identify which variants are running low
+- Plan shopping based on variant-specific expiration patterns
+- Manage multiple variants of the same product type
+
+**Implementation Status**: 🔜 PENDING - Not yet implemented
+
+### Technical Implementation Plan
+
+#### Data Structure Updates
+
+**New UI Model** (`DashboardUiConfiguration.kt`):
+```kotlin
+enum class DashboardViewMode {
+  SIMPLE,    // Current implementation - summary cards + unified calendar
+  COMPLEX    // New - product/variant week calendars
+}
+
+data class DashboardUI(
+  val searchQuery: String = "",
+  val statusFilters: Set<InstanceStatus> = emptySet(),
+  val calendarMode: CalendarMode = CalendarMode.MONTH,
+  val viewMode: DashboardViewMode = DashboardViewMode.SIMPLE,  // NEW
+)
+```
+
+**New Toggle Method** (`DashboardUiConfiguration.kt`):
+```kotlin
+interface DashboardUiConfiguration {
+  // ... existing methods ...
+  fun toggleViewMode()  // NEW - toggle between SIMPLE and COMPLEX
+}
+
+class DashboardUiConfigurationImpl(
+  private val settings: Settings
+) : DashboardUiConfiguration {
+  companion object {
+    // ... existing keys ...
+    private const val KEY_VIEW_MODE = "dashboard_view_mode"  // NEW
+  }
+  
+  override fun toggleViewMode() {
+    config.getAndUpdate { current ->
+      val newMode = when (current.viewMode) {
+        DashboardViewMode.SIMPLE -> DashboardViewMode.COMPLEX
+        DashboardViewMode.COMPLEX -> DashboardViewMode.SIMPLE
+      }
+      saveViewMode(newMode)
+      current.copy(viewMode = newMode)
+    }
+  }
+  
+  private fun saveViewMode(mode: DashboardViewMode) {
+    settings.putString(KEY_VIEW_MODE, mode.name)
+  }
+  
+  private fun loadViewMode(): DashboardViewMode {
+    val savedValue = settings.getStringOrNull(KEY_VIEW_MODE)
+    return savedValue?.let {
+      try {
+        DashboardViewMode.valueOf(it)
+      } catch (_: IllegalArgumentException) {
+        DashboardViewMode.SIMPLE
+      }
+    } ?: DashboardViewMode.SIMPLE
+  }
+}
+```
+
+#### UI Components
+
+**New Component**: `ProductVariantWeekCalendar.kt`
+```kotlin
+@Composable
+fun ProductVariantWeekCalendar(
+  variantName: String,
+  instances: ImmutableList<ProductInstanceUiModel>,
+  onInstanceClick: (ProductInstanceUiModel) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  // Week calendar showing just this variant's instances
+  // Compact horizontal layout optimized for stacking
+}
+```
+
+**New Component**: `ProductVariantCalendarList.kt`
+```kotlin
+@Composable
+fun ProductVariantCalendarList(
+  product: ProductUiModel,
+  onNavigateToDate: (LocalDate) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier = modifier) {
+    // Product header
+    Text(text = product.name, style = MaterialTheme.typography.titleLarge)
+    
+    // Variants section
+    product.variants.forEach { variant ->
+      ProductVariantWeekCalendar(
+        variantName = variant.name,
+        instances = variant.instances,
+        onInstanceClick = { /* ... */ }
+      )
+    }
+    
+    // Standalone instances section (if any)
+    if (product.standaloneInstances.isNotEmpty()) {
+      Text("Standalone Instances")
+      ProductVariantWeekCalendar(
+        variantName = "Other",
+        instances = product.standaloneInstances,
+        onInstanceClick = { /* ... */ }
+      )
+    }
+  }
+}
+```
+
+**Update**: `DashboardScreen.kt`
+```kotlin
+@Composable
+fun DashboardContent(
+  state: DashboardState.Success,
+  scrollConnection: NestedScrollConnection,
+  onNavigateToDate: (LocalDate) -> Unit,
+  onNavigateToStatus: (InstanceStatus) -> Unit,
+  onToggleCalendarMode: () -> Unit,
+  onToggleViewMode: () -> Unit,  // NEW
+  modifier: Modifier = Modifier,
+) {
+  AppScaffold(
+    modifier = Modifier
+      .nestedScroll(scrollConnection)
+      .then(modifier),
+    topBar = {
+      StyledTopAppBar(
+        title = {
+          Text(text = stringResource(R.string.dashboard_screen_title))
+        },
+        actions = {
+          // View mode toggle (Simple/Complex)
+          IconButton(onClick = onToggleViewMode) {
+            Icon(
+              imageVector = when (state.config.viewMode) {
+                DashboardViewMode.SIMPLE -> AppIcons.ViewComplex
+                DashboardViewMode.COMPLEX -> AppIcons.ViewSimple
+              },
+              contentDescription = "Toggle view mode"
+            )
+          }
+          
+          // Calendar mode toggle (Month/Week) - only show in SIMPLE mode
+          if (state.config.viewMode == DashboardViewMode.SIMPLE) {
+            IconButton(onClick = onToggleCalendarMode) {
+              Icon(
+                imageVector = when (state.config.calendarMode) {
+                  CalendarMode.MONTH -> AppIcons.CalendarCollapse
+                  CalendarMode.WEEK -> AppIcons.CalendarExpand
+                },
+                contentDescription = "Toggle calendar mode"
+              )
+            }
+          }
+        },
+      )
+    },
+  ) { paddingValues ->
+    Column(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(paddingValues),
+    ) {
+      when (state.config.viewMode) {
+        DashboardViewMode.SIMPLE -> {
+          // Current implementation
+          LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(bottom = 64.dp),
+          ) {
+            item(key = "summary", contentType = "summary") {
+              DashboardSummaryCard(
+                summary = state.summary,
+                onStatusClick = { status -> onNavigateToStatus(status) },
+              )
+            }
+            
+            item(contentType = "calendar") {
+              ProductsCalendar(
+                calendarState = state.calendarState,
+                onDateClick = onNavigateToDate,
+                calendarMode = state.config.calendarMode,
+              )
+            }
+          }
+        }
+        
+        DashboardViewMode.COMPLEX -> {
+          // New implementation
+          LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(bottom = 64.dp),
+          ) {
+            items(
+              items = state.productWithVariants,
+              key = { it.product.id },
+              contentType = { "product-variant-calendar" }
+            ) { product ->
+              ProductVariantCalendarList(
+                product = product,
+                onNavigateToDate = onNavigateToDate,
+              )
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+#### Domain Layer Updates
+
+**Update**: `DashboardMapper.kt`
+```kotlin
+data class DashboardData(
+  val items: ImmutableList<ProductUiModel>,
+  val summary: DashboardSummary,
+  val calendarState: CalendarState,
+  val productWithVariants: ImmutableList<ProductWithVariantsUiModel>,  // NEW
+)
+
+@Stable
+data class ProductWithVariantsUiModel(
+  val product: ProductUiModel,
+  val variants: ImmutableList<VariantWithInstancesUiModel>,
+  val standaloneInstances: ImmutableList<ProductInstanceUiModel>,
+)
+
+@Stable
+data class VariantWithInstancesUiModel(
+  val id: String,
+  val name: String,
+  val instances: ImmutableList<ProductInstanceUiModel>,
+)
+```
+
+#### String Resources
+
+**Add to** `app/src/main/res/values/strings.xml`:
+```xml
+<!-- Dashboard View Modes -->
+<string name="dashboard_view_mode_simple">Simple View</string>
+<string name="dashboard_view_mode_complex">Detailed View</string>
+<string name="dashboard_toggle_view_mode">Switch view mode</string>
+
+<!-- Complex View Labels -->
+<string name="dashboard_complex_variants_header">Variants</string>
+<string name="dashboard_complex_standalone_header">Standalone Items</string>
+<string name="dashboard_complex_no_instances">No instances</string>
+<string name="dashboard_complex_week_calendar">Week view for %1$s</string>
+```
+
+Translate to Spanish (es) and Catalan (ca).
+
+#### Icons
+
+**New Icons Needed**:
+- `ViewSimple` - Icon for simple view mode (e.g., grid/list icon)
+- `ViewComplex` - Icon for complex view mode (e.g., detailed list icon)
+
+### Implementation Phases
+
+#### Phase 6A: Foundation ⚠️ PENDING
+- [ ] Add `DashboardViewMode` enum to `DashboardUiConfiguration`
+- [ ] Implement `toggleViewMode()` method
+- [ ] Add persistence for view mode preference
+- [ ] Update `DashboardState` to include `productWithVariants`
+- [ ] Update `DashboardMapper` to populate `productWithVariants`
+
+#### Phase 6B: UI Components ⚠️ PENDING
+- [ ] Create `ProductVariantWeekCalendar` component
+- [ ] Create `ProductVariantCalendarList` component
+- [ ] Add new icons (`ViewSimple`, `ViewComplex`)
+- [ ] Add string resources (en, es, ca)
+
+#### Phase 6C: Dashboard Integration ⚠️ PENDING
+- [ ] Update `DashboardScreen` to support view mode toggle
+- [ ] Add view mode toggle button to app bar
+- [ ] Implement conditional rendering based on view mode
+- [ ] Hide calendar mode toggle in complex view
+- [ ] Test view mode persistence
+
+#### Phase 6D: Testing & Polish ⚠️ PENDING
+- [ ] Test switching between simple and complex views
+- [ ] Verify standalone instances display correctly
+- [ ] Test empty states (variants with no instances)
+- [ ] Performance testing with many products/variants
+- [ ] UI/UX refinement based on feedback
+
+### Success Criteria
+
+- [ ] Users can toggle between Simple and Complex view modes
+- [ ] View mode preference persists across app restarts
+- [ ] Complex view shows each variant with its own week calendar
+- [ ] Standalone instances appear in separate calendar section
+- [ ] Empty variants display correctly with "No instances" message
+- [ ] UI is responsive and performant with many products
+- [ ] All strings properly localized (en, es, ca)
+
+### Visual Mockups
+
+#### Simple View (Current)
+```
+┌─────────────────────────────────────────┐
+│ Dashboard              [≡] [📅→📆]     │
+├─────────────────────────────────────────┤
+│ ┌─────────────────────────────────────┐ │
+│ │ Summary Cards                       │ │
+│ │ Expired: 2 | Expiring: 5 | Fresh: 8│ │
+│ └─────────────────────────────────────┘ │
+│                                         │
+│ ┌─────────────────────────────────────┐ │
+│ │ January 2026        [Unified Cal]   │ │
+│ │ S  M  T  W  T  F  S                 │ │
+│ │          1  2  3  4  5              │ │
+│ │ 🟢 🔴 🟡 🟢 🟢 🟢 🟢              │ │
+│ │ ...                                 │ │
+│ └─────────────────────────────────────┘ │
+└─────────────────────────────────────────┘
+```
+
+#### Complex View (New)
+```
+┌─────────────────────────────────────────┐
+│ Dashboard              [≡]              │
+├─────────────────────────────────────────┤
+│ 📦 Drinks                               │
+│                                         │
+│ ├─ Fanta                                │
+│ │  Week: [🟢][🟢][🟡][ ][ ][ ][ ]    │
+│ │        15  20  22                    │
+│ │                                       │
+│ ├─ Coke                                 │
+│ │  Week: [🟢][🟢][🟢][🟢][ ][ ][ ]  │
+│ │        18  25  30  2                 │
+│ │                                       │
+│ ├─ Beer                                 │
+│ │  Week: [ ][ ][ ][ ][ ][ ][ ]        │
+│ │        (No instances)                 │
+│ │                                       │
+│ └─ Standalone Items                     │
+│    Week: [🟡][ ][ ][ ][ ][ ][ ]       │
+│          28 (Wine)                      │
+│                                         │
+│ 📦 Dairy                                │
+│ ├─ Whole Milk                           │
+│ │  Week: [🟢][🟢][ ][ ][ ][ ][ ]    │
+│ └─ ...                                  │
+└─────────────────────────────────────────┘
+```
+
+### Benefits
+
+**Simple View**:
+- Quick overview of total inventory
+- Easy to spot urgent items across all products
+- Minimal scrolling required
+- Good for daily quick checks
+
+**Complex View**:
+- Detailed per-variant tracking
+- Identify which specific variants need restocking
+- Better for inventory planning
+- Useful for managing multiple variants of same product type
+- See distribution of expirations over time per variant
+
+### Notes
+
+- Complex view always uses week calendars (no month view toggle)
+- Simple view retains current month/week toggle functionality
+- View mode preference is independent of calendar mode preference
+- Both views share the same underlying data from `ProductWithInstances`
+- Consider adding animation/transition between view modes
+- May need to optimize rendering for products with many variants
