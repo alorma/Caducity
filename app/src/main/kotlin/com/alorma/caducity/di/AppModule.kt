@@ -27,9 +27,8 @@ import com.alorma.caducity.ui.screen.product.create.FutureDateSelectableDates
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailAddInstanceViewModel
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailMapper
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailViewModel
-import com.alorma.caducity.ui.screen.products.ProductsListMapper
-import com.alorma.caducity.ui.screen.products.ProductsListViewModel
 import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
+import com.alorma.caducity.ui.screen.products.productsListModule
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
@@ -49,6 +48,7 @@ val appModule = module {
   includes(fireAndForgetModule)
 
   includes(dashboardModule)
+  includes(productsListModule)
 
   factoryOf(::BarcodeHandlerNoOp) {
     bind<BarcodeHandler>()
@@ -62,14 +62,6 @@ val appModule = module {
   singleOf(::GetExpiringProductsUseCase)
 
   factoryOf(::RelativeTimeFormatter)
-
-  // Products list
-  single {
-    ProductsListMapper(
-      dateFormat = get(qualifier = ConfigQualifier.DateFormat.HumanReadable),
-    )
-  }
-  viewModelOf(::ProductsListViewModel)
 
   // Product detail
   singleOf(::ObtainProductDetailUseCase)

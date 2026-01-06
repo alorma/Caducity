@@ -1,38 +1,36 @@
 package com.alorma.caducity.ui.screen.products
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
-import com.alorma.caducity.ui.components.StyledTopAppBar
-import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.domain.usecase.ProductsListFilter
-import androidx.compose.ui.res.stringResource
+import com.alorma.caducity.ui.components.StyledTopAppBar
+import com.alorma.caducity.ui.components.loading.FullscreenLoading
+import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-/**
- * Full screen version of Products List with top bar.
- * Use this for top-level navigation routes.
- */
 @Suppress("ModifierReuse")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,12 +58,13 @@ fun ProductsListScreen(
     },
   ) { paddingValues ->
     ProductsListContent(
-      state = state,
-      onNavigateToProductDetail = onNavigateToProductDetail,
       modifier = Modifier
         .fillMaxSize()
         .padding(paddingValues)
         .padding(horizontal = 16.dp),
+      loading = { FullscreenLoading() },
+      state = state,
+      onNavigateToProductDetail = onNavigateToProductDetail,
     )
   }
 }
@@ -89,11 +88,12 @@ fun ProductsListBottomSheet(
   val state by viewModel.state.collectAsStateWithLifecycle()
 
   ProductsListContent(
-    state = state,
-    onNavigateToProductDetail = onNavigateToProductDetail,
     modifier = modifier
       .fillMaxWidth()
       .padding(horizontal = 16.dp),
+    loading = { ProductsListLoading() },
+    state = state,
+    onNavigateToProductDetail = onNavigateToProductDetail,
   )
 }
 
@@ -102,13 +102,14 @@ private fun ProductsListContent(
   state: ProductsListState,
   onNavigateToProductDetail: (String) -> Unit,
   modifier: Modifier = Modifier,
+  loading: @Composable () -> Unit = { ProductsListLoading() },
 ) {
   Column(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     when (val currentState = state) {
-      is ProductsListState.Loading -> ProductsListLoading()
+      is ProductsListState.Loading -> loading()
       is ProductsListState.Empty -> ProductsListEmptyState(currentState)
       is ProductsListState.Success -> ProductsListSuccess(currentState, onNavigateToProductDetail)
     }
@@ -117,12 +118,15 @@ private fun ProductsListContent(
 
 @Composable
 private fun ProductsListLoading() {
-  Text(
-    text = "Loading...",
-    style = MaterialTheme.typography.bodyMedium,
-    color = CaducityTheme.colorScheme.onSurfaceVariant,
-    modifier = Modifier.padding(vertical = 32.dp),
-  )
+  Box(
+    modifier = Modifier
+      .wrapContentHeight()
+      .fillMaxWidth()
+      .padding(vertical = 64.dp),
+    contentAlignment = Alignment.Center,
+  ) {
+    WavyLoadingIndicator()
+  }
 }
 
 @Composable

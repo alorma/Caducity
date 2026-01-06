@@ -2,25 +2,40 @@ package com.alorma.caducity.ui.screen.products
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.domain.usecase.ObtainProductsUseCase
 import com.alorma.caducity.domain.usecase.ProductsListFilter
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration.Companion.seconds
 
 class ProductsListViewModel(
   filtersParam: ProductsListFilter,
+  private val obtainProductsUseCase: ObtainProductsUseCase,
   private val productsListMapper: ProductsListMapper,
 ) : ViewModel() {
 
-  val state: StateFlow<ProductsListState> = MutableStateFlow(ProductsListState.Loading)
-    .stateIn(
-      scope = viewModelScope,
-      started = SharingStarted.WhileSubscribed(5.seconds),
-      initialValue = ProductsListState.Loading,
-    )
+  val state: StateFlow<ProductsListState> =
+    obtainProductsUseCase.obtain()
+      .map { items ->
+        if (items.isEmpty()) {
+          ProductsListState.Empty(filtersParam)
+        } else {
+          ProductsListState.Success(
+            items = persistentListOf(),
+          )
+        }
+      }
+      .onStart { emit(ProductsListState.Loading) }
+      .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5.seconds),
+        initialValue = ProductsListState.Loading,
+      )
 
   fun onFiltersUpdate(newFilters: ProductsListFilter) {
 
