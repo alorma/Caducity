@@ -3,8 +3,6 @@ package com.alorma.caducity.ui.screen.product.detail
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
-import com.alorma.caducity.ui.screen.products.ProductInstanceStatusGroup
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat
@@ -13,7 +11,9 @@ import kotlinx.datetime.toLocalDateTime
 class ProductDetailMapper(
   private val dateFormat: DateTimeFormat<LocalDate>,
 ) {
-  fun mapToProductDetail(productWithInstances: ProductWithInstances): ProductDetailUiModel {
+  fun mapToProductDetail(
+    productWithInstances: ProductWithInstances,
+  ): ProductDetailState.Success {
 
     // Map variants with their instance counts
     val variants = productWithInstances.variants.map { variantWithInstances ->
@@ -43,40 +43,12 @@ class ProductDetailMapper(
         }.thenBy { it.expirationDate }
       )
 
-    val groups = productWithInstances
-      .variants
-      .map { variantWithInstances ->
-        val groupInstances = variantWithInstances
-          .instances
-          .map { instance -> mapInstanceToUi(instance) }
-          .toImmutableList()
-
-        // Calculate status groups (excluding frozen for the bars)
-        val frozenCount = groupInstances.count { it.status == InstanceStatus.Frozen }
-        val statusGroups = groupInstances
-          .filter { it.status != InstanceStatus.Frozen }
-          .groupBy { it.status }
-          .map { (status, statusInstances) ->
-            ProductInstanceStatusGroup(
-              status = status,
-              count = statusInstances.size,
-            )
-          }
-          .toImmutableList()
-
-        // Keep ALL instances (including frozen) for display in the LazyRow
-        ProductInstanceDetailGroup(
-          identifier = variantWithInstances.variant.name,
-          statusGroups = statusGroups,
-          frozenCount = frozenCount,
-          instances = groupInstances, // All instances, frozen included
-        )
-      }.toImmutableList()
-
-    return ProductDetailUiModel(
-      id = productWithInstances.product.id,
-      name = productWithInstances.product.name,
-      description = productWithInstances.product.description,
+    return ProductDetailState.Success(
+      product = ProductDetailUiModel(
+        id = productWithInstances.product.id,
+        name = productWithInstances.product.name,
+        description = productWithInstances.product.description,
+      ),
       variants = variants,
       standaloneInstances = standaloneInstances,
     )

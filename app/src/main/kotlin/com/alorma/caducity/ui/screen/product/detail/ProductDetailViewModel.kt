@@ -20,8 +20,7 @@ class ProductDetailViewModel(
     .map { result ->
       result.fold(
         onSuccess = { productWithInstances ->
-          val productDetail = productDetailMapper.mapToProductDetail(productWithInstances)
-          ProductDetailState.Success(productDetail)
+          productDetailMapper.mapToProductDetail(productWithInstances)
         },
         onFailure = { error ->
           ProductDetailState.Error(error.message ?: "Product not found")

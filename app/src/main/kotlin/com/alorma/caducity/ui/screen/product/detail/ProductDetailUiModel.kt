@@ -12,8 +12,6 @@ data class ProductDetailUiModel(
   val id: String,
   val name: String,
   val description: String,
-  val variants: List<ProductDetailVariantUiModel>,
-  val standaloneInstances: List<ProductInstanceDetailUiModel>,
 )
 
 @Stable

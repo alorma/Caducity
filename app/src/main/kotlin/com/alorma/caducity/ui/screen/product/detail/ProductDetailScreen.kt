@@ -8,8 +8,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LoadingIndicator
-import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,7 +55,7 @@ fun ProductDetailScreen(
 
     is ProductDetailState.Success -> {
       ProductDetailContent(
-        product = currentState.product,
+        state = currentState,
         snackbarHostState = snackbarState,
         dialogState = dialogState,
         onBack = onBack,
@@ -83,7 +81,7 @@ fun ProductDetailScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProductDetailContent(
-  product: ProductDetailUiModel,
+  state: ProductDetailState.Success,
   snackbarHostState: AppSnackbarHostState,
   dialogState: AppDialogState,
   onBack: () -> Unit,
@@ -92,7 +90,7 @@ private fun ProductDetailContent(
   AppScaffold(
     topBar = {
       StyledTopAppBar(
-        title = { Text(text = product.name) },
+        title = { Text(text = state.product.name) },
         navigationIcon = {
           IconButton(onClick = onBack) {
             Icon(
@@ -117,7 +115,17 @@ private fun ProductDetailContent(
     Column(
       modifier = Modifier.padding(paddingValues),
     ) {
+      state.variants.forEach { variant ->
+        Text(text = variant.name)
+      }
 
+      state.standaloneInstances.forEach { instance ->
+        if (instance.identifier.isEmpty()) {
+          Text(text = "No identifier")
+        } else {
+          Text(text = instance.identifier)
+        }
+      }
     }
   }
 }
