@@ -20,7 +20,7 @@ class DashboardViewModel(
   val state: StateFlow<DashboardState> = obtainDashboardProductsUseCase
     .obtainProducts()
     .map { instances: ImmutableList<ProductInstance> ->
-      dashboardMapper.mapToDashboardSections(
+      dashboardMapper.mapToDashboardState(
         instances = instances,
       )
     }.stateIn(
