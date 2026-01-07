@@ -9,6 +9,8 @@ import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.plusMonths
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -21,7 +23,7 @@ class DashboardMapper(
   private val localizedDateFormatter: LocalizedDateFormatter,
 ) {
 
-  fun mapToDashboardSections(
+  fun mapToDashboardState(
     instances: ImmutableList<ProductInstance>,
   ): DashboardState {
     val summary = calculateSummary(instances)
@@ -62,30 +64,42 @@ class DashboardMapper(
   private fun calculateCalendarState(
     instances: List<ProductInstance>,
   ): CalendarState {
-    val startDate = instances
-      .minBy { instance -> instance.expirationDate }
-      .expirationDate
-      .toLocalDateTime(TimeZone.currentSystemDefault())
-      .date
-
-    val endDate = instances
-      .maxBy { instance -> instance.expirationDate }
-      .expirationDate
-      .toLocalDateTime(TimeZone.currentSystemDefault())
-      .date
 
     val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    return if (instances.isEmpty()) {
+      CalendarState(
+        today = today,
+        startLocalDate = today.minusMonths(1),
+        endLocalDate = today.plusMonths(1),
+        content = persistentMapOf(),
+        monthNames = localizedDateFormatter.getMonthNames(),
+        daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
+      )
+    } else {
+      val startDate = instances
+        .minBy { instance -> instance.expirationDate }
+        .expirationDate
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+        .date
 
-    val dateWithShapes = getDateWithShapes(instances, today)
+      val endDate = instances
+        .maxBy { instance -> instance.expirationDate }
+        .expirationDate
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+        .date
 
-    return CalendarState(
-      today = today,
-      startLocalDate = startDate.minusMonths(1),
-      endLocalDate = endDate.plusMonths(1),
-      content = dateWithShapes,
-      monthNames = localizedDateFormatter.getMonthNames(),
-      daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
-    )
+      val dateWithShapes = getDateWithShapes(instances, today)
+
+      CalendarState(
+        today = today,
+        startLocalDate = startDate.minusMonths(1),
+        endLocalDate = endDate.plusMonths(1),
+        content = dateWithShapes,
+        monthNames = localizedDateFormatter.getMonthNames(),
+        daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
+      )
+
+    }
   }
 
   private fun getDateWithShapes(
