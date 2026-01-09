@@ -28,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
@@ -38,8 +37,10 @@ import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.ThermometerSnow
 import com.alorma.caducity.ui.components.StatusBadge
+import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
+import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
@@ -57,7 +58,6 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun ProductDetailScreen(
   productId: String,
-  onBack: () -> Unit,
   onNavigateToAddInstance: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
@@ -87,6 +87,46 @@ fun ProductDetailScreen(
             message = R.string.error_cannot_freeze_expired,
             type = AppFeedbackType.Status(effect.status),
           )
+        }
+        is ProductDetailSideEffect.ShowConsumeExpiredWarning -> {
+          val result = dialogState.showAlertDialog(
+            title = AppFeedbackResource.AsResource(
+              R.string.warning_consume_expired_title
+            ),
+            text = AppFeedbackResource.AsResource(
+              R.string.warning_consume_expired_message
+            ),
+            type = AppFeedbackType.Status(effect.instance.status),
+            positiveButton = AppFeedbackResource.AsResource(
+              R.string.warning_consume_expired_positive
+            ),
+            negativeButton = AppFeedbackResource.AsResource(
+              R.string.warning_consume_expired_negative
+            ),
+          )
+          if (result == DialogResult.Positive) {
+            viewModel.onConsumeInstanceConfirmed(effect.instance)
+          }
+        }
+        is ProductDetailSideEffect.ShowConsumeExpiredError -> {
+          val result = dialogState.showAlertDialog(
+            title = AppFeedbackResource.AsResource(
+              R.string.error_cannot_consume_expired
+            ),
+            text = AppFeedbackResource.AsResource(
+              R.string.error_cannot_consume_expired_message
+            ),
+            type = AppFeedbackType.Status(effect.status),
+            positiveButton = AppFeedbackResource.AsResource(
+              R.string.error_cannot_consume_expired_positive
+            ),
+            negativeButton = AppFeedbackResource.AsResource(
+              R.string.warning_consume_expired_negative
+            ),
+          )
+          if (result == DialogResult.Positive) {
+            viewModel.onDeleteInstance(effect.instance)
+          }
         }
       }
     }

@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.product.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
 import kotlinx.coroutines.channels.Channel
@@ -13,11 +14,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class ProductDetailViewModel(
   productId: String,
   obtainProductDetailUseCase: ObtainProductDetailUseCase,
   productDetailMapper: ProductDetailMapper,
+  private val appClock: AppClock,
 ) : ViewModel() {
 
   private val _sideEffect = Channel<ProductDetailSideEffect>(Channel.BUFFERED)
@@ -45,7 +49,32 @@ class ProductDetailViewModel(
     )
 
   fun onConsumeInstance(instance: ProductInstanceDetailUiModel) {
-    // TODO: Implement consume instance logic
+    when (instance.status) {
+      InstanceStatus.ExpiringSoon -> {
+        // Only show warning if expiration date is today
+        val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        if (instance.expirationDate == today) {
+          emitSideEffect(ProductDetailSideEffect.ShowConsumeExpiredWarning(instance))
+        } else {
+          onConsumeInstanceConfirmed(instance)
+        }
+      }
+      InstanceStatus.Expired -> {
+        // Show error dialog for expired items
+        emitSideEffect(ProductDetailSideEffect.ShowConsumeExpiredError(instance, instance.status))
+      }
+      InstanceStatus.Fresh -> {
+        onConsumeInstanceConfirmed(instance)
+      }
+      InstanceStatus.Consumed,
+      InstanceStatus.Frozen -> {
+        // Already consumed or frozen, no action needed
+      }
+    }
+  }
+
+  fun onConsumeInstanceConfirmed(instance: ProductInstanceDetailUiModel) {
+    // TODO: Implement consume instance logic (called after user confirms warning)
   }
 
   fun onFreezeInstance(instance: ProductInstanceDetailUiModel) {
