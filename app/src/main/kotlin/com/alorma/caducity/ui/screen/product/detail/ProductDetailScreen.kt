@@ -1,28 +1,40 @@
 package com.alorma.caducity.ui.screen.product.detail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.ui.components.topbar.NavigationIcon
-import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.shape.ShapePosition
+import com.alorma.caducity.ui.components.shape.calculateShape
+import com.alorma.caducity.ui.components.shape.toVerticalShape
+import com.alorma.caducity.ui.components.topbar.NavigationIcon
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -57,7 +69,6 @@ fun ProductDetailScreen(
         state = currentState,
         snackbarHostState = snackbarState,
         dialogState = dialogState,
-        onBack = onBack,
         onNavigateToAddInstance = onNavigateToAddInstance,
       )
     }
@@ -83,7 +94,6 @@ private fun ProductDetailContent(
   state: ProductDetailState.Success,
   snackbarHostState: AppSnackbarHostState,
   dialogState: AppDialogState,
-  onBack: () -> Unit,
   onNavigateToAddInstance: () -> Unit,
 ) {
   AppScaffold(
@@ -104,37 +114,131 @@ private fun ProductDetailContent(
     snackbarState = snackbarHostState,
     dialogState = dialogState,
   ) { paddingValues ->
-    Column(
-      modifier = Modifier.padding(paddingValues),
+    LazyColumn(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(paddingValues)
+        .padding(horizontal = 16.dp),
+      verticalArrangement = Arrangement.spacedBy(2.dp),
+      contentPadding = PaddingValues(
+        bottom = 90.dp,
+      ),
     ) {
-      Text(
-        text = "Variants",
-        style = CaducityTheme.typography.headlineSmall,
-      )
-      state.variants.forEach { variant ->
-        Text(text = variant.name)
-        Column {
-          variant.instances.forEachIndexed { index, instance ->
-            if (instance.identifier.isEmpty()) {
-              Text(text = "\tInstance $index")
-            } else {
-              Text(text = "\t${instance.identifier}")
-            }
+      // Variants section
+      if (state.variants.isNotEmpty()) {
+        item(key = "variants-title", contentType = "section-title") {
+          SectionTitle(text = "Variants", isFirst = true)
+        }
+
+        state.variants.forEach { variant ->
+          item(
+            key = "variant-${variant.id}-title",
+            contentType = "variant-title"
+          ) {
+            VariantTitle(name = variant.name)
+          }
+
+          itemsIndexed(
+            items = variant.instances,
+            key = { _, instance -> "variant-${variant.id}-instance-${instance.id}" },
+            contentType = { _, _ -> "variant-instance" },
+          ) { index, instance ->
+            ProductInstanceCard(
+              instance = instance,
+              shapePosition = variant.instances.calculateShape(index),
+            )
           }
         }
       }
 
-      Text(
-        text = "Standalone instances",
-        style = CaducityTheme.typography.headlineSmall,
-      )
-      state.standaloneInstances.forEach { instance ->
-        if (instance.identifier.isEmpty()) {
-          Text(text = "No identifier")
-        } else {
-          Text(text = instance.identifier)
+      // Standalone instances section
+      if (state.standaloneInstances.isNotEmpty()) {
+        item(key = "standalone-title", contentType = "section-title") {
+          SectionTitle(
+            text = "Standalone instances",
+            isFirst = state.variants.isEmpty(),
+          )
+        }
+
+        itemsIndexed(
+          items = state.standaloneInstances,
+          key = { _, instance -> "standalone-instance-${instance.id}" },
+          contentType = { _, _ -> "standalone-instance" },
+        ) { index, instance ->
+          ProductInstanceCard(
+            instance = instance,
+            shapePosition = state.standaloneInstances.calculateShape(index),
+          )
         }
       }
+    }
+  }
+}
+
+@Composable
+private fun SectionTitle(
+  text: String,
+  isFirst: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  Text(
+    modifier = modifier.padding(
+      top = if (isFirst) 0.dp else 24.dp,
+      bottom = 8.dp
+    ),
+    text = text,
+    style = MaterialTheme.typography.titleLarge,
+    color = CaducityTheme.colorScheme.onSurface,
+  )
+}
+
+@Composable
+private fun VariantTitle(
+  name: String,
+  modifier: Modifier = Modifier,
+) {
+  Text(
+    modifier = modifier.padding(top = 16.dp, bottom = 8.dp),
+    text = name,
+    style = MaterialTheme.typography.titleSmall,
+    color = CaducityTheme.colorScheme.onSurfaceVariant,
+  )
+}
+
+@Composable
+private fun ProductInstanceCard(
+  instance: ProductInstanceDetailUiModel,
+  shapePosition: ShapePosition,
+  modifier: Modifier = Modifier,
+) {
+  Surface(
+    modifier = modifier.fillMaxWidth(),
+    shape = shapePosition.toVerticalShape(),
+    color = CaducityTheme.colorScheme.surfaceContainer,
+  ) {
+    Row(
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Column(
+        modifier = Modifier.weight(1f),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+      ) {
+        if (instance.identifier.isNotEmpty()) {
+          Text(
+            text = instance.identifier,
+            style = MaterialTheme.typography.labelLarge,
+            color = CaducityTheme.colorScheme.onSurface,
+          )
+        }
+        Text(
+          text = instance.expirationDateText,
+          style = MaterialTheme.typography.bodySmall,
+          color = CaducityTheme.colorScheme.onSurfaceVariant,
+        )
+      }
+      StatusBadge(instance.status)
     }
   }
 }
