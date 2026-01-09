@@ -11,6 +11,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarExitDirection
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +23,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.ui.components.calendar.CaducityMonthCalendar
@@ -42,6 +46,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun DashboardScreen(
   onNavigateToDate: (LocalDate) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
+  onNavigateToSettings: () -> Unit,
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
   viewModel: DashboardViewModel = koinViewModel(),
@@ -56,6 +61,7 @@ fun DashboardScreen(
         scrollConnection = scrollConnection,
         onNavigateToDate = onNavigateToDate,
         onNavigateToStatus = onNavigateToStatus,
+        onNavigateToSettings = onNavigateToSettings,
       )
     }
   }
@@ -68,6 +74,7 @@ fun DashboardContent(
   scrollConnection: NestedScrollConnection,
   onNavigateToDate: (LocalDate) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
+  onNavigateToSettings: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   AppScaffold(
@@ -78,6 +85,16 @@ fun DashboardContent(
       StyledTopAppBar(
         title = {
           Text(text = stringResource(R.string.dashboard_screen_title))
+        },
+        actions = {
+          IconButton(
+            onClick = onNavigateToSettings,
+          ) {
+            Icon(
+              imageVector = AppIcons.Outlined.Settings,
+              contentDescription = null,
+            )
+          }
         },
       )
     },
@@ -140,6 +157,7 @@ fun DashboardContentPreview() {
         ),
         onNavigateToDate = {},
         onNavigateToStatus = {},
+        onNavigateToSettings = {},
       )
     }
   }

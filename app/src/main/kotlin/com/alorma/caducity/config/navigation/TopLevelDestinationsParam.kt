@@ -10,7 +10,4 @@ sealed interface TopLevelDestinationsParam : Parcelable {
 
   @Parcelize
   data object Products : TopLevelDestinationsParam
-
-  @Parcelize
-  data object Settings : TopLevelDestinationsParam
 }
