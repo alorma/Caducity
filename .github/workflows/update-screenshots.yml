@@ -21,6 +21,8 @@ jobs:
   update-screenshots:
     name: Generate and Update Screenshots
     runs-on: ubuntu-latest
+    # Only run on main branch to prevent accidental pushes from other branches
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -74,3 +76,12 @@ jobs:
           name: screenshot-references
           path: app/src/screenshotTestDebug/reference/
           retention-days: 30
+
+      - name: Summary
+        if: always()
+        run: |
+          if [[ "${{ steps.check_changes.outputs.changes }}" == "true" ]]; then
+            echo "✅ Screenshot reference images have been updated and pushed to main" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ No screenshot changes detected - reference images are up to date" >> $GITHUB_STEP_SUMMARY
+          fi
