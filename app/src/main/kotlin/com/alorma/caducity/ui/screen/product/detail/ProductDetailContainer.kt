@@ -38,7 +38,6 @@ fun ProductDetailContainer(
       entry<ProductDetailRoutes.Root> {
         ProductDetailScreen(
           productId = it.productId,
-          onBack = onBack,
           onNavigateToAddInstance = {
             productDetailBackStack.add(ProductDetailRoutes.AddInstance(productId))
           },
