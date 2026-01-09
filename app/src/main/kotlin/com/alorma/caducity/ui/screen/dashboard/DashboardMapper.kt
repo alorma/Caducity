@@ -24,14 +24,14 @@ class DashboardMapper(
 
   fun mapToUnifiedState(
     instances: ImmutableList<ProductInstance>,
-  ): DashboardModeState {
+  ): DashboardState.Success {
     val summary = calculateSummary(instances)
 
     val calendarState = calculateCalendarState(
       instances = instances,
     )
 
-    return DashboardModeState.Unified(
+    return DashboardState.Success.Unified(
       summary = summary,
       calendarState = calendarState,
     )
@@ -39,16 +39,24 @@ class DashboardMapper(
 
   fun mapToPerProductState(
     instances: ImmutableList<ProductInstance>,
-  ): DashboardModeState {
-    val summary = calculateSummary(instances)
-
+  ): DashboardState.Success {
     val calendarState = calculateCalendarState(
       instances = instances,
     )
 
-    return DashboardModeState.PerProduct(
-      summary = summary,
-      calendarState = calendarState,
+    return DashboardState.Success.PerProduct(
+      states = listOf(
+        ProductCalendarState(
+          id = "Potato1",
+          name = "Potato 1",
+          calendarState = calendarState,
+        ),
+        ProductCalendarState(
+          id = "Potato2",
+          name = "Potato 2",
+          calendarState = calendarState,
+        ),
+      ),
     )
   }
 
