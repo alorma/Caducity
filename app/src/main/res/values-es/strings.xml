@@ -111,9 +111,9 @@
     <string name="error_cannot_consume_expired">No es seguro consumir productos caducados</string>
     <string name="error_cannot_consume_expired_message">Este artículo ha caducado y no puede ser consumido. ¿Deseas eliminarlo en su lugar?</string>
     <string name="error_cannot_consume_expired_positive">Eliminar</string>
-    <string name="warning_consume_expired_title">¿Consumir Artículo Caducado?</string>
-    <string name="warning_consume_expired_message">Este artículo ha caducado. No es seguro consumir productos caducados. ¿Estás seguro de que quieres marcarlo como consumido?</string>
-    <string name="warning_consume_expired_positive">Consumir de Todos Modos</string>
+    <string name="warning_consume_expired_title">¿Consumir Artículo que Caduca Hoy?</string>
+    <string name="warning_consume_expired_message">Este artículo caduca hoy. Por favor, asegúrate de que el producto esté en buen estado antes de consumirlo. ¿Deseas marcarlo como consumido?</string>
+    <string name="warning_consume_expired_positive">Consumir</string>
     <string name="warning_consume_expired_negative">Cancelar</string>
 
     <!-- Onboarding -->

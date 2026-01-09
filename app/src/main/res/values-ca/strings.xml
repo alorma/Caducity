@@ -112,9 +112,9 @@
     <string name="error_cannot_consume_expired">No és segur consumir productes caducats</string>
     <string name="error_cannot_consume_expired_message">Aquest article ha caducat i no pot ser consumit. Vols eliminar-lo?</string>
     <string name="error_cannot_consume_expired_positive">Eliminar</string>
-    <string name="warning_consume_expired_title">Consumir Article Caducat?</string>
-    <string name="warning_consume_expired_message">Aquest article ha caducat. No és segur consumir productes caducats. Estàs segur que vols marcar-lo com a consumit?</string>
-    <string name="warning_consume_expired_positive">Consumir de Totes Maneres</string>
+    <string name="warning_consume_expired_title">Consumir Article que Caduca Avui?</string>
+    <string name="warning_consume_expired_message">Aquest article caduca avui. Si us plau, assegura\'t que el producte estigui en bon estat abans de consumir-lo. Vols marcar-lo com a consumit?</string>
+    <string name="warning_consume_expired_positive">Consumir</string>
     <string name="warning_consume_expired_negative">Cancel·lar</string>
 
     <!-- Onboarding -->
