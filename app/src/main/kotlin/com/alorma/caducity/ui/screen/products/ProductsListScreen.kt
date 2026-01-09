@@ -24,12 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.usecase.ProductsListFilter
-import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.shape.toVerticalShape
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -65,30 +65,6 @@ fun ProductsListScreen(
       onNavigateToProductDetail = onNavigateToProductDetail,
     )
   }
-}
-
-/**
- * Bottom sheet version of Products List without top bar.
- * Use this for filtered views shown as bottom sheets.
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ProductsListBottomSheet(
-  filters: ProductsListFilter,
-  onNavigateToProductDetail: (String) -> Unit,
-  modifier: Modifier = Modifier,
-  viewModel: ProductsListViewModel = koinViewModel { parametersOf(filters) },
-) {
-  val state by viewModel.state.collectAsStateWithLifecycle()
-
-  ProductsListContent(
-    modifier = modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp),
-    loading = { ProductsListLoading() },
-    state = state,
-    onNavigateToProductDetail = onNavigateToProductDetail,
-  )
 }
 
 @Composable

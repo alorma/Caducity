@@ -21,7 +21,6 @@ import androidx.compose.material3.FloatingToolbarScrollBehavior
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.PlainTooltip
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TooltipAnchorPosition
@@ -58,8 +57,6 @@ import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
 import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailContainer
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailRoute
-import com.alorma.caducity.ui.screen.products.ProductsListBottomSheet
-import com.alorma.caducity.ui.screen.products.ProductsListRoute
 import com.alorma.caducity.ui.screen.products.ProductsListScreen
 import com.alorma.caducity.ui.screen.settings.Settings
 import com.alorma.caducity.ui.screen.settings.SettingsContainer
@@ -92,7 +89,7 @@ fun App(
 
     val topLevelRoutes = persistentListOf(
       TopLevelRoute.Dashboard,
-      TopLevelRoute.Products,
+      TopLevelRoute.Products(),
     )
 
     val exitAlwaysScrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
@@ -114,17 +111,17 @@ fun App(
               .zIndex(1f),
             scrollBehaviour = exitAlwaysScrollBehavior,
             topLevelRoutes = topLevelRoutes,
-            isRouteSelected = { topLevelBackStack.topLevelKey == it },
+            isRouteSelected = { topLevelBackStack.topLevelKey::class == it::class },
             onTopLevelUpdate = { topLevelBackStack.addTopLevel(it) },
             onCreateProduct = { topLevelBackStack.add(CreateProductRoute) },
           )
         }
       },
     ) { paddingValues ->
-      val motionScheme = CaducityTheme.motionScheme
-
       NavDisplay(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(paddingValues),
         backStack = topLevelBackStack.backStack,
         onBack = { topLevelBackStack.removeLast() },
         entryDecorators = listOf(
@@ -145,17 +142,25 @@ fun App(
             DashboardScreen(
               scrollConnection = exitAlwaysScrollBehavior,
               onNavigateToProduct = { productId ->
-                topLevelBackStack.add(ProductDetailRoute(productId))
+                topLevelBackStack.add(
+                  ProductDetailRoute(productId)
+                )
               },
               onNavigateToDate = { date ->
-                topLevelBackStack.add(ProductsListRoute.byDate(date))
+                topLevelBackStack.addTopLevel(
+                  TopLevelRoute.Products.byDate(
+                    date
+                  )
+                )
               },
               onNavigateToStatus = { status ->
-                topLevelBackStack.add(ProductsListRoute.byStatus(setOf(status)))
+                topLevelBackStack.addTopLevel(
+                  TopLevelRoute.Products.byStatus(
+                    setOf(status)
+                  )
+                )
               },
-              onNavigateToSettings = {
-                topLevelBackStack.add(Settings)
-              },
+              onNavigateToSettings = { topLevelBackStack.add(Settings) },
             )
           }
           entry<TopLevelRoute.Products> {
@@ -178,21 +183,6 @@ fun App(
               onProductCreated = { productId ->
                 topLevelBackStack.removeLast() // Remove create screen
                 topLevelBackStack.add(ProductDetailRoute(productId)) // Navigate to detail
-              }
-            )
-          }
-          entry<ProductsListRoute>(
-            metadata = BottomSheetSceneStrategy.bottomSheet(
-              sheetValue = SheetValue.PartiallyExpanded,
-            ),
-          ) {
-            ProductsListBottomSheet(
-              filters = it.toFilter(),
-              onNavigateToProductDetail = { productId ->
-                if (topLevelBackStack.backStack.last() is ProductsListRoute) {
-                  topLevelBackStack.removeLast()
-                }
-                topLevelBackStack.add(ProductDetailRoute(productId))
               }
             )
           }

@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     return when (destinationsParam) {
       TopLevelDestinationsParam.Dashboard -> TopLevelRoute.Dashboard
-      TopLevelDestinationsParam.Products -> TopLevelRoute.Products
+      TopLevelDestinationsParam.Products -> TopLevelRoute.Products()
       null -> null
     }
   }

@@ -5,21 +5,21 @@ import com.alorma.caducity.ui.components.calendar.calendarData
 import com.alorma.caducity.ui.components.calendar.daysOfWeekNames
 import com.alorma.caducity.ui.components.calendar.monthNames
 import com.alorma.caducity.ui.components.calendar.today
-import com.kizitonwose.calendar.core.minusDays
 import com.kizitonwose.calendar.core.minusMonths
-import com.kizitonwose.calendar.core.plusDays
 import com.kizitonwose.calendar.core.plusMonths
+
+internal val summary = DashboardSummary(
+  expired = 6,
+  expiringSoon = 1,
+  fresh = 9,
+  frozen = 8,
+)
 
 class DashboardPreviewProvider : CollectionPreviewParameterProvider<DashboardState>(
   listOf(
     DashboardState.Loading,
     DashboardState.Success.Unified(
-      summary = DashboardSummary(
-        expired = 6,
-        expiringSoon = 1,
-        fresh = 9,
-        frozen = 8,
-      ),
+      summary = summary,
       calendarState = CalendarState(
         today = today,
         startDate = today.minusMonths(2),
@@ -30,6 +30,7 @@ class DashboardPreviewProvider : CollectionPreviewParameterProvider<DashboardSta
       ),
     ),
     DashboardState.Success.PerProduct(
+      summary = summary,
       products = listOf(
         ProductCalendarState(
           id = "Potato1",

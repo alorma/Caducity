@@ -29,8 +29,7 @@ import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.screen.dashboard.components.DashboardPerProduct
-import com.alorma.caducity.ui.screen.dashboard.components.DashboardUnified
+import com.alorma.caducity.ui.screen.dashboard.components.DashboardSuccessContentList
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.datetime.LocalDate
@@ -147,18 +146,12 @@ fun DashboardSuccessContent(
       .fillMaxSize()
       .then(modifier),
   ) {
-    when (state) {
-      is DashboardState.Success.Unified -> DashboardUnified(
-        state = state,
-        onNavigateToStatus = onNavigateToStatus,
-        onNavigateToDate = onNavigateToDate,
-      )
-
-      is DashboardState.Success.PerProduct -> DashboardPerProduct(
-        state = state,
-        onNavigateToProduct = onNavigateToProduct,
-      )
-    }
+    DashboardSuccessContentList(
+      state = state,
+      onNavigateToProduct = onNavigateToProduct,
+      onNavigateToStatus = onNavigateToStatus,
+      onNavigateToDate = onNavigateToDate,
+    )
   }
 }
 
