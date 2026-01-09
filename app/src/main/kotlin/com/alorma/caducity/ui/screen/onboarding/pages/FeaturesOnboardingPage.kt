@@ -22,9 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.CalendarExpand
 import com.alorma.caducity.base.ui.icons.Dashboard
 import com.alorma.caducity.base.ui.icons.Notifications
+import com.alorma.caducity.base.ui.icons.outlined.Calendar
 import com.alorma.caducity.ui.theme.CaducityTheme
 
 @Composable
@@ -46,7 +46,7 @@ fun FeaturesOnboardingPage(modifier: Modifier = Modifier) {
     Spacer(modifier = Modifier.height(48.dp))
 
     FeatureItem(
-      icon = AppIcons.CalendarExpand,
+      icon = AppIcons.Outlined.Calendar,
       text = stringResource(R.string.onboarding_features_track),
     )
 

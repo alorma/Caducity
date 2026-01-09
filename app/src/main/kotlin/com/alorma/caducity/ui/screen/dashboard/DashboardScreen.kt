@@ -24,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.outlined.Calendar
+import com.alorma.caducity.base.ui.icons.outlined.ListMode
 import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StyledTopAppBar
@@ -62,6 +64,7 @@ fun DashboardScreen(
         onNavigateToDate = onNavigateToDate,
         onNavigateToStatus = onNavigateToStatus,
         onNavigateToSettings = onNavigateToSettings,
+        onChangeDashboardMode = viewModel::changeDashboardMode
       )
     }
   }
@@ -75,6 +78,7 @@ fun DashboardContent(
   onNavigateToDate: (LocalDate) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
+  onChangeDashboardMode: (DashboardMode) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   AppScaffold(
@@ -87,6 +91,31 @@ fun DashboardContent(
           Text(text = stringResource(R.string.dashboard_screen_title))
         },
         actions = {
+          when (state.mode) {
+            DashboardMode.Unified -> {
+              IconButton(
+                onClick = { onChangeDashboardMode(DashboardMode.PerProduct) },
+              ) {
+                Icon(
+                  imageVector = AppIcons.Outlined.ListMode,
+                  contentDescription = null,
+                )
+              }
+            }
+
+            DashboardMode.PerProduct -> {
+              IconButton(
+                onClick = { onChangeDashboardMode(DashboardMode.Unified) },
+              ) {
+                Icon(
+                  imageVector = AppIcons.Outlined.Calendar,
+                  contentDescription = null,
+                )
+              }
+            }
+          }
+
+
           IconButton(
             onClick = onNavigateToSettings,
           ) {
@@ -137,6 +166,7 @@ fun DashboardContentPreview() {
     Surface {
       DashboardContent(
         state = DashboardState.Success(
+          mode = DashboardMode.Unified,
           summary = DashboardSummary(
             expired = 6,
             expiringSoon = 1,
@@ -158,6 +188,7 @@ fun DashboardContentPreview() {
         onNavigateToDate = {},
         onNavigateToStatus = {},
         onNavigateToSettings = {},
+        onChangeDashboardMode = {},
       )
     }
   }
