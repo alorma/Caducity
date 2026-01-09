@@ -7,6 +7,7 @@ import org.koin.dsl.module
 
 val dashboardModule = module {
   singleOf(::ObtainDashboardProductsUseCase)
+  singleOf(::DashboardConfigurator)
   singleOf(::DashboardMapper)
   viewModelOf(::DashboardViewModel)
 

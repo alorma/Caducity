@@ -4,6 +4,7 @@ sealed class DashboardState {
   data object Loading : DashboardState()
 
   data class Success(
+    val mode: DashboardMode,
     val summary: DashboardSummary,
     val calendarState: CalendarState,
   ) : DashboardState()

@@ -9,7 +9,6 @@ import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.plusMonths
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.DateTimeUnit
@@ -24,6 +23,7 @@ class DashboardMapper(
 ) {
 
   fun mapToDashboardState(
+    dashboardState: DashboardConfigState,
     instances: ImmutableList<ProductInstance>,
   ): DashboardState {
     val summary = calculateSummary(instances)
@@ -33,6 +33,7 @@ class DashboardMapper(
     )
 
     return DashboardState.Success(
+      mode = dashboardState.mode,
       summary = summary,
       calendarState = calendarState,
     )
