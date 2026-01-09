@@ -15,6 +15,15 @@ enum class ShapePosition {
   End;
 }
 
+fun List<Any>.calculateShape(index: Int): ShapePosition {
+  return when {
+    size == 1 -> ShapePosition.Single
+    index == 0 -> ShapePosition.Start
+    index == lastIndex -> ShapePosition.End
+    else -> ShapePosition.Middle
+  }
+}
+
 @Suppress("ContentEmission")
 @Composable
 fun ShapePosition.toVerticalShape(): Shape {

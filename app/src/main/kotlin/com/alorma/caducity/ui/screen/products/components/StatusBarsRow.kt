@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.shape.ShapePosition
@@ -21,6 +22,7 @@ import kotlinx.collections.immutable.ImmutableList
 fun StatusBarsRow(
   statusGroups: ImmutableList<ProductInstanceVariantGroup>,
   modifier: Modifier = Modifier,
+  gap: Dp = 4.dp,
 ) {
   if (statusGroups.isEmpty()) return
 
@@ -28,7 +30,7 @@ fun StatusBarsRow(
     modifier = modifier
       .fillMaxWidth()
       .height(24.dp),
-    horizontalArrangement = Arrangement.spacedBy(2.dp),
+    horizontalArrangement = Arrangement.spacedBy(gap),
   ) {
     val groupSize = statusGroups.size
     statusGroups.forEachIndexed { index, statusGroup ->

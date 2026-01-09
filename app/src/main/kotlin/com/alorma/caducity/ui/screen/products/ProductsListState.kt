@@ -53,6 +53,7 @@ data class ProductInstanceVariantGroup(
 
 @Stable
 data class ProductListStandaloneInstance(
+  val id: String,
   val name: String,
   val status: InstanceStatus,
 )
