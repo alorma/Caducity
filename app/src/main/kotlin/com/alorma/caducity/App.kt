@@ -4,12 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -66,6 +61,7 @@ import com.alorma.caducity.ui.screen.product.detail.ProductDetailRoute
 import com.alorma.caducity.ui.screen.products.ProductsListBottomSheet
 import com.alorma.caducity.ui.screen.products.ProductsListRoute
 import com.alorma.caducity.ui.screen.products.ProductsListScreen
+import com.alorma.caducity.ui.screen.settings.Settings
 import com.alorma.caducity.ui.screen.settings.SettingsContainer
 import com.alorma.caducity.ui.theme.AppTheme
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -97,7 +93,6 @@ fun App(
     val topLevelRoutes = persistentListOf(
       TopLevelRoute.Dashboard,
       TopLevelRoute.Products,
-      TopLevelRoute.Settings,
     )
 
     val exitAlwaysScrollBehavior = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
@@ -112,13 +107,7 @@ fun App(
       floatingActionButton = {
         val isTopLevelRoute = topLevelBackStack.backStack.last() is TopLevelRoute
 
-        val motionScheme = CaducityTheme.motionScheme
-
-        AnimatedVisibility(
-          isTopLevelRoute,
-          enter = slideInVertically(motionScheme.slowSpatialSpec()) { it },
-          exit = slideOutVertically(motionScheme.slowSpatialSpec()) { it }
-        ) {
+        AnimatedVisibility(isTopLevelRoute) {
           NavigationBar(
             modifier = Modifier
               .padding(BottomAppBarDefaults.windowInsets.asPaddingValues())
@@ -143,18 +132,6 @@ fun App(
           rememberViewModelStoreNavEntryDecorator(),
         ),
         sceneStrategy = bottomSheetStrategy,
-        transitionSpec = {
-          fadeIn(motionScheme.defaultEffectsSpec())
-            .togetherWith(fadeOut(motionScheme.defaultEffectsSpec()))
-        },
-        popTransitionSpec = {
-          fadeIn(motionScheme.defaultEffectsSpec())
-            .togetherWith(fadeOut(motionScheme.defaultEffectsSpec()))
-        },
-        predictivePopTransitionSpec = {
-          fadeIn(motionScheme.defaultEffectsSpec())
-            .togetherWith(fadeOut(motionScheme.defaultEffectsSpec()))
-        },
         entryProvider = entryProvider {
           entry<OnboardingRoute> {
             OnboardingScreen(
@@ -173,6 +150,9 @@ fun App(
               onNavigateToStatus = { status ->
                 topLevelBackStack.add(ProductsListRoute.byStatus(setOf(status)))
               },
+              onNavigateToSettings = {
+                topLevelBackStack.add(Settings)
+              },
             )
           }
           entry<TopLevelRoute.Products> {
@@ -184,7 +164,7 @@ fun App(
               },
             )
           }
-          entry<TopLevelRoute.Settings> {
+          entry<Settings> {
             SettingsContainer(
               scrollConnection = exitAlwaysScrollBehavior
             )

@@ -37,14 +37,9 @@ fun SettingsContainer(
     mutableStateListOf<NavKey>(SettingsRoute.Root)
   }
 
-  val bottomSheetStrategy = remember {
-    BottomSheetSceneStrategy<NavKey>()
-  }
-
   NavDisplay(
     modifier = modifier,
     backStack = settingsBackStack,
-    sceneStrategy = bottomSheetStrategy,
     entryDecorators = listOf(
       rememberSaveableStateHolderNavEntryDecorator(),
       rememberViewModelStoreNavEntryDecorator(),
@@ -61,9 +56,7 @@ fun SettingsContainer(
           onNavigateToAbout = { settingsBackStack.add(SettingsRoute.About) },
         )
       }
-      entry<SettingsRoute.Appearance>(
-        metadata = BottomSheetSceneStrategy.bottomSheet(),
-      ) {
+      entry<SettingsRoute.Appearance> {
         AppearanceSettingsScreen(
           themeMode = themePreferences.themeMode.value,
           useDynamicTheme = themePreferences.useDynamicColors.value,
@@ -72,33 +65,25 @@ fun SettingsContainer(
           onClose = { settingsBackStack.removeLastOrNull() },
         )
       }
-      entry<SettingsRoute.Notifications>(
-        metadata = BottomSheetSceneStrategy.bottomSheet(),
-      ) {
+      entry<SettingsRoute.Notifications> {
         NotificationsSettingsScreen(
           onClose = { settingsBackStack.removeLastOrNull() },
         )
       }
-      entry<SettingsRoute.Backup>(
-        metadata = BottomSheetSceneStrategy.bottomSheet(),
-      ) {
+      entry<SettingsRoute.Backup> {
         BackupScreen(
           onClose = { settingsBackStack.removeLastOrNull() },
         )
       }
       if (debugModeProvider.isDebugMode()) {
-        entry<SettingsRoute.Debug>(
-          metadata = BottomSheetSceneStrategy.bottomSheet(),
-        ) {
+        entry<SettingsRoute.Debug> {
           DebugSettingsScreen(
             triggerNotificationCheck = { debugHelper.triggerImmediateCheck() },
             onClose = { settingsBackStack.removeLastOrNull() },
           )
         }
       }
-      entry<SettingsRoute.About>(
-        metadata = BottomSheetSceneStrategy.bottomSheet(),
-      ) {
+      entry<SettingsRoute.About> {
         val localUriHandler = LocalUriHandler.current
 
         AboutScreen(

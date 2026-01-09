@@ -23,30 +23,24 @@ sealed interface TopLevelRoute : NavKey {
 
   @Serializable
   data object Products : TopLevelRoute
-
-  @Serializable
-  data object Settings : TopLevelRoute
 }
 
 @Composable
 fun TopLevelRoute.selectedIconImageVector() = when (this) {
   TopLevelRoute.Dashboard -> AppIcons.Filled.Dashboard
   TopLevelRoute.Products -> AppIcons.Filled.List
-  TopLevelRoute.Settings -> AppIcons.Filled.Settings
 }
 
 @Composable
 fun TopLevelRoute.unSelectedIconImageVector() = when (this) {
   TopLevelRoute.Dashboard -> AppIcons.Outlined.Dashboard
   TopLevelRoute.Products -> AppIcons.Outlined.List
-  TopLevelRoute.Settings -> AppIcons.Outlined.Settings
 }
 
 @Composable
 fun TopLevelRoute.textLabel() = when (this) {
   TopLevelRoute.Dashboard -> stringResource(R.string.dashboard_screen_title)
   TopLevelRoute.Products -> stringResource(R.string.products_screen_title)
-  TopLevelRoute.Settings -> stringResource(R.string.settings_screen_title)
 }
 
 @Suppress("ModifierRequired")

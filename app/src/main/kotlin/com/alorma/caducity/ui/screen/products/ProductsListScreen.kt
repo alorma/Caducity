@@ -102,10 +102,10 @@ private fun ProductsListContent(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
-    when (val currentState = state) {
+    when (state) {
       is ProductsListState.Loading -> loading()
-      is ProductsListState.Empty -> ProductsListEmptyState(currentState)
-      is ProductsListState.Success -> ProductsListSuccess(currentState, onNavigateToProductDetail)
+      is ProductsListState.Empty -> ProductsListEmptyState(state)
+      is ProductsListState.Success -> ProductsListSuccess(state, onNavigateToProductDetail)
     }
   }
 }
@@ -153,7 +153,10 @@ private fun ProductsListSuccess(
     contentPadding = PaddingValues(bottom = 16.dp),
     verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
-    itemsIndexed(state.items, key = { index, product -> product.id }) { index, product ->
+    itemsIndexed(
+      items = state.items,
+      key = { _, product -> product.id },
+    ) { index, product ->
 
       val shape = when {
         state.items.size == 1 -> ShapePosition.Single
