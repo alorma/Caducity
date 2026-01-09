@@ -21,6 +21,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.ThermometerSnow
 import com.alorma.caducity.ui.components.StatusBadge
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
@@ -62,6 +64,25 @@ fun ProductDetailScreen(
 
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarHostState()
+
+  LaunchedEffect(Unit) {
+    viewModel.sideEffect.collect { effect ->
+      when (effect) {
+        is ProductDetailSideEffect.ShowMessage -> {
+          snackbarState.showSnackbar(
+            message = effect.message,
+            type = AppFeedbackType.Success,
+          )
+        }
+        is ProductDetailSideEffect.ShowError -> {
+          snackbarState.showSnackbar(
+            message = effect.message,
+            type = AppFeedbackType.Error,
+          )
+        }
+      }
+    }
+  }
 
   when (val currentState = state.value) {
     is ProductDetailState.Loading -> {

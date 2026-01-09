@@ -3,17 +3,24 @@ package com.alorma.caducity.ui.screen.product.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class ProductDetailViewModel(
   productId: String,
   obtainProductDetailUseCase: ObtainProductDetailUseCase,
   productDetailMapper: ProductDetailMapper,
 ) : ViewModel() {
+
+  private val _sideEffect = Channel<ProductDetailSideEffect>(Channel.BUFFERED)
+  val sideEffect: Flow<ProductDetailSideEffect> = _sideEffect.receiveAsFlow()
 
   val state: StateFlow<ProductDetailState> = obtainProductDetailUseCase
     .obtainProductDetail(productId)
@@ -46,5 +53,11 @@ class ProductDetailViewModel(
 
   fun onDeleteInstance(instanceId: String) {
     // TODO: Implement delete instance logic
+  }
+
+  private fun emitSideEffect(effect: ProductDetailSideEffect) {
+    viewModelScope.launch {
+      _sideEffect.send(effect)
+    }
   }
 }
