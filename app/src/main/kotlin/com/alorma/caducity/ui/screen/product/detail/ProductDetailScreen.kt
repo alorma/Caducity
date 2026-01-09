@@ -28,8 +28,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Cooking
@@ -80,6 +82,12 @@ fun ProductDetailScreen(
             type = AppFeedbackType.Error,
           )
         }
+        is ProductDetailSideEffect.FreezeNotAvailable -> {
+          snackbarState.showSnackbar(
+            message = R.string.error_cannot_freeze_expired,
+            type = AppFeedbackType.Status(effect.status),
+          )
+        }
       }
     }
   }
@@ -102,9 +110,9 @@ fun ProductDetailScreen(
         snackbarHostState = snackbarState,
         dialogState = dialogState,
         onNavigateToAddInstance = onNavigateToAddInstance,
-        onConsumeInstance = viewModel::onConsumeInstance,
-        onFreezeInstance = viewModel::onFreezeInstance,
-        onDeleteInstance = viewModel::onDeleteInstance,
+        onConsumeInstance = { instance -> viewModel.onConsumeInstance(instance) },
+        onFreezeInstance = { instance -> viewModel.onFreezeInstance(instance) },
+        onDeleteInstance = { instance -> viewModel.onDeleteInstance(instance) },
       )
     }
 
@@ -130,9 +138,9 @@ private fun ProductDetailContent(
   snackbarHostState: AppSnackbarHostState,
   dialogState: AppDialogState,
   onNavigateToAddInstance: () -> Unit,
-  onConsumeInstance: (String) -> Unit,
-  onFreezeInstance: (String) -> Unit,
-  onDeleteInstance: (String) -> Unit,
+  onConsumeInstance: (ProductInstanceDetailUiModel) -> Unit,
+  onFreezeInstance: (ProductInstanceDetailUiModel) -> Unit,
+  onDeleteInstance: (ProductInstanceDetailUiModel) -> Unit,
 ) {
   AppScaffold(
     topBar = {
@@ -184,9 +192,9 @@ private fun ProductDetailContent(
             ProductInstanceCard(
               instance = instance,
               shapePosition = variant.instances.calculateShape(index),
-              onConsume = { onConsumeInstance(instance.id) },
-              onFreeze = { onFreezeInstance(instance.id) },
-              onDelete = { onDeleteInstance(instance.id) },
+              onConsume = { onConsumeInstance(instance) },
+              onFreeze = { onFreezeInstance(instance) },
+              onDelete = { onDeleteInstance(instance) },
             )
           }
         }
@@ -209,9 +217,9 @@ private fun ProductDetailContent(
           ProductInstanceCard(
             instance = instance,
             shapePosition = state.standaloneInstances.calculateShape(index),
-            onConsume = { onConsumeInstance(instance.id) },
-            onFreeze = { onFreezeInstance(instance.id) },
-            onDelete = { onDeleteInstance(instance.id) },
+            onConsume = { onConsumeInstance(instance) },
+            onFreeze = { onFreezeInstance(instance) },
+            onDelete = { onDeleteInstance(instance) },
           )
         }
       }
