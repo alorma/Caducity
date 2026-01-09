@@ -22,8 +22,8 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Backup
 import com.alorma.caducity.base.ui.icons.Restore
 import com.alorma.caducity.feature.backup.BackupFileHandler
-import com.alorma.caducity.ui.components.NavigationIcon
-import com.alorma.caducity.ui.components.StyledTopAppBar
+import com.alorma.caducity.ui.components.topbar.NavigationIcon
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
