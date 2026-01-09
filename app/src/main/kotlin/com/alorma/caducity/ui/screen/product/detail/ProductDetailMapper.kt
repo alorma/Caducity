@@ -26,22 +26,11 @@ class ProductDetailMapper(
       )
     }
 
-    // Map standalone instances
+    // Map standalone instances (already sorted by use case)
     val standaloneInstances = productWithInstances.standaloneInstances
       .map { instance ->
         mapInstanceToUi(instance)
       }
-      .sortedWith(
-        compareBy<ProductInstanceDetailUiModel> {
-          when (it.status) {
-            InstanceStatus.Expired -> 0
-            InstanceStatus.ExpiringSoon -> 1
-            InstanceStatus.Fresh -> 2
-            InstanceStatus.Frozen -> 3
-            InstanceStatus.Consumed -> 4
-          }
-        }.thenBy { it.expirationDate }
-      )
 
     return ProductDetailState.Success(
       product = ProductDetailUiModel(
