@@ -3,36 +3,56 @@ package com.alorma.caducity.ui.screen.dashboard
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 class DashboardViewModel(
   private val dashboardConfigurator: DashboardConfigurator,
-  obtainDashboardProductsUseCase: ObtainDashboardProductsUseCase,
+  private val obtainDashboardProductsUseCase: ObtainDashboardProductsUseCase,
   private val dashboardMapper: DashboardMapper,
 ) : ViewModel() {
 
-  val state: StateFlow<DashboardState> =
-    combine(
-      dashboardConfigurator.state,
-      obtainDashboardProductsUseCase
-        .obtainProducts()
-    ) { dashboardState, instances ->
-      dashboardMapper.mapToDashboardState(
-        dashboardState = dashboardState,
-        instances = instances,
-      )
-    }.stateIn(
+  @OptIn(ExperimentalCoroutinesApi::class)
+  val state: StateFlow<DashboardState> = dashboardConfigurator
+    .state
+    .flatMapConcat { dashboardConfig ->
+      when (dashboardConfig.mode) {
+        DashboardMode.Unified -> obtainUnifiedDashboard()
+        DashboardMode.PerProduct -> obtainUnifiedDashboard()
+      }
+    }
+    .map { dashboardModeState ->
+      DashboardState.Success(data = dashboardModeState)
+    }
+    .stateIn(
       scope = viewModelScope,
       started = SharingStarted.WhileSubscribed(5.seconds),
       initialValue = DashboardState.Loading,
     )
 
+  private fun obtainUnifiedDashboard(): Flow<DashboardModeState> {
+    return obtainDashboardProductsUseCase
+      .obtainProducts()
+      .map { instances ->
+        dashboardMapper.mapToUnifiedState(instances = instances)
+      }
+  }
+
+  private fun obtainPerProductDashboard(): Flow<DashboardModeState> {
+    return obtainDashboardProductsUseCase
+      .obtainProducts()
+      .map { instances ->
+        dashboardMapper.mapToPerProductState(instances = instances)
+      }
+  }
 
   fun changeDashboardMode(mode: DashboardMode) = viewModelScope.launch {
     dashboardConfigurator.changeDashboardMode(mode)

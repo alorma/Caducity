@@ -22,18 +22,31 @@ class DashboardMapper(
   private val localizedDateFormatter: LocalizedDateFormatter,
 ) {
 
-  fun mapToDashboardState(
-    dashboardState: DashboardConfigState,
+  fun mapToUnifiedState(
     instances: ImmutableList<ProductInstance>,
-  ): DashboardState {
+  ): DashboardModeState {
     val summary = calculateSummary(instances)
 
     val calendarState = calculateCalendarState(
       instances = instances,
     )
 
-    return DashboardState.Success(
-      mode = dashboardState.mode,
+    return DashboardModeState.Unified(
+      summary = summary,
+      calendarState = calendarState,
+    )
+  }
+
+  fun mapToPerProductState(
+    instances: ImmutableList<ProductInstance>,
+  ): DashboardModeState {
+    val summary = calculateSummary(instances)
+
+    val calendarState = calculateCalendarState(
+      instances = instances,
+    )
+
+    return DashboardModeState.PerProduct(
       summary = summary,
       calendarState = calendarState,
     )
@@ -130,7 +143,7 @@ class DashboardMapper(
     instances: List<ProductInstance>,
     today: LocalDate
   ): Map<LocalDate, InstanceStatus?> {
-    return buildMap<LocalDate, InstanceStatus?> {
+    return buildMap {
       instances.forEach { instance ->
         val date = instance.expirationDate.toLocalDateTime(TimeZone.currentSystemDefault()).date
         val currentStatus = get(date)
