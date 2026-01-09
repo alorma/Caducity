@@ -1,13 +1,11 @@
 package com.alorma.caducity.ui.screen.dashboard
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarExitDirection
@@ -21,7 +19,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
@@ -30,10 +27,10 @@ import com.alorma.caducity.base.ui.icons.outlined.ListMode
 import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StyledTopAppBar
-import com.alorma.caducity.ui.components.calendar.CaducityMonthCalendar
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.screen.dashboard.components.DashboardSummaryCard
+import com.alorma.caducity.ui.screen.dashboard.components.DashboardPerProduct
+import com.alorma.caducity.ui.screen.dashboard.components.DashboardUnified
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.datetime.LocalDate
@@ -71,65 +68,36 @@ private fun DashboardContent(
   onNavigateToSettings: () -> Unit,
   onChangeDashboardMode: (DashboardMode) -> Unit,
 ) {
-  when (state) {
-    is DashboardState.Loading -> DashboardLoadingContent()
-    is DashboardState.Success -> DashboardSuccessContent(
-      state = state,
-      scrollConnection = scrollConnection,
-      onNavigateToDate = onNavigateToDate,
-      onNavigateToStatus = onNavigateToStatus,
-      onNavigateToSettings = onNavigateToSettings,
-      onChangeDashboardMode = onChangeDashboardMode,
-    )
-  }
-}
-
-@Composable
-private fun DashboardLoadingContent() {
-  FullscreenLoading()
-}
-
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun DashboardSuccessContent(
-  state: DashboardState.Success,
-  scrollConnection: NestedScrollConnection,
-  onNavigateToDate: (LocalDate) -> Unit,
-  onNavigateToStatus: (InstanceStatus) -> Unit,
-  onNavigateToSettings: () -> Unit,
-  onChangeDashboardMode: (DashboardMode) -> Unit,
-  modifier: Modifier = Modifier,
-) {
   AppScaffold(
     modifier = Modifier
-      .nestedScroll(scrollConnection)
-      .then(modifier),
+      .nestedScroll(scrollConnection),
     topBar = {
       StyledTopAppBar(
-        title = {
-          Text(text = stringResource(R.string.dashboard_screen_title))
-        },
+        title = { Text(text = stringResource(R.string.dashboard_screen_title)) },
         actions = {
-          when (state) {
-            is DashboardState.Success.Unified -> {
-              IconButton(
-                onClick = { onChangeDashboardMode(DashboardMode.PerProduct) },
-              ) {
-                Icon(
-                  imageVector = AppIcons.Outlined.ListMode,
-                  contentDescription = null,
-                )
+          AnimatedContent(state) { stateContent ->
+            when (state) {
+              is DashboardState.Loading -> {}
+              is DashboardState.Success.Unified -> {
+                IconButton(
+                  onClick = { onChangeDashboardMode(DashboardMode.PerProduct) },
+                ) {
+                  Icon(
+                    imageVector = AppIcons.Outlined.ListMode,
+                    contentDescription = null,
+                  )
+                }
               }
-            }
 
-            is DashboardState.Success.PerProduct -> {
-              IconButton(
-                onClick = { onChangeDashboardMode(DashboardMode.Unified) },
-              ) {
-                Icon(
-                  imageVector = AppIcons.Outlined.Calendar,
-                  contentDescription = null,
-                )
+              is DashboardState.Success.PerProduct -> {
+                IconButton(
+                  onClick = { onChangeDashboardMode(DashboardMode.Unified) },
+                ) {
+                  Icon(
+                    imageVector = AppIcons.Outlined.Calendar,
+                    contentDescription = null,
+                  )
+                }
               }
             }
           }
@@ -145,68 +113,52 @@ fun DashboardSuccessContent(
       )
     },
   ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues),
-    ) {
-      when (state) {
-        is DashboardState.Success.Unified -> {
-          DashboardUnified(
-            state = state,
-            onNavigateToStatus = onNavigateToStatus,
-            onNavigateToDate = onNavigateToDate,
-          )
-        }
-
-        is DashboardState.Success.PerProduct -> DashboardPerProduct(
-          state = state,
-          onNavigateToStatus = onNavigateToStatus,
-          onNavigateToDate = onNavigateToDate,
-        )
-      }
+    when (state) {
+      is DashboardState.Loading -> DashboardLoadingContent()
+      is DashboardState.Success -> DashboardSuccessContent(
+        modifier = Modifier.padding(paddingValues),
+        state = state,
+        onNavigateToDate = onNavigateToDate,
+        onNavigateToStatus = onNavigateToStatus,
+      )
     }
   }
 }
 
 @Composable
-private fun DashboardUnified(
-  state: DashboardState.Success.Unified,
+private fun DashboardLoadingContent() {
+  FullscreenLoading()
+}
+
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun DashboardSuccessContent(
+  state: DashboardState.Success,
+  onNavigateToDate: (LocalDate) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
-  onNavigateToDate: (LocalDate) -> Unit
+  modifier: Modifier = Modifier,
 ) {
-  LazyColumn(
-    verticalArrangement = Arrangement.spacedBy(16.dp),
-    contentPadding = PaddingValues(bottom = 64.dp),
+  Column(
+    modifier = Modifier
+      .fillMaxSize()
+      .then(modifier),
   ) {
-
-    item(
-      key = "summary",
-      contentType = "summary"
-    ) {
-      DashboardSummaryCard(
-        summary = state.summary,
-        onStatusClick = { status -> onNavigateToStatus(status) },
+    when (state) {
+      is DashboardState.Success.Unified -> DashboardUnified(
+        state = state,
+        onNavigateToStatus = onNavigateToStatus,
+        onNavigateToDate = onNavigateToDate,
       )
-    }
 
-    item(contentType = "calendar") {
-      CaducityMonthCalendar(
-        calendarState = state.calendarState,
-        onDateClick = onNavigateToDate,
+      is DashboardState.Success.PerProduct -> DashboardPerProduct(
+        state = state,
+        onNavigateToStatus = onNavigateToStatus,
+        onNavigateToDate = onNavigateToDate,
       )
     }
   }
 }
 
-@Composable
-private fun DashboardPerProduct(
-  state: DashboardState.Success.PerProduct,
-  onNavigateToStatus: (InstanceStatus) -> Unit,
-  onNavigateToDate: (LocalDate) -> Unit
-) {
-  Text(text = "Potato")
-}
 
 @PreviewDynamicLightDark
 @Composable
