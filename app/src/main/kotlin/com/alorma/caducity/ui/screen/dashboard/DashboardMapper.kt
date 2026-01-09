@@ -56,7 +56,7 @@ class DashboardMapper(
     }
 
     return DashboardState.Success.PerProduct(
-      states = mapped,
+      products = mapped,
     )
   }
 
@@ -86,13 +86,13 @@ class DashboardMapper(
   private fun calculateCalendarState(
     instances: List<ProductInstance>,
   ): CalendarState {
-
     val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+
     return if (instances.isEmpty()) {
       CalendarState(
         today = today,
-        startLocalDate = today.minusMonths(1),
-        endLocalDate = today.plusMonths(1),
+        startDate = today.minusMonths(2),
+        endDate = today.plusMonths(2),
         content = persistentMapOf(),
         monthNames = localizedDateFormatter.getMonthNames(),
         daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
@@ -114,8 +114,8 @@ class DashboardMapper(
 
       CalendarState(
         today = today,
-        startLocalDate = startDate.minusMonths(1),
-        endLocalDate = endDate.plusMonths(1),
+        startDate = startDate.minusMonths(1),
+        endDate = endDate.plusMonths(1),
         content = dateWithShapes,
         monthNames = localizedDateFormatter.getMonthNames(),
         daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),

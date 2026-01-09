@@ -144,6 +144,9 @@ fun App(
           entry<TopLevelRoute.Dashboard> {
             DashboardScreen(
               scrollConnection = exitAlwaysScrollBehavior,
+              onNavigateToProduct = { productId ->
+                topLevelBackStack.add(ProductDetailRoute(productId))
+              },
               onNavigateToDate = { date ->
                 topLevelBackStack.add(ProductsListRoute.byDate(date))
               },

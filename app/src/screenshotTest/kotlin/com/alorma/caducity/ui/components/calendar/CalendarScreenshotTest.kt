@@ -11,6 +11,15 @@ class CalendarScreenshotTest {
   @PreviewTest
   @PreviewDynamicLightDark
   @Composable
+  fun CaducityWeekCalendarTest(
+    @PreviewParameter(provider = CalendarStateProvider::class) calendarState: CalendarState,
+  ) {
+    CaducityWeekCalendarPreview(calendarState)
+  }
+
+  @PreviewTest
+  @PreviewDynamicLightDark
+  @Composable
   fun CaducityMonthCalendarTest(
     @PreviewParameter(provider = CalendarStateProvider::class) calendarState: CalendarState,
   ) {

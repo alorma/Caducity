@@ -26,8 +26,8 @@ data class ProductCalendarState(
 @Stable
 data class CalendarState(
   val today: LocalDate,
-  val startLocalDate: LocalDate,
-  val endLocalDate: LocalDate,
+  val startDate: LocalDate,
+  val endDate: LocalDate,
   val content: ImmutableMap<LocalDate, CalendarDateInfo>,
   val monthNames: MonthNames,
   val daysOfWeekNames: DayOfWeekNames,

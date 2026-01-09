@@ -66,16 +66,16 @@ class CalendarStateProvider : CollectionPreviewParameterProvider<CalendarState>(
   listOf(
     CalendarState(
       today = today,
-      startLocalDate = today.minusMonths(2),
-      endLocalDate = today.plusMonths(2),
+      startDate = today.minusMonths(2),
+      endDate = today.plusMonths(2),
       content = emptyMap<LocalDate, CalendarDateInfo>().toImmutableMap(),
       daysOfWeekNames = daysOfWeekNames,
       monthNames = monthNames,
     ),
     CalendarState(
       today = today,
-      startLocalDate = today.minusMonths(2),
-      endLocalDate = today.plusMonths(2),
+      startDate = today.minusMonths(2),
+      endDate = today.plusMonths(2),
       content = calendarData,
       daysOfWeekNames = daysOfWeekNames,
       monthNames = monthNames,
