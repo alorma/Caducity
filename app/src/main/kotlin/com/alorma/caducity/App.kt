@@ -47,7 +47,6 @@ import com.alorma.caducity.config.navigation.Icon
 import com.alorma.caducity.config.navigation.Label
 import com.alorma.caducity.config.navigation.TopLevelBackStack
 import com.alorma.caducity.config.navigation.TopLevelRoute
-import com.alorma.caducity.domain.usecase.ProductsListFilter
 import com.alorma.caducity.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
@@ -163,9 +162,9 @@ fun App(
               onNavigateToSettings = { topLevelBackStack.add(Settings) },
             )
           }
-          entry<TopLevelRoute.Products> {
+          entry<TopLevelRoute.Products> { route ->
             ProductsListScreen(
-              filters = ProductsListFilter.All,
+              filters = route.toFilter(),
               scrollConnection = exitAlwaysScrollBehavior,
               onNavigateToProductDetail = { productId ->
                 topLevelBackStack.add(ProductDetailRoute(productId))
