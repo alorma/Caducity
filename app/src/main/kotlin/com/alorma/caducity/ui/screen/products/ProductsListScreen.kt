@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.products
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,6 +52,7 @@ import org.koin.core.parameter.parametersOf
 fun ProductsListScreen(
   filters: ProductsListFilter,
   onNavigateToProductDetail: (String) -> Unit,
+  onCreateProduct: () -> Unit,
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
   viewModel: ProductsListViewModel = koinViewModel { parametersOf(filters) },
@@ -67,7 +69,7 @@ fun ProductsListScreen(
       )
     },
     floatingActionButton = {
-      FloatingActionButton(onClick = {}) {
+      FloatingActionButton(onClick = onCreateProduct) {
         Icon(
           imageVector = AppIcons.Add,
           contentDescription = null,
@@ -179,6 +181,7 @@ private fun ProductsListSuccess(
             ProductVariantCard(
               variant = variant,
               shapePosition = product.variants.calculateShape(index),
+              onClick = { onNavigateToProductDetail(product.id) },
             )
           }
 
@@ -196,6 +199,7 @@ private fun ProductsListSuccess(
             ProductInstanceCard(
               instance = instance,
               shapePosition = product.standaloneInstances.calculateShape(index),
+              onClick = { onNavigateToProductDetail(product.id) },
             )
           }
         }
@@ -237,6 +241,7 @@ private fun ProductEmptyState(
 private fun ProductVariantCard(
   variant: ProductInstanceVariant,
   shapePosition: com.alorma.caducity.ui.components.shape.ShapePosition,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val totalCount = remember(variant.id) {
@@ -249,7 +254,9 @@ private fun ProductVariantCard(
     color = CaducityTheme.colorScheme.surfaceContainer,
   ) {
     Column(
-      modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+      modifier = Modifier
+        .clickable(onClick = onClick)
+        .padding(horizontal = 16.dp, vertical = 16.dp),
       verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
       Text(
@@ -273,6 +280,7 @@ private fun ProductVariantCard(
 private fun ProductInstanceCard(
   instance: ProductListStandaloneInstance,
   shapePosition: com.alorma.caducity.ui.components.shape.ShapePosition,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Surface(
@@ -281,7 +289,9 @@ private fun ProductInstanceCard(
     color = CaducityTheme.colorScheme.surfaceContainer,
   ) {
     Row(
-      modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+      modifier = Modifier
+        .clickable(onClick = onClick)
+        .padding(horizontal = 16.dp, vertical = 16.dp),
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       verticalAlignment = Alignment.CenterVertically,
     ) {
