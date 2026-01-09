@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -28,6 +30,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.Add
+import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.domain.usecase.ProductsListFilter
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
@@ -61,6 +65,14 @@ fun ProductsListScreen(
       StyledTopAppBar(
         title = { Text(stringResource(R.string.products_screen_title)) },
       )
+    },
+    floatingActionButton = {
+      FloatingActionButton(onClick = {}) {
+        Icon(
+          imageVector = AppIcons.Add,
+          contentDescription = null,
+        )
+      }
     },
   ) { paddingValues ->
     ProductsListContent(
