@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -136,16 +135,16 @@ private fun ProductsListSuccess(
 ) {
   LazyColumn(
     verticalArrangement = Arrangement.spacedBy(2.dp),
+    contentPadding = PaddingValues(bottom = 16.dp),
   ) {
     state.items.forEachIndexed { index, product ->
       item(
         key = "product-${product.id}-title",
         contentType = "product-title",
       ) {
-        Text(
-          text = product.name,
-          style = MaterialTheme.typography.titleMedium,
-          color = CaducityTheme.colorScheme.onSurface,
+        ProductTitle(
+          name = product.name,
+          isFirst = index == 0,
         )
       }
 
@@ -155,77 +154,131 @@ private fun ProductsListSuccess(
             key = "product-${product.id}-empty",
             contentType = "product-empty",
           ) {
-            Text(
-              modifier = Modifier.padding(vertical = 4.dp),
-              text = "No instances",
-              style = MaterialTheme.typography.bodySmall,
-              color = CaducityTheme.colorScheme.onSurfaceVariant,
-            )
+            ProductEmptyState()
           }
         }
 
         is ProductListUiModel.WithContent -> {
           itemsIndexed(
             items = product.variants,
-            key = { index, variant -> "product-${product.id}-variant-${variant.id}" },
+            key = { _, variant -> "product-${product.id}-variant-${variant.id}" },
             contentType = { _, _ -> "product-variant" },
           ) { index, variant ->
+            ProductVariantCard(
+              variant = variant,
+              shapePosition = product.variants.calculateShape(index),
+            )
+          }
 
-            val shapePosition = product.variants.calculateShape(index)
-
-            val totalCount = remember(variant.id) {
-              variant.statusGroups.sumOf { it.count } + variant.frozenCount
-            }
-
-            Surface(
-              shape = shapePosition.toVerticalShape(),
-              color = CaducityTheme.colorScheme.surfaceContainer,
-            ) {
-              Column(
-                modifier = Modifier.padding(12.dp),
-              ) {
-                Text(
-                  text = "—\t${variant.name} ($totalCount)",
-                  style = MaterialTheme.typography.labelLarge,
-                  color = CaducityTheme.colorScheme.onSurface,
-                )
-                StatusBarsRow(statusGroups = variant.statusGroups)
-                if (variant.frozenCount > 0) {
-                  Text(
-                    text = stringResource(R.string.products_list_items_frozen, variant.frozenCount),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = CaducityTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 4.dp)
-                  )
-                }
-              }
+          if (product.variants.isNotEmpty()) {
+            item {
+              Spacer(modifier = Modifier.height(8.dp))
             }
           }
 
-          items(
+          itemsIndexed(
             items = product.standaloneInstances,
-            key = { instance -> "product-${product.id}-instance-${instance.id}" },
-            contentType = { "product-variant" },
-          ) { instance ->
-            Row(
-              horizontalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-              Text(
-                text = "—\t${instance.name}",
-                style = MaterialTheme.typography.labelLarge,
-                color = CaducityTheme.colorScheme.onSurface,
-              )
-              StatusBadge(instance.status)
-            }
+            key = { _, instance -> "product-${product.id}-instance-${instance.id}" },
+            contentType = { _, _ -> "product-instance" },
+          ) { index, instance ->
+            ProductInstanceCard(
+              instance = instance,
+              shapePosition = product.standaloneInstances.calculateShape(index),
+            )
           }
         }
       }
+    }
+  }
+}
 
-      if (index < state.items.lastIndex) {
-        item {
-          Spacer(modifier = Modifier.height(12.dp))
-        }
+@Composable
+private fun ProductTitle(
+  name: String,
+  isFirst: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  Text(
+    modifier = modifier.padding(
+      top = if (isFirst) 0.dp else 24.dp,
+      bottom = 8.dp
+    ),
+    text = name,
+    style = MaterialTheme.typography.titleMedium,
+    color = CaducityTheme.colorScheme.onSurface,
+  )
+}
+
+@Composable
+private fun ProductEmptyState(
+  modifier: Modifier = Modifier,
+) {
+  Text(
+    modifier = modifier.padding(vertical = 4.dp),
+    text = "No instances",
+    style = MaterialTheme.typography.bodySmall,
+    color = CaducityTheme.colorScheme.onSurfaceVariant,
+  )
+}
+
+@Composable
+private fun ProductVariantCard(
+  variant: ProductInstanceVariant,
+  shapePosition: com.alorma.caducity.ui.components.shape.ShapePosition,
+  modifier: Modifier = Modifier,
+) {
+  val totalCount = remember(variant.id) {
+    variant.statusGroups.sumOf { it.count } + variant.frozenCount
+  }
+
+  Surface(
+    modifier = modifier.fillMaxWidth(),
+    shape = shapePosition.toVerticalShape(),
+    color = CaducityTheme.colorScheme.surfaceContainer,
+  ) {
+    Column(
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      Text(
+        text = "—\t${variant.name} ($totalCount)",
+        style = MaterialTheme.typography.labelLarge,
+        color = CaducityTheme.colorScheme.onSurface,
+      )
+      StatusBarsRow(statusGroups = variant.statusGroups)
+      if (variant.frozenCount > 0) {
+        Text(
+          text = stringResource(R.string.products_list_items_frozen, variant.frozenCount),
+          style = MaterialTheme.typography.bodySmall,
+          color = CaducityTheme.colorScheme.onSurfaceVariant,
+        )
       }
+    }
+  }
+}
+
+@Composable
+private fun ProductInstanceCard(
+  instance: ProductListStandaloneInstance,
+  shapePosition: com.alorma.caducity.ui.components.shape.ShapePosition,
+  modifier: Modifier = Modifier,
+) {
+  Surface(
+    modifier = modifier.fillMaxWidth(),
+    shape = shapePosition.toVerticalShape(),
+    color = CaducityTheme.colorScheme.surfaceContainer,
+  ) {
+    Row(
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(
+        text = "—\t${instance.name}",
+        style = MaterialTheme.typography.labelLarge,
+        color = CaducityTheme.colorScheme.onSurface,
+      )
+      StatusBadge(instance.status)
     }
   }
 }
