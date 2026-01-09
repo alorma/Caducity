@@ -1,24 +1,17 @@
 package com.alorma.caducity.domain.usecase
 
-import com.alorma.caducity.domain.InstanceDataSource
-import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.domain.model.ProductInstance
+import com.alorma.caducity.domain.ProductDataSource
+import com.alorma.caducity.domain.model.ProductWithInstances
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 class ObtainDashboardProductsUseCase(
-  private val instanceDataSource: InstanceDataSource,
+  private val productDataSource: ProductDataSource,
 ) {
 
-  fun obtainProducts(): Flow<ImmutableList<ProductInstance>> {
-    return instanceDataSource.getAllInstances()
-      .map { instances ->
-        instances
-          .filterNot { instance -> instance.status == InstanceStatus.Consumed }
-          .sortedBy { instance -> instance.expirationDate }
-          .toImmutableList()
-      }
+  fun obtainProducts(): Flow<ImmutableList<ProductWithInstances>> {
+    return productDataSource.getProducts(
+      filter = ProductsListFilter.All
+    )
   }
 }

@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.domain.usecase.ObtainDashboardInstancesUseCase
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -17,6 +18,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class DashboardViewModel(
   private val dashboardConfigurator: DashboardConfigurator,
+  private val obtainDashboardInstancesUseCase: ObtainDashboardInstancesUseCase,
   private val obtainDashboardProductsUseCase: ObtainDashboardProductsUseCase,
   private val dashboardMapper: DashboardMapper,
 ) : ViewModel() {
@@ -41,8 +43,8 @@ class DashboardViewModel(
     )
 
   private fun obtainUnifiedDashboard(): Flow<DashboardState.Success> {
-    return obtainDashboardProductsUseCase
-      .obtainProducts()
+    return obtainDashboardInstancesUseCase
+      .obtainInstances()
       .map { instances ->
         dashboardMapper.mapToUnifiedState(instances = instances)
       }
@@ -51,8 +53,8 @@ class DashboardViewModel(
   private fun obtainPerProductDashboard(): Flow<DashboardState.Success> {
     return obtainDashboardProductsUseCase
       .obtainProducts()
-      .map { instances ->
-        dashboardMapper.mapToPerProductState(instances = instances)
+      .map { products ->
+        dashboardMapper.mapToPerProductState(products = products)
       }
   }
 
