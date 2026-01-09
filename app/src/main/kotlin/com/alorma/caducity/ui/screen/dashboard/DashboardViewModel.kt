@@ -26,11 +26,8 @@ class DashboardViewModel(
     .flatMapConcat { dashboardConfig ->
       when (dashboardConfig.mode) {
         DashboardMode.Unified -> obtainUnifiedDashboard()
-        DashboardMode.PerProduct -> obtainUnifiedDashboard()
+        DashboardMode.PerProduct -> obtainPerProductDashboard()
       }
-    }
-    .map { dashboardModeState ->
-      DashboardState.Success(data = dashboardModeState)
     }
     .stateIn(
       scope = viewModelScope,
@@ -38,7 +35,7 @@ class DashboardViewModel(
       initialValue = DashboardState.Loading,
     )
 
-  private fun obtainUnifiedDashboard(): Flow<DashboardModeState> {
+  private fun obtainUnifiedDashboard(): Flow<DashboardState.Success> {
     return obtainDashboardProductsUseCase
       .obtainProducts()
       .map { instances ->
@@ -46,7 +43,7 @@ class DashboardViewModel(
       }
   }
 
-  private fun obtainPerProductDashboard(): Flow<DashboardModeState> {
+  private fun obtainPerProductDashboard(): Flow<DashboardState.Success> {
     return obtainDashboardProductsUseCase
       .obtainProducts()
       .map { instances ->

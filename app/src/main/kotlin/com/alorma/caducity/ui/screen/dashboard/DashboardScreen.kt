@@ -16,7 +16,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -111,8 +110,8 @@ fun DashboardSuccessContent(
           Text(text = stringResource(R.string.dashboard_screen_title))
         },
         actions = {
-          when (state.data) {
-            is DashboardModeState.Unified -> {
+          when (state) {
+            is DashboardState.Success.Unified -> {
               IconButton(
                 onClick = { onChangeDashboardMode(DashboardMode.PerProduct) },
               ) {
@@ -123,7 +122,7 @@ fun DashboardSuccessContent(
               }
             }
 
-            is DashboardModeState.PerProduct -> {
+            is DashboardState.Success.PerProduct -> {
               IconButton(
                 onClick = { onChangeDashboardMode(DashboardMode.Unified) },
               ) {
@@ -134,8 +133,6 @@ fun DashboardSuccessContent(
               }
             }
           }
-
-
           IconButton(
             onClick = onNavigateToSettings,
           ) {
@@ -153,38 +150,62 @@ fun DashboardSuccessContent(
         .fillMaxSize()
         .padding(paddingValues),
     ) {
-      LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(bottom = 64.dp),
-      ) {
-
-        item(
-          key = "summary",
-          contentType = "summary"
-        ) {
-          val summary = when (val mode = state.data) {
-            is DashboardModeState.Unified -> mode.summary
-            is DashboardModeState.PerProduct -> mode.summary
-          }
-          DashboardSummaryCard(
-            summary = summary,
-            onStatusClick = { status -> onNavigateToStatus(status) },
+      when (state) {
+        is DashboardState.Success.Unified -> {
+          DashboardUnified(
+            state = state,
+            onNavigateToStatus = onNavigateToStatus,
+            onNavigateToDate = onNavigateToDate,
           )
         }
 
-        item(contentType = "calendar") {
-          val calendarState = when (val mode = state.data) {
-            is DashboardModeState.Unified -> mode.calendarState
-            is DashboardModeState.PerProduct -> mode.calendarState
-          }
-          CaducityMonthCalendar(
-            calendarState = calendarState,
-            onDateClick = onNavigateToDate,
-          )
-        }
+        is DashboardState.Success.PerProduct -> DashboardPerProduct(
+          state = state,
+          onNavigateToStatus = onNavigateToStatus,
+          onNavigateToDate = onNavigateToDate,
+        )
       }
     }
   }
+}
+
+@Composable
+private fun DashboardUnified(
+  state: DashboardState.Success.Unified,
+  onNavigateToStatus: (InstanceStatus) -> Unit,
+  onNavigateToDate: (LocalDate) -> Unit
+) {
+  LazyColumn(
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+    contentPadding = PaddingValues(bottom = 64.dp),
+  ) {
+
+    item(
+      key = "summary",
+      contentType = "summary"
+    ) {
+      DashboardSummaryCard(
+        summary = state.summary,
+        onStatusClick = { status -> onNavigateToStatus(status) },
+      )
+    }
+
+    item(contentType = "calendar") {
+      CaducityMonthCalendar(
+        calendarState = state.calendarState,
+        onDateClick = onNavigateToDate,
+      )
+    }
+  }
+}
+
+@Composable
+private fun DashboardPerProduct(
+  state: DashboardState.Success.PerProduct,
+  onNavigateToStatus: (InstanceStatus) -> Unit,
+  onNavigateToDate: (LocalDate) -> Unit
+) {
+  Text(text = "Potato")
 }
 
 @PreviewDynamicLightDark

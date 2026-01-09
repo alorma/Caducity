@@ -17,6 +17,13 @@ data class DashboardSummary(
 )
 
 @Stable
+data class ProductCalendarState(
+  val id: String,
+  val name: String,
+  val calendarState: CalendarState,
+)
+
+@Stable
 data class CalendarState(
   val today: LocalDate,
   val startLocalDate: LocalDate,
