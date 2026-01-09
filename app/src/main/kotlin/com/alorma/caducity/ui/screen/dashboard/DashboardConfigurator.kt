@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.dashboard
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.getAndUpdate
 
 data class DashboardConfigState(
   val mode: DashboardMode,
@@ -26,13 +27,15 @@ class DashboardConfigurator(
     )
   }
 
-  suspend fun changeDashboardMode(mode: DashboardMode) {
+  fun changeDashboardMode(mode: DashboardMode) {
     settings[KeyDashboardMode] = when (mode) {
       DashboardMode.Unified -> DashboardModeUnified
       DashboardMode.PerProduct -> DashboardModePerProduct
     }
 
-    state.emit(obtainCurrent())
+    state.getAndUpdate { current ->
+      current.copy(mode = mode)
+    }
   }
 
   companion object {
