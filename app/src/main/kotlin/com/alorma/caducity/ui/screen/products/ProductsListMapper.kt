@@ -31,6 +31,7 @@ class ProductsListMapper(
         .standaloneInstances
         .map { instance ->
           ProductListStandaloneInstance(
+            id = instance.id,
             name = instance.identifier,
             status = instance.status,
           )
