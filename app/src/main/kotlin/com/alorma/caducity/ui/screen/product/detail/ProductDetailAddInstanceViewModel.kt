@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 import kotlin.time.Duration.Companion.days
 
 class ProductDetailAddInstanceViewModel(
@@ -119,8 +120,9 @@ class ProductDetailAddInstanceViewModel(
           identifierText
         }
 
+        val randomDays = Random.nextInt(-2, 2)
         // Create instance with data
-        val fakeExpirationDate = appClock.now().plus(30.days)
+        val fakeExpirationDate = appClock.now().plus(randomDays.days)
 
         addInstanceToProductUseCase.addInstance(
           productId = productId,
