@@ -10,6 +10,8 @@ import com.alorma.caducity.domain.InstanceDataSource
 import com.alorma.caducity.domain.NotificationConfigDataSource
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.VariantDataSource
+import com.alorma.caducity.domain.model.StatusProductInstanceComparator
+import com.alorma.caducity.domain.model.ProductInstanceComparator
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -22,6 +24,8 @@ val dataModule = module {
   single { get<AppDatabase>().variantDao() }
 
   factoryOf(::InstanceRoomMapper)
+
+  singleOf(::StatusProductInstanceComparator) bind ProductInstanceComparator::class
 
   singleOf(::RoomProductDataSource) bind ProductDataSource::class
   singleOf(::RoomInstanceDataSource) bind InstanceDataSource::class
