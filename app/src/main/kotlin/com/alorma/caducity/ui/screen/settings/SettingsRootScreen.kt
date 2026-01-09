@@ -24,8 +24,8 @@ import com.alorma.caducity.base.ui.icons.Info
 import com.alorma.caducity.base.ui.icons.Notifications
 import com.alorma.caducity.base.ui.icons.Palette
 import com.alorma.caducity.base.ui.icons.outlined.Settings
-import com.alorma.caducity.ui.components.NavigationIcon
-import com.alorma.caducity.ui.components.StyledTopAppBar
+import com.alorma.caducity.ui.components.topbar.NavigationIcon
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard

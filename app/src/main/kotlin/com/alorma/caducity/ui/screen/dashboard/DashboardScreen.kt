@@ -26,7 +26,7 @@ import com.alorma.caducity.base.ui.icons.outlined.Calendar
 import com.alorma.caducity.base.ui.icons.outlined.ListMode
 import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.ui.components.StyledTopAppBar
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardPerProduct
@@ -72,14 +72,13 @@ private fun DashboardContent(
   onChangeDashboardMode: (DashboardMode) -> Unit,
 ) {
   AppScaffold(
-    modifier = Modifier
-      .nestedScroll(scrollConnection),
+    modifier = Modifier.nestedScroll(scrollConnection),
     topBar = {
       StyledTopAppBar(
         title = { Text(text = stringResource(R.string.dashboard_screen_title)) },
         actions = {
           AnimatedContent(state) { stateContent ->
-            when (state) {
+            when (stateContent) {
               is DashboardState.Loading -> {}
               is DashboardState.Success.Unified -> {
                 IconButton(

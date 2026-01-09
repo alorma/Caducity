@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.components
+package com.alorma.caducity.ui.components.topbar
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.PaddingValues
