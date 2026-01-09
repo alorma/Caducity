@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.dashboard
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
@@ -8,9 +9,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
@@ -23,11 +25,16 @@ class DashboardViewModel(
   @OptIn(ExperimentalCoroutinesApi::class)
   val state: StateFlow<DashboardState> = dashboardConfigurator
     .state
-    .flatMapConcat { dashboardConfig ->
-      when (dashboardConfig.mode) {
+    .transformLatest { dashboardConfig ->
+      Log.i("Alorma", dashboardConfig.toString())
+
+      emit(DashboardState.Loading)
+
+      val data = when (dashboardConfig.mode) {
         DashboardMode.Unified -> obtainUnifiedDashboard()
         DashboardMode.PerProduct -> obtainPerProductDashboard()
       }
+      emitAll(data)
     }
     .stateIn(
       scope = viewModelScope,
