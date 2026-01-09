@@ -30,6 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Check
+import com.alorma.caducity.base.ui.icons.Cooking
+import com.alorma.caducity.base.ui.icons.Delete
+import com.alorma.caducity.base.ui.icons.ThermometerSnow
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
@@ -77,6 +81,9 @@ fun ProductDetailScreen(
         snackbarHostState = snackbarState,
         dialogState = dialogState,
         onNavigateToAddInstance = onNavigateToAddInstance,
+        onConsumeInstance = viewModel::onConsumeInstance,
+        onFreezeInstance = viewModel::onFreezeInstance,
+        onDeleteInstance = viewModel::onDeleteInstance,
       )
     }
 
@@ -102,6 +109,9 @@ private fun ProductDetailContent(
   snackbarHostState: AppSnackbarHostState,
   dialogState: AppDialogState,
   onNavigateToAddInstance: () -> Unit,
+  onConsumeInstance: (String) -> Unit,
+  onFreezeInstance: (String) -> Unit,
+  onDeleteInstance: (String) -> Unit,
 ) {
   AppScaffold(
     topBar = {
@@ -153,6 +163,9 @@ private fun ProductDetailContent(
             ProductInstanceCard(
               instance = instance,
               shapePosition = variant.instances.calculateShape(index),
+              onConsume = { onConsumeInstance(instance.id) },
+              onFreeze = { onFreezeInstance(instance.id) },
+              onDelete = { onDeleteInstance(instance.id) },
             )
           }
         }
@@ -175,6 +188,9 @@ private fun ProductDetailContent(
           ProductInstanceCard(
             instance = instance,
             shapePosition = state.standaloneInstances.calculateShape(index),
+            onConsume = { onConsumeInstance(instance.id) },
+            onFreeze = { onFreezeInstance(instance.id) },
+            onDelete = { onDeleteInstance(instance.id) },
           )
         }
       }
@@ -194,7 +210,7 @@ private fun SectionTitle(
       bottom = 8.dp
     ),
     text = text,
-    style = MaterialTheme.typography.titleLarge,
+    style = MaterialTheme.typography.titleMedium,
     color = CaducityTheme.colorScheme.onSurface,
   )
 }
@@ -216,6 +232,9 @@ private fun VariantTitle(
 private fun ProductInstanceCard(
   instance: ProductInstanceDetailUiModel,
   shapePosition: ShapePosition,
+  onConsume: () -> Unit,
+  onFreeze: () -> Unit,
+  onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var showMenu by remember { mutableStateOf(false) }
@@ -248,6 +267,30 @@ private fun ProductInstanceCard(
         )
       }
       StatusBadge(instance.status)
+
+      // Consume action button
+      IconButton(
+        onClick = onConsume
+      ) {
+        Icon(
+          imageVector = AppIcons.Cooking,
+          contentDescription = "Consume",
+          tint = CaducityTheme.colorScheme.primary,
+        )
+      }
+
+      // Freeze action button
+      IconButton(
+        onClick = onFreeze
+      ) {
+        Icon(
+          imageVector = AppIcons.ThermometerSnow,
+          contentDescription = "Freeze",
+          tint = CaducityTheme.colorScheme.primary,
+        )
+      }
+
+      // More actions dropdown (only Delete)
       Box {
         IconButton(onClick = { showMenu = true }) {
           Text(
@@ -261,23 +304,15 @@ private fun ProductInstanceCard(
           onDismissRequest = { showMenu = false }
         ) {
           DropdownMenuItem(
-            text = { Text("Consume") },
-            onClick = {
-              // TODO: Implement consume action
-              showMenu = false
-            }
-          )
-          DropdownMenuItem(
-            text = { Text("Freeze") },
-            onClick = {
-              // TODO: Implement freeze action
-              showMenu = false
-            }
-          )
-          DropdownMenuItem(
             text = { Text("Delete") },
+            leadingIcon = {
+              Icon(
+                imageVector = AppIcons.Delete,
+                contentDescription = null,
+              )
+            },
             onClick = {
-              // TODO: Implement delete action
+              onDelete()
               showMenu = false
             }
           )

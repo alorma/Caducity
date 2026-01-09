@@ -35,4 +35,16 @@ class ProductDetailViewModel(
       SharingStarted.WhileSubscribed(5000),
       ProductDetailState.Loading
     )
+
+  fun onConsumeInstance(instanceId: String) {
+    // TODO: Implement consume instance logic
+  }
+
+  fun onFreezeInstance(instanceId: String) {
+    // TODO: Implement freeze instance logic
+  }
+
+  fun onDeleteInstance(instanceId: String) {
+    // TODO: Implement delete instance logic
+  }
 }
