@@ -6,20 +6,19 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.BottomAppBarDefaults
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarExitDirection
-import androidx.compose.material3.FloatingToolbarScrollBehavior
 import androidx.compose.material3.HorizontalFloatingToolbar
-import androidx.compose.material3.Icon
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
@@ -34,14 +33,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.alorma.caducity.base.ui.icons.Add
-import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
 import com.alorma.caducity.config.navigation.Icon
 import com.alorma.caducity.config.navigation.Label
@@ -100,20 +96,23 @@ fun App(
         .nestedScroll(exitAlwaysScrollBehavior)
         .then(modifier),
       contentWindowInsets = WindowInsets(),
-      floatingActionButton = {
+      bottomBar = {
         val isTopLevelRoute = topLevelBackStack.backStack.last() is TopLevelRoute
-
         AnimatedVisibility(isTopLevelRoute) {
-          NavigationBar(
-            modifier = Modifier
-              .padding(BottomAppBarDefaults.windowInsets.asPaddingValues())
-              .zIndex(1f),
-            scrollBehaviour = exitAlwaysScrollBehavior,
-            topLevelRoutes = topLevelRoutes,
-            isRouteSelected = { topLevelBackStack.topLevelKey::class == it::class },
-            onTopLevelUpdate = { topLevelBackStack.addTopLevel(it) },
-            onCreateProduct = { topLevelBackStack.add(CreateProductRoute) },
-          )
+          BottomAppBar(
+            containerColor = CaducityTheme.colorScheme.background,
+          ) {
+            Box(
+              modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+              contentAlignment = Alignment.BottomCenter
+            ) {
+              NavigationBar(
+                topLevelRoutes = topLevelRoutes,
+                isRouteSelected = { topLevelBackStack.topLevelKey::class == it::class },
+                onTopLevelUpdate = { topLevelBackStack.addTopLevel(it) },
+              )
+            }
+          }
         }
       },
     ) { paddingValues ->
@@ -169,6 +168,7 @@ fun App(
               onNavigateToProductDetail = { productId ->
                 topLevelBackStack.add(ProductDetailRoute(productId))
               },
+              //onCreateProduct = { topLevelBackStack.add(CreateProductRoute) },
             )
           }
           entry<Settings> {
@@ -200,10 +200,8 @@ fun App(
 @Composable
 private fun NavigationBar(
   topLevelRoutes: ImmutableList<TopLevelRoute>,
-  scrollBehaviour: FloatingToolbarScrollBehavior,
   isRouteSelected: (TopLevelRoute) -> Boolean,
   onTopLevelUpdate: (TopLevelRoute) -> Unit,
-  onCreateProduct: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors()
@@ -212,15 +210,7 @@ private fun NavigationBar(
 
   HorizontalFloatingToolbar(
     modifier = modifier,
-    scrollBehavior = scrollBehaviour,
     expanded = true,
-    floatingActionButton = {
-      FloatingToolbarDefaults.VibrantFloatingActionButton(
-        onClick = onCreateProduct
-      ) {
-        Icon(imageVector = AppIcons.Add, contentDescription = null)
-      }
-    },
     colors = colors,
     content = {
       Row(
