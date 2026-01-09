@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.product.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -43,15 +44,21 @@ class ProductDetailViewModel(
       ProductDetailState.Loading
     )
 
-  fun onConsumeInstance(instanceId: String) {
+  fun onConsumeInstance(instance: ProductInstanceDetailUiModel) {
     // TODO: Implement consume instance logic
   }
 
-  fun onFreezeInstance(instanceId: String) {
+  fun onFreezeInstance(instance: ProductInstanceDetailUiModel) {
+    // Check if instance is expired
+    if (instance.status == InstanceStatus.Expired) {
+      emitSideEffect(ProductDetailSideEffect.FreezeNotAvailable(instance.status))
+      return
+    }
+
     // TODO: Implement freeze instance logic
   }
 
-  fun onDeleteInstance(instanceId: String) {
+  fun onDeleteInstance(instance: ProductInstanceDetailUiModel) {
     // TODO: Implement delete instance logic
   }
 
