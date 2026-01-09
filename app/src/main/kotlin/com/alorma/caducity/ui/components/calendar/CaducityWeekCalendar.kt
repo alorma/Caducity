@@ -1,10 +1,12 @@
 package com.alorma.caducity.ui.components.calendar
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.dashboard.CalendarState
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark

@@ -36,7 +36,6 @@ fun CaducityMonthCalendar(
   HorizontalCalendar(
     modifier = modifier.fillMaxWidth(),
     state = monthCalendarState,
-    contentPadding = PaddingValues(horizontal = 16.dp),
     monthHeader = { calendarMonth ->
       Column {
         CalendarYearMonthHeader(

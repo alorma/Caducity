@@ -19,9 +19,9 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
+import com.alorma.caducity.ui.screen.dashboard.DashboardSummary
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
-import com.alorma.caducity.ui.screen.dashboard.DashboardSummary
 
 @Composable
 fun DashboardSummaryCard(
@@ -32,7 +32,6 @@ fun DashboardSummaryCard(
   Column(
     modifier = Modifier
       .fillMaxWidth()
-      .padding(horizontal = 16.dp)
       .then(modifier),
     verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {

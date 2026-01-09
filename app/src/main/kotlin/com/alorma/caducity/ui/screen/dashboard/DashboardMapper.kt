@@ -55,7 +55,14 @@ class DashboardMapper(
       )
     }
 
+    val allInstances = products.flatMap { product ->
+      product.variants.flatMap { variant -> variant.instances } + product.standaloneInstances
+    }
+
+    val summary = calculateSummary(allInstances)
+
     return DashboardState.Success.PerProduct(
+      summary = summary,
       products = mapped,
     )
   }
