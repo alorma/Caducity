@@ -19,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.Check
 import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.ThermometerSnow
@@ -244,78 +244,94 @@ private fun ProductInstanceCard(
     shape = shapePosition.toVerticalShape(),
     color = CaducityTheme.colorScheme.surfaceContainer,
   ) {
-    Row(
-      modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalAlignment = Alignment.CenterVertically,
+    Column(
+      modifier = Modifier.padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-      Column(
-        modifier = Modifier.weight(1f),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+      // Instance info row
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
       ) {
-        if (instance.identifier.isNotEmpty()) {
+        Column(
+          modifier = Modifier.weight(1f),
+          verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+          if (instance.identifier.isNotEmpty()) {
+            Text(
+              text = instance.identifier,
+              style = MaterialTheme.typography.labelLarge,
+              color = CaducityTheme.colorScheme.onSurface,
+            )
+          }
           Text(
-            text = instance.identifier,
-            style = MaterialTheme.typography.labelLarge,
-            color = CaducityTheme.colorScheme.onSurface,
-          )
-        }
-        Text(
-          text = instance.expirationDateText,
-          style = MaterialTheme.typography.bodySmall,
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
-        )
-      }
-      StatusBadge(instance.status)
-
-      // Consume action button
-      IconButton(
-        onClick = onConsume
-      ) {
-        Icon(
-          imageVector = AppIcons.Cooking,
-          contentDescription = "Consume",
-          tint = CaducityTheme.colorScheme.primary,
-        )
-      }
-
-      // Freeze action button
-      IconButton(
-        onClick = onFreeze
-      ) {
-        Icon(
-          imageVector = AppIcons.ThermometerSnow,
-          contentDescription = "Freeze",
-          tint = CaducityTheme.colorScheme.primary,
-        )
-      }
-
-      // More actions dropdown (only Delete)
-      Box {
-        IconButton(onClick = { showMenu = true }) {
-          Text(
-            text = "⋮",
-            style = MaterialTheme.typography.titleLarge,
+            text = instance.expirationDateText,
+            style = MaterialTheme.typography.bodySmall,
             color = CaducityTheme.colorScheme.onSurfaceVariant,
           )
         }
-        DropdownMenu(
-          expanded = showMenu,
-          onDismissRequest = { showMenu = false }
+        StatusBadge(instance.status)
+      }
+
+      // Actions row
+      Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        // Consume action button
+        TextButton(
+          onClick = onConsume,
+          modifier = Modifier.weight(1f),
         ) {
-          DropdownMenuItem(
-            text = { Text("Delete") },
-            leadingIcon = {
-              Icon(
-                imageVector = AppIcons.Delete,
-                contentDescription = null,
-              )
-            },
-            onClick = {
-              onDelete()
-              showMenu = false
-            }
+          Icon(
+            imageVector = AppIcons.Cooking,
+            contentDescription = null,
+            modifier = Modifier.padding(end = 4.dp),
           )
+          Text("Consume")
+        }
+
+        // Freeze action button
+        TextButton(
+          onClick = onFreeze,
+          modifier = Modifier.weight(1f),
+        ) {
+          Icon(
+            imageVector = AppIcons.ThermometerSnow,
+            contentDescription = null,
+            modifier = Modifier.padding(end = 4.dp),
+          )
+          Text("Freeze")
+        }
+
+        // More actions dropdown (only Delete)
+        Box {
+          IconButton(onClick = { showMenu = true }) {
+            Text(
+              text = "⋮",
+              style = MaterialTheme.typography.titleLarge,
+              color = CaducityTheme.colorScheme.onSurfaceVariant,
+            )
+          }
+          DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+          ) {
+            DropdownMenuItem(
+              text = { Text("Delete") },
+              leadingIcon = {
+                Icon(
+                  imageVector = AppIcons.Delete,
+                  contentDescription = null,
+                )
+              },
+              onClick = {
+                onDelete()
+                showMenu = false
+              }
+            )
+          }
         }
       }
     }
