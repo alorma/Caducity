@@ -9,7 +9,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -22,10 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.Backup
 import com.alorma.caducity.base.ui.icons.Restore
 import com.alorma.caducity.feature.backup.BackupFileHandler
+import com.alorma.caducity.ui.components.NavigationIcon
 import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
@@ -148,22 +147,12 @@ private fun BackupScreenContent(
     modifier = Modifier.then(modifier),
     dialogState = dialogState,
     snackbarState = snackbarHostState,
-    containerColor = BottomSheetDefaults.ContainerColor,
     topBar = {
       StyledTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
           containerColor = BottomSheetDefaults.ContainerColor,
         ),
-        navigationIcon = {
-          IconButton(
-            onClick = onClose,
-          ) {
-            Icon(
-              imageVector = AppIcons.Back,
-              contentDescription = null,
-            )
-          }
-        },
+        navigationIcon = { NavigationIcon() },
         title = {
           Text(
             text = stringResource(R.string.settings_backup_title),

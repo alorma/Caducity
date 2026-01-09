@@ -42,6 +42,7 @@ import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.BarcodeScanner
+import com.alorma.caducity.ui.components.NavigationIcon
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -85,14 +86,7 @@ private fun CreateProductPage(
         title = {
           Text(text = stringResource(R.string.create_product_screen_title))
         },
-        navigationIcon = {
-          IconButton(onClick = onBackClick) {
-            Icon(
-              imageVector = AppIcons.Back,
-              contentDescription = stringResource(R.string.create_product_content_description_back)
-            )
-          }
-        }
+        navigationIcon = { NavigationIcon() },
       )
     },
     bottomBar = {

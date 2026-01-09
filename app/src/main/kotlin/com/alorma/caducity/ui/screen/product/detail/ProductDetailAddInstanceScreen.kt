@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.Check
+import com.alorma.caducity.ui.components.NavigationIcon
 import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -55,14 +55,7 @@ fun ProductDetailAddInstanceScreen(
     topBar = {
       StyledTopAppBar(
         title = { Text(text = stringResource(R.string.product_detail_add_instance_title)) },
-        navigationIcon = {
-          IconButton(onClick = onClose) {
-            Icon(
-              imageVector = AppIcons.Back,
-              contentDescription = stringResource(R.string.product_detail_add_instance_back),
-            )
-          }
-        },
+        navigationIcon = { NavigationIcon() },
         actions = {
           IconButton(
             onClick = {

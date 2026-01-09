@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.settings
 
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +9,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,12 +19,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.Backup
 import com.alorma.caducity.base.ui.icons.Info
 import com.alorma.caducity.base.ui.icons.Notifications
 import com.alorma.caducity.base.ui.icons.Palette
 import com.alorma.caducity.base.ui.icons.outlined.Settings
+import com.alorma.caducity.ui.components.NavigationIcon
 import com.alorma.caducity.ui.components.StyledTopAppBar
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
@@ -46,26 +44,13 @@ fun SettingsRootScreen(
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
 ) {
-  val localBackPress = LocalOnBackPressedDispatcherOwner.current
-
   AppScaffold(
     modifier = Modifier
       .nestedScroll(scrollConnection)
       .then(modifier),
     topBar = {
       StyledTopAppBar(
-        navigationIcon = {
-          IconButton(
-            onClick = {
-              localBackPress?.onBackPressedDispatcher?.onBackPressed()
-            }
-          ) {
-            Icon(
-              imageVector = AppIcons.Back,
-              contentDescription = null,
-            )
-          }
-        },
+        navigationIcon = { NavigationIcon() },
         title = {
           Text(
             text = stringResource(R.string.settings_screen_title),
