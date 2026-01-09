@@ -1,5 +1,7 @@
 package com.alorma.caducity.ui.screen.dashboard
 
+import kotlinx.datetime.LocalDate
+
 sealed interface DashboardState {
   data object Loading : DashboardState
 
@@ -10,7 +12,7 @@ sealed interface DashboardState {
     ) : Success
 
     data class PerProduct(
-      val states: List<ProductCalendarState>,
+      val products: List<ProductCalendarState>,
     ) : Success
   }
 }

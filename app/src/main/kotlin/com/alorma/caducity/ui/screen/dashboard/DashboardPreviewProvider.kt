@@ -5,7 +5,9 @@ import com.alorma.caducity.ui.components.calendar.calendarData
 import com.alorma.caducity.ui.components.calendar.daysOfWeekNames
 import com.alorma.caducity.ui.components.calendar.monthNames
 import com.alorma.caducity.ui.components.calendar.today
+import com.kizitonwose.calendar.core.minusDays
 import com.kizitonwose.calendar.core.minusMonths
+import com.kizitonwose.calendar.core.plusDays
 import com.kizitonwose.calendar.core.plusMonths
 
 class DashboardPreviewProvider : CollectionPreviewParameterProvider<DashboardState>(
@@ -20,22 +22,22 @@ class DashboardPreviewProvider : CollectionPreviewParameterProvider<DashboardSta
       ),
       calendarState = CalendarState(
         today = today,
-        startLocalDate = today.minusMonths(2),
-        endLocalDate = today.plusMonths(2),
+        startDate = today.minusMonths(2),
+        endDate = today.plusMonths(2),
         content = calendarData,
         monthNames = monthNames,
         daysOfWeekNames = daysOfWeekNames,
       ),
     ),
     DashboardState.Success.PerProduct(
-      states = listOf(
+      products = listOf(
         ProductCalendarState(
           id = "Potato1",
           name = "Potato 1",
           calendarState = CalendarState(
             today = today,
-            startLocalDate = today.minusMonths(2),
-            endLocalDate = today.plusMonths(2),
+            startDate = today.minusMonths(2),
+            endDate = today.plusMonths(2),
             content = calendarData,
             monthNames = monthNames,
             daysOfWeekNames = daysOfWeekNames,
@@ -46,8 +48,8 @@ class DashboardPreviewProvider : CollectionPreviewParameterProvider<DashboardSta
           name = "Potato 2",
           calendarState = CalendarState(
             today = today,
-            startLocalDate = today.minusMonths(2),
-            endLocalDate = today.plusMonths(2),
+            startDate = today.minusMonths(2),
+            endDate = today.plusMonths(2),
             content = calendarData,
             monthNames = monthNames,
             daysOfWeekNames = daysOfWeekNames,

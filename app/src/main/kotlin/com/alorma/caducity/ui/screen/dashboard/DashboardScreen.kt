@@ -38,6 +38,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DashboardScreen(
+  onNavigateToProduct: (String) -> Unit,
   onNavigateToDate: (LocalDate) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
@@ -52,6 +53,7 @@ fun DashboardScreen(
       state = dashboardState.value,
       scrollConnection = scrollConnection,
       onNavigateToDate = onNavigateToDate,
+      onNavigateToProduct = onNavigateToProduct,
       onNavigateToStatus = onNavigateToStatus,
       onNavigateToSettings = onNavigateToSettings,
       onChangeDashboardMode = viewModel::changeDashboardMode,
@@ -64,6 +66,7 @@ private fun DashboardContent(
   state: DashboardState,
   scrollConnection: NestedScrollConnection,
   onNavigateToDate: (LocalDate) -> Unit,
+  onNavigateToProduct: (String) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
   onChangeDashboardMode: (DashboardMode) -> Unit,
@@ -119,6 +122,7 @@ private fun DashboardContent(
         modifier = Modifier.padding(paddingValues),
         state = state,
         onNavigateToDate = onNavigateToDate,
+        onNavigateToProduct = onNavigateToProduct,
         onNavigateToStatus = onNavigateToStatus,
       )
     }
@@ -135,6 +139,7 @@ private fun DashboardLoadingContent() {
 fun DashboardSuccessContent(
   state: DashboardState.Success,
   onNavigateToDate: (LocalDate) -> Unit,
+  onNavigateToProduct: (String) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -152,8 +157,7 @@ fun DashboardSuccessContent(
 
       is DashboardState.Success.PerProduct -> DashboardPerProduct(
         state = state,
-        onNavigateToStatus = onNavigateToStatus,
-        onNavigateToDate = onNavigateToDate,
+        onNavigateToProduct = onNavigateToProduct,
       )
     }
   }
@@ -173,6 +177,7 @@ fun DashboardSuccessContentPreview(
           exitDirection = FloatingToolbarExitDirection.Bottom,
         ),
         onNavigateToDate = {},
+        onNavigateToProduct = {},
         onNavigateToStatus = {},
         onNavigateToSettings = {},
         onChangeDashboardMode = {},
