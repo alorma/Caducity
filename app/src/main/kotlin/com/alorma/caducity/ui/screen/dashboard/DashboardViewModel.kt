@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.dashboard
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
@@ -26,14 +25,13 @@ class DashboardViewModel(
   val state: StateFlow<DashboardState> = dashboardConfigurator
     .state
     .transformLatest { dashboardConfig ->
-      Log.i("Alorma", dashboardConfig.toString())
-
       emit(DashboardState.Loading)
 
       val data = when (dashboardConfig.mode) {
         DashboardMode.Unified -> obtainUnifiedDashboard()
         DashboardMode.PerProduct -> obtainPerProductDashboard()
       }
+
       emitAll(data)
     }
     .stateIn(
