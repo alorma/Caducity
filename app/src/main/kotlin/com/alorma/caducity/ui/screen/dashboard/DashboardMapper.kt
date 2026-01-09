@@ -4,6 +4,7 @@ import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.ProductInstance
+import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.plusMonths
@@ -38,25 +39,24 @@ class DashboardMapper(
   }
 
   fun mapToPerProductState(
-    instances: ImmutableList<ProductInstance>,
+    products: ImmutableList<ProductWithInstances>,
   ): DashboardState.Success {
-    val calendarState = calculateCalendarState(
-      instances = instances,
-    )
+    val mapped = products.map { product ->
+
+      val instances = buildList {
+        addAll(product.variants.flatMap { it.instances })
+        addAll(product.standaloneInstances)
+      }
+
+      ProductCalendarState(
+        id = product.product.id,
+        name = product.product.name,
+        calendarState = calculateCalendarState(instances)
+      )
+    }
 
     return DashboardState.Success.PerProduct(
-      states = listOf(
-        ProductCalendarState(
-          id = "Potato1",
-          name = "Potato 1",
-          calendarState = calendarState,
-        ),
-        ProductCalendarState(
-          id = "Potato2",
-          name = "Potato 2",
-          calendarState = calendarState,
-        ),
-      ),
+      states = mapped,
     )
   }
 
