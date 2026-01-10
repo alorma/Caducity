@@ -73,7 +73,10 @@ class AppCalendarConfigMapper(
     val content = allDates.mapIndexed { index, date ->
       val dated = datesWithContent[date]
 
-      val shape = allDates.calculateShapeWithGaps(index) { dated != null }
+      val shape = allDates.calculateShapeWithGaps(
+        index = index,
+        hasContent = { date -> datesWithContent.any { it.key == date } },
+      )
 
       date to AppCalendarDateInfo(
         status = dated?.status,
@@ -131,7 +134,10 @@ class AppCalendarConfigMapper(
     val dateEntries = instancesStatusByDate.entries.sortedBy { it.key }
 
     return dateEntries.mapIndexed { index, (date, status) ->
-      val shape = dateEntries.calculateShapeWithGaps(index) { true }
+      val shape = dateEntries.calculateShapeWithGaps(
+        index = index,
+        hasContent = { date -> dateEntries.any { it.key == date } },
+      )
       date to AppCalendarDateInfo(status, shape)
     }.toMap().toImmutableMap()
   }
