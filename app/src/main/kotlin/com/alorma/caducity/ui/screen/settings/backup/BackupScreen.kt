@@ -60,7 +60,7 @@ fun BackupScreen(
   }
 
   val dialogState = rememberAppDialogState()
-  val snackbarHostState = LocalAppSnackbarHostState.current
+  val snackbarHostState = rememberAppSnackbarHostState()
 
   // Handle side effects (success/error messages)
   LaunchedEffect(viewModel.sideEffect) {
