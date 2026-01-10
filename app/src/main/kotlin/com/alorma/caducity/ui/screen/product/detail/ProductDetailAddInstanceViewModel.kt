@@ -12,8 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlin.random.Random
-import kotlin.time.Duration.Companion.days
+import kotlinx.datetime.Instant
 
 class ProductDetailAddInstanceViewModel(
   private val productId: String,
@@ -85,6 +84,13 @@ class ProductDetailAddInstanceViewModel(
     )
   }
 
+  fun onExpirationDateChanged(dateMillis: Long?) {
+    _formState.value = _formState.value.copy(
+      expirationDateMillis = dateMillis,
+      expirationDateError = null // Clear error when user selects date
+    )
+  }
+
   fun save(onSuccess: () -> Unit) {
     viewModelScope.launch {
       val currentFormState = _formState.value
@@ -95,6 +101,14 @@ class ProductDetailAddInstanceViewModel(
       if (variantText.isEmpty() && identifierText.isEmpty()) {
         _formState.value = currentFormState.copy(
           identifierError = "Either variant or identifier must be provided"
+        )
+        return@launch
+      }
+
+      // Validation: Expiration date must be provided
+      if (currentFormState.expirationDateMillis == null) {
+        _formState.value = currentFormState.copy(
+          expirationDateError = "Expiration date is required"
         )
         return@launch
       }
@@ -120,16 +134,14 @@ class ProductDetailAddInstanceViewModel(
           identifierText
         }
 
-        val minusDay = Random.nextInt(2, 20)
-        // Create instance with data
-        val fakeExpirationDate = appClock.now()
-          .plus(minusDay.days)
+        // Convert selected date from milliseconds to Instant
+        val expirationDate = Instant.fromEpochMilliseconds(currentFormState.expirationDateMillis)
 
         addInstanceToProductUseCase.addInstance(
           productId = productId,
           identifier = identifier,
           variantId = variantId,
-          expirationDate = fakeExpirationDate,
+          expirationDate = expirationDate,
         )
 
         onSuccess()
@@ -146,6 +158,8 @@ data class FormState(
   val selectedVariantId: String? = null,
   val identifierText: TextFieldValue = TextFieldValue(),
   val identifierError: String? = null,
+  val expirationDateMillis: Long? = null,
+  val expirationDateError: String? = null,
 )
 
 sealed interface ProductDetailAddInstanceState {

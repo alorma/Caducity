@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.product.detail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -16,9 +19,12 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,8 +32,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Check
@@ -85,13 +95,14 @@ fun ProductDetailAddInstanceScreen(
 
       is ProductDetailAddInstanceState.Success -> {
         var expanded by remember { mutableStateOf(false) }
+        var showDatePicker by remember { mutableStateOf(false) }
 
         Column(
           modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+            .padding(horizontal = 24.dp)
+            .verticalScroll(rememberScrollState()),
           verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
           // Variant selection with filter
@@ -99,10 +110,9 @@ fun ProductDetailAddInstanceScreen(
             expanded = expanded,
             onExpandedChange = { expanded = it },
           ) {
-            OutlinedTextField(
-              value = formState.value.variantText,
-              onValueChange = { viewModel.onVariantTextChanged(it) },
-              shape = CaducityTheme.shapes.medium,
+            TextField(
+              value = formState.value.variantText.text,
+              onValueChange = { viewModel.onVariantTextChanged(TextFieldValue(it)) },
               label = { Text(stringResource(R.string.product_detail_add_instance_variant_label)) },
               placeholder = { Text(stringResource(R.string.product_detail_add_instance_variant_placeholder)) },
               trailingIcon = {
@@ -134,10 +144,9 @@ fun ProductDetailAddInstanceScreen(
           }
 
           // Identifier field
-          OutlinedTextField(
-            value = formState.value.identifierText,
-            onValueChange = { viewModel.onIdentifierTextChanged(it) },
-            shape = CaducityTheme.shapes.medium,
+          TextField(
+            value = formState.value.identifierText.text,
+            onValueChange = { viewModel.onIdentifierTextChanged(TextFieldValue(it)) },
             label = { Text(stringResource(R.string.product_detail_add_instance_identifier_label)) },
             placeholder = { Text(stringResource(R.string.product_detail_add_instance_identifier_placeholder)) },
             isError = formState.value.identifierError != null,
@@ -147,6 +156,42 @@ fun ProductDetailAddInstanceScreen(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
           )
+
+          // Expiration date field
+          Box(
+            modifier = Modifier
+              .fillMaxWidth()
+              .clickable { showDatePicker = true }
+          ) {
+            TextField(
+              value = formState.value.expirationDateMillis?.let {
+                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                dateFormat.format(Date(it))
+              } ?: "",
+              onValueChange = { },
+              readOnly = true,
+              enabled = false,
+              label = { Text(stringResource(R.string.product_detail_add_instance_expiration_date_label)) },
+              placeholder = { Text(stringResource(R.string.product_detail_add_instance_expiration_date_placeholder)) },
+              isError = formState.value.expirationDateError != null,
+              supportingText = formState.value.expirationDateError?.let { error ->
+                { Text(text = error) }
+              },
+              modifier = Modifier.fillMaxWidth(),
+              singleLine = true,
+            )
+          }
+
+          if (showDatePicker) {
+            ExpirationDatePickerDialog(
+              initialDateMillis = formState.value.expirationDateMillis,
+              onDateSelected = { dateMillis ->
+                viewModel.onExpirationDateChanged(dateMillis)
+                showDatePicker = false
+              },
+              onDismiss = { showDatePicker = false }
+            )
+          }
         }
       }
 
@@ -165,5 +210,42 @@ fun ProductDetailAddInstanceScreen(
         }
       }
     }
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ExpirationDatePickerDialog(
+  initialDateMillis: Long?,
+  onDateSelected: (Long?) -> Unit,
+  onDismiss: () -> Unit,
+) {
+  val datePickerState = rememberDatePickerState(
+    initialSelectedDateMillis = initialDateMillis
+  )
+
+  val confirmEnabled by remember {
+    derivedStateOf { datePickerState.selectedDateMillis != null }
+  }
+
+  DatePickerDialog(
+    onDismissRequest = onDismiss,
+    confirmButton = {
+      TextButton(
+        onClick = {
+          onDateSelected(datePickerState.selectedDateMillis)
+        },
+        enabled = confirmEnabled
+      ) {
+        Text(stringResource(R.string.product_detail_add_instance_date_picker_ok))
+      }
+    },
+    dismissButton = {
+      TextButton(onClick = onDismiss) {
+        Text(stringResource(R.string.product_detail_add_instance_date_picker_cancel))
+      }
+    }
+  ) {
+    DatePicker(state = datePickerState)
   }
 }
