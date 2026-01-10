@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.domain.usecase.ProductsListFilter
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
@@ -48,6 +50,7 @@ fun ProductsListScreen(
   filters: ProductsListFilter,
   onNavigateToProductDetail: (String) -> Unit,
   onCreateProduct: () -> Unit,
+  onNavigateToSettings: () -> Unit,
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
   viewModel: ProductsListViewModel = koinViewModel { parametersOf(filters) },
@@ -61,6 +64,16 @@ fun ProductsListScreen(
     topBar = {
       StyledTopAppBar(
         title = { Text(stringResource(R.string.products_screen_title)) },
+        actions = {
+          IconButton(
+            onClick = onNavigateToSettings,
+          ) {
+            Icon(
+              imageVector = AppIcons.Outlined.Settings,
+              contentDescription = null,
+            )
+          }
+        },
       )
     },
     floatingActionButton = {
