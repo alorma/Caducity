@@ -77,7 +77,6 @@ fun AboutScreenPreview() {
       AboutScreen(
         appVersion = "1.1.2",
         onNavigateToRepo = {},
-        onClose = {},
       )
     }
   }
