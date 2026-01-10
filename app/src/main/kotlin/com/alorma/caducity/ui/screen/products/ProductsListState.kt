@@ -26,8 +26,7 @@ sealed interface ProductListUiModel {
   data class WithContent(
     override val id: String,
     override val name: String,
-    val variants: ImmutableList<ProductInstanceVariant>,
-    val standaloneInstances: ImmutableList<ProductListStandaloneInstance>,
+    val groups: ImmutableList<ProductInstanceGroup>,
   ) : ProductListUiModel
 
   @Stable
@@ -38,22 +37,7 @@ sealed interface ProductListUiModel {
 }
 
 @Stable
-data class ProductInstanceVariant(
-  val id: String,
-  val name: String,
-  val statusGroups: ImmutableList<ProductInstanceVariantGroup>,
-  val frozenCount: Int,
-)
-
-@Stable
-data class ProductInstanceVariantGroup(
+data class ProductInstanceGroup(
   val status: InstanceStatus,
   val count: Int,
-)
-
-@Stable
-data class ProductListStandaloneInstance(
-  val id: String,
-  val name: String,
-  val status: InstanceStatus,
 )

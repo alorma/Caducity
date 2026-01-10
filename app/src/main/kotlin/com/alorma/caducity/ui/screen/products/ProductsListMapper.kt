@@ -1,17 +1,12 @@
 package com.alorma.caducity.ui.screen.products
 
-import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.domain.model.ProductWithInstances
+import com.alorma.caducity.domain.model.ProductListItem
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.format.DateTimeFormat
 
-class ProductsListMapper(
-  private val dateFormat: DateTimeFormat<LocalDate>,
-) {
+class ProductsListMapper {
   fun mapToProductsList(
-    products: ImmutableList<ProductWithInstances>,
+    products: ImmutableList<ProductListItem>,
   ): ImmutableList<ProductListUiModel> {
     return products
       .map { product -> toUiModel(product) }
@@ -19,53 +14,30 @@ class ProductsListMapper(
   }
 
   private fun toUiModel(
-    product: ProductWithInstances,
+    product: ProductListItem,
   ): ProductListUiModel {
-    return if (product.variants.isEmpty() && product.standaloneInstances.isEmpty()) {
+    val allInstances = product.instances
+
+    return if (allInstances.isEmpty()) {
       ProductListUiModel.Empty(
         id = product.product.id,
-        name = product.product.name
+        name = product.product.name,
       )
     } else {
-      val standaloneInstances = product
-        .standaloneInstances
-        .map { instance ->
-          ProductListStandaloneInstance(
-            id = instance.id,
-            name = instance.identifier,
-            status = instance.status,
+      val groups = allInstances
+        .groupBy { instance -> instance.status }
+        .mapValues { (_, instances) -> instances.size }
+        .map { (status, count) ->
+          ProductInstanceGroup(
+            status = status,
+            count = count,
           )
-        }
-
-      val variants = product
-        .variants
-        .map { variant ->
-          val groups = variant.instances.groupBy { it.status }
-
-          val statusGroups = groups
-            .filter { (status, instances) ->
-              status != InstanceStatus.Frozen && instances.isNotEmpty()
-            }
-            .map { (status, instances) ->
-              ProductInstanceVariantGroup(
-                status = status,
-                count = instances.size,
-              )
-            }.toImmutableList()
-
-          ProductInstanceVariant(
-            id = variant.variant.id,
-            name = variant.variant.name,
-            statusGroups = statusGroups,
-            frozenCount = groups[InstanceStatus.Frozen]?.size ?: 0,
-          )
-        }
+        }.toImmutableList()
 
       ProductListUiModel.WithContent(
         id = product.product.id,
         name = product.product.name,
-        variants = variants.toImmutableList(),
-        standaloneInstances = standaloneInstances.toImmutableList(),
+        groups = groups,
       )
     }
   }
