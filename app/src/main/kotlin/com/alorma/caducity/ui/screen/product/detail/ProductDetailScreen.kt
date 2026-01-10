@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.product.detail
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
@@ -54,7 +56,9 @@ import com.alorma.caducity.ui.screen.product.detail.timeline.TimelineBulletAndLi
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.kizitonwose.calendar.compose.weekcalendar.WeekCalendarState
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -128,59 +132,45 @@ private fun ProductDetailSuccessContent(
     },
   ) { paddingValues ->
 
-    val listIndex = remember {
-      val todayIndex = state.datedContent.indexOfFirst { dated ->
-        dated.date == state.today
-      }.takeUnless { it == -1 } ?: 0
+    val userSelectedDate = remember {
+      mutableStateOf(state.today)
+    }
 
-      mutableStateOf(todayIndex)
+    val selectedScrollIndex = remember {
+      derivedStateOf {
+        findFirstIndex(
+          date = userSelectedDate.value,
+          datedContent = state.datedContent
+        )
+      }
+    }
+
+    val selectedDate = remember {
+      derivedStateOf {
+        Log.i("Alorma", "Selected index: ${selectedScrollIndex.value}")
+        state.datedContent.getOrNull(selectedScrollIndex.value)?.date ?: state.today
+      }
     }
 
     val listState = rememberLazyListState(
-      initialFirstVisibleItemIndex = listIndex.value,
+      initialFirstVisibleItemIndex = selectedScrollIndex.value,
     )
 
     val weekCalendarState: WeekCalendarState = rememberWeekCalendarState(
-      firstVisibleWeekDate = state.calendarState.today,
-      firstDayOfWeek = DayOfWeek.MONDAY,
       startDate = state.calendarState.startDate,
       endDate = state.calendarState.endDate,
+      firstDayOfWeek = DayOfWeek.MONDAY,
+      firstVisibleWeekDate = selectedDate.value,
     )
 
-    val listVisibleDate = remember {
-      derivedStateOf {
-        val firstIndex = listState.firstVisibleItemIndex
-        state.datedContent[firstIndex].date
-      }
+    LaunchedEffect(selectedDate.value) {
+      weekCalendarState.animateScrollToDate(selectedDate.value)
     }
 
-    val calendarVisibleDate = remember {
-      derivedStateOf {
-        val weekDates = weekCalendarState.firstVisibleWeek.days.map { it.date }
-
-        weekDates.first()..weekDates.last()
-      }
+    LaunchedEffect(selectedScrollIndex.value) {
+      listState.animateScrollToItem(selectedScrollIndex.value)
     }
 
-    LaunchedEffect(listVisibleDate.value) {
-      if (weekCalendarState.isScrollInProgress) {
-        return@LaunchedEffect
-      }
-      weekCalendarState.animateScrollToDate(listVisibleDate.value)
-    }
-
-    LaunchedEffect(calendarVisibleDate.value) {
-      if (listState.isScrollInProgress) {
-        return@LaunchedEffect
-      }
-      val index = state.datedContent.indexOfFirst { dated ->
-        dated.date in calendarVisibleDate.value
-      }.takeUnless { it == -1 }
-
-      if (index != null) {
-        listState.animateScrollToItem(index)
-      }
-    }
 
     Column(
       modifier = Modifier.padding(paddingValues),
@@ -194,13 +184,13 @@ private fun ProductDetailSuccessContent(
           weekCalendarState = weekCalendarState,
           calendarState = state.calendarState,
           contentPadding = PaddingValues(horizontal = 12.dp),
-          onDateClick = {}
+          onDateClick = { date -> userSelectedDate.value = date },
         )
       }
 
       LazyColumn(
         state = listState,
-        contentPadding = PaddingValues(bottom = 400.dp),
+        contentPadding = PaddingValues(bottom = 600.dp),
       ) {
         items(
           items = state.datedContent,
@@ -219,6 +209,34 @@ private fun ProductDetailSuccessContent(
           )
         }
       }
+    }
+  }
+}
+
+private fun findFirstIndex(
+  date: LocalDate,
+  datedContent: ImmutableList<DateInstancesUiModel>,
+): Int {
+  // Priority 1: Scroll to today's date if it exists
+  val todayIndex = datedContent.indexOfFirst { dated ->
+    dated.date == date
+  }
+
+  return if (todayIndex != -1) {
+    todayIndex
+  } else {
+    // Priority 2: Scroll to first expiring soon item if exists
+    val expiringSoonIndex = datedContent.indexOfFirst { dated ->
+      dated.status == InstanceStatus.ExpiringSoon
+    }
+
+    if (expiringSoonIndex != -1) {
+      expiringSoonIndex
+    } else {
+      // Priority 3: Scroll to first fresh (non-expired, non-expiring) item
+      datedContent.indexOfFirst { dated ->
+        dated.status == InstanceStatus.Fresh
+      }.takeIf { it != -1 } ?: 0
     }
   }
 }
