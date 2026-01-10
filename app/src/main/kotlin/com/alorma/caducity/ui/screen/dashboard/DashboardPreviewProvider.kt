@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import com.alorma.caducity.ui.components.calendar.AppCalendarConfig
 import com.alorma.caducity.ui.components.calendar.calendarData
 import com.alorma.caducity.ui.components.calendar.daysOfWeekNames
 import com.alorma.caducity.ui.components.calendar.monthNames
@@ -20,7 +21,7 @@ class DashboardPreviewProvider : CollectionPreviewParameterProvider<DashboardSta
     DashboardState.Loading,
     DashboardState.Success.Unified(
       summary = summary,
-      calendarState = CalendarState(
+      appCalendarConfig = AppCalendarConfig(
         today = today,
         startDate = today.minusMonths(2),
         endDate = today.plusMonths(2),
@@ -35,7 +36,7 @@ class DashboardPreviewProvider : CollectionPreviewParameterProvider<DashboardSta
         ProductCalendarState(
           id = "Potato1",
           name = "Potato 1",
-          calendarState = CalendarState(
+          appCalendarConfig = AppCalendarConfig(
             today = today,
             startDate = today.minusMonths(2),
             endDate = today.plusMonths(2),
@@ -47,7 +48,7 @@ class DashboardPreviewProvider : CollectionPreviewParameterProvider<DashboardSta
         ProductCalendarState(
           id = "Potato2",
           name = "Potato 2",
-          calendarState = CalendarState(
+          appCalendarConfig = AppCalendarConfig(
             today = today,
             startDate = today.minusMonths(2),
             endDate = today.plusMonths(2),

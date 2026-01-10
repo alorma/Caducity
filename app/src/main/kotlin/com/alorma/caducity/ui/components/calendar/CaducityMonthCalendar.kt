@@ -1,17 +1,15 @@
 package com.alorma.caducity.ui.components.calendar
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.screen.dashboard.CalendarState
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.DayPosition
@@ -23,16 +21,16 @@ import kotlinx.datetime.yearMonth
 
 @Composable
 fun CaducityMonthCalendar(
-  calendarState: CalendarState,
+  appCalendarConfig: AppCalendarConfig,
   onDateClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
+  monthCalendarState: CalendarState = rememberCalendarState(
+    startMonth = appCalendarConfig.today.yearMonth.minusMonth(),
+    endMonth = appCalendarConfig.today.yearMonth.plusMonths(3),
+    firstVisibleMonth = appCalendarConfig.today.yearMonth,
+    firstDayOfWeek = appCalendarConfig.firstDayOfWeek,
+  ),
 ) {
-  val monthCalendarState = rememberCalendarState(
-    startMonth = calendarState.today.yearMonth.minusMonth(),
-    endMonth = calendarState.today.yearMonth.plusMonths(3),
-    firstVisibleMonth = calendarState.today.yearMonth,
-  )
-
   HorizontalCalendar(
     modifier = modifier.fillMaxWidth(),
     state = monthCalendarState,
@@ -41,7 +39,7 @@ fun CaducityMonthCalendar(
         CalendarYearMonthHeader(
           startYearMonth = calendarMonth.yearMonth,
           endYearMonth = calendarMonth.weekDays.last().last().date.yearMonth,
-          monthNames = calendarState.monthNames,
+          monthNames = appCalendarConfig.monthNames,
         )
 
         CalendarWeekDaysHeader(
@@ -49,16 +47,16 @@ fun CaducityMonthCalendar(
             .first()
             .map { calendarDay -> calendarDay.date }
             .toImmutableList(),
-          dayOfWeekNames = calendarState.daysOfWeekNames,
+          dayOfWeekNames = appCalendarConfig.daysOfWeekNames,
         )
       }
     },
     dayContent = { calendarDay ->
       val date = calendarDay.date
-      val dateInfo = calendarState.content[date]
+      val dateInfo = appCalendarConfig.content[date]
 
       DayContent(
-        today = calendarState.today,
+        today = appCalendarConfig.today,
         date = date,
         status = dateInfo?.status,
         shapePosition = dateInfo?.shapePosition ?: ShapePosition.None,
@@ -72,12 +70,12 @@ fun CaducityMonthCalendar(
 @PreviewDynamicLightDark
 @Composable
 fun CaducityMonthCalendarPreview(
-  @PreviewParameter(provider = CalendarStateProvider::class) calendarState: CalendarState,
+  @PreviewParameter(provider = CalendarStateProvider::class) appCalendarConfig: AppCalendarConfig,
 ) {
   PreviewTheme {
     Surface {
       CaducityMonthCalendar(
-        calendarState = calendarState,
+        appCalendarConfig = appCalendarConfig,
         onDateClick = {},
       )
     }

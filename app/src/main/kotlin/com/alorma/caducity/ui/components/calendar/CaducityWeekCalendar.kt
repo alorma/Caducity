@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.screen.dashboard.CalendarState
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.kizitonwose.calendar.compose.WeekCalendar
@@ -19,33 +18,16 @@ import kotlinx.datetime.LocalDate
 
 @Composable
 fun CaducityWeekCalendar(
-  calendarState: CalendarState,
+  appCalendarConfig: AppCalendarConfig,
+  onDateClick: (LocalDate) -> Unit,
+  modifier: Modifier = Modifier,
+  weekCalendarState: WeekCalendarState = rememberWeekCalendarState(
+    firstVisibleWeekDate = appCalendarConfig.today,
+    startDate = appCalendarConfig.startDate,
+    endDate = appCalendarConfig.endDate,
+    firstDayOfWeek = appCalendarConfig.firstDayOfWeek,
+  ),
   contentPadding: PaddingValues = PaddingValues(0.dp),
-  onDateClick: (LocalDate) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  val weekCalendarState: WeekCalendarState = rememberWeekCalendarState(
-    firstVisibleWeekDate = calendarState.today,
-    startDate = calendarState.startDate,
-    endDate = calendarState.endDate,
-  )
-
-  CaducityWeekCalendar(
-    modifier = modifier,
-    weekCalendarState = weekCalendarState,
-    calendarState = calendarState,
-    contentPadding = contentPadding,
-    onDateClick = onDateClick
-  )
-}
-
-@Composable
-fun CaducityWeekCalendar(
-  weekCalendarState: WeekCalendarState,
-  calendarState: CalendarState,
-  contentPadding: PaddingValues,
-  onDateClick: (LocalDate) -> Unit,
-  modifier: Modifier = Modifier,
 ) {
   WeekCalendar(
     modifier = modifier.fillMaxWidth(),
@@ -57,15 +39,15 @@ fun CaducityWeekCalendar(
       }.toImmutableList()
       CalendarWeekDaysHeader(
         weekDays = weekDays,
-        dayOfWeekNames = calendarState.daysOfWeekNames,
+        dayOfWeekNames = appCalendarConfig.daysOfWeekNames,
       )
     },
     dayContent = { calendarDay ->
       val date = calendarDay.date
-      val dateInfo = calendarState.content[date]
+      val dateInfo = appCalendarConfig.content[date]
 
       DayContent(
-        today = calendarState.today,
+        today = appCalendarConfig.today,
         date = date,
         status = dateInfo?.status,
         shapePosition = dateInfo?.shapePosition ?: ShapePosition.None,
@@ -79,12 +61,12 @@ fun CaducityWeekCalendar(
 @PreviewDynamicLightDark
 @Composable
 fun CaducityWeekCalendarPreview(
-  @PreviewParameter(provider = CalendarStateProvider::class) calendarState: CalendarState,
+  @PreviewParameter(provider = CalendarStateProvider::class) appCalendarConfig: AppCalendarConfig,
 ) {
   PreviewTheme {
     Surface {
       CaducityWeekCalendar(
-        calendarState = calendarState,
+        appCalendarConfig = appCalendarConfig,
         onDateClick = {},
       )
     }

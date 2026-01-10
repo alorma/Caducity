@@ -131,10 +131,10 @@ private fun ProductDetailSuccessContent(
   )
 
   val weekCalendarState: WeekCalendarState = rememberWeekCalendarState(
-    startDate = state.calendarState.startDate,
-    endDate = state.calendarState.endDate,
+    startDate = state.appCalendarConfig.startDate,
+    endDate = state.appCalendarConfig.endDate,
     firstDayOfWeek = DayOfWeek.MONDAY,
-    firstVisibleWeekDate = state.calendarState.today,
+    firstVisibleWeekDate = state.appCalendarConfig.today,
   )
 
   val coroutineScope = rememberCoroutineScope()
@@ -212,7 +212,7 @@ private fun ProductDetailSuccessContent(
         CaducityWeekCalendar(
           modifier = Modifier.padding(bottom = 8.dp),
           weekCalendarState = weekCalendarState,
-          calendarState = state.calendarState,
+          appCalendarConfig = state.appCalendarConfig,
           contentPadding = PaddingValues(horizontal = 12.dp),
           onDateClick = { date -> userSelectedDate.value = date },
         )
