@@ -1,6 +1,8 @@
 package com.alorma.caducity.ui.screen.settings
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.retain.retain
@@ -18,6 +20,7 @@ import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.feature.notification.NotificationDebugHelper
 import com.alorma.caducity.ui.screen.settings.about.AboutScreen
 import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScreen
+import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import com.alorma.caducity.ui.screen.settings.backup.BackupScreen
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsScreen
 import com.alorma.caducity.ui.screen.settings.notifications.NotificationsSettingsScreen
@@ -29,6 +32,7 @@ fun SettingsContainer(
   scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
   themePreferences: ThemePreferences = koinInject(),
+  calendarPreferences: CalendarPreferences = koinInject(),
   debugModeProvider: DebugModeProvider = koinInject(),
   debugHelper: NotificationDebugHelper = koinInject(),
   versionProvider: AppVersionProvider = koinInject(),
@@ -57,11 +61,15 @@ fun SettingsContainer(
         )
       }
       entry<SettingsRoute.Appearance> {
+        val calendarConfigState by calendarPreferences.state.collectAsState()
+
         AppearanceSettingsScreen(
           themeMode = themePreferences.themeMode.value,
           useDynamicTheme = themePreferences.useDynamicColors.value,
+          firstDayOfWeek = calendarConfigState.firstDayOfWeek,
           onThemeModeChange = { themePreferences.setThemeModeState(it) },
           onUseDynamicTheme = { themePreferences.setDynamicColorsEnabled(it) },
+          onFirstDayOfWeekChange = { calendarPreferences.setFirstDayOfWeek(it) },
         )
       }
       entry<SettingsRoute.Notifications> {

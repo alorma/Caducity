@@ -14,7 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
+import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
+import org.koin.compose.koinInject
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
@@ -25,6 +27,7 @@ import com.alorma.caducity.ui.theme.ThemeMode
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import kotlinx.datetime.DayOfWeek
 
 @Composable
 fun AppearanceSettingsScreen(
@@ -32,7 +35,10 @@ fun AppearanceSettingsScreen(
   onThemeModeChange: (ThemeMode) -> Unit,
   useDynamicTheme: Boolean,
   onUseDynamicTheme: (Boolean) -> Unit,
+  firstDayOfWeek: DayOfWeek,
+  onFirstDayOfWeekChange: (DayOfWeek) -> Unit,
   modifier: Modifier = Modifier,
+  localizedDateFormatter: LocalizedDateFormatter = koinInject(),
 ) {
   AppScaffold(
     modifier = Modifier.then(modifier),
@@ -85,6 +91,20 @@ fun AppearanceSettingsScreen(
           )
         }
       }
+
+      // Calendar settings group
+      StyledSettingsGroup {
+        StyledSettingsButtonGroupCard(
+          title = stringResource(R.string.settings_first_day_of_week_title),
+          selectedItem = firstDayOfWeek,
+          position = ShapePosition.Single,
+          items = listOf(DayOfWeek.MONDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY),
+          itemTitleMap = { day ->
+            localizedDateFormatter.getDayOfWeekFullName(day)
+          },
+          onItemSelected = { onFirstDayOfWeekChange(it) },
+        )
+      }
     }
   }
 }
@@ -102,8 +122,10 @@ fun AppearanceSettingsScreenPreview() {
       AppearanceSettingsScreen(
         themeMode = themeMode,
         useDynamicTheme = true,
+        firstDayOfWeek = DayOfWeek.MONDAY,
         onThemeModeChange = {},
         onUseDynamicTheme = {},
+        onFirstDayOfWeekChange = {},
       )
     }
   }

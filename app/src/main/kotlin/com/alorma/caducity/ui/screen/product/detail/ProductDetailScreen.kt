@@ -61,7 +61,6 @@ import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.until
 import org.koin.compose.viewmodel.koinViewModel
@@ -133,7 +132,7 @@ private fun ProductDetailSuccessContent(
   val weekCalendarState: WeekCalendarState = rememberWeekCalendarState(
     startDate = state.appCalendarConfig.startDate,
     endDate = state.appCalendarConfig.endDate,
-    firstDayOfWeek = DayOfWeek.MONDAY,
+    firstDayOfWeek = state.appCalendarConfig.firstDayOfWeek,
     firstVisibleWeekDate = state.appCalendarConfig.today,
   )
 
