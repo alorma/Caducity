@@ -6,6 +6,7 @@ import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfig
+import com.alorma.caducity.ui.components.calendar.AppCalendarDateInfo
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.plusMonths
@@ -135,7 +136,7 @@ class DashboardMapper(
   private fun getDateWithShapes(
     instances: List<ProductInstance>,
     today: LocalDate
-  ): ImmutableMap<LocalDate, CalendarDateInfo> {
+  ): ImmutableMap<LocalDate, AppCalendarDateInfo> {
     val instancesStatusByDate = instancesStatusByDate(instances, today)
     return instancesStatusByDate
       .mapValues { (date, status) ->
@@ -151,7 +152,7 @@ class DashboardMapper(
           else -> ShapePosition.Middle
         }
 
-        CalendarDateInfo(status, shapePosition)
+        AppCalendarDateInfo(status, shapePosition)
       }.toImmutableMap()
   }
 
