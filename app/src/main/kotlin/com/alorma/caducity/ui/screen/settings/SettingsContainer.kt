@@ -29,7 +29,6 @@ import org.koin.compose.koinInject
 
 @Composable
 fun SettingsContainer(
-  scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
   themePreferences: ThemePreferences = koinInject(),
   calendarPreferences: CalendarPreferences = koinInject(),
@@ -51,7 +50,6 @@ fun SettingsContainer(
     entryProvider = entryProvider {
       entry<SettingsRoute.Root> {
         SettingsRootScreen(
-          scrollConnection = scrollConnection,
           isDebug = debugModeProvider.isDebugMode(),
           onNavigateToAppearance = { settingsBackStack.add(SettingsRoute.Appearance) },
           onNavigateToNotifications = { settingsBackStack.add(SettingsRoute.Notifications) },

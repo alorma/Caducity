@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.product.create
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,12 +13,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -29,14 +27,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
-import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
-import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.topbar.NavigationIcon
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CreateProductScreen(
-  onBack: () -> Unit,
   onProductCreated: (String) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: CreateProductViewModel = koinViewModel(),
@@ -48,7 +45,6 @@ fun CreateProductScreen(
     onNameChange = viewModel::updateName,
     onDescriptionChange = viewModel::updateDescription,
     onCreateClick = { viewModel.createProduct(onProductCreated) },
-    onBackClick = onBack,
     onErrorDismiss = viewModel::clearError,
     modifier = modifier,
   )
@@ -61,7 +57,6 @@ private fun CreateProductPage(
   onNameChange: (String) -> Unit,
   onDescriptionChange: (String) -> Unit,
   onCreateClick: () -> Unit,
-  onBackClick: () -> Unit,
   onErrorDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -84,8 +79,12 @@ private fun CreateProductPage(
           horizontalArrangement = Arrangement.spacedBy(8.dp),
           verticalAlignment = Alignment.CenterVertically,
         ) {
+          val localBackPress = LocalOnBackPressedDispatcherOwner.current
+
           TextButton(
-            onClick = onBackClick,
+            onClick = {
+              localBackPress?.onBackPressedDispatcher?.onBackPressed()
+            },
             enabled = !state.isLoading,
             modifier = Modifier.weight(1f),
           ) {
@@ -152,169 +151,6 @@ private fun CreateProductPage(
       }
 
       Spacer(modifier = Modifier.height(16.dp))
-    }
-  }
-}
-
-@Composable
-private fun ProductInstanceGroupCard(
-  group: ProductInstanceGroupInput,
-  isLoading: Boolean,
-  onEditInstance: (String) -> Unit,
-  onRemoveInstance: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Card(
-    modifier = modifier.fillMaxWidth(),
-    colors = CardDefaults.cardColors(
-      containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-    )
-  ) {
-    Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
-      verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-      // Group header with identifier and count
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-      ) {
-        Column {
-          Text(
-            text = group.identifier,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.primary,
-          )
-          Text(
-            text = "${group.instances.size} items",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-      }
-
-      // Expiration dates
-      if (group.expirationDates.isNotEmpty()) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-          Text(
-            text = "Expiration dates:",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-          group.expirationDates.forEach { dateText ->
-            Text(
-              text = "• $dateText",
-              style = MaterialTheme.typography.bodyMedium,
-            )
-          }
-        }
-      }
-
-      // Edit/Remove actions for instances
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        OutlinedButton(
-          onClick = { onEditInstance(group.instances.first().id) },
-          modifier = Modifier.weight(1f),
-          enabled = !isLoading,
-        ) {
-          Text("Edit")
-        }
-
-        if (group.instances.size > 1) {
-          OutlinedButton(
-            onClick = { onRemoveInstance(group.instances.last().id) },
-            modifier = Modifier.weight(1f),
-            enabled = !isLoading,
-          ) {
-            Text("Remove one")
-          }
-        } else {
-          TextButton(
-            onClick = { onRemoveInstance(group.instances.first().id) },
-            modifier = Modifier.weight(1f),
-            enabled = !isLoading,
-          ) {
-            Text("Remove")
-          }
-        }
-      }
-    }
-  }
-}
-
-@Composable
-private fun ProductInstanceCard(
-  instance: ProductInstanceInput,
-  instanceNumber: Int,
-  canRemove: Boolean,
-  isLoading: Boolean,
-  onEdit: () -> Unit,
-  onRemove: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Card(
-    modifier = modifier.fillMaxWidth(),
-    onClick = onEdit,
-    colors = CardDefaults.cardColors(
-      containerColor = MaterialTheme.colorScheme.surfaceContainerLow
-    )
-  ) {
-    Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-      ) {
-        Text(
-          text = stringResource(
-            id = R.string.create_product_instance_number,
-            instanceNumber,
-          ),
-          style = MaterialTheme.typography.labelLarge,
-          color = MaterialTheme.colorScheme.primary,
-        )
-        if (canRemove) {
-          TextButton(
-            onClick = onRemove,
-            enabled = !isLoading,
-          ) {
-            Text(stringResource(R.string.create_product_remove_instance))
-          }
-        }
-      }
-
-      if (instance.identifier.isNotBlank()) {
-        Text(
-          text = "ID: ${instance.identifier}",
-          style = MaterialTheme.typography.bodyMedium
-        )
-      }
-
-      if (instance.expirationDateText != null) {
-        Text(
-          text = "Expires: ${instance.expirationDateText}",
-          style = MaterialTheme.typography.bodyMedium
-        )
-      }
-
-      if (instance.identifier.isBlank() && instance.expirationDateText == null) {
-        Text(
-          text = "Tap to add details",
-          style = MaterialTheme.typography.bodySmall,
-          color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-      }
     }
   }
 }
