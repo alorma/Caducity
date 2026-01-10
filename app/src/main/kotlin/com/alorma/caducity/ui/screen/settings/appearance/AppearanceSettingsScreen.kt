@@ -32,7 +32,6 @@ fun AppearanceSettingsScreen(
   onThemeModeChange: (ThemeMode) -> Unit,
   useDynamicTheme: Boolean,
   onUseDynamicTheme: (Boolean) -> Unit,
-  onClose: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   AppScaffold(
@@ -101,7 +100,6 @@ fun AppearanceSettingsScreenPreview() {
         ThemeMode.LIGHT
       }
       AppearanceSettingsScreen(
-        onClose = {},
         themeMode = themeMode,
         useDynamicTheme = true,
         onThemeModeChange = {},

@@ -45,7 +45,6 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun BackupScreen(
-  onClose: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: BackupViewModel = koinViewModel(),
   backupFileHandler: BackupFileHandler = koinInject()
@@ -126,7 +125,6 @@ fun BackupScreen(
         snackbarHostState = snackbarHostState,
         onExport = { backupFileHandler.createBackup() },
         onRestore = { backupFileHandler.selectBackup() },
-        onClose = onClose,
       )
     }
   }
@@ -138,7 +136,6 @@ private fun BackupScreenContent(
   snackbarHostState: AppSnackbarHostState,
   onExport: () -> Unit,
   onRestore: () -> Unit,
-  onClose: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   AppScaffold(
@@ -206,7 +203,6 @@ fun BackupScreenContentPreview() {
         snackbarHostState = rememberAppSnackbarHostState(),
         onExport = {},
         onRestore = {},
-        onClose = {},
       )
     }
   }
