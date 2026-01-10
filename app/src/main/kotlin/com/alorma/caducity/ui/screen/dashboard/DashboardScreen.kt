@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.dashboard
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -18,8 +17,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.outlined.Calendar
-import com.alorma.caducity.base.ui.icons.outlined.ListMode
 import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
@@ -49,7 +46,6 @@ fun DashboardScreen(
       onNavigateToProduct = onNavigateToProduct,
       onNavigateToStatus = onNavigateToStatus,
       onNavigateToSettings = onNavigateToSettings,
-      onChangeDashboardMode = viewModel::changeDashboardMode,
     )
   }
 }
@@ -61,39 +57,12 @@ private fun DashboardContent(
   onNavigateToProduct: (String) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
-  onChangeDashboardMode: (DashboardMode) -> Unit,
 ) {
   AppScaffold(
     topBar = {
       StyledTopAppBar(
         title = { Text(text = stringResource(R.string.dashboard_screen_title)) },
         actions = {
-          AnimatedContent(state) { stateContent ->
-            when (stateContent) {
-              is DashboardState.Loading -> {}
-              is DashboardState.Success.Unified -> {
-                IconButton(
-                  onClick = { onChangeDashboardMode(DashboardMode.PerProduct) },
-                ) {
-                  Icon(
-                    imageVector = AppIcons.Outlined.ListMode,
-                    contentDescription = null,
-                  )
-                }
-              }
-
-              is DashboardState.Success.PerProduct -> {
-                IconButton(
-                  onClick = { onChangeDashboardMode(DashboardMode.Unified) },
-                ) {
-                  Icon(
-                    imageVector = AppIcons.Outlined.Calendar,
-                    contentDescription = null,
-                  )
-                }
-              }
-            }
-          }
           IconButton(
             onClick = onNavigateToSettings,
           ) {
@@ -161,7 +130,6 @@ fun DashboardSuccessContentPreview(
         onNavigateToProduct = {},
         onNavigateToStatus = {},
         onNavigateToSettings = {},
-        onChangeDashboardMode = {},
       )
     }
   }
