@@ -4,6 +4,7 @@ import com.alorma.caducity.barcode.base.BarcodeHandler
 import com.alorma.caducity.barcode.base.BarcodeHandlerNoOp
 import com.alorma.caducity.config.ConfigQualifier
 import com.alorma.caducity.config.configModule
+import com.alorma.caducity.config.time.RelativeTimeFormatter
 import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.data.datasource.RoomBackupDataSource
 import com.alorma.caducity.domain.backup.BackupDataSource
@@ -19,16 +20,14 @@ import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
-import com.alorma.caducity.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.dashboard.dashboardModule
+import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
 import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
 import com.alorma.caducity.ui.screen.product.create.FutureDateSelectableDates
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailAddInstanceViewModel
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailMapper
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailViewModel
-import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
-import com.alorma.caducity.ui.screen.products.productsListModule
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
@@ -49,7 +48,6 @@ val appModule = module {
   includes(fireAndForgetModule)
 
   includes(dashboardModule)
-  includes(productsListModule)
 
   factoryOf(::BarcodeHandlerNoOp) {
     bind<BarcodeHandler>()

@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.products
+package com.alorma.caducity.config.time
 
 import android.content.Context
 import com.alorma.caducity.R
@@ -26,7 +26,7 @@ class RelativeTimeFormatter(
   }
 
   fun format(today: LocalDate, expirationDate: LocalDate): String {
-    val daysDiff = today.until(expirationDate, DateTimeUnit.DAY).toInt()
+    val daysDiff = today.until(expirationDate, DateTimeUnit.Companion.DAY).toInt()
 
     return when {
       daysDiff == 0 -> context.getString(R.string.relative_time_today)
