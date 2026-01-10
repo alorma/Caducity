@@ -1,6 +1,7 @@
 package com.alorma.caducity.data.datasource
 
 import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.config.time.date
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.toModel
 import com.alorma.caducity.data.datasource.room.toRoomEntity
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toLocalDateTime
 import java.util.UUID
 import kotlin.time.Duration.Companion.days
 
@@ -107,8 +107,8 @@ class RoomProductDataSource(
       now.plus(expirationThresholds.soonExpiringThreshold).toEpochMilliseconds()
 
     // Calculate start of today for consistent date boundary handling
-    val todayStartMillis = now.toLocalDateTime(TimeZone.currentSystemDefault())
-      .date
+    val todayStartMillis = now
+      .date()
       .atStartOfDayIn(TimeZone.currentSystemDefault())
       .toEpochMilliseconds()
 

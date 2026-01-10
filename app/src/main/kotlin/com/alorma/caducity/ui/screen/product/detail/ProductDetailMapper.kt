@@ -6,11 +6,8 @@ import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.InstanceWithVariant
 import com.alorma.caducity.domain.model.ProductDetail
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
-import com.alorma.caducity.ui.components.calendar.AppCalendarDateInfo
-import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.config.time.RelativeTimeFormatter
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 
@@ -40,17 +37,11 @@ class ProductDetailMapper(
 
     val startDate = allDatedContents.minOfOrNull { it.date } ?: today
     val endDate = allDatedContents.maxOfOrNull { it.date } ?: today
-    val content = allDatedContents.associate { datedModel ->
-      datedModel.date to AppCalendarDateInfo(
-        status = datedModel.status,
-        shapePosition = ShapePosition.Single,
-      )
-    }.toImmutableMap()
 
-    val appCalendarConfig = appCalendarConfigMapper.createWithContent(
+    val appCalendarConfig = appCalendarConfigMapper.createWithDatedContent(
       startDate = startDate,
       endDate = endDate,
-      content = content,
+      datedContent = allDatedContents,
       firstDayOfWeek = firstDayOfWeek,
     )
 

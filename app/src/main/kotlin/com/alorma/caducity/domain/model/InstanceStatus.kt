@@ -1,7 +1,6 @@
 package com.alorma.caducity.domain.model
 
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import com.alorma.caducity.config.time.date
 import kotlin.time.Duration
 import kotlin.time.Instant
 
@@ -26,18 +25,9 @@ sealed class InstanceStatus {
       now: Instant,
       soonExpiringThreshold: Duration
     ): InstanceStatus {
-      val today = now
-        .toLocalDateTime(TimeZone.Companion.currentSystemDefault())
-        .date
-
-      val expirationLocalDate = expirationDate
-        .toLocalDateTime(TimeZone.Companion.currentSystemDefault())
-        .date
-
-      val expiringSoonDate = now
-        .plus(soonExpiringThreshold)
-        .toLocalDateTime(TimeZone.Companion.currentSystemDefault())
-        .date
+      val today = now.date()
+      val expirationLocalDate = expirationDate.date()
+      val expiringSoonDate = now.plus(soonExpiringThreshold).date()
 
       return when {
         expirationLocalDate < today -> Expired
