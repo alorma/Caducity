@@ -11,6 +11,7 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
@@ -23,18 +24,20 @@ class AppCalendarConfigMapper(
 
   fun createFromInstances(
     instances: List<ProductInstance>,
+    firstDayOfWeek: DayOfWeek,
   ): AppCalendarConfig {
     val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
     return if (instances.isEmpty()) {
-      createEmpty(today)
+      createEmpty(today, firstDayOfWeek)
     } else {
-      createWithInstances(instances)
+      createWithInstances(instances, firstDayOfWeek)
     }
   }
 
   fun createEmpty(
     today: LocalDate = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    firstDayOfWeek: DayOfWeek,
   ): AppCalendarConfig {
     return AppCalendarConfig(
       today = today,
@@ -43,6 +46,7 @@ class AppCalendarConfigMapper(
       content = persistentMapOf(),
       monthNames = localizedDateFormatter.getMonthNames(),
       daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
+      firstDayOfWeek = firstDayOfWeek,
     )
   }
 
@@ -50,6 +54,7 @@ class AppCalendarConfigMapper(
     startDate: LocalDate,
     endDate: LocalDate,
     content: ImmutableMap<LocalDate, AppCalendarDateInfo>,
+    firstDayOfWeek: DayOfWeek,
   ): AppCalendarConfig {
     val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
@@ -60,11 +65,13 @@ class AppCalendarConfigMapper(
       content = content,
       monthNames = localizedDateFormatter.getMonthNames(),
       daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
+      firstDayOfWeek = firstDayOfWeek,
     )
   }
 
   private fun createWithInstances(
     instances: List<ProductInstance>,
+    firstDayOfWeek: DayOfWeek,
   ): AppCalendarConfig {
     val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
@@ -89,6 +96,7 @@ class AppCalendarConfigMapper(
       content = dateWithShapes,
       monthNames = localizedDateFormatter.getMonthNames(),
       daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
+      firstDayOfWeek = firstDayOfWeek,
     )
   }
 
