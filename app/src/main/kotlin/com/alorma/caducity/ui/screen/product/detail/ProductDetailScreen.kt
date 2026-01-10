@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
@@ -25,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Today
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
@@ -56,6 +59,7 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 import com.kizitonwose.calendar.compose.weekcalendar.WeekCalendarState
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -109,6 +113,32 @@ private fun ProductDetailSuccessContent(
   onFreeze: (ProductInstanceDetailUiModel) -> Unit,
   onDelete: (ProductInstanceDetailUiModel) -> Unit,
 ) {
+  val userSelectedDate = remember {
+    mutableStateOf(state.today)
+  }
+
+  val selectedScrollIndex = remember {
+    derivedStateOf {
+      findFirstIndex(
+        date = userSelectedDate.value,
+        datedContent = state.datedContent
+      )
+    }
+  }
+
+  val listState = rememberLazyListState(
+    initialFirstVisibleItemIndex = selectedScrollIndex.value,
+  )
+
+  val weekCalendarState: WeekCalendarState = rememberWeekCalendarState(
+    startDate = state.calendarState.startDate,
+    endDate = state.calendarState.endDate,
+    firstDayOfWeek = DayOfWeek.MONDAY,
+    firstVisibleWeekDate = state.calendarState.today,
+  )
+
+  val coroutineScope = rememberCoroutineScope()
+
   AppScaffold(
     modifier = modifier,
     dialogState = dialogState,
@@ -120,6 +150,32 @@ private fun ProductDetailSuccessContent(
         ),
         title = { Text(text = state.product.name) },
         navigationIcon = { NavigationIcon() },
+        actions = {
+          IconButton(
+            onClick = {
+              coroutineScope.launch {
+                // Scroll list to today
+                val todayIndex = findFirstIndex(
+                  date = state.today,
+                  datedContent = state.datedContent
+                )
+                listState.animateScrollToItem(todayIndex)
+
+                // Scroll calendar to today
+                weekCalendarState.animateScrollToDate(state.today)
+
+                // Update user selected date
+                userSelectedDate.value = state.today
+              }
+            }
+          ) {
+            Icon(
+              imageVector = AppIcons.Today,
+              contentDescription = "Scroll to today",
+              tint = CaducityTheme.colorScheme.primary,
+            )
+          }
+        },
       )
     },
     floatingActionButton = {
@@ -133,30 +189,6 @@ private fun ProductDetailSuccessContent(
       }
     },
   ) { paddingValues ->
-
-    val userSelectedDate = remember {
-      mutableStateOf(state.today)
-    }
-
-    val selectedScrollIndex = remember {
-      derivedStateOf {
-        findFirstIndex(
-          date = userSelectedDate.value,
-          datedContent = state.datedContent
-        )
-      }
-    }
-
-    val listState = rememberLazyListState(
-      initialFirstVisibleItemIndex = selectedScrollIndex.value,
-    )
-
-    val weekCalendarState: WeekCalendarState = rememberWeekCalendarState(
-      startDate = state.calendarState.startDate,
-      endDate = state.calendarState.endDate,
-      firstDayOfWeek = DayOfWeek.MONDAY,
-      firstVisibleWeekDate = state.calendarState.today,
-    )
 
     LaunchedEffect(selectedScrollIndex.value) {
       listState.animateScrollToItem(selectedScrollIndex.value)
