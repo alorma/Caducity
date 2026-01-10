@@ -9,12 +9,4 @@ data class ProductInstance(
   val expirationDate: Instant,
   val status: InstanceStatus,
   val pausedDate: Instant? = null,
-) {
-
-  val displayDate: Instant
-    get() = if (status == InstanceStatus.Frozen && pausedDate != null) {
-      pausedDate
-    } else {
-      expirationDate
-    }
-}
+)

@@ -8,6 +8,24 @@ import kotlinx.datetime.LocalDate
 import kotlin.time.Instant
 
 @Stable
+data class DateInstancesUiModel(
+  val text: String,
+  val status: InstanceStatus,
+  val date: LocalDate,
+  val instances: ImmutableList<ProductInstanceDetailUiModel>,
+)
+
+@Stable
+data class ProductInstanceDetailUiModel(
+  val id: String,
+  val variantName: String?,
+  val identifier: String,
+  val status: InstanceStatus,
+  val expirationDate: LocalDate,
+  val expirationDateText: String,
+)
+
+@Stable
 data class ProductDetailUiModel(
   val id: String,
   val name: String,
@@ -18,19 +36,11 @@ data class ProductDetailUiModel(
 data class ProductDetailVariantUiModel(
   val id: String,
   val name: String,
-  val instances: List<ProductInstanceDetailUiModel>,
+  val instances: List<LegacyProductInstanceDetailUiModel>,
 )
 
 @Stable
-data class ProductInstanceDetailGroup(
-  val identifier: String,
-  val statusGroups: ImmutableList<ProductInstanceVariantGroup>,
-  val frozenCount: Int,
-  val instances: ImmutableList<ProductInstanceDetailUiModel>,
-)
-
-@Stable
-data class ProductInstanceDetailUiModel(
+data class LegacyProductInstanceDetailUiModel(
   val id: String,
   val identifier: String,
   val status: InstanceStatus,

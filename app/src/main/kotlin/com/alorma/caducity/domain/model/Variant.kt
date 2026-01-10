@@ -1,8 +1,10 @@
 package com.alorma.caducity.domain.model
 
+import kotlin.time.Instant
+
 data class Variant(
   val id: String,
   val productId: String,
   val name: String,
-  val createdAt: kotlin.time.Instant,
+  val createdAt: Instant,
 )
