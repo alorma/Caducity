@@ -1,7 +1,7 @@
 package com.alorma.caducity.ui.screen.onboarding
 
 import androidx.lifecycle.ViewModel
-import com.alorma.caducity.onboarding.OnboardingFlag
+import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

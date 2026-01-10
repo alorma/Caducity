@@ -8,7 +8,7 @@ import com.alorma.caducity.domain.model.ProductDetail
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
 import com.alorma.caducity.ui.components.calendar.AppCalendarDateInfo
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
+import com.alorma.caducity.config.time.RelativeTimeFormatter
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.DayOfWeek

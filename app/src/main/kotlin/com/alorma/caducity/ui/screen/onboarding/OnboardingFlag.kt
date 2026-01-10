@@ -1,4 +1,4 @@
-package com.alorma.caducity.onboarding
+package com.alorma.caducity.ui.screen.onboarding
 
 import com.alorma.fireandforget.FireAndForget
 import com.alorma.fireandforget.FireAndForgetRunner
