@@ -143,6 +143,10 @@ dependencies {
   implementation(libs.androidx.work.runtime.ktx)
   implementation(libs.koin.androidx.workmanager)
 
+  // Testing
+  testImplementation(libs.junit)
+  testImplementation(libs.strikt.core)
+
   // Screenshot testing
   screenshotTestImplementation(libs.screenshot.validation.api)
 
