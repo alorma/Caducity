@@ -24,7 +24,6 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 
 @Composable
 fun DebugSettingsScreen(
-  onClose: () -> Unit,
   triggerNotificationCheck: () -> Unit,
   modifier: Modifier = Modifier
 ) {
@@ -69,7 +68,6 @@ fun DebugSettingsScreenPreview() {
   PreviewTheme {
     Surface {
       DebugSettingsScreen(
-        onClose = {},
         triggerNotificationCheck = {}
       )
     }

@@ -62,7 +62,6 @@ fun SettingsContainer(
           useDynamicTheme = themePreferences.useDynamicColors.value,
           onThemeModeChange = { themePreferences.setThemeModeState(it) },
           onUseDynamicTheme = { themePreferences.setDynamicColorsEnabled(it) },
-          onClose = { settingsBackStack.removeLastOrNull() },
         )
       }
       entry<SettingsRoute.Notifications> {
@@ -71,15 +70,12 @@ fun SettingsContainer(
         )
       }
       entry<SettingsRoute.Backup> {
-        BackupScreen(
-          onClose = { settingsBackStack.removeLastOrNull() },
-        )
+        BackupScreen()
       }
       if (debugModeProvider.isDebugMode()) {
         entry<SettingsRoute.Debug> {
           DebugSettingsScreen(
             triggerNotificationCheck = { debugHelper.triggerImmediateCheck() },
-            onClose = { settingsBackStack.removeLastOrNull() },
           )
         }
       }
@@ -91,7 +87,6 @@ fun SettingsContainer(
           onNavigateToRepo = {
             localUriHandler.openUri("https://github.com/alorma/caducity")
           },
-          onClose = { settingsBackStack.removeLastOrNull() },
         )
       }
     },

@@ -26,7 +26,6 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 fun AboutScreen(
   appVersion: String,
   onNavigateToRepo: () -> Unit,
-  onClose: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   AppScaffold(
