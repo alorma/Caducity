@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.product.detail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,15 +13,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -33,11 +39,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Cooking
+import com.alorma.caducity.base.ui.icons.Delete
+import com.alorma.caducity.base.ui.icons.ThermometerSnow
 import com.alorma.caducity.base.ui.icons.Today
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
@@ -263,6 +273,7 @@ private fun findFirstIndex(
   return nearestIndex ?: 0
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DatedContent(
   state: DateInstancesUiModel,
@@ -275,6 +286,9 @@ private fun DatedContent(
   val itemHeight = remember { mutableStateOf(24.dp) }
   val bulletOffset = remember { mutableStateOf(Offset.Zero) }
   val localDensity = LocalDensity.current
+
+  val selectedInstance = remember { mutableStateOf<ProductInstanceDetailUiModel?>(null) }
+  val sheetState = rememberModalBottomSheetState()
 
   Row(
     modifier = Modifier
@@ -335,13 +349,97 @@ private fun DatedContent(
 
         state.instances.forEach { instance ->
           SuggestionChip(
-            onClick = {},
+            onClick = { selectedInstance.value = instance },
             colors = chipColors,
             label = { Text(text = instance.text) },
           )
         }
       }
     }
+  }
+
+  // Bottom sheet for instance actions
+  selectedInstance.value?.let { instance ->
+    ModalBottomSheet(
+      onDismissRequest = { selectedInstance.value = null },
+      sheetState = sheetState,
+    ) {
+      InstanceActionsBottomSheet(
+        instance = instance,
+        onConsume = {
+          onConsume(instance)
+          selectedInstance.value = null
+        },
+        onFreeze = {
+          onFreeze(instance)
+          selectedInstance.value = null
+        },
+        onDelete = {
+          onDelete(instance)
+          selectedInstance.value = null
+        },
+      )
+    }
+  }
+}
+
+@Composable
+private fun InstanceActionsBottomSheet(
+  instance: ProductInstanceDetailUiModel,
+  onConsume: () -> Unit,
+  onFreeze: () -> Unit,
+  onDelete: () -> Unit,
+) {
+  Column(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(bottom = 24.dp),
+  ) {
+    // Header with instance info
+    Text(
+      text = instance.text,
+      style = MaterialTheme.typography.titleMedium,
+      modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
+    )
+
+    HorizontalDivider()
+
+    // Consume action
+    ListItem(
+      headlineContent = { Text(stringResource(R.string.product_detail_action_consume)) },
+      leadingContent = {
+        Icon(
+          imageVector = AppIcons.Cooking,
+          contentDescription = null,
+        )
+      },
+      modifier = Modifier.clickable(onClick = onConsume),
+    )
+
+    // Freeze action
+    ListItem(
+      headlineContent = { Text(stringResource(R.string.product_detail_action_freeze)) },
+      leadingContent = {
+        Icon(
+          imageVector = AppIcons.ThermometerSnow,
+          contentDescription = null,
+        )
+      },
+      modifier = Modifier.clickable(onClick = onFreeze),
+    )
+
+    // Delete action
+    ListItem(
+      headlineContent = { Text(stringResource(R.string.product_detail_action_delete)) },
+      leadingContent = {
+        Icon(
+          imageVector = AppIcons.Delete,
+          contentDescription = null,
+          tint = MaterialTheme.colorScheme.error,
+        )
+      },
+      modifier = Modifier.clickable(onClick = onDelete),
+    )
   }
 }
 
