@@ -30,6 +30,23 @@ fun CaducityWeekCalendar(
     endDate = calendarState.endDate,
   )
 
+  CaducityWeekCalendar(
+    modifier = modifier,
+    weekCalendarState = weekCalendarState,
+    calendarState = calendarState,
+    contentPadding = contentPadding,
+    onDateClick = onDateClick
+  )
+}
+
+@Composable
+fun CaducityWeekCalendar(
+  weekCalendarState: WeekCalendarState,
+  calendarState: CalendarState,
+  contentPadding: PaddingValues,
+  onDateClick: (LocalDate) -> Unit,
+  modifier: Modifier = Modifier,
+) {
   WeekCalendar(
     modifier = modifier.fillMaxWidth(),
     state = weekCalendarState,
