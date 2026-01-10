@@ -4,28 +4,24 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -36,11 +32,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.Cooking
-import com.alorma.caducity.base.ui.icons.Delete
-import com.alorma.caducity.base.ui.icons.ThermometerSnow
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
+import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
+import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
@@ -50,8 +45,6 @@ import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.components.shape.toVerticalShape
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.product.detail.timeline.TimelineBulletAndLine
@@ -77,46 +70,16 @@ fun ProductDetailScreen(
     is ProductDetailState.Loading -> FullscreenLoading()
 
     is ProductDetailState.Success -> {
-      AppScaffold(
+      ProductDetailSuccessContent(
         modifier = modifier,
         dialogState = dialogState,
         snackbarState = snackbarState,
-        topBar = {
-          StyledTopAppBar(
-            title = { Text(text = currentState.product.name) },
-            navigationIcon = { NavigationIcon() },
-          )
-        },
-        floatingActionButton = {
-          FloatingActionButton(
-            onClick = onNavigateToAddInstance,
-          ) {
-            Icon(
-              imageVector = AppIcons.Add,
-              contentDescription = null,
-            )
-          }
-        },
-      ) { paddingValues ->
-        LazyColumn(
-          modifier = Modifier.padding(paddingValues),
-          reverseLayout = true,
-        ) {
-
-          items(
-            items = currentState.content,
-            key = { datedContent -> "product-${currentState.product.id}-dated-${datedContent.date}" },
-            contentType = { "datedContent" },
-          ) { datedContent ->
-            DatedContent(
-              state = datedContent,
-              onConsume = viewModel::onConsumeInstance,
-              onFreeze = viewModel::onFreezeInstance,
-              onDelete = viewModel::onDeleteInstance,
-            )
-          }
-        }
-      }
+        currentState = currentState,
+        onNavigateToAddInstance = onNavigateToAddInstance,
+        onConsume = viewModel::onConsumeInstance,
+        onFreeze = viewModel::onFreezeInstance,
+        onDelete = viewModel::onDeleteInstance,
+      )
     }
 
     is ProductDetailState.Error -> DetailError(currentState)
@@ -124,8 +87,74 @@ fun ProductDetailScreen(
 }
 
 @Composable
+private fun ProductDetailSuccessContent(
+  modifier: Modifier,
+  dialogState: AppDialogState,
+  snackbarState: AppSnackbarHostState,
+  currentState: ProductDetailState.Success,
+  onNavigateToAddInstance: () -> Unit,
+  onConsume: (ProductInstanceDetailUiModel) -> Unit,
+  onFreeze: (ProductInstanceDetailUiModel) -> Unit,
+  onDelete: (ProductInstanceDetailUiModel) -> Unit,
+) {
+  AppScaffold(
+    modifier = modifier,
+    dialogState = dialogState,
+    snackbarState = snackbarState,
+    topBar = {
+      StyledTopAppBar(
+        title = { Text(text = currentState.product.name) },
+        navigationIcon = { NavigationIcon() },
+      )
+    },
+    floatingActionButton = {
+      FloatingActionButton(
+        onClick = onNavigateToAddInstance,
+      ) {
+        Icon(
+          imageVector = AppIcons.Add,
+          contentDescription = null,
+        )
+      }
+    },
+  ) { paddingValues ->
+    Column(
+      modifier = Modifier.padding(paddingValues),
+    ) {
+      CaducityWeekCalendar(
+        calendarState = currentState.calendarState,
+        contentPadding = PaddingValues(horizontal = 12.dp),
+        onDateClick = {}
+      )
+
+      LazyColumn(
+        contentPadding = PaddingValues(bottom = 400.dp),
+      ) {
+        items(
+          items = currentState.content,
+          key = { datedContent -> "product-${currentState.product.id}-dated-${datedContent.date}" },
+          contentType = { "datedContent" },
+        ) { datedContent ->
+          DatedContent(
+            state = datedContent,
+            contentPadding = PaddingValues(
+              start = 28.dp,
+              end = 12.dp,
+            ),
+            onConsume = onConsume,
+            onFreeze = onFreeze,
+            onDelete = onDelete,
+          )
+        }
+      }
+    }
+  }
+}
+
+@Composable
 private fun DatedContent(
   state: DateInstancesUiModel,
+  contentPadding: PaddingValues = PaddingValues(0.dp),
   onConsume: (ProductInstanceDetailUiModel) -> Unit,
   onFreeze: (ProductInstanceDetailUiModel) -> Unit,
   onDelete: (ProductInstanceDetailUiModel) -> Unit,
@@ -137,7 +166,7 @@ private fun DatedContent(
 
   Row(
     modifier = Modifier
-      .padding(start = 24.dp, end = 16.dp)
+      .padding(contentPadding)
       .onGloballyPositioned { coordinates ->
         with(localDensity) { itemHeight.value = coordinates.size.height.toDp() }
       }
@@ -158,6 +187,7 @@ private fun DatedContent(
           vertical = 12.dp,
           horizontal = 16.dp
         ),
+      verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -178,7 +208,27 @@ private fun DatedContent(
           style = CaducityTheme.typography.labelMedium,
         )
       }
-      Spacer(modifier = Modifier.height(120.dp))
+
+      FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+        maxItemsInEachRow = 3,
+      ) {
+        val statusColors = ExpirationDefaults.getSoftColors(state.status)
+
+        val chipColors = SuggestionChipDefaults.suggestionChipColors(
+          containerColor = statusColors.container,
+        )
+
+        state.instances.forEach { instance ->
+          SuggestionChip(
+            onClick = {},
+            colors = chipColors,
+            label = { Text(text = instance.text) },
+          )
+        }
+      }
     }
   }
 }
@@ -270,89 +320,6 @@ private fun SideEffectHandler(
             viewModel.onDeleteInstance(effect.instance)
           }
         }
-      }
-    }
-  }
-}
-
-@Composable
-private fun SmallProductInstanceCard(
-  instance: ProductInstanceDetailUiModel,
-  shapePosition: ShapePosition,
-  onConsume: (ProductInstanceDetailUiModel) -> Unit,
-  onFreeze: (ProductInstanceDetailUiModel) -> Unit,
-  onDelete: (ProductInstanceDetailUiModel) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  var showMenu by remember { mutableStateOf(false) }
-
-  Row(
-    modifier = modifier,
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Surface(
-      modifier = Modifier.weight(1f),
-      shape = shapePosition.toVerticalShape(),
-      color = CaducityTheme.colorScheme.surfaceContainer,
-    ) {
-      Text(
-        modifier = Modifier.padding(12.dp),
-        text = instance.text,
-        style = MaterialTheme.typography.labelLarge,
-        color = CaducityTheme.colorScheme.onSurface,
-      )
-    }
-    Box {
-      IconButton(onClick = { showMenu = true }) {
-        Text(
-          text = "⋮",
-          style = MaterialTheme.typography.titleLarge,
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
-        )
-      }
-      DropdownMenu(
-        expanded = showMenu,
-        onDismissRequest = { showMenu = false }
-      ) {
-        DropdownMenuItem(
-          text = { Text("Consume") },
-          leadingIcon = {
-            Icon(
-              imageVector = AppIcons.Cooking,
-              contentDescription = null,
-            )
-          },
-          onClick = {
-            onConsume(instance)
-            showMenu = false
-          }
-        )
-        DropdownMenuItem(
-          text = { Text("Freeze") },
-          leadingIcon = {
-            Icon(
-              imageVector = AppIcons.ThermometerSnow,
-              contentDescription = null,
-            )
-          },
-          onClick = {
-            onFreeze(instance)
-            showMenu = false
-          }
-        )
-        DropdownMenuItem(
-          text = { Text("Delete") },
-          leadingIcon = {
-            Icon(
-              imageVector = AppIcons.Delete,
-              contentDescription = null,
-            )
-          },
-          onClick = {
-            onDelete(instance)
-            showMenu = false
-          }
-        )
       }
     }
   }

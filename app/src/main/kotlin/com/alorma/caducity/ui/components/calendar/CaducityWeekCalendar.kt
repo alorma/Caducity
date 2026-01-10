@@ -20,6 +20,7 @@ import kotlinx.datetime.LocalDate
 @Composable
 fun CaducityWeekCalendar(
   calendarState: CalendarState,
+  contentPadding: PaddingValues = PaddingValues(0.dp),
   onDateClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -32,6 +33,7 @@ fun CaducityWeekCalendar(
   WeekCalendar(
     modifier = modifier.fillMaxWidth(),
     state = weekCalendarState,
+    contentPadding = contentPadding,
     weekHeader = { week ->
       val weekDays = week.days.map { weekDay ->
         weekDay.date

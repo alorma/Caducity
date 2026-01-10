@@ -1,19 +1,24 @@
 package com.alorma.caducity.ui.screen.product.detail
 
 import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.domain.model.DatedInstances
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.InstanceWithVariant
 import com.alorma.caducity.domain.model.ProductDetail
+import com.alorma.caducity.ui.components.shape.ShapePosition
+import com.alorma.caducity.ui.screen.dashboard.CalendarDateInfo
+import com.alorma.caducity.ui.screen.dashboard.CalendarState
 import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.format.DateTimeFormat
 
 class ProductDetailMapper(
   private val appClock: AppClock,
-  private val dateFormat: DateTimeFormat<LocalDate>,
   private val relativeTimeFormatter: RelativeTimeFormatter,
+  private val localizedDateFormatter: LocalizedDateFormatter,
 ) {
 
   fun mapToProductDetail(
@@ -31,8 +36,25 @@ class ProductDetailMapper(
       .mapNotNull { datedContent -> mapDatedContent(datedInstances = datedContent) }
       .toImmutableList()
 
+    val today = appClock.nowDate()
+
+    val calendarState = CalendarState(
+      startDate = allDatedContents.minOfOrNull { it.date } ?: today,
+      endDate = allDatedContents.maxOfOrNull { it.date } ?: today,
+      today = today,
+      content = allDatedContents.associate {datedModel ->
+        datedModel.date to CalendarDateInfo(
+          status = datedModel.status,
+          shapePosition = ShapePosition.Single,
+        )
+      }.toImmutableMap(),
+      monthNames = localizedDateFormatter.getMonthNames(),
+      daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
+    )
+
     return ProductDetailState.Success(
       product = productUiModel,
+      calendarState = calendarState,
       content = allDatedContents,
     )
   }

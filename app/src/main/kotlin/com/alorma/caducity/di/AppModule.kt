@@ -76,13 +76,7 @@ val appModule = module {
   singleOf(::DeleteInstanceUseCase)
   singleOf(::ConsumeInstanceUseCase)
   singleOf(::FreezeInstanceUseCase)
-  single {
-    ProductDetailMapper(
-      appClock = get(),
-      dateFormat = get(qualifier = ConfigQualifier.DateFormat.HumanReadable),
-      relativeTimeFormatter = get(),
-    )
-  }
+  singleOf(::ProductDetailMapper)
   viewModelOf(::ProductDetailViewModel)
   viewModelOf(::ProductDetailAddInstanceViewModel)
 
