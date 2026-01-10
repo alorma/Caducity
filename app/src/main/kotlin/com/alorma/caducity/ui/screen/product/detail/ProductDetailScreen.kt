@@ -5,10 +5,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
@@ -27,6 +28,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
@@ -47,10 +51,10 @@ import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHo
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.components.shape.calculateShape
 import com.alorma.caducity.ui.components.shape.toVerticalShape
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.screen.product.detail.timeline.TimelineBulletAndLine
 import com.alorma.caducity.ui.theme.CaducityTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -96,6 +100,7 @@ fun ProductDetailScreen(
       ) { paddingValues ->
         LazyColumn(
           modifier = Modifier.padding(paddingValues),
+          reverseLayout = true,
         ) {
 
           items(
@@ -124,55 +129,56 @@ private fun DatedContent(
   onConsume: (ProductInstanceDetailUiModel) -> Unit,
   onFreeze: (ProductInstanceDetailUiModel) -> Unit,
   onDelete: (ProductInstanceDetailUiModel) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-  Box(
-    modifier = Modifier.padding(horizontal = 16.dp),
-  ) {
-    // Content column
-    Row {
-      // Spacer for timeline
-      Box(modifier = Modifier.width(24.dp))
+  val itemHeight = remember { mutableStateOf(24.dp) }
+  val bulletOffset = remember { mutableStateOf(Offset.Zero) }
+  val localDensity = LocalDensity.current
 
-      Column(
-        modifier = Modifier
-          .weight(1f)
-          .padding(bottom = 16.dp),
-      ) {
-        Row(
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-          StatusBadge(
-            status = state.status,
-            size = StatusBadgeSize.Large,
-          )
-
-          Text(
-            text = "·",
-            style = CaducityTheme.typography.labelMedium,
-          )
-
-          Text(
-            text = state.text,
-            style = CaducityTheme.typography.labelMedium,
-          )
-        }
-
-        Column(
-          modifier = Modifier.padding(top = 8.dp),
-        ) {
-          state.instances.forEachIndexed { index, instance ->
-            SmallProductInstanceCard(
-              modifier = Modifier.fillMaxWidth(),
-              instance = instance,
-              shapePosition = state.instances.calculateShape(index),
-              onConsume = onConsume,
-              onFreeze = onFreeze,
-              onDelete = onDelete,
-            )
-          }
-        }
+  Row(
+    modifier = Modifier
+      .padding(start = 24.dp, end = 16.dp)
+      .onGloballyPositioned { coordinates ->
+        with(localDensity) { itemHeight.value = coordinates.size.height.toDp() }
       }
+      .fillMaxWidth()
+      .then(modifier),
+    horizontalArrangement = Arrangement.spacedBy(16.dp)
+  ) {
+    TimelineBulletAndLine(
+      itemHeight = itemHeight.value,
+      bulletOffset = bulletOffset.value,
+      onBulletPositionObtained = { bulletOffset.value = it },
+    )
+
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(
+          vertical = 12.dp,
+          horizontal = 16.dp
+        ),
+    ) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        StatusBadge(
+          status = state.status,
+          size = StatusBadgeSize.Large,
+        )
+
+        Text(
+          text = "·",
+          style = CaducityTheme.typography.labelMedium,
+        )
+
+        Text(
+          text = state.text,
+          style = CaducityTheme.typography.labelMedium,
+        )
+      }
+      Spacer(modifier = Modifier.height(120.dp))
     }
   }
 }
