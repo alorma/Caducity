@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.product.detail
 
 import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.domain.model.DatedInstances
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.InstanceWithVariant
 import com.alorma.caducity.domain.model.ProductDetail
@@ -27,35 +28,45 @@ class ProductDetailMapper(
       description = productDetail.product.description,
     )
 
-    val todayItems = DateInstancesUiModel(
-      text = relativeTimeFormatter.format(appClock.nowDate()),
-      status = InstanceStatus.ExpiringSoon,
-      date = appClock.nowDate(),
-      instances = productDetail.todayInstances.map { instance ->
-        mapInstanceToUi(instance)
-      }.toImmutableList(),
-    ).takeIf { productDetail.todayInstances.isNotEmpty() }
+    val todayContent = mapDatedContent(
+      productDetail.todayContent,
+    )
+
+    val tomorrowContent = mapDatedContent(
+      productDetail.tomorrowContent,
+    )
 
     return ProductDetailState.Success(
       product = productUiModel,
-      todayContent = todayItems,
+      todayContent = todayContent,
+      tomorrowContent = tomorrowContent,
     )
   }
 
-  private fun mapInstanceToUi(instance: InstanceWithVariant): ProductInstanceDetailUiModel {
-    val expirationDate = instance
-      .instance
-      .expirationDate
-      .toLocalDateTime(TimeZone.currentSystemDefault())
-      .date
+  private fun mapDatedContent(
+    datedInstances: DatedInstances,
+  ): DateInstancesUiModel? {
+    return DateInstancesUiModel(
+      text = relativeTimeFormatter.format(datedInstances.date),
+      status = InstanceStatus.ExpiringSoon,
+      date = datedInstances.date,
+      instances = datedInstances.instances.map { instance ->
+        mapInstanceToUi(instance)
+      }.toImmutableList(),
+    ).takeIf { datedInstances.instances.isNotEmpty() }
+  }
 
+  private fun mapInstanceToUi(
+    instance: InstanceWithVariant,
+  ): ProductInstanceDetailUiModel {
     return ProductInstanceDetailUiModel(
       id = instance.instance.id,
-      identifier = instance.instance.identifier,
       status = instance.instance.status,
-      variantName = instance.variant?.name,
-      expirationDate = expirationDate,
-      expirationDateText = dateFormat.format(expirationDate),
+      expirationDate = instance.instance
+        .expirationDate
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+        .date,
+      text = instance.variant?.name ?: instance.instance.identifier
     )
   }
 }

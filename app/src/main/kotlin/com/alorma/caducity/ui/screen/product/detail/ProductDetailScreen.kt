@@ -1,24 +1,22 @@
 package com.alorma.caducity.ui.screen.product.detail
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
@@ -47,7 +46,7 @@ import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.shape.calculateShape
-import com.alorma.caducity.ui.components.shape.toHorizontalShape
+import com.alorma.caducity.ui.components.shape.toVerticalShape
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -74,22 +73,49 @@ fun ProductDetailScreen(
     is ProductDetailState.Success -> {
       AppScaffold(
         modifier = modifier,
+        dialogState = dialogState,
+        snackbarState = snackbarState,
         topBar = {
           StyledTopAppBar(
             title = { Text(text = currentState.product.name) },
             navigationIcon = { NavigationIcon() },
           )
         },
+        floatingActionButton = {
+          FloatingActionButton(
+            onClick = onNavigateToAddInstance,
+          ) {
+            Icon(
+              imageVector = AppIcons.Add,
+              contentDescription = null,
+            )
+          }
+        },
       ) { paddingValues ->
         LazyColumn(
           modifier = Modifier.padding(paddingValues),
         ) {
-          if (currentState.todayContent != null) {
+          val today = currentState.todayContent
+          if (today != null) {
             item(
               key = "today",
             ) {
               DatedContent(
-                state = currentState.todayContent,
+                state = today,
+                onConsume = viewModel::onConsumeInstance,
+                onFreeze = viewModel::onFreezeInstance,
+                onDelete = viewModel::onDeleteInstance,
+              )
+            }
+          }
+
+          val tomorrow = currentState.tomorrowContent
+          if (tomorrow != null) {
+            item(
+              key = "tomorrow",
+            ) {
+              DatedContent(
+                state = tomorrow,
                 onConsume = viewModel::onConsumeInstance,
                 onFreeze = viewModel::onFreezeInstance,
                 onDelete = viewModel::onDeleteInstance,
@@ -112,40 +138,41 @@ private fun DatedContent(
   onDelete: (ProductInstanceDetailUiModel) -> Unit,
 ) {
   Column(
-    verticalArrangement = Arrangement.spacedBy(12.dp),
   ) {
-    StatusBadge(
-      modifier = Modifier.padding(16.dp),
-      status = state.status,
-      size = StatusBadgeSize.Large,
-    )
-
-    val datedInstances = state.instances
-    LazyRow(
-      contentPadding = PaddingValues(horizontal = 24.dp),
-      horizontalArrangement = Arrangement.spacedBy(4.dp),
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-      itemsIndexed(
-        items = datedInstances,
-        key = { _, instance -> "product-today-instance-${instance.id}" },
-        contentType = { _, _ -> "instance" },
-      ) { index, instance ->
+      StatusBadge(
+        status = state.status,
+        size = StatusBadgeSize.Large,
+      )
+
+      Text(
+        text = "·",
+        style = CaducityTheme.typography.labelMedium,
+      )
+
+      Text(
+        text = state.text,
+        style = CaducityTheme.typography.labelMedium,
+      )
+    }
+
+    Column(
+    ) {
+      state.instances.forEachIndexed { index, instance ->
         SmallProductInstanceCard(
-          modifier = Modifier.fillParentMaxWidth(
-            if (datedInstances.size == 1) {
-              1f
-            } else {
-              0.80f
-            }
-          ),
+          modifier = Modifier.fillMaxWidth(),
           instance = instance,
-          shapePosition = datedInstances.calculateShape(index),
+          shapePosition = state.instances.calculateShape(index),
           onConsume = onConsume,
           onFreeze = onFreeze,
           onDelete = onDelete,
         )
       }
     }
+
   }
 }
 
@@ -169,8 +196,10 @@ private fun SideEffectHandler(
   snackbarState: AppSnackbarHostState,
   dialogState: AppDialogState
 ) {
-  LaunchedEffect(Unit) {
+  LaunchedEffect(viewModel.sideEffect) {
     viewModel.sideEffect.collect { effect ->
+      Log.i("Alorma", effect.toString())
+
       when (effect) {
         is ProductDetailSideEffect.ShowMessage -> {
           snackbarState.showSnackbar(
@@ -240,36 +269,6 @@ private fun SideEffectHandler(
 }
 
 @Composable
-private fun SectionTitle(
-  text: String,
-  isFirst: Boolean,
-  modifier: Modifier = Modifier,
-) {
-  Text(
-    modifier = modifier.padding(
-      top = if (isFirst) 0.dp else 24.dp,
-      bottom = 8.dp
-    ),
-    text = text,
-    style = MaterialTheme.typography.titleMedium,
-    color = CaducityTheme.colorScheme.onSurface,
-  )
-}
-
-@Composable
-private fun VariantTitle(
-  name: String,
-  modifier: Modifier = Modifier,
-) {
-  Text(
-    modifier = modifier.padding(top = 16.dp, bottom = 8.dp),
-    text = name,
-    style = MaterialTheme.typography.titleSmall,
-    color = CaducityTheme.colorScheme.onSurfaceVariant,
-  )
-}
-
-@Composable
 private fun SmallProductInstanceCard(
   instance: ProductInstanceDetailUiModel,
   shapePosition: ShapePosition,
@@ -280,188 +279,73 @@ private fun SmallProductInstanceCard(
 ) {
   var showMenu by remember { mutableStateOf(false) }
 
-  Surface(
-    modifier = modifier.fillMaxWidth(),
-    shape = shapePosition.toHorizontalShape(),
-    color = CaducityTheme.colorScheme.surfaceContainer,
+  Row(
+    modifier = modifier,
+    verticalAlignment = Alignment.CenterVertically,
   ) {
-    Column(
-      modifier = Modifier.padding(16.dp),
-      verticalArrangement = Arrangement.spacedBy(12.dp),
+    Surface(
+      modifier = Modifier.weight(1f),
+      shape = shapePosition.toVerticalShape(),
+      color = CaducityTheme.colorScheme.surfaceContainer,
     ) {
       Text(
-        text = instance.variantName ?: instance.identifier,
+        modifier = Modifier.padding(12.dp),
+        text = instance.text,
         style = MaterialTheme.typography.labelLarge,
         color = CaducityTheme.colorScheme.onSurface,
       )
-
-      // Actions row
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        // Consume action button
-        TextButton(
-          onClick = { onConsume(instance) },
-          modifier = Modifier.weight(1f),
-        ) {
-          Icon(
-            imageVector = AppIcons.Cooking,
-            contentDescription = null,
-            modifier = Modifier.padding(end = 4.dp),
-          )
-          Text("Consume")
-        }
-
-        // Freeze action button
-        TextButton(
-          onClick = { onFreeze(instance) },
-          modifier = Modifier.weight(1f),
-        ) {
-          Icon(
-            imageVector = AppIcons.ThermometerSnow,
-            contentDescription = null,
-            modifier = Modifier.padding(end = 4.dp),
-          )
-          Text("Freeze")
-        }
-
-        // More actions dropdown (only Delete)
-        Box {
-          IconButton(onClick = { showMenu = true }) {
-            Text(
-              text = "⋮",
-              style = MaterialTheme.typography.titleLarge,
-              color = CaducityTheme.colorScheme.onSurfaceVariant,
-            )
-          }
-          DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false }
-          ) {
-            DropdownMenuItem(
-              text = { Text("Delete") },
-              leadingIcon = {
-                Icon(
-                  imageVector = AppIcons.Delete,
-                  contentDescription = null,
-                )
-              },
-              onClick = {
-                onDelete(instance)
-                showMenu = false
-              }
-            )
-          }
-        }
-      }
     }
-  }
-}
-
-@Composable
-private fun ProductInstanceCard(
-  instance: ProductInstanceDetailUiModel,
-  shapePosition: ShapePosition,
-  onConsume: (ProductInstanceDetailUiModel) -> Unit,
-  onFreeze: (ProductInstanceDetailUiModel) -> Unit,
-  onDelete: (ProductInstanceDetailUiModel) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  var showMenu by remember { mutableStateOf(false) }
-
-  Surface(
-    modifier = modifier.fillMaxWidth(),
-    shape = shapePosition.toHorizontalShape(),
-    color = CaducityTheme.colorScheme.surfaceContainer,
-  ) {
-    Column(
-      modifier = Modifier.padding(16.dp),
-      verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-      // Instance info row
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Column(
-          modifier = Modifier.weight(1f),
-          verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-          Text(
-            text = instance.variantName ?: instance.identifier,
-            style = MaterialTheme.typography.labelLarge,
-            color = CaducityTheme.colorScheme.onSurface,
-          )
-          Text(
-            text = instance.expirationDateText,
-            style = MaterialTheme.typography.bodySmall,
-            color = CaducityTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-        StatusBadge(instance.status)
+    Box {
+      IconButton(onClick = { showMenu = true }) {
+        Text(
+          text = "⋮",
+          style = MaterialTheme.typography.titleLarge,
+          color = CaducityTheme.colorScheme.onSurfaceVariant,
+        )
       }
-
-      // Actions row
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+      DropdownMenu(
+        expanded = showMenu,
+        onDismissRequest = { showMenu = false }
       ) {
-        // Consume action button
-        TextButton(
-          onClick = { onConsume(instance) },
-          modifier = Modifier.weight(1f),
-        ) {
-          Icon(
-            imageVector = AppIcons.Cooking,
-            contentDescription = null,
-            modifier = Modifier.padding(end = 4.dp),
-          )
-          Text("Consume")
-        }
-
-        // Freeze action button
-        TextButton(
-          onClick = { onFreeze(instance) },
-          modifier = Modifier.weight(1f),
-        ) {
-          Icon(
-            imageVector = AppIcons.ThermometerSnow,
-            contentDescription = null,
-            modifier = Modifier.padding(end = 4.dp),
-          )
-          Text("Freeze")
-        }
-
-        // More actions dropdown (only Delete)
-        Box {
-          IconButton(onClick = { showMenu = true }) {
-            Text(
-              text = "⋮",
-              style = MaterialTheme.typography.titleLarge,
-              color = CaducityTheme.colorScheme.onSurfaceVariant,
+        DropdownMenuItem(
+          text = { Text("Consume") },
+          leadingIcon = {
+            Icon(
+              imageVector = AppIcons.Cooking,
+              contentDescription = null,
             )
+          },
+          onClick = {
+            onConsume(instance)
+            showMenu = false
           }
-          DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false }
-          ) {
-            DropdownMenuItem(
-              text = { Text("Delete") },
-              leadingIcon = {
-                Icon(
-                  imageVector = AppIcons.Delete,
-                  contentDescription = null,
-                )
-              },
-              onClick = {
-                onDelete(instance)
-                showMenu = false
-              }
+        )
+        DropdownMenuItem(
+          text = { Text("Freeze") },
+          leadingIcon = {
+            Icon(
+              imageVector = AppIcons.ThermometerSnow,
+              contentDescription = null,
             )
+          },
+          onClick = {
+            onFreeze(instance)
+            showMenu = false
           }
-        }
+        )
+        DropdownMenuItem(
+          text = { Text("Delete") },
+          leadingIcon = {
+            Icon(
+              imageVector = AppIcons.Delete,
+              contentDescription = null,
+            )
+          },
+          onClick = {
+            onDelete(instance)
+            showMenu = false
+          }
+        )
       }
     }
   }
