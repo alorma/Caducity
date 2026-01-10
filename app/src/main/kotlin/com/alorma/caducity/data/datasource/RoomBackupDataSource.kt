@@ -104,7 +104,6 @@ class RoomBackupDataSource(
 
         product.instances.forEach { instance ->
           require(instance.id.isNotBlank()) { "Instance ID cannot be blank" }
-          require(instance.identifier.isNotBlank()) { "Instance identifier cannot be blank" }
           require(instance.expirationDate > 0) { "Instance expiration date must be positive" }
         }
       }
