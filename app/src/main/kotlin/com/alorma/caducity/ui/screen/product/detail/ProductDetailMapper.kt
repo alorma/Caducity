@@ -1,14 +1,13 @@
 package com.alorma.caducity.ui.screen.product.detail
 
 import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.domain.model.DatedInstances
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.InstanceWithVariant
 import com.alorma.caducity.domain.model.ProductDetail
-import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.components.calendar.AppCalendarConfig
+import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
 import com.alorma.caducity.ui.components.calendar.AppCalendarDateInfo
+import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
@@ -17,7 +16,7 @@ import kotlinx.datetime.LocalDate
 class ProductDetailMapper(
   private val appClock: AppClock,
   private val relativeTimeFormatter: RelativeTimeFormatter,
-  private val localizedDateFormatter: LocalizedDateFormatter,
+  private val appCalendarConfigMapper: AppCalendarConfigMapper,
 ) {
 
   fun mapToProductDetail(
@@ -37,18 +36,19 @@ class ProductDetailMapper(
 
     val today = appClock.nowDate()
 
-    val appCalendarConfig = AppCalendarConfig(
-      startDate = allDatedContents.minOfOrNull { it.date } ?: today,
-      endDate = allDatedContents.maxOfOrNull { it.date } ?: today,
-      today = today,
-      content = allDatedContents.associate {datedModel ->
-        datedModel.date to AppCalendarDateInfo(
-          status = datedModel.status,
-          shapePosition = ShapePosition.Single,
-        )
-      }.toImmutableMap(),
-      monthNames = localizedDateFormatter.getMonthNames(),
-      daysOfWeekNames = localizedDateFormatter.getDaysOfWeekNames(),
+    val startDate = allDatedContents.minOfOrNull { it.date } ?: today
+    val endDate = allDatedContents.maxOfOrNull { it.date } ?: today
+    val content = allDatedContents.associate { datedModel ->
+      datedModel.date to AppCalendarDateInfo(
+        status = datedModel.status,
+        shapePosition = ShapePosition.Single,
+      )
+    }.toImmutableMap()
+
+    val appCalendarConfig = appCalendarConfigMapper.createWithContent(
+      startDate = startDate,
+      endDate = endDate,
+      content = content,
     )
 
     return ProductDetailState.Success(
