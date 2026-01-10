@@ -4,7 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.time.date
+import com.alorma.caducity.domain.model.InstanceActionResult
 import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.usecase.ConsumeInstanceUseCase
+import com.alorma.caducity.domain.usecase.DeleteInstanceUseCase
+import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.channels.Channel
@@ -15,6 +19,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlin.time.Instant
 
 class ProductDetailViewModel(
   productId: String,
@@ -22,6 +30,9 @@ class ProductDetailViewModel(
   productDetailMapper: ProductDetailMapper,
   calendarPreferences: CalendarPreferences,
   private val appClock: AppClock,
+  private val consumeInstanceUseCase: ConsumeInstanceUseCase,
+  private val freezeInstanceUseCase: FreezeInstanceUseCase,
+  private val deleteInstanceUseCase: DeleteInstanceUseCase,
 ) : ViewModel() {
 
   private val _sideEffect = Channel<ProductDetailSideEffect>(Channel.BUFFERED)
@@ -72,7 +83,16 @@ class ProductDetailViewModel(
   }
 
   fun onConsumeInstanceConfirmed(instance: ProductInstanceDetailUiModel) {
-    // TODO: Implement consume instance logic (called after user confirms warning)
+    viewModelScope.launch {
+      when (consumeInstanceUseCase.forceConsumeInstance(instance.id)) {
+        is InstanceActionResult.Success -> {
+          emitSideEffect(ProductDetailSideEffect.InstanceConsumed)
+        }
+        is InstanceActionResult.Failure -> {
+          emitSideEffect(ProductDetailSideEffect.ConsumeInstanceFailed)
+        }
+      }
+    }
   }
 
   fun onFreezeInstance(instance: ProductInstanceDetailUiModel) {
@@ -82,11 +102,32 @@ class ProductDetailViewModel(
       return
     }
 
-    // TODO: Implement freeze instance logic
+    viewModelScope.launch {
+      val expirationInstant = instance.expirationDate.toInstant()
+      when (freezeInstanceUseCase.freezeInstance(instance.id, expirationInstant)) {
+        is InstanceActionResult.Success -> {
+          emitSideEffect(ProductDetailSideEffect.InstanceFrozen)
+        }
+        is InstanceActionResult.Failure -> {
+          emitSideEffect(ProductDetailSideEffect.FreezeInstanceFailed)
+        }
+      }
+    }
   }
 
   fun onDeleteInstance(instance: ProductInstanceDetailUiModel) {
-    // TODO: Implement delete instance logic
+    viewModelScope.launch {
+      val result = deleteInstanceUseCase.deleteInstance(instance.id)
+      if (result.isSuccess) {
+        emitSideEffect(ProductDetailSideEffect.InstanceDeleted)
+      } else {
+        emitSideEffect(ProductDetailSideEffect.DeleteInstanceFailed)
+      }
+    }
+  }
+
+  private fun LocalDate.toInstant(): Instant {
+    return this.atStartOfDayIn(TimeZone.currentSystemDefault())
   }
 
   private fun emitSideEffect(effect: ProductDetailSideEffect) {

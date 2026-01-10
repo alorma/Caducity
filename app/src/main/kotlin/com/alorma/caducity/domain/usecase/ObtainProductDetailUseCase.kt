@@ -27,6 +27,8 @@ class ObtainProductDetailUseCase(
     return productDataSource.getProduct(productId).map { result ->
       result.map { product ->
         val allInstances = product.allInstances
+          .filter { it.status != InstanceStatus.Frozen }
+          .toImmutableList()
 
         val dates = allInstances
           .map { it.expirationDate.date() }

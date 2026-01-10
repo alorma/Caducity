@@ -138,6 +138,16 @@
     <string name="warning_consume_expired_positive">Consume</string>
     <string name="warning_consume_expired_negative">Cancel</string>
 
+    <!-- Instance action success messages -->
+    <string name="success_instance_consumed">Instance consumed</string>
+    <string name="success_instance_frozen">Instance frozen</string>
+    <string name="success_instance_deleted">Instance deleted</string>
+
+    <!-- Instance action error messages -->
+    <string name="error_consume_instance_failed">Failed to consume instance</string>
+    <string name="error_freeze_instance_failed">Failed to freeze instance</string>
+    <string name="error_delete_instance_failed">Failed to delete instance</string>
+
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Welcome to Caducity</string>
     <string name="onboarding_welcome_message">Track your groceries and reduce food waste</string>
