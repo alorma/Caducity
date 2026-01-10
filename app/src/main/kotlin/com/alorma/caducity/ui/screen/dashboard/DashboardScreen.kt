@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -16,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.domain.model.InstanceStatus
@@ -30,6 +32,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DashboardScreen(
+  onNavigateToCreateProduct: () -> Unit,
   onNavigateToProduct: (String) -> Unit,
   onNavigateToDate: (LocalDate) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
@@ -42,6 +45,7 @@ fun DashboardScreen(
   Box(modifier) {
     DashboardContent(
       state = dashboardState.value,
+      onNavigateToCreateProduct = onNavigateToCreateProduct,
       onNavigateToDate = onNavigateToDate,
       onNavigateToProduct = onNavigateToProduct,
       onNavigateToStatus = onNavigateToStatus,
@@ -53,6 +57,7 @@ fun DashboardScreen(
 @Composable
 private fun DashboardContent(
   state: DashboardState,
+  onNavigateToCreateProduct: () -> Unit,
   onNavigateToDate: (LocalDate) -> Unit,
   onNavigateToProduct: (String) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
@@ -73,6 +78,16 @@ private fun DashboardContent(
           }
         },
       )
+    },
+    floatingActionButton = {
+      FloatingActionButton(
+        onClick = { onNavigateToCreateProduct() },
+      ) {
+        Icon(
+          imageVector = AppIcons.Add,
+          contentDescription = null,
+        )
+      }
     },
   ) { paddingValues ->
     when (state) {
@@ -126,6 +141,7 @@ fun DashboardSuccessContentPreview(
     Surface {
       DashboardContent(
         state = state,
+        onNavigateToCreateProduct = {},
         onNavigateToDate = {},
         onNavigateToProduct = {},
         onNavigateToStatus = {},
