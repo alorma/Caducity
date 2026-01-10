@@ -8,9 +8,7 @@ import com.alorma.caducity.domain.model.ProductDetail
 import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat
-import kotlinx.datetime.toLocalDateTime
 
 class ProductDetailMapper(
   private val appClock: AppClock,
@@ -28,18 +26,14 @@ class ProductDetailMapper(
       description = productDetail.product.description,
     )
 
-    val todayContent = mapDatedContent(
-      productDetail.todayContent,
-    )
-
-    val tomorrowContent = mapDatedContent(
-      productDetail.tomorrowContent,
-    )
+    val allDatedContents = productDetail
+      .datedContents
+      .mapNotNull { datedContent -> mapDatedContent(datedInstances = datedContent) }
+      .toImmutableList()
 
     return ProductDetailState.Success(
       product = productUiModel,
-      todayContent = todayContent,
-      tomorrowContent = tomorrowContent,
+      content = allDatedContents,
     )
   }
 
@@ -48,25 +42,28 @@ class ProductDetailMapper(
   ): DateInstancesUiModel? {
     return DateInstancesUiModel(
       text = relativeTimeFormatter.format(datedInstances.date),
-      status = InstanceStatus.ExpiringSoon,
+      status = datedInstances.status,
       date = datedInstances.date,
       instances = datedInstances.instances.map { instance ->
-        mapInstanceToUi(instance)
+        mapInstanceToUi(
+          instance = instance,
+          status = datedInstances.status,
+          expirationDate = datedInstances.date,
+        )
       }.toImmutableList(),
     ).takeIf { datedInstances.instances.isNotEmpty() }
   }
 
   private fun mapInstanceToUi(
     instance: InstanceWithVariant,
+    expirationDate: LocalDate,
+    status: InstanceStatus,
   ): ProductInstanceDetailUiModel {
     return ProductInstanceDetailUiModel(
-      id = instance.instance.id,
-      status = instance.instance.status,
-      expirationDate = instance.instance
-        .expirationDate
-        .toLocalDateTime(TimeZone.currentSystemDefault())
-        .date,
-      text = instance.variant?.name ?: instance.instance.identifier
+      id = instance.id,
+      expirationDate = expirationDate,
+      status = status,
+      text = instance.name,
     )
   }
 }

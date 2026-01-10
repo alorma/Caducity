@@ -17,8 +17,8 @@ data class DateInstancesUiModel(
 @Stable
 data class ProductInstanceDetailUiModel(
   val id: String,
-  val status: InstanceStatus,
   val expirationDate: LocalDate,
+  val status: InstanceStatus,
   val text: String,
 )
 

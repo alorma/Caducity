@@ -1,19 +1,16 @@
 package com.alorma.caducity.ui.screen.product.detail
 
 import android.util.Log
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -30,8 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
@@ -102,37 +97,18 @@ fun ProductDetailScreen(
         LazyColumn(
           modifier = Modifier.padding(paddingValues),
         ) {
-          val today = currentState.todayContent
-          val tomorrow = currentState.tomorrowContent
 
-          if (today != null) {
-            item(
-              key = "today",
-            ) {
-              DatedContent(
-                state = today,
-                isFirst = true,
-                isLast = tomorrow == null,
-                onConsume = viewModel::onConsumeInstance,
-                onFreeze = viewModel::onFreezeInstance,
-                onDelete = viewModel::onDeleteInstance,
-              )
-            }
-          }
-
-          if (tomorrow != null) {
-            item(
-              key = "tomorrow",
-            ) {
-              DatedContent(
-                state = tomorrow,
-                isFirst = today == null,
-                isLast = true,
-                onConsume = viewModel::onConsumeInstance,
-                onFreeze = viewModel::onFreezeInstance,
-                onDelete = viewModel::onDeleteInstance,
-              )
-            }
+          items(
+            items = currentState.content,
+            key = { datedContent -> "product-${currentState.product.id}-dated-${datedContent.date}" },
+            contentType = { "datedContent" },
+          ) { datedContent ->
+            DatedContent(
+              state = datedContent,
+              onConsume = viewModel::onConsumeInstance,
+              onFreeze = viewModel::onFreezeInstance,
+              onDelete = viewModel::onDeleteInstance,
+            )
           }
         }
       }
@@ -145,8 +121,6 @@ fun ProductDetailScreen(
 @Composable
 private fun DatedContent(
   state: DateInstancesUiModel,
-  isFirst: Boolean,
-  isLast: Boolean,
   onConsume: (ProductInstanceDetailUiModel) -> Unit,
   onFreeze: (ProductInstanceDetailUiModel) -> Unit,
   onDelete: (ProductInstanceDetailUiModel) -> Unit,
@@ -154,63 +128,6 @@ private fun DatedContent(
   Box(
     modifier = Modifier.padding(horizontal = 16.dp),
   ) {
-    val color = CaducityTheme.colorScheme.outlineVariant
-
-    // Timeline line and dots
-    Column(
-      modifier = Modifier.width(24.dp),
-      horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-      // Top line (hidden if first)
-      if (!isFirst) {
-        Canvas(
-          modifier = Modifier
-            .width(2.dp)
-            .height(16.dp)
-        ) {
-          drawLine(
-            color = color,
-            start = Offset(size.width / 2, 0f),
-            end = Offset(size.width / 2, size.height),
-            strokeWidth = 2.dp.toPx(),
-            cap = StrokeCap.Round,
-          )
-        }
-      }
-
-      // Dot
-      Canvas(
-        modifier = Modifier.size(12.dp)
-      ) {
-        drawCircle(
-          color = color,
-          radius = size.minDimension / 2,
-        )
-      }
-
-      // Bottom line extending through all content
-      if (!isLast) {
-        Box(
-          modifier = Modifier.weight(1f),
-          contentAlignment = Alignment.TopCenter,
-        ) {
-          Canvas(
-            modifier = Modifier
-              .width(2.dp)
-              .fillMaxHeight()
-          ) {
-            drawLine(
-              color = color,
-              start = Offset(size.width / 2, 0f),
-              end = Offset(size.width / 2, size.height),
-              strokeWidth = 2.dp.toPx(),
-              cap = StrokeCap.Round,
-            )
-          }
-        }
-      }
-    }
-
     // Content column
     Row {
       // Spacer for timeline
