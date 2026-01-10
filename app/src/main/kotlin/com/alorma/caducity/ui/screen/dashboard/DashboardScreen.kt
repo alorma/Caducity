@@ -7,16 +7,12 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingToolbarDefaults
-import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,9 +22,9 @@ import com.alorma.caducity.base.ui.icons.outlined.Calendar
 import com.alorma.caducity.base.ui.icons.outlined.ListMode
 import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardSuccessContentList
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
@@ -41,7 +37,6 @@ fun DashboardScreen(
   onNavigateToDate: (LocalDate) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
-  scrollConnection: NestedScrollConnection,
   modifier: Modifier = Modifier,
   viewModel: DashboardViewModel = koinViewModel(),
 ) {
@@ -50,7 +45,6 @@ fun DashboardScreen(
   Box(modifier) {
     DashboardContent(
       state = dashboardState.value,
-      scrollConnection = scrollConnection,
       onNavigateToDate = onNavigateToDate,
       onNavigateToProduct = onNavigateToProduct,
       onNavigateToStatus = onNavigateToStatus,
@@ -63,7 +57,6 @@ fun DashboardScreen(
 @Composable
 private fun DashboardContent(
   state: DashboardState,
-  scrollConnection: NestedScrollConnection,
   onNavigateToDate: (LocalDate) -> Unit,
   onNavigateToProduct: (String) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
@@ -71,7 +64,6 @@ private fun DashboardContent(
   onChangeDashboardMode: (DashboardMode) -> Unit,
 ) {
   AppScaffold(
-    modifier = Modifier.nestedScroll(scrollConnection),
     topBar = {
       StyledTopAppBar(
         title = { Text(text = stringResource(R.string.dashboard_screen_title)) },
@@ -165,9 +157,6 @@ fun DashboardSuccessContentPreview(
     Surface {
       DashboardContent(
         state = state,
-        scrollConnection = FloatingToolbarDefaults.exitAlwaysScrollBehavior(
-          exitDirection = FloatingToolbarExitDirection.Bottom,
-        ),
         onNavigateToDate = {},
         onNavigateToProduct = {},
         onNavigateToStatus = {},
