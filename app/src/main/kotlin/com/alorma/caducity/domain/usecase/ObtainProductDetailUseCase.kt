@@ -3,24 +3,24 @@ package com.alorma.caducity.domain.usecase
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.DatedInstances
+import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.InstanceWithVariant
 import com.alorma.caducity.domain.model.ProductDetail
 import com.alorma.caducity.domain.model.ProductInstance
-import com.alorma.caducity.domain.model.ProductInstanceComparator
-import com.alorma.caducity.domain.model.ProductWithInstances
-import com.kizitonwose.calendar.core.plusDays
+import com.alorma.caducity.domain.model.Variant
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.toLocalDateTime
 
 class ObtainProductDetailUseCase(
   private val appClock: AppClock,
   private val productDataSource: ProductDataSource,
-  private val instanceComparator: ProductInstanceComparator,
+  private val expirationThresholds: ExpirationThresholds,
 ) {
 
   fun obtain(productId: String): Flow<Result<ProductDetail>> {
@@ -30,22 +30,27 @@ class ObtainProductDetailUseCase(
 
         val allInstances = product.allInstances
 
-        val todayContent = extractInstances(
-          allInstances = allInstances,
-          checkDate = today,
-          product = product,
-        )
+        val minDate = allInstances
+          .minOfOrNull { it.expirationDate }
+          ?.toLocalDateTime(TimeZone.currentSystemDefault())
+          ?.date ?: today
 
-        val tomorrowContent = extractInstances(
-          allInstances = allInstances,
-          checkDate = today.plusDays(1),
-          product = product,
-        )
+        val maxDate = allInstances
+          .maxOfOrNull { it.expirationDate }
+          ?.toLocalDateTime(TimeZone.currentSystemDefault())
+          ?.date ?: today
+
+        val datedInstances = (minDate..maxDate).map { date ->
+          extractInstances(
+            allInstances = allInstances,
+            checkDate = date,
+            variants = product.variants.map { it.variant },
+          )
+        }.toImmutableList()
 
         ProductDetail(
           product = product.product,
-          todayContent = todayContent,
-          tomorrowContent = tomorrowContent,
+          datedContents = datedInstances,
         )
       }
     }
@@ -54,7 +59,7 @@ class ObtainProductDetailUseCase(
   private fun extractInstances(
     allInstances: ImmutableList<ProductInstance>,
     checkDate: LocalDate,
-    product: ProductWithInstances,
+    variants: List<Variant>,
   ): DatedInstances {
     val instances = allInstances
       .filter {
@@ -62,17 +67,36 @@ class ObtainProductDetailUseCase(
         expirationDate == checkDate
       }
       .map { instance ->
+        val variant = variants
+          .firstOrNull { variant -> variant.id == instance.variantId }
+
+        val name = listOfNotNull(
+          variant?.name,
+          instance.identifier.takeIf { it.isNotEmpty() }
+        ).joinToString(" - ")
+
         InstanceWithVariant(
-          instance = instance,
-          variant = product.variants
-            .map { it.variant }
-            .firstOrNull { variant -> variant.id == instance.variantId },
+          id = instance.id,
+          name = name,
         )
       }.toImmutableList()
 
     return DatedInstances(
       date = checkDate,
       instances = instances,
+      status = instanceStatus(checkDate),
+    )
+  }
+
+  private fun instanceStatus(
+    expirationDate: LocalDate,
+  ): InstanceStatus {
+    return InstanceStatus.calculateStatus(
+      expirationDate = expirationDate.atStartOfDayIn(
+        TimeZone.currentSystemDefault()
+      ),
+      now = appClock.now(),
+      soonExpiringThreshold = expirationThresholds.soonExpiringThreshold,
     )
   }
 
