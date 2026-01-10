@@ -53,4 +53,13 @@ class LocalizedDateFormatter {
       locale
     )
   }
+
+  fun getDayOfWeekFullName(dayOfWeek: kotlinx.datetime.DayOfWeek): String {
+    val locale = Locale.getDefault()
+    val javaDayOfWeek = java.time.DayOfWeek.of(dayOfWeek.ordinal + 1)
+    return javaDayOfWeek.getDisplayName(
+      TextStyle.FULL_STANDALONE,
+      locale
+    )
+  }
 }
