@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.product.detail
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,14 +11,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -49,6 +52,9 @@ import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.product.detail.timeline.TimelineBulletAndLine
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.kizitonwose.calendar.compose.weekcalendar.WeekCalendarState
+import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
+import kotlinx.datetime.DayOfWeek
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -74,7 +80,7 @@ fun ProductDetailScreen(
         modifier = modifier,
         dialogState = dialogState,
         snackbarState = snackbarState,
-        currentState = currentState,
+        state = currentState,
         onNavigateToAddInstance = onNavigateToAddInstance,
         onConsume = viewModel::onConsumeInstance,
         onFreeze = viewModel::onFreezeInstance,
@@ -91,7 +97,7 @@ private fun ProductDetailSuccessContent(
   modifier: Modifier,
   dialogState: AppDialogState,
   snackbarState: AppSnackbarHostState,
-  currentState: ProductDetailState.Success,
+  state: ProductDetailState.Success,
   onNavigateToAddInstance: () -> Unit,
   onConsume: (ProductInstanceDetailUiModel) -> Unit,
   onFreeze: (ProductInstanceDetailUiModel) -> Unit,
@@ -103,7 +109,10 @@ private fun ProductDetailSuccessContent(
     snackbarState = snackbarState,
     topBar = {
       StyledTopAppBar(
-        title = { Text(text = currentState.product.name) },
+        colors = TopAppBarDefaults.topAppBarColors(
+          containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
+        ),
+        title = { Text(text = state.product.name) },
         navigationIcon = { NavigationIcon() },
       )
     },
@@ -118,21 +127,84 @@ private fun ProductDetailSuccessContent(
       }
     },
   ) { paddingValues ->
+
+    val listIndex = remember {
+      val todayIndex = state.datedContent.indexOfFirst { dated ->
+        dated.date == state.today
+      }.takeUnless { it == -1 } ?: 0
+
+      mutableStateOf(todayIndex)
+    }
+
+    val listState = rememberLazyListState(
+      initialFirstVisibleItemIndex = listIndex.value,
+    )
+
+    val weekCalendarState: WeekCalendarState = rememberWeekCalendarState(
+      firstVisibleWeekDate = state.calendarState.today,
+      firstDayOfWeek = DayOfWeek.MONDAY,
+      startDate = state.calendarState.startDate,
+      endDate = state.calendarState.endDate,
+    )
+
+    val listVisibleDate = remember {
+      derivedStateOf {
+        val firstIndex = listState.firstVisibleItemIndex
+        state.datedContent[firstIndex].date
+      }
+    }
+
+    val calendarVisibleDate = remember {
+      derivedStateOf {
+        val weekDates = weekCalendarState.firstVisibleWeek.days.map { it.date }
+
+        weekDates.first()..weekDates.last()
+      }
+    }
+
+    LaunchedEffect(listVisibleDate.value) {
+      if (weekCalendarState.isScrollInProgress) {
+        return@LaunchedEffect
+      }
+      weekCalendarState.animateScrollToDate(listVisibleDate.value)
+    }
+
+    LaunchedEffect(calendarVisibleDate.value) {
+      if (listState.isScrollInProgress) {
+        return@LaunchedEffect
+      }
+      val index = state.datedContent.indexOfFirst { dated ->
+        dated.date in calendarVisibleDate.value
+      }.takeUnless { it == -1 }
+
+      if (index != null) {
+        listState.animateScrollToItem(index)
+      }
+    }
+
     Column(
       modifier = Modifier.padding(paddingValues),
     ) {
-      CaducityWeekCalendar(
-        calendarState = currentState.calendarState,
-        contentPadding = PaddingValues(horizontal = 12.dp),
-        onDateClick = {}
-      )
+      Surface(
+        color = CaducityTheme.colorScheme.surfaceContainerHigh,
+        shadowElevation = 2.dp,
+      ) {
+        CaducityWeekCalendar(
+          modifier = Modifier.padding(bottom = 8.dp),
+          weekCalendarState = weekCalendarState,
+          calendarState = state.calendarState,
+          contentPadding = PaddingValues(horizontal = 12.dp),
+          onDateClick = {}
+        )
+      }
 
       LazyColumn(
+        state = listState,
         contentPadding = PaddingValues(bottom = 400.dp),
       ) {
         items(
-          items = currentState.content,
-          key = { datedContent -> "product-${currentState.product.id}-dated-${datedContent.date}" },
+          items = state.datedContent,
+          key = { datedContent -> "product-${state.product.id}-dated-${datedContent.date}" },
           contentType = { "datedContent" },
         ) { datedContent ->
           DatedContent(
@@ -255,8 +327,6 @@ private fun SideEffectHandler(
 ) {
   LaunchedEffect(viewModel.sideEffect) {
     viewModel.sideEffect.collect { effect ->
-      Log.i("Alorma", effect.toString())
-
       when (effect) {
         is ProductDetailSideEffect.ShowMessage -> {
           snackbarState.showSnackbar(

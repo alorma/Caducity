@@ -10,7 +10,6 @@ import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.dashboard.CalendarDateInfo
 import com.alorma.caducity.ui.screen.dashboard.CalendarState
 import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
-import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.LocalDate
@@ -53,9 +52,10 @@ class ProductDetailMapper(
     )
 
     return ProductDetailState.Success(
+      today = today,
       product = productUiModel,
       calendarState = calendarState,
-      content = allDatedContents,
+      datedContent = allDatedContents,
     )
   }
 
