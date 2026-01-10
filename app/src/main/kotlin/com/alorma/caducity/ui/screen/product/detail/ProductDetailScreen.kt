@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.product.detail
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -145,13 +145,6 @@ private fun ProductDetailSuccessContent(
       }
     }
 
-    val selectedDate = remember {
-      derivedStateOf {
-        Log.i("Alorma", "Selected index: ${selectedScrollIndex.value}")
-        state.datedContent.getOrNull(selectedScrollIndex.value)?.date ?: state.today
-      }
-    }
-
     val listState = rememberLazyListState(
       initialFirstVisibleItemIndex = selectedScrollIndex.value,
     )
@@ -160,17 +153,20 @@ private fun ProductDetailSuccessContent(
       startDate = state.calendarState.startDate,
       endDate = state.calendarState.endDate,
       firstDayOfWeek = DayOfWeek.MONDAY,
-      firstVisibleWeekDate = selectedDate.value,
+      firstVisibleWeekDate = state.calendarState.today,
     )
-
-    LaunchedEffect(selectedDate.value) {
-      weekCalendarState.animateScrollToDate(selectedDate.value)
-    }
 
     LaunchedEffect(selectedScrollIndex.value) {
       listState.animateScrollToItem(selectedScrollIndex.value)
     }
 
+    LaunchedEffect(listState) {
+      snapshotFlow { listState.firstVisibleItemIndex }.collect { index ->
+        val date = state.datedContent.getOrNull(index)?.date ?: state.today
+
+        weekCalendarState.animateScrollToDate(date)
+      }
+    }
 
     Column(
       modifier = Modifier.padding(paddingValues),
