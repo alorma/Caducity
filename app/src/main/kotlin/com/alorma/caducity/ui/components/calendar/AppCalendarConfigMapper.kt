@@ -5,8 +5,7 @@ import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.ProductInstance
-import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.components.shape.calculateShape
+import com.alorma.caducity.ui.components.shape.calculateShapeWithGaps
 import com.alorma.caducity.ui.screen.product.detail.DateInstancesUiModel
 import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.plusMonths
@@ -14,10 +13,8 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableMap
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.plus
 
 class AppCalendarConfigMapper(
   private val appClock: AppClock,
@@ -60,15 +57,29 @@ class AppCalendarConfigMapper(
   ): AppCalendarConfig {
     val today = appClock.now().date()
 
-    val content = datedContent.associate { dateInstance ->
-      val index = datedContent.indexOfFirst { it.date == dateInstance.date }
-      val shape = datedContent.calculateShape(index)
+    val minDate = datedContent.minOfOrNull { it.date } ?: today
+    val maxDate = datedContent.maxOfOrNull { it.date } ?: today
 
-      dateInstance.date to AppCalendarDateInfo(
-        status = dateInstance.status,
+    // Create a map of dates that have content for quick lookup
+    val datesWithContent = datedContent.associateBy { it.date }
+
+    // Ensure today is included in the date range
+    val actualMinDate = minOf(minDate, today)
+    val actualMaxDate = maxOf(maxDate, today)
+
+    // Convert date range to list for shape calculation
+    val allDates = (actualMinDate..actualMaxDate).toList()
+
+    val content = allDates.mapIndexed { index, date ->
+      val dated = datesWithContent[date]
+
+      val shape = allDates.calculateShapeWithGaps(index) { dated != null }
+
+      date to AppCalendarDateInfo(
+        status = dated?.status,
         shapePosition = shape,
       )
-    }.toImmutableMap()
+    }.toMap().toImmutableMap()
 
     return AppCalendarConfig(
       today = today,
@@ -115,22 +126,14 @@ class AppCalendarConfigMapper(
     today: LocalDate
   ): ImmutableMap<LocalDate, AppCalendarDateInfo> {
     val instancesStatusByDate = instancesStatusByDate(instances, today)
-    return instancesStatusByDate
-      .mapValues { (date, status) ->
-        val hasPrevDay = instancesStatusByDate.containsKey(date.plus(-1, DateTimeUnit.DAY))
-        val hasNextDay = instancesStatusByDate.containsKey(date.plus(1, DateTimeUnit.DAY))
 
-        val shapePosition = when {
-          date == today && !hasPrevDay && !hasNextDay -> ShapePosition.Single
-          date == today && hasPrevDay && !hasNextDay -> ShapePosition.End
-          !hasPrevDay && !hasNextDay -> ShapePosition.Single
-          !hasPrevDay && hasNextDay -> ShapePosition.Start
-          hasPrevDay && !hasNextDay -> ShapePosition.End
-          else -> ShapePosition.Middle
-        }
+    // Convert map to list of entries for shape calculation
+    val dateEntries = instancesStatusByDate.entries.sortedBy { it.key }
 
-        AppCalendarDateInfo(status, shapePosition)
-      }.toImmutableMap()
+    return dateEntries.mapIndexed { index, (date, status) ->
+      val shape = dateEntries.calculateShapeWithGaps(index) { true }
+      date to AppCalendarDateInfo(status, shape)
+    }.toMap().toImmutableMap()
   }
 
   private fun instancesStatusByDate(
