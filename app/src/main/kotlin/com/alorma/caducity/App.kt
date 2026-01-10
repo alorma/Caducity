@@ -168,6 +168,7 @@ fun App(
                 topLevelBackStack.add(ProductDetailRoute(productId))
               },
               onCreateProduct = { topLevelBackStack.add(CreateProductRoute) },
+              onNavigateToSettings = { topLevelBackStack.add(Settings) },
             )
           }
           entry<Settings> {
