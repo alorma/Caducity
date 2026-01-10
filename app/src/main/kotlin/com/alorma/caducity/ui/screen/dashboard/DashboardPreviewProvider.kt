@@ -19,17 +19,6 @@ internal val summary = DashboardSummary(
 class DashboardPreviewProvider : CollectionPreviewParameterProvider<DashboardState>(
   listOf(
     DashboardState.Loading,
-    DashboardState.Success.Unified(
-      summary = summary,
-      appCalendarConfig = AppCalendarConfig(
-        today = today,
-        startDate = today.minusMonths(2),
-        endDate = today.plusMonths(2),
-        content = calendarData,
-        monthNames = monthNames,
-        daysOfWeekNames = daysOfWeekNames,
-      ),
-    ),
     DashboardState.Success.PerProduct(
       summary = summary,
       products = listOf(

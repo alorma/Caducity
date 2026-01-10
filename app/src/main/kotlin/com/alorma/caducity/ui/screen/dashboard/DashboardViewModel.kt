@@ -2,7 +2,6 @@ package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alorma.caducity.domain.usecase.ObtainDashboardInstancesUseCase
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,7 +17,6 @@ import kotlin.time.Duration.Companion.seconds
 
 class DashboardViewModel(
   calendarPreferences: CalendarPreferences,
-  private val obtainDashboardInstancesUseCase: ObtainDashboardInstancesUseCase,
   private val obtainDashboardProductsUseCase: ObtainDashboardProductsUseCase,
   private val dashboardMapper: DashboardMapper,
 ) : ViewModel() {
@@ -33,14 +31,6 @@ class DashboardViewModel(
       started = SharingStarted.WhileSubscribed(5.seconds),
       initialValue = DashboardState.Loading,
     )
-
-  private fun obtainUnifiedDashboard(firstDayOfWeek: kotlinx.datetime.DayOfWeek): Flow<DashboardState.Success> {
-    return obtainDashboardInstancesUseCase
-      .obtainInstances()
-      .map { instances ->
-        dashboardMapper.mapToUnifiedState(instances = instances, firstDayOfWeek = firstDayOfWeek)
-      }
-  }
 
   private fun obtainPerProductDashboard(firstDayOfWeek: kotlinx.datetime.DayOfWeek): Flow<DashboardState.Success> {
     return obtainDashboardProductsUseCase

@@ -11,20 +11,6 @@ class DashboardMapper(
   private val appCalendarConfigMapper: AppCalendarConfigMapper,
 ) {
 
-  fun mapToUnifiedState(
-    instances: ImmutableList<ProductInstance>,
-    firstDayOfWeek: DayOfWeek,
-  ): DashboardState.Success {
-    val summary = calculateSummary(instances)
-
-    val calendarConfig = appCalendarConfigMapper.createFromInstances(instances, firstDayOfWeek)
-
-    return DashboardState.Success.Unified(
-      summary = summary,
-      appCalendarConfig = calendarConfig,
-    )
-  }
-
   fun mapToPerProductState(
     products: ImmutableList<ProductWithInstances>,
     firstDayOfWeek: DayOfWeek,
