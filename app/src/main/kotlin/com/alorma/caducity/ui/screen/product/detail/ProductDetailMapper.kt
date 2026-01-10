@@ -8,7 +8,7 @@ import com.alorma.caducity.domain.model.InstanceWithVariant
 import com.alorma.caducity.domain.model.ProductDetail
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.dashboard.CalendarDateInfo
-import com.alorma.caducity.ui.screen.dashboard.CalendarState
+import com.alorma.caducity.ui.components.calendar.AppCalendarConfig
 import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
@@ -37,7 +37,7 @@ class ProductDetailMapper(
 
     val today = appClock.nowDate()
 
-    val calendarState = CalendarState(
+    val appCalendarConfig = AppCalendarConfig(
       startDate = allDatedContents.minOfOrNull { it.date } ?: today,
       endDate = allDatedContents.maxOfOrNull { it.date } ?: today,
       today = today,
@@ -54,7 +54,7 @@ class ProductDetailMapper(
     return ProductDetailState.Success(
       today = today,
       product = productUiModel,
-      calendarState = calendarState,
+      appCalendarConfig = appCalendarConfig,
       datedContent = allDatedContents,
     )
   }

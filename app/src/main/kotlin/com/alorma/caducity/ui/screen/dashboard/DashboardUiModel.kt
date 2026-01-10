@@ -2,11 +2,10 @@ package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.compose.runtime.Stable
 import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.ui.components.calendar.AppCalendarConfig
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.format.DayOfWeekNames
-import kotlinx.datetime.format.MonthNames
 
 @Stable
 data class DashboardSummary(
@@ -20,26 +19,5 @@ data class DashboardSummary(
 data class ProductCalendarState(
   val id: String,
   val name: String,
-  val calendarState: CalendarState,
-)
-
-@Stable
-data class CalendarState(
-  val today: LocalDate,
-  val startDate: LocalDate,
-  val endDate: LocalDate,
-  val content: ImmutableMap<LocalDate, CalendarDateInfo>,
-  val monthNames: MonthNames,
-  val daysOfWeekNames: DayOfWeekNames,
-)
-
-@Stable
-data class CalendarData(
-  val productsByDate: ImmutableMap<LocalDate, CalendarDateInfo>
-)
-
-@Stable
-data class CalendarDateInfo(
-  val status: InstanceStatus?,
-  val shapePosition: ShapePosition,
+  val appCalendarConfig: AppCalendarConfig,
 )

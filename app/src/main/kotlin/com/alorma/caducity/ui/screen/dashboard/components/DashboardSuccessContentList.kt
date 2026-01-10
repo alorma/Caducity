@@ -58,7 +58,7 @@ fun DashboardSuccessContentList(
             )
 
             CaducityWeekCalendar(
-              calendarState = productCalendarState.calendarState,
+              appCalendarConfig = productCalendarState.appCalendarConfig,
               onDateClick = { onNavigateToProduct(productCalendarState.id) },
             )
           }
@@ -70,7 +70,7 @@ fun DashboardSuccessContentList(
         item(contentType = "calendar") {
           CaducityMonthCalendar(
             modifier = Modifier.animateItem(),
-            calendarState = state.calendarState,
+            appCalendarConfig = state.appCalendarConfig,
             onDateClick = onNavigateToDate,
           )
         }

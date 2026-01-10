@@ -5,6 +5,7 @@ import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
+import com.alorma.caducity.ui.components.calendar.AppCalendarConfig
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.plusMonths
@@ -34,7 +35,7 @@ class DashboardMapper(
 
     return DashboardState.Success.Unified(
       summary = summary,
-      calendarState = calendarState,
+      appCalendarConfig = calendarState,
     )
   }
 
@@ -51,7 +52,7 @@ class DashboardMapper(
       ProductCalendarState(
         id = product.product.id,
         name = product.product.name,
-        calendarState = calculateCalendarState(instances)
+        appCalendarConfig = calculateCalendarState(instances)
       )
     }
 
@@ -92,11 +93,11 @@ class DashboardMapper(
 
   private fun calculateCalendarState(
     instances: List<ProductInstance>,
-  ): CalendarState {
+  ): AppCalendarConfig {
     val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
     return if (instances.isEmpty()) {
-      CalendarState(
+      AppCalendarConfig(
         today = today,
         startDate = today.minusMonths(2),
         endDate = today.plusMonths(2),
@@ -119,7 +120,7 @@ class DashboardMapper(
 
       val dateWithShapes = getDateWithShapes(instances, today)
 
-      CalendarState(
+      AppCalendarConfig(
         today = today,
         startDate = startDate.minusMonths(1),
         endDate = endDate.plusMonths(1),
