@@ -7,8 +7,8 @@ import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.InstanceWithVariant
 import com.alorma.caducity.domain.model.ProductDetail
 import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.screen.dashboard.CalendarDateInfo
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfig
+import com.alorma.caducity.ui.components.calendar.AppCalendarDateInfo
 import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
@@ -42,7 +42,7 @@ class ProductDetailMapper(
       endDate = allDatedContents.maxOfOrNull { it.date } ?: today,
       today = today,
       content = allDatedContents.associate {datedModel ->
-        datedModel.date to CalendarDateInfo(
+        datedModel.date to AppCalendarDateInfo(
           status = datedModel.status,
           shapePosition = ShapePosition.Single,
         )
