@@ -1,6 +1,8 @@
 package com.alorma.caducity.domain.usecase
 
+import android.util.Log
 import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.DatedInstances
 import com.alorma.caducity.domain.model.InstanceStatus
@@ -15,7 +17,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toLocalDateTime
 
 class ObtainProductDetailUseCase(
   private val appClock: AppClock,
@@ -29,28 +30,21 @@ class ObtainProductDetailUseCase(
         val today = appClock.nowDate()
 
         val allInstances = product.allInstances
+        val dates = allInstances
+          .map { it.expirationDate.date() }
+          .distinct()
 
-        val minDate = allInstances
-          .minOfOrNull { it.expirationDate }
-          ?.toLocalDateTime(TimeZone.currentSystemDefault())
-          ?.date ?: today
-
-        val maxDate = allInstances
-          .maxOfOrNull { it.expirationDate }
-          ?.toLocalDateTime(TimeZone.currentSystemDefault())
-          ?.date ?: today
-
-        val datedInstances = (minDate..maxDate).map { date ->
+        val datedInstances = dates.map { date ->
           extractInstances(
             allInstances = allInstances,
             checkDate = date,
             variants = product.variants.map { it.variant },
           )
-        }.toImmutableList()
+        }.filter { dated -> dated.instances.isNotEmpty() }
 
         ProductDetail(
           product = product.product,
-          datedContents = datedInstances,
+          datedContents = datedInstances.toImmutableList(),
         )
       }
     }
@@ -61,9 +55,10 @@ class ObtainProductDetailUseCase(
     checkDate: LocalDate,
     variants: List<Variant>,
   ): DatedInstances {
+    Log.i("Alorma", "Date: $checkDate")
     val instances = allInstances
       .filter {
-        val expirationDate = it.expirationDate.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val expirationDate = it.expirationDate.date()
         expirationDate == checkDate
       }
       .map { instance ->

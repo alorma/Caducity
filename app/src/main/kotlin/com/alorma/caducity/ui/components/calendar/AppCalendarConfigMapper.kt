@@ -2,20 +2,22 @@ package com.alorma.caducity.ui.components.calendar
 
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.language.LocalizedDateFormatter
+import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.ui.components.shape.ShapePosition
+import com.alorma.caducity.ui.components.shape.calculateShape
+import com.alorma.caducity.ui.screen.product.detail.DateInstancesUiModel
 import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.plusMonths
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
 
 class AppCalendarConfigMapper(
   private val appClock: AppClock,
@@ -26,7 +28,7 @@ class AppCalendarConfigMapper(
     instances: List<ProductInstance>,
     firstDayOfWeek: DayOfWeek,
   ): AppCalendarConfig {
-    val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    val today = appClock.now().date()
 
     return if (instances.isEmpty()) {
       createEmpty(today, firstDayOfWeek)
@@ -36,7 +38,7 @@ class AppCalendarConfigMapper(
   }
 
   fun createEmpty(
-    today: LocalDate = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    today: LocalDate = appClock.now().date(),
     firstDayOfWeek: DayOfWeek,
   ): AppCalendarConfig {
     return AppCalendarConfig(
@@ -50,13 +52,23 @@ class AppCalendarConfigMapper(
     )
   }
 
-  fun createWithContent(
+  fun createWithDatedContent(
     startDate: LocalDate,
     endDate: LocalDate,
-    content: ImmutableMap<LocalDate, AppCalendarDateInfo>,
+    datedContent: ImmutableList<DateInstancesUiModel>,
     firstDayOfWeek: DayOfWeek,
   ): AppCalendarConfig {
-    val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    val today = appClock.now().date()
+
+    val content = datedContent.associate { dateInstance ->
+      val index = datedContent.indexOfFirst { it.date == dateInstance.date }
+      val shape = datedContent.calculateShape(index)
+
+      dateInstance.date to AppCalendarDateInfo(
+        status = dateInstance.status,
+        shapePosition = shape,
+      )
+    }.toImmutableMap()
 
     return AppCalendarConfig(
       today = today,
@@ -73,19 +85,17 @@ class AppCalendarConfigMapper(
     instances: List<ProductInstance>,
     firstDayOfWeek: DayOfWeek,
   ): AppCalendarConfig {
-    val today = appClock.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    val today = appClock.now().date()
 
     val startDate = instances
       .minBy { instance -> instance.expirationDate }
       .expirationDate
-      .toLocalDateTime(TimeZone.currentSystemDefault())
-      .date
+      .date()
 
     val endDate = instances
       .maxBy { instance -> instance.expirationDate }
       .expirationDate
-      .toLocalDateTime(TimeZone.currentSystemDefault())
-      .date
+      .date()
 
     val dateWithShapes = getDateWithShapes(instances, today)
 
@@ -129,7 +139,7 @@ class AppCalendarConfigMapper(
   ): Map<LocalDate, InstanceStatus?> {
     return buildMap {
       instances.forEach { instance ->
-        val date = instance.expirationDate.toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val date = instance.expirationDate.date()
         val currentStatus = get(date)
 
         // Keep the most critical status (Expired > ExpiringSoon > Frozen > Fresh)

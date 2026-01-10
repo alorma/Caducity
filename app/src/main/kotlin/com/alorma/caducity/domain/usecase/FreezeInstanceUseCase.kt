@@ -4,8 +4,7 @@ import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.InstanceActionError
 import com.alorma.caducity.domain.model.InstanceActionResult
 import com.alorma.caducity.config.clock.AppClock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import com.alorma.caducity.config.time.date
 import kotlin.time.Instant
 
 class FreezeInstanceUseCase(
@@ -19,8 +18,8 @@ class FreezeInstanceUseCase(
   ): InstanceActionResult<Unit> {
     // Calculate remaining days from now to expiration
     val now = appClock.now()
-    val nowDate = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
-    val expirationLocalDate = expirationDate.toLocalDateTime(TimeZone.currentSystemDefault()).date
+    val nowDate = now.date()
+    val expirationLocalDate = expirationDate.date()
 
     val remainingDays = (expirationLocalDate.toEpochDays() - nowDate.toEpochDays()).toInt()
 

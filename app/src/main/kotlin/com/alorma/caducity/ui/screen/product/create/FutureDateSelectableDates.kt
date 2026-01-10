@@ -3,9 +3,9 @@ package com.alorma.caducity.ui.screen.product.create
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates
 import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.config.time.date
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)
 class FutureDateSelectableDates(
@@ -14,8 +14,8 @@ class FutureDateSelectableDates(
 
   private val todayMillis: Long by lazy {
     val now = appClock.now()
-    val today = now.toLocalDateTime(TimeZone.UTC).date
-    val todayStart = today.atStartOfDayIn(TimeZone.UTC)
+    val today = now.date()
+    val todayStart = today.atStartOfDayIn(TimeZone.currentSystemDefault())
     todayStart.toEpochMilliseconds()
   }
 
@@ -24,7 +24,7 @@ class FutureDateSelectableDates(
   }
 
   override fun isSelectableYear(year: Int): Boolean {
-    val currentYear = appClock.now().toLocalDateTime(TimeZone.UTC).year
+    val currentYear = appClock.nowDate().year
     return year >= currentYear
   }
 }
