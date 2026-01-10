@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.ui.components.calendar.CaducityMonthCalendar
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
 import com.alorma.caducity.ui.screen.dashboard.DashboardState
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -42,7 +41,7 @@ fun DashboardSuccessContentList(
       )
     }
 
-    when(state) {
+    when (state) {
       is DashboardState.Success.PerProduct -> {
         items(
           items = state.products,
@@ -65,17 +64,6 @@ fun DashboardSuccessContentList(
 
         }
       }
-
-      is DashboardState.Success.Unified -> {
-        item(contentType = "calendar") {
-          CaducityMonthCalendar(
-            modifier = Modifier.animateItem(),
-            appCalendarConfig = state.appCalendarConfig,
-            onDateClick = onNavigateToDate,
-          )
-        }
-      }
     }
-
   }
 }
