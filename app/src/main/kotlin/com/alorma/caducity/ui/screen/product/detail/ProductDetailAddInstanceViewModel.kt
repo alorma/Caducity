@@ -121,7 +121,7 @@ class ProductDetailAddInstanceViewModel(
         }
 
         // Create instance with data
-        val fakeExpirationDate = appClock.now().plus(1.days)
+        val fakeExpirationDate = appClock.now().minus(4.days)
 
         addInstanceToProductUseCase.addInstance(
           productId = productId,

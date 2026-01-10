@@ -5,11 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,7 +19,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
@@ -34,7 +30,6 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.domain.usecase.ProductsListFilter
-import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -151,78 +146,35 @@ private fun ProductsListSuccess(
     verticalArrangement = Arrangement.spacedBy(2.dp),
     contentPadding = PaddingValues(bottom = 16.dp),
   ) {
-    state.items.forEachIndexed { index, product ->
-      item(
-        key = "product-${product.id}-title",
-        contentType = "product-title",
+    itemsIndexed(
+      items = state.items,
+      key = { _, product -> "product-${product.id}-title" },
+      contentType = { _, _ -> "product" },
+    ) { index, product ->
+      Surface(
+        shape = state.items.calculateShape(index).toVerticalShape(),
       ) {
-        ProductTitle(
-          name = product.name,
-          isFirst = index == 0,
-        )
-      }
+        Column(
+          modifier = Modifier
+            .clickable(onClick = { onNavigateToProductDetail(product.id) })
+            .padding(12.dp),
+          verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+          Text(
+            text = product.name,
+            style = MaterialTheme.typography.titleMedium,
+          )
 
-      when (product) {
-        is ProductListUiModel.Empty -> {
-          item(
-            key = "product-${product.id}-empty",
-            contentType = "product-empty",
-          ) {
-            ProductEmptyState()
-          }
-        }
-
-        is ProductListUiModel.WithContent -> {
-          itemsIndexed(
-            items = product.variants,
-            key = { _, variant -> "product-${product.id}-variant-${variant.id}" },
-            contentType = { _, _ -> "product-variant" },
-          ) { index, variant ->
-            ProductVariantCard(
-              variant = variant,
-              shapePosition = product.variants.calculateShape(index),
-              onClick = { onNavigateToProductDetail(product.id) },
-            )
-          }
-
-          if (product.variants.isNotEmpty()) {
-            item {
-              Spacer(modifier = Modifier.height(8.dp))
-            }
-          }
-
-          itemsIndexed(
-            items = product.standaloneInstances,
-            key = { _, instance -> "product-${product.id}-instance-${instance.id}" },
-            contentType = { _, _ -> "product-instance" },
-          ) { index, instance ->
-            ProductInstanceCard(
-              instance = instance,
-              shapePosition = product.standaloneInstances.calculateShape(index),
-              onClick = { onNavigateToProductDetail(product.id) },
+          when (product) {
+            is ProductListUiModel.Empty -> ProductEmptyState()
+            is ProductListUiModel.WithContent -> StatusBarsRow(
+              statusGroups = product.groups,
             )
           }
         }
       }
     }
   }
-}
-
-@Composable
-private fun ProductTitle(
-  name: String,
-  isFirst: Boolean,
-  modifier: Modifier = Modifier,
-) {
-  Text(
-    modifier = modifier.padding(
-      top = if (isFirst) 0.dp else 24.dp,
-      bottom = 8.dp
-    ),
-    text = name,
-    style = MaterialTheme.typography.titleMedium,
-    color = CaducityTheme.colorScheme.onSurface,
-  )
 }
 
 @Composable
@@ -235,72 +187,4 @@ private fun ProductEmptyState(
     style = MaterialTheme.typography.bodySmall,
     color = CaducityTheme.colorScheme.onSurfaceVariant,
   )
-}
-
-@Composable
-private fun ProductVariantCard(
-  variant: ProductInstanceVariant,
-  shapePosition: com.alorma.caducity.ui.components.shape.ShapePosition,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  val totalCount = remember(variant.id) {
-    variant.statusGroups.sumOf { it.count } + variant.frozenCount
-  }
-
-  Surface(
-    modifier = modifier.fillMaxWidth(),
-    shape = shapePosition.toVerticalShape(),
-    color = CaducityTheme.colorScheme.surfaceContainer,
-  ) {
-    Column(
-      modifier = Modifier
-        .clickable(onClick = onClick)
-        .padding(horizontal = 16.dp, vertical = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      Text(
-        text = "—\t${variant.name} ($totalCount)",
-        style = MaterialTheme.typography.labelLarge,
-        color = CaducityTheme.colorScheme.onSurface,
-      )
-      StatusBarsRow(statusGroups = variant.statusGroups)
-      if (variant.frozenCount > 0) {
-        Text(
-          text = stringResource(R.string.products_list_items_frozen, variant.frozenCount),
-          style = MaterialTheme.typography.bodySmall,
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun ProductInstanceCard(
-  instance: ProductListStandaloneInstance,
-  shapePosition: com.alorma.caducity.ui.components.shape.ShapePosition,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Surface(
-    modifier = modifier.fillMaxWidth(),
-    shape = shapePosition.toVerticalShape(),
-    color = CaducityTheme.colorScheme.surfaceContainer,
-  ) {
-    Row(
-      modifier = Modifier
-        .clickable(onClick = onClick)
-        .padding(horizontal = 16.dp, vertical = 16.dp),
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Text(
-        text = "—\t${instance.name}",
-        style = MaterialTheme.typography.labelLarge,
-        color = CaducityTheme.colorScheme.onSurface,
-      )
-      StatusBadge(instance.status)
-    }
-  }
 }
