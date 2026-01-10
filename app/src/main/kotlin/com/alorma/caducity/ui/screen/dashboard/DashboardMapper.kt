@@ -5,6 +5,7 @@ import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.domain.model.ProductWithInstances
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.datetime.DayOfWeek
 
 class DashboardMapper(
   private val appCalendarConfigMapper: AppCalendarConfigMapper,
@@ -12,10 +13,11 @@ class DashboardMapper(
 
   fun mapToUnifiedState(
     instances: ImmutableList<ProductInstance>,
+    firstDayOfWeek: DayOfWeek,
   ): DashboardState.Success {
     val summary = calculateSummary(instances)
 
-    val calendarConfig = appCalendarConfigMapper.createFromInstances(instances)
+    val calendarConfig = appCalendarConfigMapper.createFromInstances(instances, firstDayOfWeek)
 
     return DashboardState.Success.Unified(
       summary = summary,
@@ -25,6 +27,7 @@ class DashboardMapper(
 
   fun mapToPerProductState(
     products: ImmutableList<ProductWithInstances>,
+    firstDayOfWeek: DayOfWeek,
   ): DashboardState.Success {
     val mapped = products.map { product ->
 
@@ -36,7 +39,7 @@ class DashboardMapper(
       ProductCalendarState(
         id = product.product.id,
         name = product.product.name,
-        appCalendarConfig = appCalendarConfigMapper.createFromInstances(instances)
+        appCalendarConfig = appCalendarConfigMapper.createFromInstances(instances, firstDayOfWeek)
       )
     }
 

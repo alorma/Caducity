@@ -11,6 +11,7 @@ import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.products.RelativeTimeFormatter
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
+import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 
 class ProductDetailMapper(
@@ -21,6 +22,7 @@ class ProductDetailMapper(
 
   fun mapToProductDetail(
     productDetail: ProductDetail,
+    firstDayOfWeek: DayOfWeek,
   ): ProductDetailState.Success {
 
     val productUiModel = ProductDetailUiModel(
@@ -49,6 +51,7 @@ class ProductDetailMapper(
       startDate = startDate,
       endDate = endDate,
       content = content,
+      firstDayOfWeek = firstDayOfWeek,
     )
 
     return ProductDetailState.Success(

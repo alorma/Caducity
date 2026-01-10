@@ -5,10 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
+import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -20,24 +22,28 @@ class ProductDetailViewModel(
   productId: String,
   obtainProductDetailUseCase: ObtainProductDetailUseCase,
   productDetailMapper: ProductDetailMapper,
+  calendarPreferences: CalendarPreferences,
   private val appClock: AppClock,
 ) : ViewModel() {
 
   private val _sideEffect = Channel<ProductDetailSideEffect>(Channel.BUFFERED)
   val sideEffect: Flow<ProductDetailSideEffect> = _sideEffect.receiveAsFlow()
 
-  val state: StateFlow<ProductDetailState> = obtainProductDetailUseCase
-    .obtain(productId)
-    .map { result ->
-      result.fold(
-        onSuccess = { product -> productDetailMapper.mapToProductDetail(product) },
-        onFailure = { ProductDetailState.Error("Not found") },
-      )
-    }.stateIn(
-      viewModelScope,
-      started = SharingStarted.WhileSubscribed(5000),
-      initialValue = ProductDetailState.Loading
+  val state: StateFlow<ProductDetailState> = combine(
+    obtainProductDetailUseCase.obtain(productId),
+    calendarPreferences.state,
+  ) { result, calendarConfig ->
+    result.fold(
+      onSuccess = { product ->
+        productDetailMapper.mapToProductDetail(product, calendarConfig.firstDayOfWeek)
+      },
+      onFailure = { ProductDetailState.Error("Not found") },
     )
+  }.stateIn(
+    viewModelScope,
+    started = SharingStarted.WhileSubscribed(5000),
+    initialValue = ProductDetailState.Loading
+  )
 
   fun onConsumeInstance(instance: ProductInstanceDetailUiModel) {
     when (instance.status) {
