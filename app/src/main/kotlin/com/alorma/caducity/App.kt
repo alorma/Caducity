@@ -11,9 +11,9 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.dashboard.DashboardRoute
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
+import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingRoute
 import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
 import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
@@ -60,6 +60,9 @@ fun App(
         }
         entry<DashboardRoute> {
           DashboardScreen(
+            onNavigateToCreateProduct = {
+              appBackStack.add(CreateProductRoute)
+            },
             onNavigateToProduct = { productId ->
               appBackStack.add(
                 ProductDetailRoute(productId)

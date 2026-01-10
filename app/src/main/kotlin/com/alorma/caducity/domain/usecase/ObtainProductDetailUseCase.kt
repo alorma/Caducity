@@ -27,12 +27,12 @@ class ObtainProductDetailUseCase(
   fun obtain(productId: String): Flow<Result<ProductDetail>> {
     return productDataSource.getProduct(productId).map { result ->
       result.map { product ->
-        val today = appClock.nowDate()
-
         val allInstances = product.allInstances
+
         val dates = allInstances
           .map { it.expirationDate.date() }
           .distinct()
+          .sorted()
 
         val datedInstances = dates.map { date ->
           extractInstances(
@@ -45,7 +45,11 @@ class ObtainProductDetailUseCase(
         ProductDetail(
           product = product.product,
           datedContents = datedInstances.toImmutableList(),
-        )
+        ).also {
+          it.datedContents.forEach {
+            Log.i("Alorma", it.date.toString())
+          }
+        }
       }
     }
   }
@@ -55,7 +59,6 @@ class ObtainProductDetailUseCase(
     checkDate: LocalDate,
     variants: List<Variant>,
   ): DatedInstances {
-    Log.i("Alorma", "Date: $checkDate")
     val instances = allInstances
       .filter {
         val expirationDate = it.expirationDate.date()
