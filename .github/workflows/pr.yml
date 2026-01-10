@@ -65,6 +65,10 @@ jobs:
         continue-on-error: false
         run: ./gradlew :app:assembleDebug
 
+      - name: Run Unit Tests
+        continue-on-error: false
+        run: ./gradlew test
+
       - name: Validate Screenshot Tests
         continue-on-error: false
         run: ./gradlew validateDebugScreenshotTest
