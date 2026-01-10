@@ -9,6 +9,7 @@ sealed interface ProductDetailState {
   data class Success(
     val product: ProductDetailUiModel,
     val todayContent: DateInstancesUiModel?,
+    val tomorrowContent: DateInstancesUiModel?,
   ) : ProductDetailState
 
   @Stable

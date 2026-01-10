@@ -1,10 +1,17 @@
 package com.alorma.caducity.domain.model
 
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.datetime.LocalDate
 
 data class ProductDetail(
   val product: Product,
-  val todayInstances: ImmutableList<InstanceWithVariant>,
+  val todayContent: DatedInstances,
+  val tomorrowContent: DatedInstances,
+)
+
+data class DatedInstances(
+  val date: LocalDate,
+  val instances: ImmutableList<InstanceWithVariant>,
 )
 
 data class InstanceWithVariant(

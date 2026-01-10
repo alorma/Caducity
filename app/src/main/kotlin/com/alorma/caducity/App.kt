@@ -131,8 +131,7 @@ fun App(
           entry<OnboardingRoute> {
             OnboardingScreen(
               onComplete = {
-                // Navigate to Dashboard after onboarding
-                topLevelBackStack.add(TopLevelRoute.Dashboard)
+                topLevelBackStack.addTopLevel(TopLevelRoute.Dashboard)
               }
             )
           }
