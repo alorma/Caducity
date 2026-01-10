@@ -134,6 +134,16 @@
     <string name="warning_consume_expired_positive">Consumir</string>
     <string name="warning_consume_expired_negative">Cancelar</string>
 
+    <!-- Instance action success messages -->
+    <string name="success_instance_consumed">Instancia consumida</string>
+    <string name="success_instance_frozen">Instancia congelada</string>
+    <string name="success_instance_deleted">Instancia eliminada</string>
+
+    <!-- Instance action error messages -->
+    <string name="error_consume_instance_failed">Error al consumir instancia</string>
+    <string name="error_freeze_instance_failed">Error al congelar instancia</string>
+    <string name="error_delete_instance_failed">Error al eliminar instancia</string>
+
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Bienvenido a Caducity</string>
     <string name="onboarding_welcome_message">Rastrea tus alimentos y reduce el desperdicio</string>

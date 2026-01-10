@@ -49,6 +49,7 @@ import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.ThermometerSnow
 import com.alorma.caducity.base.ui.icons.Today
+import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
@@ -466,16 +467,44 @@ private fun SideEffectHandler(
   LaunchedEffect(viewModel.sideEffect) {
     viewModel.sideEffect.collect { effect ->
       when (effect) {
-        is ProductDetailSideEffect.ShowMessage -> {
+        ProductDetailSideEffect.InstanceConsumed -> {
           snackbarState.showSnackbar(
-            message = effect.message,
+            message = R.string.success_instance_consumed,
             type = AppFeedbackType.Success,
           )
         }
 
-        is ProductDetailSideEffect.ShowError -> {
+        ProductDetailSideEffect.InstanceFrozen -> {
           snackbarState.showSnackbar(
-            message = effect.message,
+            message = R.string.success_instance_frozen,
+            type = AppFeedbackType.Status(InstanceStatus.Frozen),
+          )
+        }
+
+        ProductDetailSideEffect.InstanceDeleted -> {
+          snackbarState.showSnackbar(
+            message = R.string.success_instance_deleted,
+            type = AppFeedbackType.Success,
+          )
+        }
+
+        ProductDetailSideEffect.ConsumeInstanceFailed -> {
+          snackbarState.showSnackbar(
+            message = R.string.error_consume_instance_failed,
+            type = AppFeedbackType.Error,
+          )
+        }
+
+        ProductDetailSideEffect.FreezeInstanceFailed -> {
+          snackbarState.showSnackbar(
+            message = R.string.error_freeze_instance_failed,
+            type = AppFeedbackType.Error,
+          )
+        }
+
+        ProductDetailSideEffect.DeleteInstanceFailed -> {
+          snackbarState.showSnackbar(
+            message = R.string.error_delete_instance_failed,
             type = AppFeedbackType.Error,
           )
         }
