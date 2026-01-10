@@ -36,7 +36,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
@@ -57,10 +56,13 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 import com.kizitonwose.calendar.compose.weekcalendar.WeekCalendarState
 import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.until
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.math.abs
 
 @Composable
 fun ProductDetailScreen(
@@ -213,38 +215,31 @@ private fun findFirstIndex(
   date: LocalDate,
   datedContent: ImmutableList<DateInstancesUiModel>,
 ): Int {
-  // Priority 1: Scroll to today's date if it exists
-  val todayIndex = datedContent.indexOfFirst { dated ->
-    dated.date == date
-  }
+  if (datedContent.isEmpty()) return 0
 
-  return if (todayIndex != -1) {
-    todayIndex
-  } else {
-    // Priority 2: Scroll to first expiring soon item if exists
-    val expiringSoonIndex = datedContent.indexOfFirst { dated ->
-      dated.status == InstanceStatus.ExpiringSoon
-    }
+  // Find exact match first
+  val exactIndex = datedContent.indexOfFirst { it.date == date }
+  if (exactIndex != -1) return exactIndex
 
-    if (expiringSoonIndex != -1) {
-      expiringSoonIndex
-    } else {
-      // Priority 3: Scroll to first fresh (non-expired, non-expiring) item
-      datedContent.indexOfFirst { dated ->
-        dated.status == InstanceStatus.Fresh
-      }.takeIf { it != -1 } ?: 0
+  // Find the nearest date by calculating days difference using kotlinx-datetime
+  val nearestIndex = datedContent
+    .withIndex()
+    .minByOrNull { (_, dated) ->
+      abs(date.until(dated.date, DateTimeUnit.DAY))
     }
-  }
+    ?.index
+
+  return nearestIndex ?: 0
 }
 
 @Composable
 private fun DatedContent(
   state: DateInstancesUiModel,
-  contentPadding: PaddingValues = PaddingValues(0.dp),
   onConsume: (ProductInstanceDetailUiModel) -> Unit,
   onFreeze: (ProductInstanceDetailUiModel) -> Unit,
   onDelete: (ProductInstanceDetailUiModel) -> Unit,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
   val itemHeight = remember { mutableStateOf(24.dp) }
   val bulletOffset = remember { mutableStateOf(Offset.Zero) }
