@@ -13,7 +13,6 @@ val dashboardModule = module {
   singleOf(::AppCalendarConfigMapper)
   singleOf(::ObtainDashboardProductsUseCase)
   singleOf(::ObtainDashboardInstancesUseCase)
-  singleOf(::DashboardConfigurator)
   singleOf(::DashboardMapper)
   viewModelOf(::DashboardViewModel)
 
