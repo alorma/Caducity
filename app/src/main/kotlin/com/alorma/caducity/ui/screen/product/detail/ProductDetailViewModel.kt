@@ -9,7 +9,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -28,24 +27,16 @@ class ProductDetailViewModel(
   val sideEffect: Flow<ProductDetailSideEffect> = _sideEffect.receiveAsFlow()
 
   val state: StateFlow<ProductDetailState> = obtainProductDetailUseCase
-    .obtainProductDetail(productId)
+    .obtain(productId)
     .map { result ->
       result.fold(
-        onSuccess = { productWithInstances ->
-          productDetailMapper.mapToProductDetail(productWithInstances)
-        },
-        onFailure = { error ->
-          ProductDetailState.Error(error.message ?: "Product not found")
-        }
+        onSuccess = { product -> productDetailMapper.mapToProductDetail(product) },
+        onFailure = { ProductDetailState.Error("Not found") },
       )
-    }
-    .catch { error ->
-      emit(ProductDetailState.Error(error.message ?: "Unknown error"))
-    }
-    .stateIn(
+    }.stateIn(
       viewModelScope,
-      SharingStarted.WhileSubscribed(5000),
-      ProductDetailState.Loading
+      started = SharingStarted.WhileSubscribed(5000),
+      initialValue = ProductDetailState.Loading
     )
 
   fun onConsumeInstance(instance: ProductInstanceDetailUiModel) {
@@ -59,13 +50,16 @@ class ProductDetailViewModel(
           onConsumeInstanceConfirmed(instance)
         }
       }
+
       InstanceStatus.Expired -> {
         // Show error dialog for expired items
         emitSideEffect(ProductDetailSideEffect.ShowConsumeExpiredError(instance, instance.status))
       }
+
       InstanceStatus.Fresh -> {
         onConsumeInstanceConfirmed(instance)
       }
+
       InstanceStatus.Consumed,
       InstanceStatus.Frozen -> {
         // Already consumed or frozen, no action needed

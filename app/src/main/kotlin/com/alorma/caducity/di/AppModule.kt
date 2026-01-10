@@ -32,6 +32,7 @@ import com.alorma.caducity.ui.screen.products.productsListModule
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -61,7 +62,13 @@ val appModule = module {
   viewModelOf(::OnboardingViewModel)
   singleOf(::GetExpiringProductsUseCase)
 
-  factoryOf(::RelativeTimeFormatter)
+  factory {
+    RelativeTimeFormatter(
+      context = androidContext(),
+      appClock = get(),
+      dateFormat = get(qualifier = ConfigQualifier.DateFormat.HumanReadable),
+    )
+  }
 
   // Product detail
   singleOf(::ObtainProductDetailUseCase)
@@ -71,7 +78,9 @@ val appModule = module {
   singleOf(::FreezeInstanceUseCase)
   single {
     ProductDetailMapper(
+      appClock = get(),
       dateFormat = get(qualifier = ConfigQualifier.DateFormat.HumanReadable),
+      relativeTimeFormatter = get(),
     )
   }
   viewModelOf(::ProductDetailViewModel)
