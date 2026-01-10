@@ -1,6 +1,5 @@
 package com.alorma.caducity.domain.usecase
 
-import android.util.Log
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.ProductDataSource
@@ -45,11 +44,7 @@ class ObtainProductDetailUseCase(
         ProductDetail(
           product = product.product,
           datedContents = datedInstances.toImmutableList(),
-        ).also {
-          it.datedContents.forEach {
-            Log.i("Alorma", it.date.toString())
-          }
-        }
+        )
       }
     }
   }

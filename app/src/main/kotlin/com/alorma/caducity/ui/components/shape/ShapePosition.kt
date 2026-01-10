@@ -15,11 +15,30 @@ enum class ShapePosition {
   End;
 }
 
-fun List<Any>.calculateShape(index: Int): ShapePosition {
+/**
+ * Calculates the shape position for an item considering gaps in a sequence.
+ * Use this when iterating through a list where not all items should be visually connected.
+ *
+ * @param index The index in the list to calculate the shape for
+ * @param hasContent Predicate to determine if an item at given index should be visually connected
+ * @return The appropriate ShapePosition based on adjacent items with content
+ */
+fun <T> List<T>.calculateShapeWithGaps(
+  index: Int,
+  hasContent: (T) -> Boolean = { true }
+): ShapePosition {
+  val current = getOrNull(index) ?: return ShapePosition.None
+  val currentHasContent = hasContent(current)
+
+  if (!currentHasContent) return ShapePosition.None
+
+  val hasPrevious = getOrNull(index - 1)?.let(hasContent) == true
+  val hasNext = getOrNull(index + 1)?.let(hasContent) == true
+
   return when {
-    size == 1 -> ShapePosition.Single
-    index == 0 -> ShapePosition.Start
-    index == lastIndex -> ShapePosition.End
+    !hasPrevious && !hasNext -> ShapePosition.Single
+    !hasPrevious && hasNext -> ShapePosition.Start
+    hasPrevious && !hasNext -> ShapePosition.End
     else -> ShapePosition.Middle
   }
 }
