@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -35,19 +36,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Check
-import com.alorma.caducity.ui.components.topbar.NavigationIcon
-import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.topbar.NavigationIcon
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -158,29 +159,32 @@ fun ProductDetailAddInstanceScreen(
           )
 
           // Expiration date field
-          Box(
+          TextField(
             modifier = Modifier
               .fillMaxWidth()
-              .clickable { showDatePicker = true }
-          ) {
-            TextField(
-              value = formState.value.expirationDateMillis?.let {
-                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                dateFormat.format(Date(it))
-              } ?: "",
-              onValueChange = { },
-              readOnly = true,
-              enabled = false,
-              label = { Text(stringResource(R.string.product_detail_add_instance_expiration_date_label)) },
-              placeholder = { Text(stringResource(R.string.product_detail_add_instance_expiration_date_placeholder)) },
-              isError = formState.value.expirationDateError != null,
-              supportingText = formState.value.expirationDateError?.let { error ->
-                { Text(text = error) }
-              },
-              modifier = Modifier.fillMaxWidth(),
-              singleLine = true,
-            )
-          }
+              .clickable { showDatePicker = true },
+            value = formState.value.expirationDateMillis?.let {
+              val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+              dateFormat.format(Date(it))
+            } ?: "",
+            onValueChange = { },
+            readOnly = true,
+            enabled = false,
+            label = { Text(stringResource(R.string.product_detail_add_instance_expiration_date_label)) },
+            placeholder = { Text(stringResource(R.string.product_detail_add_instance_expiration_date_placeholder)) },
+            isError = formState.value.expirationDateError != null,
+            supportingText = formState.value.expirationDateError?.let { error ->
+              { Text(text = error) }
+            },
+            singleLine = true,
+            colors = TextFieldDefaults.colors(
+              disabledTextColor = MaterialTheme.colorScheme.onSurface,
+              disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+              disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+              disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+              disabledIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
+          )
 
           if (showDatePicker) {
             ExpirationDatePickerDialog(
