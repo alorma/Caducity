@@ -39,6 +39,8 @@ materialKolor = "5.0.0-alpha04"
 
 scanEngine = "1.6.2"
 
+strikt = "0.35.1"
+
 [libraries]
 # Compose BOM
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
@@ -97,6 +99,8 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
 junit = { group = "junit", name = "junit", version = "4.13.2" }
+
+strikt-core = { group = "io.strikt", name = "strikt-core", version.ref = "strikt" }
 
 material-kolor = { group = "com.materialkolor", name = "material-kolor", version.ref = "materialKolor" }
 
