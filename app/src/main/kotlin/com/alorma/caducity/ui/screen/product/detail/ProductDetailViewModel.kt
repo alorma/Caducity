@@ -75,7 +75,6 @@ class ProductDetailViewModel(
         onConsumeInstanceConfirmed(instance)
       }
 
-      InstanceStatus.Consumed,
       InstanceStatus.Frozen -> {
         // Already consumed or frozen, no action needed
       }

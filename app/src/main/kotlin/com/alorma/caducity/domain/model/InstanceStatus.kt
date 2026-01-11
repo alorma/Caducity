@@ -9,7 +9,6 @@ sealed class InstanceStatus {
   data object ExpiringSoon : InstanceStatus()
   data object Fresh : InstanceStatus()
   data object Frozen : InstanceStatus()
-  data object Consumed : InstanceStatus()
 
   companion object {
     /**

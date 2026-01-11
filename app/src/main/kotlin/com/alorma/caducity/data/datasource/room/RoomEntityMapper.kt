@@ -43,7 +43,6 @@ fun ProductInstanceRoomEntity.toModel(
 
   // Determine status: consumed > frozen > calculated
   val status = when {
-    consumedDate != null -> InstanceStatus.Consumed
     pausedDate != null -> InstanceStatus.Frozen
     else -> InstanceStatus.calculateStatus(
       expirationDate = expirationInstant,

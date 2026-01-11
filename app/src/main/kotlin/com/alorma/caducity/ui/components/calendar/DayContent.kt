@@ -180,14 +180,6 @@ class DayContentPreviewContentProvider :
         shapePosition = ShapePosition.End,
         isOutDay = false,
       ),
-      // Regular day - Consumed status
-      DayContentPreviewContent(
-        date = LocalDate(2026, 2, 10),
-        today = LocalDate(2026, 2, 15),
-        status = InstanceStatus.Consumed,
-        shapePosition = ShapePosition.Single,
-        isOutDay = false,
-      ),
       // Out of month day - with status (dimmed)
       DayContentPreviewContent(
         date = LocalDate(2026, 1, 31),

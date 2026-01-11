@@ -109,7 +109,6 @@ private fun SummaryStatusCard(
         InstanceStatus.ExpiringSoon -> stringResource(R.string.dashboard_section_expiring_soon)
         InstanceStatus.Fresh -> stringResource(R.string.dashboard_section_fresh)
         InstanceStatus.Frozen -> stringResource(R.string.dashboard_section_frozen)
-        InstanceStatus.Consumed -> "Consumed" // Consumed items don't appear in dashboard
       }
 
       Text(
