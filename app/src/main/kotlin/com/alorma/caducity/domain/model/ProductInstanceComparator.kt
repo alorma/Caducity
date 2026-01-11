@@ -20,7 +20,6 @@ class StatusProductInstanceComparator : ProductInstanceComparator {
       InstanceStatus.ExpiringSoon -> 1
       InstanceStatus.Fresh -> 2
       InstanceStatus.Frozen -> 3
-      InstanceStatus.Consumed -> 4
     }
   }.thenBy { it.expirationDate }
 

@@ -131,11 +131,6 @@ class RoomProductDataSource(
         // Frozen items don't have a date range filter - return all dates
         Pair(0L, Long.MAX_VALUE)
       }
-
-      InstanceStatus.Consumed -> {
-        // Consumed items are filtered at the mapper level
-        Pair(0L, Long.MAX_VALUE)
-      }
     }
   }
 

@@ -94,7 +94,6 @@ fun StatusBadge(
       InstanceStatus.ExpiringSoon -> stringResource(R.string.expiration_status_badge_expiring_soon)
       InstanceStatus.Fresh -> stringResource(R.string.expiration_status_badge_fresh)
       InstanceStatus.Frozen -> stringResource(R.string.expiration_status_badge_frozen)
-      InstanceStatus.Consumed -> stringResource(R.string.expiration_status_badge_consumed)
     }
 
     Text(
