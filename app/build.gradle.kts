@@ -33,7 +33,8 @@ android {
     val debugToken = if (localProperties.exists()) {
       val properties = Properties()
       properties.load(localProperties.inputStream())
-      properties.getProperty("DEBUG_APP_CHECK_TOKEN") ?: System.getenv("DEBUG_APP_CHECK_TOKEN") ?: ""
+      properties.getProperty("DEBUG_APP_CHECK_TOKEN") ?: System.getenv("DEBUG_APP_CHECK_TOKEN")
+      ?: ""
     } else {
       System.getenv("DEBUG_APP_CHECK_TOKEN") ?: ""
     }
@@ -89,10 +90,8 @@ android {
 
   experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
-  testOptions {
-    screenshotTests {
-      imageDifferenceThreshold = 0.01f
-    }
+  screenshotTests {
+    imageDifferenceThreshold = 0.01f
   }
 }
 
