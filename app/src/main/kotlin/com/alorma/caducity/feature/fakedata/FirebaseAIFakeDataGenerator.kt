@@ -10,6 +10,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.Content
 import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.ai.type.PublicPreviewAPI
+import com.google.firebase.ai.type.RequestOptions
 import com.google.firebase.ai.type.generationConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -65,6 +67,53 @@ class FirebaseAIFakeDataGenerator : FakeDataGenerator {
 
       val parsed = parseResponse(responseText)
       Result.success(parsed)
+    } catch (e: Exception) {
+      Result.failure(e.toGeminiError() as Throwable)
+    }
+  }
+
+  @OptIn(PublicPreviewAPI::class)
+  override suspend fun generateFromUserPrompt(
+    userPrompt: String,
+    existingProducts: List<Product>
+  ): Result<GeneratedGroceryData> = withContext(Dispatchers.IO) {
+    try {
+      // Input validation
+      if (userPrompt.isBlank()) {
+        return@withContext Result.success(GeneratedGroceryData(products = emptyList()))
+      }
+
+
+      val generativeModel = Firebase.ai(
+        backend = GenerativeBackend.googleAI()
+      ).templateGenerativeModel(
+        requestOptions = RequestOptions(),
+      )
+
+      val response = generativeModel.generateContent(
+        templateId = "user-template",
+        mapOf("input" to userPrompt)
+      )
+
+      val responseText = response.text ?: throw IllegalStateException("Empty response from Gemini")
+
+      val parsed = parseResponse(responseText)
+
+      // Validate output
+      val validatedProducts = parsed.products.filter { product ->
+        product.name.length <= 100 &&
+        product.description.length <= 200 &&
+        product.variants.all { variant ->
+          variant.instances.all { instance ->
+            instance.daysFromNow in -30..365
+          }
+        } &&
+        product.standaloneInstances.all { instance ->
+          instance.daysFromNow in -30..365
+        }
+      }
+
+      Result.success(GeneratedGroceryData(products = validatedProducts))
     } catch (e: Exception) {
       Result.failure(e.toGeminiError() as Throwable)
     }

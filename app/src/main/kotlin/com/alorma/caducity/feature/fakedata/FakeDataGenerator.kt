@@ -23,4 +23,16 @@ interface FakeDataGenerator {
     variantsPerProduct: Int,
     instancesPerVariantRange: IntRange
   ): Result<GeneratedGroceryData>
+
+  /**
+   * Generates grocery products from user natural language prompt
+   *
+   * @param userPrompt User's description of purchased groceries
+   * @param existingProducts Current products in the database (for context)
+   * @return Result containing generated data or error
+   */
+  suspend fun generateFromUserPrompt(
+    userPrompt: String,
+    existingProducts: List<Product>
+  ): Result<GeneratedGroceryData>
 }
