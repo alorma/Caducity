@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-class FirebaseAIFakeDataGenerator : FakeDataGenerator {
+class FirebaseAIPromptDataSource : AIPromptDataSource {
 
   private val json = Json {
     ignoreUnknownKeys = true

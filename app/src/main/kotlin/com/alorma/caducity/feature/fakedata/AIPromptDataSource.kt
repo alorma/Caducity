@@ -7,7 +7,7 @@ import com.alorma.caducity.feature.fakedata.models.GeneratedGroceryData
  * Interface for generating fake grocery product data
  * Implementations can use AI (Gemini), mock data, or other sources
  */
-interface FakeDataGenerator {
+interface AIPromptDataSource {
   /**
    * Generates realistic grocery products with variants and instances
    *

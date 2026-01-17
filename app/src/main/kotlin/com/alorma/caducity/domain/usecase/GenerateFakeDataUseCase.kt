@@ -4,7 +4,7 @@ import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.VariantDataSource
 import com.alorma.caducity.domain.model.Product
-import com.alorma.caducity.feature.fakedata.FakeDataGenerator
+import com.alorma.caducity.feature.fakedata.AIPromptDataSource
 import com.alorma.caducity.feature.fakedata.models.GeneratedProduct
 import com.alorma.caducity.feature.fakedata.models.GenerationProgress
 import com.alorma.caducity.feature.fakedata.models.toGeminiError
@@ -20,7 +20,7 @@ import kotlin.uuid.Uuid
  * Orchestrates the entire process: fetch existing, generate with AI, insert to DB
  */
 class GenerateFakeDataUseCase(
-  private val fakeDataGenerator: FakeDataGenerator,
+  private val AIPromptDataSource: AIPromptDataSource,
   private val productDataSource: ProductDataSource,
   private val variantDataSource: VariantDataSource,
   private val appClock: AppClock,
@@ -50,7 +50,7 @@ class GenerateFakeDataUseCase(
 
       // Step 3: Generate with AI
       emit(GenerationProgress.GeneratingWithAI)
-      val generatedData = fakeDataGenerator.generateGroceryData(
+      val generatedData = AIPromptDataSource.generateGroceryData(
         existingProducts = existingProducts,
         maxProducts = maxProducts,
         variantsPerProduct = variantsPerProduct,

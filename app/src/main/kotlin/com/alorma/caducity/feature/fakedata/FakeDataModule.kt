@@ -11,8 +11,8 @@ import org.koin.dsl.module
  */
 val fakeDataModule: Module = module {
   // Data generator
-  singleOf(::FirebaseAIFakeDataGenerator) {
-    bind<FakeDataGenerator>()
+  singleOf(::FirebaseAIPromptDataSource) {
+    bind<AIPromptDataSource>()
   }
 
   // Use case
