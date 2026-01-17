@@ -24,6 +24,25 @@
     <string name="dashboard_filter_expiring_soon">Expiring</string>
     <string name="dashboard_filter_expired">Expired</string>
     <string name="dashboard_clear_filters">Clear Filters</string>
+    <string name="dashboard_fab_manual">Manual</string>
+    <string name="dashboard_fab_ai">AI</string>
+    <string name="dashboard_ai_title">Add Products with AI</string>
+    <string name="dashboard_ai_prompt_hint">Describe what you bought</string>
+    <string name="dashboard_ai_prompt_example">e.g., "2 tiramisu cups (category desserts) expires tomorrow"</string>
+    <string name="dashboard_ai_generate_button">Generate</string>
+    <string name="dashboard_ai_char_counter">%1$d / 500</string>
+    <string name="dashboard_ai_success">Created %1$d products, %2$d variants, %3$d instances</string>
+    <string name="dashboard_ai_generating">Generating products…</string>
+    <string name="dashboard_ai_error_generic">Failed to generate products</string>
+
+    <string name="dashboard_ai_review_title">Review Products</string>
+    <string name="dashboard_ai_review_description">Found %1$d matching products. Review before adding:</string>
+    <string name="dashboard_ai_review_match_score">%1$d%% match</string>
+    <string name="dashboard_ai_review_will_add">Will add %1$d variants, %2$d instances</string>
+    <string name="dashboard_ai_review_new_products">New Products</string>
+    <string name="dashboard_ai_review_new_product">Will be created as new product</string>
+    <string name="dashboard_ai_review_cancel">Cancel</string>
+    <string name="dashboard_ai_review_confirm">Confirm</string>
 
     <string name="dashboard_section_expired">Expired</string>
     <string name="dashboard_section_expiring_soon">Expiring</string>

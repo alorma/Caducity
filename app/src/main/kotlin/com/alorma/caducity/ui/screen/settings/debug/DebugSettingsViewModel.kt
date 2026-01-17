@@ -52,7 +52,13 @@ class DebugSettingsViewModel(
 
           is GenerationProgress.CheckingExisting,
           is GenerationProgress.GeneratingWithAI,
+          is GenerationProgress.MatchingProducts,
           is GenerationProgress.InsertingToDatabase -> {
+            _uiState.value = _uiState.value.copy(progress = progress)
+          }
+
+          is GenerationProgress.AwaitingReview -> {
+            // Debug mode auto-confirms matches without user review
             _uiState.value = _uiState.value.copy(progress = progress)
           }
 
@@ -121,10 +127,10 @@ data class DebugSettingsUiState(
   val error: String? = null,
 
   // Configuration defaults
-  val defaultMaxProducts: Int = 5,
+  val defaultMaxProducts: Int = 2,
   val defaultMaxVariantsPerProduct: Int = 3,
-  val defaultMinInstancesPerVariant: Int = 6,
-  val defaultMaxInstancesPerVariant: Int = 10
+  val defaultMinInstancesPerVariant: Int = 2,
+  val defaultMaxInstancesPerVariant: Int = 3,
 )
 
 /**
