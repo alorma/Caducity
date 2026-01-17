@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.components.shape.ShapePosition
+import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.kizitonwose.calendar.compose.WeekCalendar
@@ -19,6 +21,7 @@ import kotlinx.datetime.LocalDate
 @Composable
 fun CaducityWeekCalendar(
   appCalendarConfig: AppCalendarConfig,
+  todayColor: Color,
   onDateClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
   weekCalendarState: WeekCalendarState = rememberWeekCalendarState(
@@ -48,6 +51,7 @@ fun CaducityWeekCalendar(
 
       DayContent(
         today = appCalendarConfig.today,
+        todayColor = todayColor,
         date = date,
         status = dateInfo?.status,
         shapePosition = dateInfo?.shapePosition ?: ShapePosition.None,
@@ -66,6 +70,7 @@ fun CaducityWeekCalendarPreview(
   PreviewTheme {
     Surface {
       CaducityWeekCalendar(
+        todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
         appCalendarConfig = appCalendarConfig,
         onDateClick = {},
       )

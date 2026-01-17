@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "449733844268",
+    "project_id": "caducity-54bfd",
+    "storage_bucket": "caducity-54bfd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449733844268:android:3a15866a97a04509d56089",
+        "android_client_info": {
+          "package_name": "com.alorma.caducity"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU2AgWfFcTzUrypXEPNQUQV8XtPMkpRf8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449733844268:android:6ad4a3169fc97bd7d56089",
+        "android_client_info": {
+          "package_name": "com.alorma.caducity.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU2AgWfFcTzUrypXEPNQUQV8XtPMkpRf8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
