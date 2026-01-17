@@ -221,6 +221,7 @@ private fun ProductDetailSuccessContent(
       ) {
         CaducityWeekCalendar(
           modifier = Modifier.padding(bottom = 8.dp),
+          todayColor = CaducityTheme.colorScheme.primary,
           weekCalendarState = weekCalendarState,
           appCalendarConfig = state.appCalendarConfig,
           contentPadding = PaddingValues(horizontal = 12.dp),

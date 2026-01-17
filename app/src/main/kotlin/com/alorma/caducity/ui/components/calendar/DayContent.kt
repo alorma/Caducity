@@ -37,6 +37,7 @@ fun DayContent(
   isOutDay: Boolean,
   onClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
+  todayColor: Color = CaducityTheme.colorScheme.surfaceContainerHighest,
 ) {
 
   val backgroundColor = if (status != null) {
@@ -68,7 +69,7 @@ fun DayContent(
 
     if (today == date) {
       val borderColor = if (status == null) {
-        CaducityTheme.colorScheme.surfaceContainerHighest
+        todayColor
       } else {
         backgroundColor
       }

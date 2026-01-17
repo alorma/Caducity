@@ -58,6 +58,7 @@ fun DashboardSuccessContentList(
 
             CaducityWeekCalendar(
               appCalendarConfig = productCalendarState.appCalendarConfig,
+              todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
               onDateClick = { onNavigateToProduct(productCalendarState.id) },
             )
           }
