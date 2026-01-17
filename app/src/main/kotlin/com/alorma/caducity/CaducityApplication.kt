@@ -4,6 +4,8 @@ import android.app.Application
 import com.alorma.caducity.di.appModule
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.notification.NotificationChannelManager
+import com.google.firebase.Firebase
+import com.google.firebase.initialize
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -21,6 +23,9 @@ class CaducityApplication : Application() {
 
   override fun onCreate() {
     super.onCreate()
+
+    // Initialize Firebase (must be done before using Firebase services)
+    Firebase.initialize(this)
 
     // Initialize Koin
     startKoin {

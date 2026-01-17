@@ -41,6 +41,9 @@ scanEngine = "1.6.2"
 
 strikt = "0.35.1"
 
+# Firebase
+firebase-bom = "34.8.0"
+
 [libraries]
 # Compose BOM
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
@@ -106,6 +109,10 @@ material-kolor = { group = "com.materialkolor", name = "material-kolor", version
 
 scan-engine = { group = "com.github.tillhub", name = "scan-engine", version.ref = "scanEngine" }
 
+# Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-ai = { group = "com.google.firebase", name = "firebase-ai" }
+
 # Plugins
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -119,3 +126,4 @@ jetbrains-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", ver
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 compose-screenshot = { id = "com.android.compose.screenshot", version.ref = "compose-screenshot-testing" }
+google-services = { id = "com.google.gms.google-services", version = "4.4.2" }

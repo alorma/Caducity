@@ -13,6 +13,8 @@ plugins {
 
   alias(libs.plugins.compose.screenshot)
 
+  alias(libs.plugins.google.services)
+
   id("caducity.version")
 }
 
@@ -142,6 +144,10 @@ dependencies {
 
   implementation(libs.androidx.work.runtime.ktx)
   implementation(libs.koin.androidx.workmanager)
+
+  // Firebase
+  implementation(platform(libs.firebase.bom))
+  implementation(libs.firebase.ai)
 
   // Testing
   testImplementation(libs.junit)

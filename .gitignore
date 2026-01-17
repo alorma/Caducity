@@ -19,3 +19,8 @@ deployment/
 
 # Screenshot test outputs
 **/screenshotTest/outputs/
+
+certs/release.keystore
+
+# Firebase configuration (contains API keys)
+app/google-services.json
