@@ -95,6 +95,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          DEBUG_APP_CHECK_TOKEN: ${{ secrets.DEBUG_APP_CHECK_TOKEN }}
 
       - name: Prepare artifacts for upload
         run: |
