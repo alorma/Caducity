@@ -1,0 +1,26 @@
+package com.alorma.caducity.feature.fakedata
+
+import com.alorma.caducity.domain.model.Product
+import com.alorma.caducity.feature.fakedata.models.GeneratedGroceryData
+
+/**
+ * Interface for generating fake grocery product data
+ * Implementations can use AI (Gemini), mock data, or other sources
+ */
+interface FakeDataGenerator {
+  /**
+   * Generates realistic grocery products with variants and instances
+   *
+   * @param existingProducts Current products in the database (for smart mixing)
+   * @param maxProducts Maximum number of total products to have after generation
+   * @param variantsPerProduct Maximum variants to generate per product
+   * @param instancesPerVariantRange Range of instances to generate per variant (min..max)
+   * @return Result containing generated data or error
+   */
+  suspend fun generateGroceryData(
+    existingProducts: List<Product>,
+    maxProducts: Int,
+    variantsPerProduct: Int,
+    instancesPerVariantRange: IntRange
+  ): Result<GeneratedGroceryData>
+}

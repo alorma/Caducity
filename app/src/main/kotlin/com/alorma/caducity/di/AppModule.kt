@@ -20,6 +20,7 @@ import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
+import com.alorma.caducity.feature.fakedata.fakeDataModule
 import com.alorma.caducity.ui.screen.dashboard.dashboardModule
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
@@ -29,6 +30,7 @@ import com.alorma.caducity.ui.screen.product.detail.ProductDetailAddInstanceView
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailMapper
 import com.alorma.caducity.ui.screen.product.detail.ProductDetailViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
+import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
 import org.koin.android.ext.koin.androidContext
@@ -46,6 +48,7 @@ val appModule = module {
   includes(dataModule)
   includes(domainModule)
   includes(fireAndForgetModule)
+  includes(fakeDataModule)
 
   includes(dashboardModule)
 
@@ -96,4 +99,7 @@ val appModule = module {
   singleOf(::ExportBackupUseCase)
   singleOf(::ImportBackupUseCase)
   viewModelOf(::BackupViewModel)
+
+  // Debug Settings
+  viewModelOf(::DebugSettingsViewModel)
 }

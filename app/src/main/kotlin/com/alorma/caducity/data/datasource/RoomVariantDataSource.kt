@@ -54,4 +54,8 @@ class RoomVariantDataSource(
   override suspend fun getActiveInstanceCount(variantId: String): Int {
     return variantDao.getActiveInstanceCount(variantId)
   }
+
+  override suspend fun clearAllVariants() {
+    variantDao.clearAllVariants()
+  }
 }
