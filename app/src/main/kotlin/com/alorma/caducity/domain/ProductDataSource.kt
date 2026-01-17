@@ -26,4 +26,8 @@ interface ProductDataSource {
   suspend fun freezeInstance(instanceId: String, remainingDays: Int)
 
   suspend fun unfreezeInstance(instanceId: String)
+
+  suspend fun clearAllProducts()
+
+  suspend fun clearAllInstances()
 }

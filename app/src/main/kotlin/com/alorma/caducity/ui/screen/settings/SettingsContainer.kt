@@ -80,9 +80,7 @@ fun SettingsContainer(
       }
       if (debugModeProvider.isDebugMode()) {
         entry<SettingsRoute.Debug> {
-          DebugSettingsScreen(
-            triggerNotificationCheck = { debugHelper.triggerImmediateCheck() },
-          )
+          DebugSettingsScreen()
         }
       }
       entry<SettingsRoute.About> {

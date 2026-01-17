@@ -61,6 +61,10 @@ jobs:
           gradle-version: wrapper
           cache-read-only: false
 
+      - name: Create google-services.json
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > app/google-services.json
+
       - name: Build Android - PR
         continue-on-error: false
         run: ./gradlew :app:assembleDebug

@@ -15,4 +15,6 @@ interface VariantDataSource {
   suspend fun deleteVariant(variantId: String): Result<Unit>
 
   suspend fun getActiveInstanceCount(variantId: String): Int
+
+  suspend fun clearAllVariants()
 }
