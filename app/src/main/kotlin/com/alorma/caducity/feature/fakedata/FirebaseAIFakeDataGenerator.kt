@@ -51,7 +51,6 @@ class FirebaseAIFakeDataGenerator : FakeDataGenerator {
           temperature = 0.9f
           topK = 40
           topP = 0.95f
-          maxOutputTokens = 8192
           responseMimeType = "application/json"
         },
       )

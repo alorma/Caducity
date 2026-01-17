@@ -96,6 +96,12 @@ class GenerateFakeDataUseCase(
       description = generatedProduct.description
     )
 
+    // Create the product FIRST (before variants and instances)
+    productDataSource.createProduct(
+      product,
+      emptyList<com.alorma.caducity.domain.model.ProductInstance>().toImmutableList()
+    )
+
     var variantsCreated = 0
     var instancesCreated = 0
 
@@ -135,9 +141,6 @@ class GenerateFakeDataUseCase(
       )
       instancesCreated++
     }
-
-    // Create the product last (with empty instances list initially)
-    productDataSource.createProduct(product, emptyList<com.alorma.caducity.domain.model.ProductInstance>().toImmutableList())
 
     return CreationResult(
       variantsCreated = variantsCreated,

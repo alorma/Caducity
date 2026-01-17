@@ -214,4 +214,12 @@ class RoomProductDataSource(
       }
     }
   }
+
+  override suspend fun clearAllProducts() {
+    productDao.clearAllProducts()
+  }
+
+  override suspend fun clearAllInstances() {
+    instanceDao.clearAllProductInstances()
+  }
 }

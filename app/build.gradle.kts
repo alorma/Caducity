@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
   alias(libs.plugins.android.application)
@@ -26,6 +27,18 @@ android {
     applicationId = "com.alorma.caducity"
     minSdk = libs.versions.android.minSdk.get().toInt()
     targetSdk = libs.versions.android.targetSdk.get().toInt()
+
+    // Read debug App Check token from environment or local.properties
+    val localProperties = file("../local.properties")
+    val debugToken = if (localProperties.exists()) {
+      val properties = Properties()
+      properties.load(localProperties.inputStream())
+      properties.getProperty("DEBUG_APP_CHECK_TOKEN") ?: System.getenv("DEBUG_APP_CHECK_TOKEN") ?: ""
+    } else {
+      System.getenv("DEBUG_APP_CHECK_TOKEN") ?: ""
+    }
+
+    buildConfigField("String", "DEBUG_APP_CHECK_TOKEN", "\"$debugToken\"")
   }
   packaging {
     resources {
@@ -148,6 +161,9 @@ dependencies {
   // Firebase
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.ai)
+  implementation(libs.firebase.appcheck)
+  implementation(libs.firebase.appcheck.playintegrity)
+  implementation(libs.firebase.appcheck.debug)
 
   // Testing
   testImplementation(libs.junit)
