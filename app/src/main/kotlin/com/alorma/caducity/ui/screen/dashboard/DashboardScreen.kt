@@ -61,6 +61,7 @@ fun DashboardScreen(
   // Handle AI generation completion
   LaunchedEffect(aiGenerationState.value.completedResult) {
     aiGenerationState.value.completedResult?.let { result ->
+      showAISheet.value = false
       val message = successMessageFormat.format(
         result.productsCreated,
         result.variantsCreated,
