@@ -19,9 +19,7 @@ val platformModule: Module = module {
       androidContext(),
       AppDatabase::class.java,
       "caducity_database.db"
-    )
-      .fallbackToDestructiveMigration(true)
-      .build()
+    ).build()
   }
 
 
