@@ -18,7 +18,7 @@ val platformModule: Module = module {
     Room.databaseBuilder(
       androidContext(),
       AppDatabase::class.java,
-      "caducity.db"
+      "caducity_database.db"
     )
       .fallbackToDestructiveMigration(true)
       .build()
