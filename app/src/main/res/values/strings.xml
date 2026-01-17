@@ -35,6 +35,15 @@
     <string name="dashboard_ai_generating">Generating products…</string>
     <string name="dashboard_ai_error_generic">Failed to generate products</string>
 
+    <string name="dashboard_ai_review_title">Review Products</string>
+    <string name="dashboard_ai_review_description">Found %1$d matching products. Review before adding:</string>
+    <string name="dashboard_ai_review_match_score">%1$d%% match</string>
+    <string name="dashboard_ai_review_will_add">Will add %1$d variants, %2$d instances</string>
+    <string name="dashboard_ai_review_new_products">New Products</string>
+    <string name="dashboard_ai_review_new_product">Will be created as new product</string>
+    <string name="dashboard_ai_review_cancel">Cancel</string>
+    <string name="dashboard_ai_review_confirm">Confirm</string>
+
     <string name="dashboard_section_expired">Expired</string>
     <string name="dashboard_section_expiring_soon">Expiring</string>
     <string name="dashboard_section_fresh">Fresh</string>

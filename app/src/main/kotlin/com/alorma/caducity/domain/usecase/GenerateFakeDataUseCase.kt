@@ -50,7 +50,7 @@ class GenerateFakeDataUseCase(
 
       // Step 3: Generate with AI
       emit(GenerationProgress.GeneratingWithAI)
-      val generatedData = AIPromptDataSource.generateGroceryData(
+      val generatedData = AIPromptDataSource.generateFakeData(
         existingProducts = existingProducts,
         maxProducts = maxProducts,
         variantsPerProduct = variantsPerProduct,

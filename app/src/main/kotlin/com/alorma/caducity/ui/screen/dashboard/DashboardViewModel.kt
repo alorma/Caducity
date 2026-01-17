@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.GenerateProductsFromPromptUseCase
 import com.alorma.caducity.domain.usecase.ObtainDashboardProductsUseCase
 import com.alorma.caducity.feature.fakedata.models.GenerationProgress
+import com.alorma.caducity.feature.fakedata.models.MatchingResults
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -57,10 +58,57 @@ class DashboardViewModel(
           is GenerationProgress.Started,
           is GenerationProgress.CheckingExisting,
           is GenerationProgress.GeneratingWithAI,
+          is GenerationProgress.MatchingProducts,
           is GenerationProgress.InsertingToDatabase -> {
             _aiGenerationState.value = AIGenerationState(
               isGenerating = true,
               progress = progress
+            )
+          }
+          is GenerationProgress.AwaitingReview -> {
+            _aiGenerationState.value = AIGenerationState(
+              isGenerating = false,
+              awaitingReview = progress.matchingResults
+            )
+          }
+          is GenerationProgress.Completed -> {
+            _aiGenerationState.value = AIGenerationState(
+              isGenerating = false,
+              completedResult = progress
+            )
+          }
+          is GenerationProgress.Failed -> {
+            _aiGenerationState.value = AIGenerationState(
+              isGenerating = false,
+              error = progress.error.toUserMessage()
+            )
+          }
+        }
+      }
+    }
+  }
+
+  fun onConfirmMatches(matchingResults: MatchingResults) {
+    viewModelScope.launch {
+      _aiGenerationState.value = AIGenerationState(isGenerating = true)
+
+      generateProductsFromPromptUseCase.confirmMatches(matchingResults).collect { progress ->
+        when (progress) {
+          is GenerationProgress.Started,
+          is GenerationProgress.CheckingExisting,
+          is GenerationProgress.GeneratingWithAI,
+          is GenerationProgress.MatchingProducts,
+          is GenerationProgress.InsertingToDatabase -> {
+            _aiGenerationState.value = AIGenerationState(
+              isGenerating = true,
+              progress = progress
+            )
+          }
+          is GenerationProgress.AwaitingReview -> {
+            // Should not happen in confirm flow
+            _aiGenerationState.value = AIGenerationState(
+              isGenerating = false,
+              awaitingReview = progress.matchingResults
             )
           }
           is GenerationProgress.Completed -> {
@@ -103,5 +151,6 @@ data class AIGenerationState(
   val isGenerating: Boolean = false,
   val progress: GenerationProgress? = null,
   val error: String? = null,
-  val completedResult: GenerationProgress.Completed? = null
+  val completedResult: GenerationProgress.Completed? = null,
+  val awaitingReview: MatchingResults? = null
 )

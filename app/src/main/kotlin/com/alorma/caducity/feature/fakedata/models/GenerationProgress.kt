@@ -21,6 +21,17 @@ sealed interface GenerationProgress {
   data object GeneratingWithAI : GenerationProgress
 
   /**
+   * Matching generated products against existing products
+   */
+  data object MatchingProducts : GenerationProgress
+
+  /**
+   * Awaiting user review of matched products
+   * User needs to confirm before proceeding
+   */
+  data class AwaitingReview(val matchingResults: MatchingResults) : GenerationProgress
+
+  /**
    * Inserting generated data into the database
    * @param current Number of items inserted so far
    * @param total Total number of items to insert

@@ -15,6 +15,9 @@ val fakeDataModule: Module = module {
     bind<AIPromptDataSource>()
   }
 
+  // Product matcher
+  singleOf(::ProductMatcher)
+
   // Use case
   singleOf(::GenerateFakeDataUseCase)
 

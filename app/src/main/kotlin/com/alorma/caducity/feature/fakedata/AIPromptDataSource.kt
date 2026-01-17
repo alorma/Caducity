@@ -17,7 +17,7 @@ interface AIPromptDataSource {
    * @param instancesPerVariantRange Range of instances to generate per variant (min..max)
    * @return Result containing generated data or error
    */
-  suspend fun generateGroceryData(
+  suspend fun generateFakeData(
     existingProducts: List<Product>,
     maxProducts: Int,
     variantsPerProduct: Int,

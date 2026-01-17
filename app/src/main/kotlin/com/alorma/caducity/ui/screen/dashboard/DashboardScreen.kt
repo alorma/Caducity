@@ -97,6 +97,20 @@ fun DashboardScreen(
     )
   }
 
+  // Show AI review sheet when matches are found
+  aiGenerationState.awaitingReview?.let { matchingResults ->
+    DashboardAIReviewSheet(
+      matchingResults = matchingResults,
+      onDismiss = {
+        showAISheet = false
+        viewModel.resetAIState()
+      },
+      onConfirm = {
+        viewModel.onConfirmMatches(matchingResults)
+      }
+    )
+  }
+
   Box(modifier) {
     DashboardContent(
       state = dashboardState.value,

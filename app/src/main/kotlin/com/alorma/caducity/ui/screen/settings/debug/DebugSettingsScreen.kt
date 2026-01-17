@@ -232,6 +232,8 @@ private fun GenerationProgress.toDisplayText(): String = when (this) {
   is GenerationProgress.Started -> "Starting..."
   is GenerationProgress.CheckingExisting -> "Checking existing products..."
   is GenerationProgress.GeneratingWithAI -> "Generating with AI..."
+  is GenerationProgress.MatchingProducts -> "Matching products..."
+  is GenerationProgress.AwaitingReview -> "Awaiting review..."
   is GenerationProgress.InsertingToDatabase -> "Inserting $current/$total..."
   is GenerationProgress.Completed -> "Completed: $productsCreated products"
   is GenerationProgress.Failed -> "Failed"
