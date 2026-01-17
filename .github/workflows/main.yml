@@ -64,7 +64,7 @@ jobs:
 
       - name: Create google-services.json
         run: |
-          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > app/google-services.json
+          echo -n "${{ secrets.GOOGLE_SERVICES_JSON }}" > app/google-services.json
 
       - name: Build Android - Main
         continue-on-error: false
@@ -106,7 +106,7 @@ jobs:
 
       - name: Create google-services.json
         run: |
-          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > app/google-services.json
+          echo -n "${{ secrets.GOOGLE_SERVICES_JSON }}" > app/google-services.json
 
       - name: Decode Keystore
         run: |
