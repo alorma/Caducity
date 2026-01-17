@@ -49,18 +49,18 @@ fun DashboardScreen(
   viewModel: DashboardViewModel = koinViewModel(),
 ) {
   val dashboardState = viewModel.state.collectAsStateWithLifecycle()
-  val aiGenerationState by viewModel.aiGenerationState.collectAsStateWithLifecycle()
+  val aiGenerationState = viewModel.aiGenerationState.collectAsStateWithLifecycle()
 
-  var showAISheet by remember { mutableStateOf(false) }
-  var showFABMenu by remember { mutableStateOf(false) }
+  val showAISheet = remember { mutableStateOf(false) }
+  val showFABMenu = remember { mutableStateOf(false) }
   val snackbarHostState = rememberAppSnackbarHostState()
 
   // Get strings outside of LaunchedEffect
   val successMessageFormat = stringResource(R.string.dashboard_ai_success)
 
   // Handle AI generation completion
-  LaunchedEffect(aiGenerationState.completedResult) {
-    aiGenerationState.completedResult?.let { result ->
+  LaunchedEffect(aiGenerationState.value.completedResult) {
+    aiGenerationState.value.completedResult?.let { result ->
       val message = successMessageFormat.format(
         result.productsCreated,
         result.variantsCreated,
@@ -70,14 +70,14 @@ fun DashboardScreen(
         message = message,
         duration = SnackbarDuration.Short
       )
-      showAISheet = false
+      showAISheet.value = false
       viewModel.resetAIState()
     }
   }
 
   // Handle AI generation errors
-  LaunchedEffect(aiGenerationState.error) {
-    aiGenerationState.error?.let { error ->
+  LaunchedEffect(aiGenerationState.value.error) {
+    aiGenerationState.value.error?.let { error ->
       snackbarHostState.showSnackbar(
         message = error,
         duration = SnackbarDuration.Long
@@ -87,22 +87,22 @@ fun DashboardScreen(
   }
 
   // Show AI input sheet
-  if (showAISheet) {
+  if (showAISheet.value) {
     DashboardAIInputSheet(
-      onDismiss = { showAISheet = false },
+      onDismiss = { showAISheet.value = false },
       onGenerate = { prompt ->
         viewModel.onGenerateFromPrompt(prompt)
       },
-      isGenerating = aiGenerationState.isGenerating
+      isGenerating = aiGenerationState.value.isGenerating
     )
   }
 
   // Show AI review sheet when matches are found
-  aiGenerationState.awaitingReview?.let { matchingResults ->
+  aiGenerationState.value.awaitingReview?.let { matchingResults ->
     DashboardAIReviewSheet(
       matchingResults = matchingResults,
       onDismiss = {
-        showAISheet = false
+        showAISheet.value = false
         viewModel.resetAIState()
       },
       onConfirm = {
@@ -119,7 +119,7 @@ fun DashboardScreen(
       onNavigateToProduct = onNavigateToProduct,
       onNavigateToStatus = onNavigateToStatus,
       onNavigateToSettings = onNavigateToSettings,
-      onOpenAISheet = { showAISheet = true },
+      onOpenAISheet = { showAISheet.value = true },
       snackbarHostState = snackbarHostState,
     )
   }
