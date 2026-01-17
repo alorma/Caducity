@@ -5,8 +5,10 @@ import com.alorma.caducity.di.appModule
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.notification.NotificationChannelManager
 import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
 import com.google.firebase.appcheck.appCheck
 import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
+import com.google.firebase.appcheck.debug.internal.StorageHelper
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.initialize
 import org.koin.android.ext.android.inject
@@ -27,28 +29,7 @@ class CaducityApplication : Application() {
   override fun onCreate() {
     super.onCreate()
 
-    // Initialize Firebase (must be done before using Firebase services)
-    Firebase.initialize(this)
-
-    // Initialize Firebase App Check
-    if (BuildConfig.DEBUG) {
-      // Use debug provider for debug builds with token
-      val debugToken = BuildConfig.DEBUG_APP_CHECK_TOKEN
-      if (debugToken.isNotEmpty()) {
-        System.setProperty(
-          "firebase.appcheck.debug.token",
-          debugToken
-        )
-      }
-      Firebase.appCheck.installAppCheckProviderFactory(
-        DebugAppCheckProviderFactory.getInstance()
-      )
-    } else {
-      // Use Play Integrity for production builds
-      Firebase.appCheck.installAppCheckProviderFactory(
-        PlayIntegrityAppCheckProviderFactory.getInstance()
-      )
-    }
+    initializeFirebase()
 
     // Initialize Koin
     startKoin {
@@ -63,5 +44,27 @@ class CaducityApplication : Application() {
 
     // Schedule expiration check work
     workScheduler.scheduleExpirationCheck()
+  }
+
+  private fun initializeFirebase() {
+    // Initialize Firebase (must be done before using Firebase services)
+    Firebase.initialize(this)
+
+    // Initialize Firebase App Check
+    val appCheckProvider = if (BuildConfig.DEBUG) {
+      val storageHelper = StorageHelper(
+        FirebaseApp.getInstance().applicationContext,
+        FirebaseApp.getInstance().persistenceKey,
+      )
+      storageHelper.saveDebugSecret(BuildConfig.DEBUG_APP_CHECK_TOKEN)
+
+      DebugAppCheckProviderFactory.getInstance()
+    } else {
+      PlayIntegrityAppCheckProviderFactory.getInstance()
+    }
+
+    Firebase.appCheck.installAppCheckProviderFactory(
+      appCheckProvider
+    )
   }
 }
