@@ -14,6 +14,7 @@ import com.alorma.caducity.domain.usecase.ConsumeInstanceUseCase
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DeleteInstanceUseCase
 import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
+import com.alorma.caducity.domain.usecase.GenerateProductsFromPromptUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
@@ -102,4 +103,7 @@ val appModule = module {
 
   // Debug Settings
   viewModelOf(::DebugSettingsViewModel)
+
+  // AI Product Generation
+  singleOf(::GenerateProductsFromPromptUseCase)
 }

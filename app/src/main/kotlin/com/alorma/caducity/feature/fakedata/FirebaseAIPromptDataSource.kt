@@ -8,22 +8,23 @@ import com.alorma.caducity.feature.fakedata.models.GeneratedVariant
 import com.alorma.caducity.feature.fakedata.models.toGeminiError
 import com.google.firebase.Firebase
 import com.google.firebase.ai.ai
-import com.google.firebase.ai.type.Content
 import com.google.firebase.ai.type.GenerativeBackend
-import com.google.firebase.ai.type.generationConfig
+import com.google.firebase.ai.type.PublicPreviewAPI
+import com.google.firebase.ai.type.RequestOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-class FirebaseAIFakeDataGenerator : FakeDataGenerator {
+class FirebaseAIPromptDataSource : AIPromptDataSource {
 
   private val json = Json {
     ignoreUnknownKeys = true
     isLenient = true
   }
 
-  override suspend fun generateGroceryData(
+  @OptIn(PublicPreviewAPI::class)
+  override suspend fun generateFakeData(
     existingProducts: List<Product>,
     maxProducts: Int,
     variantsPerProduct: Int,
@@ -36,29 +37,20 @@ class FirebaseAIFakeDataGenerator : FakeDataGenerator {
         return@withContext Result.success(GeneratedGroceryData(products = emptyList()))
       }
 
-      val prompt = buildPrompt(
-        productsToGenerate = productsToGenerate,
-        variantsPerProduct = variantsPerProduct,
-        instancesPerVariantRange = instancesPerVariantRange
-      )
-
-
       val generativeModel = Firebase.ai(
-        backend = GenerativeBackend.googleAI()
-      ).generativeModel(
-        modelName = "gemini-2.5-flash",
-        generationConfig = generationConfig {
-          temperature = 0.9f
-          topK = 40
-          topP = 0.95f
-          responseMimeType = "application/json"
-        },
+        backend = GenerativeBackend.googleAI(),
+      ).templateGenerativeModel(
+        requestOptions = RequestOptions(),
       )
 
       val response = generativeModel.generateContent(
-        prompt = Content.Builder()
-          .text(prompt)
-          .build()
+        templateId = "debug-fake-generation",
+        mapOf(
+          "productsToGenerate" to productsToGenerate.toString(),
+          "variantsPerProduct" to variantsPerProduct.toString(),
+          "instancesMin" to instancesPerVariantRange.first.toString(),
+          "instancesMax" to instancesPerVariantRange.last.toString()
+        )
       )
 
       val responseText = response.text ?: throw IllegalStateException("Empty response from Gemini")
@@ -70,59 +62,75 @@ class FirebaseAIFakeDataGenerator : FakeDataGenerator {
     }
   }
 
-  private fun buildPrompt(
-    productsToGenerate: Int,
-    variantsPerProduct: Int,
-    instancesPerVariantRange: IntRange
-  ): String {
-    return """
-Generate realistic grocery product data for a food expiration tracker app. Create $productsToGenerate common grocery products.
+  @OptIn(PublicPreviewAPI::class)
+  override suspend fun generateFromUserPrompt(
+    userPrompt: String,
+    existingProducts: List<Product>
+  ): Result<GeneratedGroceryData> = withContext(Dispatchers.IO) {
+    try {
+      // Input validation
+      if (userPrompt.isBlank()) {
+        return@withContext Result.success(GeneratedGroceryData(products = emptyList()))
+      }
 
-For each product:
-- Generate ${variantsPerProduct} variants (different sizes, brands, or types)
-- Each variant should have ${instancesPerVariantRange.first}-${instancesPerVariantRange.last} instances
-- Each instance needs an identifier (lot number/batch code) and days until expiration
-- 20% of instances should be EXPIRED (daysFromNow: -1 to -30)
-- 30% should be EXPIRING SOON (daysFromNow: 1 to 7)
-- 50% should be FRESH (daysFromNow: 8 to 90)
-- Also generate 1-2 standalone instances per product (without variant)
 
-Product examples: milk, eggs, bread, yogurt, cheese, chicken, vegetables, fruits, etc.
-Variant examples: "Whole Milk 1L", "Skim Milk 500ml", "Organic Eggs 12ct", "White Bread 500g"
-Identifier examples: "LOT-A123", "BATCH-2024-01-15", "EXP-456789"
+      val generativeModel = Firebase.ai(
+        backend = GenerativeBackend.googleAI()
+      ).templateGenerativeModel(
+        requestOptions = RequestOptions(),
+      )
 
-Return JSON matching this exact structure:
-{
-  "products": [
-    {
-      "name": "Milk",
-      "description": "Fresh dairy milk",
-      "variants": [
-        {
-          "name": "Whole Milk 1L",
-          "instances": [
-            {"identifier": "LOT-A123", "daysFromNow": -5},
-            {"identifier": "LOT-A124", "daysFromNow": 2},
-            {"identifier": "LOT-A125", "daysFromNow": 15}
-          ]
+      val response = generativeModel.generateContent(
+        templateId = "user-template",
+        mapOf("input" to userPrompt)
+      )
+
+      val responseText = response.text ?: throw IllegalStateException("Empty response from Gemini")
+
+      val parsed = parseResponse(responseText)
+
+      // Validate output
+      val validatedProducts = parsed.products.filter { product ->
+        product.name.length <= 100 &&
+        product.description.length <= 200 &&
+        product.variants.all { variant ->
+          variant.instances.all { instance ->
+            instance.daysFromNow in -30..365
+          }
+        } &&
+        product.standaloneInstances.all { instance ->
+          instance.daysFromNow in -30..365
         }
-      ],
-      "standaloneInstances": [
-        {"identifier": "BATCH-X1", "daysFromNow": 10}
-      ]
-    }
-  ]
-}
+      }
 
-Generate realistic, varied data. Use creative product names, realistic variant descriptions, and authentic-looking identifiers.
-""".trimIndent()
+      Result.success(GeneratedGroceryData(products = validatedProducts))
+    } catch (e: Exception) {
+      Result.failure(e.toGeminiError() as Throwable)
+    }
   }
+
 
   private fun parseResponse(responseText: String): GeneratedGroceryData {
     try {
-      val jsonResponse = json.decodeFromString<GeminiResponse>(
-        responseText
-      )
+      // Clean the response text - lite models may add markdown code blocks or extra text
+      val cleanedJson = responseText
+        .trim()
+        .removePrefix("```json")
+        .removePrefix("```")
+        .removeSuffix("```")
+        .trim()
+        .let { text ->
+          // Find the first { and last } to extract just the JSON object
+          val startIndex = text.indexOf('{')
+          val endIndex = text.lastIndexOf('}')
+          if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
+            text.substring(startIndex, endIndex + 1)
+          } else {
+            text
+          }
+        }
+
+      val jsonResponse = json.decodeFromString<GeminiResponse>(cleanedJson)
       return GeneratedGroceryData(
         products = jsonResponse.products.map { product ->
           GeneratedProduct(
@@ -149,7 +157,7 @@ Generate realistic, varied data. Use creative product names, realistic variant d
         }
       )
     } catch (e: Exception) {
-      throw IllegalStateException("Failed to parse Gemini response: ${e.message}", e)
+      throw IllegalStateException("Failed to parse Gemini response: ${e.message}\nResponse: $responseText", e)
     }
   }
 
