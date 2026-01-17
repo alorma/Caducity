@@ -68,6 +68,8 @@ jobs:
       - name: Build Android - PR
         continue-on-error: false
         run: ./gradlew :app:assembleDebug
+        env:
+          DEBUG_APP_CHECK_TOKEN: ${{ secrets.DEBUG_APP_CHECK_TOKEN }}
 
       - name: Run Unit Tests
         continue-on-error: false
