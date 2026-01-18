@@ -32,7 +32,7 @@ interface AIPromptDataSource {
    * @param existingProducts Current products in the database (for context)
    * @return Result containing generated data or error
    */
-  suspend fun generateFromUserPrompt(
+  suspend fun generateProductList(
     userPrompt: String,
     existingProducts: List<Product>
   ): Result<GeneratedGroceryData>
