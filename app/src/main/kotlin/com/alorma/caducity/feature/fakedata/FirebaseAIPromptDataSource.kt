@@ -135,13 +135,23 @@ class FirebaseAIPromptDataSource : AIPromptDataSource {
         requestOptions = RequestOptions(),
       )
 
-      val response = generativeModel.generateContent(
-        templateId = "product-detail-variants",
-        mapOf(
-          "productName" to productName,
-          "userPrompt" to userPrompt
+      val response = try {
+        generativeModel.generateContent(
+          templateId = "product-detail-variants",
+          mapOf(
+            "productName" to productName,
+            "userPrompt" to userPrompt
+          )
         )
-      )
+      } catch (e: Exception) {
+        // Handle quota exceeded specifically
+        if (e.message?.contains("quota", ignoreCase = true) == true ||
+            e.message?.contains("429", ignoreCase = true) == true) {
+          Timber.w(e, "Quota exceeded for generateVariantsForProduct")
+          throw IllegalStateException("AI quota exceeded. Please try again in a minute.", e)
+        }
+        throw e
+      }
 
       val responseText = response.text ?: throw IllegalStateException("Empty response from Gemini")
 

@@ -94,9 +94,12 @@ private fun ProductDetailAIInputContent(
       label = { Text(stringResource(R.string.product_detail_ai_prompt_hint)) },
       placeholder = { Text(stringResource(R.string.product_detail_ai_prompt_example)) },
       enabled = !isGenerating,
-      modifier = Modifier.fillMaxWidth(),
-      minLines = 3,
-      maxLines = 5,
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(200.dp),
+      minLines = 5,
+      singleLine = false,
+      maxLines = Int.MAX_VALUE,
       supportingText = {
         Text(
           text = stringResource(R.string.dashboard_ai_char_counter, promptText.length),

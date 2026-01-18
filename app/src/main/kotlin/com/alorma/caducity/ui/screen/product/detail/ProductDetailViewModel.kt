@@ -177,9 +177,14 @@ class ProductDetailViewModel(
           }
         },
         onFailure = { error ->
+          val errorMessage = when {
+            error.message?.contains("quota", ignoreCase = true) == true ->
+              "AI quota exceeded. Try again in 1 minute."
+            else -> "Failed to generate variants"
+          }
           _aiGenerationState.value = AIGenerationState(
             isGenerating = false,
-            error = "Failed to generate variants"
+            error = errorMessage
           )
         }
       )
