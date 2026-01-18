@@ -40,6 +40,7 @@ materialKolor = "5.0.0-alpha04"
 scanEngine = "1.6.2"
 
 strikt = "0.35.1"
+timber = "5.0.1"
 
 # Firebase
 firebase-bom = "34.8.0"
@@ -108,6 +109,8 @@ strikt-core = { group = "io.strikt", name = "strikt-core", version.ref = "strikt
 material-kolor = { group = "com.materialkolor", name = "material-kolor", version.ref = "materialKolor" }
 
 scan-engine = { group = "com.github.tillhub", name = "scan-engine", version.ref = "scanEngine" }
+
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 
 # Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }

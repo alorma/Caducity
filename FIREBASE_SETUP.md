@@ -32,7 +32,39 @@ This document explains how to set up Firebase Vertex AI for the AI-powered fake 
 3. Accept terms and enable the Vertex AI API
 4. The gemini-1.5-flash model should be available by default
 
-## Step 4: Verify Setup
+## Step 4: Create Vertex AI Prompt Templates
+
+The app uses two prompt templates for AI-powered features:
+
+### Template 1: Dashboard Products Generation (Template ID: `product-list-generation`)
+
+This template generates complete products with variants and instances from the Dashboard screen.
+
+1. In Firebase Console, navigate to "Build" → "Vertex AI in Firebase" → "Prompt Templates"
+2. Click "Create Template"
+3. Set Template ID: `product-list-generation`
+4. Copy the system instructions and schema from `prompts/dashboard-products-template.md`
+5. Define input parameter: `input` (string)
+6. Test with sample inputs
+7. Deploy template
+
+### Template 2: Product Detail Variants Generation (Template ID: `product-detail-variants`)
+
+This template generates variants and instances for an existing product from the Product Detail screen.
+
+1. In Firebase Console, navigate to "Build" → "Vertex AI in Firebase" → "Prompt Templates"
+2. Click "Create Template"
+3. Set Template ID: `product-detail-variants`
+4. Copy the system instructions and schema from `prompts/product-detail-variants-template.md`
+5. Define input parameters:
+   - `productName` (string) - Name of the existing product
+   - `userPrompt` (string) - User's description of variants/instances
+6. Test with sample inputs
+7. Deploy template
+
+**Important**: Template IDs must match exactly as specified above, as the code references them by these IDs.
+
+## Step 5: Verify Setup
 
 Build the project:
 ```bash
@@ -41,13 +73,35 @@ Build the project:
 
 If the build succeeds, Firebase is properly configured.
 
-## Using the Feature
+## Using the Features
+
+### AI-Powered Product Generation (Dashboard)
 
 1. Build and install the app: `./gradlew installDebug`
-2. Navigate to: Settings → Debug → Generate Fake Data
-3. Configure parameters (products, variants, instances)
+2. Navigate to: Dashboard
+3. Click the AI FAB button (floating action button)
+4. Enter a natural language description of your groceries
+   - Example: "3 bottles of 1L whole milk, expires in 5 days"
+5. Click "Generate"
+6. Review the generated products
+7. Click "Confirm" to add them to your inventory
+
+### AI-Powered Variant Generation (Product Detail)
+
+1. Navigate to any product's detail screen
+2. Click the Sparkles (✨) icon in the top bar
+3. Enter a description of variants/instances to add
+   - Example: "2 cartons of 500ml, expires in 7 days"
 4. Click "Generate"
-5. The app will use Gemini AI to create realistic grocery products
+5. Review the generated variants and instances
+6. Click "Add to Product" to confirm
+
+### Debug Feature: Bulk Generation
+
+1. Navigate to: Settings → Debug → Generate Fake Data
+2. Configure parameters (products, variants, instances)
+3. Click "Generate"
+4. The app will use Gemini AI to create realistic grocery products
 
 ## Troubleshooting
 

@@ -9,12 +9,18 @@ import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.usecase.ConsumeInstanceUseCase
 import com.alorma.caducity.domain.usecase.DeleteInstanceUseCase
 import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
+import com.alorma.caducity.domain.usecase.GenerateVariantsForProductUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
+import com.alorma.caducity.feature.fakedata.AIPromptDataSource
+import com.alorma.caducity.feature.fakedata.models.GeneratedProductVariants
+import com.alorma.caducity.feature.fakedata.models.GenerationProgress
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -25,7 +31,7 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlin.time.Instant
 
 class ProductDetailViewModel(
-  productId: String,
+  private val productId: String,
   obtainProductDetailUseCase: ObtainProductDetailUseCase,
   productDetailMapper: ProductDetailMapper,
   calendarPreferences: CalendarPreferences,
@@ -33,6 +39,8 @@ class ProductDetailViewModel(
   private val consumeInstanceUseCase: ConsumeInstanceUseCase,
   private val freezeInstanceUseCase: FreezeInstanceUseCase,
   private val deleteInstanceUseCase: DeleteInstanceUseCase,
+  private val aiPromptDataSource: AIPromptDataSource,
+  private val generateVariantsForProductUseCase: GenerateVariantsForProductUseCase,
 ) : ViewModel() {
 
   private val _sideEffect = Channel<ProductDetailSideEffect>(Channel.BUFFERED)
@@ -53,6 +61,11 @@ class ProductDetailViewModel(
     started = SharingStarted.WhileSubscribed(5000),
     initialValue = ProductDetailState.Loading
   )
+
+  private val _aiGenerationState = MutableStateFlow(AIGenerationState())
+  val aiGenerationState: StateFlow<AIGenerationState> = _aiGenerationState.asStateFlow()
+
+  private var pendingGeneratedVariants: GeneratedProductVariants? = null
 
   fun onConsumeInstance(instance: ProductInstanceDetailUiModel) {
     when (instance.status) {
@@ -129,9 +142,108 @@ class ProductDetailViewModel(
     return this.atStartOfDayIn(TimeZone.currentSystemDefault())
   }
 
+  fun onGenerateVariantsFromPrompt(prompt: String) {
+    val currentState = state.value
+    if (currentState !is ProductDetailState.Success) return
+
+    viewModelScope.launch {
+      _aiGenerationState.value = AIGenerationState(isGenerating = true)
+
+      // First, get the generated variants from the AI
+      val result = aiPromptDataSource.generateVariantsForProduct(
+        userPrompt = prompt,
+        productName = currentState.product.name
+      )
+
+      result.fold(
+        onSuccess = { generatedVariants ->
+          // Check if anything was generated
+          if (generatedVariants.variants.isEmpty() && generatedVariants.standaloneInstances.isEmpty()) {
+            _aiGenerationState.value = AIGenerationState(
+              isGenerating = false,
+              completedResult = GenerationProgress.Completed(
+                productsCreated = 0,
+                variantsCreated = 0,
+                instancesCreated = 0
+              )
+            )
+          } else {
+            // Store the variants and show review sheet
+            pendingGeneratedVariants = generatedVariants
+            _aiGenerationState.value = AIGenerationState(
+              isGenerating = false,
+              awaitingReview = generatedVariants
+            )
+          }
+        },
+        onFailure = { error ->
+          _aiGenerationState.value = AIGenerationState(
+            isGenerating = false,
+            error = "Failed to generate variants"
+          )
+        }
+      )
+    }
+  }
+
+  fun onConfirmVariants(generatedVariants: GeneratedProductVariants) {
+    viewModelScope.launch {
+      _aiGenerationState.value = AIGenerationState(isGenerating = true)
+
+      generateVariantsForProductUseCase.confirmAndInsert(
+        productId = productId,
+        generatedVariants = generatedVariants
+      ).collect { progress ->
+        when (progress) {
+          is GenerationProgress.Started,
+          is GenerationProgress.InsertingToDatabase -> {
+            _aiGenerationState.value = AIGenerationState(
+              isGenerating = true,
+              progress = progress
+            )
+          }
+          is GenerationProgress.Completed -> {
+            _aiGenerationState.value = AIGenerationState(
+              isGenerating = false,
+              completedResult = progress
+            )
+            pendingGeneratedVariants = null
+          }
+          is GenerationProgress.Failed -> {
+            _aiGenerationState.value = AIGenerationState(
+              isGenerating = false,
+              error = "Failed to add variants"
+            )
+          }
+          else -> {
+            // Ignore other progress states
+          }
+        }
+      }
+    }
+  }
+
+  fun dismissAIError() {
+    _aiGenerationState.value = AIGenerationState()
+  }
+
+  fun resetAIState() {
+    _aiGenerationState.value = AIGenerationState()
+    pendingGeneratedVariants = null
+  }
+
   private fun emitSideEffect(effect: ProductDetailSideEffect) {
     viewModelScope.launch {
       _sideEffect.send(effect)
     }
   }
+
 }
+
+data class AIGenerationState(
+  val isGenerating: Boolean = false,
+  val progress: GenerationProgress? = null,
+  val error: String? = null,
+  val completedResult: GenerationProgress.Completed? = null,
+  val awaitingReview: GeneratedProductVariants? = null
+)

@@ -4,8 +4,8 @@ import com.alorma.caducity.domain.model.Product
 import com.alorma.caducity.feature.fakedata.models.GeneratedGroceryData
 import com.alorma.caducity.feature.fakedata.models.GeneratedInstance
 import com.alorma.caducity.feature.fakedata.models.GeneratedProduct
+import com.alorma.caducity.feature.fakedata.models.GeneratedProductVariants
 import com.alorma.caducity.feature.fakedata.models.GeneratedVariant
-import com.alorma.caducity.feature.fakedata.models.toGeminiError
 import com.google.firebase.Firebase
 import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.GenerativeBackend
@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 
 class FirebaseAIPromptDataSource : AIPromptDataSource {
 
@@ -22,6 +23,7 @@ class FirebaseAIPromptDataSource : AIPromptDataSource {
     ignoreUnknownKeys = true
     isLenient = true
   }
+
 
   @OptIn(PublicPreviewAPI::class)
   override suspend fun generateFakeData(
@@ -58,7 +60,8 @@ class FirebaseAIPromptDataSource : AIPromptDataSource {
       val parsed = parseResponse(responseText)
       Result.success(parsed)
     } catch (e: Exception) {
-      Result.failure(e.toGeminiError() as Throwable)
+      Timber.e(e, "generateFakeData failed: ${e.message}")
+      Result.failure(e)
     }
   }
 
@@ -81,7 +84,7 @@ class FirebaseAIPromptDataSource : AIPromptDataSource {
       )
 
       val response = generativeModel.generateContent(
-        templateId = "user-template",
+        templateId = "product-list-generation",
         mapOf("input" to userPrompt)
       )
 
@@ -105,7 +108,64 @@ class FirebaseAIPromptDataSource : AIPromptDataSource {
 
       Result.success(GeneratedGroceryData(products = validatedProducts))
     } catch (e: Exception) {
-      Result.failure(e.toGeminiError() as Throwable)
+      Timber.e(e, "generateFromUserPrompt failed: ${e.message}")
+      Result.failure(e)
+    }
+  }
+
+  @OptIn(PublicPreviewAPI::class)
+  override suspend fun generateVariantsForProduct(
+    userPrompt: String,
+    productName: String
+  ): Result<GeneratedProductVariants> = withContext(Dispatchers.IO) {
+    try {
+      // Input validation
+      if (userPrompt.isBlank()) {
+        return@withContext Result.success(
+          GeneratedProductVariants(
+            variants = emptyList(),
+            standaloneInstances = emptyList()
+          )
+        )
+      }
+
+      val generativeModel = Firebase.ai(
+        backend = GenerativeBackend.googleAI()
+      ).templateGenerativeModel(
+        requestOptions = RequestOptions(),
+      )
+
+      val response = generativeModel.generateContent(
+        templateId = "product-detail-variants",
+        mapOf(
+          "productName" to productName,
+          "userPrompt" to userPrompt
+        )
+      )
+
+      val responseText = response.text ?: throw IllegalStateException("Empty response from Gemini")
+
+      val parsed = parseVariantsResponse(responseText)
+
+      // Validate output
+      val validatedVariants = parsed.variants.filter { variant ->
+        variant.instances.all { instance ->
+          instance.daysFromNow in -30..365
+        }
+      }
+      val validatedStandaloneInstances = parsed.standaloneInstances.filter { instance ->
+        instance.daysFromNow in -30..365
+      }
+
+      Result.success(
+        GeneratedProductVariants(
+          variants = validatedVariants,
+          standaloneInstances = validatedStandaloneInstances
+        )
+      )
+    } catch (e: Exception) {
+      Timber.e(e, "generateVariantsForProduct failed: ${e.message}")
+      Result.failure(e)
     }
   }
 
@@ -113,22 +173,7 @@ class FirebaseAIPromptDataSource : AIPromptDataSource {
   private fun parseResponse(responseText: String): GeneratedGroceryData {
     try {
       // Clean the response text - lite models may add markdown code blocks or extra text
-      val cleanedJson = responseText
-        .trim()
-        .removePrefix("```json")
-        .removePrefix("```")
-        .removeSuffix("```")
-        .trim()
-        .let { text ->
-          // Find the first { and last } to extract just the JSON object
-          val startIndex = text.indexOf('{')
-          val endIndex = text.lastIndexOf('}')
-          if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
-            text.substring(startIndex, endIndex + 1)
-          } else {
-            text
-          }
-        }
+      val cleanedJson = cleanJsonResponse(responseText)
 
       val jsonResponse = json.decodeFromString<GeminiResponse>(cleanedJson)
       return GeneratedGroceryData(
@@ -161,6 +206,54 @@ class FirebaseAIPromptDataSource : AIPromptDataSource {
     }
   }
 
+  private fun parseVariantsResponse(responseText: String): GeneratedProductVariants {
+    try {
+      val cleanedJson = cleanJsonResponse(responseText)
+
+      val jsonResponse = json.decodeFromString<GeminiVariantsResponse>(cleanedJson)
+      return GeneratedProductVariants(
+        variants = jsonResponse.variants.map { variant ->
+          GeneratedVariant(
+            name = variant.name,
+            instances = variant.instances.map { instance ->
+              GeneratedInstance(
+                identifier = instance.identifier,
+                daysFromNow = instance.daysFromNow
+              )
+            }
+          )
+        },
+        standaloneInstances = jsonResponse.standaloneInstances.map { instance ->
+          GeneratedInstance(
+            identifier = instance.identifier,
+            daysFromNow = instance.daysFromNow
+          )
+        }
+      )
+    } catch (e: Exception) {
+      throw IllegalStateException("Failed to parse Gemini variants response: ${e.message}\nResponse: $responseText", e)
+    }
+  }
+
+  private fun cleanJsonResponse(responseText: String): String {
+    return responseText
+      .trim()
+      .removePrefix("```json")
+      .removePrefix("```")
+      .removeSuffix("```")
+      .trim()
+      .let { text ->
+        // Find the first { and last } to extract just the JSON object
+        val startIndex = text.indexOf('{')
+        val endIndex = text.lastIndexOf('}')
+        if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
+          text.substring(startIndex, endIndex + 1)
+        } else {
+          text
+        }
+      }
+  }
+
   // Internal serialization models for parsing Gemini JSON response
   @Serializable
   private data class GeminiResponse(
@@ -185,5 +278,11 @@ class FirebaseAIPromptDataSource : AIPromptDataSource {
   private data class GeminiInstance(
     val identifier: String,
     val daysFromNow: Int
+  )
+
+  @Serializable
+  private data class GeminiVariantsResponse(
+    val variants: List<GeminiVariant>,
+    val standaloneInstances: List<GeminiInstance>
   )
 }

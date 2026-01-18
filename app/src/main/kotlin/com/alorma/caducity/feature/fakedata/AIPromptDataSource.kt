@@ -2,6 +2,7 @@ package com.alorma.caducity.feature.fakedata
 
 import com.alorma.caducity.domain.model.Product
 import com.alorma.caducity.feature.fakedata.models.GeneratedGroceryData
+import com.alorma.caducity.feature.fakedata.models.GeneratedProductVariants
 
 /**
  * Interface for generating fake grocery product data
@@ -35,4 +36,16 @@ interface AIPromptDataSource {
     userPrompt: String,
     existingProducts: List<Product>
   ): Result<GeneratedGroceryData>
+
+  /**
+   * Generates variants and instances for an existing product from user prompt
+   *
+   * @param userPrompt User's description of variants/instances to add
+   * @param productName Name of the existing product (for context)
+   * @return Result containing generated variants and instances or error
+   */
+  suspend fun generateVariantsForProduct(
+    userPrompt: String,
+    productName: String
+  ): Result<GeneratedProductVariants>
 }
