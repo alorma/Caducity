@@ -17,6 +17,7 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import timber.log.Timber
 
 /**
  * Custom Application class for Caducity.
@@ -28,6 +29,11 @@ class CaducityApplication : Application() {
 
   override fun onCreate() {
     super.onCreate()
+
+    // Initialize Timber (logging) - only in debug builds
+    if (BuildConfig.DEBUG) {
+      Timber.plant(Timber.DebugTree())
+    }
 
     initializeFirebase()
 

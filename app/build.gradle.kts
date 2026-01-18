@@ -157,6 +157,9 @@ dependencies {
   implementation(libs.androidx.work.runtime.ktx)
   implementation(libs.koin.androidx.workmanager)
 
+  // Timber (logging)
+  implementation(libs.timber)
+
   // Firebase
   implementation(platform(libs.firebase.bom))
   implementation(libs.firebase.ai)

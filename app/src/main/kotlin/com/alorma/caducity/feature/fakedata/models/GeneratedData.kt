@@ -42,3 +42,12 @@ data class GeneratedInstance(
    */
   fun toDuration(): Duration = Duration.parse("${daysFromNow}d")
 }
+
+/**
+ * Represents variants and instances generated for an existing product
+ * Used when adding variants/instances to a product (not creating a new product)
+ */
+data class GeneratedProductVariants(
+  val variants: List<GeneratedVariant>,
+  val standaloneInstances: List<GeneratedInstance>,
+)
