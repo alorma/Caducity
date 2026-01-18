@@ -66,7 +66,7 @@ class FirebaseAIPromptDataSource : AIPromptDataSource {
   }
 
   @OptIn(PublicPreviewAPI::class)
-  override suspend fun generateFromUserPrompt(
+  override suspend fun generateProductList(
     userPrompt: String,
     existingProducts: List<Product>
   ): Result<GeneratedGroceryData> = withContext(Dispatchers.IO) {

@@ -50,7 +50,7 @@ class GenerateProductsFromPromptUseCase(
 
       // Step 3: Generate with AI
       emit(GenerationProgress.GeneratingWithAI)
-      val generatedData = AIPromptDataSource.generateFromUserPrompt(
+      val generatedData = AIPromptDataSource.generateProductList(
         userPrompt = userPrompt,
         existingProducts = existingProducts
       ).getOrThrow()
