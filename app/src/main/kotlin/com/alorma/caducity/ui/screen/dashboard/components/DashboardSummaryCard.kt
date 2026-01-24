@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,47 +31,74 @@ fun DashboardSummaryCard(
   onStatusClick: (InstanceStatus) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val arrangement = Arrangement.spacedBy(8.dp)
+
+  val largeShape = CaducityTheme.shapes.largeIncreased
+  val smallShape = CaducityTheme.shapes.small
+
   Column(
     modifier = Modifier
       .fillMaxWidth()
       .then(modifier),
-    verticalArrangement = Arrangement.spacedBy(12.dp),
+    verticalArrangement = arrangement,
   ) {
-    // First row: Expired, Expiring Soon
     Row(
       modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(12.dp),
+      horizontalArrangement = arrangement,
     ) {
       SummaryStatusCard(
+        modifier = Modifier.weight(1f),
+        shape = RoundedCornerShape(
+          topStart = largeShape.topStart,
+          topEnd = smallShape.topStart,
+          bottomStart = smallShape.topStart,
+          bottomEnd = smallShape.topStart,
+        ),
         status = InstanceStatus.Expired,
         count = summary.expired,
         onClick = { onStatusClick(it) },
-        modifier = Modifier.weight(1f),
       )
       SummaryStatusCard(
+        modifier = Modifier.weight(1f),
+        shape = RoundedCornerShape(
+          topStart = smallShape.topStart,
+          topEnd = largeShape.topStart,
+          bottomStart = smallShape.topStart,
+          bottomEnd = smallShape.topStart,
+        ),
         status = InstanceStatus.ExpiringSoon,
         count = summary.expiringSoon,
         onClick = { onStatusClick(it) },
-        modifier = Modifier.weight(1f),
       )
     }
 
-    // Second row: Fresh, Frozen
     Row(
       modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(12.dp),
+      horizontalArrangement = arrangement,
     ) {
       SummaryStatusCard(
+        modifier = Modifier.weight(1f),
+        shape = RoundedCornerShape(
+          topStart = smallShape.topStart,
+          topEnd = smallShape.topStart,
+          bottomStart = largeShape.topStart,
+          bottomEnd = smallShape.topStart,
+        ),
         status = InstanceStatus.Fresh,
         count = summary.fresh,
         onClick = { onStatusClick(it) },
-        modifier = Modifier.weight(1f),
       )
       SummaryStatusCard(
+        modifier = Modifier.weight(1f),
+        shape = RoundedCornerShape(
+          topStart = smallShape.topStart,
+          topEnd = smallShape.topStart,
+          bottomStart = smallShape.topStart,
+          bottomEnd = largeShape.topStart,
+        ),
         status = InstanceStatus.Frozen,
         count = summary.frozen,
         onClick = { onStatusClick(it) },
-        modifier = Modifier.weight(1f),
       )
     }
   }
@@ -80,6 +109,7 @@ private fun SummaryStatusCard(
   status: InstanceStatus,
   count: Int,
   onClick: (InstanceStatus) -> Unit,
+  shape: Shape,
   modifier: Modifier = Modifier
 ) {
   val colors = ExpirationDefaults.getVibrantColors(status)
@@ -94,7 +124,7 @@ private fun SummaryStatusCard(
     modifier = Modifier.then(modifier),
     color = colors.container.copy(alpha = dim),
     contentColor = colors.onContainer,
-    shape = CaducityTheme.shapes.extraLarge,
+    shape = shape,
   ) {
     Column(
       modifier = Modifier
