@@ -218,5 +218,7 @@
     <string name="backup_error_export_failed">Failed to export backup</string>
     <string name="backup_error_restore_failed">Failed to restore backup</string>
 
+    <string name="dashboard_add">Add</string>
+
     <string name="app_name">Caducity</string>
 </resources>

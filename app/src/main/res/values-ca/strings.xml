@@ -183,5 +183,7 @@
     <string name="backup_error_export_failed">Error en exportar còpia de seguretat</string>
     <string name="backup_error_restore_failed">Error en restaurar còpia de seguretat</string>
 
+    <string name="dashboard_add">Afegir</string>
+
     <string name="app_name">Caducity</string>
 </resources>
