@@ -182,5 +182,7 @@
     <string name="backup_error_export_failed">Error al exportar respaldo</string>
     <string name="backup_error_restore_failed">Error al restaurar respaldo</string>
 
+    <string name="dashboard_add">Añadir</string>
+
     <string name="app_name">Caducity</string>
 </resources>
