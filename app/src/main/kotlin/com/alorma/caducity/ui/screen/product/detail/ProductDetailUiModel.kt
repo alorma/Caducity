@@ -45,3 +45,10 @@ data class LegacyProductInstanceDetailUiModel(
   val expirationDateText: String,
   val expirationInstant: Instant,
 )
+
+@Stable
+data class ProductDetailVariantTabUiModel(
+  val id: String,
+  val name: String,
+  val datedInstances: DateInstancesUiModel,
+)
