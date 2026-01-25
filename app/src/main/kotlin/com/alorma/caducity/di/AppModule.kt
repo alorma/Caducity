@@ -14,15 +14,12 @@ import com.alorma.caducity.domain.usecase.ConsumeInstanceUseCase
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DeleteInstanceUseCase
 import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
-import com.alorma.caducity.domain.usecase.GenerateProductsFromPromptUseCase
-import com.alorma.caducity.domain.usecase.GenerateVariantsForProductUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringProductsUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
-import com.alorma.caducity.feature.fakedata.fakeDataModule
 import com.alorma.caducity.ui.screen.dashboard.dashboardModule
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
@@ -50,7 +47,6 @@ val appModule = module {
   includes(dataModule)
   includes(domainModule)
   includes(fireAndForgetModule)
-  includes(fakeDataModule)
 
   includes(dashboardModule)
 
@@ -104,8 +100,4 @@ val appModule = module {
 
   // Debug Settings
   viewModelOf(::DebugSettingsViewModel)
-
-  // AI Product Generation
-  singleOf(::GenerateProductsFromPromptUseCase)
-  singleOf(::GenerateVariantsForProductUseCase)
 }
