@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -21,9 +23,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -123,33 +127,8 @@ private fun ProductDetailSuccessContent(
   onFreeze: (ProductInstanceDetailUiModel) -> Unit,
   onDelete: (ProductInstanceDetailUiModel) -> Unit,
 ) {
-  val userSelectedDate = remember {
-    mutableStateOf(state.today)
-  }
-
-  val selectedScrollIndex = remember {
-    derivedStateOf {
-      findFirstIndex(
-        date = userSelectedDate.value,
-        datedContent = state.datedContent
-      )
-    }
-  }
-
-  val listState = rememberLazyListState(
-    initialFirstVisibleItemIndex = selectedScrollIndex.value,
-  )
-
-  val weekCalendarState: WeekCalendarState = rememberWeekCalendarState(
-    startDate = state.appCalendarConfig.startDate,
-    endDate = state.appCalendarConfig.endDate,
-    firstDayOfWeek = state.appCalendarConfig.firstDayOfWeek,
-    firstVisibleWeekDate = state.appCalendarConfig.today,
-  )
-
+  val pagerState = rememberPagerState(pageCount = { state.variantTabs.size })
   val coroutineScope = rememberCoroutineScope()
-
-  val showAIInputSheet = remember { mutableStateOf(false) }
 
   AppScaffold(
     modifier = modifier,
@@ -162,33 +141,6 @@ private fun ProductDetailSuccessContent(
         ),
         title = { Text(text = state.product.name) },
         navigationIcon = { NavigationIcon() },
-        actions = {
-          // Today button
-          IconButton(
-            onClick = {
-              coroutineScope.launch {
-                // Scroll list to today
-                val todayIndex = findFirstIndex(
-                  date = state.today,
-                  datedContent = state.datedContent
-                )
-                listState.animateScrollToItem(todayIndex)
-
-                // Scroll calendar to today
-                weekCalendarState.animateScrollToDate(state.today)
-
-                // Update user selected date
-                userSelectedDate.value = state.today
-              }
-            }
-          ) {
-            Icon(
-              imageVector = AppIcons.Today,
-              contentDescription = "Scroll to today",
-              tint = CaducityTheme.colorScheme.primary,
-            )
-          }
-        },
       )
     },
     floatingActionButton = {
@@ -203,56 +155,133 @@ private fun ProductDetailSuccessContent(
     },
   ) { paddingValues ->
 
-    LaunchedEffect(selectedScrollIndex.value) {
-      listState.animateScrollToItem(selectedScrollIndex.value)
-    }
-
-    LaunchedEffect(listState) {
-      snapshotFlow { listState.firstVisibleItemIndex }.collect { index ->
-        val date = state.datedContent.getOrNull(index)?.date ?: state.today
-
-        weekCalendarState.animateScrollToDate(date)
-      }
-    }
-
     Column(
       modifier = Modifier.padding(paddingValues),
     ) {
-      Surface(
-        color = CaducityTheme.colorScheme.surfaceContainerHigh,
-        shadowElevation = 2.dp,
-      ) {
-        CaducityWeekCalendar(
-          modifier = Modifier.padding(bottom = 8.dp),
-          todayColor = CaducityTheme.colorScheme.primary,
-          weekCalendarState = weekCalendarState,
-          appCalendarConfig = state.appCalendarConfig,
-          contentPadding = PaddingValues(horizontal = 12.dp),
-          onDateClick = { date -> userSelectedDate.value = date },
-        )
-      }
-
-      LazyColumn(
-        state = listState,
-        contentPadding = PaddingValues(bottom = 600.dp),
-      ) {
-        items(
-          items = state.datedContent,
-          key = { datedContent -> "product-${state.product.id}-dated-${datedContent.date}" },
-          contentType = { "datedContent" },
-        ) { datedContent ->
-          DatedContent(
-            state = datedContent,
-            contentPadding = PaddingValues(
-              start = 28.dp,
-              end = 12.dp,
-            ),
-            onConsume = onConsume,
-            onFreeze = onFreeze,
-            onDelete = onDelete,
-          )
+      // Tabs for variants
+      if (state.variantTabs.isNotEmpty()) {
+        Surface(
+          color = CaducityTheme.colorScheme.surfaceContainerHigh,
+          shadowElevation = 2.dp,
+        ) {
+          PrimaryTabRow(
+            selectedTabIndex = pagerState.currentPage,
+          ) {
+            state.variantTabs.forEachIndexed { index, variantTab ->
+              Tab(
+                selected = pagerState.currentPage == index,
+                onClick = {
+                  coroutineScope.launch {
+                    pagerState.animateScrollToPage(index)
+                  }
+                },
+                text = { Text(text = variantTab.name) },
+              )
+            }
+          }
         }
       }
+
+      // Horizontal Pager for variant content
+      HorizontalPager(
+        state = pagerState,
+        modifier = Modifier.fillMaxSize(),
+      ) { page ->
+        val variantTab = state.variantTabs[page]
+        VariantTabContent(
+          variantTab = variantTab,
+          onConsume = onConsume,
+          onFreeze = onFreeze,
+          onDelete = onDelete,
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun VariantTabContent(
+  variantTab: ProductDetailVariantTabUiModel,
+  onConsume: (ProductInstanceDetailUiModel) -> Unit,
+  onFreeze: (ProductInstanceDetailUiModel) -> Unit,
+  onDelete: (ProductInstanceDetailUiModel) -> Unit,
+) {
+  val selectedInstance = remember { mutableStateOf<ProductInstanceDetailUiModel?>(null) }
+  val sheetState = rememberModalBottomSheetState()
+
+  Column(
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    // Show expiration date and status
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      StatusBadge(
+        status = variantTab.datedInstances.status,
+        size = StatusBadgeSize.Large,
+      )
+
+      if (variantTab.datedInstances.text.isNotEmpty()) {
+        Text(
+          text = "·",
+          style = CaducityTheme.typography.labelMedium,
+        )
+
+        Text(
+          text = variantTab.datedInstances.text,
+          style = CaducityTheme.typography.labelMedium,
+        )
+      }
+    }
+
+    // Show instances
+    FlowRow(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      maxItemsInEachRow = 3,
+    ) {
+      val statusColors = ExpirationDefaults.getSoftColors(variantTab.datedInstances.status)
+
+      val chipColors = SuggestionChipDefaults.suggestionChipColors(
+        containerColor = statusColors.container,
+      )
+
+      variantTab.datedInstances.instances.forEach { instance ->
+        SuggestionChip(
+          onClick = { selectedInstance.value = instance },
+          colors = chipColors,
+          label = { Text(text = instance.text) },
+        )
+      }
+    }
+  }
+
+  // Bottom sheet for instance actions
+  selectedInstance.value?.let { instance ->
+    ModalBottomSheet(
+      onDismissRequest = { selectedInstance.value = null },
+      sheetState = sheetState,
+    ) {
+      InstanceActionsBottomSheet(
+        instance = instance,
+        onConsume = {
+          onConsume(instance)
+          selectedInstance.value = null
+        },
+        onFreeze = {
+          onFreeze(instance)
+          selectedInstance.value = null
+        },
+        onDelete = {
+          onDelete(instance)
+          selectedInstance.value = null
+        },
+      )
     }
   }
 }

@@ -14,6 +14,7 @@ sealed interface ProductDetailState {
     val product: ProductDetailUiModel,
     val appCalendarConfig: AppCalendarConfig,
     val datedContent: ImmutableList<DateInstancesUiModel>,
+    val variantTabs: ImmutableList<ProductDetailVariantTabUiModel>,
   ) : ProductDetailState
 
   @Stable
