@@ -10,16 +10,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -33,11 +29,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -52,7 +46,6 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.ThermometerSnow
-import com.alorma.caducity.base.ui.icons.Today
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
@@ -71,8 +64,6 @@ import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.product.detail.timeline.TimelineBulletAndLine
 import com.alorma.caducity.ui.theme.CaducityTheme
-import com.kizitonwose.calendar.compose.weekcalendar.WeekCalendarState
-import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DateTimeUnit
@@ -154,29 +145,36 @@ private fun ProductDetailSuccessContent(
       }
     },
   ) { paddingValues ->
-
     Column(
       modifier = Modifier.padding(paddingValues),
     ) {
-      // Tabs for variants
-      if (state.variantTabs.isNotEmpty()) {
-        Surface(
-          color = CaducityTheme.colorScheme.surfaceContainerHigh,
-          shadowElevation = 2.dp,
-        ) {
-          PrimaryTabRow(
-            selectedTabIndex = pagerState.currentPage,
-          ) {
-            state.variantTabs.forEachIndexed { index, variantTab ->
-              Tab(
-                selected = pagerState.currentPage == index,
-                onClick = {
-                  coroutineScope.launch {
-                    pagerState.animateScrollToPage(index)
-                  }
-                },
-                text = { Text(text = variantTab.name) },
-              )
+      Surface(
+        color = CaducityTheme.colorScheme.surfaceContainerHigh,
+        shadowElevation = 2.dp,
+      ) {
+        Column {
+          CaducityWeekCalendar(
+            appCalendarConfig = state.appCalendarConfig,
+            todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
+            onDateClick = { },
+          )
+
+          if (state.variantTabs.isNotEmpty()) {
+            PrimaryTabRow(
+              selectedTabIndex = pagerState.currentPage,
+              containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
+            ) {
+              state.variantTabs.forEachIndexed { index, variantTab ->
+                Tab(
+                  selected = pagerState.currentPage == index,
+                  onClick = {
+                    coroutineScope.launch {
+                      pagerState.animateScrollToPage(index)
+                    }
+                  },
+                  text = { Text(text = variantTab.name) },
+                )
+              }
             }
           }
         }
