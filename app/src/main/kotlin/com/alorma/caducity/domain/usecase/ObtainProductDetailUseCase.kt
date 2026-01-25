@@ -64,18 +64,10 @@ class ObtainProductDetailUseCase(
             )
           }
 
-          // Use the earliest date as the representative date for this variant
-          val earliestDatedInstances: VariantDatedInstances = datedInstancesList.minByOrNull { it.date }
-            ?: VariantDatedInstances(
-              date = appClock.nowDate(),
-              status = InstanceStatus.Fresh,
-              instances = emptyList(),
-            )
-
           DetailVariant(
             id = variant.variant.id,
             name = variant.variant.name,
-            datedInstances = earliestDatedInstances,
+            datedInstancesGroups = datedInstancesList,
           )
         }
 

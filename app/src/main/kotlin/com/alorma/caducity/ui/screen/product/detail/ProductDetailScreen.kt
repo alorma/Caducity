@@ -5,21 +5,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Surface
@@ -34,9 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -62,16 +57,10 @@ import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
-import com.alorma.caducity.ui.screen.product.detail.timeline.TimelineBulletAndLine
 import com.alorma.caducity.ui.theme.CaducityTheme
-import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.until
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import kotlin.math.abs
 
 @Composable
 fun ProductDetailScreen(
@@ -160,8 +149,9 @@ private fun ProductDetailSuccessContent(
           )
 
           if (state.variantTabs.isNotEmpty()) {
-            PrimaryTabRow(
+            SecondaryScrollableTabRow(
               selectedTabIndex = pagerState.currentPage,
+              edgePadding = 16.dp,
               containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
             ) {
               state.variantTabs.forEachIndexed { index, variantTab ->
@@ -213,24 +203,66 @@ private fun VariantTabContent(
       .padding(16.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
+    // Show each status group
+    variantTab.datedInstancesGroups.forEach { datedInstances ->
+      StatusGroupCard(
+        datedInstances = datedInstances,
+        onInstanceClick = { selectedInstance.value = it },
+      )
+    }
+  }
+
+  // Bottom sheet for instance actions
+  selectedInstance.value?.let { instance ->
+    ModalBottomSheet(
+      onDismissRequest = { selectedInstance.value = null },
+      sheetState = sheetState,
+    ) {
+      InstanceActionsBottomSheet(
+        instance = instance,
+        onConsume = {
+          onConsume(instance)
+          selectedInstance.value = null
+        },
+        onFreeze = {
+          onFreeze(instance)
+          selectedInstance.value = null
+        },
+        onDelete = {
+          onDelete(instance)
+          selectedInstance.value = null
+        },
+      )
+    }
+  }
+}
+
+@Composable
+private fun StatusGroupCard(
+  datedInstances: DateInstancesUiModel,
+  onInstanceClick: (ProductInstanceDetailUiModel) -> Unit,
+) {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(12.dp),
+  ) {
     // Show expiration date and status
     Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
       StatusBadge(
-        status = variantTab.datedInstances.status,
+        status = datedInstances.status,
         size = StatusBadgeSize.Large,
       )
 
-      if (variantTab.datedInstances.text.isNotEmpty()) {
+      if (datedInstances.text.isNotEmpty()) {
         Text(
           text = "·",
           style = CaducityTheme.typography.labelMedium,
         )
 
         Text(
-          text = variantTab.datedInstances.text,
+          text = datedInstances.text,
           style = CaducityTheme.typography.labelMedium,
         )
       }
@@ -243,174 +275,19 @@ private fun VariantTabContent(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       maxItemsInEachRow = 3,
     ) {
-      val statusColors = ExpirationDefaults.getSoftColors(variantTab.datedInstances.status)
+      val statusColors = ExpirationDefaults.getSoftColors(datedInstances.status)
 
       val chipColors = SuggestionChipDefaults.suggestionChipColors(
         containerColor = statusColors.container,
       )
 
-      variantTab.datedInstances.instances.forEach { instance ->
+      datedInstances.instances.forEach { instance ->
         SuggestionChip(
-          onClick = { selectedInstance.value = instance },
+          onClick = { onInstanceClick(instance) },
           colors = chipColors,
           label = { Text(text = instance.text) },
         )
       }
-    }
-  }
-
-  // Bottom sheet for instance actions
-  selectedInstance.value?.let { instance ->
-    ModalBottomSheet(
-      onDismissRequest = { selectedInstance.value = null },
-      sheetState = sheetState,
-    ) {
-      InstanceActionsBottomSheet(
-        instance = instance,
-        onConsume = {
-          onConsume(instance)
-          selectedInstance.value = null
-        },
-        onFreeze = {
-          onFreeze(instance)
-          selectedInstance.value = null
-        },
-        onDelete = {
-          onDelete(instance)
-          selectedInstance.value = null
-        },
-      )
-    }
-  }
-}
-
-private fun findFirstIndex(
-  date: LocalDate,
-  datedContent: ImmutableList<DateInstancesUiModel>,
-): Int {
-  if (datedContent.isEmpty()) return 0
-
-  // Find exact match first
-  val exactIndex = datedContent.indexOfFirst { it.date == date }
-  if (exactIndex != -1) return exactIndex
-
-  // Find the nearest date by calculating days difference using kotlinx-datetime
-  val nearestIndex = datedContent
-    .withIndex()
-    .minByOrNull { (_, dated) ->
-      abs(date.until(dated.date, DateTimeUnit.DAY))
-    }
-    ?.index
-
-  return nearestIndex ?: 0
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DatedContent(
-  state: DateInstancesUiModel,
-  onConsume: (ProductInstanceDetailUiModel) -> Unit,
-  onFreeze: (ProductInstanceDetailUiModel) -> Unit,
-  onDelete: (ProductInstanceDetailUiModel) -> Unit,
-  modifier: Modifier = Modifier,
-  contentPadding: PaddingValues = PaddingValues(0.dp),
-) {
-  val itemHeight = remember { mutableStateOf(24.dp) }
-  val bulletOffset = remember { mutableStateOf(Offset.Zero) }
-  val localDensity = LocalDensity.current
-
-  val selectedInstance = remember { mutableStateOf<ProductInstanceDetailUiModel?>(null) }
-  val sheetState = rememberModalBottomSheetState()
-
-  Row(
-    modifier = Modifier
-      .padding(contentPadding)
-      .onGloballyPositioned { coordinates ->
-        with(localDensity) { itemHeight.value = coordinates.size.height.toDp() }
-      }
-      .fillMaxWidth()
-      .then(modifier),
-    horizontalArrangement = Arrangement.spacedBy(16.dp)
-  ) {
-    TimelineBulletAndLine(
-      itemHeight = itemHeight.value,
-      bulletOffset = bulletOffset.value,
-      onBulletPositionObtained = { bulletOffset.value = it },
-    )
-
-    Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(
-          vertical = 12.dp,
-          horizontal = 16.dp
-        ),
-      verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-      ) {
-        StatusBadge(
-          status = state.status,
-          size = StatusBadgeSize.Large,
-        )
-
-        Text(
-          text = "·",
-          style = CaducityTheme.typography.labelMedium,
-        )
-
-        Text(
-          text = state.text,
-          style = CaducityTheme.typography.labelMedium,
-        )
-      }
-
-      FlowRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
-        maxItemsInEachRow = 3,
-      ) {
-        val statusColors = ExpirationDefaults.getSoftColors(state.status)
-
-        val chipColors = SuggestionChipDefaults.suggestionChipColors(
-          containerColor = statusColors.container,
-        )
-
-        state.instances.forEach { instance ->
-          SuggestionChip(
-            onClick = { selectedInstance.value = instance },
-            colors = chipColors,
-            label = { Text(text = instance.text) },
-          )
-        }
-      }
-    }
-  }
-
-  // Bottom sheet for instance actions
-  selectedInstance.value?.let { instance ->
-    ModalBottomSheet(
-      onDismissRequest = { selectedInstance.value = null },
-      sheetState = sheetState,
-    ) {
-      InstanceActionsBottomSheet(
-        instance = instance,
-        onConsume = {
-          onConsume(instance)
-          selectedInstance.value = null
-        },
-        onFreeze = {
-          onFreeze(instance)
-          selectedInstance.value = null
-        },
-        onDelete = {
-          onDelete(instance)
-          selectedInstance.value = null
-        },
-      )
     }
   }
 }

@@ -11,7 +11,7 @@ data class ProductDetail(
 data class DetailVariant(
   val id: String,
   val name: String,
-  val datedInstances: VariantDatedInstances,
+  val datedInstancesGroups: List<VariantDatedInstances>,
 )
 
 data class VariantDatedInstances(

@@ -30,25 +30,8 @@ data class ProductDetailUiModel(
 )
 
 @Stable
-data class ProductDetailVariantUiModel(
-  val id: String,
-  val name: String,
-  val instances: List<LegacyProductInstanceDetailUiModel>,
-)
-
-@Stable
-data class LegacyProductInstanceDetailUiModel(
-  val id: String,
-  val identifier: String,
-  val status: InstanceStatus,
-  val expirationDate: LocalDate,
-  val expirationDateText: String,
-  val expirationInstant: Instant,
-)
-
-@Stable
 data class ProductDetailVariantTabUiModel(
   val id: String,
   val name: String,
-  val datedInstances: DateInstancesUiModel,
+  val datedInstancesGroups: ImmutableList<DateInstancesUiModel>,
 )
