@@ -13,7 +13,6 @@ sealed interface ProductDetailState {
     val today: LocalDate,
     val product: ProductDetailUiModel,
     val appCalendarConfig: AppCalendarConfig,
-    val datedContent: ImmutableList<DateInstancesUiModel>,
     val variantTabs: ImmutableList<ProductDetailVariantTabUiModel>,
   ) : ProductDetailState
 

@@ -33,10 +33,12 @@ class ProductDetailMapper(
       ProductDetailVariantTabUiModel(
         id = variant.id,
         name = variant.name,
-        datedInstances = mapVariantDatedContent(
-          variant = variant,
-          datedInstances = variant.datedInstances
-        ),
+        datedInstancesGroups = variant.datedInstancesGroups.map { datedInstances ->
+          mapVariantDatedContent(
+            variant = variant,
+            datedInstances = datedInstances
+          )
+        }.toImmutableList(),
       )
     }.toMutableList()
 
@@ -45,19 +47,21 @@ class ProductDetailMapper(
       val otherTab = ProductDetailVariantTabUiModel(
         id = "other",
         name = "Other",
-        datedInstances = DateInstancesUiModel(
-          text = "",
-          status = InstanceStatus.Fresh,
-          date = appClock.nowDate(),
-          instances = productDetail.nonVariant.map { instance ->
-            ProductInstanceDetailUiModel(
-              id = instance.id,
-              expirationDate = appClock.nowDate(),
-              status = InstanceStatus.Fresh,
-              text = instance.name,
-            )
-          }.toImmutableList(),
-        ),
+        datedInstancesGroups = listOf(
+          DateInstancesUiModel(
+            text = "",
+            status = InstanceStatus.Fresh,
+            date = appClock.nowDate(),
+            instances = productDetail.nonVariant.map { instance ->
+              ProductInstanceDetailUiModel(
+                id = instance.id,
+                expirationDate = appClock.nowDate(),
+                status = InstanceStatus.Fresh,
+                text = instance.name,
+              )
+            }.toImmutableList(),
+          )
+        ).toImmutableList(),
       )
       variantTabs.add(otherTab)
     }
@@ -65,13 +69,17 @@ class ProductDetailMapper(
     val today = appClock.nowDate()
 
     // Collect all dates from variants for calendar
-    val allDates = productDetail.variants.map { it.datedInstances.date }
+    val allDates = productDetail.variants.flatMap { variant ->
+      variant.datedInstancesGroups.map { it.date }
+    }
     val startDate = allDates.minOrNull() ?: today
     val endDate = allDates.maxOrNull() ?: today
 
     // Create calendar config with all dated content from variants
-    val allDatedContents = productDetail.variants.map { variant ->
-      mapVariantDatedContent(variant = variant, datedInstances = variant.datedInstances)
+    val allDatedContents = productDetail.variants.flatMap { variant ->
+      variant.datedInstancesGroups.map { datedInstances ->
+        mapVariantDatedContent(variant = variant, datedInstances = datedInstances)
+      }
     }.toImmutableList()
 
     val appCalendarConfig = appCalendarConfigMapper.createWithDatedContent(
@@ -85,7 +93,6 @@ class ProductDetailMapper(
       today = today,
       product = productUiModel,
       appCalendarConfig = appCalendarConfig,
-      datedContent = allDatedContents,
       variantTabs = variantTabs.toImmutableList(),
     )
   }
