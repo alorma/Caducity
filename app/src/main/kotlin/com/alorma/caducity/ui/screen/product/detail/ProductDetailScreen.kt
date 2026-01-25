@@ -47,7 +47,6 @@ import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
-import com.alorma.caducity.base.ui.icons.Sparkles
 import com.alorma.caducity.base.ui.icons.ThermometerSnow
 import com.alorma.caducity.base.ui.icons.Today
 import com.alorma.caducity.domain.model.InstanceStatus
@@ -87,7 +86,6 @@ fun ProductDetailScreen(
   viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
-  val aiGenerationState = viewModel.aiGenerationState.collectAsStateWithLifecycle()
 
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarHostState()
@@ -103,15 +101,10 @@ fun ProductDetailScreen(
         dialogState = dialogState,
         snackbarState = snackbarState,
         state = currentState,
-        aiGenerationState = aiGenerationState.value,
         onNavigateToAddInstance = onNavigateToAddInstance,
         onConsume = viewModel::onConsumeInstance,
         onFreeze = viewModel::onFreezeInstance,
         onDelete = viewModel::onDeleteInstance,
-        onGenerateVariantsFromPrompt = viewModel::onGenerateVariantsFromPrompt,
-        onConfirmVariants = viewModel::onConfirmVariants,
-        onDismissAIError = viewModel::dismissAIError,
-        onResetAIState = viewModel::resetAIState,
       )
     }
 
@@ -125,15 +118,10 @@ private fun ProductDetailSuccessContent(
   dialogState: AppDialogState,
   snackbarState: AppSnackbarHostState,
   state: ProductDetailState.Success,
-  aiGenerationState: AIGenerationState,
   onNavigateToAddInstance: () -> Unit,
   onConsume: (ProductInstanceDetailUiModel) -> Unit,
   onFreeze: (ProductInstanceDetailUiModel) -> Unit,
   onDelete: (ProductInstanceDetailUiModel) -> Unit,
-  onGenerateVariantsFromPrompt: (String) -> Unit,
-  onConfirmVariants: (com.alorma.caducity.feature.fakedata.models.GeneratedProductVariants) -> Unit,
-  onDismissAIError: () -> Unit,
-  onResetAIState: () -> Unit,
 ) {
   val userSelectedDate = remember {
     mutableStateOf(state.today)
@@ -175,17 +163,6 @@ private fun ProductDetailSuccessContent(
         title = { Text(text = state.product.name) },
         navigationIcon = { NavigationIcon() },
         actions = {
-          // AI button
-          IconButton(
-            onClick = { showAIInputSheet.value = true }
-          ) {
-            Icon(
-              imageVector = AppIcons.Filled.Sparkles,
-              contentDescription = "Add variants with AI",
-              tint = CaducityTheme.colorScheme.secondary,
-            )
-          }
-
           // Today button
           IconButton(
             onClick = {
@@ -276,56 +253,6 @@ private fun ProductDetailSuccessContent(
           )
         }
       }
-    }
-  }
-
-  // AI Input Sheet
-  if (showAIInputSheet.value) {
-    ProductDetailAIInputSheet(
-      productName = state.product.name,
-      onDismiss = {
-        showAIInputSheet.value = false
-        onResetAIState()
-      },
-      onGenerate = { prompt ->
-        showAIInputSheet.value = false
-        onGenerateVariantsFromPrompt(prompt)
-      },
-      isGenerating = aiGenerationState.isGenerating
-    )
-  }
-
-  // AI Review Sheet
-  aiGenerationState.awaitingReview?.let { generatedVariants ->
-    ProductDetailAIReviewSheet(
-      generatedVariants = generatedVariants,
-      onDismiss = { onResetAIState() },
-      onConfirm = {
-        onConfirmVariants(generatedVariants)
-      }
-    )
-  }
-
-  // AI Success handling
-  LaunchedEffect(aiGenerationState.completedResult) {
-    aiGenerationState.completedResult?.let { result ->
-      val message = "Created ${result.variantsCreated} variants, ${result.instancesCreated} instances"
-      snackbarState.showSnackbar(
-        message = message,
-        type = AppFeedbackType.Success
-      )
-      onResetAIState()
-    }
-  }
-
-  // AI Error handling
-  LaunchedEffect(aiGenerationState.error) {
-    aiGenerationState.error?.let { error ->
-      snackbarState.showSnackbar(
-        message = error,
-        type = AppFeedbackType.Error
-      )
-      onDismissAIError()
     }
   }
 }
