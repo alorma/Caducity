@@ -1,8 +1,8 @@
 package com.alorma.caducity.ui.screen.dashboard
 
 import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.domain.model.ProductInstance
-import com.alorma.caducity.domain.model.ProductWithInstances
+import com.alorma.caducity.domain.model.Item
+import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.DayOfWeek
@@ -11,41 +11,41 @@ class DashboardMapper(
   private val appCalendarConfigMapper: AppCalendarConfigMapper,
 ) {
 
-  fun mapToPerProductState(
-    products: ImmutableList<ProductWithInstances>,
+  fun mapToPerCategoryState(
+    categories: ImmutableList<CategoryWithItems>,
     firstDayOfWeek: DayOfWeek,
   ): DashboardState.Success {
-    val mapped = products.map { product ->
+    val mapped = categories.map { category ->
 
-      val instances = buildList {
-        addAll(product.variants.flatMap { it.instances })
-        addAll(product.standaloneInstances)
+      val items = buildList {
+        addAll(category.products.flatMap { it.items })
+        addAll(category.standaloneItems)
       }
 
-      ProductCalendarState(
-        id = product.product.id,
-        name = product.product.name,
-        appCalendarConfig = appCalendarConfigMapper.createFromInstances(instances, firstDayOfWeek)
+      CategoryCalendarState(
+        id = category.category.id,
+        name = category.category.name,
+        appCalendarConfig = appCalendarConfigMapper.createFromItems(items, firstDayOfWeek)
       )
     }
 
-    val allInstances = products.flatMap { product ->
-      product.variants.flatMap { variant -> variant.instances } + product.standaloneInstances
+    val allItems = categories.flatMap { category ->
+      category.products.flatMap { product -> product.items } + category.standaloneItems
     }
 
-    val summary = calculateSummary(allInstances)
+    val summary = calculateSummary(allItems)
 
-    return DashboardState.Success.PerProduct(
+    return DashboardState.Success.PerCategory(
       summary = summary,
-      products = mapped,
+      categories = mapped,
     )
   }
 
-  private fun calculateSummary(instances: List<ProductInstance>): DashboardSummary {
-    val expiredCount = getStatusCount(instances, InstanceStatus.Expired)
-    val expiringSoonCount = getStatusCount(instances, InstanceStatus.ExpiringSoon)
-    val freshCount = getStatusCount(instances, InstanceStatus.Fresh)
-    val frozenCount = getStatusCount(instances, InstanceStatus.Frozen)
+  private fun calculateSummary(items: List<Item>): DashboardSummary {
+    val expiredCount = getStatusCount(items, InstanceStatus.Expired)
+    val expiringSoonCount = getStatusCount(items, InstanceStatus.ExpiringSoon)
+    val freshCount = getStatusCount(items, InstanceStatus.Fresh)
+    val frozenCount = getStatusCount(items, InstanceStatus.Frozen)
 
     return DashboardSummary(
       expired = expiredCount,
@@ -56,11 +56,11 @@ class DashboardMapper(
   }
 
   private fun getStatusCount(
-    instances: List<ProductInstance>,
+    items: List<Item>,
     status: InstanceStatus,
   ): Int {
-    return instances
-      .filter { instance -> instance.status == status }
+    return items
+      .filter { item -> item.status == status }
       .size
   }
 }

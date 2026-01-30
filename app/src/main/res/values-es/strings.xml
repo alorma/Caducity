@@ -45,6 +45,26 @@
     <string name="settings_backup_title">Respaldo</string>
     <string name="settings_backup_description">Exportar y restaurar tus datos</string>
 
+    <string name="dashboard_fab_manual">Manual</string>
+    <string name="dashboard_fab_ai">IA</string>
+    <string name="dashboard_ai_title">Añadir Categorías con IA</string>
+    <string name="dashboard_ai_prompt_hint">Describe lo que compraste</string>
+    <string name="dashboard_ai_prompt_example">ej., "2 tiramisú (categoría postres) caduca mañana"</string>
+    <string name="dashboard_ai_generate_button">Generar</string>
+    <string name="dashboard_ai_char_counter">%1$d / 500</string>
+    <string name="dashboard_ai_success">Creadas %1$d categorías, %2$d productos, %3$d artículos</string>
+    <string name="dashboard_ai_generating">Generando categorías…</string>
+    <string name="dashboard_ai_error_generic">Error al generar categorías</string>
+
+    <string name="dashboard_ai_review_title">Revisar Categorías</string>
+    <string name="dashboard_ai_review_description">Se encontraron %1$d categorías coincidentes. Revisa antes de añadir:</string>
+    <string name="dashboard_ai_review_match_score">%1$d%% coincidencia</string>
+    <string name="dashboard_ai_review_will_add">Se añadirán %1$d productos, %2$d artículos</string>
+    <string name="dashboard_ai_review_new_products">Nuevas Categorías</string>
+    <string name="dashboard_ai_review_new_product">Se creará como nueva categoría</string>
+    <string name="dashboard_ai_review_cancel">Cancelar</string>
+    <string name="dashboard_ai_review_confirm">Confirmar</string>
+
     <string name="settings_group_appearance">Apariencia</string>
     <string name="settings_theme_title">Tema</string>
     <string name="settings_theme_light">Claro</string>
@@ -114,6 +134,19 @@
     <string name="product_detail_action_freeze">Congelar</string>
     <string name="product_detail_action_delete">Eliminar</string>
 
+    <!-- Product Detail AI -->
+    <string name="product_detail_ai_title">Añadir Productos con IA</string>
+    <string name="product_detail_ai_prompt_hint">Describe los productos o artículos</string>
+    <string name="product_detail_ai_prompt_example">ej., "3 botellas de 1L leche entera, caduca en 5 días"</string>
+    <string name="product_detail_ai_generate_button">Generar</string>
+    <string name="product_detail_ai_generating">Generando productos…</string>
+    <string name="product_detail_ai_success">Creados %1$d productos, %2$d artículos</string>
+    <string name="product_detail_ai_review_title">Revisar Productos</string>
+    <string name="product_detail_ai_review_description">Generados %1$d productos y %2$d artículos. Revisa antes de añadir:</string>
+    <string name="product_detail_ai_review_confirm">Añadir a Categoría</string>
+    <string name="product_detail_ai_review_cancel">Cancelar</string>
+    <string name="product_detail_ai_error_generic">Error al generar productos</string>
+
     <!-- Relative time values -->
     <string name="relative_time_today">Hoy</string>
     <string name="relative_time_tomorrow">Mañana</string>
@@ -134,7 +167,7 @@
     <string name="language_spanish">Español</string>
     <string name="language_catalan">Català</string>
 
-    <!-- Instance action errors -->
+    <!-- Item action errors -->
     <string name="error_instance_not_found">Elemento no encontrado</string>
     <string name="error_cannot_freeze_expired">No se pueden congelar artículos caducados</string>
     <string name="error_cannot_consume_expired">No es seguro consumir productos caducados</string>

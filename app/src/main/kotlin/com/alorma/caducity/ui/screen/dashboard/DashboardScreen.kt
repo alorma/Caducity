@@ -39,7 +39,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun DashboardScreen(
   onNavigateToCreateProduct: () -> Unit,
-  onNavigateToProduct: (String) -> Unit,
+  onNavigateToCategory: (String) -> Unit,
   onNavigateToDate: (LocalDate) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
@@ -53,7 +53,7 @@ fun DashboardScreen(
     DashboardContent(
       state = dashboardState.value,
       onNavigateToCreateProduct = onNavigateToCreateProduct,
-      onNavigateToProduct = onNavigateToProduct,
+      onNavigateToCategory = onNavigateToCategory,
       onNavigateToStatus = onNavigateToStatus,
       onNavigateToSettings = onNavigateToSettings,
       snackbarHostState = snackbarHostState,
@@ -65,7 +65,7 @@ fun DashboardScreen(
 private fun DashboardContent(
   state: DashboardState,
   onNavigateToCreateProduct: () -> Unit,
-  onNavigateToProduct: (String) -> Unit,
+  onNavigateToCategory: (String) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
   snackbarHostState: AppSnackbarState,
@@ -114,7 +114,7 @@ private fun DashboardContent(
         modifier = Modifier.padding(paddingValues),
         state = state,
         lazyListState = lazyListState,
-        onNavigateToProduct = onNavigateToProduct,
+        onNavigateToCategory = onNavigateToCategory,
         onNavigateToStatus = onNavigateToStatus,
       )
     }
@@ -131,7 +131,7 @@ private fun DashboardLoadingContent() {
 fun DashboardSuccessContent(
   state: DashboardState.Success,
   lazyListState: LazyListState,
-  onNavigateToProduct: (String) -> Unit,
+  onNavigateToCategory: (String) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -143,7 +143,7 @@ fun DashboardSuccessContent(
     DashboardSuccessContentList(
       state = state,
       lazyListState = lazyListState,
-      onNavigateToProduct = onNavigateToProduct,
+      onNavigateToCategory = onNavigateToCategory,
       onNavigateToStatus = onNavigateToStatus,
     )
   }
@@ -160,7 +160,7 @@ fun DashboardSuccessContentPreview(
       DashboardContent(
         state = state,
         onNavigateToCreateProduct = {},
-        onNavigateToProduct = {},
+        onNavigateToCategory = {},
         onNavigateToStatus = {},
         onNavigateToSettings = {},
         snackbarHostState = rememberAppSnackbarState(),
