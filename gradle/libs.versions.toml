@@ -5,7 +5,7 @@ compose-screenshot-testing = "0.0.1-alpha13"
 
 # Kotlin
 kotlin = "2.3.0"
-ksp = "2.3.4"
+ksp = "2.3.5"
 
 # Android
 agp = "9.0.0"
