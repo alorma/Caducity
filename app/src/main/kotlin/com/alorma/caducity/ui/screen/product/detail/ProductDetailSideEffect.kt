@@ -7,11 +7,16 @@ sealed interface ProductDetailSideEffect {
   data object InstanceConsumed : ProductDetailSideEffect
   data object InstanceFrozen : ProductDetailSideEffect
   data object InstanceDeleted : ProductDetailSideEffect
+  data object VariantCreated : ProductDetailSideEffect
 
   // Error events
   data object ConsumeInstanceFailed : ProductDetailSideEffect
   data object FreezeInstanceFailed : ProductDetailSideEffect
   data object DeleteInstanceFailed : ProductDetailSideEffect
+  data object CreateVariantFailed : ProductDetailSideEffect
+
+  // Dialog events
+  data object ShowAddVariantDialog : ProductDetailSideEffect
 
   // Specific validation events
   data class FreezeNotAvailable(val status: InstanceStatus) : ProductDetailSideEffect

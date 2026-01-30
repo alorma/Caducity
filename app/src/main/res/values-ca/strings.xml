@@ -89,6 +89,11 @@
 
     <!-- Product Detail -->
     <string name="product_detail_auto_identifier_item">Article</string>
+    <string name="product_detail_add_variant_dialog_title">Afegir Variant</string>
+    <string name="product_detail_add_variant_dialog_label">Nom de la Variant</string>
+    <string name="product_detail_add_variant_dialog_placeholder">Introdueix el nom de la variant</string>
+    <string name="product_detail_add_variant_dialog_cancel">Cancel·lar</string>
+    <string name="product_detail_add_variant_dialog_add">Afegir</string>
     <string name="product_detail_add_instance_title">Afegir Instància</string>
     <string name="product_detail_add_instance_back">Enrere</string>
     <string name="product_detail_add_instance_add_other">Afegir Altra</string>
@@ -148,6 +153,7 @@
     <string name="error_consume_instance_failed">Error en consumir instància</string>
     <string name="error_freeze_instance_failed">Error en congelar instància</string>
     <string name="error_delete_instance_failed">Error en eliminar instància</string>
+    <string name="error_create_variant_failed">Error en crear variant</string>
 
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Benvingut a Caducity</string>

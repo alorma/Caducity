@@ -19,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
@@ -30,9 +31,11 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -92,6 +95,7 @@ fun ProductDetailScreen(
         onConsume = viewModel::onConsumeInstance,
         onFreeze = viewModel::onFreezeInstance,
         onDelete = viewModel::onDeleteInstance,
+        onShowAddVariantDialog = viewModel::onShowAddVariantDialog,
       )
     }
 
@@ -109,6 +113,7 @@ private fun ProductDetailSuccessContent(
   onConsume: (ProductInstanceDetailUiModel) -> Unit,
   onFreeze: (ProductInstanceDetailUiModel) -> Unit,
   onDelete: (ProductInstanceDetailUiModel) -> Unit,
+  onShowAddVariantDialog: () -> Unit,
 ) {
   val pagerState = rememberPagerState(pageCount = { state.variantTabs.size })
   val coroutineScope = rememberCoroutineScope()
@@ -178,7 +183,7 @@ private fun ProductDetailSuccessContent(
 
               IconButton(
                 modifier = Modifier,
-                onClick = {},
+                onClick = onShowAddVariantDialog,
               ) {
                 Icon(
                   modifier = Modifier.size(18.dp),
@@ -485,6 +490,40 @@ private fun SideEffectHandler(
           if (result == DialogResult.Positive) {
             viewModel.onDeleteInstance(effect.instance)
           }
+        }
+
+        ProductDetailSideEffect.ShowAddVariantDialog -> {
+          var variantName by mutableStateOf("")
+          val result = dialogState.showAlertDialog(
+            title = { Text(stringResource(R.string.product_detail_add_variant_dialog_title)) },
+            text = {
+              OutlinedTextField(
+                value = variantName,
+                onValueChange = { variantName = it },
+                label = { Text(stringResource(R.string.product_detail_add_variant_dialog_label)) },
+                placeholder = { Text(stringResource(R.string.product_detail_add_variant_dialog_placeholder)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+              )
+            },
+            positiveButton = { Text(stringResource(R.string.product_detail_add_variant_dialog_add)) },
+            negativeButton = { Text(stringResource(R.string.product_detail_add_variant_dialog_cancel)) },
+            type = AppFeedbackType.Info,
+          )
+          if (result == DialogResult.Positive && variantName.isNotBlank()) {
+            viewModel.onCreateVariant(variantName)
+          }
+        }
+
+        ProductDetailSideEffect.VariantCreated -> {
+          // Variant created successfully - no feedback needed, it will appear in the list
+        }
+
+        ProductDetailSideEffect.CreateVariantFailed -> {
+          snackbarState.showSnackbar(
+            message = R.string.error_create_variant_failed,
+            type = AppFeedbackType.Error,
+          )
         }
       }
     }
