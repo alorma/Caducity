@@ -2,8 +2,8 @@ package com.alorma.caducity.domain.model
 
 import kotlin.time.Instant
 
-data class NewProductInstance(
+data class NewItem(
   val identifier: String,
-  val variantId: String? = null,
+  val productId: String? = null,
   val expirationDate: Instant,
 )

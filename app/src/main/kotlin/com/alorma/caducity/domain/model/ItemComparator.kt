@@ -1,20 +1,20 @@
 package com.alorma.caducity.domain.model
 
 /**
- * Interface for defining different ProductInstance sorting strategies.
+ * Interface for defining different Item sorting strategies.
  */
-interface ProductInstanceComparator : Comparator<ProductInstance>
+interface ItemComparator : Comparator<Item>
 
 /**
- * Default comparator for sorting ProductInstance objects.
+ * Default comparator for sorting Item objects.
  *
  * Sorting priority:
  * 1. Status (Expired -> ExpiringSoon -> Fresh -> Frozen -> Consumed)
  * 2. Expiration date (earliest first)
  */
-class StatusProductInstanceComparator : ProductInstanceComparator {
+class StatusItemComparator : ItemComparator {
 
-  private val comparator = compareBy<ProductInstance> {
+  private val comparator = compareBy<Item> {
     when (it.status) {
       InstanceStatus.Expired -> 0
       InstanceStatus.ExpiringSoon -> 1
@@ -23,7 +23,7 @@ class StatusProductInstanceComparator : ProductInstanceComparator {
     }
   }.thenBy { it.expirationDate }
 
-  override fun compare(o1: ProductInstance, o2: ProductInstance): Int {
+  override fun compare(o1: Item, o2: Item): Int {
     return comparator.compare(o1, o2)
   }
 }

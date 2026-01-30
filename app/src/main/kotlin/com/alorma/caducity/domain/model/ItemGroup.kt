@@ -2,10 +2,10 @@ package com.alorma.caducity.domain.model
 
 import kotlinx.collections.immutable.ImmutableList
 
-data class ProductInstanceGroup(
+data class ItemGroup(
   val identifier: String,
-  val variantId: String? = null,
-  val variantName: String? = null,
+  val productId: String? = null,
+  val productName: String? = null,
   val isStandalone: Boolean = false,
-  val instances: ImmutableList<ProductInstance>,
+  val items: ImmutableList<Item>,
 )
