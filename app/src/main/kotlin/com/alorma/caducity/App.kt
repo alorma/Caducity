@@ -13,13 +13,13 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.ui.screen.dashboard.DashboardRoute
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
+import com.alorma.caducity.ui.screen.category.create.CreateCategoryRoute
+import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
+import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
+import com.alorma.caducity.ui.screen.category.detail.CategoryDetailRoute
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingRoute
 import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
-import com.alorma.caducity.ui.screen.product.create.CreateProductRoute
-import com.alorma.caducity.ui.screen.product.create.CreateProductScreen
-import com.alorma.caducity.ui.screen.product.detail.ProductDetailContainer
-import com.alorma.caducity.ui.screen.product.detail.ProductDetailRoute
 import com.alorma.caducity.ui.screen.settings.Settings
 import com.alorma.caducity.ui.screen.settings.SettingsContainer
 import com.alorma.caducity.ui.theme.AppTheme
@@ -61,11 +61,11 @@ fun App(
         entry<DashboardRoute> {
           DashboardScreen(
             onNavigateToCreateProduct = {
-              appBackStack.add(CreateProductRoute)
+              appBackStack.add(CreateCategoryRoute)
             },
-            onNavigateToProduct = { productId ->
+            onNavigateToCategory = { productId ->
               appBackStack.add(
-                ProductDetailRoute(productId)
+                CategoryDetailRoute(productId)
               )
             },
             onNavigateToDate = { date ->
@@ -80,16 +80,16 @@ fun App(
         entry<Settings> {
           SettingsContainer()
         }
-        entry<CreateProductRoute> {
-          CreateProductScreen(
+        entry<CreateCategoryRoute> {
+          CreateCategoryScreen(
             onProductCreated = { productId ->
               appBackStack.removeLast()
-              appBackStack.add(ProductDetailRoute(productId)) // Navigate to detail
+              appBackStack.add(CategoryDetailRoute(productId)) // Navigate to detail
             }
           )
         }
-        entry<ProductDetailRoute> {
-          ProductDetailContainer(
+        entry<CategoryDetailRoute> {
+          CategoryDetailContainer(
             productId = it.productId,
             onBack = { appBackStack.removeLast() }
           )

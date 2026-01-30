@@ -281,18 +281,18 @@ private fun StatusGroupCard(
       horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
       StatusBadge(
-        status = datedInstances.status,
+        status = datedItems.status,
         size = StatusBadgeSize.Large,
       )
 
-      if (datedInstances.text.isNotEmpty()) {
+      if (datedItems.text.isNotEmpty()) {
         Text(
           text = "·",
           style = CaducityTheme.typography.labelMedium,
         )
 
         Text(
-          text = datedInstances.text,
+          text = datedItems.text,
           style = CaducityTheme.typography.labelMedium,
         )
       }
@@ -305,17 +305,17 @@ private fun StatusGroupCard(
       verticalArrangement = Arrangement.spacedBy(8.dp),
       maxItemsInEachRow = 3,
     ) {
-      val statusColors = ExpirationDefaults.getSoftColors(datedInstances.status)
+      val statusColors = ExpirationDefaults.getSoftColors(datedItems.status)
 
       val chipColors = SuggestionChipDefaults.suggestionChipColors(
         containerColor = statusColors.container,
       )
 
-      datedItems.items.forEach { instance ->
+      datedItems.items.forEach { item ->
         SuggestionChip(
-          onClick = { onItemClick(instance) },
+          onClick = { onItemClick(item) },
           colors = chipColors,
-          label = { Text(text = instance.text) },
+          label = { Text(text = item.text) },
         )
       }
     }
@@ -331,7 +331,7 @@ private fun AppBottomSheetState.ItemActionsBottomSheet(
 ) {
   coroutineScope.launch {
     show(
-      appFeedbackType = AppFeedbackType.Status(instance.status),
+      appFeedbackType = AppFeedbackType.Status(item.status),
     ) {
       Column(
         modifier = Modifier

@@ -12,7 +12,7 @@ import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import java.util.concurrent.TimeUnit
 
 /**
- * Schedules periodic background work to check for expiring products.
+ * Schedules periodic background work to check for expiring categories.
  * Uses WorkManager to ensure the work runs even when the app is closed.
  */
 class ExpirationWorkSchedulerImpl(

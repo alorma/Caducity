@@ -4,8 +4,8 @@ import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.toModel
 import com.alorma.caducity.data.datasource.room.toRoomEntity
-import com.alorma.caducity.domain.VariantDataSource
-import com.alorma.caducity.domain.model.Variant
+import com.alorma.caducity.domain.ProductDataSource
+import com.alorma.caducity.domain.model.Product
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -15,47 +15,47 @@ import java.util.UUID
 class RoomProductDataSource(
   database: AppDatabase,
   private val appClock: AppClock,
-) : VariantDataSource {
+) : ProductDataSource {
 
   private val productDao = database.productDao()
 
-  override fun getVariantsByProduct(productId: String): Flow<ImmutableList<Variant>> {
-    return productDao.getProductsByCategory(productId)
+  override fun getProductsByCategory(categoryId: String): Flow<ImmutableList<Product>> {
+    return productDao.getProductsByCategory(categoryId)
       .map { entities ->
         entities.map { it.toModel() }.toImmutableList()
       }
   }
 
-  override suspend fun getVariant(variantId: String): Variant? {
-    return productDao.getProduct(variantId)?.toModel()
+  override suspend fun getProduct(productId: String): Product? {
+    return productDao.getProduct(productId)?.toModel()
   }
 
-  override suspend fun createVariant(productId: String, name: String): Variant {
-    val variant = Variant(
+  override suspend fun createProduct(categoryId: String, name: String): Product {
+    val product = Product(
       id = UUID.randomUUID().toString(),
-      productId = productId,
+      categoryId = categoryId,
       name = name,
       createdAt = appClock.now(),
     )
-    productDao.insertProduct(variant.toRoomEntity())
-    return variant
+    productDao.insertProduct(product.toRoomEntity())
+    return product
   }
 
-  override suspend fun deleteVariant(variantId: String): Result<Unit> {
-    val instanceCount = productDao.getActiveItemCount(variantId)
-    return if (instanceCount > 0) {
-      Result.failure(IllegalStateException("Cannot delete variant with active instances"))
+  override suspend fun deleteProduct(productId: String): Result<Unit> {
+    val itemCount = productDao.getActiveItemCount(productId)
+    return if (itemCount > 0) {
+      Result.failure(IllegalStateException("Cannot delete product with active items"))
     } else {
-      productDao.deleteProduct(variantId)
+      productDao.deleteProduct(productId)
       Result.success(Unit)
     }
   }
 
-  override suspend fun getActiveInstanceCount(variantId: String): Int {
-    return productDao.getActiveItemCount(variantId)
+  override suspend fun getActiveItemCount(productId: String): Int {
+    return productDao.getActiveItemCount(productId)
   }
 
-  override suspend fun clearAllVariants() {
+  override suspend fun clearAllProducts() {
     productDao.clearAllProducts()
   }
 }

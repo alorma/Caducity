@@ -8,6 +8,7 @@ import com.alorma.caducity.domain.model.InstanceActionResult
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
+import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase

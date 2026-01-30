@@ -5,12 +5,12 @@ import com.alorma.caducity.config.time.date
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.toModel
 import com.alorma.caducity.data.datasource.room.toRoomEntity
-import com.alorma.caducity.domain.ProductDataSource
+import com.alorma.caducity.domain.CategoryDataSource
+import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.domain.model.NewProductInstance
-import com.alorma.caducity.domain.model.Product
-import com.alorma.caducity.domain.model.ProductInstance
-import com.alorma.caducity.domain.model.ProductWithInstances
+import com.alorma.caducity.domain.model.Item
+import com.alorma.caducity.domain.model.NewItem
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.ProductsListFilter
 import kotlinx.collections.immutable.ImmutableList
@@ -26,12 +26,12 @@ class RoomCategoryDataSource(
   database: AppDatabase,
   private val appClock: AppClock,
   private val expirationThresholds: ExpirationThresholds,
-) : ProductDataSource {
+) : CategoryDataSource {
 
   private val categoryDao = database.categoryDao()
   private val itemDao = database.itemDao()
 
-  override fun getProducts(filter: ProductsListFilter): Flow<ImmutableList<ProductWithInstances>> {
+  override fun getCategories(filter: ProductsListFilter): Flow<ImmutableList<CategoryWithItems>> {
     val daoFlow = when (filter) {
       is ProductsListFilter.All -> {
         categoryDao.getAllCategoriesWithItems()
@@ -85,12 +85,12 @@ class RoomCategoryDataSource(
       // Apply in-memory status filter only for multiple statuses
       // (to handle non-contiguous date ranges like Expired + Fresh)
       val filtered = if (filter is ProductsListFilter.ByStatus && filter.statuses.size > 1) {
-        products.filter { productWithInstances ->
-          // Keep product if it has at least one instance with the requested status
-          val allInstances = productWithInstances.variants.flatMap { it.instances } +
-              productWithInstances.standaloneInstances
-          allInstances.any { instance ->
-            instance.status in filter.statuses
+        products.filter { categoryWithItems ->
+          // Keep category if it has at least one item with the requested status
+          val allItems = categoryWithItems.products.flatMap { it.items } +
+              categoryWithItems.standaloneItems
+          allItems.any { item ->
+            item.status in filter.statuses
           }
         }
       } else {
@@ -134,48 +134,48 @@ class RoomCategoryDataSource(
     }
   }
 
-  override fun getProduct(productId: String): Flow<Result<ProductWithInstances>> {
-    return categoryDao.getCategoryWithItems(productId)
+  override fun getCategory(categoryId: String): Flow<Result<CategoryWithItems>> {
+    return categoryDao.getCategoryWithItems(categoryId)
       .map { roomEntity ->
         roomEntity?.let {
-          // Filter consumed instances before converting
+          // Filter consumed items before converting
           Result.success(it.filterConsumed().toModel(appClock, expirationThresholds))
-        } ?: Result.failure(NoSuchElementException("Product with id $productId not found"))
+        } ?: Result.failure(NoSuchElementException("Category with id $categoryId not found"))
       }
   }
 
-  override suspend fun createProduct(
-    product: Product,
-    instances: ImmutableList<ProductInstance>,
+  override suspend fun createCategory(
+    category: Category,
+    items: ImmutableList<Item>,
   ) {
-    categoryDao.insertCategory(product.toRoomEntity())
-    instances.forEach { instance ->
-      itemDao.insertItem(instance.toRoomEntity(product.id))
+    categoryDao.insertCategory(category.toRoomEntity())
+    items.forEach { item ->
+      itemDao.insertItem(item.toRoomEntity(category.id))
     }
   }
 
-  override suspend fun addInstance(
-    productId: String,
-    instance: NewProductInstance
+  override suspend fun addItem(
+    categoryId: String,
+    item: NewItem
   ): String {
     val id = UUID.randomUUID().toString()
 
     itemDao.insertItem(
-      instance.toRoomEntity(id = id, categoryId = productId),
+      item.toRoomEntity(id = id, categoryId = categoryId),
     )
     return id
   }
 
-  override suspend fun deleteInstance(instanceId: String) {
-    itemDao.deleteItem(instanceId)
+  override suspend fun deleteItem(itemId: String) {
+    itemDao.deleteItem(itemId)
   }
 
-  override suspend fun getInstance(instanceId: String): ProductInstance? {
-    return itemDao.getItem(instanceId)?.toModel(appClock, expirationThresholds)
+  override suspend fun getItem(itemId: String): Item? {
+    return itemDao.getItem(itemId)?.toModel(appClock, expirationThresholds)
   }
 
-  override suspend fun markInstanceAsConsumed(instanceId: String) {
-    itemDao.getItem(instanceId)?.let { item ->
+  override suspend fun markItemAsConsumed(itemId: String) {
+    itemDao.getItem(itemId)?.let { item ->
       val updatedItem = item.copy(
         consumedDate = appClock.now().toEpochMilliseconds(),
         pausedDate = null, // Clear frozen state if it was frozen
@@ -185,8 +185,8 @@ class RoomCategoryDataSource(
     }
   }
 
-  override suspend fun freezeInstance(instanceId: String, remainingDays: Int) {
-    itemDao.getItem(instanceId)?.let { item ->
+  override suspend fun freezeItem(itemId: String, remainingDays: Int) {
+    itemDao.getItem(itemId)?.let { item ->
       val updatedItem = item.copy(
         pausedDate = appClock.now().toEpochMilliseconds(),
         remainingDays = remainingDays
@@ -195,8 +195,8 @@ class RoomCategoryDataSource(
     }
   }
 
-  override suspend fun unfreezeInstance(instanceId: String) {
-    itemDao.getItem(instanceId)?.let { item ->
+  override suspend fun unfreezeItem(itemId: String) {
+    itemDao.getItem(itemId)?.let { item ->
       val pausedDate = item.pausedDate
       val remainingDays = item.remainingDays
 
@@ -215,11 +215,11 @@ class RoomCategoryDataSource(
     }
   }
 
-  override suspend fun clearAllProducts() {
+  override suspend fun clearAllCategories() {
     categoryDao.clearAllCategories()
   }
 
-  override suspend fun clearAllInstances() {
+  override suspend fun clearAllItems() {
     itemDao.clearAllItems()
   }
 }

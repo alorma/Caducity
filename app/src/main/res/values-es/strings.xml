@@ -178,12 +178,12 @@
     <string name="warning_consume_expired_positive">Consumir</string>
     <string name="warning_consume_expired_negative">Cancelar</string>
 
-    <!-- Instance action success messages -->
+    <!-- Item action success messages -->
     <string name="success_instance_consumed">Elemento consumido</string>
     <string name="success_instance_frozen">Elemento congelado</string>
     <string name="success_instance_deleted">Elemento eliminado</string>
 
-    <!-- Instance action error messages -->
+    <!-- Item action error messages -->
     <string name="error_consume_instance_failed">Error al consumir elemento</string>
     <string name="error_freeze_instance_failed">Error al congelar elemento</string>
     <string name="error_delete_instance_failed">Error al eliminar elemento</string>
