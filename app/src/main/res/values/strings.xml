@@ -122,6 +122,11 @@
     <string name="product_detail_add_instance_save">Save</string>
     <string name="product_detail_add_instance_date_picker_ok">OK</string>
     <string name="product_detail_add_instance_date_picker_cancel">Cancel</string>
+    <string name="product_detail_add_instance_quantity_label">Quantity</string>
+    <string name="product_detail_add_instance_quantity_slider">Slider (1-6)</string>
+    <string name="product_detail_add_instance_quantity_custom">Custom</string>
+    <string name="product_detail_add_instance_quantity_custom_label">Number of instances</string>
+    <string name="product_detail_add_instance_quantity_value">%1$d instances</string>
     <string name="product_detail_action_consume">Consume</string>
     <string name="product_detail_action_freeze">Freeze</string>
     <string name="product_detail_action_delete">Delete</string>
