@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.product.create
+package com.alorma.caducity.ui.screen.category.create
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
@@ -33,10 +33,10 @@ import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun CreateProductScreen(
+fun CreateCategoryScreen(
   onProductCreated: (String) -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: CreateProductViewModel = koinViewModel(),
+  viewModel: CreateCategoryViewModel = koinViewModel(),
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
 
@@ -44,7 +44,7 @@ fun CreateProductScreen(
     state = state.value,
     onNameChange = viewModel::updateName,
     onDescriptionChange = viewModel::updateDescription,
-    onCreateClick = { viewModel.createProduct(onProductCreated) },
+    onCreateClick = { viewModel.createCategory(onProductCreated) },
     onErrorDismiss = viewModel::clearError,
     modifier = modifier,
   )
@@ -53,7 +53,7 @@ fun CreateProductScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CreateProductPage(
-  state: CreateProductState,
+  state: CreateCategoryState,
   onNameChange: (String) -> Unit,
   onDescriptionChange: (String) -> Unit,
   onCreateClick: () -> Unit,

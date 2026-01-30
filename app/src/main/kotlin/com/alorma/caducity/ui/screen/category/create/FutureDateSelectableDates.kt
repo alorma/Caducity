@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.product.create
+package com.alorma.caducity.ui.screen.category.create
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates

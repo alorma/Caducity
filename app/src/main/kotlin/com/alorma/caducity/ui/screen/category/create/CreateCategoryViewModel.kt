@@ -1,8 +1,8 @@
-package com.alorma.caducity.ui.screen.product.create
+package com.alorma.caducity.ui.screen.category.create
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alorma.caducity.domain.usecase.CreateProductUseCase
+import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,12 +16,12 @@ import kotlinx.datetime.format.DateTimeFormat
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-class CreateProductViewModel(
-  private val createProductUseCase: CreateProductUseCase,
+class CreateCategoryViewModel(
+  private val createCategoryUseCase: CreateCategoryUseCase,
 ) : ViewModel() {
 
-  private val _state = MutableStateFlow(CreateProductState())
-  val state: StateFlow<CreateProductState> = _state.asStateFlow()
+  private val _state = MutableStateFlow(CreateCategoryState())
+  val state: StateFlow<CreateCategoryState> = _state.asStateFlow()
 
   fun updateName(name: String) {
     _state.update { it.copy(name = name) }
@@ -31,7 +31,7 @@ class CreateProductViewModel(
     _state.update { it.copy(description = description) }
   }
 
-  fun createProduct(onSuccess: (String) -> Unit) {
+  fun createCategory(onSuccess: (String) -> Unit) {
     val currentState = _state.value
 
     if (!validateInput(currentState)) {
@@ -41,22 +41,22 @@ class CreateProductViewModel(
     _state.update { it.copy(isLoading = true, error = null) }
 
     viewModelScope.launch {
-      val result = createProductUseCase.createProduct(
+      val result = createCategoryUseCase.createCategory(
         name = currentState.name,
         description = currentState.description,
-        instances = emptyList(), // No instances on creation
+        items = emptyList(), // No items on creation
       )
 
       result.fold(
-        onSuccess = { productId ->
-          _state.update { CreateProductState() }
-          onSuccess(productId)
+        onSuccess = { categoryId ->
+          _state.update { CreateCategoryState() }
+          onSuccess(categoryId)
         },
         onFailure = { error ->
           _state.update {
             it.copy(
               isLoading = false,
-              error = error.message ?: "Failed to create product"
+              error = error.message ?: "Failed to create category"
             )
           }
         }
@@ -64,9 +64,9 @@ class CreateProductViewModel(
     }
   }
 
-  private fun validateInput(state: CreateProductState): Boolean {
+  private fun validateInput(state: CreateCategoryState): Boolean {
     if (state.name.isBlank()) {
-      _state.update { it.copy(error = "Product name is required") }
+      _state.update { it.copy(error = "Category name is required") }
       return false
     }
     return true

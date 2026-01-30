@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.product.detail
+package com.alorma.caducity.ui.screen.category.detail
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -68,11 +68,11 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun ProductDetailScreen(
+fun CategoryDetailScreen(
   productId: String,
   onNavigateToAddInstance: (variantId: String?) -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
+  viewModel: CategoryDetailViewModel = koinViewModel { parametersOf(productId) }
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
 
@@ -88,37 +88,37 @@ fun ProductDetailScreen(
   )
 
   when (val currentState = state.value) {
-    is ProductDetailState.Loading -> FullscreenLoading()
+    is CategoryDetailState.Loading -> FullscreenLoading()
 
-    is ProductDetailState.Success -> {
-      ProductDetailSuccessContent(
+    is CategoryDetailState.Success -> {
+      CategoryDetailSuccessContent(
         modifier = modifier,
         bottomSheetState = bottomSheetState,
         dialogState = dialogState,
         snackbarState = snackbarState,
         state = currentState,
         onNavigateToAddInstance = onNavigateToAddInstance,
-        onInstanceClick = viewModel::onInstanceClick,
-        onShowAddVariantDialog = viewModel::onShowAddVariantDialog,
+        onItemClick = viewModel::onItemClick,
+        onShowAddProductDialog = viewModel::onShowAddProductDialog,
       )
     }
 
-    is ProductDetailState.Error -> DetailError(currentState)
+    is CategoryDetailState.Error -> DetailError(currentState)
   }
 }
 
 @Composable
-private fun ProductDetailSuccessContent(
+private fun CategoryDetailSuccessContent(
   modifier: Modifier,
   bottomSheetState: AppBottomSheetState,
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
-  state: ProductDetailState.Success,
+  state: CategoryDetailState.Success,
   onNavigateToAddInstance: (variantId: String?) -> Unit,
-  onInstanceClick: (ProductInstanceDetailUiModel) -> Unit,
-  onShowAddVariantDialog: () -> Unit,
+  onItemClick: (ItemDetailUiModel) -> Unit,
+  onShowAddProductDialog: () -> Unit,
 ) {
-  val pagerState = rememberPagerState(pageCount = { state.variantTabs.size })
+  val pagerState = rememberPagerState(pageCount = { state.productTabs.size })
   val coroutineScope = rememberCoroutineScope()
 
   AppScaffold(
@@ -131,22 +131,22 @@ private fun ProductDetailSuccessContent(
         colors = TopAppBarDefaults.topAppBarColors(
           containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
         ),
-        title = { Text(text = state.product.name) },
+        title = { Text(text = state.category.name) },
         navigationIcon = { NavigationIcon() },
       )
     },
     floatingActionButton = {
       FloatingActionButton(
         onClick = {
-          // Get the currently selected variant ID
-          val selectedVariantId = if (state.variantTabs.isNotEmpty()) {
-            val currentTab = state.variantTabs[pagerState.currentPage]
-            // Don't pass "other" as a variant ID
+          // Get the currently selected product ID
+          val selectedProductId = if (state.productTabs.isNotEmpty()) {
+            val currentTab = state.productTabs[pagerState.currentPage]
+            // Don't pass "other" as a product ID
             if (currentTab.id != "other") currentTab.id else null
           } else {
             null
           }
-          onNavigateToAddInstance(selectedVariantId)
+          onNavigateToAddInstance(selectedProductId)
         },
       ) {
         Icon(
@@ -170,7 +170,7 @@ private fun ProductDetailSuccessContent(
             onDateClick = { },
           )
 
-          if (state.variantTabs.isNotEmpty()) {
+          if (state.productTabs.isNotEmpty()) {
             Row(
               modifier = Modifier.padding(
                 top = 8.dp,
@@ -185,7 +185,7 @@ private fun ProductDetailSuccessContent(
                 divider = {},
                 containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
               ) {
-                state.variantTabs.forEachIndexed { index, variantTab ->
+                state.productTabs.forEachIndexed { index, productTab ->
                   Tab(
                     selected = pagerState.currentPage == index,
                     onClick = {
@@ -193,14 +193,14 @@ private fun ProductDetailSuccessContent(
                         pagerState.animateScrollToPage(index)
                       }
                     },
-                    text = { Text(text = variantTab.name) },
+                    text = { Text(text = productTab.name) },
                   )
                 }
               }
 
               IconButton(
                 modifier = Modifier,
-                onClick = onShowAddVariantDialog,
+                onClick = onShowAddProductDialog,
               ) {
                 Icon(
                   modifier = Modifier.size(18.dp),
@@ -218,10 +218,10 @@ private fun ProductDetailSuccessContent(
         state = pagerState,
         modifier = Modifier.fillMaxSize(),
       ) { page ->
-        val variantTab = state.variantTabs[page]
-        VariantTabContent(
-          variantTab = variantTab,
-          onInstanceClick = onInstanceClick,
+        val productTab = state.productTabs[page]
+        ProductTabContent(
+          productTab = productTab,
+          onItemClick = onItemClick,
         )
       }
     }
@@ -229,13 +229,13 @@ private fun ProductDetailSuccessContent(
 }
 
 @Composable
-private fun VariantTabContent(
-  variantTab: ProductDetailVariantTabUiModel,
-  onInstanceClick: (ProductInstanceDetailUiModel) -> Unit,
+private fun ProductTabContent(
+  productTab: CategoryDetailProductTabUiModel,
+  onItemClick: (ItemDetailUiModel) -> Unit,
 ) {
-  when (variantTab) {
-    is ProductDetailVariantTabUiModel.Empty -> {
-      // Show empty state for variants with no instances
+  when (productTab) {
+    is CategoryDetailProductTabUiModel.Empty -> {
+      // Show empty state for products with no items
       Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
@@ -248,7 +248,7 @@ private fun VariantTabContent(
       }
     }
 
-    is ProductDetailVariantTabUiModel.WithInstances -> {
+    is CategoryDetailProductTabUiModel.WithItems -> {
       Column(
         modifier = Modifier
           .fillMaxSize()
@@ -256,10 +256,10 @@ private fun VariantTabContent(
         verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
         // Show each status group
-        variantTab.datedInstancesGroups.forEach { datedInstances ->
+        productTab.datedItemsGroups.forEach { datedItems ->
           StatusGroupCard(
-            datedInstances = datedInstances,
-            onInstanceClick = onInstanceClick,
+            datedItems = datedItems,
+            onItemClick = onItemClick,
           )
         }
       }
@@ -269,8 +269,8 @@ private fun VariantTabContent(
 
 @Composable
 private fun StatusGroupCard(
-  datedInstances: DateInstancesUiModel,
-  onInstanceClick: (ProductInstanceDetailUiModel) -> Unit,
+  datedItems: DateItemsUiModel,
+  onItemClick: (ItemDetailUiModel) -> Unit,
 ) {
   Column(
     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -311,9 +311,9 @@ private fun StatusGroupCard(
         containerColor = statusColors.container,
       )
 
-      datedInstances.instances.forEach { instance ->
+      datedItems.items.forEach { instance ->
         SuggestionChip(
-          onClick = { onInstanceClick(instance) },
+          onClick = { onItemClick(instance) },
           colors = chipColors,
           label = { Text(text = instance.text) },
         )
@@ -322,9 +322,9 @@ private fun StatusGroupCard(
   }
 }
 
-private fun AppBottomSheetState.InstanceActionsBottomSheet(
+private fun AppBottomSheetState.ItemActionsBottomSheet(
   coroutineScope: CoroutineScope,
-  instance: ProductInstanceDetailUiModel,
+  item: ItemDetailUiModel,
   onConsume: () -> Unit,
   onFreeze: () -> Unit,
   onDelete: () -> Unit,
@@ -338,9 +338,9 @@ private fun AppBottomSheetState.InstanceActionsBottomSheet(
           .fillMaxWidth()
           .padding(bottom = 24.dp),
       ) {
-        // Header with instance info
+        // Header with item info
         Text(
-          text = instance.text,
+          text = item.text,
           style = MaterialTheme.typography.titleMedium,
           modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
         )
@@ -358,7 +358,7 @@ private fun AppBottomSheetState.InstanceActionsBottomSheet(
           },
           modifier = Modifier.clickable {
             onConsume()
-            coroutineScope.launch { this@InstanceActionsBottomSheet.hide() }
+            coroutineScope.launch { this@ItemActionsBottomSheet.hide() }
           },
         )
 
@@ -373,7 +373,7 @@ private fun AppBottomSheetState.InstanceActionsBottomSheet(
           },
           modifier = Modifier.clickable {
             onFreeze()
-            coroutineScope.launch { this@InstanceActionsBottomSheet.hide() }
+            coroutineScope.launch { this@ItemActionsBottomSheet.hide() }
           },
         )
 
@@ -389,7 +389,7 @@ private fun AppBottomSheetState.InstanceActionsBottomSheet(
           },
           modifier = Modifier.clickable {
             onDelete()
-            coroutineScope.launch { this@InstanceActionsBottomSheet.hide() }
+            coroutineScope.launch { this@ItemActionsBottomSheet.hide() }
           },
         )
       }
@@ -398,7 +398,7 @@ private fun AppBottomSheetState.InstanceActionsBottomSheet(
 }
 
 @Composable
-private fun DetailError(currentState: ProductDetailState.Error) {
+private fun DetailError(currentState: CategoryDetailState.Error) {
   Box(
     modifier = Modifier.fillMaxSize(),
     contentAlignment = Alignment.Center,
@@ -413,7 +413,7 @@ private fun DetailError(currentState: ProductDetailState.Error) {
 
 @Composable
 private fun SideEffectHandler(
-  viewModel: ProductDetailViewModel,
+  viewModel: CategoryDetailViewModel,
   snackbarState: AppSnackbarState,
   dialogState: AppDialogState,
   bottomSheetState: AppBottomSheetState,
@@ -421,56 +421,56 @@ private fun SideEffectHandler(
   LaunchedEffect(viewModel.sideEffect) {
     viewModel.sideEffect.collect { effect ->
       when (effect) {
-        ProductDetailSideEffect.InstanceConsumed -> {
+        CategoryDetailSideEffect.ItemConsumed -> {
           snackbarState.showSnackbar(
             message = R.string.success_instance_consumed,
             type = AppFeedbackType.Success,
           )
         }
 
-        ProductDetailSideEffect.InstanceFrozen -> {
+        CategoryDetailSideEffect.ItemFrozen -> {
           snackbarState.showSnackbar(
             message = R.string.success_instance_frozen,
             type = AppFeedbackType.Status(InstanceStatus.Frozen),
           )
         }
 
-        ProductDetailSideEffect.InstanceDeleted -> {
+        CategoryDetailSideEffect.ItemDeleted -> {
           snackbarState.showSnackbar(
             message = R.string.success_instance_deleted,
             type = AppFeedbackType.Success,
           )
         }
 
-        ProductDetailSideEffect.ConsumeInstanceFailed -> {
+        CategoryDetailSideEffect.ConsumeItemFailed -> {
           snackbarState.showSnackbar(
             message = R.string.error_consume_instance_failed,
             type = AppFeedbackType.Error,
           )
         }
 
-        ProductDetailSideEffect.FreezeInstanceFailed -> {
+        CategoryDetailSideEffect.FreezeItemFailed -> {
           snackbarState.showSnackbar(
             message = R.string.error_freeze_instance_failed,
             type = AppFeedbackType.Error,
           )
         }
 
-        ProductDetailSideEffect.DeleteInstanceFailed -> {
+        CategoryDetailSideEffect.DeleteItemFailed -> {
           snackbarState.showSnackbar(
             message = R.string.error_delete_instance_failed,
             type = AppFeedbackType.Error,
           )
         }
 
-        is ProductDetailSideEffect.FreezeNotAvailable -> {
+        is CategoryDetailSideEffect.FreezeNotAvailable -> {
           snackbarState.showSnackbar(
             message = R.string.error_cannot_freeze_expired,
             type = AppFeedbackType.Status(effect.status),
           )
         }
 
-        is ProductDetailSideEffect.ShowConsumeExpiredWarning -> {
+        is CategoryDetailSideEffect.ShowConsumeExpiredWarning -> {
           val result = dialogState.showAlertDialog(
             title = AppFeedbackResource.AsResource(
               R.string.warning_consume_expired_title
@@ -478,7 +478,7 @@ private fun SideEffectHandler(
             text = AppFeedbackResource.AsResource(
               R.string.warning_consume_expired_message
             ),
-            type = AppFeedbackType.Status(effect.instance.status),
+            type = AppFeedbackType.Status(effect.item.status),
             positiveButton = AppFeedbackResource.AsResource(
               R.string.warning_consume_expired_positive
             ),
@@ -487,11 +487,11 @@ private fun SideEffectHandler(
             ),
           )
           if (result == DialogResult.Positive) {
-            viewModel.onConsumeInstanceConfirmed(effect.instance)
+            viewModel.onConsumeItemConfirmed(effect.item)
           }
         }
 
-        is ProductDetailSideEffect.ShowConsumeExpiredError -> {
+        is CategoryDetailSideEffect.ShowConsumeExpiredError -> {
           val result = dialogState.showAlertDialog(
             title = AppFeedbackResource.AsResource(
               R.string.error_cannot_consume_expired
@@ -508,18 +508,18 @@ private fun SideEffectHandler(
             ),
           )
           if (result == DialogResult.Positive) {
-            viewModel.onDeleteInstance(effect.instance)
+            viewModel.onDeleteItem(effect.item)
           }
         }
 
-        ProductDetailSideEffect.ShowAddVariantDialog -> {
-          var variantName by mutableStateOf("")
+        CategoryDetailSideEffect.ShowAddProductDialog -> {
+          var productName by mutableStateOf("")
           val result = dialogState.showAlertDialog(
             title = { Text(stringResource(R.string.product_detail_add_variant_dialog_title)) },
             text = {
               OutlinedTextField(
-                value = variantName,
-                onValueChange = { variantName = it },
+                value = productName,
+                onValueChange = { productName = it },
                 label = { Text(stringResource(R.string.product_detail_add_variant_dialog_label)) },
                 placeholder = { Text(stringResource(R.string.product_detail_add_variant_dialog_placeholder)) },
                 singleLine = true,
@@ -530,35 +530,35 @@ private fun SideEffectHandler(
             negativeButton = { Text(stringResource(R.string.product_detail_add_variant_dialog_cancel)) },
             type = AppFeedbackType.Info,
           )
-          if (result == DialogResult.Positive && variantName.isNotBlank()) {
-            viewModel.onCreateVariant(variantName)
+          if (result == DialogResult.Positive && productName.isNotBlank()) {
+            viewModel.onCreateProduct(productName)
           }
         }
 
-        is ProductDetailSideEffect.ShowInstanceActionsBottomSheet -> {
-          bottomSheetState.InstanceActionsBottomSheet(
+        is CategoryDetailSideEffect.ShowItemActionsBottomSheet -> {
+          bottomSheetState.ItemActionsBottomSheet(
             coroutineScope = this,
-            instance = effect.instance,
+            item = effect.item,
             onConsume = {
-              viewModel.onConsumeInstance(effect.instance)
+              viewModel.onConsumeItem(effect.item)
               this.launch { }
             },
             onFreeze = {
-              viewModel.onFreezeInstance(effect.instance)
+              viewModel.onFreezeItem(effect.item)
               this.launch { }
             },
             onDelete = {
-              viewModel.onDeleteInstance(effect.instance)
+              viewModel.onDeleteItem(effect.item)
               this.launch { }
             },
           )
         }
 
-        ProductDetailSideEffect.VariantCreated -> {
-          // Variant created successfully - no feedback needed, it will appear in the list
+        CategoryDetailSideEffect.ProductCreated -> {
+          // Product created successfully - no feedback needed, it will appear in the list
         }
 
-        ProductDetailSideEffect.CreateVariantFailed -> {
+        CategoryDetailSideEffect.CreateProductFailed -> {
           snackbarState.showSnackbar(
             message = R.string.error_create_variant_failed,
             type = AppFeedbackType.Error,

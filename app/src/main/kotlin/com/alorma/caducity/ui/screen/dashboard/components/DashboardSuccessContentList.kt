@@ -28,7 +28,7 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 @Composable
 fun DashboardSuccessContentList(
   state: DashboardState.Success,
-  onNavigateToProduct: (String) -> Unit,
+  onNavigateToCategory: (String) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
   lazyListState: LazyListState,
 ) {
@@ -53,12 +53,12 @@ fun DashboardSuccessContentList(
     }
 
     when (state) {
-      is DashboardState.Success.PerProduct -> {
+      is DashboardState.Success.PerCategory -> {
         items(
-          items = state.products,
-          key = { product -> product.id },
-          contentType = { "product" },
-        ) { productCalendarState ->
+          items = state.categories,
+          key = { category -> category.id },
+          contentType = { "category" },
+        ) { categoryCalendarState ->
           Column(
             modifier = Modifier.animateItem(),
           ) {
@@ -67,14 +67,14 @@ fun DashboardSuccessContentList(
                 .fillMaxWidth()
                 .clip(CaducityTheme.shapes.small)
                 .clickable {
-                  onNavigateToProduct(productCalendarState.id)
+                  onNavigateToCategory(categoryCalendarState.id)
                 }
                 .padding(horizontal = 4.dp, vertical = 8.dp),
               verticalAlignment = Alignment.CenterVertically,
             ) {
               Text(
                 modifier = Modifier.padding(start = 8.dp).weight(1f),
-                text = productCalendarState.name,
+                text = categoryCalendarState.name,
                 style = CaducityTheme.typography.titleMedium,
               )
 
@@ -86,9 +86,9 @@ fun DashboardSuccessContentList(
             }
 
             CaducityWeekCalendar(
-              appCalendarConfig = productCalendarState.appCalendarConfig,
+              appCalendarConfig = categoryCalendarState.appCalendarConfig,
               todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
-              onDateClick = { onNavigateToProduct(productCalendarState.id) },
+              onDateClick = { onNavigateToCategory(categoryCalendarState.id) },
             )
           }
 

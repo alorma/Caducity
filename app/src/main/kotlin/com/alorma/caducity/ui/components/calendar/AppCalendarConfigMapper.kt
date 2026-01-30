@@ -4,9 +4,9 @@ import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.domain.model.ProductInstance
+import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.ui.components.shape.calculateShapeWithGaps
-import com.alorma.caducity.ui.screen.product.detail.DateInstancesUiModel
+import com.alorma.caducity.ui.screen.category.detail.DateItemsUiModel
 import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.plusMonths
 import kotlinx.collections.immutable.ImmutableList
@@ -21,16 +21,16 @@ class AppCalendarConfigMapper(
   private val localizedDateFormatter: LocalizedDateFormatter,
 ) {
 
-  fun createFromInstances(
-    instances: List<ProductInstance>,
+  fun createFromItems(
+    items: List<Item>,
     firstDayOfWeek: DayOfWeek,
   ): AppCalendarConfig {
     val today = appClock.now().date()
 
-    return if (instances.isEmpty()) {
+    return if (items.isEmpty()) {
       createEmpty(today, firstDayOfWeek)
     } else {
-      createWithInstances(instances, firstDayOfWeek)
+      createWithItems(items, firstDayOfWeek)
     }
   }
 
@@ -52,7 +52,7 @@ class AppCalendarConfigMapper(
   fun createWithDatedContent(
     startDate: LocalDate,
     endDate: LocalDate,
-    datedContent: ImmutableList<DateInstancesUiModel>,
+    datedContent: ImmutableList<DateItemsUiModel>,
     firstDayOfWeek: DayOfWeek,
   ): AppCalendarConfig {
     val today = appClock.now().date()
@@ -95,23 +95,23 @@ class AppCalendarConfigMapper(
     )
   }
 
-  private fun createWithInstances(
-    instances: List<ProductInstance>,
+  private fun createWithItems(
+    items: List<Item>,
     firstDayOfWeek: DayOfWeek,
   ): AppCalendarConfig {
     val today = appClock.now().date()
 
-    val startDate = instances
-      .minBy { instance -> instance.expirationDate }
+    val startDate = items
+      .minBy { item -> item.expirationDate }
       .expirationDate
       .date()
 
-    val endDate = instances
-      .maxBy { instance -> instance.expirationDate }
+    val endDate = items
+      .maxBy { item -> item.expirationDate }
       .expirationDate
       .date()
 
-    val dateWithShapes = getDateWithShapes(instances, today)
+    val dateWithShapes = getDateWithShapes(items, today)
 
     return AppCalendarConfig(
       today = today,
@@ -125,13 +125,13 @@ class AppCalendarConfigMapper(
   }
 
   private fun getDateWithShapes(
-    instances: List<ProductInstance>,
+    items: List<Item>,
     today: LocalDate
   ): ImmutableMap<LocalDate, AppCalendarDateInfo> {
-    val instancesStatusByDate = instancesStatusByDate(instances, today)
+    val itemsStatusByDate = itemsStatusByDate(items, today)
 
     // Convert map to list of entries for shape calculation
-    val dateEntries = instancesStatusByDate.entries.sortedBy { it.key }
+    val dateEntries = itemsStatusByDate.entries.sortedBy { it.key }
 
     return dateEntries.mapIndexed { index, (date, status) ->
       val shape = dateEntries.calculateShapeWithGaps(
@@ -142,30 +142,30 @@ class AppCalendarConfigMapper(
     }.toMap().toImmutableMap()
   }
 
-  private fun instancesStatusByDate(
-    instances: List<ProductInstance>,
+  private fun itemsStatusByDate(
+    items: List<Item>,
     today: LocalDate
   ): Map<LocalDate, InstanceStatus?> {
     return buildMap {
-      instances.forEach { instance ->
-        val date = instance.expirationDate.date()
+      items.forEach { item ->
+        val date = item.expirationDate.date()
         val currentStatus = get(date)
 
         // Keep the most critical status (Expired > ExpiringSoon > Frozen > Fresh)
         val newStatus = when {
           currentStatus == InstanceStatus.Expired -> InstanceStatus.Expired
-          instance.status == InstanceStatus.Expired -> InstanceStatus.Expired
+          item.status == InstanceStatus.Expired -> InstanceStatus.Expired
           currentStatus == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
-          instance.status == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
+          item.status == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
           currentStatus == InstanceStatus.Frozen -> InstanceStatus.Frozen
-          instance.status == InstanceStatus.Frozen -> InstanceStatus.Frozen
+          item.status == InstanceStatus.Frozen -> InstanceStatus.Frozen
           else -> InstanceStatus.Fresh
         }
 
         put(date, newStatus)
       }
 
-      // Ensure today is always in the map, even if no products
+      // Ensure today is always in the map, even if no items
       if (!containsKey(today)) {
         put(today, null)
       }

@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.product.detail
+package com.alorma.caducity.ui.screen.category.detail
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
@@ -13,13 +13,13 @@ import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
 
 @Composable
-fun ProductDetailContainer(
+fun CategoryDetailContainer(
   productId: String,
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val productDetailBackStack = retain {
-    mutableStateListOf<NavKey>(ProductDetailRoutes.Root(productId))
+    mutableStateListOf<NavKey>(CategoryDetailRoutes.Root(productId))
   }
 
   val bottomSheetStrategy = remember {
@@ -35,16 +35,16 @@ fun ProductDetailContainer(
       rememberViewModelStoreNavEntryDecorator(),
     ),
     entryProvider = entryProvider {
-      entry<ProductDetailRoutes.Root> {
-        ProductDetailScreen(
+      entry<CategoryDetailRoutes.Root> {
+        CategoryDetailScreen(
           productId = it.productId,
           onNavigateToAddInstance = { variantId ->
-            productDetailBackStack.add(ProductDetailRoutes.AddInstance(productId, variantId))
+            productDetailBackStack.add(CategoryDetailRoutes.AddInstance(productId, variantId))
           },
         )
       }
-      entry<ProductDetailRoutes.AddInstance> {
-        ProductDetailAddInstanceScreen(
+      entry<CategoryDetailRoutes.AddInstance> {
+        CategoryDetailAddItemScreen(
           productId = it.productId,
           variantId = it.variantId,
           onClose = { productDetailBackStack.removeLastOrNull() },

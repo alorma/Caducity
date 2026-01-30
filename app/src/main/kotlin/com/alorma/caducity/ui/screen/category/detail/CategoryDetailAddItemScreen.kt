@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.product.detail
+package com.alorma.caducity.ui.screen.category.detail
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -55,12 +55,12 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProductDetailAddInstanceScreen(
+fun CategoryDetailAddItemScreen(
   productId: String,
   variantId: String?,
   onClose: () -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: ProductDetailAddInstanceViewModel = koinViewModel { parametersOf(productId, variantId) }
+  viewModel: CategoryDetailAddItemViewModel = koinViewModel { parametersOf(productId, variantId) }
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
   val formState = viewModel.formState.collectAsStateWithLifecycle()
@@ -87,7 +87,7 @@ fun ProductDetailAddInstanceScreen(
     },
   ) { paddingValues ->
     when (val currentState = state.value) {
-      is ProductDetailAddInstanceState.Loading -> {
+      is CategoryDetailAddItemState.Loading -> {
         Box(
           modifier = Modifier
             .fillMaxSize()
@@ -98,7 +98,7 @@ fun ProductDetailAddInstanceScreen(
         }
       }
 
-      is ProductDetailAddInstanceState.Success -> {
+      is CategoryDetailAddItemState.Success -> {
         var expanded by remember { mutableStateOf(false) }
         var showDatePicker by remember { mutableStateOf(false) }
 
@@ -116,8 +116,8 @@ fun ProductDetailAddInstanceScreen(
             onExpandedChange = { expanded = it },
           ) {
             TextField(
-              value = formState.value.variantText.text,
-              onValueChange = { viewModel.onVariantTextChanged(TextFieldValue(it)) },
+              value = formState.value.productText.text,
+              onValueChange = { viewModel.onProductTextChanged(TextFieldValue(it)) },
               label = { Text(stringResource(R.string.product_detail_add_instance_variant_label)) },
               placeholder = { Text(stringResource(R.string.product_detail_add_instance_variant_placeholder)) },
               trailingIcon = {
@@ -129,17 +129,17 @@ fun ProductDetailAddInstanceScreen(
               singleLine = true,
             )
 
-            val filteredVariants = viewModel.getFilteredVariants()
-            if (filteredVariants.isNotEmpty()) {
+            val filteredProducts = viewModel.getFilteredProducts()
+            if (filteredProducts.isNotEmpty()) {
               ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
               ) {
-                filteredVariants.forEach { variant ->
+                filteredProducts.forEach { product ->
                   DropdownMenuItem(
-                    text = { Text(variant.name) },
+                    text = { Text(product.name) },
                     onClick = {
-                      viewModel.onVariantSelected(variant.id, variant.name)
+                      viewModel.onProductSelected(product.id, product.name)
                       expanded = false
                     },
                   )
@@ -253,7 +253,7 @@ fun ProductDetailAddInstanceScreen(
         }
       }
 
-      is ProductDetailAddInstanceState.Error -> {
+      is CategoryDetailAddItemState.Error -> {
         Box(
           modifier = Modifier
             .fillMaxSize()

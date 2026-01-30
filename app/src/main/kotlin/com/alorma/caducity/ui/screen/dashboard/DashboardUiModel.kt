@@ -16,7 +16,7 @@ data class DashboardSummary(
 )
 
 @Stable
-data class ProductCalendarState(
+data class CategoryCalendarState(
   val id: String,
   val name: String,
   val appCalendarConfig: AppCalendarConfig,
