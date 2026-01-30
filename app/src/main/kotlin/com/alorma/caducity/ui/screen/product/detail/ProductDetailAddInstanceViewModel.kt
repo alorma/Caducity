@@ -4,13 +4,17 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.config.resources.StringProvider
+import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.usecase.AddInstanceToProductUseCase
 import com.alorma.caducity.domain.usecase.CreateVariantUseCase
 import com.alorma.caducity.domain.usecase.GetProductVariantsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlin.time.Instant
 
@@ -19,6 +23,8 @@ class ProductDetailAddInstanceViewModel(
   private val getProductVariantsUseCase: GetProductVariantsUseCase,
   private val createVariantUseCase: CreateVariantUseCase,
   private val addInstanceToProductUseCase: AddInstanceToProductUseCase,
+  private val productDataSource: ProductDataSource,
+  private val stringProvider: StringProvider,
   private val appClock: AppClock,
 ) : ViewModel() {
 
@@ -147,27 +153,35 @@ class ProductDetailAddInstanceViewModel(
           result.getOrThrow().id
         }
 
+        // Get existing instance count for this variant/standalone
+        val productWithInstances = productDataSource.getProduct(productId).firstOrNull()?.getOrNull()
+        val existingInstanceCount = if (variantId != null) {
+          // Count instances in the specific variant
+          productWithInstances?.variants
+            ?.find { it.variant.id == variantId }
+            ?.instances?.size ?: 0
+        } else {
+          // Count standalone instances (no variant)
+          productWithInstances?.standaloneInstances?.size ?: 0
+        }
+
         // Convert selected date from milliseconds to Instant
         val expirationDate = Instant.fromEpochMilliseconds(currentFormState.expirationDateMillis)
 
         // Create multiple instances
         repeat(quantity) { index ->
           // Determine identifier for each instance
-          val identifier = if (variantId != null) {
-            // Variant selected: identifier can be empty or use provided value
-            val baseIdentifier = identifierText.ifEmpty { "" }
-            if (baseIdentifier.isNotEmpty() && quantity > 1) {
-              "$baseIdentifier - ${index + 1}"
-            } else {
-              baseIdentifier
-            }
+          val identifier = if (identifierText.isEmpty()) {
+            // Empty identifier: auto-generate localized "Item #X"
+            val itemNumber = existingInstanceCount + index + 1
+            val itemLabel = stringProvider.getString(R.string.product_detail_auto_identifier_item)
+            "$itemLabel #$itemNumber"
+          } else if (quantity > 1) {
+            // Multiple instances with provided identifier: append " - N"
+            "$identifierText - ${index + 1}"
           } else {
-            // No variant: use provided identifier (we validated it's not empty above)
-            if (quantity > 1) {
-              "$identifierText - ${index + 1}"
-            } else {
-              identifierText
-            }
+            // Single instance with provided identifier: use as-is
+            identifierText
           }
 
           addInstanceToProductUseCase.addInstance(
