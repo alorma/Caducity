@@ -29,9 +29,8 @@ import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
-import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
-import com.alorma.caducity.ui.components.feedback.snackbar.LocalAppSnackbarHostState
-import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
@@ -60,7 +59,7 @@ fun BackupScreen(
   }
 
   val dialogState = rememberAppDialogState()
-  val snackbarHostState = rememberAppSnackbarHostState()
+  val snackbarHostState = rememberAppSnackbarState()
 
   // Handle side effects (success/error messages)
   LaunchedEffect(viewModel.sideEffect) {
@@ -133,7 +132,7 @@ fun BackupScreen(
 @Composable
 private fun BackupScreenContent(
   dialogState: AppDialogState,
-  snackbarHostState: AppSnackbarHostState,
+  snackbarHostState: AppSnackbarState,
   onExport: () -> Unit,
   onRestore: () -> Unit,
   modifier: Modifier = Modifier,
@@ -200,7 +199,7 @@ fun BackupScreenContentPreview() {
     Surface {
       BackupScreenContent(
         dialogState = rememberAppDialogState(),
-        snackbarHostState = rememberAppSnackbarHostState(),
+        snackbarHostState = rememberAppSnackbarState(),
         onExport = {},
         onRestore = {},
       )

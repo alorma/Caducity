@@ -25,8 +25,8 @@ import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
-import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
@@ -47,7 +47,7 @@ fun DashboardScreen(
   viewModel: DashboardViewModel = koinViewModel(),
 ) {
   val dashboardState = viewModel.state.collectAsStateWithLifecycle()
-  val snackbarHostState = rememberAppSnackbarHostState()
+  val snackbarHostState = rememberAppSnackbarState()
 
   Box(modifier) {
     DashboardContent(
@@ -68,7 +68,7 @@ private fun DashboardContent(
   onNavigateToProduct: (String) -> Unit,
   onNavigateToStatus: (InstanceStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
-  snackbarHostState: AppSnackbarHostState,
+  snackbarHostState: AppSnackbarState,
 ) {
   val lazyListState = rememberLazyListState()
 
@@ -163,7 +163,7 @@ fun DashboardSuccessContentPreview(
         onNavigateToProduct = {},
         onNavigateToStatus = {},
         onNavigateToSettings = {},
-        snackbarHostState = rememberAppSnackbarHostState(),
+        snackbarHostState = rememberAppSnackbarState(),
       )
     }
   }

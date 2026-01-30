@@ -18,7 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.SuggestionChip
@@ -27,12 +26,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -53,11 +50,13 @@ import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
-import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
-import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
@@ -77,9 +76,15 @@ fun ProductDetailScreen(
   val state = viewModel.state.collectAsStateWithLifecycle()
 
   val dialogState = rememberAppDialogState()
-  val snackbarState = rememberAppSnackbarHostState()
+  val snackbarState = rememberAppSnackbarState()
+  val bottomSheetState = rememberAppBottomSheetState()
 
-  SideEffectHandler(viewModel, snackbarState, dialogState)
+  SideEffectHandler(
+    viewModel = viewModel,
+    snackbarState = snackbarState,
+    dialogState = dialogState,
+    bottomSheetState = bottomSheetState,
+  )
 
   when (val currentState = state.value) {
     is ProductDetailState.Loading -> FullscreenLoading()
@@ -91,6 +96,7 @@ fun ProductDetailScreen(
         snackbarState = snackbarState,
         state = currentState,
         onNavigateToAddInstance = onNavigateToAddInstance,
+        onInstanceClick = viewModel::onInstanceClick,
         onConsume = viewModel::onConsumeInstance,
         onFreeze = viewModel::onFreezeInstance,
         onDelete = viewModel::onDeleteInstance,
@@ -106,9 +112,10 @@ fun ProductDetailScreen(
 private fun ProductDetailSuccessContent(
   modifier: Modifier,
   dialogState: AppDialogState,
-  snackbarState: AppSnackbarHostState,
+  snackbarState: AppSnackbarState,
   state: ProductDetailState.Success,
   onNavigateToAddInstance: () -> Unit,
+  onInstanceClick: (ProductInstanceDetailUiModel) -> Unit,
   onConsume: (ProductInstanceDetailUiModel) -> Unit,
   onFreeze: (ProductInstanceDetailUiModel) -> Unit,
   onDelete: (ProductInstanceDetailUiModel) -> Unit,
@@ -203,9 +210,7 @@ private fun ProductDetailSuccessContent(
         val variantTab = state.variantTabs[page]
         VariantTabContent(
           variantTab = variantTab,
-          onConsume = onConsume,
-          onFreeze = onFreeze,
-          onDelete = onDelete,
+          onInstanceClick = onInstanceClick,
         )
       }
     }
@@ -215,9 +220,7 @@ private fun ProductDetailSuccessContent(
 @Composable
 private fun VariantTabContent(
   variantTab: ProductDetailVariantTabUiModel,
-  onConsume: (ProductInstanceDetailUiModel) -> Unit,
-  onFreeze: (ProductInstanceDetailUiModel) -> Unit,
-  onDelete: (ProductInstanceDetailUiModel) -> Unit,
+  onInstanceClick: (ProductInstanceDetailUiModel) -> Unit,
 ) {
   when (variantTab) {
     is ProductDetailVariantTabUiModel.Empty -> {
@@ -235,9 +238,6 @@ private fun VariantTabContent(
     }
 
     is ProductDetailVariantTabUiModel.WithInstances -> {
-      val selectedInstance = remember { mutableStateOf<ProductInstanceDetailUiModel?>(null) }
-      val sheetState = rememberModalBottomSheetState()
-
       Column(
         modifier = Modifier
           .fillMaxSize()
@@ -248,31 +248,7 @@ private fun VariantTabContent(
         variantTab.datedInstancesGroups.forEach { datedInstances ->
           StatusGroupCard(
             datedInstances = datedInstances,
-            onInstanceClick = { selectedInstance.value = it },
-          )
-        }
-      }
-
-      // Bottom sheet for instance actions
-      selectedInstance.value?.let { instance ->
-        ModalBottomSheet(
-          onDismissRequest = { selectedInstance.value = null },
-          sheetState = sheetState,
-        ) {
-          InstanceActionsBottomSheet(
-            instance = instance,
-            onConsume = {
-              onConsume(instance)
-              selectedInstance.value = null
-            },
-            onFreeze = {
-              onFreeze(instance)
-              selectedInstance.value = null
-            },
-            onDelete = {
-              onDelete(instance)
-              selectedInstance.value = null
-            },
+            onInstanceClick = onInstanceClick,
           )
         }
       }
@@ -412,8 +388,9 @@ private fun DetailError(currentState: ProductDetailState.Error) {
 @Composable
 private fun SideEffectHandler(
   viewModel: ProductDetailViewModel,
-  snackbarState: AppSnackbarHostState,
-  dialogState: AppDialogState
+  snackbarState: AppSnackbarState,
+  dialogState: AppDialogState,
+  bottomSheetState: AppBottomSheetState,
 ) {
   LaunchedEffect(viewModel.sideEffect) {
     viewModel.sideEffect.collect { effect ->
@@ -529,6 +506,19 @@ private fun SideEffectHandler(
           )
           if (result == DialogResult.Positive && variantName.isNotBlank()) {
             viewModel.onCreateVariant(variantName)
+          }
+        }
+
+        is ProductDetailSideEffect.ShowInstanceActionsBottomSheet -> launch {
+          bottomSheetState.show(
+            onDismissRequest = {},
+          ) {
+            InstanceActionsBottomSheet(
+              instance = effect.instance,
+              onConsume = { viewModel.onConsumeInstance(effect.instance) },
+              onFreeze = { viewModel.onFreezeInstance(effect.instance) },
+              onDelete = { viewModel.onDeleteInstance(effect.instance) },
+            )
           }
         }
 

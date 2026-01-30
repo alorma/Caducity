@@ -18,6 +18,11 @@ sealed interface ProductDetailSideEffect {
   // Dialog events
   data object ShowAddVariantDialog : ProductDetailSideEffect
 
+  // Bottom sheet events
+  data class ShowInstanceActionsBottomSheet(
+    val instance: ProductInstanceDetailUiModel,
+  ) : ProductDetailSideEffect
+
   // Specific validation events
   data class FreezeNotAvailable(val status: InstanceStatus) : ProductDetailSideEffect
   data class ShowConsumeExpiredWarning(

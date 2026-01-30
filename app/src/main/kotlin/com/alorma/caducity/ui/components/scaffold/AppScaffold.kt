@@ -15,14 +15,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetHost
+import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.bottomsheet.LocalAppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogHost
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.LocalAppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHost
-import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHostState
-import com.alorma.caducity.ui.components.feedback.snackbar.LocalAppSnackbarHostState
-import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarHostState
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.LocalAppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 
 @Suppress("ModifierTopMost")
 @Composable
@@ -30,8 +34,9 @@ fun AppScaffold(
   modifier: Modifier = Modifier,
   topBar: @Composable () -> Unit = {},
   bottomBar: @Composable () -> Unit = {},
-  snackbarState: AppSnackbarHostState = rememberAppSnackbarHostState(),
+  bottomSheetState: AppBottomSheetState = rememberAppBottomSheetState(),
   dialogState: AppDialogState = rememberAppDialogState(),
+  snackbarState: AppSnackbarState = rememberAppSnackbarState(),
   floatingActionButton: @Composable () -> Unit = {},
   floatingActionButtonPosition: FabPosition = FabPosition.End,
   containerColor: Color = MaterialTheme.colorScheme.background,
@@ -40,14 +45,15 @@ fun AppScaffold(
   content: @Composable (PaddingValues) -> Unit,
 ) {
   CompositionLocalProvider(
-    LocalAppSnackbarHostState provides snackbarState,
+    LocalAppSnackbarState provides snackbarState,
     LocalAppDialogState provides dialogState,
+    LocalAppBottomSheetState provides bottomSheetState,
   ) {
     Scaffold(
       modifier = modifier,
       topBar = topBar,
       bottomBar = bottomBar,
-      snackbarHost = { AppSnackbarHost(LocalAppSnackbarHostState.current) },
+      snackbarHost = { AppSnackbarHost(LocalAppSnackbarState.current) },
       floatingActionButton = floatingActionButton,
       floatingActionButtonPosition = floatingActionButtonPosition,
       containerColor = containerColor,
@@ -62,6 +68,7 @@ fun AppScaffold(
       ) {
         content(paddingValues)
         AppDialogHost(LocalAppDialogState.current)
+        AppBottomSheetHost(LocalAppBottomSheetState.current)
       }
     }
   }
