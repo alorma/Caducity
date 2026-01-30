@@ -24,19 +24,19 @@ class ObtainProductDetailUseCase(
   fun obtain(productId: String): Flow<Result<ProductDetail>> {
     return productDataSource.getProduct(productId).map { result ->
       result.map { product ->
-        // Filter out frozen instances
+        // Filter out frozen instances but keep empty variants
         val activeVariants = product.variants.map { variant ->
           variant.copy(
             instances = variant.instances
               .filter { it.status != InstanceStatus.Frozen }
               .toImmutableList()
           )
-        }.filter { it.instances.isNotEmpty() }
+        }
 
         val activeStandaloneInstances = product.standaloneInstances
           .filter { it.status != InstanceStatus.Frozen }
 
-        // Map variants to DetailVariant with their dated instances
+        // Map variants to DetailVariant with their dated instances (including empty variants)
         val detailVariants: List<DetailVariant> = activeVariants.map { variant ->
           val dates: List<LocalDate> = variant.instances
             .map { it.expirationDate.date() }

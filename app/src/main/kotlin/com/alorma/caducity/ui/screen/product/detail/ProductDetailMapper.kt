@@ -28,23 +28,30 @@ class ProductDetailMapper(
       description = productDetail.product.description,
     )
 
-    // Map variants to UI models
+    // Map variants to UI models (empty or with instances)
     val variantTabs = productDetail.variants.map { variant ->
-      ProductDetailVariantTabUiModel(
-        id = variant.id,
-        name = variant.name,
-        datedInstancesGroups = variant.datedInstancesGroups.map { datedInstances ->
-          mapVariantDatedContent(
-            variant = variant,
-            datedInstances = datedInstances
-          )
-        }.toImmutableList(),
-      )
+      if (variant.datedInstancesGroups.isEmpty()) {
+        ProductDetailVariantTabUiModel.Empty(
+          id = variant.id,
+          name = variant.name,
+        )
+      } else {
+        ProductDetailVariantTabUiModel.WithInstances(
+          id = variant.id,
+          name = variant.name,
+          datedInstancesGroups = variant.datedInstancesGroups.map { datedInstances ->
+            mapVariantDatedContent(
+              variant = variant,
+              datedInstances = datedInstances
+            )
+          }.toImmutableList(),
+        )
+      }
     }.toMutableList()
 
     // Add "Other" tab for non-variant instances if they exist
     if (productDetail.nonVariant.isNotEmpty()) {
-      val otherTab = ProductDetailVariantTabUiModel(
+      val otherTab = ProductDetailVariantTabUiModel.WithInstances(
         id = "other",
         name = "Other",
         datedInstancesGroups = listOf(
@@ -68,15 +75,16 @@ class ProductDetailMapper(
 
     val today = appClock.nowDate()
 
-    // Collect all dates from variants for calendar
-    val allDates = productDetail.variants.flatMap { variant ->
+    // Collect all dates from variants with instances for calendar
+    val variantsWithInstances = productDetail.variants.filter { it.datedInstancesGroups.isNotEmpty() }
+    val allDates = variantsWithInstances.flatMap { variant ->
       variant.datedInstancesGroups.map { it.date }
     }
     val startDate = allDates.minOrNull() ?: today
     val endDate = allDates.maxOrNull() ?: today
 
-    // Create calendar config with all dated content from variants
-    val allDatedContents = productDetail.variants.flatMap { variant ->
+    // Create calendar config with all dated content from variants with instances
+    val allDatedContents = variantsWithInstances.flatMap { variant ->
       variant.datedInstancesGroups.map { datedInstances ->
         mapVariantDatedContent(variant = variant, datedInstances = datedInstances)
       }
