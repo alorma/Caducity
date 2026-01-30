@@ -16,10 +16,10 @@
     </string-array>
 
     <string  name="dashboard_screen_title">Panel</string>
-    <string name="products_screen_title">Productos</string>
+    <string name="products_screen_title">Categorías</string>
     <string name="dashboard_action_collapse">Colapsar</string>
     <string name="dashboard_action_expand">Expandir</string>
-    <string name="dashboard_search_placeholder">Buscar productos…</string>
+    <string name="dashboard_search_placeholder">Buscar categorías…</string>
     <string name="dashboard_filter_fresh">Fresco</string>
     <string name="dashboard_filter_expiring_soon">Próximo</string>
     <string name="dashboard_filter_expired">Caducado</string>
@@ -66,9 +66,9 @@
     <string name="settings_group_notifications">Notificaciones</string>
     <string name="settings_enable_notifications">Activar notificaciones</string>
 
-    <string name="create_product_screen_title">Crear Producto</string>
-    <string name="create_product_name_label">Nombre del Producto</string>
-    <string name="create_product_name_placeholder">Introduce el nombre del producto</string>
+    <string name="create_product_screen_title">Crear Categoría</string>
+    <string name="create_product_name_label">Nombre de la Categoría</string>
+    <string name="create_product_name_placeholder">Introduce el nombre de la categoría</string>
     <string name="create_product_description_label">Descripción</string>
     <string name="create_product_description_placeholder">Introduce la descripción</string>
     <string name="create_product_expiration_date_label">Fecha de Caducidad</string>
@@ -76,7 +76,7 @@
     <string name="create_product_button_cancel">Cancelar</string>
     <string name="create_product_button_create">Crear</string>
     <string name="create_product_content_description_back">Atrás</string>
-    <string name="create_product_instances_title">Instancias del Producto</string>
+    <string name="create_product_instances_title">Instancias de la Categoría</string>
     <string name="create_product_instance_identifier_label">Identificador</string>
     <string name="create_product_instance_identifier_placeholder">ej., Lote #1, Unidad A</string>
     <string name="create_product_add_instance">Añadir Instancia</string>
@@ -137,11 +137,11 @@
     <!-- Instance action errors -->
     <string name="error_instance_not_found">Instancia no encontrada</string>
     <string name="error_cannot_freeze_expired">No se pueden congelar artículos caducados</string>
-    <string name="error_cannot_consume_expired">No es seguro consumir productos caducados</string>
+    <string name="error_cannot_consume_expired">No es seguro consumir categorías caducadas</string>
     <string name="error_cannot_consume_expired_message">Este artículo ha caducado y no puede ser consumido. ¿Deseas eliminarlo en su lugar?</string>
     <string name="error_cannot_consume_expired_positive">Eliminar</string>
     <string name="warning_consume_expired_title">¿Consumir Artículo que Caduca Hoy?</string>
-    <string name="warning_consume_expired_message">Este artículo caduca hoy. Por favor, asegúrate de que el producto esté en buen estado antes de consumirlo. ¿Deseas marcarlo como consumido?</string>
+    <string name="warning_consume_expired_message">Este artículo caduca hoy. Por favor, asegúrate de que la categoría esté en buen estado antes de consumirlo. ¿Deseas marcarlo como consumido?</string>
     <string name="warning_consume_expired_positive">Consumir</string>
     <string name="warning_consume_expired_negative">Cancelar</string>
 
@@ -160,17 +160,17 @@
     <string name="onboarding_welcome_title">Bienvenido a Caducity</string>
     <string name="onboarding_welcome_message">Rastrea tus alimentos y reduce el desperdicio</string>
     <string name="onboarding_features_title">Características Clave</string>
-    <string name="onboarding_features_track">Rastrea las fechas de caducidad de todos tus productos</string>
-    <string name="onboarding_features_notify">Recibe notificaciones antes de que caduquen los productos</string>
+    <string name="onboarding_features_track">Rastrea las fechas de caducidad de todas tus categorías</string>
+    <string name="onboarding_features_notify">Recibe notificaciones antes de que caduquen las categorías</string>
     <string name="onboarding_features_dashboard">Visualiza estadísticas e información en tu panel</string>
     <string name="onboarding_permissions_title">Mantente Informado</string>
-    <string name="onboarding_permissions_message">Permite las notificaciones para recibir alertas oportunas sobre productos que caducan</string>
+    <string name="onboarding_permissions_message">Permite las notificaciones para recibir alertas oportunas sobre categorías que caducan</string>
     <string name="onboarding_permissions_granted">Notificaciones activadas</string>
     <string name="onboarding_permissions_automatic">Las notificaciones están activadas automáticamente</string>
     <string name="onboarding_tutorial_title">Primeros Pasos</string>
-    <string name="onboarding_tutorial_message">Añade tu primer producto para empezar a rastrear fechas de caducidad</string>
+    <string name="onboarding_tutorial_message">Añade tu primera categoría para empezar a rastrear fechas de caducidad</string>
     <string name="onboarding_disclaimer_title">Aviso Importante</string>
-    <string name="onboarding_disclaimer_message">Esta aplicación ayuda a rastrear las fechas de caducidad de productos pero no sustituye las prácticas adecuadas de seguridad alimentaria. Usa siempre tu criterio y sigue las pautas de seguridad alimentaria. Los desarrolladores no son responsables de ningún problema de salud derivado del consumo de productos caducados.</string>
+    <string name="onboarding_disclaimer_message">Esta aplicación ayuda a rastrear las fechas de caducidad de categorías pero no sustituye las prácticas adecuadas de seguridad alimentaria. Usa siempre tu criterio y sigue las pautas de seguridad alimentaria. Los desarrolladores no son responsables de ningún problema de salud derivado del consumo de categorías caducadas.</string>
     <string name="onboarding_button_next">Siguiente</string>
     <string name="onboarding_button_skip">Omitir</string>
     <string name="onboarding_button_previous">Anterior</string>
