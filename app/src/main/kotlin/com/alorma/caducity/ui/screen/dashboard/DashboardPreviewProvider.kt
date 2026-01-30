@@ -19,10 +19,10 @@ internal val summary = DashboardSummary(
 class DashboardPreviewProvider : CollectionPreviewParameterProvider<DashboardState>(
   listOf(
     DashboardState.Loading,
-    DashboardState.Success.PerProduct(
+    DashboardState.Success.PerCategory(
       summary = summary,
-      products = listOf(
-        ProductCalendarState(
+      categories = listOf(
+        CategoryCalendarState(
           id = "Potato1",
           name = "Potato 1",
           appCalendarConfig = AppCalendarConfig(
@@ -34,7 +34,7 @@ class DashboardPreviewProvider : CollectionPreviewParameterProvider<DashboardSta
             daysOfWeekNames = daysOfWeekNames,
           ),
         ),
-        ProductCalendarState(
+        CategoryCalendarState(
           id = "Potato2",
           name = "Potato 2",
           appCalendarConfig = AppCalendarConfig(

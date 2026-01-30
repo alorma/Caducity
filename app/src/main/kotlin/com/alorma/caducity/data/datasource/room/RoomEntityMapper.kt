@@ -1,31 +1,33 @@
 package com.alorma.caducity.data.datasource.room
 
 import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.domain.model.NewProductInstance
+import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.CategoryProduct
+import com.alorma.caducity.domain.model.CategoryWithItems
+import com.alorma.caducity.domain.model.ItemStatus
+import com.alorma.caducity.domain.model.Item
+import com.alorma.caducity.domain.model.NewItem
 import com.alorma.caducity.domain.model.Product
-import com.alorma.caducity.domain.model.ProductInstance
-import com.alorma.caducity.domain.model.ProductWithInstances
-import com.alorma.caducity.domain.model.Variant
-import com.alorma.caducity.domain.model.ProductVariant
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import kotlinx.collections.immutable.toImmutableList
 import kotlin.time.Instant
 
-fun ProductRoomEntity.toModel(): Product {
-  return Product(
+// CategoryRoomEntity maps to Category domain model
+fun CategoryRoomEntity.toModel(): Category {
+  return Category(
     id = id,
     name = name,
     description = description,
   )
 }
 
-fun NewProductInstance.toRoomEntity(id: String, productId: String): ProductInstanceRoomEntity {
-  return ProductInstanceRoomEntity(
+// NewItem maps to ItemRoomEntity
+fun NewItem.toRoomEntity(id: String, categoryId: String): ItemRoomEntity {
+  return ItemRoomEntity(
     id = id,
-    productId = productId,
+    categoryId = categoryId,
     identifier = this.identifier,
-    variantId = this.variantId,
+    productId = this.productId,
     expirationDate = expirationDate.toEpochMilliseconds(),
     pausedDate = null,
     remainingDays = null,
@@ -33,82 +35,87 @@ fun NewProductInstance.toRoomEntity(id: String, productId: String): ProductInsta
   )
 }
 
+// ItemRoomEntity maps to Item domain model
 @Deprecated("Use mapper")
-fun ProductInstanceRoomEntity.toModel(
+fun ItemRoomEntity.toModel(
   appClock: AppClock,
   expirationThresholds: ExpirationThresholds
-): ProductInstance {
+): Item {
   val expirationInstant = Instant.fromEpochMilliseconds(expirationDate)
   val pausedInstant = pausedDate?.let { Instant.fromEpochMilliseconds(it) }
 
   // Determine status: consumed > frozen > calculated
   val status = when {
-    pausedDate != null -> InstanceStatus.Frozen
-    else -> InstanceStatus.calculateStatus(
+    pausedDate != null -> ItemStatus.Frozen
+    else -> ItemStatus.calculateStatus(
       expirationDate = expirationInstant,
       now = appClock.now(),
       soonExpiringThreshold = expirationThresholds.soonExpiringThreshold
     )
   }
 
-  return ProductInstance(
+  return Item(
     id = id,
     identifier = identifier,
-    variantId = variantId,
+    productId = productId,
     expirationDate = expirationInstant,
     status = status,
     pausedDate = pausedInstant,
   )
 }
 
-fun ProductWithInstancesRoomEntity.toModel(
+// CategoryWithItemsRoomEntity maps to CategoryWithItems domain model
+fun CategoryWithItemsRoomEntity.toModel(
   appClock: AppClock,
   expirationThresholds: ExpirationThresholds
-): ProductWithInstances {
-  val instancesModel = instances.map { it.toModel(appClock, expirationThresholds) }
+): CategoryWithItems {
+  val itemsModel = items.map { it.toModel(appClock, expirationThresholds) }
 
-  // Build variant map for quick lookup
-  val variantMap = variants.associateBy { it.id }
+  // Build product map for quick lookup (ProductRoomEntity = products in domain)
+  val productMap = products.associateBy { it.id }
 
-  // Group instances by variant
-  val instancesByVariant = instancesModel
-    .filter { it.variantId != null }
-    .groupBy { it.variantId!! }
+  // Group items by product (productId in ItemRoomEntity = productId in domain)
+  val itemsByProduct = itemsModel
+    .filter { it.productId != null }
+    .groupBy { it.productId!! }
 
-  // Include ALL variants, even those with no instances
-  val variantsWithInstances = variants.map { variantEntity ->
-    val variantInstances = instancesByVariant[variantEntity.id] ?: emptyList()
-    ProductVariant(
-      variant = variantEntity.toModel(),
-      instances = variantInstances.toImmutableList()
+  // Include ALL products, even those with no items (products = products in domain)
+  val productsWithItems = products.map { productEntity ->
+    val productItems = itemsByProduct[productEntity.id] ?: emptyList()
+    CategoryProduct(
+      product = productEntity.toModel(),
+      items = productItems.toImmutableList()
     )
   }.toImmutableList()
 
-  // Get standalone instances (no variantId)
-  val standaloneInstancesModel = instancesModel
-    .filter { it.variantId == null }
+  // Get standalone items (no productId = no productId in domain)
+  val standaloneItemsModel = itemsModel
+    .filter { it.productId == null }
     .toImmutableList()
 
-  return ProductWithInstances(
-    product = product.toModel(),
-    variants = variantsWithInstances,
-    standaloneInstances = standaloneInstancesModel,
+  return CategoryWithItems(
+    category = category.toModel(),
+    products = productsWithItems,
+    standaloneItems = standaloneItemsModel,
   )
 }
 
-fun Product.toRoomEntity(): ProductRoomEntity {
-  return ProductRoomEntity(
+// Category domain model maps to CategoryRoomEntity
+fun Category.toRoomEntity(): CategoryRoomEntity {
+  return CategoryRoomEntity(
     id = id,
     name = name,
     description = description,
   )
 }
 
-fun ProductInstance.toRoomEntity(productId: String): ProductInstanceRoomEntity {
-  return ProductInstanceRoomEntity(
+// Item domain model maps to ItemRoomEntity
+fun Item.toRoomEntity(categoryId: String): ItemRoomEntity {
+  return ItemRoomEntity(
     id = id,
-    productId = productId,
+    categoryId = categoryId,
     identifier = identifier,
+    productId = productId,
     expirationDate = expirationDate.toEpochMilliseconds(),
     pausedDate = null,
     remainingDays = null,
@@ -116,19 +123,21 @@ fun ProductInstance.toRoomEntity(productId: String): ProductInstanceRoomEntity {
   )
 }
 
-fun VariantRoomEntity.toModel(): Variant {
-  return Variant(
+// ProductRoomEntity maps to Product domain model
+fun ProductRoomEntity.toModel(): Product {
+  return Product(
     id = id,
-    productId = productId,
+    categoryId = categoryId,
     name = name,
     createdAt = Instant.fromEpochMilliseconds(createdAt),
   )
 }
 
-fun Variant.toRoomEntity(): VariantRoomEntity {
-  return VariantRoomEntity(
+// Product domain model maps to ProductRoomEntity
+fun Product.toRoomEntity(): ProductRoomEntity {
+  return ProductRoomEntity(
     id = id,
-    productId = productId,
+    categoryId = categoryId,
     name = name,
     createdAt = createdAt.toEpochMilliseconds(),
   )

@@ -10,13 +10,13 @@ import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.data.datasource.RoomBackupDataSource
 import com.alorma.caducity.domain.backup.BackupDataSource
 import com.alorma.caducity.domain.domainModule
-import com.alorma.caducity.domain.usecase.AddInstanceToProductUseCase
-import com.alorma.caducity.domain.usecase.ConsumeInstanceUseCase
-import com.alorma.caducity.domain.usecase.CreateProductUseCase
-import com.alorma.caducity.domain.usecase.DeleteInstanceUseCase
-import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
-import com.alorma.caducity.domain.usecase.GetExpiringProductsUseCase
-import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
+import com.alorma.caducity.domain.usecase.AddItemToCategoryUseCase
+import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
+import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
+import com.alorma.caducity.domain.usecase.DeleteItemUseCase
+import com.alorma.caducity.domain.usecase.FreezeItemUseCase
+import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
+import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
@@ -24,11 +24,11 @@ import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.ui.screen.dashboard.dashboardModule
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
-import com.alorma.caducity.ui.screen.product.create.CreateProductViewModel
-import com.alorma.caducity.ui.screen.product.create.FutureDateSelectableDates
-import com.alorma.caducity.ui.screen.product.detail.ProductDetailAddInstanceViewModel
-import com.alorma.caducity.ui.screen.product.detail.ProductDetailMapper
-import com.alorma.caducity.ui.screen.product.detail.ProductDetailViewModel
+import com.alorma.caducity.ui.screen.category.create.CreateCategoryViewModel
+import com.alorma.caducity.ui.screen.category.create.FutureDateSelectableDates
+import com.alorma.caducity.ui.screen.category.detail.CategoryDetailAddItemViewModel
+import com.alorma.caducity.ui.screen.category.detail.CategoryDetailMapper
+import com.alorma.caducity.ui.screen.category.detail.CategoryDetailViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
@@ -60,7 +60,7 @@ val appModule = module {
   // Onboarding
   singleOf(::OnboardingFlag)
   viewModelOf(::OnboardingViewModel)
-  singleOf(::GetExpiringProductsUseCase)
+  singleOf(::GetExpiringCategoriesUseCase)
 
   factory {
     RelativeTimeFormatter(
@@ -70,19 +70,19 @@ val appModule = module {
     )
   }
 
-  // Product detail
-  singleOf(::ObtainProductDetailUseCase)
-  singleOf(::AddInstanceToProductUseCase)
-  singleOf(::DeleteInstanceUseCase)
-  singleOf(::ConsumeInstanceUseCase)
-  singleOf(::FreezeInstanceUseCase)
-  singleOf(::ProductDetailMapper)
-  viewModelOf(::ProductDetailViewModel)
-  viewModelOf(::ProductDetailAddInstanceViewModel)
+  // Category detail
+  singleOf(::ObtainCategoryDetailUseCase)
+  singleOf(::AddItemToCategoryUseCase)
+  singleOf(::DeleteItemUseCase)
+  singleOf(::ConsumeItemUseCase)
+  singleOf(::FreezeItemUseCase)
+  singleOf(::CategoryDetailMapper)
+  viewModelOf(::CategoryDetailViewModel)
+  viewModelOf(::CategoryDetailAddItemViewModel)
 
-  // Create product
-  singleOf(::CreateProductUseCase)
-  viewModelOf(::CreateProductViewModel)
+  // Create category
+  singleOf(::CreateCategoryUseCase)
+  viewModelOf(::CreateCategoryViewModel)
 
   singleOf(::FutureDateSelectableDates)
 

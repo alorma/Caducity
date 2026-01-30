@@ -2,10 +2,10 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "bc1ddc15219499662caaa07fc6f979a6",
+    "identityHash": "c6d6e5c3907208095f879dfa3db87ffe",
     "entities": [
       {
-        "tableName": "products",
+        "tableName": "categories",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
@@ -35,8 +35,8 @@
         }
       },
       {
-        "tableName": "product_instances",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `productId` TEXT NOT NULL, `identifier` TEXT NOT NULL, `variantId` TEXT, `expirationDate` INTEGER NOT NULL, `pausedDate` INTEGER, `remainingDays` INTEGER, `consumedDate` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`productId`) REFERENCES `products`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`variantId`) REFERENCES `variants`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "tableName": "items",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `categoryId` TEXT NOT NULL, `identifier` TEXT NOT NULL, `productId` TEXT, `expirationDate` INTEGER NOT NULL, `pausedDate` INTEGER, `remainingDays` INTEGER, `consumedDate` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`categoryId`) REFERENCES `categories`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`productId`) REFERENCES `products`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -45,8 +45,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "productId",
-            "columnName": "productId",
+            "fieldPath": "categoryId",
+            "columnName": "categoryId",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -57,8 +57,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "variantId",
-            "columnName": "variantId",
+            "fieldPath": "productId",
+            "columnName": "productId",
             "affinity": "TEXT"
           },
           {
@@ -91,42 +91,42 @@
         },
         "indices": [
           {
-            "name": "index_product_instances_productId",
+            "name": "index_items_categoryId",
+            "unique": false,
+            "columnNames": [
+              "categoryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_items_categoryId` ON `${TABLE_NAME}` (`categoryId`)"
+          },
+          {
+            "name": "index_items_productId",
             "unique": false,
             "columnNames": [
               "productId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_product_instances_productId` ON `${TABLE_NAME}` (`productId`)"
-          },
-          {
-            "name": "index_product_instances_variantId",
-            "unique": false,
-            "columnNames": [
-              "variantId"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_product_instances_variantId` ON `${TABLE_NAME}` (`variantId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_items_productId` ON `${TABLE_NAME}` (`productId`)"
           }
         ],
         "foreignKeys": [
           {
-            "table": "products",
+            "table": "categories",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
-              "productId"
+              "categoryId"
             ],
             "referencedColumns": [
               "id"
             ]
           },
           {
-            "table": "variants",
+            "table": "products",
             "onDelete": "SET NULL",
             "onUpdate": "NO ACTION",
             "columns": [
-              "variantId"
+              "productId"
             ],
             "referencedColumns": [
               "id"
@@ -135,8 +135,8 @@
         ]
       },
       {
-        "tableName": "variants",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `productId` TEXT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`productId`) REFERENCES `products`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "tableName": "products",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `categoryId` TEXT NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`categoryId`) REFERENCES `categories`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -145,8 +145,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "productId",
-            "columnName": "productId",
+            "fieldPath": "categoryId",
+            "columnName": "categoryId",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -171,22 +171,22 @@
         },
         "indices": [
           {
-            "name": "index_variants_productId",
+            "name": "index_products_categoryId",
             "unique": false,
             "columnNames": [
-              "productId"
+              "categoryId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_variants_productId` ON `${TABLE_NAME}` (`productId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_products_categoryId` ON `${TABLE_NAME}` (`categoryId`)"
           }
         ],
         "foreignKeys": [
           {
-            "table": "products",
+            "table": "categories",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
-              "productId"
+              "categoryId"
             ],
             "referencedColumns": [
               "id"
@@ -197,7 +197,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'bc1ddc15219499662caaa07fc6f979a6')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c6d6e5c3907208095f879dfa3db87ffe')"
     ]
   }
 }

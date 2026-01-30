@@ -45,6 +45,26 @@
     <string name="settings_backup_title">Respaldo</string>
     <string name="settings_backup_description">Exportar y restaurar tus datos</string>
 
+    <string name="dashboard_fab_manual">Manual</string>
+    <string name="dashboard_fab_ai">IA</string>
+    <string name="dashboard_ai_title">Añadir Categorías con IA</string>
+    <string name="dashboard_ai_prompt_hint">Describe lo que compraste</string>
+    <string name="dashboard_ai_prompt_example">ej., "2 tiramisú (categoría postres) caduca mañana"</string>
+    <string name="dashboard_ai_generate_button">Generar</string>
+    <string name="dashboard_ai_char_counter">%1$d / 500</string>
+    <string name="dashboard_ai_success">Creadas %1$d categorías, %2$d productos, %3$d artículos</string>
+    <string name="dashboard_ai_generating">Generando categorías…</string>
+    <string name="dashboard_ai_error_generic">Error al generar categorías</string>
+
+    <string name="dashboard_ai_review_title">Revisar Categorías</string>
+    <string name="dashboard_ai_review_description">Se encontraron %1$d categorías coincidentes. Revisa antes de añadir:</string>
+    <string name="dashboard_ai_review_match_score">%1$d%% coincidencia</string>
+    <string name="dashboard_ai_review_will_add">Se añadirán %1$d productos, %2$d artículos</string>
+    <string name="dashboard_ai_review_new_products">Nuevas Categorías</string>
+    <string name="dashboard_ai_review_new_product">Se creará como nueva categoría</string>
+    <string name="dashboard_ai_review_cancel">Cancelar</string>
+    <string name="dashboard_ai_review_confirm">Confirmar</string>
+
     <string name="settings_group_appearance">Apariencia</string>
     <string name="settings_theme_title">Tema</string>
     <string name="settings_theme_light">Claro</string>
@@ -66,53 +86,66 @@
     <string name="settings_group_notifications">Notificaciones</string>
     <string name="settings_enable_notifications">Activar notificaciones</string>
 
-    <string name="create_product_screen_title">Crear Categoría</string>
-    <string name="create_product_name_label">Nombre de la Categoría</string>
-    <string name="create_product_name_placeholder">Introduce el nombre de la categoría</string>
-    <string name="create_product_description_label">Descripción</string>
-    <string name="create_product_description_placeholder">Introduce la descripción</string>
-    <string name="create_product_expiration_date_label">Fecha de Caducidad</string>
-    <string name="create_product_expiration_date_placeholder">DD/MM/AAAA</string>
-    <string name="create_product_button_cancel">Cancelar</string>
-    <string name="create_product_button_create">Crear</string>
-    <string name="create_product_content_description_back">Atrás</string>
-    <string name="create_product_instances_title">Elementos de la Categoría</string>
-    <string name="create_product_instance_identifier_label">Identificador</string>
-    <string name="create_product_instance_identifier_placeholder">ej., Lote #1, Unidad A</string>
-    <string name="create_product_add_instance">Añadir Elemento</string>
-    <string name="create_product_remove_instance">Eliminar</string>
-    <string name="create_product_instance_number">Elemento %1$d</string>
-    <string name="create_product_instance_quantity_label">Cantidad</string>
-    <string name="create_product_instance_quantity_placeholder">1</string>
-    <string name="create_product_instance_split_preview">Se crearán %1$d elementos</string>
+    <string name="create_category_screen_title">Crear Categoría</string>
+    <string name="create_category_name_label">Nombre de la Categoría</string>
+    <string name="create_category_name_placeholder">Introduce el nombre de la categoría</string>
+    <string name="create_category_description_label">Descripción</string>
+    <string name="create_category_description_placeholder">Introduce la descripción</string>
+    <string name="create_category_expiration_date_label">Fecha de Caducidad</string>
+    <string name="create_category_expiration_date_placeholder">DD/MM/AAAA</string>
+    <string name="create_category_button_cancel">Cancelar</string>
+    <string name="create_category_button_create">Crear</string>
+    <string name="create_category_content_description_back">Atrás</string>
+    <string name="create_category_items_title">Elementos de la Categoría</string>
+    <string name="create_category_item_identifier_label">Identificador</string>
+    <string name="create_category_item_identifier_placeholder">ej., Lote #1, Unidad A</string>
+    <string name="create_category_add_item">Añadir Elemento</string>
+    <string name="create_category_remove_item">Eliminar</string>
+    <string name="create_category_item_number">Elemento %1$d</string>
+    <string name="create_category_item_quantity_label">Cantidad</string>
+    <string name="create_category_item_quantity_placeholder">1</string>
+    <string name="create_category_item_split_preview">Se crearán %1$d elementos</string>
 
-    <!-- Product Detail -->
-    <string name="product_detail_auto_identifier_item">Artículo</string>
-    <string name="product_detail_add_variant_dialog_title">Añadir Producto</string>
-    <string name="product_detail_add_variant_dialog_label">Nombre del Producto</string>
-    <string name="product_detail_add_variant_dialog_placeholder">Introduce el nombre del producto</string>
-    <string name="product_detail_add_variant_dialog_cancel">Cancelar</string>
-    <string name="product_detail_add_variant_dialog_add">Añadir</string>
-    <string name="product_detail_variant_empty_state">Aún no hay elementos. Toca el botón + para añadir uno.</string>
-    <string name="product_detail_variant_other">Otras</string>
-    <string name="product_detail_add_instance_title">Añadir Elemento</string>
-    <string name="product_detail_add_instance_back">Atrás</string>
-    <string name="product_detail_add_instance_add_other">Añadir Otra</string>
-    <string name="product_detail_add_instance_variant_label">Producto</string>
-    <string name="product_detail_add_instance_variant_placeholder">Escribe para buscar o introduce nuevo producto</string>
-    <string name="product_detail_add_instance_identifier_label">Identificador</string>
-    <string name="product_detail_add_instance_identifier_placeholder">Opcional si se selecciona producto</string>
-    <string name="product_detail_add_instance_expiration_date_label">Fecha de Caducidad</string>
-    <string name="product_detail_add_instance_expiration_date_placeholder">Selecciona fecha de caducidad</string>
-    <string name="product_detail_add_instance_save">Guardar</string>
-    <string name="product_detail_add_instance_date_picker_ok">Aceptar</string>
-    <string name="product_detail_add_instance_date_picker_cancel">Cancelar</string>
-    <string name="product_detail_add_instance_quantity_label">Cantidad</string>
-    <string name="product_detail_add_instance_quantity_more">Más</string>
-    <string name="product_detail_add_instance_quantity_custom_label">Número de elementos</string>
-    <string name="product_detail_action_consume">Consumir</string>
-    <string name="product_detail_action_freeze">Congelar</string>
-    <string name="product_detail_action_delete">Eliminar</string>
+    <!-- Category Detail -->
+    <string name="category_detail_auto_identifier_item">Artículo</string>
+    <string name="category_detail_add_product_dialog_title">Añadir Producto</string>
+    <string name="category_detail_add_product_dialog_label">Nombre del Producto</string>
+    <string name="category_detail_add_product_dialog_placeholder">Introduce el nombre del producto</string>
+    <string name="category_detail_add_product_dialog_cancel">Cancelar</string>
+    <string name="category_detail_add_product_dialog_add">Añadir</string>
+    <string name="category_detail_product_empty_state">Aún no hay elementos. Toca el botón + para añadir uno.</string>
+    <string name="category_detail_product_other">Otras</string>
+    <string name="category_detail_add_item_title">Añadir Elemento</string>
+    <string name="category_detail_add_item_back">Atrás</string>
+    <string name="category_detail_add_item_add_other">Añadir Otra</string>
+    <string name="category_detail_add_item_product_label">Producto</string>
+    <string name="category_detail_add_item_product_placeholder">Escribe para buscar o introduce nuevo producto</string>
+    <string name="category_detail_add_item_identifier_label">Identificador</string>
+    <string name="category_detail_add_item_identifier_placeholder">Opcional si se selecciona producto</string>
+    <string name="category_detail_add_item_expiration_date_label">Fecha de Caducidad</string>
+    <string name="category_detail_add_item_expiration_date_placeholder">Selecciona fecha de caducidad</string>
+    <string name="category_detail_add_item_save">Guardar</string>
+    <string name="category_detail_add_item_date_picker_ok">Aceptar</string>
+    <string name="category_detail_add_item_date_picker_cancel">Cancelar</string>
+    <string name="category_detail_add_item_quantity_label">Cantidad</string>
+    <string name="category_detail_add_item_quantity_more">Más</string>
+    <string name="category_detail_add_item_quantity_custom_label">Número de elementos</string>
+    <string name="category_detail_action_consume">Consumir</string>
+    <string name="category_detail_action_freeze">Congelar</string>
+    <string name="category_detail_action_delete">Eliminar</string>
+
+    <!-- Category Detail AI -->
+    <string name="category_detail_ai_title">Añadir Productos con IA</string>
+    <string name="category_detail_ai_prompt_hint">Describe los productos o artículos</string>
+    <string name="category_detail_ai_prompt_example">ej., "3 botellas de 1L leche entera, caduca en 5 días"</string>
+    <string name="category_detail_ai_generate_button">Generar</string>
+    <string name="category_detail_ai_generating">Generando productos…</string>
+    <string name="category_detail_ai_success">Creados %1$d productos, %2$d artículos</string>
+    <string name="category_detail_ai_review_title">Revisar Productos</string>
+    <string name="category_detail_ai_review_description">Generados %1$d productos y %2$d artículos. Revisa antes de añadir:</string>
+    <string name="category_detail_ai_review_confirm">Añadir a Categoría</string>
+    <string name="category_detail_ai_review_cancel">Cancelar</string>
+    <string name="category_detail_ai_error_generic">Error al generar productos</string>
 
     <!-- Relative time values -->
     <string name="relative_time_today">Hoy</string>
@@ -134,8 +167,8 @@
     <string name="language_spanish">Español</string>
     <string name="language_catalan">Català</string>
 
-    <!-- Instance action errors -->
-    <string name="error_instance_not_found">Elemento no encontrado</string>
+    <!-- Item action errors -->
+    <string name="error_item_not_found">Elemento no encontrado</string>
     <string name="error_cannot_freeze_expired">No se pueden congelar artículos caducados</string>
     <string name="error_cannot_consume_expired">No es seguro consumir productos caducados</string>
     <string name="error_cannot_consume_expired_message">Este artículo ha caducado y no puede ser consumido. ¿Deseas eliminarlo en su lugar?</string>
@@ -145,16 +178,16 @@
     <string name="warning_consume_expired_positive">Consumir</string>
     <string name="warning_consume_expired_negative">Cancelar</string>
 
-    <!-- Instance action success messages -->
-    <string name="success_instance_consumed">Elemento consumido</string>
-    <string name="success_instance_frozen">Elemento congelado</string>
-    <string name="success_instance_deleted">Elemento eliminado</string>
+    <!-- Item action success messages -->
+    <string name="success_item_consumed">Elemento consumido</string>
+    <string name="success_item_frozen">Elemento congelado</string>
+    <string name="success_item_deleted">Elemento eliminado</string>
 
-    <!-- Instance action error messages -->
-    <string name="error_consume_instance_failed">Error al consumir elemento</string>
-    <string name="error_freeze_instance_failed">Error al congelar elemento</string>
-    <string name="error_delete_instance_failed">Error al eliminar elemento</string>
-    <string name="error_create_variant_failed">Error al crear producto</string>
+    <!-- Item action error messages -->
+    <string name="error_consume_item_failed">Error al consumir elemento</string>
+    <string name="error_freeze_item_failed">Error al congelar elemento</string>
+    <string name="error_delete_item_failed">Error al eliminar elemento</string>
+    <string name="error_create_product_failed">Error al crear producto</string>
 
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Bienvenido a Caducity</string>

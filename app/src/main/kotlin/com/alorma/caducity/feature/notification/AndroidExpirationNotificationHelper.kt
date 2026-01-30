@@ -16,7 +16,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.getSystemService
 import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
-import com.alorma.caducity.domain.model.ProductWithInstances
+import com.alorma.caducity.domain.model.CategoryWithItems
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -85,7 +85,7 @@ class AndroidExpirationNotificationHelper(
     return checkNotificationPermission()
   }
 
-  override fun showExpirationNotification(expiringProducts: List<ProductWithInstances>) {
+  override fun showExpirationNotification(expiringProducts: List<CategoryWithItems>) {
     if (!areNotificationsEnabled().value) {
       return
     }
@@ -124,17 +124,17 @@ class AndroidExpirationNotificationHelper(
 
   private fun buildNotificationTitle(count: Int): String {
     return if (count == 1) {
-      "Product expiring soon"
+      "Category expiring soon"
     } else {
-      "$count products expiring soon"
+      "$count categories expiring soon"
     }
   }
 
-  private fun buildNotificationText(products: List<ProductWithInstances>): String {
-    return if (products.size == 1) {
-      products.first().product.name
+  private fun buildNotificationText(categories: List<CategoryWithItems>): String {
+    return if (categories.size == 1) {
+      categories.first().category.name
     } else {
-      "${products.first().product.name} and ${products.size - 1} more"
+      "${categories.first().category.name} and ${categories.size - 1} more"
     }
   }
 
