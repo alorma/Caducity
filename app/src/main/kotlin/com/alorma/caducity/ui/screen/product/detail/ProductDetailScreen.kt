@@ -62,6 +62,7 @@ import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -92,14 +93,12 @@ fun ProductDetailScreen(
     is ProductDetailState.Success -> {
       ProductDetailSuccessContent(
         modifier = modifier,
+        bottomSheetState = bottomSheetState,
         dialogState = dialogState,
         snackbarState = snackbarState,
         state = currentState,
         onNavigateToAddInstance = onNavigateToAddInstance,
         onInstanceClick = viewModel::onInstanceClick,
-        onConsume = viewModel::onConsumeInstance,
-        onFreeze = viewModel::onFreezeInstance,
-        onDelete = viewModel::onDeleteInstance,
         onShowAddVariantDialog = viewModel::onShowAddVariantDialog,
       )
     }
@@ -111,14 +110,12 @@ fun ProductDetailScreen(
 @Composable
 private fun ProductDetailSuccessContent(
   modifier: Modifier,
+  bottomSheetState: AppBottomSheetState,
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
   state: ProductDetailState.Success,
   onNavigateToAddInstance: () -> Unit,
   onInstanceClick: (ProductInstanceDetailUiModel) -> Unit,
-  onConsume: (ProductInstanceDetailUiModel) -> Unit,
-  onFreeze: (ProductInstanceDetailUiModel) -> Unit,
-  onDelete: (ProductInstanceDetailUiModel) -> Unit,
   onShowAddVariantDialog: () -> Unit,
 ) {
   val pagerState = rememberPagerState(pageCount = { state.variantTabs.size })
@@ -126,6 +123,7 @@ private fun ProductDetailSuccessContent(
 
   AppScaffold(
     modifier = modifier,
+    bottomSheetState = bottomSheetState,
     dialogState = dialogState,
     snackbarState = snackbarState,
     topBar = {
@@ -311,63 +309,76 @@ private fun StatusGroupCard(
   }
 }
 
-@Composable
-private fun InstanceActionsBottomSheet(
+private fun AppBottomSheetState.InstanceActionsBottomSheet(
+  coroutineScope: CoroutineScope,
   instance: ProductInstanceDetailUiModel,
   onConsume: () -> Unit,
   onFreeze: () -> Unit,
   onDelete: () -> Unit,
 ) {
-  Column(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(bottom = 24.dp),
-  ) {
-    // Header with instance info
-    Text(
-      text = instance.text,
-      style = MaterialTheme.typography.titleMedium,
-      modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-    )
-
-    HorizontalDivider()
-
-    // Consume action
-    ListItem(
-      headlineContent = { Text(stringResource(R.string.product_detail_action_consume)) },
-      leadingContent = {
-        Icon(
-          imageVector = AppIcons.Cooking,
-          contentDescription = null,
+  coroutineScope.launch {
+    show {
+      Column(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(bottom = 24.dp),
+      ) {
+        // Header with instance info
+        Text(
+          text = instance.text,
+          style = MaterialTheme.typography.titleMedium,
+          modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
         )
-      },
-      modifier = Modifier.clickable(onClick = onConsume),
-    )
 
-    // Freeze action
-    ListItem(
-      headlineContent = { Text(stringResource(R.string.product_detail_action_freeze)) },
-      leadingContent = {
-        Icon(
-          imageVector = AppIcons.ThermometerSnow,
-          contentDescription = null,
-        )
-      },
-      modifier = Modifier.clickable(onClick = onFreeze),
-    )
+        HorizontalDivider()
 
-    // Delete action
-    ListItem(
-      headlineContent = { Text(stringResource(R.string.product_detail_action_delete)) },
-      leadingContent = {
-        Icon(
-          imageVector = AppIcons.Delete,
-          contentDescription = null,
-          tint = MaterialTheme.colorScheme.error,
+        // Consume action
+        ListItem(
+          headlineContent = { Text(stringResource(R.string.product_detail_action_consume)) },
+          leadingContent = {
+            Icon(
+              imageVector = AppIcons.Cooking,
+              contentDescription = null,
+            )
+          },
+          modifier = Modifier.clickable {
+            onConsume()
+            coroutineScope.launch { this@InstanceActionsBottomSheet.hide() }
+          },
         )
-      },
-      modifier = Modifier.clickable(onClick = onDelete),
-    )
+
+        // Freeze action
+        ListItem(
+          headlineContent = { Text(stringResource(R.string.product_detail_action_freeze)) },
+          leadingContent = {
+            Icon(
+              imageVector = AppIcons.ThermometerSnow,
+              contentDescription = null,
+            )
+          },
+          modifier = Modifier.clickable {
+            onFreeze()
+            coroutineScope.launch { this@InstanceActionsBottomSheet.hide() }
+          },
+        )
+
+        // Delete action
+        ListItem(
+          headlineContent = { Text(stringResource(R.string.product_detail_action_delete)) },
+          leadingContent = {
+            Icon(
+              imageVector = AppIcons.Delete,
+              contentDescription = null,
+              tint = MaterialTheme.colorScheme.error,
+            )
+          },
+          modifier = Modifier.clickable {
+            onDelete()
+            coroutineScope.launch { this@InstanceActionsBottomSheet.hide() }
+          },
+        )
+      }
+    }
   }
 }
 
@@ -509,17 +520,23 @@ private fun SideEffectHandler(
           }
         }
 
-        is ProductDetailSideEffect.ShowInstanceActionsBottomSheet -> launch {
-          bottomSheetState.show(
-            onDismissRequest = {},
-          ) {
-            InstanceActionsBottomSheet(
-              instance = effect.instance,
-              onConsume = { viewModel.onConsumeInstance(effect.instance) },
-              onFreeze = { viewModel.onFreezeInstance(effect.instance) },
-              onDelete = { viewModel.onDeleteInstance(effect.instance) },
-            )
-          }
+        is ProductDetailSideEffect.ShowInstanceActionsBottomSheet -> {
+          bottomSheetState.InstanceActionsBottomSheet(
+            coroutineScope = this,
+            instance = effect.instance,
+            onConsume = {
+              viewModel.onConsumeInstance(effect.instance)
+              this.launch { }
+            },
+            onFreeze = {
+              viewModel.onFreezeInstance(effect.instance)
+              this.launch { }
+            },
+            onDelete = {
+              viewModel.onDeleteInstance(effect.instance)
+              this.launch { }
+            },
+          )
         }
 
         ProductDetailSideEffect.VariantCreated -> {
