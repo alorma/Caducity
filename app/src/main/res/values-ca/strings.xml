@@ -17,10 +17,10 @@
     </string-array>
 
     <string  name="dashboard_screen_title">Tauler</string>
-    <string name="products_screen_title">Productes</string>
+    <string name="products_screen_title">Categories</string>
     <string name="dashboard_action_collapse">Col·lapsar</string>
     <string name="dashboard_action_expand">Expandir</string>
-    <string name="dashboard_search_placeholder">Cercar productes…</string>
+    <string name="dashboard_search_placeholder">Cercar categories…</string>
     <string name="dashboard_filter_fresh">Fresc</string>
     <string name="dashboard_filter_expiring_soon">Pròxim</string>
     <string name="dashboard_filter_expired">Caducat</string>
@@ -67,9 +67,9 @@
     <string name="settings_group_notifications">Notificacions</string>
     <string name="settings_enable_notifications">Activar notificacions</string>
 
-    <string name="create_product_screen_title">Crear Producte</string>
-    <string name="create_product_name_label">Nom del Producte</string>
-    <string name="create_product_name_placeholder">Introdueix el nom del producte</string>
+    <string name="create_product_screen_title">Crear Categoria</string>
+    <string name="create_product_name_label">Nom de la Categoria</string>
+    <string name="create_product_name_placeholder">Introdueix el nom de la categoria</string>
     <string name="create_product_description_label">Descripció</string>
     <string name="create_product_description_placeholder">Introdueix la descripció</string>
     <string name="create_product_expiration_date_label">Data de Caducitat</string>
@@ -77,32 +77,32 @@
     <string name="create_product_button_cancel">Cancel·lar</string>
     <string name="create_product_button_create">Crear</string>
     <string name="create_product_content_description_back">Enrere</string>
-    <string name="create_product_instances_title">Instàncies del Producte</string>
+    <string name="create_product_instances_title">Elements de la Categoria</string>
     <string name="create_product_instance_identifier_label">Identificador</string>
     <string name="create_product_instance_identifier_placeholder">ex., Lot #1, Unitat A</string>
-    <string name="create_product_add_instance">Afegir Instància</string>
+    <string name="create_product_add_instance">Afegir Element</string>
     <string name="create_product_remove_instance">Eliminar</string>
-    <string name="create_product_instance_number">Instància %1$d</string>
+    <string name="create_product_instance_number">Element %1$d</string>
     <string name="create_product_instance_quantity_label">Quantitat</string>
     <string name="create_product_instance_quantity_placeholder">1</string>
-    <string name="create_product_instance_split_preview">Es crearan %1$d instàncies</string>
+    <string name="create_product_instance_split_preview">Es crearan %1$d elements</string>
 
     <!-- Product Detail -->
     <string name="product_detail_auto_identifier_item">Article</string>
-    <string name="product_detail_add_variant_dialog_title">Afegir Variant</string>
-    <string name="product_detail_add_variant_dialog_label">Nom de la Variant</string>
-    <string name="product_detail_add_variant_dialog_placeholder">Introdueix el nom de la variant</string>
+    <string name="product_detail_add_variant_dialog_title">Afegir Producte</string>
+    <string name="product_detail_add_variant_dialog_label">Nom del Producte</string>
+    <string name="product_detail_add_variant_dialog_placeholder">Introdueix el nom del producte</string>
     <string name="product_detail_add_variant_dialog_cancel">Cancel·lar</string>
     <string name="product_detail_add_variant_dialog_add">Afegir</string>
-    <string name="product_detail_variant_empty_state">Encara no hi ha instàncies. Toca el botó + per afegir-ne una.</string>
+    <string name="product_detail_variant_empty_state">Encara no hi ha elements. Toca el botó + per afegir-ne un.</string>
     <string name="product_detail_variant_other">Altres</string>
-    <string name="product_detail_add_instance_title">Afegir Instància</string>
+    <string name="product_detail_add_instance_title">Afegir Element</string>
     <string name="product_detail_add_instance_back">Enrere</string>
     <string name="product_detail_add_instance_add_other">Afegir Altra</string>
-    <string name="product_detail_add_instance_variant_label">Variant</string>
-    <string name="product_detail_add_instance_variant_placeholder">Escriu per cercar o introdueix nova variant</string>
+    <string name="product_detail_add_instance_variant_label">Producte</string>
+    <string name="product_detail_add_instance_variant_placeholder">Escriu per cercar o introdueix nou producte</string>
     <string name="product_detail_add_instance_identifier_label">Identificador</string>
-    <string name="product_detail_add_instance_identifier_placeholder">Opcional si se selecciona variant</string>
+    <string name="product_detail_add_instance_identifier_placeholder">Opcional si se selecciona producte</string>
     <string name="product_detail_add_instance_expiration_date_label">Data de Caducitat</string>
     <string name="product_detail_add_instance_expiration_date_placeholder">Selecciona data de caducitat</string>
     <string name="product_detail_add_instance_save">Desar</string>
@@ -110,7 +110,7 @@
     <string name="product_detail_add_instance_date_picker_cancel">Cancel·lar</string>
     <string name="product_detail_add_instance_quantity_label">Quantitat</string>
     <string name="product_detail_add_instance_quantity_more">Més</string>
-    <string name="product_detail_add_instance_quantity_custom_label">Nombre d\'instàncies</string>
+    <string name="product_detail_add_instance_quantity_custom_label">Nombre d\'elements</string>
     <string name="product_detail_action_consume">Consumir</string>
     <string name="product_detail_action_freeze">Congelar</string>
     <string name="product_detail_action_delete">Eliminar</string>
@@ -136,7 +136,7 @@
     <string name="language_catalan">Català</string>
 
     <!-- Instance action errors -->
-    <string name="error_instance_not_found">Instància no trobada</string>
+    <string name="error_instance_not_found">Element no trobat</string>
     <string name="error_cannot_freeze_expired">No es poden congelar articles caducats</string>
     <string name="error_cannot_consume_expired">No és segur consumir productes caducats</string>
     <string name="error_cannot_consume_expired_message">Aquest article ha caducat i no pot ser consumit. Vols eliminar-lo?</string>
@@ -147,29 +147,29 @@
     <string name="warning_consume_expired_negative">Cancel·lar</string>
 
     <!-- Instance action success messages -->
-    <string name="success_instance_consumed">Instància consumida</string>
-    <string name="success_instance_frozen">Instància congelada</string>
-    <string name="success_instance_deleted">Instància eliminada</string>
+    <string name="success_instance_consumed">Element consumit</string>
+    <string name="success_instance_frozen">Element congelat</string>
+    <string name="success_instance_deleted">Element eliminat</string>
 
     <!-- Instance action error messages -->
-    <string name="error_consume_instance_failed">Error en consumir instància</string>
-    <string name="error_freeze_instance_failed">Error en congelar instància</string>
-    <string name="error_delete_instance_failed">Error en eliminar instància</string>
-    <string name="error_create_variant_failed">Error en crear variant</string>
+    <string name="error_consume_instance_failed">Error en consumir element</string>
+    <string name="error_freeze_instance_failed">Error en congelar element</string>
+    <string name="error_delete_instance_failed">Error en eliminar element</string>
+    <string name="error_create_variant_failed">Error en crear producte</string>
 
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Benvingut a Caducity</string>
     <string name="onboarding_welcome_message">Controla els teus aliments i redueix el malbaratament</string>
     <string name="onboarding_features_title">Característiques Clau</string>
-    <string name="onboarding_features_track">Controla les dates de caducitat de tots els teus productes</string>
-    <string name="onboarding_features_notify">Rep notificacions abans que caduquin els productes</string>
+    <string name="onboarding_features_track">Controla les dates de caducitat de totes les teves categories</string>
+    <string name="onboarding_features_notify">Rep notificacions abans que caduquin les categories</string>
     <string name="onboarding_features_dashboard">Visualitza estadístiques i informació al teu tauler</string>
     <string name="onboarding_permissions_title">Mantingues-te Informat</string>
-    <string name="onboarding_permissions_message">Permet les notificacions per rebre alertes oportunes sobre productes que caduquen</string>
+    <string name="onboarding_permissions_message">Permet les notificacions per rebre alertes oportunes sobre categories que caduquen</string>
     <string name="onboarding_permissions_granted">Notificacions activades</string>
     <string name="onboarding_permissions_automatic">Les notificacions estan activades automàticament</string>
     <string name="onboarding_tutorial_title">Primers Passos</string>
-    <string name="onboarding_tutorial_message">Afegeix el teu primer producte per començar a controlar dates de caducitat</string>
+    <string name="onboarding_tutorial_message">Afegeix la teva primera categoria per començar a controlar dates de caducitat</string>
     <string name="onboarding_disclaimer_title">Avís Important</string>
     <string name="onboarding_disclaimer_message">Aquesta aplicació ajuda a controlar les dates de caducitat de productes però no substitueix les pràctiques adequades de seguretat alimentària. Utilitza sempre el teu criteri i segueix les pautes de seguretat alimentària. Els desenvolupadors no són responsables de cap problema de salut derivat del consum de productes caducats.</string>
     <string name="onboarding_button_next">Següent</string>
