@@ -95,6 +95,7 @@
     <string name="product_detail_add_variant_dialog_cancel">Cancel·lar</string>
     <string name="product_detail_add_variant_dialog_add">Afegir</string>
     <string name="product_detail_variant_empty_state">Encara no hi ha instàncies. Toca el botó + per afegir-ne una.</string>
+    <string name="product_detail_variant_other">Altres</string>
     <string name="product_detail_add_instance_title">Afegir Instància</string>
     <string name="product_detail_add_instance_back">Enrere</string>
     <string name="product_detail_add_instance_add_other">Afegir Altra</string>

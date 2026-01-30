@@ -117,6 +117,7 @@
     <string name="product_detail_add_variant_dialog_cancel">Cancel</string>
     <string name="product_detail_add_variant_dialog_add">Add</string>
     <string name="product_detail_variant_empty_state">No instances yet. Tap the + button to add one.</string>
+    <string name="product_detail_variant_other">Other</string>
     <string name="product_detail_add_instance_title">Add Instance</string>
     <string name="product_detail_add_instance_back">Back</string>
     <string name="product_detail_add_instance_add_other">Add Other</string>

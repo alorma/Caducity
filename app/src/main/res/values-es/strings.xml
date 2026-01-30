@@ -94,6 +94,7 @@
     <string name="product_detail_add_variant_dialog_cancel">Cancelar</string>
     <string name="product_detail_add_variant_dialog_add">Añadir</string>
     <string name="product_detail_variant_empty_state">Aún no hay instancias. Toca el botón + para añadir una.</string>
+    <string name="product_detail_variant_other">Otras</string>
     <string name="product_detail_add_instance_title">Añadir Instancia</string>
     <string name="product_detail_add_instance_back">Atrás</string>
     <string name="product_detail_add_instance_add_other">Añadir Otra</string>

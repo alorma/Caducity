@@ -20,6 +20,7 @@ import kotlin.time.Instant
 
 class ProductDetailAddInstanceViewModel(
   private val productId: String,
+  private val preselectedVariantId: String?,
   private val getProductVariantsUseCase: GetProductVariantsUseCase,
   private val createVariantUseCase: CreateVariantUseCase,
   private val addInstanceToProductUseCase: AddInstanceToProductUseCase,
@@ -56,6 +57,14 @@ class ProductDetailAddInstanceViewModel(
           _state.value = ProductDetailAddInstanceState.Success(
             variants = allVariants
           )
+
+          // Pre-select variant if provided
+          if (preselectedVariantId != null) {
+            val preselectedVariant = allVariants.find { it.id == preselectedVariantId }
+            if (preselectedVariant != null) {
+              onVariantSelected(preselectedVariant.id, preselectedVariant.name)
+            }
+          }
         }
     }
   }

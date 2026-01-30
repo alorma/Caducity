@@ -70,7 +70,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun ProductDetailScreen(
   productId: String,
-  onNavigateToAddInstance: () -> Unit,
+  onNavigateToAddInstance: (variantId: String?) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
 ) {
@@ -114,7 +114,7 @@ private fun ProductDetailSuccessContent(
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
   state: ProductDetailState.Success,
-  onNavigateToAddInstance: () -> Unit,
+  onNavigateToAddInstance: (variantId: String?) -> Unit,
   onInstanceClick: (ProductInstanceDetailUiModel) -> Unit,
   onShowAddVariantDialog: () -> Unit,
 ) {
@@ -137,7 +137,17 @@ private fun ProductDetailSuccessContent(
     },
     floatingActionButton = {
       FloatingActionButton(
-        onClick = onNavigateToAddInstance,
+        onClick = {
+          // Get the currently selected variant ID
+          val selectedVariantId = if (state.variantTabs.isNotEmpty()) {
+            val currentTab = state.variantTabs[pagerState.currentPage]
+            // Don't pass "other" as a variant ID
+            if (currentTab.id != "other") currentTab.id else null
+          } else {
+            null
+          }
+          onNavigateToAddInstance(selectedVariantId)
+        },
       ) {
         Icon(
           imageVector = AppIcons.Add,
