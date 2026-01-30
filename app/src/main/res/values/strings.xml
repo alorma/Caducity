@@ -173,11 +173,11 @@
     <!-- Instance action errors -->
     <string name="error_instance_not_found">Instance not found</string>
     <string name="error_cannot_freeze_expired">Cannot freeze expired items</string>
-    <string name="error_cannot_consume_expired">It is not safe to consume expired categories</string>
+    <string name="error_cannot_consume_expired">It is not safe to consume expired products</string>
     <string name="error_cannot_consume_expired_message">This item has expired and cannot be consumed. Would you like to delete it instead?</string>
     <string name="error_cannot_consume_expired_positive">Delete</string>
     <string name="warning_consume_expired_title">Consume Item Expiring Today?</string>
-    <string name="warning_consume_expired_message">This item expires today. Please make sure the category is in good condition before consuming. Do you want to mark it as consumed?</string>
+    <string name="warning_consume_expired_message">This item expires today. Please make sure the product is in good condition before consuming. Do you want to mark it as consumed?</string>
     <string name="warning_consume_expired_positive">Consume</string>
     <string name="warning_consume_expired_negative">Cancel</string>
 
@@ -206,7 +206,7 @@
     <string name="onboarding_tutorial_title">Getting Started</string>
     <string name="onboarding_tutorial_message">Add your first category to start tracking expiration dates</string>
     <string name="onboarding_disclaimer_title">Important Disclaimer</string>
-    <string name="onboarding_disclaimer_message">This app helps track category expiration dates but is not a substitute for proper food safety practices. Always use your judgment and follow food safety guidelines. The developers are not responsible for any health issues arising from consuming expired categories.</string>
+    <string name="onboarding_disclaimer_message">This app helps track product expiration dates but is not a substitute for proper food safety practices. Always use your judgment and follow food safety guidelines. The developers are not responsible for any health issues arising from consuming expired products.</string>
     <string name="onboarding_button_next">Next</string>
     <string name="onboarding_button_skip">Skip</string>
     <string name="onboarding_button_previous">Previous</string>

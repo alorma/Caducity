@@ -138,11 +138,11 @@
     <!-- Instance action errors -->
     <string name="error_instance_not_found">Instància no trobada</string>
     <string name="error_cannot_freeze_expired">No es poden congelar articles caducats</string>
-    <string name="error_cannot_consume_expired">No és segur consumir categories caducades</string>
+    <string name="error_cannot_consume_expired">No és segur consumir productes caducats</string>
     <string name="error_cannot_consume_expired_message">Aquest article ha caducat i no pot ser consumit. Vols eliminar-lo?</string>
     <string name="error_cannot_consume_expired_positive">Eliminar</string>
     <string name="warning_consume_expired_title">Consumir Article que Caduca Avui?</string>
-    <string name="warning_consume_expired_message">Aquest article caduca avui. Si us plau, assegura\'t que la categoria estigui en bon estat abans de consumir-lo. Vols marcar-lo com a consumit?</string>
+    <string name="warning_consume_expired_message">Aquest article caduca avui. Si us plau, assegura\'t que el producte estigui en bon estat abans de consumir-lo. Vols marcar-lo com a consumit?</string>
     <string name="warning_consume_expired_positive">Consumir</string>
     <string name="warning_consume_expired_negative">Cancel·lar</string>
 
@@ -171,7 +171,7 @@
     <string name="onboarding_tutorial_title">Primers Passos</string>
     <string name="onboarding_tutorial_message">Afegeix la teva primera categoria per començar a controlar dates de caducitat</string>
     <string name="onboarding_disclaimer_title">Avís Important</string>
-    <string name="onboarding_disclaimer_message">Aquesta aplicació ajuda a controlar les dates de caducitat de categories però no substitueix les pràctiques adequades de seguretat alimentària. Utilitza sempre el teu criteri i segueix les pautes de seguretat alimentària. Els desenvolupadors no són responsables de cap problema de salut derivat del consum de categories caducades.</string>
+    <string name="onboarding_disclaimer_message">Aquesta aplicació ajuda a controlar les dates de caducitat de productes però no substitueix les pràctiques adequades de seguretat alimentària. Utilitza sempre el teu criteri i segueix les pautes de seguretat alimentària. Els desenvolupadors no són responsables de cap problema de salut derivat del consum de productes caducats.</string>
     <string name="onboarding_button_next">Següent</string>
     <string name="onboarding_button_skip">Ometre</string>
     <string name="onboarding_button_previous">Anterior</string>
