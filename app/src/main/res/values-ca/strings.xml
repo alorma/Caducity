@@ -100,6 +100,11 @@
     <string name="product_detail_add_instance_save">Desar</string>
     <string name="product_detail_add_instance_date_picker_ok">Acceptar</string>
     <string name="product_detail_add_instance_date_picker_cancel">Cancel·lar</string>
+    <string name="product_detail_add_instance_quantity_label">Quantitat</string>
+    <string name="product_detail_add_instance_quantity_slider">Lliscador (1-6)</string>
+    <string name="product_detail_add_instance_quantity_custom">Personalitzat</string>
+    <string name="product_detail_add_instance_quantity_custom_label">Nombre d\'instàncies</string>
+    <string name="product_detail_add_instance_quantity_value">%1$d instàncies</string>
     <string name="product_detail_action_consume">Consumir</string>
     <string name="product_detail_action_freeze">Congelar</string>
     <string name="product_detail_action_delete">Eliminar</string>

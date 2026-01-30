@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,11 +20,17 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MultiChoiceSegmentedButtonRow
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.ui.text.style.TextAlign
+import kotlin.math.roundToInt
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -185,6 +192,69 @@ fun ProductDetailAddInstanceScreen(
               disabledIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
             ),
           )
+
+          // Quantity controls
+          Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+          ) {
+            Text(
+              text = stringResource(R.string.product_detail_add_instance_quantity_label),
+              style = MaterialTheme.typography.bodyLarge,
+            )
+
+            // Segmented button for mode selection
+            MultiChoiceSegmentedButtonRow(
+              modifier = Modifier.fillMaxWidth()
+            ) {
+              SegmentedButton(
+                checked = !formState.value.useCustomQuantity,
+                onCheckedChange = { viewModel.onUseCustomQuantityChanged(false) },
+                shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+              ) {
+                Text(stringResource(R.string.product_detail_add_instance_quantity_slider))
+              }
+              SegmentedButton(
+                checked = formState.value.useCustomQuantity,
+                onCheckedChange = { viewModel.onUseCustomQuantityChanged(true) },
+                shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+              ) {
+                Text(stringResource(R.string.product_detail_add_instance_quantity_custom))
+              }
+            }
+
+            if (formState.value.useCustomQuantity) {
+              // Custom quantity input
+              TextField(
+                value = formState.value.customQuantity.text,
+                onValueChange = { viewModel.onCustomQuantityChanged(TextFieldValue(it)) },
+                label = { Text(stringResource(R.string.product_detail_add_instance_quantity_custom_label)) },
+                placeholder = { Text("1") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+              )
+            } else {
+              // Slider for quantity (1-6)
+              Column {
+                Row(
+                  modifier = Modifier.fillMaxWidth(),
+                  horizontalArrangement = Arrangement.SpaceBetween,
+                  verticalAlignment = Alignment.CenterVertically,
+                ) {
+                  Text(
+                    text = stringResource(R.string.product_detail_add_instance_quantity_value, formState.value.quantity),
+                    style = MaterialTheme.typography.bodyMedium,
+                  )
+                }
+                Slider(
+                  value = formState.value.quantity.toFloat(),
+                  onValueChange = { viewModel.onQuantityChanged(it.roundToInt()) },
+                  valueRange = 1f..6f,
+                  steps = 4,
+                  modifier = Modifier.fillMaxWidth(),
+                )
+              }
+            }
+          }
 
           if (showDatePicker) {
             ExpirationDatePickerDialog(

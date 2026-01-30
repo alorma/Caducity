@@ -91,6 +91,18 @@ class ProductDetailAddInstanceViewModel(
     )
   }
 
+  fun onQuantityChanged(quantity: Int) {
+    _formState.value = _formState.value.copy(quantity = quantity)
+  }
+
+  fun onUseCustomQuantityChanged(useCustom: Boolean) {
+    _formState.value = _formState.value.copy(useCustomQuantity = useCustom)
+  }
+
+  fun onCustomQuantityChanged(text: TextFieldValue) {
+    _formState.value = _formState.value.copy(customQuantity = text)
+  }
+
   fun save(onSuccess: () -> Unit) {
     viewModelScope.launch {
       val currentFormState = _formState.value
@@ -113,6 +125,13 @@ class ProductDetailAddInstanceViewModel(
         return@launch
       }
 
+      // Determine quantity
+      val quantity = if (currentFormState.useCustomQuantity) {
+        currentFormState.customQuantity.text.toIntOrNull()?.coerceAtLeast(1) ?: 1
+      } else {
+        currentFormState.quantity
+      }
+
       try {
         // Determine variant ID (use existing or create new)
         val variantId = if (variantText.isEmpty()) {
@@ -125,24 +144,36 @@ class ProductDetailAddInstanceViewModel(
           result.getOrThrow().id
         }
 
-        // Determine identifier
-        val identifier = if (variantId != null) {
-          // Variant selected: identifier can be empty or use provided value
-          identifierText.ifEmpty { "" }
-        } else {
-          // No variant: use provided identifier (we validated it's not empty above)
-          identifierText
-        }
-
         // Convert selected date from milliseconds to Instant
         val expirationDate = Instant.fromEpochMilliseconds(currentFormState.expirationDateMillis)
 
-        addInstanceToProductUseCase.addInstance(
-          productId = productId,
-          identifier = identifier,
-          variantId = variantId,
-          expirationDate = expirationDate,
-        )
+        // Create multiple instances
+        repeat(quantity) { index ->
+          // Determine identifier for each instance
+          val identifier = if (variantId != null) {
+            // Variant selected: identifier can be empty or use provided value
+            val baseIdentifier = identifierText.ifEmpty { "" }
+            if (baseIdentifier.isNotEmpty() && quantity > 1) {
+              "$baseIdentifier - ${index + 1}"
+            } else {
+              baseIdentifier
+            }
+          } else {
+            // No variant: use provided identifier (we validated it's not empty above)
+            if (quantity > 1) {
+              "$identifierText - ${index + 1}"
+            } else {
+              identifierText
+            }
+          }
+
+          addInstanceToProductUseCase.addInstance(
+            productId = productId,
+            identifier = identifier,
+            variantId = variantId,
+            expirationDate = expirationDate,
+          )
+        }
 
         onSuccess()
       } catch (e: Exception) {
@@ -160,6 +191,9 @@ data class FormState(
   val identifierError: String? = null,
   val expirationDateMillis: Long? = null,
   val expirationDateError: String? = null,
+  val quantity: Int = 1,
+  val useCustomQuantity: Boolean = false,
+  val customQuantity: TextFieldValue = TextFieldValue(),
 )
 
 sealed interface ProductDetailAddInstanceState {
