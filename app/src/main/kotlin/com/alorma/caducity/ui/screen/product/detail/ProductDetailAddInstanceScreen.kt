@@ -57,9 +57,10 @@ import java.util.Locale
 @Composable
 fun ProductDetailAddInstanceScreen(
   productId: String,
+  variantId: String?,
   onClose: () -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: ProductDetailAddInstanceViewModel = koinViewModel { parametersOf(productId) }
+  viewModel: ProductDetailAddInstanceViewModel = koinViewModel { parametersOf(productId, variantId) }
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
   val formState = viewModel.formState.collectAsStateWithLifecycle()

@@ -10,6 +10,9 @@ sealed interface ProductDetailRoutes : NavKey {
   data class Root(val productId: String) : ProductDetailRoutes
 
   @Serializable
-  data class AddInstance(val productId: String) : ProductDetailRoutes
+  data class AddInstance(
+    val productId: String,
+    val variantId: String? = null
+  ) : ProductDetailRoutes
 }
 

@@ -1,6 +1,8 @@
 package com.alorma.caducity.ui.screen.product.detail
 
+import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.DetailVariant
 import com.alorma.caducity.domain.model.ProductDetail
@@ -15,6 +17,7 @@ class ProductDetailMapper(
   private val appClock: AppClock,
   private val relativeTimeFormatter: RelativeTimeFormatter,
   private val appCalendarConfigMapper: AppCalendarConfigMapper,
+  private val stringProvider: StringProvider,
 ) {
 
   fun mapToProductDetail(
@@ -53,7 +56,7 @@ class ProductDetailMapper(
     if (productDetail.nonVariant.isNotEmpty()) {
       val otherTab = ProductDetailVariantTabUiModel.WithInstances(
         id = "other",
-        name = "Other",
+        name = stringProvider.getString(R.string.product_detail_variant_other),
         datedInstancesGroups = listOf(
           DateInstancesUiModel(
             text = "",
@@ -101,7 +104,7 @@ class ProductDetailMapper(
       today = today,
       product = productUiModel,
       appCalendarConfig = appCalendarConfig,
-      variantTabs = variantTabs.toImmutableList(),
+      variantTabs = variantTabs.sortedBy { it.name }.toImmutableList(),
     )
   }
 

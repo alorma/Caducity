@@ -24,7 +24,8 @@ class ObtainProductDetailUseCase(
   fun obtain(productId: String): Flow<Result<ProductDetail>> {
     return productDataSource.getProduct(productId).map { result ->
       result.map { product ->
-        // Filter out frozen instances but keep empty variants
+        // Filter out frozen instances but keep all variants (even empty ones)
+        // Consumed instances are already filtered at the data source level
         val activeVariants = product.variants.map { variant ->
           variant.copy(
             instances = variant.instances

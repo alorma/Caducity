@@ -71,17 +71,18 @@ fun ProductWithInstancesRoomEntity.toModel(
   val variantMap = variants.associateBy { it.id }
 
   // Group instances by variant
-  val variantsWithInstances = instancesModel
+  val instancesByVariant = instancesModel
     .filter { it.variantId != null }
     .groupBy { it.variantId!! }
-    .mapNotNull { (variantId, variantInstances) ->
-      val variant = variantMap[variantId] ?: return@mapNotNull null
-      ProductVariant(
-        variant = variant.toModel(),
-        instances = variantInstances.toImmutableList()
-      )
-    }
-    .toImmutableList()
+
+  // Include ALL variants, even those with no instances
+  val variantsWithInstances = variants.map { variantEntity ->
+    val variantInstances = instancesByVariant[variantEntity.id] ?: emptyList()
+    ProductVariant(
+      variant = variantEntity.toModel(),
+      instances = variantInstances.toImmutableList()
+    )
+  }.toImmutableList()
 
   // Get standalone instances (no variantId)
   val standaloneInstancesModel = instancesModel

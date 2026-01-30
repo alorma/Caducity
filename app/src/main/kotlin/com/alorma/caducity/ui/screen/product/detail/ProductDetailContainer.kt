@@ -38,14 +38,15 @@ fun ProductDetailContainer(
       entry<ProductDetailRoutes.Root> {
         ProductDetailScreen(
           productId = it.productId,
-          onNavigateToAddInstance = {
-            productDetailBackStack.add(ProductDetailRoutes.AddInstance(productId))
+          onNavigateToAddInstance = { variantId ->
+            productDetailBackStack.add(ProductDetailRoutes.AddInstance(productId, variantId))
           },
         )
       }
       entry<ProductDetailRoutes.AddInstance> {
         ProductDetailAddInstanceScreen(
           productId = it.productId,
+          variantId = it.variantId,
           onClose = { productDetailBackStack.removeLastOrNull() },
         )
       }
