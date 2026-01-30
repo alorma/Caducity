@@ -151,7 +151,7 @@ class CategoryDetailAddItemViewModel(
 
       try {
         // Determine product ID (use existing or create new)
-        val categoryId = if (productText.isEmpty()) {
+        val productId = if (productText.isEmpty()) {
           null
         } else if (currentFormState.selectedcategoryId != null) {
           currentFormState.selectedcategoryId
@@ -181,7 +181,7 @@ class CategoryDetailAddItemViewModel(
           }
 
           addItemToCategoryUseCase.addItem(
-            categoryId = categoryId,
+            categoryId = this@CategoryDetailAddItemViewModel.categoryId,
             identifier = identifier,
             productId = productId,
             expirationDate = expirationDate,

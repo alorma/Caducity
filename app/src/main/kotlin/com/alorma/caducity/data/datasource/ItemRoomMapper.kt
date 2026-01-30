@@ -16,7 +16,7 @@ class ItemRoomMapper(
     return Item(
       id = entity.id,
       identifier = entity.identifier,
-      categoryId = entity.categoryId,
+      productId = entity.productId,
       expirationDate = instantFromTimestamp(entity.expirationDate),
       status = instanceStatus(entity),
       pausedDate = entity.pausedDate?.let { date -> instantFromTimestamp(date) },

@@ -57,7 +57,7 @@ fun ItemRoomEntity.toModel(
   return Item(
     id = id,
     identifier = identifier,
-    categoryId = categoryId,
+    productId = productId,
     expirationDate = expirationInstant,
     status = status,
     pausedDate = pausedInstant,
@@ -74,10 +74,10 @@ fun CategoryWithItemsRoomEntity.toModel(
   // Build product map for quick lookup (ProductRoomEntity = products in domain)
   val productMap = products.associateBy { it.id }
 
-  // Group items by product (categoryId in ItemRoomEntity = categoryId in domain)
+  // Group items by product (productId in ItemRoomEntity = productId in domain)
   val itemsByProduct = itemsModel
-    .filter { it.categoryId != null }
-    .groupBy { it.categoryId!! }
+    .filter { it.productId != null }
+    .groupBy { it.productId!! }
 
   // Include ALL products, even those with no items (products = products in domain)
   val productsWithItems = products.map { productEntity ->
@@ -88,9 +88,9 @@ fun CategoryWithItemsRoomEntity.toModel(
     )
   }.toImmutableList()
 
-  // Get standalone items (no categoryId = no categoryId in domain)
+  // Get standalone items (no productId = no productId in domain)
   val standaloneItemsModel = itemsModel
-    .filter { it.categoryId == null }
+    .filter { it.productId == null }
     .toImmutableList()
 
   return CategoryWithItems(
