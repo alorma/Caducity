@@ -134,6 +134,9 @@
     <string name="category_detail_action_consume">Consumir</string>
     <string name="category_detail_action_freeze">Congelar</string>
     <string name="category_detail_action_delete">Eliminar</string>
+    <string name="category_detail_frozen_items">Congelats</string>
+    <string name="category_detail_section_available">Articles disponibles</string>
+    <string name="category_detail_section_frozen">Articles congelats</string>
 
     <!-- Category Detail AI -->
     <string name="category_detail_ai_title">Afegir Productes amb IA</string>

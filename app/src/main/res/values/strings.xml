@@ -136,6 +136,9 @@
     <string name="category_detail_action_consume">Consume</string>
     <string name="category_detail_action_freeze">Freeze</string>
     <string name="category_detail_action_delete">Delete</string>
+    <string name="category_detail_frozen_items">Frozen</string>
+    <string name="category_detail_section_available">Available items</string>
+    <string name="category_detail_section_frozen">Frozen items</string>
 
     <!-- Category Detail AI -->
     <string name="category_detail_ai_title">Add Products with AI</string>
