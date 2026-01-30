@@ -95,8 +95,11 @@ class ProductDetailAddInstanceViewModel(
     _formState.value = _formState.value.copy(quantity = quantity)
   }
 
-  fun onUseCustomQuantityChanged(useCustom: Boolean) {
-    _formState.value = _formState.value.copy(useCustomQuantity = useCustom)
+  fun onShowCustomQuantityInputChanged(show: Boolean) {
+    _formState.value = _formState.value.copy(
+      showCustomQuantityInput = show,
+      customQuantity = if (!show) TextFieldValue() else _formState.value.customQuantity
+    )
   }
 
   fun onCustomQuantityChanged(text: TextFieldValue) {
@@ -126,7 +129,7 @@ class ProductDetailAddInstanceViewModel(
       }
 
       // Determine quantity
-      val quantity = if (currentFormState.useCustomQuantity) {
+      val quantity = if (currentFormState.showCustomQuantityInput && currentFormState.customQuantity.text.isNotBlank()) {
         currentFormState.customQuantity.text.toIntOrNull()?.coerceAtLeast(1) ?: 1
       } else {
         currentFormState.quantity
@@ -192,7 +195,7 @@ data class FormState(
   val expirationDateMillis: Long? = null,
   val expirationDateError: String? = null,
   val quantity: Int = 1,
-  val useCustomQuantity: Boolean = false,
+  val showCustomQuantityInput: Boolean = false,
   val customQuantity: TextFieldValue = TextFieldValue(),
 )
 
