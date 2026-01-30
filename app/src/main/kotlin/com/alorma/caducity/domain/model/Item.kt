@@ -5,7 +5,7 @@ import kotlin.time.Instant
 data class Item(
   val id: String,
   val identifier: String,
-  val categoryId: String? = null,
+  val productId: String? = null,
   val expirationDate: Instant,
   val status: ItemStatus,
   val pausedDate: Instant? = null,
