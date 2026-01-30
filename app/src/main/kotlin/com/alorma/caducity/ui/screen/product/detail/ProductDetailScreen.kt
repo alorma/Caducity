@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -24,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -149,20 +152,38 @@ private fun ProductDetailSuccessContent(
           )
 
           if (state.variantTabs.isNotEmpty()) {
-            SecondaryScrollableTabRow(
-              selectedTabIndex = pagerState.currentPage,
-              edgePadding = 16.dp,
-              containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
+            Row(
+              modifier = Modifier.padding(end = 16.dp),
+              verticalAlignment = Alignment.CenterVertically,
             ) {
-              state.variantTabs.forEachIndexed { index, variantTab ->
-                Tab(
-                  selected = pagerState.currentPage == index,
-                  onClick = {
-                    coroutineScope.launch {
-                      pagerState.animateScrollToPage(index)
-                    }
-                  },
-                  text = { Text(text = variantTab.name) },
+              SecondaryScrollableTabRow(
+                modifier = Modifier.weight(1f),
+                selectedTabIndex = pagerState.currentPage,
+                edgePadding = 16.dp,
+                divider = {},
+                containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
+              ) {
+                state.variantTabs.forEachIndexed { index, variantTab ->
+                  Tab(
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                      coroutineScope.launch {
+                        pagerState.animateScrollToPage(index)
+                      }
+                    },
+                    text = { Text(text = variantTab.name) },
+                  )
+                }
+              }
+
+              IconButton(
+                modifier = Modifier,
+                onClick = {},
+              ) {
+                Icon(
+                  modifier = Modifier.size(18.dp),
+                  imageVector = AppIcons.Add,
+                  contentDescription = null,
                 )
               }
             }
