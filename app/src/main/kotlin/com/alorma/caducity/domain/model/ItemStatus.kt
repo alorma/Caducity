@@ -9,6 +9,7 @@ sealed class ItemStatus {
   data object ExpiringSoon : ItemStatus()
   data object Fresh : ItemStatus()
   data object Frozen : ItemStatus()
+  data object Consumed : ItemStatus()
 
   companion object Companion {
     /**

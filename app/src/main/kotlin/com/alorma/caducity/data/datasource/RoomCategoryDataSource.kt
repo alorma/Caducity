@@ -131,6 +131,11 @@ class RoomCategoryDataSource(
         // Frozen items don't have a date range filter - return all dates
         Pair(0L, Long.MAX_VALUE)
       }
+
+      ItemStatus.Consumed -> {
+        // Consumed items don't have a date range filter - return all dates
+        Pair(0L, Long.MAX_VALUE)
+      }
     }
   }
 
@@ -138,8 +143,8 @@ class RoomCategoryDataSource(
     return categoryDao.getCategoryWithItems(categoryId)
       .map { roomEntity ->
         roomEntity?.let {
-          // Filter consumed items before converting
-          Result.success(it.filterConsumed().toModel(appClock, expirationThresholds))
+          // Don't filter consumed items - let them be mapped with Consumed status
+          Result.success(it.toModel(appClock, expirationThresholds))
         } ?: Result.failure(NoSuchElementException("Category with id $categoryId not found"))
       }
   }

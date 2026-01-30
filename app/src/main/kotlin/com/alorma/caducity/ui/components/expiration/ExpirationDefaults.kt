@@ -40,6 +40,7 @@ object ExpirationDefaults {
     ItemStatus.ExpiringSoon -> statusColors(expirationColors.expiringSoon)
     ItemStatus.Expired -> statusColors(expirationColors.expired)
     ItemStatus.Frozen -> statusColors(expirationColors.frozen)
+    ItemStatus.Consumed -> statusColors(expirationColors.consumed)
   }
 
   @Composable

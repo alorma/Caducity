@@ -20,6 +20,7 @@ class StatusItemComparator : ItemComparator {
       ItemStatus.ExpiringSoon -> 1
       ItemStatus.Fresh -> 2
       ItemStatus.Frozen -> 3
+      ItemStatus.Consumed -> 4
     }
   }.thenBy { it.expirationDate }
 

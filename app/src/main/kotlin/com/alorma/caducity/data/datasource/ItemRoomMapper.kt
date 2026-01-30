@@ -26,8 +26,8 @@ class ItemRoomMapper(
   private fun instanceStatus(
     entity: ItemRoomEntity,
   ): ItemStatus {
-    // Note: consumedDate items are filtered at SQL level, so they never reach this mapper
     return when {
+      entity.consumedDate != null -> ItemStatus.Consumed
       entity.pausedDate != null -> ItemStatus.Frozen
       else -> ItemStatus.calculateStatus(
         expirationDate = instantFromTimestamp(entity.expirationDate),

@@ -1,18 +1,13 @@
 package com.alorma.caducity.ui.screen.category.detail
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.FloatingActionButton
@@ -23,8 +18,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SecondaryScrollableTabRow
-import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -47,10 +40,7 @@ import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.ThermometerSnow
 import com.alorma.caducity.domain.model.ItemStatus
-import com.alorma.caducity.ui.components.StatusBadge
-import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
-import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
@@ -64,6 +54,7 @@ import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.screen.category.detail.product.ProductTabContent
 import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -225,221 +216,6 @@ private fun CategoryDetailSuccessContent(
         ProductTabContent(
           productTab = productTab,
           onItemClick = onItemClick,
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun ProductTabContent(
-  productTab: CategoryDetailProductTabUiModel,
-  onItemClick: (ItemDetailUiModel) -> Unit,
-) {
-  when (productTab) {
-    is CategoryDetailProductTabUiModel.Empty -> {
-      // Show empty state for products with no items
-      Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-      ) {
-        Text(
-          text = stringResource(R.string.category_detail_product_empty_state),
-          style = MaterialTheme.typography.bodyLarge,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-      }
-    }
-
-    is CategoryDetailProductTabUiModel.WithItems -> {
-      val availableItemsCount = productTab.datedItemsGroups.sumOf { it.items.size }
-      val frozenItemsCount = productTab.frozenItems.size
-
-      LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-      ) {
-        // Sticky header for available items
-        if (productTab.datedItemsGroups.isNotEmpty()) {
-          stickyHeader {
-            SectionHeader(
-              title = stringResource(R.string.category_detail_section_available),
-              count = availableItemsCount,
-            )
-          }
-        }
-
-        // Show each dated status group
-        items(productTab.datedItemsGroups) { datedItems ->
-          StatusGroupCard(
-            datedItems = datedItems,
-            onItemClick = onItemClick,
-          )
-        }
-
-        // Sticky header for frozen items
-        if (productTab.frozenItems.isNotEmpty()) {
-          stickyHeader {
-            SectionHeader(
-              title = stringResource(R.string.category_detail_section_frozen),
-              count = frozenItemsCount,
-            )
-          }
-
-          item {
-            FrozenItemsGroupCard(
-              frozenItems = productTab.frozenItems,
-              onItemClick = onItemClick,
-            )
-          }
-        }
-      }
-    }
-  }
-}
-
-@Composable
-private fun StatusGroupCard(
-  datedItems: DateItemsUiModel,
-  onItemClick: (ItemDetailUiModel) -> Unit,
-) {
-  Column(
-    verticalArrangement = Arrangement.spacedBy(12.dp),
-  ) {
-    // Show expiration date and status
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      StatusBadge(
-        status = datedItems.status,
-        size = StatusBadgeSize.Large,
-      )
-
-      if (datedItems.text.isNotEmpty()) {
-        Text(
-          text = "·",
-          style = CaducityTheme.typography.labelMedium,
-        )
-
-        Text(
-          text = datedItems.text,
-          style = CaducityTheme.typography.labelMedium,
-        )
-      }
-    }
-
-    // Show instances
-    FlowRow(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-      maxItemsInEachRow = 3,
-    ) {
-      val statusColors = ExpirationDefaults.getSoftColors(datedItems.status)
-
-      val chipColors = SuggestionChipDefaults.suggestionChipColors(
-        containerColor = statusColors.container,
-      )
-
-      datedItems.items.forEach { item ->
-        SuggestionChip(
-          onClick = { onItemClick(item) },
-          colors = chipColors,
-          label = { Text(text = item.text) },
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun FrozenItemsGroupCard(
-  frozenItems: List<ItemDetailUiModel>,
-  onItemClick: (ItemDetailUiModel) -> Unit,
-) {
-  Column(
-    verticalArrangement = Arrangement.spacedBy(12.dp),
-  ) {
-    // Show frozen status badge
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      StatusBadge(
-        status = ItemStatus.Frozen,
-        size = StatusBadgeSize.Large,
-      )
-
-      Text(
-        text = "·",
-        style = CaducityTheme.typography.labelMedium,
-      )
-
-      Text(
-        text = stringResource(R.string.category_detail_frozen_items),
-        style = CaducityTheme.typography.labelMedium,
-      )
-    }
-
-    // Show frozen instances
-    FlowRow(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-      maxItemsInEachRow = 3,
-    ) {
-      val statusColors = ExpirationDefaults.getSoftColors(ItemStatus.Frozen)
-
-      val chipColors = SuggestionChipDefaults.suggestionChipColors(
-        containerColor = statusColors.container,
-      )
-
-      frozenItems.forEach { item ->
-        SuggestionChip(
-          onClick = { onItemClick(item) },
-          colors = chipColors,
-          label = { Text(text = item.text) },
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun SectionHeader(
-  title: String,
-  count: Int,
-) {
-  Surface(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(bottom = 8.dp),
-    color = CaducityTheme.colorScheme.surface,
-  ) {
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 8.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      Text(
-        text = title,
-        style = CaducityTheme.typography.titleMedium,
-        color = CaducityTheme.colorScheme.onSurface,
-      )
-
-      Surface(
-        shape = MaterialTheme.shapes.small,
-        color = CaducityTheme.colorScheme.secondaryContainer,
-      ) {
-        Text(
-          text = count.toString(),
-          style = CaducityTheme.typography.labelMedium,
-          color = CaducityTheme.colorScheme.onSecondaryContainer,
-          modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         )
       }
     }
