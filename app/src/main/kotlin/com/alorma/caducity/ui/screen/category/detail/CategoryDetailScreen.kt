@@ -421,56 +421,56 @@ private fun SideEffectHandler(
   LaunchedEffect(viewModel.sideEffect) {
     viewModel.sideEffect.collect { effect ->
       when (effect) {
-        CategoryDetailSideEffect.ItemConsumed -> {
+        CategoryDetailSideEffect.ItemConsumed -> launch {
           snackbarState.showSnackbar(
             message = R.string.success_item_consumed,
             type = AppFeedbackType.Success,
           )
         }
 
-        CategoryDetailSideEffect.ItemFrozen -> {
+        CategoryDetailSideEffect.ItemFrozen -> launch {
           snackbarState.showSnackbar(
             message = R.string.success_item_frozen,
             type = AppFeedbackType.Status(ItemStatus.Frozen),
           )
         }
 
-        CategoryDetailSideEffect.ItemDeleted -> {
+        CategoryDetailSideEffect.ItemDeleted -> launch {
           snackbarState.showSnackbar(
             message = R.string.success_item_deleted,
             type = AppFeedbackType.Success,
           )
         }
 
-        CategoryDetailSideEffect.ConsumeItemFailed -> {
+        CategoryDetailSideEffect.ConsumeItemFailed -> launch {
           snackbarState.showSnackbar(
             message = R.string.error_consume_item_failed,
             type = AppFeedbackType.Error,
           )
         }
 
-        CategoryDetailSideEffect.FreezeItemFailed -> {
+        CategoryDetailSideEffect.FreezeItemFailed -> launch {
           snackbarState.showSnackbar(
             message = R.string.error_freeze_item_failed,
             type = AppFeedbackType.Error,
           )
         }
 
-        CategoryDetailSideEffect.DeleteItemFailed -> {
+        CategoryDetailSideEffect.DeleteItemFailed -> launch {
           snackbarState.showSnackbar(
             message = R.string.error_delete_item_failed,
             type = AppFeedbackType.Error,
           )
         }
 
-        is CategoryDetailSideEffect.FreezeNotAvailable -> {
+        is CategoryDetailSideEffect.FreezeNotAvailable -> launch {
           snackbarState.showSnackbar(
             message = R.string.error_cannot_freeze_expired,
             type = AppFeedbackType.Status(effect.status),
           )
         }
 
-        is CategoryDetailSideEffect.ShowConsumeExpiredWarning -> {
+        is CategoryDetailSideEffect.ShowConsumeExpiredWarning -> launch {
           val result = dialogState.showAlertDialog(
             title = AppFeedbackResource.AsResource(
               R.string.warning_consume_expired_title
@@ -491,7 +491,7 @@ private fun SideEffectHandler(
           }
         }
 
-        is CategoryDetailSideEffect.ShowConsumeExpiredError -> {
+        is CategoryDetailSideEffect.ShowConsumeExpiredError -> launch {
           val result = dialogState.showAlertDialog(
             title = AppFeedbackResource.AsResource(
               R.string.error_cannot_consume_expired
@@ -512,7 +512,7 @@ private fun SideEffectHandler(
           }
         }
 
-        CategoryDetailSideEffect.ShowAddProductDialog -> {
+        CategoryDetailSideEffect.ShowAddProductDialog -> launch {
           var productName by mutableStateOf("")
           val result = dialogState.showAlertDialog(
             title = { Text(stringResource(R.string.category_detail_add_product_dialog_title)) },
@@ -535,9 +535,9 @@ private fun SideEffectHandler(
           }
         }
 
-        is CategoryDetailSideEffect.ShowItemActionsBottomSheet -> {
+        is CategoryDetailSideEffect.ShowItemActionsBottomSheet -> launch {
           bottomSheetState.ItemActionsBottomSheet(
-            coroutineScope = this,
+            coroutineScope = this@LaunchedEffect,
             item = effect.item,
             onConsume = {
               viewModel.onConsumeItem(effect.item)
@@ -554,11 +554,11 @@ private fun SideEffectHandler(
           )
         }
 
-        CategoryDetailSideEffect.ProductCreated -> {
+        CategoryDetailSideEffect.ProductCreated -> launch {
           // Product created successfully - no feedback needed, it will appear in the list
         }
 
-        CategoryDetailSideEffect.CreateProductFailed -> {
+        CategoryDetailSideEffect.CreateProductFailed -> launch {
           snackbarState.showSnackbar(
             message = R.string.error_create_product_failed,
             type = AppFeedbackType.Error,
