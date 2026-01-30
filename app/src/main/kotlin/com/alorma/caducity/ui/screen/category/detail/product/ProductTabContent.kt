@@ -20,16 +20,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
+import com.alorma.caducity.ui.components.calendar.today
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.DateItemsUiModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import com.alorma.caducity.ui.theme.preview.ScreenshotPreviewTheme
+import com.kizitonwose.calendar.core.minusDays
 
 @Composable
 fun ProductTabContent(
@@ -313,6 +320,136 @@ private fun SectionHeader(
           modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
         )
       }
+    }
+  }
+}
+
+// Preview Data
+private val yesterday = today.minusDays(1)
+private val nextWeek = kotlinx.datetime.LocalDate(2024, 2, 22)
+
+class ProductTabContentPreviewProvider :
+  CollectionPreviewParameterProvider<CategoryDetailProductTabUiModel>(
+    listOf(
+      // Empty state
+      CategoryDetailProductTabUiModel.Empty(
+        id = "1",
+        name = "Milk",
+      ),
+      // Product with all statuses
+      CategoryDetailProductTabUiModel.WithItems(
+        id = "3",
+        name = "Cheese",
+        datedItemsGroups = kotlinx.collections.immutable.persistentListOf(
+          DateItemsUiModel(
+            text = "Yesterday",
+            status = ItemStatus.Expired,
+            date = yesterday,
+            items = kotlinx.collections.immutable.persistentListOf(
+              ItemDetailUiModel(
+                id = "1",
+                expirationDate = yesterday,
+                status = ItemStatus.Expired,
+                text = "Expired package",
+              ),
+            ),
+          ),
+          DateItemsUiModel(
+            text = "Today",
+            status = ItemStatus.ExpiringSoon,
+            date = today,
+            items = kotlinx.collections.immutable.persistentListOf(
+              ItemDetailUiModel(
+                id = "2",
+                expirationDate = today,
+                status = ItemStatus.ExpiringSoon,
+                text = "Expiring package 1",
+              ),
+              ItemDetailUiModel(
+                id = "3",
+                expirationDate = today,
+                status = ItemStatus.ExpiringSoon,
+                text = "Expiring package 2",
+              ),
+            ),
+          ),
+          DateItemsUiModel(
+            text = "In 7 days",
+            status = ItemStatus.Fresh,
+            date = nextWeek,
+            items = kotlinx.collections.immutable.persistentListOf(
+              ItemDetailUiModel(
+                id = "4",
+                expirationDate = nextWeek,
+                status = ItemStatus.Fresh,
+                text = "Fresh package 1",
+              ),
+              ItemDetailUiModel(
+                id = "5",
+                expirationDate = nextWeek,
+                status = ItemStatus.Fresh,
+                text = "Fresh package 2",
+              ),
+              ItemDetailUiModel(
+                id = "6",
+                expirationDate = nextWeek,
+                status = ItemStatus.Fresh,
+                text = "Fresh package 3",
+              ),
+            ),
+          ),
+        ),
+        frozenItems = kotlinx.collections.immutable.persistentListOf(
+          ItemDetailUiModel(
+            id = "7",
+            expirationDate = today,
+            status = ItemStatus.Frozen,
+            text = "Frozen package 1",
+          ),
+          ItemDetailUiModel(
+            id = "8",
+            expirationDate = today,
+            status = ItemStatus.Frozen,
+            text = "Frozen package 2",
+          ),
+        ),
+        consumedItems = kotlinx.collections.immutable.persistentListOf(
+          ItemDetailUiModel(
+            id = "9",
+            expirationDate = today,
+            status = ItemStatus.Consumed,
+            text = "Consumed package 1",
+          ),
+          ItemDetailUiModel(
+            id = "10",
+            expirationDate = today,
+            status = ItemStatus.Consumed,
+            text = "Consumed package 2",
+          ),
+        ),
+      ),
+    )
+  ) {
+  override fun getDisplayName(index: Int): String {
+    return when (values.toList()[index]) {
+      is CategoryDetailProductTabUiModel.Empty -> "Empty"
+      is CategoryDetailProductTabUiModel.WithItems -> "With status"
+    }
+  }
+}
+
+@PreviewLightDark
+@Composable
+fun ProductTabContentPreview(
+  @PreviewParameter(provider = ProductTabContentPreviewProvider::class)
+  productTab: CategoryDetailProductTabUiModel,
+) {
+  PreviewTheme {
+    Surface {
+      ProductTabContent(
+        productTab = productTab,
+        onItemClick = {},
+      )
     }
   }
 }

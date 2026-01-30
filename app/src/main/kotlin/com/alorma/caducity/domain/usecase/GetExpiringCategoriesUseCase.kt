@@ -19,11 +19,7 @@ class GetExpiringCategoriesUseCase(
    * Only includes categories with items that have ExpiringSoon or Expired status.
    */
   suspend fun load(): List<CategoryWithItems> {
-    // Get all categories filtered by expiring/expired status
-    val statusFilter = ProductsListFilter.ByStatus(
-      statuses = setOf(ItemStatus.ExpiringSoon, ItemStatus.Expired)
-    )
-    val filteredCategories = categoryDataSource.getCategories(statusFilter).first()
+    val filteredCategories = categoryDataSource.getCategories().first()
 
     return filteredCategories
       .map { categoryWithItems ->
@@ -48,7 +44,7 @@ class GetExpiringCategoriesUseCase(
       .sortedBy { categoryWithItems ->
         // Sort by earliest expiration date across all items
         val allItems = categoryWithItems.products.flatMap { it.items } +
-                         categoryWithItems.standaloneItems
+            categoryWithItems.standaloneItems
         allItems.minOfOrNull { it.expirationDate }
       }
   }
