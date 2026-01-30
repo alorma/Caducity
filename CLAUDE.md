@@ -428,6 +428,121 @@ Specialized mapper for items with status calculation:
 7. **ViewModel** maps to **UiModel** for screens
 8. **Screen** observes `StateFlow<UiState>` from ViewModel
 
+## UI Layer Architecture
+
+The UI layer follows MVI/MVVM pattern with Jetpack Compose:
+
+### Screen Structure (`ui/screen/`)
+
+**Dashboard (`dashboard/`):**
+- `DashboardScreen` - Main dashboard with category list/calendar
+- `DashboardViewModel` - State management, uses `ObtainDashboardCategoriesUseCase`
+- `DashboardState` - Sealed class: Loading, Success (PerCategory/Calendar), Error
+- `DashboardUiModel` - UI models: CategoryCalendarState, DashboardSummary (counts)
+- `DashboardMapper` - Maps domain models to UI models
+
+**Category Detail (`category/detail/`):**
+- `CategoryDetailScreen` - Shows category with products and items
+- `CategoryDetailViewModel` - Manages category, product, and item operations
+- `CategoryDetailState` - Sealed class: Loading, Success, Error
+- `CategoryDetailSideEffect` - Side effects: ItemConsumed, ItemFrozen, ProductCreated, dialogs, bottom sheets
+- `CategoryDetailMapper` - Maps to product tabs and item groups
+- `CategoryDetailAddItemScreen` - Screen for adding items to category/product
+- `CategoryDetailAddItemViewModel` - Handles item creation with product selection
+
+**Category Create (`category/create/`):**
+- `CreateCategoryScreen` - Form for creating new category
+- `CreateCategoryViewModel` - Handles validation and creation
+- `CreateCategoryState` - Form state with validation
+
+**Settings (`settings/`):**
+- Settings screens for theme, language, notifications, etc.
+
+### UI Models
+
+**Category Detail:**
+- `CategoryDetailUiModel` - UI representation of category (id, name, description)
+- `ItemDetailUiModel` - UI representation of item (id, expirationDate, status, text)
+- `DateItemsUiModel` - Grouped items by date (text, status, date, items)
+- `CategoryDetailProductTabUiModel` - Sealed class for product tabs:
+  - `Empty` - No items in product
+  - `WithItems` - Product with grouped items by date
+- `ProductUiModel` - Simple product UI model (id, name)
+
+**Dashboard:**
+- `CategoryCalendarState` - Category with calendar config (id, name, calendarConfig)
+- `DashboardSummary` - Summary counts (expired, expiringSoon, fresh, frozen)
+
+### ViewModels Pattern
+
+All ViewModels follow the same structure:
+```kotlin
+class CategoryDetailViewModel(
+  // Use cases injected via constructor
+  private val obtainCategoryDetailUseCase: ObtainCategoryDetailUseCase,
+  private val consumeItemUseCase: ConsumeItemUseCase,
+  private val freezeItemUseCase: FreezeItemUseCase,
+  // ... other use cases
+) : ViewModel() {
+
+  // State as StateFlow
+  val state: StateFlow<CategoryDetailState> = ...
+
+  // Side effects channel
+  private val sideEffectChannel = Channel<CategoryDetailSideEffect>()
+  val sideEffects = sideEffectChannel.receiveAsFlow()
+
+  // Public methods for user actions
+  fun onItemClick(item: ItemDetailUiModel) { ... }
+  fun onConsumeItem(item: ItemDetailUiModel) { ... }
+
+  // Private method to emit side effects
+  private fun emitSideEffect(effect: CategoryDetailSideEffect) {
+    viewModelScope.launch {
+      sideEffectChannel.send(effect)
+    }
+  }
+}
+```
+
+### State Management Pattern
+
+**State:**
+- Sealed class hierarchy for screen states
+- Example: `sealed interface CategoryDetailState { object Loading, data class Success, data class Error }`
+- Exposed as `StateFlow<State>` from ViewModel
+- Screen observes state and renders accordingly
+
+**Side Effects:**
+- Sealed interface for one-time events
+- Examples: Snackbars, Dialogs, Bottom Sheets, Navigation
+- Exposed as `Flow<SideEffect>` from ViewModel (Channel-based)
+- Handled in `SideEffectHandler` composable
+
+### Navigation
+
+**Routes (`TopLevelRoute.kt`):**
+- `DashboardRoute` - Main dashboard
+- `CreateCategoryRoute` - Create new category
+- `CategoryDetailRoute` - Category detail with nested routes:
+  - `CategoryDetailRoutes.Root(categoryId)` - Category overview
+  - `CategoryDetailRoutes.AddItem(categoryId, productId?)` - Add item screen
+- `SettingsRoute` - Settings screens
+
+**Navigation Pattern:**
+- Type-safe navigation with sealed classes
+- ViewModel scoping via `rememberViewModelStoreNavEntryDecorator()`
+- State preservation via `rememberSaveableStateHolderNavEntryDecorator()`
+
+### Components (`base/ui/components/`)
+
+**Reusable Components:**
+- `StatusBadge` - Visual indicator for item status (Fresh, ExpiringSoon, Expired, Frozen)
+- `ItemCard` - Card component for displaying items
+- `AppScaffold` - Standard scaffold with dialog/snackbar/bottom sheet support
+- `AppCalendar` - Calendar component for date selection and visualization
+- `TopBars` - Standard app bars (TopAppBar, SearchBar, etc.)
+
 ### User Feedback: Dialogs, Snackbars, and Bottom Sheets
 
 **IMPORTANT**: All user feedback (dialogs, snackbars, bottom sheets) MUST be handled through side effects, never directly from UI state.

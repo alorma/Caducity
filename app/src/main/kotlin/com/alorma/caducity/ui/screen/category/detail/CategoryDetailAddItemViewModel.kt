@@ -183,7 +183,7 @@ class CategoryDetailAddItemViewModel(
           addItemToCategoryUseCase.addItem(
             categoryId = categoryId,
             identifier = identifier,
-            categoryId = categoryId,
+            productId = productId,
             expirationDate = expirationDate,
           )
         }
