@@ -236,9 +236,42 @@ The `base/` module contains reusable components separated into focused sub-modul
 4. **ViewModel** maps to **UiModel** for screens
 5. **Screen** observes `StateFlow<UiState>` from ViewModel
 
-### User Feedback: Dialogs and Snackbars
+### User Feedback: Dialogs, Snackbars, and Bottom Sheets
 
-**IMPORTANT**: All user feedback (dialogs, snackbars) MUST be handled through side effects, never directly from UI state.
+**IMPORTANT**: All user feedback (dialogs, snackbars, bottom sheets) MUST be handled through side effects, never directly from UI state.
+
+#### State Initialization
+
+All screens must initialize the three feedback states at the top level:
+
+```kotlin
+@Composable
+fun ProductDetailScreen(
+  productId: String,
+  viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
+) {
+  val dialogState = rememberAppDialogState()
+  val snackbarState = rememberAppSnackbarState()
+  val bottomSheetState = rememberAppBottomSheetState()
+
+  SideEffectHandler(
+    viewModel = viewModel,
+    dialogState = dialogState,
+    snackbarState = snackbarState,
+    bottomSheetState = bottomSheetState,
+  )
+
+  // Pass all three states to scaffold
+  AppScaffold(
+    dialogState = dialogState,
+    snackbarState = snackbarState,
+    bottomSheetState = bottomSheetState,
+    // ... other params
+  ) {
+    // Screen content
+  }
+}
+```
 
 #### Dialog Pattern
 
@@ -313,7 +346,7 @@ When you need to show a snackbar:
    }
    ```
 
-3. **Handle in SideEffectHandler** using `AppSnackbarHostState`:
+3. **Handle in SideEffectHandler** using `AppSnackbarState`:
    ```kotlin
    ProductDetailSideEffect.CreateVariantFailed -> {
      snackbarState.showSnackbar(
@@ -323,14 +356,89 @@ When you need to show a snackbar:
    }
    ```
 
+#### Bottom Sheet Pattern
+
+When you need to show a bottom sheet:
+
+1. **Add a side effect** with the data to display:
+   ```kotlin
+   sealed interface ProductDetailSideEffect {
+     data class ShowInstanceActionsBottomSheet(
+       val instance: ProductInstanceDetailUiModel,
+     ) : ProductDetailSideEffect
+   }
+   ```
+
+2. **Emit from ViewModel**:
+   ```kotlin
+   fun onInstanceClick(instance: ProductInstanceDetailUiModel) {
+     emitSideEffect(ProductDetailSideEffect.ShowInstanceActionsBottomSheet(instance))
+   }
+   ```
+
+3. **Handle in SideEffectHandler** using `AppBottomSheetState`:
+   ```kotlin
+   is ProductDetailSideEffect.ShowInstanceActionsBottomSheet -> {
+     bottomSheetState.InstanceActionsBottomSheet(
+       coroutineScope = this,
+       instance = effect.instance,
+       onConsume = {
+         viewModel.onConsumeInstance(effect.instance)
+       },
+       onFreeze = {
+         viewModel.onFreezeInstance(effect.instance)
+       },
+       onDelete = {
+         viewModel.onDeleteInstance(effect.instance)
+       },
+     )
+   }
+   ```
+
+4. **Create extension function** for the bottom sheet content:
+   ```kotlin
+   private fun AppBottomSheetState.InstanceActionsBottomSheet(
+     coroutineScope: CoroutineScope,
+     instance: ProductInstanceDetailUiModel,
+     onConsume: () -> Unit,
+     onFreeze: () -> Unit,
+     onDelete: () -> Unit,
+   ) {
+     coroutineScope.launch {
+       show {
+         // Bottom sheet content composable
+         Column(modifier = Modifier.fillMaxWidth()) {
+           Text(text = instance.text)
+           ListItem(
+             headlineContent = { Text("Action") },
+             modifier = Modifier.clickable {
+               onConsume()
+               coroutineScope.launch { this@InstanceActionsBottomSheet.hide() }
+             }
+           )
+         }
+       }
+     }
+   }
+   ```
+
+**Key Points**:
+- Use extension function on `AppBottomSheetState` for bottom sheet content
+- Call `show { }` with a composable lambda for content
+- Call `hide()` to dismiss the bottom sheet after actions
+- Pass `coroutineScope` from `SideEffectHandler` to manage lifecycle
+
 #### Key Rules
 
-- **NEVER** create separate `@Composable` dialog functions in screens
-- **NEVER** use `remember { mutableStateOf(false) }` for dialog visibility
+- **NEVER** create separate `@Composable` dialog/bottom sheet functions in screens
+- **NEVER** use `remember { mutableStateOf(false) }` for dialog/bottom sheet visibility
+- **NEVER** use `rememberModalBottomSheetState()` directly in screen composables
 - **ALWAYS** use `dialogState.showAlertDialog()` for dialogs
 - **ALWAYS** use `snackbarState.showSnackbar()` for snackbars
+- **ALWAYS** use `bottomSheetState.show { }` for bottom sheets (via extension function)
 - **ALWAYS** emit side effects from ViewModel, handle in `SideEffectHandler`
-- **ALWAYS** pass `dialogState` and `snackbarState` to screen composables
+- **ALWAYS** pass `dialogState`, `snackbarState`, and `bottomSheetState` to screen composables
+- **ALWAYS** create bottom sheet content as extension functions on `AppBottomSheetState`
 
 ### Opt-In Requirements
 The following experimental APIs are enabled project-wide:

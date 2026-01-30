@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 
 @Composable
 fun rememberAppBottomSheetState(
@@ -35,7 +36,12 @@ class AppBottomSheetState(
   internal var showSheet: Boolean by mutableStateOf(false)
   internal var sheetContent by mutableStateOf<(@Composable () -> Unit)>({})
   internal var onDismissRequest by mutableStateOf({})
-  fun show(onDismissRequest: () -> Unit = {}, content: @Composable () -> Unit) {
+
+  fun show(
+    onDismissRequest: () -> Unit = {},
+    appFeedbackType: AppFeedbackType = AppFeedbackType.Info,
+    content: @Composable () -> Unit,
+    ) {
     this.onDismissRequest = {
       preDismiss()
       onDismissRequest()
@@ -43,6 +49,7 @@ class AppBottomSheetState(
     sheetContent = {
       AppModalBottomSheet(
         bottomSheetState = this,
+        appFeedbackType = appFeedbackType,
         content = content,
       )
     }

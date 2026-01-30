@@ -317,7 +317,9 @@ private fun AppBottomSheetState.InstanceActionsBottomSheet(
   onDelete: () -> Unit,
 ) {
   coroutineScope.launch {
-    show {
+    show(
+      appFeedbackType = AppFeedbackType.Status(instance.status),
+    ) {
       Column(
         modifier = Modifier
           .fillMaxWidth()

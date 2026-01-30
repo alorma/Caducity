@@ -5,6 +5,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.softColors
 import com.alorma.caducity.ui.theme.CaducityTheme
 
 
@@ -14,8 +16,9 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 @Composable
 fun AppModalBottomSheet(
   bottomSheetState: AppBottomSheetState,
-  containerColor: Color = CaducityTheme.colorScheme.surfaceContainerHigh,
-  contentColor: Color = contentColorFor(containerColor),
+  appFeedbackType: AppFeedbackType,
+  containerColor: Color = appFeedbackType.softColors().container,
+  contentColor: Color = appFeedbackType.softColors().onContainer,
   content: @Composable () -> Unit,
 ) = with(bottomSheetState) {
   ModalBottomSheet(
