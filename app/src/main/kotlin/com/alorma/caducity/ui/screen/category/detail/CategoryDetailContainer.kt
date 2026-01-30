@@ -14,12 +14,12 @@ import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
 
 @Composable
 fun CategoryDetailContainer(
-  productId: String,
+  categoryId: String,
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val productDetailBackStack = retain {
-    mutableStateListOf<NavKey>(CategoryDetailRoutes.Root(productId))
+    mutableStateListOf<NavKey>(CategoryDetailRoutes.Root(categoryId))
   }
 
   val bottomSheetStrategy = remember {
@@ -37,16 +37,16 @@ fun CategoryDetailContainer(
     entryProvider = entryProvider {
       entry<CategoryDetailRoutes.Root> {
         CategoryDetailScreen(
-          productId = it.productId,
-          onNavigateToAddInstance = { variantId ->
-            productDetailBackStack.add(CategoryDetailRoutes.AddInstance(productId, variantId))
+          categoryId = it.categoryId,
+          onNavigateToAddInstance = { productId ->
+            productDetailBackStack.add(CategoryDetailRoutes.AddInstance(categoryId, productId))
           },
         )
       }
       entry<CategoryDetailRoutes.AddInstance> {
         CategoryDetailAddItemScreen(
+          categoryId = it.categoryId,
           productId = it.productId,
-          variantId = it.variantId,
           onClose = { productDetailBackStack.removeLastOrNull() },
         )
       }

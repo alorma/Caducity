@@ -146,7 +146,7 @@ Android notification system for expiration alerts:
 - **NotificationChannelManager**: Creates and manages Android notification channels
 - **ExpirationNotificationHelper**: Handles notification creation and display using NotificationCompat
 - **NotificationDebugHelper**: Interface for testing notifications
-- Background work runs daily to check for expiring products
+- Background work runs daily to check for expiring items across categories
 
 ### FireAndForget System
 
@@ -209,10 +209,10 @@ One-time operation flags for features like onboarding, announcements, and first-
 The `base/` module contains reusable components separated into focused sub-modules:
 
 - **base/main**: Core domain models shared across features
-  - `InstanceStatus`: Enum for product instance states (Fresh, ExpiringSoon, Expired)
+  - `InstanceStatus`: Enum for item states (Fresh, ExpiringSoon, Expired, Frozen)
 
 - **base/ui/components**: Reusable UI components
-  - `StatusBadge`: Visual status indicators for product instances
+  - `StatusBadge`: Visual status indicators for items
   - `TopBars`: Common app bar components
   - `ExpirationDefaults`: Shared expiration-related UI constants
 
@@ -228,6 +228,37 @@ The `base/` module contains reusable components separated into focused sub-modul
   - System bars appearance
 
 ## Key Patterns and Conventions
+
+## Data Model Hierarchy
+
+The app uses a three-level hierarchy to organize grocery items:
+
+```
+Category (top-level grouping)
+├── Product (optional mid-level grouping within a category)
+│   └── Item (individual trackable unit with expiration date)
+└── Standalone Item (item without a product grouping)
+```
+
+**Examples:**
+- **Category**: "Dairy"
+  - **Product**: "Whole Milk"
+    - **Item**: Bottle expiring on 2024-02-15
+    - **Item**: Bottle expiring on 2024-02-20
+  - **Product**: "2% Milk"
+    - **Item**: Bottle expiring on 2024-02-18
+  - **Standalone Item**: Yogurt expiring on 2024-02-10 (no product grouping)
+
+**Database Schema:**
+- `categories` table: Top-level categories (id, name, description)
+- `products` table: Products within categories (id, categoryId, name, createdAt)
+- `items` table: Individual trackable items (id, categoryId, productId?, expirationDate, status, etc.)
+
+**Key Concepts:**
+- **Categories** organize related items (e.g., "Dairy", "Produce", "Meat")
+- **Products** are optional groupings within categories (e.g., "Whole Milk" vs "2% Milk")
+- **Items** are the actual trackable units with expiration dates
+- Items can exist with or without a product grouping (standalone items)
 
 ### Data Flow
 1. **ViewModel** collects data from **UseCase**
@@ -246,9 +277,9 @@ All screens must initialize the three feedback states at the top level:
 
 ```kotlin
 @Composable
-fun ProductDetailScreen(
-  productId: String,
-  viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
+fun CategoryDetailScreen(
+  categoryId: String,
+  viewModel: CategoryDetailViewModel = koinViewModel { parametersOf(categoryId) }
 ) {
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarState()
@@ -279,28 +310,28 @@ When you need to show a dialog:
 
 1. **Add a side effect** in the screen's `SideEffect` sealed interface:
    ```kotlin
-   sealed interface ProductDetailSideEffect {
-     data object ShowAddVariantDialog : ProductDetailSideEffect
+   sealed interface CategoryDetailSideEffect {
+     data object ShowAddProductDialog : CategoryDetailSideEffect
    }
    ```
 
 2. **Emit the side effect** from ViewModel:
    ```kotlin
-   fun onShowAddVariantDialog() {
-     emitSideEffect(ProductDetailSideEffect.ShowAddVariantDialog)
+   fun onShowAddProductDialog() {
+     emitSideEffect(CategoryDetailSideEffect.ShowAddProductDialog)
    }
    ```
 
 3. **Handle in SideEffectHandler** using `AppDialogState`:
    ```kotlin
-   ProductDetailSideEffect.ShowAddVariantDialog -> {
-     var variantName by mutableStateOf("")
+   CategoryDetailSideEffect.ShowAddProductDialog -> {
+     var productName by mutableStateOf("")
      val result = dialogState.showAlertDialog(
-       title = { Text("Add Variant") },
+       title = { Text("Add Product") },
        text = {
          OutlinedTextField(
-           value = variantName,
-           onValueChange = { variantName = it },
+           value = productName,
+           onValueChange = { productName = it },
            // ... other params
          )
        },
@@ -309,7 +340,7 @@ When you need to show a dialog:
        type = AppFeedbackType.Info,
      )
      if (result == DialogResult.Positive) {
-       viewModel.onCreateVariant(variantName)
+       viewModel.onCreateProduct(productName)
      }
    }
    ```
@@ -326,21 +357,21 @@ When you need to show a snackbar:
 
 1. **Add a side effect** for the snackbar event:
    ```kotlin
-   sealed interface ProductDetailSideEffect {
-     data object VariantCreated : ProductDetailSideEffect
-     data object CreateVariantFailed : ProductDetailSideEffect
+   sealed interface CategoryDetailSideEffect {
+     data object ProductCreated : CategoryDetailSideEffect
+     data object CreateProductFailed : CategoryDetailSideEffect
    }
    ```
 
 2. **Emit from ViewModel**:
    ```kotlin
-   fun onCreateVariant(name: String) {
+   fun onCreateProduct(name: String) {
      viewModelScope.launch {
-       val result = createVariantUseCase.create(productId, name)
+       val result = createProductUseCase.create(categoryId, name)
        if (result.isSuccess) {
-         emitSideEffect(ProductDetailSideEffect.VariantCreated)
+         emitSideEffect(CategoryDetailSideEffect.ProductCreated)
        } else {
-         emitSideEffect(ProductDetailSideEffect.CreateVariantFailed)
+         emitSideEffect(CategoryDetailSideEffect.CreateProductFailed)
        }
      }
    }
@@ -348,9 +379,9 @@ When you need to show a snackbar:
 
 3. **Handle in SideEffectHandler** using `AppSnackbarState`:
    ```kotlin
-   ProductDetailSideEffect.CreateVariantFailed -> {
+   CategoryDetailSideEffect.CreateProductFailed -> {
      snackbarState.showSnackbar(
-       message = R.string.error_create_variant_failed,
+       message = R.string.error_create_product_failed,
        type = AppFeedbackType.Error,
      )
    }
@@ -362,34 +393,34 @@ When you need to show a bottom sheet:
 
 1. **Add a side effect** with the data to display:
    ```kotlin
-   sealed interface ProductDetailSideEffect {
-     data class ShowInstanceActionsBottomSheet(
-       val instance: ProductInstanceDetailUiModel,
-     ) : ProductDetailSideEffect
+   sealed interface CategoryDetailSideEffect {
+     data class ShowItemActionsBottomSheet(
+       val item: ItemDetailUiModel,
+     ) : CategoryDetailSideEffect
    }
    ```
 
 2. **Emit from ViewModel**:
    ```kotlin
-   fun onInstanceClick(instance: ProductInstanceDetailUiModel) {
-     emitSideEffect(ProductDetailSideEffect.ShowInstanceActionsBottomSheet(instance))
+   fun onItemClick(item: ItemDetailUiModel) {
+     emitSideEffect(CategoryDetailSideEffect.ShowItemActionsBottomSheet(item))
    }
    ```
 
 3. **Handle in SideEffectHandler** using `AppBottomSheetState`:
    ```kotlin
-   is ProductDetailSideEffect.ShowInstanceActionsBottomSheet -> {
-     bottomSheetState.InstanceActionsBottomSheet(
+   is CategoryDetailSideEffect.ShowItemActionsBottomSheet -> {
+     bottomSheetState.ItemActionsBottomSheet(
        coroutineScope = this,
-       instance = effect.instance,
+       item = effect.item,
        onConsume = {
-         viewModel.onConsumeInstance(effect.instance)
+         viewModel.onConsumeItem(effect.item)
        },
        onFreeze = {
-         viewModel.onFreezeInstance(effect.instance)
+         viewModel.onFreezeItem(effect.item)
        },
        onDelete = {
-         viewModel.onDeleteInstance(effect.instance)
+         viewModel.onDeleteItem(effect.item)
        },
      )
    }
@@ -397,9 +428,9 @@ When you need to show a bottom sheet:
 
 4. **Create extension function** for the bottom sheet content:
    ```kotlin
-   private fun AppBottomSheetState.InstanceActionsBottomSheet(
+   private fun AppBottomSheetState.ItemActionsBottomSheet(
      coroutineScope: CoroutineScope,
-     instance: ProductInstanceDetailUiModel,
+     item: ItemDetailUiModel,
      onConsume: () -> Unit,
      onFreeze: () -> Unit,
      onDelete: () -> Unit,
@@ -408,12 +439,12 @@ When you need to show a bottom sheet:
        show {
          // Bottom sheet content composable
          Column(modifier = Modifier.fillMaxWidth()) {
-           Text(text = instance.text)
+           Text(text = item.text)
            ListItem(
              headlineContent = { Text("Action") },
              modifier = Modifier.clickable {
                onConsume()
-               coroutineScope.launch { this@InstanceActionsBottomSheet.hide() }
+               coroutineScope.launch { this@ItemActionsBottomSheet.hide() }
              }
            )
          }

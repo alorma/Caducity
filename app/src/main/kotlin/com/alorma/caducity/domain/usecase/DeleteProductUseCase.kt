@@ -5,7 +5,7 @@ import com.alorma.caducity.domain.ProductDataSource
 class DeleteProductUseCase(
   private val productDataSource: ProductDataSource,
 ) {
-  suspend operator fun invoke(productId: String): Result<Unit> {
-    return productDataSource.deleteProduct(productId)
+  suspend operator fun invoke(categoryId: String): Result<Unit> {
+    return productDataSource.deleteProduct(categoryId)
   }
 }

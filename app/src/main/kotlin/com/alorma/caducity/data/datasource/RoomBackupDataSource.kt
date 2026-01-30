@@ -69,7 +69,7 @@ class RoomBackupDataSource(
             id = backupInstance.id,
             categoryId = backupProduct.id,
             identifier = backupInstance.identifier,
-            productId = null, // Old backups don't have product variants
+            categoryId = null, // Old backups don't have product variants
             expirationDate = backupInstance.expirationDate,
             pausedDate = backupInstance.pausedDate,
             remainingDays = backupInstance.remainingDays,

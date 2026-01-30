@@ -26,8 +26,8 @@ class RoomProductDataSource(
       }
   }
 
-  override suspend fun getProduct(productId: String): Product? {
-    return productDao.getProduct(productId)?.toModel()
+  override suspend fun getProduct(categoryId: String): Product? {
+    return productDao.getProduct(categoryId)?.toModel()
   }
 
   override suspend fun createProduct(categoryId: String, name: String): Product {
@@ -41,18 +41,18 @@ class RoomProductDataSource(
     return product
   }
 
-  override suspend fun deleteProduct(productId: String): Result<Unit> {
-    val itemCount = productDao.getActiveItemCount(productId)
+  override suspend fun deleteProduct(categoryId: String): Result<Unit> {
+    val itemCount = productDao.getActiveItemCount(categoryId)
     return if (itemCount > 0) {
       Result.failure(IllegalStateException("Cannot delete product with active items"))
     } else {
-      productDao.deleteProduct(productId)
+      productDao.deleteProduct(categoryId)
       Result.success(Unit)
     }
   }
 
-  override suspend fun getActiveItemCount(productId: String): Int {
-    return productDao.getActiveItemCount(productId)
+  override suspend fun getActiveItemCount(categoryId: String): Int {
+    return productDao.getActiveItemCount(categoryId)
   }
 
   override suspend fun clearAllProducts() {

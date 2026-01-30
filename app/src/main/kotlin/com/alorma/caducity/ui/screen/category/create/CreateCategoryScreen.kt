@@ -34,17 +34,17 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CreateCategoryScreen(
-  onProductCreated: (String) -> Unit,
+  onCategoryCreated: (String) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: CreateCategoryViewModel = koinViewModel(),
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
 
-  CreateProductPage(
+  CreateCategoryPage(
     state = state.value,
     onNameChange = viewModel::updateName,
     onDescriptionChange = viewModel::updateDescription,
-    onCreateClick = { viewModel.createCategory(onProductCreated) },
+    onCreateClick = { viewModel.createCategory(onCategoryCreated) },
     onErrorDismiss = viewModel::clearError,
     modifier = modifier,
   )
@@ -52,7 +52,7 @@ fun CreateCategoryScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CreateProductPage(
+private fun CreateCategoryPage(
   state: CreateCategoryState,
   onNameChange: (String) -> Unit,
   onDescriptionChange: (String) -> Unit,

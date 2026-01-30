@@ -63,9 +63,9 @@ fun App(
             onNavigateToCreateProduct = {
               appBackStack.add(CreateCategoryRoute)
             },
-            onNavigateToCategory = { productId ->
+            onNavigateToCategory = { categoryId ->
               appBackStack.add(
-                CategoryDetailRoute(productId)
+                CategoryDetailRoute(categoryId)
               )
             },
             onNavigateToDate = { date ->
@@ -82,15 +82,15 @@ fun App(
         }
         entry<CreateCategoryRoute> {
           CreateCategoryScreen(
-            onProductCreated = { productId ->
+            onCategoryCreated = { categoryId ->
               appBackStack.removeLast()
-              appBackStack.add(CategoryDetailRoute(productId)) // Navigate to detail
+              appBackStack.add(CategoryDetailRoute(categoryId)) // Navigate to detail
             }
           )
         }
         entry<CategoryDetailRoute> {
           CategoryDetailContainer(
-            productId = it.productId,
+            categoryId = it.categoryId,
             onBack = { appBackStack.removeLast() }
           )
         }

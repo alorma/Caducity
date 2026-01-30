@@ -13,13 +13,13 @@ class AddItemToCategoryUseCase(
   suspend fun addItem(
     categoryId: String,
     identifier: String,
-    productId: String? = null,
+    categoryId: String? = null,
     expirationDate: Instant,
   ): Result<String> {
     return try {
       val item = NewItem(
         identifier = identifier,
-        productId = productId,
+        categoryId = categoryId,
         expirationDate = expirationDate,
       )
 

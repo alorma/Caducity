@@ -69,10 +69,10 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun CategoryDetailScreen(
-  productId: String,
-  onNavigateToAddInstance: (variantId: String?) -> Unit,
+  categoryId: String,
+  onNavigateToAddInstance: (productId: String?) -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: CategoryDetailViewModel = koinViewModel { parametersOf(productId) }
+  viewModel: CategoryDetailViewModel = koinViewModel { parametersOf(categoryId) }
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
 
@@ -114,7 +114,7 @@ private fun CategoryDetailSuccessContent(
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
   state: CategoryDetailState.Success,
-  onNavigateToAddInstance: (variantId: String?) -> Unit,
+  onNavigateToAddInstance: (productId: String?) -> Unit,
   onItemClick: (ItemDetailUiModel) -> Unit,
   onShowAddProductDialog: () -> Unit,
 ) {
@@ -139,14 +139,14 @@ private fun CategoryDetailSuccessContent(
       FloatingActionButton(
         onClick = {
           // Get the currently selected product ID
-          val selectedProductId = if (state.productTabs.isNotEmpty()) {
+          val selectedcategoryId = if (state.productTabs.isNotEmpty()) {
             val currentTab = state.productTabs[pagerState.currentPage]
             // Don't pass "other" as a product ID
             if (currentTab.id != "other") currentTab.id else null
           } else {
             null
           }
-          onNavigateToAddInstance(selectedProductId)
+          onNavigateToAddInstance(selectedcategoryId)
         },
       ) {
         Icon(

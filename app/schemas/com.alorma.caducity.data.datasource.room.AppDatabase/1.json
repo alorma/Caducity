@@ -36,7 +36,7 @@
       },
       {
         "tableName": "items",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `categoryId` TEXT NOT NULL, `identifier` TEXT NOT NULL, `productId` TEXT, `expirationDate` INTEGER NOT NULL, `pausedDate` INTEGER, `remainingDays` INTEGER, `consumedDate` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`categoryId`) REFERENCES `categories`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`productId`) REFERENCES `products`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `categoryId` TEXT NOT NULL, `identifier` TEXT NOT NULL, `categoryId` TEXT, `expirationDate` INTEGER NOT NULL, `pausedDate` INTEGER, `remainingDays` INTEGER, `consumedDate` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`categoryId`) REFERENCES `categories`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`categoryId`) REFERENCES `products`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -57,8 +57,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "productId",
-            "columnName": "productId",
+            "fieldPath": "categoryId",
+            "columnName": "categoryId",
             "affinity": "TEXT"
           },
           {
@@ -100,13 +100,13 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_items_categoryId` ON `${TABLE_NAME}` (`categoryId`)"
           },
           {
-            "name": "index_items_productId",
+            "name": "index_items_categoryId",
             "unique": false,
             "columnNames": [
-              "productId"
+              "categoryId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_items_productId` ON `${TABLE_NAME}` (`productId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_items_categoryId` ON `${TABLE_NAME}` (`categoryId`)"
           }
         ],
         "foreignKeys": [
@@ -126,7 +126,7 @@
             "onDelete": "SET NULL",
             "onUpdate": "NO ACTION",
             "columns": [
-              "productId"
+              "categoryId"
             ],
             "referencedColumns": [
               "id"

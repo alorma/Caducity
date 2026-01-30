@@ -4,6 +4,6 @@ import kotlin.time.Instant
 
 data class NewItem(
   val identifier: String,
-  val productId: String? = null,
+  val categoryId: String? = null,
   val expirationDate: Instant,
 )

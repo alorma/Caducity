@@ -20,7 +20,7 @@ import kotlin.time.Instant
 
 class CategoryDetailAddItemViewModel(
   private val categoryId: String,
-  private val preselectedProductId: String?,
+  private val preselectedcategoryId: String?,
   private val getCategoryProductsUseCase: GetCategoryProductsUseCase,
   private val createProductUseCase: CreateProductUseCase,
   private val addItemToCategoryUseCase: AddItemToCategoryUseCase,
@@ -58,8 +58,8 @@ class CategoryDetailAddItemViewModel(
           )
 
           // Pre-select product if provided
-          if (preselectedProductId != null) {
-            val preselectedProduct = allProducts.find { it.id == preselectedProductId }
+          if (preselectedcategoryId != null) {
+            val preselectedProduct = allProducts.find { it.id == preselectedcategoryId }
             if (preselectedProduct != null) {
               onProductSelected(preselectedProduct.id, preselectedProduct.name)
             }
@@ -71,17 +71,17 @@ class CategoryDetailAddItemViewModel(
   fun onProductTextChanged(text: TextFieldValue) {
     _formState.value = _formState.value.copy(
       productText = text,
-      selectedProductId = null // Clear selection when user types
+      selectedcategoryId = null // Clear selection when user types
     )
   }
 
-  fun onProductSelected(productId: String, productName: String) {
+  fun onProductSelected(categoryId: String, productName: String) {
     _formState.value = _formState.value.copy(
       productText = TextFieldValue(
         text = productName,
         selection = TextRange(productName.length),
       ),
-      selectedProductId = productId
+      selectedcategoryId = categoryId
     )
   }
 
@@ -151,10 +151,10 @@ class CategoryDetailAddItemViewModel(
 
       try {
         // Determine product ID (use existing or create new)
-        val productId = if (productText.isEmpty()) {
+        val categoryId = if (productText.isEmpty()) {
           null
-        } else if (currentFormState.selectedProductId != null) {
-          currentFormState.selectedProductId
+        } else if (currentFormState.selectedcategoryId != null) {
+          currentFormState.selectedcategoryId
         } else {
           // Create new product
           val result = createProductUseCase.create(categoryId, productText)
@@ -183,7 +183,7 @@ class CategoryDetailAddItemViewModel(
           addItemToCategoryUseCase.addItem(
             categoryId = categoryId,
             identifier = identifier,
-            productId = productId,
+            categoryId = categoryId,
             expirationDate = expirationDate,
           )
         }
@@ -199,7 +199,7 @@ class CategoryDetailAddItemViewModel(
 
 data class FormState(
   val productText: TextFieldValue = TextFieldValue(),
-  val selectedProductId: String? = null,
+  val selectedcategoryId: String? = null,
   val identifierText: TextFieldValue = TextFieldValue(),
   val identifierError: String? = null,
   val expirationDateMillis: Long? = null,

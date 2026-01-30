@@ -56,11 +56,11 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryDetailAddItemScreen(
-  productId: String,
-  variantId: String?,
+  categoryId: String,
+  productId: String?,
   onClose: () -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: CategoryDetailAddItemViewModel = koinViewModel { parametersOf(productId, variantId) }
+  viewModel: CategoryDetailAddItemViewModel = koinViewModel { parametersOf(categoryId, productId) }
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
   val formState = viewModel.formState.collectAsStateWithLifecycle()
