@@ -23,4 +23,14 @@ data class CategoryWithItemsRoomEntity(
   fun filterConsumed(): CategoryWithItemsRoomEntity {
     return copy(items = items.filter { it.consumedDate == null })
   }
+
+  // Get only consumed items
+  fun getConsumedItems(): List<ItemRoomEntity> {
+    return items.filter { it.consumedDate != null }
+  }
+
+  // Get only active items (not consumed)
+  fun getActiveItems(): List<ItemRoomEntity> {
+    return items.filter { it.consumedDate == null }
+  }
 }

@@ -30,6 +30,7 @@
     <string name="dashboard_section_expiring_soon">Pròxim</string>
     <string name="dashboard_section_fresh">Fresc</string>
     <string name="dashboard_section_frozen">Congelat</string>
+    <string name="dashboard_section_consumed">Consumit</string>
     <string name="dashboard_section_empty">Buit</string>
 
     <string name="products_list_items_frozen">%1$d articles congelats</string>
@@ -135,8 +136,10 @@
     <string name="category_detail_action_freeze">Congelar</string>
     <string name="category_detail_action_delete">Eliminar</string>
     <string name="category_detail_frozen_items">Congelats</string>
+    <string name="category_detail_consumed_items">Consumits</string>
     <string name="category_detail_section_available">Articles disponibles</string>
     <string name="category_detail_section_frozen">Articles congelats</string>
+    <string name="category_detail_section_consumed">Articles consumits</string>
 
     <!-- Category Detail AI -->
     <string name="category_detail_ai_title">Afegir Productes amb IA</string>

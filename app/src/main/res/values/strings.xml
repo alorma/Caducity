@@ -48,6 +48,7 @@
     <string name="dashboard_section_expiring_soon">Expiring</string>
     <string name="dashboard_section_fresh">Fresh</string>
     <string name="dashboard_section_frozen">Frozen</string>
+    <string name="dashboard_section_consumed">Consumed</string>
     <string name="dashboard_section_empty">Empty</string>
 
     <string name="products_list_items_frozen">%1$d items frozen</string>
@@ -137,8 +138,10 @@
     <string name="category_detail_action_freeze">Freeze</string>
     <string name="category_detail_action_delete">Delete</string>
     <string name="category_detail_frozen_items">Frozen</string>
+    <string name="category_detail_consumed_items">Consumed</string>
     <string name="category_detail_section_available">Available items</string>
     <string name="category_detail_section_frozen">Frozen items</string>
+    <string name="category_detail_section_consumed">Consumed items</string>
 
     <!-- Category Detail AI -->
     <string name="category_detail_ai_title">Add Products with AI</string>

@@ -23,7 +23,7 @@ class DefaultExpirationColors(
   override val expiringSoon: Color = Color(0xFFFFDE21)
   override val expired: Color = error
   override val frozen: Color = Color.Cyan
-  override val consumed: Color = Color.Green
+  override val consumed: Color = Color.Gray
 }
 
 class VibrantExpirationColors(

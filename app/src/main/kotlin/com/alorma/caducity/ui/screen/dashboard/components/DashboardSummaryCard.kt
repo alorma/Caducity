@@ -139,6 +139,7 @@ private fun SummaryStatusCard(
         ItemStatus.ExpiringSoon -> stringResource(R.string.dashboard_section_expiring_soon)
         ItemStatus.Fresh -> stringResource(R.string.dashboard_section_fresh)
         ItemStatus.Frozen -> stringResource(R.string.dashboard_section_frozen)
+        ItemStatus.Consumed -> stringResource(R.string.dashboard_section_consumed)
       }
 
       Text(

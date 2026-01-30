@@ -80,6 +80,10 @@ class CategoryDetailViewModel(
       ItemStatus.Frozen -> {
         // Already consumed or frozen, no action needed
       }
+
+      ItemStatus.Consumed -> {
+        // Already consumed, no action needed
+      }
     }
   }
 

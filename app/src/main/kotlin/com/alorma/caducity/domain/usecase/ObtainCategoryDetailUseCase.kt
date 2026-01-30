@@ -24,23 +24,26 @@ class ObtainCategoryDetailUseCase(
   fun obtain(categoryId: String): Flow<Result<CategoryDetail>> {
     return categoryDataSource.getCategory(categoryId).map { result ->
       result.map { category ->
-        // Separate frozen and active items but keep all products (even empty ones)
-        // Consumed items are already filtered at the data source level
+        // Separate frozen, active, and consumed items but keep all products (even empty ones)
         val productsWithSeparatedItems = category.products.map { product ->
-          val activeItems = product.items.filter { it.status != ItemStatus.Frozen }
+          val activeItems = product.items.filter { it.status != ItemStatus.Frozen && it.status != ItemStatus.Consumed }
           val frozenItems = product.items.filter { it.status == ItemStatus.Frozen }
-          product to Pair(activeItems, frozenItems)
+          val consumedItems = product.items.filter { it.status == ItemStatus.Consumed }
+          product to Triple(activeItems, frozenItems, consumedItems)
         }
 
         val activeStandaloneItems = category.standaloneItems
-          .filter { it.status != ItemStatus.Frozen }
+          .filter { it.status != ItemStatus.Frozen && it.status != ItemStatus.Consumed }
 
         val frozenStandaloneItems = category.standaloneItems
           .filter { it.status == ItemStatus.Frozen }
 
+        val consumedStandaloneItems = category.standaloneItems
+          .filter { it.status == ItemStatus.Consumed }
+
         // Map products to DetailProduct with their dated items (including empty products)
-        val detailProducts: List<DetailProduct> = productsWithSeparatedItems.map { (product, itemPair) ->
-          val (activeItems, frozenItems) = itemPair
+        val detailProducts: List<DetailProduct> = productsWithSeparatedItems.map { (product, itemTriple) ->
+          val (activeItems, frozenItems, consumedItems) = itemTriple
 
           val dates: List<LocalDate> = activeItems
             .map { it.expirationDate.date() }
@@ -79,11 +82,23 @@ class ObtainCategoryDetailUseCase(
             )
           }
 
+          // Map consumed items
+          val consumedItemsList: List<ProductItem> = consumedItems.map { item ->
+            val name = listOfNotNull(
+              item.identifier.takeIf { it.isNotEmpty() }
+            ).joinToString(" - ")
+            ProductItem(
+              id = item.id,
+              name = name,
+            )
+          }
+
           DetailProduct(
             id = product.product.id,
             name = product.product.name,
             datedItemsGroups = datedItemsList,
             frozenItems = frozenItemsList,
+            consumedItems = consumedItemsList,
           )
         }
 
@@ -109,11 +124,23 @@ class ObtainCategoryDetailUseCase(
           )
         }
 
+        // Map standalone consumed items
+        val standaloneConsumedItemsList: List<ProductItem> = consumedStandaloneItems.map { item ->
+          val name = listOfNotNull(
+            item.identifier.takeIf { it.isNotEmpty() }
+          ).joinToString(" - ")
+          ProductItem(
+            id = item.id,
+            name = name,
+          )
+        }
+
         CategoryDetail(
           category = category.category,
           products = detailProducts,
           standaloneItems = standaloneItemsList,
           standaloneFrozenItems = standaloneFrozenItemsList,
+          standaloneConsumedItems = standaloneConsumedItemsList,
         )
       }
     }

@@ -7,6 +7,7 @@ data class CategoryDetail(
   val products: List<DetailProduct>,
   val standaloneItems: List<ProductItem>,
   val standaloneFrozenItems: List<ProductItem>,
+  val standaloneConsumedItems: List<ProductItem>,
 )
 
 data class DetailProduct(
@@ -14,6 +15,7 @@ data class DetailProduct(
   val name: String,
   val datedItemsGroups: List<ProductDatedItems>,
   val frozenItems: List<ProductItem>,
+  val consumedItems: List<ProductItem>,
 )
 
 data class ProductDatedItems(
