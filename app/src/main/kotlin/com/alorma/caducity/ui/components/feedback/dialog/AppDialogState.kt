@@ -47,16 +47,38 @@ class AppDialogState() {
     text: AppFeedbackResource,
     type: AppFeedbackType,
     positiveButton: AppFeedbackResource,
+    negativeButton: AppFeedbackResource? = null,
     properties: DialogProperties = DialogProperties(
       usePlatformDefaultWidth = true,
     ),
-    negativeButton: AppFeedbackResource? = null,
+  ): DialogResult = showAlertDialog(
+    title = { Text(text = exposeResource(title)) },
+    text = { Text(text = exposeResource(text)) },
+    positiveButton = { Text(text = exposeResource(positiveButton)) },
+    negativeButton = if (negativeButton != null) {
+      { Text(text = exposeResource(negativeButton)) }
+    } else {
+      null
+    },
+    type = type,
+    properties = properties,
+  )
+
+  suspend fun showAlertDialog(
+    title: @Composable () -> Unit,
+    text: @Composable () -> Unit,
+    positiveButton: @Composable () -> Unit,
+    negativeButton: (@Composable () -> Unit)? = null,
+    type: AppFeedbackType,
+    properties: DialogProperties = DialogProperties(
+      usePlatformDefaultWidth = true,
+    ),
   ): DialogResult = mutex.withLock {
     try {
       suspendCancellableCoroutine { cancellation ->
         dialogInfo = object : DialogInfo {
-          override val title: @Composable () -> Unit = { Text(text = exposeResource(title)) }
-          override val text: @Composable () -> Unit = { Text(text = exposeResource(text)) }
+          override val title: @Composable () -> Unit = title
+          override val text: @Composable () -> Unit = text
           override val positiveButton: @Composable (() -> Unit) = {
             val colors = type.softColors()
 
@@ -66,7 +88,7 @@ class AppDialogState() {
                 contentColor = colors.onContainer,
               ),
               onClick = { dismiss(DialogResult.Positive) },
-              content = { Text(text = exposeResource(positiveButton)) },
+              content = { positiveButton() },
             )
           }
           override val negativeButton: @Composable (() -> Unit)? = if (negativeButton != null) {
@@ -79,7 +101,7 @@ class AppDialogState() {
                   contentColor = colors.onContainer,
                 ),
                 onClick = { dismiss(DialogResult.Negative) },
-                content = { Text(text = exposeResource(negativeButton)) },
+                content = { negativeButton() },
               )
             }
           } else {

@@ -7,6 +7,7 @@ import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.model.InstanceActionResult
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.usecase.ConsumeInstanceUseCase
+import com.alorma.caducity.domain.usecase.CreateVariantUseCase
 import com.alorma.caducity.domain.usecase.DeleteInstanceUseCase
 import com.alorma.caducity.domain.usecase.FreezeInstanceUseCase
 import com.alorma.caducity.domain.usecase.ObtainProductDetailUseCase
@@ -25,7 +26,7 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlin.time.Instant
 
 class ProductDetailViewModel(
-  productId: String,
+  private val productId: String,
   obtainProductDetailUseCase: ObtainProductDetailUseCase,
   productDetailMapper: ProductDetailMapper,
   calendarPreferences: CalendarPreferences,
@@ -33,6 +34,7 @@ class ProductDetailViewModel(
   private val consumeInstanceUseCase: ConsumeInstanceUseCase,
   private val freezeInstanceUseCase: FreezeInstanceUseCase,
   private val deleteInstanceUseCase: DeleteInstanceUseCase,
+  private val createVariantUseCase: CreateVariantUseCase,
 ) : ViewModel() {
 
   private val _sideEffect = Channel<ProductDetailSideEffect>(Channel.BUFFERED)
@@ -123,6 +125,21 @@ class ProductDetailViewModel(
         emitSideEffect(ProductDetailSideEffect.InstanceDeleted)
       } else {
         emitSideEffect(ProductDetailSideEffect.DeleteInstanceFailed)
+      }
+    }
+  }
+
+  fun onShowAddVariantDialog() {
+    emitSideEffect(ProductDetailSideEffect.ShowAddVariantDialog)
+  }
+
+  fun onCreateVariant(variantName: String) {
+    viewModelScope.launch {
+      val result = createVariantUseCase.create(productId, variantName)
+      if (result.isSuccess) {
+        emitSideEffect(ProductDetailSideEffect.VariantCreated)
+      } else {
+        emitSideEffect(ProductDetailSideEffect.CreateVariantFailed)
       }
     }
   }
