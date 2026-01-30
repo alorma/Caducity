@@ -170,7 +170,7 @@ class CategoryDetailAddItemViewModel(
           val identifier = if (identifierText.isEmpty()) {
             // Empty identifier: auto-generate localized "Item #X"
             val itemNumber = index + 1
-            val itemLabel = stringProvider.getString(R.string.product_detail_auto_identifier_item)
+            val itemLabel = stringProvider.getString(R.string.category_detail_auto_identifier_item)
             "$itemLabel #$itemNumber"
           } else if (quantity > 1) {
             // Multiple items with provided identifier: append " - N"

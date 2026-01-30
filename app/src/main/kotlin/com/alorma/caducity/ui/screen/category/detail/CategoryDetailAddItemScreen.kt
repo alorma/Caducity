@@ -69,7 +69,7 @@ fun CategoryDetailAddItemScreen(
     modifier = modifier,
     topBar = {
       StyledTopAppBar(
-        title = { Text(text = stringResource(R.string.product_detail_add_instance_title)) },
+        title = { Text(text = stringResource(R.string.category_detail_add_item_title)) },
         navigationIcon = { NavigationIcon() },
         actions = {
           IconButton(
@@ -79,7 +79,7 @@ fun CategoryDetailAddItemScreen(
           ) {
             Icon(
               imageVector = AppIcons.Check,
-              contentDescription = stringResource(R.string.product_detail_add_instance_save),
+              contentDescription = stringResource(R.string.category_detail_add_item_save),
             )
           }
         },
@@ -118,8 +118,8 @@ fun CategoryDetailAddItemScreen(
             TextField(
               value = formState.value.productText.text,
               onValueChange = { viewModel.onProductTextChanged(TextFieldValue(it)) },
-              label = { Text(stringResource(R.string.product_detail_add_instance_variant_label)) },
-              placeholder = { Text(stringResource(R.string.product_detail_add_instance_variant_placeholder)) },
+              label = { Text(stringResource(R.string.category_detail_add_item_product_label)) },
+              placeholder = { Text(stringResource(R.string.category_detail_add_item_product_placeholder)) },
               trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
               },
@@ -152,8 +152,8 @@ fun CategoryDetailAddItemScreen(
           TextField(
             value = formState.value.identifierText.text,
             onValueChange = { viewModel.onIdentifierTextChanged(TextFieldValue(it)) },
-            label = { Text(stringResource(R.string.product_detail_add_instance_identifier_label)) },
-            placeholder = { Text(stringResource(R.string.product_detail_add_instance_identifier_placeholder)) },
+            label = { Text(stringResource(R.string.category_detail_add_item_identifier_label)) },
+            placeholder = { Text(stringResource(R.string.category_detail_add_item_identifier_placeholder)) },
             isError = formState.value.identifierError != null,
             supportingText = formState.value.identifierError?.let { error ->
               { Text(text = error) }
@@ -174,8 +174,8 @@ fun CategoryDetailAddItemScreen(
             onValueChange = { },
             readOnly = true,
             enabled = false,
-            label = { Text(stringResource(R.string.product_detail_add_instance_expiration_date_label)) },
-            placeholder = { Text(stringResource(R.string.product_detail_add_instance_expiration_date_placeholder)) },
+            label = { Text(stringResource(R.string.category_detail_add_item_expiration_date_label)) },
+            placeholder = { Text(stringResource(R.string.category_detail_add_item_expiration_date_placeholder)) },
             isError = formState.value.expirationDateError != null,
             supportingText = formState.value.expirationDateError?.let { error ->
               { Text(text = error) }
@@ -195,7 +195,7 @@ fun CategoryDetailAddItemScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
           ) {
             Text(
-              text = stringResource(R.string.product_detail_add_instance_quantity_label),
+              text = stringResource(R.string.category_detail_add_item_quantity_label),
               style = MaterialTheme.typography.bodyLarge,
             )
 
@@ -223,7 +223,7 @@ fun CategoryDetailAddItemScreen(
                 onClick = {
                   viewModel.onShowCustomQuantityInputChanged(!formState.value.showCustomQuantityInput)
                 },
-                label = { Text(text = stringResource(R.string.product_detail_add_instance_quantity_more)) },
+                label = { Text(text = stringResource(R.string.category_detail_add_item_quantity_more)) },
               )
             }
 
@@ -232,7 +232,7 @@ fun CategoryDetailAddItemScreen(
               TextField(
                 value = formState.value.customQuantity.text,
                 onValueChange = { viewModel.onCustomQuantityChanged(TextFieldValue(it)) },
-                label = { Text(stringResource(R.string.product_detail_add_instance_quantity_custom_label)) },
+                label = { Text(stringResource(R.string.category_detail_add_item_quantity_custom_label)) },
                 placeholder = { Text("7") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
@@ -295,12 +295,12 @@ private fun ExpirationDatePickerDialog(
         },
         enabled = confirmEnabled
       ) {
-        Text(stringResource(R.string.product_detail_add_instance_date_picker_ok))
+        Text(stringResource(R.string.category_detail_add_item_date_picker_ok))
       }
     },
     dismissButton = {
       TextButton(onClick = onDismiss) {
-        Text(stringResource(R.string.product_detail_add_instance_date_picker_cancel))
+        Text(stringResource(R.string.category_detail_add_item_date_picker_cancel))
       }
     }
   ) {

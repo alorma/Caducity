@@ -65,7 +65,7 @@ private fun CreateCategoryPage(
     topBar = {
       StyledTopAppBar(
         title = {
-          Text(text = stringResource(R.string.create_product_screen_title))
+          Text(text = stringResource(R.string.create_category_screen_title))
         },
         navigationIcon = { NavigationIcon() },
       )
@@ -88,7 +88,7 @@ private fun CreateCategoryPage(
             enabled = !state.isLoading,
             modifier = Modifier.weight(1f),
           ) {
-            Text(stringResource(R.string.create_product_button_cancel))
+            Text(stringResource(R.string.create_category_button_cancel))
           }
           Button(
             onClick = onCreateClick,
@@ -98,7 +98,7 @@ private fun CreateCategoryPage(
             if (state.isLoading) {
               CircularProgressIndicator()
             } else {
-              Text(stringResource(R.string.create_product_button_create))
+              Text(stringResource(R.string.create_category_button_create))
             }
           }
         }
@@ -119,8 +119,8 @@ private fun CreateCategoryPage(
       TextField(
         value = state.name,
         onValueChange = onNameChange,
-        label = { Text(stringResource(R.string.create_product_name_label)) },
-        placeholder = { Text(stringResource(R.string.create_product_name_placeholder)) },
+        label = { Text(stringResource(R.string.create_category_name_label)) },
+        placeholder = { Text(stringResource(R.string.create_category_name_placeholder)) },
         modifier = Modifier.fillMaxWidth(),
         enabled = !state.isLoading,
         isError = state.error != null,
@@ -130,8 +130,8 @@ private fun CreateCategoryPage(
       TextField(
         value = state.description,
         onValueChange = onDescriptionChange,
-        label = { Text(stringResource(R.string.create_product_description_label)) },
-        placeholder = { Text(stringResource(R.string.create_product_description_placeholder)) },
+        label = { Text(stringResource(R.string.create_category_description_label)) },
+        placeholder = { Text(stringResource(R.string.create_category_description_placeholder)) },
         modifier = Modifier.fillMaxWidth(),
         minLines = 3,
         enabled = !state.isLoading,

@@ -56,7 +56,7 @@ class CategoryDetailMapper(
     if (categoryDetail.standaloneItems.isNotEmpty()) {
       val otherTab = CategoryDetailProductTabUiModel.WithItems(
         id = "other",
-        name = stringProvider.getString(R.string.product_detail_variant_other),
+        name = stringProvider.getString(R.string.category_detail_product_other),
         datedItemsGroups = listOf(
           DateItemsUiModel(
             text = "",

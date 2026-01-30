@@ -241,7 +241,7 @@ private fun ProductTabContent(
         contentAlignment = Alignment.Center,
       ) {
         Text(
-          text = stringResource(R.string.product_detail_variant_empty_state),
+          text = stringResource(R.string.category_detail_product_empty_state),
           style = MaterialTheme.typography.bodyLarge,
           color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -349,7 +349,7 @@ private fun AppBottomSheetState.ItemActionsBottomSheet(
 
         // Consume action
         ListItem(
-          headlineContent = { Text(stringResource(R.string.product_detail_action_consume)) },
+          headlineContent = { Text(stringResource(R.string.category_detail_action_consume)) },
           leadingContent = {
             Icon(
               imageVector = AppIcons.Cooking,
@@ -364,7 +364,7 @@ private fun AppBottomSheetState.ItemActionsBottomSheet(
 
         // Freeze action
         ListItem(
-          headlineContent = { Text(stringResource(R.string.product_detail_action_freeze)) },
+          headlineContent = { Text(stringResource(R.string.category_detail_action_freeze)) },
           leadingContent = {
             Icon(
               imageVector = AppIcons.ThermometerSnow,
@@ -379,7 +379,7 @@ private fun AppBottomSheetState.ItemActionsBottomSheet(
 
         // Delete action
         ListItem(
-          headlineContent = { Text(stringResource(R.string.product_detail_action_delete)) },
+          headlineContent = { Text(stringResource(R.string.category_detail_action_delete)) },
           leadingContent = {
             Icon(
               imageVector = AppIcons.Delete,
@@ -423,42 +423,42 @@ private fun SideEffectHandler(
       when (effect) {
         CategoryDetailSideEffect.ItemConsumed -> {
           snackbarState.showSnackbar(
-            message = R.string.success_instance_consumed,
+            message = R.string.success_item_consumed,
             type = AppFeedbackType.Success,
           )
         }
 
         CategoryDetailSideEffect.ItemFrozen -> {
           snackbarState.showSnackbar(
-            message = R.string.success_instance_frozen,
+            message = R.string.success_item_frozen,
             type = AppFeedbackType.Status(ItemStatus.Frozen),
           )
         }
 
         CategoryDetailSideEffect.ItemDeleted -> {
           snackbarState.showSnackbar(
-            message = R.string.success_instance_deleted,
+            message = R.string.success_item_deleted,
             type = AppFeedbackType.Success,
           )
         }
 
         CategoryDetailSideEffect.ConsumeItemFailed -> {
           snackbarState.showSnackbar(
-            message = R.string.error_consume_instance_failed,
+            message = R.string.error_consume_item_failed,
             type = AppFeedbackType.Error,
           )
         }
 
         CategoryDetailSideEffect.FreezeItemFailed -> {
           snackbarState.showSnackbar(
-            message = R.string.error_freeze_instance_failed,
+            message = R.string.error_freeze_item_failed,
             type = AppFeedbackType.Error,
           )
         }
 
         CategoryDetailSideEffect.DeleteItemFailed -> {
           snackbarState.showSnackbar(
-            message = R.string.error_delete_instance_failed,
+            message = R.string.error_delete_item_failed,
             type = AppFeedbackType.Error,
           )
         }
@@ -515,19 +515,19 @@ private fun SideEffectHandler(
         CategoryDetailSideEffect.ShowAddProductDialog -> {
           var productName by mutableStateOf("")
           val result = dialogState.showAlertDialog(
-            title = { Text(stringResource(R.string.product_detail_add_variant_dialog_title)) },
+            title = { Text(stringResource(R.string.category_detail_add_product_dialog_title)) },
             text = {
               OutlinedTextField(
                 value = productName,
                 onValueChange = { productName = it },
-                label = { Text(stringResource(R.string.product_detail_add_variant_dialog_label)) },
-                placeholder = { Text(stringResource(R.string.product_detail_add_variant_dialog_placeholder)) },
+                label = { Text(stringResource(R.string.category_detail_add_product_dialog_label)) },
+                placeholder = { Text(stringResource(R.string.category_detail_add_product_dialog_placeholder)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
               )
             },
-            positiveButton = { Text(stringResource(R.string.product_detail_add_variant_dialog_add)) },
-            negativeButton = { Text(stringResource(R.string.product_detail_add_variant_dialog_cancel)) },
+            positiveButton = { Text(stringResource(R.string.category_detail_add_product_dialog_add)) },
+            negativeButton = { Text(stringResource(R.string.category_detail_add_product_dialog_cancel)) },
             type = AppFeedbackType.Info,
           )
           if (result == DialogResult.Positive && productName.isNotBlank()) {
@@ -560,7 +560,7 @@ private fun SideEffectHandler(
 
         CategoryDetailSideEffect.CreateProductFailed -> {
           snackbarState.showSnackbar(
-            message = R.string.error_create_variant_failed,
+            message = R.string.error_create_product_failed,
             type = AppFeedbackType.Error,
           )
         }
