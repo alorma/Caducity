@@ -89,9 +89,9 @@
 
     <!-- Product Detail -->
     <string name="product_detail_auto_identifier_item">Article</string>
-    <string name="product_detail_add_variant_dialog_title">Afegir Variant</string>
-    <string name="product_detail_add_variant_dialog_label">Nom de la Variant</string>
-    <string name="product_detail_add_variant_dialog_placeholder">Introdueix el nom de la variant</string>
+    <string name="product_detail_add_variant_dialog_title">Afegir Producte</string>
+    <string name="product_detail_add_variant_dialog_label">Nom del Producte</string>
+    <string name="product_detail_add_variant_dialog_placeholder">Introdueix el nom del producte</string>
     <string name="product_detail_add_variant_dialog_cancel">Cancel·lar</string>
     <string name="product_detail_add_variant_dialog_add">Afegir</string>
     <string name="product_detail_variant_empty_state">Encara no hi ha instàncies. Toca el botó + per afegir-ne una.</string>
@@ -99,10 +99,10 @@
     <string name="product_detail_add_instance_title">Afegir Instància</string>
     <string name="product_detail_add_instance_back">Enrere</string>
     <string name="product_detail_add_instance_add_other">Afegir Altra</string>
-    <string name="product_detail_add_instance_variant_label">Variant</string>
-    <string name="product_detail_add_instance_variant_placeholder">Escriu per cercar o introdueix nova variant</string>
+    <string name="product_detail_add_instance_variant_label">Producte</string>
+    <string name="product_detail_add_instance_variant_placeholder">Escriu per cercar o introdueix nou producte</string>
     <string name="product_detail_add_instance_identifier_label">Identificador</string>
-    <string name="product_detail_add_instance_identifier_placeholder">Opcional si se selecciona variant</string>
+    <string name="product_detail_add_instance_identifier_placeholder">Opcional si se selecciona producte</string>
     <string name="product_detail_add_instance_expiration_date_label">Data de Caducitat</string>
     <string name="product_detail_add_instance_expiration_date_placeholder">Selecciona data de caducitat</string>
     <string name="product_detail_add_instance_save">Desar</string>
@@ -155,7 +155,7 @@
     <string name="error_consume_instance_failed">Error en consumir instància</string>
     <string name="error_freeze_instance_failed">Error en congelar instància</string>
     <string name="error_delete_instance_failed">Error en eliminar instància</string>
-    <string name="error_create_variant_failed">Error en crear variant</string>
+    <string name="error_create_variant_failed">Error en crear producte</string>
 
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Benvingut a Caducity</string>
