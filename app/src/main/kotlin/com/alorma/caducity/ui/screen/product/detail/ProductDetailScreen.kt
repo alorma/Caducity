@@ -172,7 +172,10 @@ private fun ProductDetailSuccessContent(
 
           if (state.variantTabs.isNotEmpty()) {
             Row(
-              modifier = Modifier.padding(end = 16.dp),
+              modifier = Modifier.padding(
+                top = 8.dp,
+                end = 16.dp,
+              ),
               verticalAlignment = Alignment.CenterVertically,
             ) {
               SecondaryScrollableTabRow(
