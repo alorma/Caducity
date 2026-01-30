@@ -76,15 +76,15 @@
     <string name="create_product_button_cancel">Cancelar</string>
     <string name="create_product_button_create">Crear</string>
     <string name="create_product_content_description_back">Atrás</string>
-    <string name="create_product_instances_title">Instancias de la Categoría</string>
+    <string name="create_product_instances_title">Elementos de la Categoría</string>
     <string name="create_product_instance_identifier_label">Identificador</string>
     <string name="create_product_instance_identifier_placeholder">ej., Lote #1, Unidad A</string>
-    <string name="create_product_add_instance">Añadir Instancia</string>
+    <string name="create_product_add_instance">Añadir Elemento</string>
     <string name="create_product_remove_instance">Eliminar</string>
-    <string name="create_product_instance_number">Instancia %1$d</string>
+    <string name="create_product_instance_number">Elemento %1$d</string>
     <string name="create_product_instance_quantity_label">Cantidad</string>
     <string name="create_product_instance_quantity_placeholder">1</string>
-    <string name="create_product_instance_split_preview">Se crearán %1$d instancias</string>
+    <string name="create_product_instance_split_preview">Se crearán %1$d elementos</string>
 
     <!-- Product Detail -->
     <string name="product_detail_auto_identifier_item">Artículo</string>
@@ -93,9 +93,9 @@
     <string name="product_detail_add_variant_dialog_placeholder">Introduce el nombre del producto</string>
     <string name="product_detail_add_variant_dialog_cancel">Cancelar</string>
     <string name="product_detail_add_variant_dialog_add">Añadir</string>
-    <string name="product_detail_variant_empty_state">Aún no hay instancias. Toca el botón + para añadir una.</string>
+    <string name="product_detail_variant_empty_state">Aún no hay elementos. Toca el botón + para añadir uno.</string>
     <string name="product_detail_variant_other">Otras</string>
-    <string name="product_detail_add_instance_title">Añadir Instancia</string>
+    <string name="product_detail_add_instance_title">Añadir Elemento</string>
     <string name="product_detail_add_instance_back">Atrás</string>
     <string name="product_detail_add_instance_add_other">Añadir Otra</string>
     <string name="product_detail_add_instance_variant_label">Producto</string>
@@ -109,7 +109,7 @@
     <string name="product_detail_add_instance_date_picker_cancel">Cancelar</string>
     <string name="product_detail_add_instance_quantity_label">Cantidad</string>
     <string name="product_detail_add_instance_quantity_more">Más</string>
-    <string name="product_detail_add_instance_quantity_custom_label">Número de instancias</string>
+    <string name="product_detail_add_instance_quantity_custom_label">Número de elementos</string>
     <string name="product_detail_action_consume">Consumir</string>
     <string name="product_detail_action_freeze">Congelar</string>
     <string name="product_detail_action_delete">Eliminar</string>
@@ -135,7 +135,7 @@
     <string name="language_catalan">Català</string>
 
     <!-- Instance action errors -->
-    <string name="error_instance_not_found">Instancia no encontrada</string>
+    <string name="error_instance_not_found">Elemento no encontrado</string>
     <string name="error_cannot_freeze_expired">No se pueden congelar artículos caducados</string>
     <string name="error_cannot_consume_expired">No es seguro consumir productos caducados</string>
     <string name="error_cannot_consume_expired_message">Este artículo ha caducado y no puede ser consumido. ¿Deseas eliminarlo en su lugar?</string>
@@ -146,14 +146,14 @@
     <string name="warning_consume_expired_negative">Cancelar</string>
 
     <!-- Instance action success messages -->
-    <string name="success_instance_consumed">Instancia consumida</string>
-    <string name="success_instance_frozen">Instancia congelada</string>
-    <string name="success_instance_deleted">Instancia eliminada</string>
+    <string name="success_instance_consumed">Elemento consumido</string>
+    <string name="success_instance_frozen">Elemento congelado</string>
+    <string name="success_instance_deleted">Elemento eliminado</string>
 
     <!-- Instance action error messages -->
-    <string name="error_consume_instance_failed">Error al consumir instancia</string>
-    <string name="error_freeze_instance_failed">Error al congelar instancia</string>
-    <string name="error_delete_instance_failed">Error al eliminar instancia</string>
+    <string name="error_consume_instance_failed">Error al consumir elemento</string>
+    <string name="error_freeze_instance_failed">Error al congelar elemento</string>
+    <string name="error_delete_instance_failed">Error al eliminar elemento</string>
     <string name="error_create_variant_failed">Error al crear producto</string>
 
     <!-- Onboarding -->

@@ -31,14 +31,14 @@
     <string name="dashboard_ai_prompt_example">e.g., "2 tiramisu cups (category desserts) expires tomorrow"</string>
     <string name="dashboard_ai_generate_button">Generate</string>
     <string name="dashboard_ai_char_counter">%1$d / 500</string>
-    <string name="dashboard_ai_success">Created %1$d categories, %2$d products, %3$d instances</string>
+    <string name="dashboard_ai_success">Created %1$d categories, %2$d products, %3$d items</string>
     <string name="dashboard_ai_generating">Generating categories…</string>
     <string name="dashboard_ai_error_generic">Failed to generate categories</string>
 
     <string name="dashboard_ai_review_title">Review Categories</string>
     <string name="dashboard_ai_review_description">Found %1$d matching categories. Review before adding:</string>
     <string name="dashboard_ai_review_match_score">%1$d%% match</string>
-    <string name="dashboard_ai_review_will_add">Will add %1$d products, %2$d instances</string>
+    <string name="dashboard_ai_review_will_add">Will add %1$d products, %2$d items</string>
     <string name="dashboard_ai_review_new_products">New Categories</string>
     <string name="dashboard_ai_review_new_product">Will be created as new category</string>
     <string name="dashboard_ai_review_cancel">Cancel</string>
@@ -99,15 +99,15 @@
     <string name="create_product_button_cancel">Cancel</string>
     <string name="create_product_button_create">Create</string>
     <string name="create_product_content_description_back">Back</string>
-    <string name="create_product_instances_title">Category Instances</string>
+    <string name="create_product_instances_title">Category Items</string>
     <string name="create_product_instance_identifier_label">Identifier</string>
     <string name="create_product_instance_identifier_placeholder">e.g., Batch #1, Unit A</string>
-    <string name="create_product_add_instance">Add Instance</string>
+    <string name="create_product_add_instance">Add Item</string>
     <string name="create_product_remove_instance">Remove</string>
-    <string name="create_product_instance_number">Instance %1$d</string>
+    <string name="create_product_instance_number">Item %1$d</string>
     <string name="create_product_instance_quantity_label">Quantity</string>
     <string name="create_product_instance_quantity_placeholder">1</string>
-    <string name="create_product_instance_split_preview">%1$d instances will be created</string>
+    <string name="create_product_instance_split_preview">%1$d items will be created</string>
 
     <!-- Product Detail -->
     <string name="product_detail_auto_identifier_item">Item</string>
@@ -116,9 +116,9 @@
     <string name="product_detail_add_variant_dialog_placeholder">Enter product name</string>
     <string name="product_detail_add_variant_dialog_cancel">Cancel</string>
     <string name="product_detail_add_variant_dialog_add">Add</string>
-    <string name="product_detail_variant_empty_state">No instances yet. Tap the + button to add one.</string>
+    <string name="product_detail_variant_empty_state">No items yet. Tap the + button to add one.</string>
     <string name="product_detail_variant_other">Other</string>
-    <string name="product_detail_add_instance_title">Add Instance</string>
+    <string name="product_detail_add_instance_title">Add Item</string>
     <string name="product_detail_add_instance_back">Back</string>
     <string name="product_detail_add_instance_add_other">Add Other</string>
     <string name="product_detail_add_instance_variant_label">Product</string>
@@ -132,20 +132,20 @@
     <string name="product_detail_add_instance_date_picker_cancel">Cancel</string>
     <string name="product_detail_add_instance_quantity_label">Quantity</string>
     <string name="product_detail_add_instance_quantity_more">More</string>
-    <string name="product_detail_add_instance_quantity_custom_label">Number of instances</string>
+    <string name="product_detail_add_instance_quantity_custom_label">Number of items</string>
     <string name="product_detail_action_consume">Consume</string>
     <string name="product_detail_action_freeze">Freeze</string>
     <string name="product_detail_action_delete">Delete</string>
 
     <!-- Product Detail AI -->
     <string name="product_detail_ai_title">Add Products with AI</string>
-    <string name="product_detail_ai_prompt_hint">Describe the products or instances</string>
+    <string name="product_detail_ai_prompt_hint">Describe the products or items</string>
     <string name="product_detail_ai_prompt_example">e.g., "3 bottles of 1L whole milk, expires in 5 days"</string>
     <string name="product_detail_ai_generate_button">Generate</string>
     <string name="product_detail_ai_generating">Generating products…</string>
-    <string name="product_detail_ai_success">Created %1$d products, %2$d instances</string>
+    <string name="product_detail_ai_success">Created %1$d products, %2$d items</string>
     <string name="product_detail_ai_review_title">Review Products</string>
-    <string name="product_detail_ai_review_description">Generated %1$d products and %2$d instances. Review before adding:</string>
+    <string name="product_detail_ai_review_description">Generated %1$d products and %2$d items. Review before adding:</string>
     <string name="product_detail_ai_review_confirm">Add to Category</string>
     <string name="product_detail_ai_review_cancel">Cancel</string>
     <string name="product_detail_ai_error_generic">Failed to generate products</string>
@@ -170,8 +170,8 @@
     <string name="language_spanish">Español</string>
     <string name="language_catalan">Català</string>
 
-    <!-- Instance action errors -->
-    <string name="error_instance_not_found">Instance not found</string>
+    <!-- Item action errors -->
+    <string name="error_instance_not_found">Item not found</string>
     <string name="error_cannot_freeze_expired">Cannot freeze expired items</string>
     <string name="error_cannot_consume_expired">It is not safe to consume expired products</string>
     <string name="error_cannot_consume_expired_message">This item has expired and cannot be consumed. Would you like to delete it instead?</string>
@@ -181,15 +181,15 @@
     <string name="warning_consume_expired_positive">Consume</string>
     <string name="warning_consume_expired_negative">Cancel</string>
 
-    <!-- Instance action success messages -->
-    <string name="success_instance_consumed">Instance consumed</string>
-    <string name="success_instance_frozen">Instance frozen</string>
-    <string name="success_instance_deleted">Instance deleted</string>
+    <!-- Item action success messages -->
+    <string name="success_instance_consumed">Item consumed</string>
+    <string name="success_instance_frozen">Item frozen</string>
+    <string name="success_instance_deleted">Item deleted</string>
 
-    <!-- Instance action error messages -->
-    <string name="error_consume_instance_failed">Failed to consume instance</string>
-    <string name="error_freeze_instance_failed">Failed to freeze instance</string>
-    <string name="error_delete_instance_failed">Failed to delete instance</string>
+    <!-- Item action error messages -->
+    <string name="error_consume_instance_failed">Failed to consume item</string>
+    <string name="error_freeze_instance_failed">Failed to freeze item</string>
+    <string name="error_delete_instance_failed">Failed to delete item</string>
     <string name="error_create_variant_failed">Failed to create product</string>
 
     <!-- Onboarding -->
