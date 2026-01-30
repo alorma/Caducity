@@ -88,6 +88,7 @@
     <string name="create_product_instance_split_preview">Es crearan %1$d instàncies</string>
 
     <!-- Product Detail -->
+    <string name="product_detail_auto_identifier_item">Article</string>
     <string name="product_detail_add_instance_title">Afegir Instància</string>
     <string name="product_detail_add_instance_back">Enrere</string>
     <string name="product_detail_add_instance_add_other">Afegir Altra</string>

@@ -110,6 +110,7 @@
     <string name="create_product_instance_split_preview">%1$d instances will be created</string>
 
     <!-- Product Detail -->
+    <string name="product_detail_auto_identifier_item">Item</string>
     <string name="product_detail_add_instance_title">Add Instance</string>
     <string name="product_detail_add_instance_back">Back</string>
     <string name="product_detail_add_instance_add_other">Add Other</string>

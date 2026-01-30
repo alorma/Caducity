@@ -13,16 +13,4 @@ object ConfigQualifier {
       override val value: QualifierValue = "BackupName"
     }
   }
-
-  object Palette {
-    object Default: Qualifier {
-      override val value: QualifierValue = "PaletteDefault"
-    }
-    object Vibrant: Qualifier {
-      override val value: QualifierValue = "PaletteVibrant"
-    }
-    object Soft: Qualifier {
-      override val value: QualifierValue = "PaletteSoft"
-    }
-  }
 }

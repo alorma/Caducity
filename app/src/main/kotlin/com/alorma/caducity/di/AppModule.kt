@@ -4,6 +4,7 @@ import com.alorma.caducity.barcode.base.BarcodeHandler
 import com.alorma.caducity.barcode.base.BarcodeHandlerNoOp
 import com.alorma.caducity.config.ConfigQualifier
 import com.alorma.caducity.config.configModule
+import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.config.time.RelativeTimeFormatter
 import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.data.datasource.RoomBackupDataSource
