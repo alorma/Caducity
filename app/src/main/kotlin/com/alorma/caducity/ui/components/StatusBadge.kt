@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 
@@ -64,7 +64,7 @@ enum class StatusBadgeSize {
 
 @Composable
 fun StatusBadge(
-  status: InstanceStatus,
+  status: ItemStatus,
   modifier: Modifier = Modifier,
   size: StatusBadgeSize = StatusBadgeSize.Small,
 ) {
@@ -90,10 +90,10 @@ fun StatusBadge(
     Spacer(modifier = Modifier.width(size.spacing))
 
     val text = when (status) {
-      InstanceStatus.Expired -> stringResource(R.string.expiration_status_badge_expired)
-      InstanceStatus.ExpiringSoon -> stringResource(R.string.expiration_status_badge_expiring_soon)
-      InstanceStatus.Fresh -> stringResource(R.string.expiration_status_badge_fresh)
-      InstanceStatus.Frozen -> stringResource(R.string.expiration_status_badge_frozen)
+      ItemStatus.Expired -> stringResource(R.string.expiration_status_badge_expired)
+      ItemStatus.ExpiringSoon -> stringResource(R.string.expiration_status_badge_expiring_soon)
+      ItemStatus.Fresh -> stringResource(R.string.expiration_status_badge_fresh)
+      ItemStatus.Frozen -> stringResource(R.string.expiration_status_badge_frozen)
     }
 
     Text(

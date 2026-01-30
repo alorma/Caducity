@@ -4,64 +4,13 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProductDao {
 
-  @Transaction
-  @Query("SELECT * FROM products")
-  fun getAllProductsWithInstances(): Flow<List<ProductWithInstancesRoomEntity>>
-
-  @Transaction
-  @Query(
-    """
-    SELECT DISTINCT p.* FROM products p
-    INNER JOIN product_instances pi ON p.id = pi.productId
-    WHERE CASE
-            WHEN pi.pausedDate IS NOT NULL THEN pi.pausedDate
-            ELSE pi.expirationDate
-          END >= :startDate
-      AND CASE
-            WHEN pi.pausedDate IS NOT NULL THEN pi.pausedDate
-            ELSE pi.expirationDate
-          END < :endDate
-      AND pi.consumedDate IS NULL
-  """
-  )
-  fun getProductsWithInstancesByDateRange(
-    startDate: Long,
-    endDate: Long
-  ): Flow<List<ProductWithInstancesRoomEntity>>
-
-  @Transaction
-  @Query(
-    """
-    SELECT DISTINCT p.* FROM products p
-    INNER JOIN product_instances pi ON p.id = pi.productId
-    WHERE CASE
-            WHEN pi.pausedDate IS NOT NULL THEN pi.pausedDate
-            ELSE pi.expirationDate
-          END >= :date
-      AND CASE
-            WHEN pi.pausedDate IS NOT NULL THEN pi.pausedDate
-            ELSE pi.expirationDate
-          END < :nextDay
-      AND pi.consumedDate IS NULL
-  """
-  )
-  fun getProductsWithInstancesByDate(
-    date: Long,
-    nextDay: Long
-  ): Flow<List<ProductWithInstancesRoomEntity>>
-
-  @Transaction
-  @Query("SELECT * FROM products WHERE id = :productId")
-  fun getProductWithInstances(productId: String): Flow<ProductWithInstancesRoomEntity?>
-
-  @Query("SELECT * FROM products")
-  fun getAllProducts(): Flow<List<ProductRoomEntity>>
+  @Query("SELECT * FROM products WHERE categoryId = :categoryId ORDER BY name ASC")
+  fun getProductsByCategory(categoryId: String): Flow<List<ProductRoomEntity>>
 
   @Query("SELECT * FROM products WHERE id = :productId")
   suspend fun getProduct(productId: String): ProductRoomEntity?
@@ -75,7 +24,9 @@ interface ProductDao {
   @Query("DELETE FROM products WHERE id = :productId")
   suspend fun deleteProduct(productId: String)
 
-  // Backup & Restore methods
+  @Query("SELECT COUNT(*) FROM items WHERE productId = :productId AND consumedDate IS NULL")
+  suspend fun getActiveItemCount(productId: String): Int
+
   @Query("SELECT * FROM products")
   suspend fun getAllProductsSync(): List<ProductRoomEntity>
 

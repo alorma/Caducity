@@ -26,10 +26,10 @@ object NotificationChannelManager {
     // Create expiration alerts channel
     val expirationChannel = NotificationChannel(
       CHANNEL_ID_EXPIRATION,
-      "Product Expiration Alerts",
+      "Category Expiration Alerts",
       NotificationManager.IMPORTANCE_HIGH
     ).apply {
-      description = "Notifications for products that are approaching their expiration date"
+      description = "Notifications for categories with items approaching their expiration date"
       enableVibration(true)
       enableLights(true)
     }

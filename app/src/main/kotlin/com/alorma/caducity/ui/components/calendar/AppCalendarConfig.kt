@@ -1,7 +1,7 @@
 package com.alorma.caducity.ui.components.calendar
 
 import androidx.compose.runtime.Stable
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.datetime.DayOfWeek
@@ -22,6 +22,6 @@ data class AppCalendarConfig(
 
 @Stable
 data class AppCalendarDateInfo(
-  val status: InstanceStatus?,
+  val status: ItemStatus?,
   val shapePosition: ShapePosition,
 )

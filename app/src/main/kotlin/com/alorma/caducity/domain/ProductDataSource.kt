@@ -1,33 +1,20 @@
 package com.alorma.caducity.domain
 
-import com.alorma.caducity.domain.model.NewProductInstance
 import com.alorma.caducity.domain.model.Product
-import com.alorma.caducity.domain.model.ProductInstance
-import com.alorma.caducity.domain.model.ProductWithInstances
-import com.alorma.caducity.domain.usecase.ProductsListFilter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
 interface ProductDataSource {
-  fun getProducts(filter: ProductsListFilter): Flow<ImmutableList<ProductWithInstances>>
 
-  fun getProduct(productId: String): Flow<Result<ProductWithInstances>>
+  fun getProductsByCategory(categoryId: String): Flow<ImmutableList<Product>>
 
-  suspend fun createProduct(product: Product, instances: ImmutableList<ProductInstance>)
+  suspend fun getProduct(categoryId: String): Product?
 
-  suspend fun addInstance(productId: String, instance: NewProductInstance): String
+  suspend fun createProduct(categoryId: String, name: String): Product
 
-  suspend fun deleteInstance(instanceId: String)
+  suspend fun deleteProduct(categoryId: String): Result<Unit>
 
-  suspend fun getInstance(instanceId: String): ProductInstance?
-
-  suspend fun markInstanceAsConsumed(instanceId: String)
-
-  suspend fun freezeInstance(instanceId: String, remainingDays: Int)
-
-  suspend fun unfreezeInstance(instanceId: String)
+  suspend fun getActiveItemCount(categoryId: String): Int
 
   suspend fun clearAllProducts()
-
-  suspend fun clearAllInstances()
 }

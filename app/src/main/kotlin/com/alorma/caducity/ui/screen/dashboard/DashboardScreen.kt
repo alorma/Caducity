@@ -24,7 +24,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.outlined.Settings
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
@@ -39,9 +39,9 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun DashboardScreen(
   onNavigateToCreateProduct: () -> Unit,
-  onNavigateToProduct: (String) -> Unit,
+  onNavigateToCategory: (String) -> Unit,
   onNavigateToDate: (LocalDate) -> Unit,
-  onNavigateToStatus: (InstanceStatus) -> Unit,
+  onNavigateToStatus: (ItemStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: DashboardViewModel = koinViewModel(),
@@ -53,7 +53,7 @@ fun DashboardScreen(
     DashboardContent(
       state = dashboardState.value,
       onNavigateToCreateProduct = onNavigateToCreateProduct,
-      onNavigateToProduct = onNavigateToProduct,
+      onNavigateToCategory = onNavigateToCategory,
       onNavigateToStatus = onNavigateToStatus,
       onNavigateToSettings = onNavigateToSettings,
       snackbarHostState = snackbarHostState,
@@ -65,8 +65,8 @@ fun DashboardScreen(
 private fun DashboardContent(
   state: DashboardState,
   onNavigateToCreateProduct: () -> Unit,
-  onNavigateToProduct: (String) -> Unit,
-  onNavigateToStatus: (InstanceStatus) -> Unit,
+  onNavigateToCategory: (String) -> Unit,
+  onNavigateToStatus: (ItemStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
   snackbarHostState: AppSnackbarState,
 ) {
@@ -114,7 +114,7 @@ private fun DashboardContent(
         modifier = Modifier.padding(paddingValues),
         state = state,
         lazyListState = lazyListState,
-        onNavigateToProduct = onNavigateToProduct,
+        onNavigateToCategory = onNavigateToCategory,
         onNavigateToStatus = onNavigateToStatus,
       )
     }
@@ -131,8 +131,8 @@ private fun DashboardLoadingContent() {
 fun DashboardSuccessContent(
   state: DashboardState.Success,
   lazyListState: LazyListState,
-  onNavigateToProduct: (String) -> Unit,
-  onNavigateToStatus: (InstanceStatus) -> Unit,
+  onNavigateToCategory: (String) -> Unit,
+  onNavigateToStatus: (ItemStatus) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -143,7 +143,7 @@ fun DashboardSuccessContent(
     DashboardSuccessContentList(
       state = state,
       lazyListState = lazyListState,
-      onNavigateToProduct = onNavigateToProduct,
+      onNavigateToCategory = onNavigateToCategory,
       onNavigateToStatus = onNavigateToStatus,
     )
   }
@@ -160,7 +160,7 @@ fun DashboardSuccessContentPreview(
       DashboardContent(
         state = state,
         onNavigateToCreateProduct = {},
-        onNavigateToProduct = {},
+        onNavigateToCategory = {},
         onNavigateToStatus = {},
         onNavigateToSettings = {},
         snackbarHostState = rememberAppSnackbarState(),

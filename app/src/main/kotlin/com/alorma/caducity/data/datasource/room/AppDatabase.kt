@@ -5,15 +5,15 @@ import androidx.room.RoomDatabase
 
 @Database(
   entities = [
+    CategoryRoomEntity::class,
+    ItemRoomEntity::class,
     ProductRoomEntity::class,
-    ProductInstanceRoomEntity::class,
-    VariantRoomEntity::class,
   ],
   version = 1,
   exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
+  abstract fun categoryDao(): CategoryDao
+  abstract fun itemDao(): ItemDao
   abstract fun productDao(): ProductDao
-  abstract fun instanceDao(): InstanceDao
-  abstract fun variantDao(): VariantDao
 }

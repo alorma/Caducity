@@ -1,7 +1,7 @@
 package com.alorma.caducity.ui.components.calendar
 
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.plusDays
@@ -44,19 +44,19 @@ val today = LocalDate(month.year, month.month, 9)
 
 val calendarData = persistentMapOf(
   today to AppCalendarDateInfo(
-    status = InstanceStatus.Expired, shapePosition = ShapePosition.Start,
+    status = ItemStatus.Expired, shapePosition = ShapePosition.Start,
   ),
   today.plusDays(1) to AppCalendarDateInfo(
-    status = InstanceStatus.ExpiringSoon, shapePosition = ShapePosition.Middle,
+    status = ItemStatus.ExpiringSoon, shapePosition = ShapePosition.Middle,
   ),
   today.plusDays(2) to AppCalendarDateInfo(
-    status = InstanceStatus.Frozen, shapePosition = ShapePosition.Middle,
+    status = ItemStatus.Frozen, shapePosition = ShapePosition.Middle,
   ),
   today.plusDays(3) to AppCalendarDateInfo(
-    status = InstanceStatus.Frozen, shapePosition = ShapePosition.End,
+    status = ItemStatus.Frozen, shapePosition = ShapePosition.End,
   ),
   today.plusDays(5) to AppCalendarDateInfo(
-    status = InstanceStatus.Fresh, shapePosition = ShapePosition.Single,
+    status = ItemStatus.Fresh, shapePosition = ShapePosition.Single,
   ),
 )
 

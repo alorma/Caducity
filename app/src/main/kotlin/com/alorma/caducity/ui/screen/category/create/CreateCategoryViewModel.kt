@@ -1,0 +1,80 @@
+package com.alorma.caducity.ui.screen.category.create
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.format.DateTimeFormat
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
+
+class CreateCategoryViewModel(
+  private val createCategoryUseCase: CreateCategoryUseCase,
+) : ViewModel() {
+
+  private val _state = MutableStateFlow(CreateCategoryState())
+  val state: StateFlow<CreateCategoryState> = _state.asStateFlow()
+
+  fun updateName(name: String) {
+    _state.update { it.copy(name = name) }
+  }
+
+  fun updateDescription(description: String) {
+    _state.update { it.copy(description = description) }
+  }
+
+  fun createCategory(onSuccess: (String) -> Unit) {
+    val currentState = _state.value
+
+    if (!validateInput(currentState)) {
+      return
+    }
+
+    _state.update { it.copy(isLoading = true, error = null) }
+
+    viewModelScope.launch {
+      val result = createCategoryUseCase.createCategory(
+        name = currentState.name,
+        description = currentState.description,
+        items = emptyList(), // No items on creation
+      )
+
+      result.fold(
+        onSuccess = { categoryId ->
+          _state.update { CreateCategoryState() }
+          onSuccess(categoryId)
+        },
+        onFailure = { error ->
+          _state.update {
+            it.copy(
+              isLoading = false,
+              error = error.message ?: "Failed to create category"
+            )
+          }
+        }
+      )
+    }
+  }
+
+  private fun validateInput(state: CreateCategoryState): Boolean {
+    if (state.name.isBlank()) {
+      _state.update { it.copy(error = "Category name is required") }
+      return false
+    }
+    return true
+  }
+
+  fun clearError() {
+    _state.update { it.copy(error = null) }
+  }
+}
+
+

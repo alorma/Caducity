@@ -3,7 +3,7 @@ package com.alorma.caducity.ui.components.expiration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.colors.ContainerColors
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.ExpirationColorsPalette
@@ -13,33 +13,33 @@ object ExpirationDefaults {
 
   @Composable
   fun getVibrantColors(
-    instanceStatus: InstanceStatus,
+    itemStatus: ItemStatus,
   ): ContainerColors {
     return expirationColorByStatus(
-      instanceStatus = instanceStatus,
+      itemStatus = itemStatus,
       expirationColors = CaducityTheme.expirationColors.vibrant,
     )
   }
 
   @Composable
   fun getSoftColors(
-    instanceStatus: InstanceStatus,
+    itemStatus: ItemStatus,
   ): ContainerColors {
     return expirationColorByStatus(
-      instanceStatus = instanceStatus,
+      itemStatus = itemStatus,
       expirationColors = CaducityTheme.expirationColors.soft,
     )
   }
 
   @Composable
   private fun expirationColorByStatus(
-    instanceStatus: InstanceStatus,
+    itemStatus: ItemStatus,
     expirationColors: ExpirationColorsPalette,
-  ): ContainerColors = when (instanceStatus) {
-    InstanceStatus.Fresh -> statusColors(expirationColors.fresh)
-    InstanceStatus.ExpiringSoon -> statusColors(expirationColors.expiringSoon)
-    InstanceStatus.Expired -> statusColors(expirationColors.expired)
-    InstanceStatus.Frozen -> statusColors(expirationColors.frozen)
+  ): ContainerColors = when (itemStatus) {
+    ItemStatus.Fresh -> statusColors(expirationColors.fresh)
+    ItemStatus.ExpiringSoon -> statusColors(expirationColors.expiringSoon)
+    ItemStatus.Expired -> statusColors(expirationColors.expired)
+    ItemStatus.Frozen -> statusColors(expirationColors.frozen)
   }
 
   @Composable

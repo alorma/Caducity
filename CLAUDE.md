@@ -146,7 +146,7 @@ Android notification system for expiration alerts:
 - **NotificationChannelManager**: Creates and manages Android notification channels
 - **ExpirationNotificationHelper**: Handles notification creation and display using NotificationCompat
 - **NotificationDebugHelper**: Interface for testing notifications
-- Background work runs daily to check for expiring products
+- Background work runs daily to check for expiring items across categories
 
 ### FireAndForget System
 
@@ -209,10 +209,10 @@ One-time operation flags for features like onboarding, announcements, and first-
 The `base/` module contains reusable components separated into focused sub-modules:
 
 - **base/main**: Core domain models shared across features
-  - `InstanceStatus`: Enum for product instance states (Fresh, ExpiringSoon, Expired)
+  - `InstanceStatus`: Enum for item states (Fresh, ExpiringSoon, Expired, Frozen)
 
 - **base/ui/components**: Reusable UI components
-  - `StatusBadge`: Visual status indicators for product instances
+  - `StatusBadge`: Visual status indicators for items
   - `TopBars`: Common app bar components
   - `ExpirationDefaults`: Shared expiration-related UI constants
 
@@ -229,12 +229,319 @@ The `base/` module contains reusable components separated into focused sub-modul
 
 ## Key Patterns and Conventions
 
+## Data Model Hierarchy
+
+The app uses a three-level hierarchy to organize grocery items:
+
+```
+Category (top-level grouping)
+├── Product (optional mid-level grouping within a category)
+│   └── Item (individual trackable unit with expiration date)
+└── Standalone Item (item without a product grouping)
+```
+
+**Examples:**
+- **Category**: "Dairy"
+  - **Product**: "Whole Milk"
+    - **Item**: Bottle expiring on 2024-02-15
+    - **Item**: Bottle expiring on 2024-02-20
+  - **Product**: "2% Milk"
+    - **Item**: Bottle expiring on 2024-02-18
+  - **Standalone Item**: Yogurt expiring on 2024-02-10 (no product grouping)
+
+**Database Schema:**
+- `categories` table: Top-level categories (id, name, description)
+- `products` table: Products within categories (id, categoryId, name, createdAt)
+- `items` table: Individual trackable items (id, categoryId, productId?, expirationDate, status, etc.)
+
+**Key Concepts:**
+- **Categories** organize related items (e.g., "Dairy", "Produce", "Meat")
+- **Products** are optional groupings within categories (e.g., "Whole Milk" vs "2% Milk")
+- **Items** are the actual trackable units with expiration dates
+- Items can exist with or without a product grouping (standalone items)
+
+## Domain Model Architecture
+
+The domain layer follows Clean Architecture principles with clear separation of concerns:
+
+### Core Domain Models (`domain/model/`)
+
+**Primary Models:**
+- `Category` - Top-level grouping (id, name, description)
+- `Product` - Mid-level grouping within a category (id, categoryId, name, createdAt)
+- `Item` - Individual trackable unit (id, categoryId, productId?, identifier, expirationDate, status, pausedDate)
+- `NewItem` - DTO for creating new items (identifier, productId?, expirationDate)
+
+**Composite Models:**
+- `CategoryWithItems` - Category with all its products and items
+  - Contains: `category: Category`, `products: List<CategoryProduct>`, `standaloneItems: List<Item>`
+  - Nested: `CategoryProduct` (product with its items)
+- `ProductWithItems` - Product with all its items
+- `CategoryDetail` - Detailed category view for UI
+  - Contains: `category: Category`, `products: List<DetailProduct>`, `standaloneItems: List<ProductItem>`
+  - Nested types for UI presentation
+- `CategoryListItem` - Simplified category for list views
+- `ItemGroup` - Grouped items by identifier and product
+
+**Status and Utilities:**
+- `InstanceStatus` (in `base/main`) - Enum: Fresh, ExpiringSoon, Expired, Frozen
+- `ItemComparator` - Interface for sorting items
+- `StatusItemComparator` - Sorts items by status and expiration date
+
+### Data Sources (`domain/`)
+
+**Interface Pattern:**
+All data sources are defined as interfaces in the domain layer and implemented in the data layer:
+
+- `CategoryDataSource` - CRUD for categories and items
+  - `getCategories(filter)`, `getCategory(id)`, `createCategory()`, `addItem()`, `deleteItem()`
+  - Item lifecycle: `markItemAsConsumed()`, `freezeItem()`, `unfreezeItem()`
+
+- `ProductDataSource` - CRUD for products within categories
+  - `getProductsByCategory()`, `getProduct()`, `createProduct()`, `deleteProduct()`
+  - `getActiveItemCount()` - Check if product has active items before deletion
+
+- `ItemDataSource` - Query operations for items
+  - `getAllItems()` - Get all items across all categories
+
+### Use Cases (`domain/usecase/`)
+
+**Category Use Cases:**
+- `CreateCategoryUseCase` - Create new category with initial items
+- `ObtainDashboardCategoriesUseCase` - Get categories for dashboard
+- `ObtainCategoryDetailUseCase` - Get detailed category view
+- `GetExpiringCategoriesUseCase` - Get categories with expiring items
+- `ObtainCategoriesUseCase` - Get all categories
+
+**Product Use Cases:**
+- `CreateProductUseCase` - Create new product within category
+- `DeleteProductUseCase` - Delete product (validates no active items)
+- `GetCategoryProductsUseCase` - Get all products in a category
+
+**Item Use Cases:**
+- `AddItemToCategoryUseCase` - Add item to category (with optional product)
+- `ConsumeItemUseCase` - Mark item as consumed (with expiration validation)
+- `FreezeItemUseCase` - Freeze/unfreeze item (pauses expiration tracking)
+- `DeleteItemUseCase` - Delete item
+
+**Configuration:**
+- `ExpirationThresholds` - Configurable thresholds for status calculation
+  - `soonExpiringThreshold: Duration` - When items are considered "expiring soon"
+
+## Room Database Layer
+
+The data layer uses Room for local persistence with a clean mapping to domain models:
+
+### Room Entities (`data/datasource/room/`)
+
+**Core Entities:**
+- `CategoryRoomEntity` - Table: `categories`
+  - Fields: id, name, description
+
+- `ProductRoomEntity` - Table: `products`
+  - Fields: id, categoryId (FK → categories), name, createdAt
+  - Foreign Key: CASCADE delete when category is deleted
+  - Index: categoryId
+
+- `ItemRoomEntity` - Table: `items`
+  - Fields: id, categoryId (FK → categories), productId? (FK → products), identifier, expirationDate, pausedDate?, remainingDays?, consumedDate?
+  - Foreign Keys:
+    - categoryId → CASCADE delete when category is deleted
+    - productId → SET_NULL when product is deleted (preserves standalone items)
+  - Indexes: categoryId, productId
+
+**Relation Entity:**
+- `CategoryWithItemsRoomEntity` - Join query result
+  - Embedded: CategoryRoomEntity
+  - Relations: List<ItemRoomEntity>, List<ProductRoomEntity>
+  - Method: `filterConsumed()` - Filter out consumed items in memory
+
+### DAOs (Data Access Objects)
+
+**CategoryDao:**
+- `getAllCategoriesWithItems()` - All categories with their items and products
+- `getCategoriesWithItemsByDateRange(startDate, endDate)` - Filter by expiration date
+- `getCategoryWithItems(categoryId)` - Single category with items/products
+- `insertCategory()`, `deleteCategory()`, `getAllCategoriesSync()`, `clearAllCategories()`
+
+**ProductDao:**
+- `getProductsByCategory(categoryId)` - All products in a category (sorted by name)
+- `getProduct(productId)` - Single product
+- `insertProduct()`, `deleteProduct()`, `getActiveItemCount(productId)`
+- `getAllProductsSync()`, `clearAllProducts()`
+
+**ItemDao:**
+- `getAllItems()` - All items across all categories
+- `getCategoryItems(categoryId)` - Items for a specific category
+- `getItem(itemId)`, `insertItem()`, `updateItem()`, `deleteItem()`
+- `getAllItemsSync()`, `clearAllItems()`
+
+**AppDatabase:**
+- Version: 1
+- Entities: [CategoryRoomEntity, ItemRoomEntity, ProductRoomEntity]
+- Abstract methods: `categoryDao()`, `itemDao()`, `productDao()`
+
+### Mappers
+
+**RoomEntityMapper:**
+Maps between Room entities and domain models:
+- `CategoryRoomEntity.toModel()` → `Category`
+- `ItemRoomEntity.toModel()` → `Item` (via ItemRoomMapper with status calculation)
+- `ProductRoomEntity.toModel()` → `Product`
+- `CategoryWithItemsRoomEntity.toModel()` → `CategoryWithItems`
+- Reverse mappings: `Category.toEntity()`, `Item.toEntity()`, `Product.toEntity()`
+
+**ItemRoomMapper:**
+Specialized mapper for items with status calculation:
+- Constructor: `(AppClock, ExpirationThresholds)`
+- Maps `ItemRoomEntity` → `Item` with calculated `InstanceStatus`
+- Status logic: Frozen > Consumed > Calculated (based on expiration and thresholds)
+
+### Data Source Implementations
+
+**RoomCategoryDataSource** (implements CategoryDataSource):
+- Uses: CategoryDao, ItemDao, ItemRoomMapper
+- Handles: Category CRUD, Item lifecycle (add, consume, freeze, unfreeze, delete)
+- Filtering: Supports date range and consumed item filtering
+
+**RoomProductDataSource** (implements ProductDataSource):
+- Uses: ProductDao
+- Handles: Product CRUD within categories
+- Validation: Checks active item count before product deletion
+
+**RoomItemDataSource** (implements ItemDataSource):
+- Uses: ItemDao, ItemRoomMapper
+- Handles: Item query operations
+
+**RoomBackupDataSource:**
+- Handles backup/restore operations for all entities
+- Maintains backward compatibility with old terminology in backup format
+- Uses all three DAOs (CategoryDao, ProductDao, ItemDao)
+
 ### Data Flow
 1. **ViewModel** collects data from **UseCase**
-2. **UseCase** calls **DataSource** (Room database)
-3. **DataSource** returns domain **Model** (mapped from **Entity**)
-4. **ViewModel** maps to **UiModel** for screens
-5. **Screen** observes `StateFlow<UiState>` from ViewModel
+2. **UseCase** calls **DataSource** interface (domain layer)
+3. **DataSource Implementation** (Room) queries DAOs
+4. **DAO** returns Room entities
+5. **Mapper** converts Room entities to domain models (with status calculation)
+6. **DataSource** returns domain models to UseCase
+7. **ViewModel** maps to **UiModel** for screens
+8. **Screen** observes `StateFlow<UiState>` from ViewModel
+
+## UI Layer Architecture
+
+The UI layer follows MVI/MVVM pattern with Jetpack Compose:
+
+### Screen Structure (`ui/screen/`)
+
+**Dashboard (`dashboard/`):**
+- `DashboardScreen` - Main dashboard with category list/calendar
+- `DashboardViewModel` - State management, uses `ObtainDashboardCategoriesUseCase`
+- `DashboardState` - Sealed class: Loading, Success (PerCategory/Calendar), Error
+- `DashboardUiModel` - UI models: CategoryCalendarState, DashboardSummary (counts)
+- `DashboardMapper` - Maps domain models to UI models
+
+**Category Detail (`category/detail/`):**
+- `CategoryDetailScreen` - Shows category with products and items
+- `CategoryDetailViewModel` - Manages category, product, and item operations
+- `CategoryDetailState` - Sealed class: Loading, Success, Error
+- `CategoryDetailSideEffect` - Side effects: ItemConsumed, ItemFrozen, ProductCreated, dialogs, bottom sheets
+- `CategoryDetailMapper` - Maps to product tabs and item groups
+- `CategoryDetailAddItemScreen` - Screen for adding items to category/product
+- `CategoryDetailAddItemViewModel` - Handles item creation with product selection
+
+**Category Create (`category/create/`):**
+- `CreateCategoryScreen` - Form for creating new category
+- `CreateCategoryViewModel` - Handles validation and creation
+- `CreateCategoryState` - Form state with validation
+
+**Settings (`settings/`):**
+- Settings screens for theme, language, notifications, etc.
+
+### UI Models
+
+**Category Detail:**
+- `CategoryDetailUiModel` - UI representation of category (id, name, description)
+- `ItemDetailUiModel` - UI representation of item (id, expirationDate, status, text)
+- `DateItemsUiModel` - Grouped items by date (text, status, date, items)
+- `CategoryDetailProductTabUiModel` - Sealed class for product tabs:
+  - `Empty` - No items in product
+  - `WithItems` - Product with grouped items by date
+- `ProductUiModel` - Simple product UI model (id, name)
+
+**Dashboard:**
+- `CategoryCalendarState` - Category with calendar config (id, name, calendarConfig)
+- `DashboardSummary` - Summary counts (expired, expiringSoon, fresh, frozen)
+
+### ViewModels Pattern
+
+All ViewModels follow the same structure:
+```kotlin
+class CategoryDetailViewModel(
+  // Use cases injected via constructor
+  private val obtainCategoryDetailUseCase: ObtainCategoryDetailUseCase,
+  private val consumeItemUseCase: ConsumeItemUseCase,
+  private val freezeItemUseCase: FreezeItemUseCase,
+  // ... other use cases
+) : ViewModel() {
+
+  // State as StateFlow
+  val state: StateFlow<CategoryDetailState> = ...
+
+  // Side effects channel
+  private val sideEffectChannel = Channel<CategoryDetailSideEffect>()
+  val sideEffects = sideEffectChannel.receiveAsFlow()
+
+  // Public methods for user actions
+  fun onItemClick(item: ItemDetailUiModel) { ... }
+  fun onConsumeItem(item: ItemDetailUiModel) { ... }
+
+  // Private method to emit side effects
+  private fun emitSideEffect(effect: CategoryDetailSideEffect) {
+    viewModelScope.launch {
+      sideEffectChannel.send(effect)
+    }
+  }
+}
+```
+
+### State Management Pattern
+
+**State:**
+- Sealed class hierarchy for screen states
+- Example: `sealed interface CategoryDetailState { object Loading, data class Success, data class Error }`
+- Exposed as `StateFlow<State>` from ViewModel
+- Screen observes state and renders accordingly
+
+**Side Effects:**
+- Sealed interface for one-time events
+- Examples: Snackbars, Dialogs, Bottom Sheets, Navigation
+- Exposed as `Flow<SideEffect>` from ViewModel (Channel-based)
+- Handled in `SideEffectHandler` composable
+
+### Navigation
+
+**Routes (`TopLevelRoute.kt`):**
+- `DashboardRoute` - Main dashboard
+- `CreateCategoryRoute` - Create new category
+- `CategoryDetailRoute` - Category detail with nested routes:
+  - `CategoryDetailRoutes.Root(categoryId)` - Category overview
+  - `CategoryDetailRoutes.AddItem(categoryId, productId?)` - Add item screen
+- `SettingsRoute` - Settings screens
+
+**Navigation Pattern:**
+- Type-safe navigation with sealed classes
+- ViewModel scoping via `rememberViewModelStoreNavEntryDecorator()`
+- State preservation via `rememberSaveableStateHolderNavEntryDecorator()`
+
+### Components (`base/ui/components/`)
+
+**Reusable Components:**
+- `StatusBadge` - Visual indicator for item status (Fresh, ExpiringSoon, Expired, Frozen)
+- `ItemCard` - Card component for displaying items
+- `AppScaffold` - Standard scaffold with dialog/snackbar/bottom sheet support
+- `AppCalendar` - Calendar component for date selection and visualization
+- `TopBars` - Standard app bars (TopAppBar, SearchBar, etc.)
 
 ### User Feedback: Dialogs, Snackbars, and Bottom Sheets
 
@@ -246,9 +553,9 @@ All screens must initialize the three feedback states at the top level:
 
 ```kotlin
 @Composable
-fun ProductDetailScreen(
-  productId: String,
-  viewModel: ProductDetailViewModel = koinViewModel { parametersOf(productId) }
+fun CategoryDetailScreen(
+  categoryId: String,
+  viewModel: CategoryDetailViewModel = koinViewModel { parametersOf(categoryId) }
 ) {
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarState()
@@ -279,28 +586,28 @@ When you need to show a dialog:
 
 1. **Add a side effect** in the screen's `SideEffect` sealed interface:
    ```kotlin
-   sealed interface ProductDetailSideEffect {
-     data object ShowAddVariantDialog : ProductDetailSideEffect
+   sealed interface CategoryDetailSideEffect {
+     data object ShowAddProductDialog : CategoryDetailSideEffect
    }
    ```
 
 2. **Emit the side effect** from ViewModel:
    ```kotlin
-   fun onShowAddVariantDialog() {
-     emitSideEffect(ProductDetailSideEffect.ShowAddVariantDialog)
+   fun onShowAddProductDialog() {
+     emitSideEffect(CategoryDetailSideEffect.ShowAddProductDialog)
    }
    ```
 
 3. **Handle in SideEffectHandler** using `AppDialogState`:
    ```kotlin
-   ProductDetailSideEffect.ShowAddVariantDialog -> {
-     var variantName by mutableStateOf("")
+   CategoryDetailSideEffect.ShowAddProductDialog -> {
+     var productName by mutableStateOf("")
      val result = dialogState.showAlertDialog(
-       title = { Text("Add Variant") },
+       title = { Text("Add Product") },
        text = {
          OutlinedTextField(
-           value = variantName,
-           onValueChange = { variantName = it },
+           value = productName,
+           onValueChange = { productName = it },
            // ... other params
          )
        },
@@ -309,7 +616,7 @@ When you need to show a dialog:
        type = AppFeedbackType.Info,
      )
      if (result == DialogResult.Positive) {
-       viewModel.onCreateVariant(variantName)
+       viewModel.onCreateProduct(productName)
      }
    }
    ```
@@ -326,21 +633,21 @@ When you need to show a snackbar:
 
 1. **Add a side effect** for the snackbar event:
    ```kotlin
-   sealed interface ProductDetailSideEffect {
-     data object VariantCreated : ProductDetailSideEffect
-     data object CreateVariantFailed : ProductDetailSideEffect
+   sealed interface CategoryDetailSideEffect {
+     data object ProductCreated : CategoryDetailSideEffect
+     data object CreateProductFailed : CategoryDetailSideEffect
    }
    ```
 
 2. **Emit from ViewModel**:
    ```kotlin
-   fun onCreateVariant(name: String) {
+   fun onCreateProduct(name: String) {
      viewModelScope.launch {
-       val result = createVariantUseCase.create(productId, name)
+       val result = createProductUseCase.create(categoryId, name)
        if (result.isSuccess) {
-         emitSideEffect(ProductDetailSideEffect.VariantCreated)
+         emitSideEffect(CategoryDetailSideEffect.ProductCreated)
        } else {
-         emitSideEffect(ProductDetailSideEffect.CreateVariantFailed)
+         emitSideEffect(CategoryDetailSideEffect.CreateProductFailed)
        }
      }
    }
@@ -348,9 +655,9 @@ When you need to show a snackbar:
 
 3. **Handle in SideEffectHandler** using `AppSnackbarState`:
    ```kotlin
-   ProductDetailSideEffect.CreateVariantFailed -> {
+   CategoryDetailSideEffect.CreateProductFailed -> {
      snackbarState.showSnackbar(
-       message = R.string.error_create_variant_failed,
+       message = R.string.error_create_product_failed,
        type = AppFeedbackType.Error,
      )
    }
@@ -362,34 +669,34 @@ When you need to show a bottom sheet:
 
 1. **Add a side effect** with the data to display:
    ```kotlin
-   sealed interface ProductDetailSideEffect {
-     data class ShowInstanceActionsBottomSheet(
-       val instance: ProductInstanceDetailUiModel,
-     ) : ProductDetailSideEffect
+   sealed interface CategoryDetailSideEffect {
+     data class ShowItemActionsBottomSheet(
+       val item: ItemDetailUiModel,
+     ) : CategoryDetailSideEffect
    }
    ```
 
 2. **Emit from ViewModel**:
    ```kotlin
-   fun onInstanceClick(instance: ProductInstanceDetailUiModel) {
-     emitSideEffect(ProductDetailSideEffect.ShowInstanceActionsBottomSheet(instance))
+   fun onItemClick(item: ItemDetailUiModel) {
+     emitSideEffect(CategoryDetailSideEffect.ShowItemActionsBottomSheet(item))
    }
    ```
 
 3. **Handle in SideEffectHandler** using `AppBottomSheetState`:
    ```kotlin
-   is ProductDetailSideEffect.ShowInstanceActionsBottomSheet -> {
-     bottomSheetState.InstanceActionsBottomSheet(
+   is CategoryDetailSideEffect.ShowItemActionsBottomSheet -> {
+     bottomSheetState.ItemActionsBottomSheet(
        coroutineScope = this,
-       instance = effect.instance,
+       item = effect.item,
        onConsume = {
-         viewModel.onConsumeInstance(effect.instance)
+         viewModel.onConsumeItem(effect.item)
        },
        onFreeze = {
-         viewModel.onFreezeInstance(effect.instance)
+         viewModel.onFreezeItem(effect.item)
        },
        onDelete = {
-         viewModel.onDeleteInstance(effect.instance)
+         viewModel.onDeleteItem(effect.item)
        },
      )
    }
@@ -397,9 +704,9 @@ When you need to show a bottom sheet:
 
 4. **Create extension function** for the bottom sheet content:
    ```kotlin
-   private fun AppBottomSheetState.InstanceActionsBottomSheet(
+   private fun AppBottomSheetState.ItemActionsBottomSheet(
      coroutineScope: CoroutineScope,
-     instance: ProductInstanceDetailUiModel,
+     item: ItemDetailUiModel,
      onConsume: () -> Unit,
      onFreeze: () -> Unit,
      onDelete: () -> Unit,
@@ -408,12 +715,12 @@ When you need to show a bottom sheet:
        show {
          // Bottom sheet content composable
          Column(modifier = Modifier.fillMaxWidth()) {
-           Text(text = instance.text)
+           Text(text = item.text)
            ListItem(
              headlineContent = { Text("Action") },
              modifier = Modifier.clickable {
                onConsume()
-               coroutineScope.launch { this@InstanceActionsBottomSheet.hide() }
+               coroutineScope.launch { this@ItemActionsBottomSheet.hide() }
              }
            )
          }
@@ -507,11 +814,11 @@ LazyColumn(verticalArrangement = Arrangement.spacedBy(0.dp)) {
 - Horizontal scrolling lists (`LazyRow`) - Use `.toHorizontalShape()`
 - Vertical grouped lists (`LazyColumn` sections) - Use `.toVerticalShape()`
 - Settings menu groups (vertical)
-- Instance cards within product groups (horizontal)
+- Item cards within category/product groups (horizontal)
 - Any UI showing related items in sequence
 
 **Reference Implementations**:
-- Horizontal: `ProductInstanceCard` in `ProductsListItem.kt` (uses `.toHorizontalShape()`)
+- Horizontal: `ItemCard` in `CategoriesListItem.kt` (uses `.toHorizontalShape()`)
 - Vertical: `StyledSettingsCard` in settings components (uses `.toVerticalShape()`)
 
 ### Date/Time Handling
@@ -529,18 +836,19 @@ LazyColumn(verticalArrangement = Arrangement.spacedBy(0.dp)) {
 ## Current Implementation Status
 
 **Completed**:
-- Basic app scaffold with navigation
-- Dashboard screen with ViewModel
-- Settings screen with theme selection
-- Adaptive UI for different screen sizes
-- DI setup with Koin
-- Room database integration
-
-**In Progress (see DEVELOPMENT_PLAN.md)**:
-- Product and ProductInstance entities
-- Full CRUD operations for products
-- Dashboard statistics and data display
-- Expiration notifications system
+- ✅ Basic app scaffold with navigation
+- ✅ Dashboard screen with ViewModel
+- ✅ Settings screen with theme selection
+- ✅ Adaptive UI for different screen sizes
+- ✅ DI setup with Koin
+- ✅ Room database integration (categories, products, items)
+- ✅ Full CRUD operations for categories, products, and items
+- ✅ Dashboard statistics and data display
+- ✅ Expiration notifications system
+- ✅ Category detail screens with product and item management
+- ✅ Item status tracking (Fresh, ExpiringSoon, Expired, Frozen)
+- ✅ FireAndForget system for onboarding and tutorials
+- ✅ Multi-language support (en, es, ca)
 
 ## Development Notes
 

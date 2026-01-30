@@ -6,9 +6,9 @@ sealed interface DashboardState {
   sealed interface Success : DashboardState {
     val summary: DashboardSummary
 
-    data class PerProduct(
+    data class PerCategory(
       override val summary: DashboardSummary,
-      val products: List<ProductCalendarState>,
+      val categories: List<CategoryCalendarState>,
     ) : Success
   }
 }
