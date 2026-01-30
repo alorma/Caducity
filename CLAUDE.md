@@ -236,6 +236,102 @@ The `base/` module contains reusable components separated into focused sub-modul
 4. **ViewModel** maps to **UiModel** for screens
 5. **Screen** observes `StateFlow<UiState>` from ViewModel
 
+### User Feedback: Dialogs and Snackbars
+
+**IMPORTANT**: All user feedback (dialogs, snackbars) MUST be handled through side effects, never directly from UI state.
+
+#### Dialog Pattern
+
+When you need to show a dialog:
+
+1. **Add a side effect** in the screen's `SideEffect` sealed interface:
+   ```kotlin
+   sealed interface ProductDetailSideEffect {
+     data object ShowAddVariantDialog : ProductDetailSideEffect
+   }
+   ```
+
+2. **Emit the side effect** from ViewModel:
+   ```kotlin
+   fun onShowAddVariantDialog() {
+     emitSideEffect(ProductDetailSideEffect.ShowAddVariantDialog)
+   }
+   ```
+
+3. **Handle in SideEffectHandler** using `AppDialogState`:
+   ```kotlin
+   ProductDetailSideEffect.ShowAddVariantDialog -> {
+     var variantName by mutableStateOf("")
+     val result = dialogState.showAlertDialog(
+       title = { Text("Add Variant") },
+       text = {
+         OutlinedTextField(
+           value = variantName,
+           onValueChange = { variantName = it },
+           // ... other params
+         )
+       },
+       positiveButton = { Text("Add") },
+       negativeButton = { Text("Cancel") },
+       type = AppFeedbackType.Info,
+     )
+     if (result == DialogResult.Positive) {
+       viewModel.onCreateVariant(variantName)
+     }
+   }
+   ```
+
+**Available `AppFeedbackType` values**:
+- `AppFeedbackType.Info` - Neutral blue/gray styling
+- `AppFeedbackType.Success` - Green success styling
+- `AppFeedbackType.Error` - Red error styling
+- `AppFeedbackType.Status(status)` - Status-based styling (Fresh, Expired, etc.)
+
+#### Snackbar Pattern
+
+When you need to show a snackbar:
+
+1. **Add a side effect** for the snackbar event:
+   ```kotlin
+   sealed interface ProductDetailSideEffect {
+     data object VariantCreated : ProductDetailSideEffect
+     data object CreateVariantFailed : ProductDetailSideEffect
+   }
+   ```
+
+2. **Emit from ViewModel**:
+   ```kotlin
+   fun onCreateVariant(name: String) {
+     viewModelScope.launch {
+       val result = createVariantUseCase.create(productId, name)
+       if (result.isSuccess) {
+         emitSideEffect(ProductDetailSideEffect.VariantCreated)
+       } else {
+         emitSideEffect(ProductDetailSideEffect.CreateVariantFailed)
+       }
+     }
+   }
+   ```
+
+3. **Handle in SideEffectHandler** using `AppSnackbarHostState`:
+   ```kotlin
+   ProductDetailSideEffect.CreateVariantFailed -> {
+     snackbarState.showSnackbar(
+       message = R.string.error_create_variant_failed,
+       type = AppFeedbackType.Error,
+     )
+   }
+   ```
+
+#### Key Rules
+
+- **NEVER** create separate `@Composable` dialog functions in screens
+- **NEVER** use `remember { mutableStateOf(false) }` for dialog visibility
+- **ALWAYS** use `dialogState.showAlertDialog()` for dialogs
+- **ALWAYS** use `snackbarState.showSnackbar()` for snackbars
+- **ALWAYS** emit side effects from ViewModel, handle in `SideEffectHandler`
+- **ALWAYS** pass `dialogState` and `snackbarState` to screen composables
+
 ### Opt-In Requirements
 The following experimental APIs are enabled project-wide:
 - `kotlin.time.ExperimentalTime`
