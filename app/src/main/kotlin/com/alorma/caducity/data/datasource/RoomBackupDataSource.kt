@@ -6,8 +6,8 @@ import com.alorma.caducity.data.backup.BackupData
 import com.alorma.caducity.data.backup.BackupProduct
 import com.alorma.caducity.data.backup.BackupProductInstance
 import com.alorma.caducity.data.datasource.room.AppDatabase
-import com.alorma.caducity.data.datasource.room.ProductInstanceRoomEntity
-import com.alorma.caducity.data.datasource.room.ProductRoomEntity
+import com.alorma.caducity.data.datasource.room.CategoryRoomEntity
+import com.alorma.caducity.data.datasource.room.ItemRoomEntity
 import com.alorma.caducity.domain.backup.BackupDataSource
 
 class RoomBackupDataSource(
@@ -15,29 +15,29 @@ class RoomBackupDataSource(
   private val appClock: AppClock
 ) : BackupDataSource {
 
-  private val productDao = database.productDao()
-  private val instanceDao = database.instanceDao()
+  private val categoryDao = database.categoryDao()
+  private val itemDao = database.itemDao()
 
   override suspend fun exportBackup(): BackupData {
-    val products = productDao.getAllProductsSync()
-    val instances = instanceDao.getAllProductInstancesSync()
+    val categories = categoryDao.getAllCategoriesSync()
+    val items = itemDao.getAllItemsSync()
 
-    // Group instances by product ID
-    val instancesByProduct = instances.groupBy { it.productId }
+    // Group items by category ID
+    val itemsByCategory = items.groupBy { it.categoryId }
 
-    val backupProducts = products.map { product ->
+    val backupProducts = categories.map { category ->
       BackupProduct(
-        id = product.id,
-        name = product.name,
-        description = product.description,
-        instances = (instancesByProduct[product.id] ?: emptyList()).map { instance ->
+        id = category.id,
+        name = category.name,
+        description = category.description,
+        instances = (itemsByCategory[category.id] ?: emptyList()).map { item ->
           BackupProductInstance(
-            id = instance.id,
-            identifier = instance.identifier,
-            expirationDate = instance.expirationDate,
-            pausedDate = instance.pausedDate,
-            remainingDays = instance.remainingDays,
-            consumedDate = instance.consumedDate
+            id = item.id,
+            identifier = item.identifier,
+            expirationDate = item.expirationDate,
+            pausedDate = item.pausedDate,
+            remainingDays = item.remainingDays,
+            consumedDate = item.consumedDate
           )
         }
       )
@@ -55,37 +55,38 @@ class RoomBackupDataSource(
       // Clear existing data
       clearAllData()
 
-      // Insert products and instances
+      // Insert categories and items (mapping from old backup format)
       backup.products.forEach { backupProduct ->
-        val product = ProductRoomEntity(
+        val category = CategoryRoomEntity(
           id = backupProduct.id,
           name = backupProduct.name,
           description = backupProduct.description
         )
-        productDao.insertProduct(product)
+        categoryDao.insertCategory(category)
 
-        val instances = backupProduct.instances.map { backupInstance ->
-          ProductInstanceRoomEntity(
+        val items = backupProduct.instances.map { backupInstance ->
+          ItemRoomEntity(
             id = backupInstance.id,
-            productId = backupProduct.id,
+            categoryId = backupProduct.id,
             identifier = backupInstance.identifier,
+            productId = null, // Old backups don't have product variants
             expirationDate = backupInstance.expirationDate,
             pausedDate = backupInstance.pausedDate,
             remainingDays = backupInstance.remainingDays,
             consumedDate = backupInstance.consumedDate
           )
         }
-        if (instances.isNotEmpty()) {
-          instanceDao.insertProductInstances(instances)
+        if (items.isNotEmpty()) {
+          itemDao.insertItems(items)
         }
       }
     }
   }
 
   override suspend fun clearAllData() {
-    // Delete instances first due to foreign key constraint
-    instanceDao.clearAllProductInstances()
-    productDao.clearAllProducts()
+    // Delete items first due to foreign key constraint
+    itemDao.clearAllItems()
+    categoryDao.clearAllCategories()
   }
 
   override fun validateBackup(backup: BackupData): Result<Unit> {

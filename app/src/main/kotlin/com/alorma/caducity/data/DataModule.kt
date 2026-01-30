@@ -1,11 +1,11 @@
 package com.alorma.caducity.data
 
 import com.alorma.caducity.data.datasource.FakeNotificationConfigDataSource
-import com.alorma.caducity.data.datasource.InstanceRoomMapper
+import com.alorma.caducity.data.datasource.ItemRoomMapper
+import com.alorma.caducity.data.datasource.RoomCategoryDataSource
 import com.alorma.caducity.data.datasource.RoomProductDataSource
-import com.alorma.caducity.data.datasource.RoomVariantDataSource
 import com.alorma.caducity.data.datasource.room.AppDatabase
-import com.alorma.caducity.data.datasource.room.RoomInstanceDataSource
+import com.alorma.caducity.data.datasource.room.RoomItemDataSource
 import com.alorma.caducity.domain.InstanceDataSource
 import com.alorma.caducity.domain.NotificationConfigDataSource
 import com.alorma.caducity.domain.ProductDataSource
@@ -19,16 +19,16 @@ import org.koin.dsl.module
 
 val dataModule = module {
 
+  single { get<AppDatabase>().categoryDao() }
+  single { get<AppDatabase>().itemDao() }
   single { get<AppDatabase>().productDao() }
-  single { get<AppDatabase>().instanceDao() }
-  single { get<AppDatabase>().variantDao() }
 
-  factoryOf(::InstanceRoomMapper)
+  factoryOf(::ItemRoomMapper)
 
   singleOf(::StatusProductInstanceComparator) bind ProductInstanceComparator::class
 
-  singleOf(::RoomProductDataSource) bind ProductDataSource::class
-  singleOf(::RoomInstanceDataSource) bind InstanceDataSource::class
-  singleOf(::RoomVariantDataSource) bind VariantDataSource::class
+  singleOf(::RoomCategoryDataSource) bind ProductDataSource::class
+  singleOf(::RoomItemDataSource) bind InstanceDataSource::class
+  singleOf(::RoomProductDataSource) bind VariantDataSource::class
   singleOf(::FakeNotificationConfigDataSource) bind NotificationConfigDataSource::class
 }

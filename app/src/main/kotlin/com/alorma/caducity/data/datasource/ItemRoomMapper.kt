@@ -1,22 +1,22 @@
 package com.alorma.caducity.data.datasource
 
 import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.data.datasource.room.ProductInstanceRoomEntity
+import com.alorma.caducity.data.datasource.room.ItemRoomEntity
 import com.alorma.caducity.domain.model.InstanceStatus
 import com.alorma.caducity.domain.model.ProductInstance
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import kotlin.time.Instant
 
-class InstanceRoomMapper(
+class ItemRoomMapper(
   private val appClock: AppClock,
   private val expirationThresholds: ExpirationThresholds
 ) {
 
-  fun toModel(entity: ProductInstanceRoomEntity): ProductInstance {
+  fun toModel(entity: ItemRoomEntity): ProductInstance {
     return ProductInstance(
       id = entity.id,
       identifier = entity.identifier,
-      variantId = entity.variantId,
+      variantId = entity.productId,
       expirationDate = instantFromTimestamp(entity.expirationDate),
       status = instanceStatus(entity),
       pausedDate = entity.pausedDate?.let { date -> instantFromTimestamp(date) },
@@ -24,7 +24,7 @@ class InstanceRoomMapper(
   }
 
   private fun instanceStatus(
-    entity: ProductInstanceRoomEntity,
+    entity: ItemRoomEntity,
   ): InstanceStatus {
     // Note: consumedDate items are filtered at SQL level, so they never reach this mapper
     return when {

@@ -1,225 +1,61 @@
 package com.alorma.caducity.data.datasource
 
 import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.config.time.date
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.toModel
 import com.alorma.caducity.data.datasource.room.toRoomEntity
-import com.alorma.caducity.domain.ProductDataSource
-import com.alorma.caducity.domain.model.InstanceStatus
-import com.alorma.caducity.domain.model.NewProductInstance
-import com.alorma.caducity.domain.model.Product
-import com.alorma.caducity.domain.model.ProductInstance
-import com.alorma.caducity.domain.model.ProductWithInstances
-import com.alorma.caducity.domain.usecase.ExpirationThresholds
-import com.alorma.caducity.domain.usecase.ProductsListFilter
+import com.alorma.caducity.domain.VariantDataSource
+import com.alorma.caducity.domain.model.Variant
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
 import java.util.UUID
-import kotlin.time.Duration.Companion.days
 
 class RoomProductDataSource(
   database: AppDatabase,
   private val appClock: AppClock,
-  private val expirationThresholds: ExpirationThresholds,
-) : ProductDataSource {
+) : VariantDataSource {
 
   private val productDao = database.productDao()
-  private val instanceDao = database.instanceDao()
 
-  override fun getProducts(filter: ProductsListFilter): Flow<ImmutableList<ProductWithInstances>> {
-    val daoFlow = when (filter) {
-      is ProductsListFilter.All -> {
-        productDao.getAllProductsWithInstances()
-      }
-
-      is ProductsListFilter.ByDate -> {
-        val startOfDayMillis =
-          filter.date.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
-        val nextDayMillis = startOfDayMillis + 1.days.inWholeMilliseconds
-        productDao.getProductsWithInstancesByDate(startOfDayMillis, nextDayMillis)
-      }
-
-      is ProductsListFilter.ByDateRange -> {
-        val startMillis =
-          filter.startDate.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
-        val endMillis = filter.endDate.atStartOfDayIn(TimeZone.currentSystemDefault())
-          .toEpochMilliseconds() + 1.days.inWholeMilliseconds
-        productDao.getProductsWithInstancesByDateRange(startMillis, endMillis)
-      }
-
-      is ProductsListFilter.ByStatus -> {
-        // Convert status filters to date range queries for SQL optimization
-        when {
-          filter.statuses.isEmpty() -> {
-            productDao.getAllProductsWithInstances()
-          }
-
-          filter.statuses.size == 1 -> {
-            // Single status: fully optimized SQL query
-            val status = filter.statuses.first()
-            val (minDate, maxDate) = statusToDateRange(status)
-            productDao.getProductsWithInstancesByDateRange(minDate, maxDate)
-          }
-
-          else -> {
-            // Multiple statuses: hybrid approach - SQL narrows range, then in-memory filter
-            val dateRanges = filter.statuses.map { statusToDateRange(it) }
-            val minDate = dateRanges.minOf { it.first }
-            val maxDate = dateRanges.maxOf { it.second }
-            productDao.getProductsWithInstancesByDateRange(minDate, maxDate)
-          }
-        }
-      }
-    }
-
-    return daoFlow.map { roomEntities ->
-      // Filter consumed instances at the source
-      val filteredEntities = roomEntities.map { it.filterConsumed() }
-      val products = filteredEntities.map { it.toModel(appClock, expirationThresholds) }
-
-      // Apply in-memory status filter only for multiple statuses
-      // (to handle non-contiguous date ranges like Expired + Fresh)
-      val filtered = if (filter is ProductsListFilter.ByStatus && filter.statuses.size > 1) {
-        products.filter { productWithInstances ->
-          // Keep product if it has at least one instance with the requested status
-          val allInstances = productWithInstances.variants.flatMap { it.instances } +
-              productWithInstances.standaloneInstances
-          allInstances.any { instance ->
-            instance.status in filter.statuses
-          }
-        }
-      } else {
-        products
-      }
-
-      filtered.toImmutableList()
-    }
-  }
-
-  private fun statusToDateRange(status: InstanceStatus): Pair<Long, Long> {
-    val now = appClock.now()
-    val expiringSoonMillis =
-      now.plus(expirationThresholds.soonExpiringThreshold).toEpochMilliseconds()
-
-    // Calculate start of today for consistent date boundary handling
-    val todayStartMillis = now
-      .date()
-      .atStartOfDayIn(TimeZone.currentSystemDefault())
-      .toEpochMilliseconds()
-
-    return when (status) {
-      InstanceStatus.Expired -> {
-        // From epoch to yesterday (before today starts) - excludes items expiring today
-        Pair(0L, todayStartMillis)
-      }
-
-      InstanceStatus.ExpiringSoon -> {
-        // From today (start of day) to (now + threshold) - includes items expiring today
-        Pair(todayStartMillis, expiringSoonMillis)
-      }
-
-      InstanceStatus.Fresh -> {
-        Pair(expiringSoonMillis, Long.MAX_VALUE) // From (now + threshold) to infinity
-      }
-
-      InstanceStatus.Frozen -> {
-        // Frozen items don't have a date range filter - return all dates
-        Pair(0L, Long.MAX_VALUE)
-      }
-    }
-  }
-
-  override fun getProduct(productId: String): Flow<Result<ProductWithInstances>> {
-    return productDao.getProductWithInstances(productId)
-      .map { roomEntity ->
-        roomEntity?.let {
-          // Filter consumed instances before converting
-          Result.success(it.filterConsumed().toModel(appClock, expirationThresholds))
-        } ?: Result.failure(NoSuchElementException("Product with id $productId not found"))
+  override fun getVariantsByProduct(productId: String): Flow<ImmutableList<Variant>> {
+    return productDao.getProductsByCategory(productId)
+      .map { entities ->
+        entities.map { it.toModel() }.toImmutableList()
       }
   }
 
-  override suspend fun createProduct(
-    product: Product,
-    instances: ImmutableList<ProductInstance>,
-  ) {
-    productDao.insertProduct(product.toRoomEntity())
-    instances.forEach { instance ->
-      instanceDao.insertProductInstance(instance.toRoomEntity(product.id))
-    }
+  override suspend fun getVariant(variantId: String): Variant? {
+    return productDao.getProduct(variantId)?.toModel()
   }
 
-  override suspend fun addInstance(
-    productId: String,
-    instance: NewProductInstance
-  ): String {
-    val id = UUID.randomUUID().toString()
-
-    instanceDao.insertProductInstance(
-      instance.toRoomEntity(id = id, productId = productId),
+  override suspend fun createVariant(productId: String, name: String): Variant {
+    val variant = Variant(
+      id = UUID.randomUUID().toString(),
+      productId = productId,
+      name = name,
+      createdAt = appClock.now(),
     )
-    return id
+    productDao.insertProduct(variant.toRoomEntity())
+    return variant
   }
 
-  override suspend fun deleteInstance(instanceId: String) {
-    instanceDao.deleteProductInstance(instanceId)
-  }
-
-  override suspend fun getInstance(instanceId: String): ProductInstance? {
-    return instanceDao.getProductInstance(instanceId)?.toModel(appClock, expirationThresholds)
-  }
-
-  override suspend fun markInstanceAsConsumed(instanceId: String) {
-    instanceDao.getProductInstance(instanceId)?.let { instance ->
-      val updatedInstance = instance.copy(
-        consumedDate = appClock.now().toEpochMilliseconds(),
-        pausedDate = null, // Clear frozen state if it was frozen
-        remainingDays = null
-      )
-      instanceDao.updateProductInstance(updatedInstance)
+  override suspend fun deleteVariant(variantId: String): Result<Unit> {
+    val instanceCount = productDao.getActiveItemCount(variantId)
+    return if (instanceCount > 0) {
+      Result.failure(IllegalStateException("Cannot delete variant with active instances"))
+    } else {
+      productDao.deleteProduct(variantId)
+      Result.success(Unit)
     }
   }
 
-  override suspend fun freezeInstance(instanceId: String, remainingDays: Int) {
-    instanceDao.getProductInstance(instanceId)?.let { instance ->
-      val updatedInstance = instance.copy(
-        pausedDate = appClock.now().toEpochMilliseconds(),
-        remainingDays = remainingDays
-      )
-      instanceDao.updateProductInstance(updatedInstance)
-    }
+  override suspend fun getActiveInstanceCount(variantId: String): Int {
+    return productDao.getActiveItemCount(variantId)
   }
 
-  override suspend fun unfreezeInstance(instanceId: String) {
-    instanceDao.getProductInstance(instanceId)?.let { instance ->
-      val pausedDate = instance.pausedDate
-      val remainingDays = instance.remainingDays
-
-      if (pausedDate != null && remainingDays != null) {
-        // Calculate new expiration date: now + remaining days
-        val now = appClock.now()
-        val newExpirationDate = now.toEpochMilliseconds() + (remainingDays.days.inWholeMilliseconds)
-
-        val updatedInstance = instance.copy(
-          expirationDate = newExpirationDate,
-          pausedDate = null,
-          remainingDays = null
-        )
-        instanceDao.updateProductInstance(updatedInstance)
-      }
-    }
-  }
-
-  override suspend fun clearAllProducts() {
+  override suspend fun clearAllVariants() {
     productDao.clearAllProducts()
-  }
-
-  override suspend fun clearAllInstances() {
-    instanceDao.clearAllProductInstances()
   }
 }

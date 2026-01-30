@@ -1,19 +1,19 @@
 package com.alorma.caducity.data.datasource.room
 
-import com.alorma.caducity.data.datasource.InstanceRoomMapper
+import com.alorma.caducity.data.datasource.ItemRoomMapper
 import com.alorma.caducity.domain.InstanceDataSource
 import com.alorma.caducity.domain.model.ProductInstance
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class RoomInstanceDataSource(
-  private val instanceDao: InstanceDao,
-  private val mapper: InstanceRoomMapper,
+class RoomItemDataSource(
+  private val itemDao: ItemDao,
+  private val mapper: ItemRoomMapper,
 ): InstanceDataSource {
 
   override fun getAllInstances(): Flow<List<ProductInstance>> {
-    return instanceDao.getAllInstances().map { instances ->
-      instances.map { instance -> mapper.toModel(instance) }
+    return itemDao.getAllItems().map { items ->
+      items.map { item -> mapper.toModel(item) }
     }
   }
 }
