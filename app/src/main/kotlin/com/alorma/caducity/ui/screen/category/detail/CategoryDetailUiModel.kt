@@ -44,5 +44,6 @@ sealed class CategoryDetailProductTabUiModel {
     override val id: String,
     override val name: String,
     val datedItemsGroups: ImmutableList<DateItemsUiModel>,
+    val frozenItems: ImmutableList<ItemDetailUiModel>,
   ) : CategoryDetailProductTabUiModel()
 }

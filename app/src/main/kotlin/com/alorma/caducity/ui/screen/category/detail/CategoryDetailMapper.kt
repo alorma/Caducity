@@ -33,7 +33,7 @@ class CategoryDetailMapper(
 
     // Map products to UI models (empty or with items)
     val productTabs = categoryDetail.products.map { product ->
-      if (product.datedItemsGroups.isEmpty()) {
+      if (product.datedItemsGroups.isEmpty() && product.frozenItems.isEmpty()) {
         CategoryDetailProductTabUiModel.Empty(
           id = product.id,
           name = product.name,
@@ -48,12 +48,20 @@ class CategoryDetailMapper(
               datedItems = datedItems
             )
           }.toImmutableList(),
+          frozenItems = product.frozenItems.map { item ->
+            ItemDetailUiModel(
+              id = item.id,
+              expirationDate = appClock.nowDate(),
+              status = ItemStatus.Frozen,
+              text = item.name,
+            )
+          }.toImmutableList(),
         )
       }
     }.toMutableList()
 
     // Add "Other" tab for standalone items if they exist
-    if (categoryDetail.standaloneItems.isNotEmpty()) {
+    if (categoryDetail.standaloneItems.isNotEmpty() || categoryDetail.standaloneFrozenItems.isNotEmpty()) {
       val otherTab = CategoryDetailProductTabUiModel.WithItems(
         id = "other",
         name = stringProvider.getString(R.string.category_detail_product_other),
@@ -72,6 +80,14 @@ class CategoryDetailMapper(
             }.toImmutableList(),
           )
         ).toImmutableList(),
+        frozenItems = categoryDetail.standaloneFrozenItems.map { item ->
+          ItemDetailUiModel(
+            id = item.id,
+            expirationDate = appClock.nowDate(),
+            status = ItemStatus.Frozen,
+            text = item.name,
+          )
+        }.toImmutableList(),
       )
       productTabs.add(otherTab)
     }
