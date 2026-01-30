@@ -30,8 +30,20 @@ data class ProductDetailUiModel(
 )
 
 @Stable
-data class ProductDetailVariantTabUiModel(
-  val id: String,
-  val name: String,
-  val datedInstancesGroups: ImmutableList<DateInstancesUiModel>,
-)
+sealed class ProductDetailVariantTabUiModel {
+  abstract val id: String
+  abstract val name: String
+
+  @Stable
+  data class Empty(
+    override val id: String,
+    override val name: String,
+  ) : ProductDetailVariantTabUiModel()
+
+  @Stable
+  data class WithInstances(
+    override val id: String,
+    override val name: String,
+    val datedInstancesGroups: ImmutableList<DateInstancesUiModel>,
+  ) : ProductDetailVariantTabUiModel()
+}

@@ -27,7 +27,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -220,45 +219,63 @@ private fun VariantTabContent(
   onFreeze: (ProductInstanceDetailUiModel) -> Unit,
   onDelete: (ProductInstanceDetailUiModel) -> Unit,
 ) {
-  val selectedInstance = remember { mutableStateOf<ProductInstanceDetailUiModel?>(null) }
-  val sheetState = rememberModalBottomSheetState()
-
-  Column(
-    modifier = Modifier
-      .fillMaxSize()
-      .padding(16.dp),
-    verticalArrangement = Arrangement.spacedBy(16.dp),
-  ) {
-    // Show each status group
-    variantTab.datedInstancesGroups.forEach { datedInstances ->
-      StatusGroupCard(
-        datedInstances = datedInstances,
-        onInstanceClick = { selectedInstance.value = it },
-      )
+  when (variantTab) {
+    is ProductDetailVariantTabUiModel.Empty -> {
+      // Show empty state for variants with no instances
+      Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+      ) {
+        Text(
+          text = stringResource(R.string.product_detail_variant_empty_state),
+          style = MaterialTheme.typography.bodyLarge,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+      }
     }
-  }
 
-  // Bottom sheet for instance actions
-  selectedInstance.value?.let { instance ->
-    ModalBottomSheet(
-      onDismissRequest = { selectedInstance.value = null },
-      sheetState = sheetState,
-    ) {
-      InstanceActionsBottomSheet(
-        instance = instance,
-        onConsume = {
-          onConsume(instance)
-          selectedInstance.value = null
-        },
-        onFreeze = {
-          onFreeze(instance)
-          selectedInstance.value = null
-        },
-        onDelete = {
-          onDelete(instance)
-          selectedInstance.value = null
-        },
-      )
+    is ProductDetailVariantTabUiModel.WithInstances -> {
+      val selectedInstance = remember { mutableStateOf<ProductInstanceDetailUiModel?>(null) }
+      val sheetState = rememberModalBottomSheetState()
+
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+      ) {
+        // Show each status group
+        variantTab.datedInstancesGroups.forEach { datedInstances ->
+          StatusGroupCard(
+            datedInstances = datedInstances,
+            onInstanceClick = { selectedInstance.value = it },
+          )
+        }
+      }
+
+      // Bottom sheet for instance actions
+      selectedInstance.value?.let { instance ->
+        ModalBottomSheet(
+          onDismissRequest = { selectedInstance.value = null },
+          sheetState = sheetState,
+        ) {
+          InstanceActionsBottomSheet(
+            instance = instance,
+            onConsume = {
+              onConsume(instance)
+              selectedInstance.value = null
+            },
+            onFreeze = {
+              onFreeze(instance)
+              selectedInstance.value = null
+            },
+            onDelete = {
+              onDelete(instance)
+              selectedInstance.value = null
+            },
+          )
+        }
+      }
     }
   }
 }
