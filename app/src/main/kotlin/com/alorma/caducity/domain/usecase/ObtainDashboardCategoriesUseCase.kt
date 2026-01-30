@@ -10,8 +10,6 @@ class ObtainDashboardCategoriesUseCase(
 ) {
 
   fun obtainCategories(): Flow<ImmutableList<CategoryWithItems>> {
-    return categoryDataSource.getCategories(
-      filter = ProductsListFilter.All
-    )
+    return categoryDataSource.getCategories()
   }
 }

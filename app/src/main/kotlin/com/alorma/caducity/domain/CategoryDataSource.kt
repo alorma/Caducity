@@ -4,12 +4,11 @@ import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.NewItem
-import com.alorma.caducity.domain.usecase.ProductsListFilter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
 interface CategoryDataSource {
-  fun getCategories(filter: ProductsListFilter): Flow<ImmutableList<CategoryWithItems>>
+  fun getCategories(): Flow<ImmutableList<CategoryWithItems>>
 
   fun getCategory(categoryId: String): Flow<Result<CategoryWithItems>>
 

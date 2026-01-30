@@ -18,19 +18,4 @@ data class CategoryWithItemsRoomEntity(
     entityColumn = "categoryId"
   )
   val products: List<ProductRoomEntity> = emptyList()
-) {
-  // Filter consumed items in memory (Room @Relation doesn't support WHERE clauses well)
-  fun filterConsumed(): CategoryWithItemsRoomEntity {
-    return copy(items = items.filter { it.consumedDate == null })
-  }
-
-  // Get only consumed items
-  fun getConsumedItems(): List<ItemRoomEntity> {
-    return items.filter { it.consumedDate != null }
-  }
-
-  // Get only active items (not consumed)
-  fun getActiveItems(): List<ItemRoomEntity> {
-    return items.filter { it.consumedDate == null }
-  }
-}
+)
