@@ -133,6 +133,10 @@ class ProductDetailViewModel(
     emitSideEffect(ProductDetailSideEffect.ShowAddVariantDialog)
   }
 
+  fun onInstanceClick(instance: ProductInstanceDetailUiModel) {
+    emitSideEffect(ProductDetailSideEffect.ShowInstanceActionsBottomSheet(instance))
+  }
+
   fun onCreateVariant(variantName: String) {
     viewModelScope.launch {
       val result = createVariantUseCase.create(productId, variantName)

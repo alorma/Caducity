@@ -35,7 +35,6 @@ import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.vibrantColors
 import com.alorma.caducity.ui.components.feedback.exposeResource
-import com.alorma.caducity.ui.components.feedback.softColors
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -44,11 +43,11 @@ import kotlinx.coroutines.sync.withLock
 import kotlin.coroutines.resume
 
 @Composable
-fun rememberAppSnackbarHostState(): AppSnackbarHostState = remember {
-  AppSnackbarHostState()
+fun rememberAppSnackbarState(): AppSnackbarState = remember {
+  AppSnackbarState()
 }
 
-val LocalAppSnackbarHostState = compositionLocalOf<AppSnackbarHostState> {
+val LocalAppSnackbarState = compositionLocalOf<AppSnackbarState> {
   throw (IllegalStateException("Should be provided from a AppSnackbarHostState"))
 }
 
@@ -60,7 +59,7 @@ val LocalAppSnackbarHostState = compositionLocalOf<AppSnackbarHostState> {
  * automatically, but can be decoupled from it and live separately when desired.
  */
 @Stable
-class AppSnackbarHostState {
+class AppSnackbarState {
 
   /**
    * Only one [AppSnackbar] can be shown at a time.
@@ -79,7 +78,7 @@ class AppSnackbarHostState {
    * Shows or queues to be shown a [AppSnackbar] at the bottom of the [IJScaffold] at
    * which this state is attached and suspends until AppSnackbar is disappeared.
    *
-   * [AppSnackbarHostState] guarantees to show at most one AppSnackbar at a time. If this function is
+   * [AppSnackbarState] guarantees to show at most one AppSnackbar at a time. If this function is
    * called while another AppSnackbar is already visible, it will be suspended until this snack
    * bar is shown and subsequently addressed. If the caller is cancelled, the AppSnackbar will be
    * removed from display and/or the queue to be displayed.
@@ -167,8 +166,8 @@ class AppSnackbarHostState {
  * on material specification and the [hostState].
  *
  * This component with default parameters comes build-in with [Scaffold], if you need to show a
- * default [AppSnackbar], use use [AppSnackbarHostState] and
- * [AppSnackbarHostState.showSnackbar].
+ * default [AppSnackbar], use use [AppSnackbarState] and
+ * [AppSnackbarState.showSnackbar].
  *
 
  * If you want to customize appearance of the [AppSnackbar], you can pass your own version as a child
@@ -181,7 +180,7 @@ class AppSnackbarHostState {
  */
 @Composable
 fun AppSnackbarHost(
-  hostState: AppSnackbarHostState,
+  hostState: AppSnackbarState,
   modifier: Modifier = Modifier,
   ijSnackbar: @Composable (AppSnackbarData) -> Unit = { AppSnackbar(it) },
 ) {
@@ -250,7 +249,7 @@ fun AppSnackbar(
 }
 
 /**
- * Interface to represent one particular [AppSnackbar] as a piece of the [AppSnackbarHostState]
+ * Interface to represent one particular [AppSnackbar] as a piece of the [AppSnackbarState]
  *
  * @property message text to be shown in the [AppSnackbar]
  * @property actionLabel optional action label to show as button in the AppSnackbar
@@ -277,7 +276,7 @@ interface AppSnackbarData {
 
 
 /**
- * Possible results of the [AppSnackbarHostState.showSnackbar] call
+ * Possible results of the [AppSnackbarState.showSnackbar] call
  */
 enum class AppSnackbarResult {
   /**
