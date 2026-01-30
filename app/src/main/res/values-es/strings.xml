@@ -100,10 +100,8 @@
     <string name="product_detail_add_instance_date_picker_ok">Aceptar</string>
     <string name="product_detail_add_instance_date_picker_cancel">Cancelar</string>
     <string name="product_detail_add_instance_quantity_label">Cantidad</string>
-    <string name="product_detail_add_instance_quantity_slider">Deslizador (1-6)</string>
-    <string name="product_detail_add_instance_quantity_custom">Personalizado</string>
+    <string name="product_detail_add_instance_quantity_more">Más</string>
     <string name="product_detail_add_instance_quantity_custom_label">Número de instancias</string>
-    <string name="product_detail_add_instance_quantity_value">%1$d instancias</string>
     <string name="product_detail_action_consume">Consumir</string>
     <string name="product_detail_action_freeze">Congelar</string>
     <string name="product_detail_action_delete">Eliminar</string>
