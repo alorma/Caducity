@@ -2,7 +2,7 @@ package com.alorma.caducity.domain.usecase
 
 import com.alorma.caducity.domain.CategoryDataSource
 import com.alorma.caducity.domain.model.CategoryWithItems
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.first
 
@@ -21,7 +21,7 @@ class GetExpiringCategoriesUseCase(
   suspend fun load(): List<CategoryWithItems> {
     // Get all categories filtered by expiring/expired status
     val statusFilter = ProductsListFilter.ByStatus(
-      statuses = setOf(InstanceStatus.ExpiringSoon, InstanceStatus.Expired)
+      statuses = setOf(ItemStatus.ExpiringSoon, ItemStatus.Expired)
     )
     val filteredCategories = categoryDataSource.getCategories(statusFilter).first()
 
@@ -31,13 +31,13 @@ class GetExpiringCategoriesUseCase(
         val filteredProducts = categoryWithItems.products.map { productWithItems ->
           productWithItems.copy(
             items = productWithItems.items.filter { item ->
-              item.status == InstanceStatus.ExpiringSoon || item.status == InstanceStatus.Expired
+              item.status == ItemStatus.ExpiringSoon || item.status == ItemStatus.Expired
             }.toImmutableList()
           )
         }.filter { it.items.isNotEmpty() }.toImmutableList()
 
         val filteredStandaloneItems = categoryWithItems.standaloneItems.filter { item ->
-          item.status == InstanceStatus.ExpiringSoon || item.status == InstanceStatus.Expired
+          item.status == ItemStatus.ExpiringSoon || item.status == ItemStatus.Expired
         }.toImmutableList()
 
         categoryWithItems.copy(

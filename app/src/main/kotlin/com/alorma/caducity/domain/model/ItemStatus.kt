@@ -4,13 +4,13 @@ import com.alorma.caducity.config.time.date
 import kotlin.time.Duration
 import kotlin.time.Instant
 
-sealed class InstanceStatus {
-  data object Expired : InstanceStatus()
-  data object ExpiringSoon : InstanceStatus()
-  data object Fresh : InstanceStatus()
-  data object Frozen : InstanceStatus()
+sealed class ItemStatus {
+  data object Expired : ItemStatus()
+  data object ExpiringSoon : ItemStatus()
+  data object Fresh : ItemStatus()
+  data object Frozen : ItemStatus()
 
-  companion object {
+  companion object Companion {
     /**
      * Calculates the expiration status for a product instance.
      *
@@ -23,7 +23,7 @@ sealed class InstanceStatus {
       expirationDate: Instant,
       now: Instant,
       soonExpiringThreshold: Duration
-    ): InstanceStatus {
+    ): ItemStatus {
       val today = now.date()
       val expirationLocalDate = expirationDate.date()
       val expiringSoonDate = now.plus(soonExpiringThreshold).date()

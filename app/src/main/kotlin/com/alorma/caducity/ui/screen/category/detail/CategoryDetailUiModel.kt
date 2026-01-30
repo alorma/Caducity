@@ -1,15 +1,14 @@
 package com.alorma.caducity.ui.screen.category.detail
 
 import androidx.compose.runtime.Stable
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
-import kotlin.time.Instant
 
 @Stable
 data class DateItemsUiModel(
   val text: String,
-  val status: InstanceStatus,
+  val status: ItemStatus,
   val date: LocalDate,
   val items: ImmutableList<ItemDetailUiModel>,
 )
@@ -18,7 +17,7 @@ data class DateItemsUiModel(
 data class ItemDetailUiModel(
   val id: String,
   val expirationDate: LocalDate,
-  val status: InstanceStatus,
+  val status: ItemStatus,
   val text: String,
 )
 

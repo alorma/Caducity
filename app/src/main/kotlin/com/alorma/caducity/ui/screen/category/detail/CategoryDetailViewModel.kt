@@ -5,9 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.model.InstanceActionResult
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
-import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
@@ -59,7 +58,7 @@ class CategoryDetailViewModel(
 
   fun onConsumeItem(item: ItemDetailUiModel) {
     when (item.status) {
-      InstanceStatus.ExpiringSoon -> {
+      ItemStatus.ExpiringSoon -> {
         // Only show warning if expiration date is today
         val today = appClock.now().date()
         if (item.expirationDate == today) {
@@ -69,16 +68,16 @@ class CategoryDetailViewModel(
         }
       }
 
-      InstanceStatus.Expired -> {
+      ItemStatus.Expired -> {
         // Show error dialog for expired items
         emitSideEffect(CategoryDetailSideEffect.ShowConsumeExpiredError(item, item.status))
       }
 
-      InstanceStatus.Fresh -> {
+      ItemStatus.Fresh -> {
         onConsumeItemConfirmed(item)
       }
 
-      InstanceStatus.Frozen -> {
+      ItemStatus.Frozen -> {
         // Already consumed or frozen, no action needed
       }
     }
@@ -100,7 +99,7 @@ class CategoryDetailViewModel(
 
   fun onFreezeItem(item: ItemDetailUiModel) {
     // Check if item is expired
-    if (item.status == InstanceStatus.Expired) {
+    if (item.status == ItemStatus.Expired) {
       emitSideEffect(CategoryDetailSideEffect.FreezeNotAvailable(item.status))
       return
     }

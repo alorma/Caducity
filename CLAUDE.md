@@ -260,12 +260,173 @@ Category (top-level grouping)
 - **Items** are the actual trackable units with expiration dates
 - Items can exist with or without a product grouping (standalone items)
 
+## Domain Model Architecture
+
+The domain layer follows Clean Architecture principles with clear separation of concerns:
+
+### Core Domain Models (`domain/model/`)
+
+**Primary Models:**
+- `Category` - Top-level grouping (id, name, description)
+- `Product` - Mid-level grouping within a category (id, categoryId, name, createdAt)
+- `Item` - Individual trackable unit (id, categoryId, productId?, identifier, expirationDate, status, pausedDate)
+- `NewItem` - DTO for creating new items (identifier, productId?, expirationDate)
+
+**Composite Models:**
+- `CategoryWithItems` - Category with all its products and items
+  - Contains: `category: Category`, `products: List<CategoryProduct>`, `standaloneItems: List<Item>`
+  - Nested: `CategoryProduct` (product with its items)
+- `ProductWithItems` - Product with all its items
+- `CategoryDetail` - Detailed category view for UI
+  - Contains: `category: Category`, `products: List<DetailProduct>`, `standaloneItems: List<ProductItem>`
+  - Nested types for UI presentation
+- `CategoryListItem` - Simplified category for list views
+- `ItemGroup` - Grouped items by identifier and product
+
+**Status and Utilities:**
+- `InstanceStatus` (in `base/main`) - Enum: Fresh, ExpiringSoon, Expired, Frozen
+- `ItemComparator` - Interface for sorting items
+- `StatusItemComparator` - Sorts items by status and expiration date
+
+### Data Sources (`domain/`)
+
+**Interface Pattern:**
+All data sources are defined as interfaces in the domain layer and implemented in the data layer:
+
+- `CategoryDataSource` - CRUD for categories and items
+  - `getCategories(filter)`, `getCategory(id)`, `createCategory()`, `addItem()`, `deleteItem()`
+  - Item lifecycle: `markItemAsConsumed()`, `freezeItem()`, `unfreezeItem()`
+
+- `ProductDataSource` - CRUD for products within categories
+  - `getProductsByCategory()`, `getProduct()`, `createProduct()`, `deleteProduct()`
+  - `getActiveItemCount()` - Check if product has active items before deletion
+
+- `ItemDataSource` - Query operations for items
+  - `getAllItems()` - Get all items across all categories
+
+### Use Cases (`domain/usecase/`)
+
+**Category Use Cases:**
+- `CreateCategoryUseCase` - Create new category with initial items
+- `ObtainDashboardCategoriesUseCase` - Get categories for dashboard
+- `ObtainCategoryDetailUseCase` - Get detailed category view
+- `GetExpiringCategoriesUseCase` - Get categories with expiring items
+- `ObtainCategoriesUseCase` - Get all categories
+
+**Product Use Cases:**
+- `CreateProductUseCase` - Create new product within category
+- `DeleteProductUseCase` - Delete product (validates no active items)
+- `GetCategoryProductsUseCase` - Get all products in a category
+
+**Item Use Cases:**
+- `AddItemToCategoryUseCase` - Add item to category (with optional product)
+- `ConsumeItemUseCase` - Mark item as consumed (with expiration validation)
+- `FreezeItemUseCase` - Freeze/unfreeze item (pauses expiration tracking)
+- `DeleteItemUseCase` - Delete item
+
+**Configuration:**
+- `ExpirationThresholds` - Configurable thresholds for status calculation
+  - `soonExpiringThreshold: Duration` - When items are considered "expiring soon"
+
+## Room Database Layer
+
+The data layer uses Room for local persistence with a clean mapping to domain models:
+
+### Room Entities (`data/datasource/room/`)
+
+**Core Entities:**
+- `CategoryRoomEntity` - Table: `categories`
+  - Fields: id, name, description
+
+- `ProductRoomEntity` - Table: `products`
+  - Fields: id, categoryId (FK → categories), name, createdAt
+  - Foreign Key: CASCADE delete when category is deleted
+  - Index: categoryId
+
+- `ItemRoomEntity` - Table: `items`
+  - Fields: id, categoryId (FK → categories), productId? (FK → products), identifier, expirationDate, pausedDate?, remainingDays?, consumedDate?
+  - Foreign Keys:
+    - categoryId → CASCADE delete when category is deleted
+    - productId → SET_NULL when product is deleted (preserves standalone items)
+  - Indexes: categoryId, productId
+
+**Relation Entity:**
+- `CategoryWithItemsRoomEntity` - Join query result
+  - Embedded: CategoryRoomEntity
+  - Relations: List<ItemRoomEntity>, List<ProductRoomEntity>
+  - Method: `filterConsumed()` - Filter out consumed items in memory
+
+### DAOs (Data Access Objects)
+
+**CategoryDao:**
+- `getAllCategoriesWithItems()` - All categories with their items and products
+- `getCategoriesWithItemsByDateRange(startDate, endDate)` - Filter by expiration date
+- `getCategoryWithItems(categoryId)` - Single category with items/products
+- `insertCategory()`, `deleteCategory()`, `getAllCategoriesSync()`, `clearAllCategories()`
+
+**ProductDao:**
+- `getProductsByCategory(categoryId)` - All products in a category (sorted by name)
+- `getProduct(productId)` - Single product
+- `insertProduct()`, `deleteProduct()`, `getActiveItemCount(productId)`
+- `getAllProductsSync()`, `clearAllProducts()`
+
+**ItemDao:**
+- `getAllItems()` - All items across all categories
+- `getCategoryItems(categoryId)` - Items for a specific category
+- `getItem(itemId)`, `insertItem()`, `updateItem()`, `deleteItem()`
+- `getAllItemsSync()`, `clearAllItems()`
+
+**AppDatabase:**
+- Version: 1
+- Entities: [CategoryRoomEntity, ItemRoomEntity, ProductRoomEntity]
+- Abstract methods: `categoryDao()`, `itemDao()`, `productDao()`
+
+### Mappers
+
+**RoomEntityMapper:**
+Maps between Room entities and domain models:
+- `CategoryRoomEntity.toModel()` → `Category`
+- `ItemRoomEntity.toModel()` → `Item` (via ItemRoomMapper with status calculation)
+- `ProductRoomEntity.toModel()` → `Product`
+- `CategoryWithItemsRoomEntity.toModel()` → `CategoryWithItems`
+- Reverse mappings: `Category.toEntity()`, `Item.toEntity()`, `Product.toEntity()`
+
+**ItemRoomMapper:**
+Specialized mapper for items with status calculation:
+- Constructor: `(AppClock, ExpirationThresholds)`
+- Maps `ItemRoomEntity` → `Item` with calculated `InstanceStatus`
+- Status logic: Frozen > Consumed > Calculated (based on expiration and thresholds)
+
+### Data Source Implementations
+
+**RoomCategoryDataSource** (implements CategoryDataSource):
+- Uses: CategoryDao, ItemDao, ItemRoomMapper
+- Handles: Category CRUD, Item lifecycle (add, consume, freeze, unfreeze, delete)
+- Filtering: Supports date range and consumed item filtering
+
+**RoomProductDataSource** (implements ProductDataSource):
+- Uses: ProductDao
+- Handles: Product CRUD within categories
+- Validation: Checks active item count before product deletion
+
+**RoomItemDataSource** (implements ItemDataSource):
+- Uses: ItemDao, ItemRoomMapper
+- Handles: Item query operations
+
+**RoomBackupDataSource:**
+- Handles backup/restore operations for all entities
+- Maintains backward compatibility with old terminology in backup format
+- Uses all three DAOs (CategoryDao, ProductDao, ItemDao)
+
 ### Data Flow
 1. **ViewModel** collects data from **UseCase**
-2. **UseCase** calls **DataSource** (Room database)
-3. **DataSource** returns domain **Model** (mapped from **Entity**)
-4. **ViewModel** maps to **UiModel** for screens
-5. **Screen** observes `StateFlow<UiState>` from ViewModel
+2. **UseCase** calls **DataSource** interface (domain layer)
+3. **DataSource Implementation** (Room) queries DAOs
+4. **DAO** returns Room entities
+5. **Mapper** converts Room entities to domain models (with status calculation)
+6. **DataSource** returns domain models to UseCase
+7. **ViewModel** maps to **UiModel** for screens
+8. **Screen** observes `StateFlow<UiState>` from ViewModel
 
 ### User Feedback: Dialogs, Snackbars, and Bottom Sheets
 
@@ -538,11 +699,11 @@ LazyColumn(verticalArrangement = Arrangement.spacedBy(0.dp)) {
 - Horizontal scrolling lists (`LazyRow`) - Use `.toHorizontalShape()`
 - Vertical grouped lists (`LazyColumn` sections) - Use `.toVerticalShape()`
 - Settings menu groups (vertical)
-- Instance cards within product groups (horizontal)
+- Item cards within category/product groups (horizontal)
 - Any UI showing related items in sequence
 
 **Reference Implementations**:
-- Horizontal: `ProductInstanceCard` in `ProductsListItem.kt` (uses `.toHorizontalShape()`)
+- Horizontal: `ItemCard` in `CategoriesListItem.kt` (uses `.toHorizontalShape()`)
 - Vertical: `StyledSettingsCard` in settings components (uses `.toVerticalShape()`)
 
 ### Date/Time Handling
@@ -560,18 +721,19 @@ LazyColumn(verticalArrangement = Arrangement.spacedBy(0.dp)) {
 ## Current Implementation Status
 
 **Completed**:
-- Basic app scaffold with navigation
-- Dashboard screen with ViewModel
-- Settings screen with theme selection
-- Adaptive UI for different screen sizes
-- DI setup with Koin
-- Room database integration
-
-**In Progress (see DEVELOPMENT_PLAN.md)**:
-- Product and ProductInstance entities
-- Full CRUD operations for products
-- Dashboard statistics and data display
-- Expiration notifications system
+- ✅ Basic app scaffold with navigation
+- ✅ Dashboard screen with ViewModel
+- ✅ Settings screen with theme selection
+- ✅ Adaptive UI for different screen sizes
+- ✅ DI setup with Koin
+- ✅ Room database integration (categories, products, items)
+- ✅ Full CRUD operations for categories, products, and items
+- ✅ Dashboard statistics and data display
+- ✅ Expiration notifications system
+- ✅ Category detail screens with product and item management
+- ✅ Item status tracking (Fresh, ExpiringSoon, Expired, Frozen)
+- ✅ FireAndForget system for onboarding and tutorials
+- ✅ Multi-language support (en, es, ca)
 
 ## Development Notes
 

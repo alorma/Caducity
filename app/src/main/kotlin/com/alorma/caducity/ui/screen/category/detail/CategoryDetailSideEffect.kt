@@ -1,6 +1,6 @@
 package com.alorma.caducity.ui.screen.category.detail
 
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 
 sealed interface CategoryDetailSideEffect {
   // Success events
@@ -24,13 +24,13 @@ sealed interface CategoryDetailSideEffect {
   ) : CategoryDetailSideEffect
 
   // Specific validation events
-  data class FreezeNotAvailable(val status: InstanceStatus) : CategoryDetailSideEffect
+  data class FreezeNotAvailable(val status: ItemStatus) : CategoryDetailSideEffect
   data class ShowConsumeExpiredWarning(
     val item: ItemDetailUiModel,
   ) : CategoryDetailSideEffect
 
   data class ShowConsumeExpiredError(
     val item: ItemDetailUiModel,
-    val status: InstanceStatus
+    val status: ItemStatus
   ) : CategoryDetailSideEffect
 }

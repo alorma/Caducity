@@ -43,7 +43,7 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.ThermometerSnow
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.StatusBadgeSize
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
@@ -431,7 +431,7 @@ private fun SideEffectHandler(
         CategoryDetailSideEffect.ItemFrozen -> {
           snackbarState.showSnackbar(
             message = R.string.success_instance_frozen,
-            type = AppFeedbackType.Status(InstanceStatus.Frozen),
+            type = AppFeedbackType.Status(ItemStatus.Frozen),
           )
         }
 

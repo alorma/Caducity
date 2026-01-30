@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.screen.dashboard.DashboardSummary
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -28,7 +28,7 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 @Composable
 fun DashboardSummaryCard(
   summary: DashboardSummary,
-  onStatusClick: (InstanceStatus) -> Unit,
+  onStatusClick: (ItemStatus) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val arrangement = Arrangement.spacedBy(8.dp)
@@ -54,7 +54,7 @@ fun DashboardSummaryCard(
           bottomStart = smallShape.topStart,
           bottomEnd = smallShape.topStart,
         ),
-        status = InstanceStatus.Expired,
+        status = ItemStatus.Expired,
         count = summary.expired,
         onClick = { onStatusClick(it) },
       )
@@ -66,7 +66,7 @@ fun DashboardSummaryCard(
           bottomStart = smallShape.topStart,
           bottomEnd = smallShape.topStart,
         ),
-        status = InstanceStatus.ExpiringSoon,
+        status = ItemStatus.ExpiringSoon,
         count = summary.expiringSoon,
         onClick = { onStatusClick(it) },
       )
@@ -84,7 +84,7 @@ fun DashboardSummaryCard(
           bottomStart = largeShape.topStart,
           bottomEnd = smallShape.topStart,
         ),
-        status = InstanceStatus.Fresh,
+        status = ItemStatus.Fresh,
         count = summary.fresh,
         onClick = { onStatusClick(it) },
       )
@@ -96,7 +96,7 @@ fun DashboardSummaryCard(
           bottomStart = smallShape.topStart,
           bottomEnd = largeShape.topStart,
         ),
-        status = InstanceStatus.Frozen,
+        status = ItemStatus.Frozen,
         count = summary.frozen,
         onClick = { onStatusClick(it) },
       )
@@ -106,9 +106,9 @@ fun DashboardSummaryCard(
 
 @Composable
 private fun SummaryStatusCard(
-  status: InstanceStatus,
+  status: ItemStatus,
   count: Int,
-  onClick: (InstanceStatus) -> Unit,
+  onClick: (ItemStatus) -> Unit,
   shape: Shape,
   modifier: Modifier = Modifier
 ) {
@@ -135,10 +135,10 @@ private fun SummaryStatusCard(
     ) {
 
       val text = when (status) {
-        InstanceStatus.Expired -> stringResource(R.string.dashboard_section_expired)
-        InstanceStatus.ExpiringSoon -> stringResource(R.string.dashboard_section_expiring_soon)
-        InstanceStatus.Fresh -> stringResource(R.string.dashboard_section_fresh)
-        InstanceStatus.Frozen -> stringResource(R.string.dashboard_section_frozen)
+        ItemStatus.Expired -> stringResource(R.string.dashboard_section_expired)
+        ItemStatus.ExpiringSoon -> stringResource(R.string.dashboard_section_expiring_soon)
+        ItemStatus.Fresh -> stringResource(R.string.dashboard_section_fresh)
+        ItemStatus.Frozen -> stringResource(R.string.dashboard_section_frozen)
       }
 
       Text(

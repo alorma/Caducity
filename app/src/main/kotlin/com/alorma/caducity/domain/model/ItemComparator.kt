@@ -16,10 +16,10 @@ class StatusItemComparator : ItemComparator {
 
   private val comparator = compareBy<Item> {
     when (it.status) {
-      InstanceStatus.Expired -> 0
-      InstanceStatus.ExpiringSoon -> 1
-      InstanceStatus.Fresh -> 2
-      InstanceStatus.Frozen -> 3
+      ItemStatus.Expired -> 0
+      ItemStatus.ExpiringSoon -> 1
+      ItemStatus.Fresh -> 2
+      ItemStatus.Frozen -> 3
     }
   }.thenBy { it.expirationDate }
 

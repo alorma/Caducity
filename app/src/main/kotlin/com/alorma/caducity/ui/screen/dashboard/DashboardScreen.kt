@@ -24,7 +24,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.outlined.Settings
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
@@ -41,7 +41,7 @@ fun DashboardScreen(
   onNavigateToCreateProduct: () -> Unit,
   onNavigateToCategory: (String) -> Unit,
   onNavigateToDate: (LocalDate) -> Unit,
-  onNavigateToStatus: (InstanceStatus) -> Unit,
+  onNavigateToStatus: (ItemStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: DashboardViewModel = koinViewModel(),
@@ -66,7 +66,7 @@ private fun DashboardContent(
   state: DashboardState,
   onNavigateToCreateProduct: () -> Unit,
   onNavigateToCategory: (String) -> Unit,
-  onNavigateToStatus: (InstanceStatus) -> Unit,
+  onNavigateToStatus: (ItemStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
   snackbarHostState: AppSnackbarState,
 ) {
@@ -132,7 +132,7 @@ fun DashboardSuccessContent(
   state: DashboardState.Success,
   lazyListState: LazyListState,
   onNavigateToCategory: (String) -> Unit,
-  onNavigateToStatus: (InstanceStatus) -> Unit,
+  onNavigateToStatus: (ItemStatus) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(

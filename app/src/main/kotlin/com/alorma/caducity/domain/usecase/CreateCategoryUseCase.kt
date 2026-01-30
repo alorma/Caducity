@@ -4,7 +4,7 @@ import com.alorma.caducity.domain.CategoryDataSource
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import kotlinx.collections.immutable.toImmutableList
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
@@ -36,7 +36,7 @@ class CreateCategoryUseCase(
           id = Uuid.random().toString(),
           identifier = identifier,
           expirationDate = expirationDate,
-          status = InstanceStatus.calculateStatus(
+          status = ItemStatus.calculateStatus(
             expirationDate = expirationDate,
             now = now,
             soonExpiringThreshold = expirationThresholds.soonExpiringThreshold

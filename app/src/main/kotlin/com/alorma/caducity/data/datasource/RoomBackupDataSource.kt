@@ -4,7 +4,7 @@ import androidx.room.withTransaction
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.data.backup.BackupData
 import com.alorma.caducity.data.backup.BackupProduct
-import com.alorma.caducity.data.backup.BackupProductInstance
+import com.alorma.caducity.data.backup.BackupProductItem
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.CategoryRoomEntity
 import com.alorma.caducity.data.datasource.room.ItemRoomEntity
@@ -30,8 +30,8 @@ class RoomBackupDataSource(
         id = category.id,
         name = category.name,
         description = category.description,
-        instances = (itemsByCategory[category.id] ?: emptyList()).map { item ->
-          BackupProductInstance(
+        items = (itemsByCategory[category.id] ?: emptyList()).map { item ->
+          BackupProductItem(
             id = item.id,
             identifier = item.identifier,
             expirationDate = item.expirationDate,
@@ -64,7 +64,7 @@ class RoomBackupDataSource(
         )
         categoryDao.insertCategory(category)
 
-        val items = backupProduct.instances.map { backupInstance ->
+        val items = backupProduct.items.map { backupInstance ->
           ItemRoomEntity(
             id = backupInstance.id,
             categoryId = backupProduct.id,
@@ -103,7 +103,7 @@ class RoomBackupDataSource(
         require(product.id.isNotBlank()) { "Product ID cannot be blank" }
         require(product.name.isNotBlank()) { "Product name cannot be blank" }
 
-        product.instances.forEach { instance ->
+        product.items.forEach { instance ->
           require(instance.id.isNotBlank()) { "Instance ID cannot be blank" }
           require(instance.expirationDate > 0) { "Instance expiration date must be positive" }
         }

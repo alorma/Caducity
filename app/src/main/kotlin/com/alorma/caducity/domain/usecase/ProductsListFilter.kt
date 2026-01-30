@@ -1,6 +1,6 @@
 package com.alorma.caducity.domain.usecase
 
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import kotlinx.datetime.LocalDate
 
 sealed class ProductsListFilter {
@@ -9,7 +9,7 @@ sealed class ProductsListFilter {
   ) : ProductsListFilter()
 
   data class ByStatus(
-    val statuses: Set<InstanceStatus>,
+    val statuses: Set<ItemStatus>,
   ) : ProductsListFilter()
 
   data class ByDateRange(

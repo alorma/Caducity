@@ -7,6 +7,6 @@ data class Item(
   val identifier: String,
   val categoryId: String? = null,
   val expirationDate: Instant,
-  val status: InstanceStatus,
+  val status: ItemStatus,
   val pausedDate: Instant? = null,
 )

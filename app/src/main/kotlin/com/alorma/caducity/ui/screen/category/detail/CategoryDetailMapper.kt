@@ -3,7 +3,7 @@ package com.alorma.caducity.ui.screen.category.detail
 import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.resources.StringProvider
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.DetailProduct
 import com.alorma.caducity.domain.model.CategoryDetail
 import com.alorma.caducity.domain.model.ProductItem
@@ -60,13 +60,13 @@ class CategoryDetailMapper(
         datedItemsGroups = listOf(
           DateItemsUiModel(
             text = "",
-            status = InstanceStatus.Fresh,
+            status = ItemStatus.Fresh,
             date = appClock.nowDate(),
             items = categoryDetail.standaloneItems.map { item ->
               ItemDetailUiModel(
                 id = item.id,
                 expirationDate = appClock.nowDate(),
-                status = InstanceStatus.Fresh,
+                status = ItemStatus.Fresh,
                 text = item.name,
               )
             }.toImmutableList(),
@@ -129,7 +129,7 @@ class CategoryDetailMapper(
   private fun mapItemToUi(
     item: ProductItem,
     expirationDate: LocalDate,
-    status: InstanceStatus,
+    status: ItemStatus,
   ): ItemDetailUiModel {
     return ItemDetailUiModel(
       id = item.id,

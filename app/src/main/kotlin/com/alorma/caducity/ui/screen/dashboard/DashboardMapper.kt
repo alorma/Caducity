@@ -1,6 +1,6 @@
 package com.alorma.caducity.ui.screen.dashboard
 
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
@@ -42,10 +42,10 @@ class DashboardMapper(
   }
 
   private fun calculateSummary(items: List<Item>): DashboardSummary {
-    val expiredCount = getStatusCount(items, InstanceStatus.Expired)
-    val expiringSoonCount = getStatusCount(items, InstanceStatus.ExpiringSoon)
-    val freshCount = getStatusCount(items, InstanceStatus.Fresh)
-    val frozenCount = getStatusCount(items, InstanceStatus.Frozen)
+    val expiredCount = getStatusCount(items, ItemStatus.Expired)
+    val expiringSoonCount = getStatusCount(items, ItemStatus.ExpiringSoon)
+    val freshCount = getStatusCount(items, ItemStatus.Fresh)
+    val frozenCount = getStatusCount(items, ItemStatus.Frozen)
 
     return DashboardSummary(
       expired = expiredCount,
@@ -57,7 +57,7 @@ class DashboardMapper(
 
   private fun getStatusCount(
     items: List<Item>,
-    status: InstanceStatus,
+    status: ItemStatus,
   ): Int {
     return items
       .filter { item -> item.status == status }

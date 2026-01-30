@@ -3,7 +3,7 @@ package com.alorma.caducity.domain.usecase
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.CategoryDataSource
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.DetailProduct
 import com.alorma.caducity.domain.model.CategoryDetail
 import com.alorma.caducity.domain.model.ProductDatedItems
@@ -29,13 +29,13 @@ class ObtainCategoryDetailUseCase(
         val activeProducts = category.products.map { product ->
           product.copy(
             items = product.items
-              .filter { it.status != InstanceStatus.Frozen }
+              .filter { it.status != ItemStatus.Frozen }
               .toImmutableList()
           )
         }
 
         val activeStandaloneItems = category.standaloneItems
-          .filter { it.status != InstanceStatus.Frozen }
+          .filter { it.status != ItemStatus.Frozen }
 
         // Map products to DetailProduct with their dated items (including empty products)
         val detailProducts: List<DetailProduct> = activeProducts.map { product ->
@@ -94,8 +94,8 @@ class ObtainCategoryDetailUseCase(
 
   private fun instanceStatus(
     expirationDate: LocalDate,
-  ): InstanceStatus {
-    return InstanceStatus.calculateStatus(
+  ): ItemStatus {
+    return ItemStatus.calculateStatus(
       expirationDate = expirationDate.atStartOfDayIn(
         TimeZone.currentSystemDefault()
       ),

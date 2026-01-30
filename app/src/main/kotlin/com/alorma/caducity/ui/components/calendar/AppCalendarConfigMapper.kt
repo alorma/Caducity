@@ -3,7 +3,7 @@ package com.alorma.caducity.ui.components.calendar
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.config.time.date
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.ui.components.shape.calculateShapeWithGaps
 import com.alorma.caducity.ui.screen.category.detail.DateItemsUiModel
@@ -145,7 +145,7 @@ class AppCalendarConfigMapper(
   private fun itemsStatusByDate(
     items: List<Item>,
     today: LocalDate
-  ): Map<LocalDate, InstanceStatus?> {
+  ): Map<LocalDate, ItemStatus?> {
     return buildMap {
       items.forEach { item ->
         val date = item.expirationDate.date()
@@ -153,13 +153,13 @@ class AppCalendarConfigMapper(
 
         // Keep the most critical status (Expired > ExpiringSoon > Frozen > Fresh)
         val newStatus = when {
-          currentStatus == InstanceStatus.Expired -> InstanceStatus.Expired
-          item.status == InstanceStatus.Expired -> InstanceStatus.Expired
-          currentStatus == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
-          item.status == InstanceStatus.ExpiringSoon -> InstanceStatus.ExpiringSoon
-          currentStatus == InstanceStatus.Frozen -> InstanceStatus.Frozen
-          item.status == InstanceStatus.Frozen -> InstanceStatus.Frozen
-          else -> InstanceStatus.Fresh
+          currentStatus == ItemStatus.Expired -> ItemStatus.Expired
+          item.status == ItemStatus.Expired -> ItemStatus.Expired
+          currentStatus == ItemStatus.ExpiringSoon -> ItemStatus.ExpiringSoon
+          item.status == ItemStatus.ExpiringSoon -> ItemStatus.ExpiringSoon
+          currentStatus == ItemStatus.Frozen -> ItemStatus.Frozen
+          item.status == ItemStatus.Frozen -> ItemStatus.Frozen
+          else -> ItemStatus.Fresh
         }
 
         put(date, newStatus)

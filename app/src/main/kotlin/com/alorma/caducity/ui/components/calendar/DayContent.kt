@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.shape.toHorizontalShape
@@ -32,7 +32,7 @@ import kotlinx.datetime.LocalDate
 fun DayContent(
   today: LocalDate,
   date: LocalDate,
-  status: InstanceStatus?,
+  status: ItemStatus?,
   shapePosition: ShapePosition,
   isOutDay: Boolean,
   onClick: (LocalDate) -> Unit,
@@ -153,7 +153,7 @@ class DayContentPreviewContentProvider :
       DayContentPreviewContent(
         date = LocalDate(2026, 2, 15),
         today = LocalDate(2026, 2, 15),
-        status = InstanceStatus.Expired,
+        status = ItemStatus.Expired,
         shapePosition = ShapePosition.Single,
         isOutDay = false,
       ),
@@ -161,7 +161,7 @@ class DayContentPreviewContentProvider :
       DayContentPreviewContent(
         date = LocalDate(2026, 2, 15),
         today = LocalDate(2026, 2, 15),
-        status = InstanceStatus.ExpiringSoon,
+        status = ItemStatus.ExpiringSoon,
         shapePosition = ShapePosition.Start,
         isOutDay = false,
       ),
@@ -169,7 +169,7 @@ class DayContentPreviewContentProvider :
       DayContentPreviewContent(
         date = LocalDate(2026, 2, 20),
         today = LocalDate(2026, 2, 15),
-        status = InstanceStatus.Fresh,
+        status = ItemStatus.Fresh,
         shapePosition = ShapePosition.Middle,
         isOutDay = false,
       ),
@@ -177,7 +177,7 @@ class DayContentPreviewContentProvider :
       DayContentPreviewContent(
         date = LocalDate(2026, 2, 28),
         today = LocalDate(2026, 2, 15),
-        status = InstanceStatus.Frozen,
+        status = ItemStatus.Frozen,
         shapePosition = ShapePosition.End,
         isOutDay = false,
       ),
@@ -185,7 +185,7 @@ class DayContentPreviewContentProvider :
       DayContentPreviewContent(
         date = LocalDate(2026, 1, 31),
         today = LocalDate(2026, 2, 15),
-        status = InstanceStatus.Expired,
+        status = ItemStatus.Expired,
         shapePosition = ShapePosition.Single,
         isOutDay = true,
       ),
@@ -203,7 +203,7 @@ class DayContentPreviewContentProvider :
 data class DayContentPreviewContent(
   val date: LocalDate,
   val today: LocalDate,
-  val status: InstanceStatus?,
+  val status: ItemStatus?,
   val shapePosition: ShapePosition,
   val isOutDay: Boolean,
 )

@@ -20,7 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.outlined.CircleChevronRight
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
 import com.alorma.caducity.ui.screen.dashboard.DashboardState
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -29,7 +29,7 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 fun DashboardSuccessContentList(
   state: DashboardState.Success,
   onNavigateToCategory: (String) -> Unit,
-  onNavigateToStatus: (InstanceStatus) -> Unit,
+  onNavigateToStatus: (ItemStatus) -> Unit,
   lazyListState: LazyListState,
 ) {
   LazyColumn(

@@ -4,7 +4,7 @@ import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryProduct
 import com.alorma.caducity.domain.model.CategoryWithItems
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.NewItem
 import com.alorma.caducity.domain.model.Product
@@ -46,8 +46,8 @@ fun ItemRoomEntity.toModel(
 
   // Determine status: consumed > frozen > calculated
   val status = when {
-    pausedDate != null -> InstanceStatus.Frozen
-    else -> InstanceStatus.calculateStatus(
+    pausedDate != null -> ItemStatus.Frozen
+    else -> ItemStatus.calculateStatus(
       expirationDate = expirationInstant,
       now = appClock.now(),
       soonExpiringThreshold = expirationThresholds.soonExpiringThreshold

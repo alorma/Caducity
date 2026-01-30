@@ -3,7 +3,7 @@ package com.alorma.caducity.domain.usecase
 import com.alorma.caducity.domain.CategoryDataSource
 import com.alorma.caducity.domain.model.InstanceActionError
 import com.alorma.caducity.domain.model.InstanceActionResult
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 
 class ConsumeItemUseCase(
   private val categoryDataSource: CategoryDataSource,
@@ -15,7 +15,7 @@ class ConsumeItemUseCase(
       ?: return InstanceActionResult.Failure(InstanceActionError.InstanceNotFound)
 
     // Prevent consuming expired items
-    if (item.status == InstanceStatus.Expired) {
+    if (item.status == ItemStatus.Expired) {
       return InstanceActionResult.Failure(InstanceActionError.CannotConsumeExpiredInstance(itemId))
     }
 

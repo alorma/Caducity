@@ -16,7 +16,7 @@ data class DetailProduct(
 
 data class ProductDatedItems(
   val date: LocalDate,
-  val status: InstanceStatus,
+  val status: ItemStatus,
   val items: List<ProductItem>,
 )
 

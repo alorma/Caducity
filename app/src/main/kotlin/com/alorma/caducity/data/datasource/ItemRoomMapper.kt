@@ -2,7 +2,7 @@ package com.alorma.caducity.data.datasource
 
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.data.datasource.room.ItemRoomEntity
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import kotlin.time.Instant
@@ -25,11 +25,11 @@ class ItemRoomMapper(
 
   private fun instanceStatus(
     entity: ItemRoomEntity,
-  ): InstanceStatus {
+  ): ItemStatus {
     // Note: consumedDate items are filtered at SQL level, so they never reach this mapper
     return when {
-      entity.pausedDate != null -> InstanceStatus.Frozen
-      else -> InstanceStatus.calculateStatus(
+      entity.pausedDate != null -> ItemStatus.Frozen
+      else -> ItemStatus.calculateStatus(
         expirationDate = instantFromTimestamp(entity.expirationDate),
         now = appClock.now(),
         soonExpiringThreshold = expirationThresholds.soonExpiringThreshold

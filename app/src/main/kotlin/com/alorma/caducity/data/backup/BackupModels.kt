@@ -18,11 +18,11 @@ data class BackupProduct(
   val id: String,
   val name: String,
   val description: String,
-  val instances: List<BackupProductInstance>
+  val items: List<BackupProductItem>
 )
 
 @Serializable
-data class BackupProductInstance(
+data class BackupProductItem(
   val id: String,
   val identifier: String,
   val expirationDate: Long,

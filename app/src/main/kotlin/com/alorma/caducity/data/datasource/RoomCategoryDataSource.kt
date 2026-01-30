@@ -8,7 +8,7 @@ import com.alorma.caducity.data.datasource.room.toRoomEntity
 import com.alorma.caducity.domain.CategoryDataSource
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryWithItems
-import com.alorma.caducity.domain.model.InstanceStatus
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.NewItem
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
@@ -101,7 +101,7 @@ class RoomCategoryDataSource(
     }
   }
 
-  private fun statusToDateRange(status: InstanceStatus): Pair<Long, Long> {
+  private fun statusToDateRange(status: ItemStatus): Pair<Long, Long> {
     val now = appClock.now()
     val expiringSoonMillis =
       now.plus(expirationThresholds.soonExpiringThreshold).toEpochMilliseconds()
@@ -113,21 +113,21 @@ class RoomCategoryDataSource(
       .toEpochMilliseconds()
 
     return when (status) {
-      InstanceStatus.Expired -> {
+      ItemStatus.Expired -> {
         // From epoch to yesterday (before today starts) - excludes items expiring today
         Pair(0L, todayStartMillis)
       }
 
-      InstanceStatus.ExpiringSoon -> {
+      ItemStatus.ExpiringSoon -> {
         // From today (start of day) to (now + threshold) - includes items expiring today
         Pair(todayStartMillis, expiringSoonMillis)
       }
 
-      InstanceStatus.Fresh -> {
+      ItemStatus.Fresh -> {
         Pair(expiringSoonMillis, Long.MAX_VALUE) // From (now + threshold) to infinity
       }
 
-      InstanceStatus.Frozen -> {
+      ItemStatus.Frozen -> {
         // Frozen items don't have a date range filter - return all dates
         Pair(0L, Long.MAX_VALUE)
       }
