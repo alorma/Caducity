@@ -2,7 +2,10 @@ package com.alorma.caducity.ui.components.expiration
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.colors.ContainerColors
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -10,6 +13,17 @@ import com.alorma.caducity.ui.theme.colors.ExpirationColorsPalette
 import com.materialkolor.ktx.isLight
 
 object ExpirationDefaults {
+
+  @Composable
+  fun getTitle(itemStatus: ItemStatus): String {
+    return when (itemStatus) {
+      ItemStatus.Expired -> stringResource(R.string.expiration_status_badge_expired)
+      ItemStatus.ExpiringSoon -> stringResource(R.string.expiration_status_badge_expiring_soon)
+      ItemStatus.Fresh -> stringResource(R.string.expiration_status_badge_fresh)
+      ItemStatus.Frozen -> stringResource(R.string.expiration_status_badge_frozen)
+      ItemStatus.Consumed -> stringResource(R.string.expiration_status_badge_consumed)
+    }
+  }
 
   @Composable
   fun getVibrantColors(
