@@ -136,7 +136,6 @@
     <string name="category_detail_action_delete">Eliminar</string>
     <string name="category_detail_frozen_items">Congelados</string>
     <string name="category_detail_consumed_items">Consumidos</string>
-    <string name="category_detail_section_available">Artículos disponibles</string>
     <string name="category_detail_section_frozen">Artículos congelados</string>
     <string name="category_detail_section_consumed">Artículos consumidos</string>
 

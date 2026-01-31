@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
+import com.alorma.caducity.ui.theme.CaducityTheme
 
 enum class StatusBadgeSize {
   Small,
@@ -72,7 +73,7 @@ fun StatusBadge(
 
   Row(
     modifier = modifier
-      .clip(MaterialTheme.shapes.small)
+      .clip(CaducityTheme.shapes.small)
       .background(colors.container)
       .padding(
         horizontal = size.horizontalPadding,

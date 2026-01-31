@@ -3,12 +3,11 @@ package com.alorma.caducity.ui.screen.category.detail
 import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.resources.StringProvider
-import com.alorma.caducity.domain.model.ItemStatus
-import com.alorma.caducity.domain.model.DetailProduct
+import com.alorma.caducity.config.time.RelativeTimeFormatter
 import com.alorma.caducity.domain.model.CategoryDetail
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.ProductItem
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
-import com.alorma.caducity.config.time.RelativeTimeFormatter
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
@@ -42,12 +41,9 @@ class CategoryDetailMapper(
         CategoryDetailProductTabUiModel.WithItems(
           id = product.id,
           name = product.name,
-          datedItemsGroups = product.datedItemsGroups.map { datedItems ->
-            mapProductDatedContent(
-              product = product,
-              datedItems = datedItems
-            )
-          }.toImmutableList(),
+          datedItemsGroups = product.datedItemsGroups
+            .map { datedItems -> mapProductDatedContent(datedItems = datedItems) }
+            .toImmutableList(),
           frozenItems = product.frozenItems.map { item ->
             ItemDetailUiModel(
               id = item.id,
@@ -70,8 +66,9 @@ class CategoryDetailMapper(
 
     // Add "Other" tab for standalone items if they exist
     if (categoryDetail.standaloneItems.isNotEmpty() ||
-        categoryDetail.standaloneFrozenItems.isNotEmpty() ||
-        categoryDetail.standaloneConsumedItems.isNotEmpty()) {
+      categoryDetail.standaloneFrozenItems.isNotEmpty() ||
+      categoryDetail.standaloneConsumedItems.isNotEmpty()
+    ) {
       val otherTab = CategoryDetailProductTabUiModel.WithItems(
         id = "other",
         name = stringProvider.getString(R.string.category_detail_product_other),
@@ -122,9 +119,7 @@ class CategoryDetailMapper(
 
     // Create calendar config with all dated content from products with items
     val allDatedContents = productsWithItems.flatMap { product ->
-      product.datedItemsGroups.map { datedItems ->
-        mapProductDatedContent(product = product, datedItems = datedItems)
-      }
+      product.datedItemsGroups.map { datedItems -> mapProductDatedContent(datedItems = datedItems) }
     }.toImmutableList()
 
     val appCalendarConfig = appCalendarConfigMapper.createWithDatedContent(
@@ -143,11 +138,13 @@ class CategoryDetailMapper(
   }
 
   private fun mapProductDatedContent(
-    product: DetailProduct,
     datedItems: com.alorma.caducity.domain.model.ProductDatedItems,
   ): DateItemsUiModel {
     return DateItemsUiModel(
-      text = relativeTimeFormatter.format(datedItems.date),
+      text = relativeTimeFormatter.format(
+        appClock.nowDate(),
+        datedItems.date,
+      ),
       status = datedItems.status,
       date = datedItems.date,
       items = datedItems.items.map { item ->
