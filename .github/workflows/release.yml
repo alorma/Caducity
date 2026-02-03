@@ -118,7 +118,7 @@ jobs:
 
     steps:
       - name: Download AAB artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: release-aab
           path: artifacts/aab
@@ -149,7 +149,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download APK artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: release-apk
           path: artifacts/apk
