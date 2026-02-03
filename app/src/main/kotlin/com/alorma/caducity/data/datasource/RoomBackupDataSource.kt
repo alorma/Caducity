@@ -7,7 +7,9 @@ import com.alorma.caducity.data.backup.BackupData
 import com.alorma.caducity.data.backup.BackupProduct
 import com.alorma.caducity.data.backup.BackupProductItem
 import com.alorma.caducity.data.datasource.room.AppDatabase
+import com.alorma.caducity.data.datasource.room.CategoryRoomEntity
 import com.alorma.caducity.data.datasource.room.ItemRoomEntity
+import com.alorma.caducity.data.datasource.room.ProductRoomEntity
 import com.alorma.caducity.domain.backup.BackupDataSource
 
 class RoomBackupDataSource(
@@ -71,36 +73,58 @@ class RoomBackupDataSource(
 
   override suspend fun importBackup(backup: BackupData) {
     database.withTransaction {
-      /*
       // Clear existing data
       clearAllData()
 
       // Insert categories and items (mapping from old backup format)
-      backup.products.forEach { backupProduct ->
-        val category = CategoryRoomEntity(
-          id = backupProduct.id,
-          name = backupProduct.name,
-          description = backupProduct.description
+      backup.categories.forEach { category: BackupCategory ->
+        val categoryEntity = CategoryRoomEntity(
+          id = category.id,
+          name = category.name,
+          description = category.description
         )
-        categoryDao.insertCategory(category)
+        categoryDao.insertCategory(categoryEntity)
 
-        val items = backupProduct.items.map { backupInstance ->
-          ItemRoomEntity(
-            id = backupInstance.id,
-            categoryId = backupProduct.id,
-            identifier = backupInstance.identifier,
-            productId = null, // Old backups don't have product variants
-            expirationDate = backupInstance.expirationDate,
-            pausedDate = backupInstance.pausedDate,
-            remainingDays = backupInstance.remainingDays,
-            consumedDate = backupInstance.consumedDate
+        category.products.forEach { product ->
+          val productEntity = ProductRoomEntity(
+            id = product.id,
+            categoryId = product.categoryId,
+            name = product.name,
+            createdAt = product.createdAt,
           )
+          productDao.insertProduct(productEntity)
         }
-        if (items.isNotEmpty()) {
-          itemDao.insertItems(items)
+
+        category.standaloneItems.forEach { item ->
+          val itemEntity = ItemRoomEntity(
+            id = item.id,
+            categoryId = categoryEntity.id,
+            identifier = item.identifier,
+            productId = null,
+            expirationDate = item.expirationDate,
+            pausedDate = item.pausedDate,
+            remainingDays = item.remainingDays,
+            consumedDate = item.consumedDate
+          )
+          itemDao.insertItem(itemEntity)
+        }
+
+        category.products.forEach { product ->
+          product.items.forEach { item ->
+            val itemEntity = ItemRoomEntity(
+              id = item.id,
+              categoryId = categoryEntity.id,
+              identifier = item.identifier,
+              productId = product.id,
+              expirationDate = item.expirationDate,
+              pausedDate = item.pausedDate,
+              remainingDays = item.remainingDays,
+              consumedDate = item.consumedDate
+            )
+            itemDao.insertItem(itemEntity)
+          }
         }
       }
-       */
     }
   }
 
