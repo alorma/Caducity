@@ -36,6 +36,6 @@ jobs:
         run: |
           echo "### Version Updated Successfully ✅" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**New Version:** \`${{ steps.bump.outputs.next_version }}-snapshot\`" >> $GITHUB_STEP_SUMMARY
+          echo "**New Version:** \`${{ steps.bump.outputs.next_version }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "The version has been bumped and committed to the main branch." >> $GITHUB_STEP_SUMMARY
