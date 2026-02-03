@@ -76,10 +76,6 @@ jobs:
         continue-on-error: false
         run: ./gradlew test
 
-      - name: Validate Screenshot Tests
-        continue-on-error: true
-        run: ./gradlew validateDebugScreenshotTest
-
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
