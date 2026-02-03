@@ -238,6 +238,9 @@ jobs:
         run: |
           NEXT_VERSION="${{ steps.next_version.outputs.next_version }}"
 
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
           git add version.properties
           git commit -m "Bump version to $NEXT_VERSION"
           git push origin main
