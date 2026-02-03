@@ -1,0 +1,41 @@
+name: Bump Minor Version
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bump-version:
+    name: Bump Minor Version
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Bump minor version
+        id: bump
+        uses: ./.github/actions/bump-minor-version
+      
+      - name: Commit version changes
+        uses: ./.github/actions/commit-version
+        with:
+          version: ${{ steps.bump.outputs.next_version }}
+      
+      - name: Summary
+        run: |
+          echo "### Version Updated Successfully ✅" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**New Version:** \`${{ steps.bump.outputs.next_version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "The version has been bumped and committed to the main branch." >> $GITHUB_STEP_SUMMARY

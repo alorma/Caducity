@@ -36,11 +36,7 @@ jobs:
           cache-read-only: false
 
       - name: Disable snapshot before release
-        run: |
-          echo "Setting snapshot to false in version.properties"
-          sed -i "s/^snapshot=.*/snapshot=false/" version.properties
-          echo "Updated version.properties:"
-          cat version.properties
+        uses: ./.github/actions/disable-snapshot
 
       - name: Get current version
         id: get_version
@@ -72,11 +68,7 @@ jobs:
           cache-read-only: false
 
       - name: Disable snapshot before release
-        run: |
-          echo "Setting snapshot to false in version.properties"
-          sed -i "s/^snapshot=.*/snapshot=false/" version.properties
-          echo "Updated version.properties:"
-          cat version.properties
+        uses: ./.github/actions/disable-snapshot
 
       - name: Create google-services.json
         run: |
@@ -199,48 +191,11 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Calculate next version
-        id: next_version
-        run: |
-          CURRENT_VERSION="${{ needs.get-version.outputs.version }}"
-          echo "Current version: $CURRENT_VERSION"
+      - name: Bump minor version
+        id: bump
+        uses: ./.github/actions/bump-minor-version
 
-          # Parse semantic version (major.minor.patch), removing any pre-release or build metadata
-          BASE_VERSION=$(echo "$CURRENT_VERSION" | sed 's/[-+].*//')
-          IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE_VERSION"
-
-          # Increment minor version and reset patch to 0
-          NEXT_MINOR=$((MINOR + 1))
-          NEXT_VERSION="${MAJOR}.${NEXT_MINOR}.0"
-
-          echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
-          echo "Next version: $NEXT_VERSION"
-
-      - name: Update version in version.properties
-        run: |
-          NEXT_VERSION="${{ steps.next_version.outputs.next_version }}"
-          echo "Updating version.properties to version: $NEXT_VERSION"
-
-          # Parse the next version into components
-          IFS='.' read -r NEXT_MAJOR NEXT_MINOR NEXT_PATCH <<< "$NEXT_VERSION"
-
-          # Update version.properties
-          sed -i "s/^major=.*/major=$NEXT_MAJOR/" version.properties
-          sed -i "s/^minor=.*/minor=$NEXT_MINOR/" version.properties
-          sed -i "s/^patch=.*/patch=$NEXT_PATCH/" version.properties
-          sed -i "s/^snapshot=.*/snapshot=true/" version.properties
-
-          # Verify the change
-          echo "Updated version:"
-          cat version.properties
-
-      - name: Commit and push version update
-        run: |
-          NEXT_VERSION="${{ steps.next_version.outputs.next_version }}"
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git add version.properties
-          git commit -m "Bump version to $NEXT_VERSION"
-          git push origin main
+      - name: Commit version changes
+        uses: ./.github/actions/commit-version
+        with:
+          version: ${{ steps.bump.outputs.next_version }}
