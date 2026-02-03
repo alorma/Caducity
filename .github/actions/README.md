@@ -30,7 +30,7 @@ This directory contains reusable composite actions for managing version updates 
 ```
 
 **Outputs:**
-- `next_version`: The new version string (e.g., "0.1.0")
+- `next_version`: The new version string including snapshot suffix (e.g., "0.1.0-snapshot")
 
 **What it does:**
 - Reads the current version from `version.properties`
