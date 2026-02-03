@@ -1,0 +1,13 @@
+name: Disable Snapshot in version.properties
+description: Sets snapshot to false in version.properties file
+
+runs:
+  using: composite
+  steps:
+    - name: Disable snapshot in version.properties
+      shell: bash
+      run: |
+        echo "Setting snapshot to false in version.properties"
+        sed -i "s/^snapshot=.*/snapshot=false/" version.properties
+        echo "Updated version.properties:"
+        cat version.properties

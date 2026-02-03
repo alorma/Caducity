@@ -1,0 +1,37 @@
+name: Bump Minor Version
+description: Increments the minor version by 1 and resets patch to 0 in version.properties
+
+outputs:
+  next_version:
+    description: The new version after bumping (includes -snapshot suffix)
+    value: ${{ steps.bump.outputs.next_version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Calculate and update next version
+      id: bump
+      shell: bash
+      run: |
+        # Read current version from version.properties
+        MAJOR=$(grep "^major=" version.properties | cut -d'=' -f2)
+        MINOR=$(grep "^minor=" version.properties | cut -d'=' -f2)
+        PATCH=$(grep "^patch=" version.properties | cut -d'=' -f2)
+        
+        echo "Current version: $MAJOR.$MINOR.$PATCH"
+        
+        # Increment minor version and reset patch to 0
+        NEXT_MINOR=$((MINOR + 1))
+        NEXT_VERSION="${MAJOR}.${NEXT_MINOR}.0"
+        
+        echo "Next version: $NEXT_VERSION-snapshot"
+        echo "next_version=${NEXT_VERSION}-snapshot" >> $GITHUB_OUTPUT
+        
+        # Update version.properties
+        sed -i "s/^minor=.*/minor=$NEXT_MINOR/" version.properties
+        sed -i "s/^patch=.*/patch=0/" version.properties
+        sed -i "s/^snapshot=.*/snapshot=true/" version.properties
+        
+        # Verify the change
+        echo "Updated version.properties:"
+        cat version.properties
