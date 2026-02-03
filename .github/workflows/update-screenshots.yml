@@ -71,7 +71,7 @@ jobs:
 
       - name: Upload Screenshots as Artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: screenshot-references
           path: app/src/screenshotTestDebug/reference/
