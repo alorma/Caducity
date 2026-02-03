@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class BackupData(
   val version: Int,
   val exportDate: Long,
-  val products: List<BackupProduct>
+  val categories: List<BackupCategory>
 ) {
   companion object {
     const val CURRENT_VERSION = 1
@@ -14,10 +14,20 @@ data class BackupData(
 }
 
 @Serializable
-data class BackupProduct(
+data class BackupCategory(
   val id: String,
   val name: String,
   val description: String,
+  val products: List<BackupProduct>,
+  val standaloneItems: List<BackupProductItem>,
+)
+
+@Serializable
+data class BackupProduct(
+  val id: String,
+  val categoryId: String,
+  val name: String,
+  val createdAt: Long,
   val items: List<BackupProductItem>
 )
 
