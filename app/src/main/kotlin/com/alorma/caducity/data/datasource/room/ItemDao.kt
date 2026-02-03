@@ -22,9 +22,6 @@ interface ItemDao {
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insertItem(item: ItemRoomEntity)
 
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertItems(items: List<ItemRoomEntity>)
-
   @Update
   suspend fun updateItem(item: ItemRoomEntity)
 
