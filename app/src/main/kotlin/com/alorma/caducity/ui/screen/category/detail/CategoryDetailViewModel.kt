@@ -176,12 +176,12 @@ class CategoryDetailViewModel(
         if (result.isSuccess) {
           emitSideEffect(CategoryDetailSideEffect.CategoryDeleted)
         } else {
-          suppressErrorsDuringRemoval.value = false
           emitSideEffect(CategoryDetailSideEffect.DeleteCategoryFailed)
         }
       } catch (exception: Exception) {
-        suppressErrorsDuringRemoval.value = false
         emitSideEffect(CategoryDetailSideEffect.DeleteCategoryFailed)
+      } finally {
+        suppressErrorsDuringRemoval.value = false
       }
     }
   }
