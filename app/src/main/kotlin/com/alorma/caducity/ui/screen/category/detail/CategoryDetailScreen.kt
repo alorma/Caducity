@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.category.detail
 
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,7 +67,6 @@ fun CategoryDetailScreen(
   categoryId: String,
   onNavigateToAddInstance: (productId: String?) -> Unit,
   modifier: Modifier = Modifier,
-  onNavigateBack: (() -> Unit)? = null,
   viewModel: CategoryDetailViewModel = koinViewModel { parametersOf(categoryId) }
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
@@ -80,7 +80,6 @@ fun CategoryDetailScreen(
     snackbarState = snackbarState,
     dialogState = dialogState,
     bottomSheetState = bottomSheetState,
-    onNavigateBack = onNavigateBack,
   )
 
   when (val currentState = state.value) {
@@ -329,8 +328,9 @@ private fun SideEffectHandler(
   snackbarState: AppSnackbarState,
   dialogState: AppDialogState,
   bottomSheetState: AppBottomSheetState,
-  onNavigateBack: (() -> Unit)?,
 ) {
+  val backDispatcher = LocalOnBackPressedDispatcherOwner.current
+
   LaunchedEffect(viewModel.sideEffect) {
     viewModel.sideEffect.collect { effect ->
       when (effect) {
@@ -505,7 +505,7 @@ private fun SideEffectHandler(
             type = AppFeedbackType.Success,
           )
           // Navigate back after successful deletion
-          onNavigateBack?.invoke()
+          backDispatcher?.onBackPressedDispatcher?.onBackPressed()
         }
 
         CategoryDetailSideEffect.DeleteCategoryFailed -> launch {
