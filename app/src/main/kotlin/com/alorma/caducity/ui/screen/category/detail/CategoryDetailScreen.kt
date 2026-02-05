@@ -330,7 +330,7 @@ private fun SideEffectHandler(
   bottomSheetState: AppBottomSheetState,
 ) {
   val backDispatcher = LocalOnBackPressedDispatcherOwner.current
-  
+
   LaunchedEffect(viewModel.sideEffect) {
     viewModel.sideEffect.collect { effect ->
       when (effect) {
