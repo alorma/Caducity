@@ -54,7 +54,7 @@ class CategoryDetailViewModel(
       onSuccess = { category ->
         categoryDetailMapper.mapToCategoryDetail(category, calendarConfig.firstDayOfWeek)
       },
-      onFailure = { error ->
+      onFailure = { _ ->
         if (shouldSuppressErrors) {
           CategoryDetailState.Loading
         } else {
@@ -171,10 +171,15 @@ class CategoryDetailViewModel(
   fun onDeleteCategory() {
     viewModelScope.launch {
       suppressErrorsDuringRemoval.value = true
-      val result = deleteCategoryUseCase.deleteCategory(categoryId)
-      if (result.isSuccess) {
-        emitSideEffect(CategoryDetailSideEffect.CategoryDeleted)
-      } else {
+      try {
+        val result = deleteCategoryUseCase.deleteCategory(categoryId)
+        if (result.isSuccess) {
+          emitSideEffect(CategoryDetailSideEffect.CategoryDeleted)
+        } else {
+          suppressErrorsDuringRemoval.value = false
+          emitSideEffect(CategoryDetailSideEffect.DeleteCategoryFailed)
+        }
+      } catch (exception: Exception) {
         suppressErrorsDuringRemoval.value = false
         emitSideEffect(CategoryDetailSideEffect.DeleteCategoryFailed)
       }
