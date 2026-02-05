@@ -197,6 +197,14 @@
     <string name="error_delete_item_failed">Failed to delete item</string>
     <string name="error_create_product_failed">Failed to create product</string>
 
+    <!-- Category deletion -->
+    <string name="category_detail_delete_dialog_title">Delete Category?</string>
+    <string name="category_detail_delete_dialog_message">This will permanently delete this category and all its products and items. This action cannot be undone.</string>
+    <string name="category_detail_delete_dialog_delete">Delete</string>
+    <string name="category_detail_delete_dialog_cancel">Cancel</string>
+    <string name="success_category_deleted">Category deleted</string>
+    <string name="error_delete_category_failed">Failed to delete category</string>
+
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Welcome to Caducity</string>
     <string name="onboarding_welcome_message">Track your groceries and reduce food waste</string>
