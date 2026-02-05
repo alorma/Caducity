@@ -15,6 +15,7 @@ import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -42,15 +43,24 @@ class CategoryDetailViewModel(
   private val _sideEffect = Channel<CategoryDetailSideEffect>(Channel.BUFFERED)
   val sideEffect: Flow<CategoryDetailSideEffect> = _sideEffect.receiveAsFlow()
 
+  private val suppressErrorsDuringRemoval = MutableStateFlow(false)
+
   val state: StateFlow<CategoryDetailState> = combine(
     obtainCategoryDetailUseCase.obtain(categoryId),
     calendarPreferences.state,
-  ) { result, calendarConfig ->
+    suppressErrorsDuringRemoval,
+  ) { result, calendarConfig, shouldSuppressErrors ->
     result.fold(
       onSuccess = { category ->
         categoryDetailMapper.mapToCategoryDetail(category, calendarConfig.firstDayOfWeek)
       },
-      onFailure = { CategoryDetailState.Error("Not found") },
+      onFailure = { error ->
+        if (shouldSuppressErrors) {
+          CategoryDetailState.Loading
+        } else {
+          CategoryDetailState.Error("Not found")
+        }
+      },
     )
   }.stateIn(
     viewModelScope,
@@ -160,10 +170,12 @@ class CategoryDetailViewModel(
 
   fun onDeleteCategory() {
     viewModelScope.launch {
+      suppressErrorsDuringRemoval.value = true
       val result = deleteCategoryUseCase.deleteCategory(categoryId)
       if (result.isSuccess) {
         emitSideEffect(CategoryDetailSideEffect.CategoryDeleted)
       } else {
+        suppressErrorsDuringRemoval.value = false
         emitSideEffect(CategoryDetailSideEffect.DeleteCategoryFailed)
       }
     }
