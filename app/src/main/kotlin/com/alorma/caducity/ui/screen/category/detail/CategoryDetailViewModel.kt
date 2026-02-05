@@ -8,6 +8,7 @@ import com.alorma.caducity.domain.model.InstanceActionResult
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
+import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase
@@ -35,6 +36,7 @@ class CategoryDetailViewModel(
   private val freezeItemUseCase: FreezeItemUseCase,
   private val deleteItemUseCase: DeleteItemUseCase,
   private val createProductUseCase: CreateProductUseCase,
+  private val deleteCategoryUseCase: DeleteCategoryUseCase,
 ) : ViewModel() {
 
   private val _sideEffect = Channel<CategoryDetailSideEffect>(Channel.BUFFERED)
@@ -148,6 +150,21 @@ class CategoryDetailViewModel(
         emitSideEffect(CategoryDetailSideEffect.ProductCreated)
       } else {
         emitSideEffect(CategoryDetailSideEffect.CreateProductFailed)
+      }
+    }
+  }
+
+  fun onDeleteCategoryClick() {
+    emitSideEffect(CategoryDetailSideEffect.ShowDeleteCategoryDialog)
+  }
+
+  fun onDeleteCategory() {
+    viewModelScope.launch {
+      val result = deleteCategoryUseCase.deleteCategory(categoryId)
+      if (result.isSuccess) {
+        emitSideEffect(CategoryDetailSideEffect.CategoryDeleted)
+      } else {
+        emitSideEffect(CategoryDetailSideEffect.DeleteCategoryFailed)
       }
     }
   }

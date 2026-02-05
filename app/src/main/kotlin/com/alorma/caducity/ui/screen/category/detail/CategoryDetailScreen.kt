@@ -66,6 +66,7 @@ fun CategoryDetailScreen(
   categoryId: String,
   onNavigateToAddInstance: (productId: String?) -> Unit,
   modifier: Modifier = Modifier,
+  onNavigateBack: (() -> Unit)? = null,
   viewModel: CategoryDetailViewModel = koinViewModel { parametersOf(categoryId) }
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
@@ -79,6 +80,7 @@ fun CategoryDetailScreen(
     snackbarState = snackbarState,
     dialogState = dialogState,
     bottomSheetState = bottomSheetState,
+    onNavigateBack = onNavigateBack,
   )
 
   when (val currentState = state.value) {
@@ -94,6 +96,7 @@ fun CategoryDetailScreen(
         onNavigateToAddInstance = onNavigateToAddInstance,
         onItemClick = viewModel::onItemClick,
         onShowAddProductDialog = viewModel::onShowAddProductDialog,
+        onDeleteCategoryClick = viewModel::onDeleteCategoryClick,
       )
     }
 
@@ -111,6 +114,7 @@ private fun CategoryDetailSuccessContent(
   onNavigateToAddInstance: (productId: String?) -> Unit,
   onItemClick: (ItemDetailUiModel) -> Unit,
   onShowAddProductDialog: () -> Unit,
+  onDeleteCategoryClick: () -> Unit,
 ) {
   val pagerState = rememberPagerState(pageCount = { state.productTabs.size })
   val coroutineScope = rememberCoroutineScope()
@@ -127,6 +131,14 @@ private fun CategoryDetailSuccessContent(
         ),
         title = { Text(text = state.category.name) },
         navigationIcon = { NavigationIcon() },
+        actions = {
+          IconButton(onClick = onDeleteCategoryClick) {
+            Icon(
+              imageVector = AppIcons.Delete,
+              contentDescription = stringResource(R.string.category_detail_action_delete),
+            )
+          }
+        },
       )
     },
     floatingActionButton = {
@@ -317,6 +329,7 @@ private fun SideEffectHandler(
   snackbarState: AppSnackbarState,
   dialogState: AppDialogState,
   bottomSheetState: AppBottomSheetState,
+  onNavigateBack: (() -> Unit)?,
 ) {
   LaunchedEffect(viewModel.sideEffect) {
     viewModel.sideEffect.collect { effect ->
@@ -461,6 +474,43 @@ private fun SideEffectHandler(
         CategoryDetailSideEffect.CreateProductFailed -> launch {
           snackbarState.showSnackbar(
             message = R.string.error_create_product_failed,
+            type = AppFeedbackType.Error,
+          )
+        }
+
+        CategoryDetailSideEffect.ShowDeleteCategoryDialog -> launch {
+          val result = dialogState.showAlertDialog(
+            title = AppFeedbackResource.AsResource(
+              R.string.category_detail_delete_dialog_title
+            ),
+            text = AppFeedbackResource.AsResource(
+              R.string.category_detail_delete_dialog_message
+            ),
+            type = AppFeedbackType.Error,
+            positiveButton = AppFeedbackResource.AsResource(
+              R.string.category_detail_delete_dialog_delete
+            ),
+            negativeButton = AppFeedbackResource.AsResource(
+              R.string.category_detail_delete_dialog_cancel
+            ),
+          )
+          if (result == DialogResult.Positive) {
+            viewModel.onDeleteCategory()
+          }
+        }
+
+        CategoryDetailSideEffect.CategoryDeleted -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.success_category_deleted,
+            type = AppFeedbackType.Success,
+          )
+          // Navigate back after successful deletion
+          onNavigateBack?.invoke()
+        }
+
+        CategoryDetailSideEffect.DeleteCategoryFailed -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.error_delete_category_failed,
             type = AppFeedbackType.Error,
           )
         }

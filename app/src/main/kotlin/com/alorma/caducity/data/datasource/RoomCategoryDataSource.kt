@@ -71,6 +71,10 @@ class RoomCategoryDataSource(
     itemDao.deleteItem(itemId)
   }
 
+  override suspend fun deleteCategory(categoryId: String) {
+    categoryDao.deleteCategory(categoryId)
+  }
+
   override suspend fun getItem(itemId: String): Item? {
     return itemDao.getItem(itemId)?.let { mapper.mapItemToModel(it) }
   }
