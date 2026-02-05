@@ -18,6 +18,8 @@ interface CategoryDataSource {
 
   suspend fun deleteItem(itemId: String)
 
+  suspend fun deleteCategory(categoryId: String)
+
   suspend fun getItem(itemId: String): Item?
 
   suspend fun markItemAsConsumed(itemId: String)
