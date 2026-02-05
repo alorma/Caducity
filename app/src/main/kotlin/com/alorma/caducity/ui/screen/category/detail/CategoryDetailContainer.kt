@@ -41,7 +41,6 @@ fun CategoryDetailContainer(
           onNavigateToAddInstance = { productId ->
             productDetailBackStack.add(CategoryDetailRoutes.AddInstance(categoryId, productId))
           },
-          onNavigateBack = onBack,
         )
       }
       entry<CategoryDetailRoutes.AddInstance> {
