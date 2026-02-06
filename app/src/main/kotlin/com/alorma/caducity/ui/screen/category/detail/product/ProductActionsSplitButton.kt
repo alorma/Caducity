@@ -29,6 +29,7 @@ import com.alorma.caducity.base.ui.icons.ArrowDown
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.filled.Broom
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.light
 
 @Composable
 fun ProductActionsSplitButton(
@@ -42,9 +43,9 @@ fun ProductActionsSplitButton(
   val buttonColors = ButtonDefaults.filledTonalButtonColors()
 
   SplitButtonLayout(
-    modifier = modifier.heightIn(size),
     leadingButton = {
       SplitButtonDefaults.LeadingButton(
+        modifier = modifier.heightIn(size),
         colors = buttonColors,
         shapes = SplitButtonDefaults.leadingButtonShapesFor(size),
         contentPadding = SplitButtonDefaults.leadingButtonContentPaddingFor(size),
@@ -52,7 +53,7 @@ fun ProductActionsSplitButton(
       ) {
         Text(
           text = stringResource(R.string.category_detail_add_item_button),
-          style = ButtonDefaults.textStyleFor(size)
+          style = ButtonDefaults.textStyleFor(size).light(),
         )
       }
     },

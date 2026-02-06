@@ -379,7 +379,7 @@ private fun SideEffectHandler(
             text = AppFeedbackResource.AsResource(
               R.string.category_detail_delete_dialog_message
             ),
-            type = AppFeedbackType.Error,
+            type = AppFeedbackType.Info,
             positiveButton = AppFeedbackResource.AsResource(
               R.string.category_detail_delete_dialog_delete
             ),
