@@ -2,11 +2,8 @@ package com.alorma.caducity.ui.screen.category.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alorma.caducity.domain.model.ProductDeletionStrategy
-import com.alorma.caducity.domain.usecase.ClearProductItemsUseCase
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
-import com.alorma.caducity.domain.usecase.DeleteProductUseCase
 import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.Job
@@ -28,9 +25,7 @@ class CategoryDetailViewModel(
   categoryDetailMapper: CategoryDetailMapper,
   calendarPreferences: CalendarPreferences,
   private val createProductUseCase: CreateProductUseCase,
-  private val deleteProductUseCase: DeleteProductUseCase,
   private val deleteCategoryUseCase: DeleteCategoryUseCase,
-  private val clearProductItemsUseCase: ClearProductItemsUseCase,
 ) : ViewModel() {
 
   private val _sideEffect = Channel<CategoryDetailSideEffect>(Channel.BUFFERED)
@@ -73,72 +68,6 @@ class CategoryDetailViewModel(
         emitSideEffect(CategoryDetailSideEffect.ProductCreated)
       } else {
         emitSideEffect(CategoryDetailSideEffect.CreateProductFailed)
-      }
-    }
-  }
-
-  fun onDeleteProductClick(productId: String) {
-    viewModelScope.launch {
-      val activeItemCount = deleteProductUseCase.getActiveItemCount(productId)
-      if (activeItemCount > 0) {
-        // Get available products from current state
-        val currentState = state.value
-        val availableProducts = if (currentState is CategoryDetailState.Success) {
-          currentState.productTabs.filter { it.id != null && it.id != productId }
-        } else {
-          emptyList()
-        }
-        emitSideEffect(
-          CategoryDetailSideEffect.ShowDeleteProductWithItemsDialog(
-            productId = productId,
-            activeItemCount = activeItemCount,
-            availableProducts = availableProducts,
-            onDeleteProduct = ::onDeleteProduct,
-          )
-        )
-      } else {
-        emitSideEffect(
-          CategoryDetailSideEffect.ShowDeleteProductDialog(
-            productId,
-            onDeleteProduct = ::onDeleteProduct,
-          )
-        )
-      }
-    }
-  }
-
-  fun onDeleteProduct(productId: String, strategy: ProductDeletionStrategy) {
-    viewModelScope.launch {
-      val result = deleteProductUseCase.delete(productId, strategy)
-      if (result.isSuccess) {
-        emitSideEffect(CategoryDetailSideEffect.ProductDeleted)
-      } else {
-        emitSideEffect(CategoryDetailSideEffect.DeleteProductFailed)
-      }
-    }
-  }
-
-  fun onClearProductItemsClick(productId: String?) {
-    emitSideEffect(
-      CategoryDetailSideEffect.ShowClearProductItemsDialog(
-        productId = productId,
-        onClearProductItems = ::onClearProductItems,
-      )
-    )
-  }
-
-  private fun onClearProductItems(productId: String?, clearAll: Boolean) {
-    viewModelScope.launch {
-      val result = if (clearAll) {
-        clearProductItemsUseCase.clearAllItems(categoryId, productId)
-      } else {
-        clearProductItemsUseCase.clearConsumedItems(categoryId, productId)
-      }
-
-      if (result.isSuccess) {
-        emitSideEffect(CategoryDetailSideEffect.ItemsCleared)
-      } else {
-        emitSideEffect(CategoryDetailSideEffect.ClearItemsFailed)
       }
     }
   }

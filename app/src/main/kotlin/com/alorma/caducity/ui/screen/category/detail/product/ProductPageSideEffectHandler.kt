@@ -4,22 +4,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
+import com.alorma.caducity.domain.model.ProductDeletionStrategy
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.bottomsheet.LocalAppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
-import com.alorma.caducity.ui.components.feedback.dialog.LocalAppDialogState
-import com.alorma.caducity.ui.components.feedback.snackbar.LocalAppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun ProductPageSideEffectHandler(
   viewModel: ProductPageViewModel,
+  dialogState: AppDialogState,
+  snackbarState: AppSnackbarState,
+  bottomSheetState: AppBottomSheetState,
+  onNavigateToAddItem: (categoryId: String, productId: String?) -> Unit,
 ) {
-  val dialogState = LocalAppDialogState.current
-  val snackbarState = LocalAppSnackbarState.current
-  val bottomSheetState = LocalAppBottomSheetState.current
-
   LaunchedEffect(viewModel.sideEffect) {
     viewModel.sideEffect.collect { effect ->
       when (effect) {
@@ -128,6 +129,108 @@ internal fun ProductPageSideEffectHandler(
               viewModel.onDeleteItem(effect.item)
             },
           )
+        }
+
+        // Product-level success events
+        ProductPageSideEffect.ProductDeleted -> launch {
+          bottomSheetState.hide()
+          snackbarState.showSnackbar(
+            message = R.string.success_product_deleted,
+            type = AppFeedbackType.Success,
+          )
+        }
+
+        ProductPageSideEffect.ItemsCleared -> launch {
+          bottomSheetState.hide()
+          snackbarState.showSnackbar(
+            message = R.string.success_items_cleared,
+            type = AppFeedbackType.Success,
+          )
+        }
+
+        // Product-level error events
+        ProductPageSideEffect.DeleteProductFailed -> launch {
+          bottomSheetState.hide()
+          snackbarState.showSnackbar(
+            message = R.string.error_delete_product_failed,
+            type = AppFeedbackType.Error,
+          )
+        }
+
+        ProductPageSideEffect.ClearItemsFailed -> launch {
+          bottomSheetState.hide()
+          snackbarState.showSnackbar(
+            message = R.string.error_clear_items_failed,
+            type = AppFeedbackType.Error,
+          )
+        }
+
+        // Product-level dialog events
+        is ProductPageSideEffect.ShowDeleteProductDialog -> launch {
+          val result = dialogState.showAlertDialog(
+            title = AppFeedbackResource.AsResource(
+              R.string.product_delete_dialog_title
+            ),
+            text = AppFeedbackResource.AsResource(
+              R.string.product_delete_dialog_message
+            ),
+            type = AppFeedbackType.Error,
+            positiveButton = AppFeedbackResource.AsResource(
+              R.string.product_delete_dialog_delete
+            ),
+            negativeButton = AppFeedbackResource.AsResource(
+              R.string.product_delete_dialog_cancel
+            ),
+          )
+          if (result == DialogResult.Positive) {
+            effect.onDeleteProduct(
+              effect.productId,
+              ProductDeletionStrategy.CascadeDelete,
+            )
+          }
+        }
+
+        is ProductPageSideEffect.ShowDeleteProductWithItemsDialog -> {
+          bottomSheetState.showDeleteProductWithItemsBottomSheet(
+            coroutineScope = this,
+            itemCount = effect.activeItemCount,
+            availableProducts = effect.availableProducts,
+            onMoveToStandalone = {
+              effect.onDeleteProduct(
+                effect.productId,
+                ProductDeletionStrategy.MoveToStandalone,
+              )
+            },
+            onMoveToProduct = { targetProductId ->
+              effect.onDeleteProduct(
+                effect.productId,
+                ProductDeletionStrategy.MoveToProduct(targetProductId),
+              )
+            },
+            onCascadeDelete = {
+              effect.onDeleteProduct(
+                effect.productId,
+                ProductDeletionStrategy.CascadeDelete,
+              )
+            },
+          )
+        }
+
+        is ProductPageSideEffect.ShowClearProductItemsDialog -> {
+          bottomSheetState.showClearItemsBottomSheet(
+            coroutineScope = this,
+            onClearConsumed = {
+              effect.onClearProductItems(effect.productId, false)
+            },
+            onClearAll = {
+              effect.onClearProductItems(effect.productId, true)
+            },
+          )
+        }
+
+        // Navigation events
+        is ProductPageSideEffect.NavigateToAddItem -> {
+          onNavigateToAddItem(effect.categoryId, effect.productId)
         }
       }
     }

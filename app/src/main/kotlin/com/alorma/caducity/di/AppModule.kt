@@ -81,8 +81,6 @@ val appModule = module {
   singleOf(::AddItemToCategoryUseCase)
   singleOf(::DeleteItemUseCase)
   singleOf(::DeleteCategoryUseCase)
-  singleOf(::DeleteProductUseCase)
-  singleOf(::ClearProductItemsUseCase)
   singleOf(::ConsumeItemUseCase)
   singleOf(::FreezeItemUseCase)
   singleOf(::CategoryDetailMapper)
@@ -92,6 +90,8 @@ val appModule = module {
   // Product page
   factoryOf(::GetProductItemsUseCase)
   factoryOf(::ProductPageMapper)
+  factoryOf(::DeleteProductUseCase)
+  factoryOf(::ClearProductItemsUseCase)
   viewModelOf(::ProductPageViewModel)
 
   // Create category
