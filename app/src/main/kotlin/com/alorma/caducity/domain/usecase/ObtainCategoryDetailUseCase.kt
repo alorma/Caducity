@@ -3,10 +3,10 @@ package com.alorma.caducity.domain.usecase
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.CategoryDataSource
+import com.alorma.caducity.domain.model.CalendarData
 import com.alorma.caducity.domain.model.CategoryDetail
+import com.alorma.caducity.domain.model.DateStatus
 import com.alorma.caducity.domain.model.ItemStatus
-import com.alorma.caducity.domain.model.ProductDatedItems
-import com.alorma.caducity.domain.model.ProductItem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDate
@@ -29,19 +29,14 @@ class ObtainCategoryDetailUseCase(
           it.status != ItemStatus.Frozen && it.status != ItemStatus.Consumed
         }
 
-        // Group items by date for calendar
-        val calendarData: List<ProductDatedItems> = allActiveItems
+        // Group items by date for calendar - only dates, statuses, and counts
+        val dateStatuses = allActiveItems
           .groupBy { it.expirationDate.date() }
           .map { (date, items) ->
-            ProductDatedItems(
+            DateStatus(
               date = date,
               status = calculateStatus(date),
-              items = items.map { item ->
-                ProductItem(
-                  id = item.id,
-                  name = item.identifier.takeIf { it.isNotEmpty() } ?: "",
-                )
-              },
+              itemCount = items.size,
             )
           }
           .sortedBy { it.date }
@@ -49,7 +44,7 @@ class ObtainCategoryDetailUseCase(
         CategoryDetail(
           category = categoryWithItems.category,
           products = categoryWithItems.products.map { it.product },
-          calendarData = calendarData,
+          calendarData = CalendarData(dateStatuses = dateStatuses),
         )
       }
     }

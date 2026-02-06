@@ -47,25 +47,18 @@ class CategoryDetailMapper(
 
     val today = appClock.nowDate()
 
-    // Build calendar from calendar data
-    val calendarDatedContent = categoryDetail.calendarData.map { datedItems ->
+    // Build calendar from calendar data (dates and statuses only, no items)
+    val calendarDatedContent = categoryDetail.calendarData.dateStatuses.map { dateStatus ->
       DateItemsUiModel(
-        text = relativeTimeFormatter.format(today, datedItems.date),
-        status = datedItems.status,
-        date = datedItems.date,
-        items = datedItems.items.map { item ->
-          ItemDetailUiModel(
-            id = item.id,
-            expirationDate = datedItems.date,
-            status = datedItems.status,
-            text = item.name,
-          )
-        }.toImmutableList(),
+        text = relativeTimeFormatter.format(today, dateStatus.date),
+        status = dateStatus.status,
+        date = dateStatus.date,
+        items = kotlinx.collections.immutable.persistentListOf(), // Empty - calendar doesn't need item details
       )
     }.toImmutableList()
 
-    val startDate = categoryDetail.calendarData.minOfOrNull { it.date } ?: today
-    val endDate = categoryDetail.calendarData.maxOfOrNull { it.date } ?: today
+    val startDate = categoryDetail.calendarData.dateStatuses.minOfOrNull { it.date } ?: today
+    val endDate = categoryDetail.calendarData.dateStatuses.maxOfOrNull { it.date } ?: today
 
     val appCalendarConfig = appCalendarConfigMapper.createWithDatedContent(
       startDate = startDate,
