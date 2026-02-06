@@ -13,12 +13,15 @@ import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -43,23 +46,16 @@ class CategoryDetailViewModel(
   private val _sideEffect = Channel<CategoryDetailSideEffect>(Channel.BUFFERED)
   val sideEffect: Flow<CategoryDetailSideEffect> = _sideEffect.receiveAsFlow()
 
-  private val suppressErrorsDuringRemoval = MutableStateFlow(false)
-
-  val state: StateFlow<CategoryDetailState> = combine(
+  private val customState: StateFlow<CategoryDetailState> = combine(
     obtainCategoryDetailUseCase.obtain(categoryId),
     calendarPreferences.state,
-    suppressErrorsDuringRemoval,
-  ) { result, calendarConfig, shouldSuppressErrors ->
+  ) { result, calendarConfig ->
     result.fold(
       onSuccess = { category ->
         categoryDetailMapper.mapToCategoryDetail(category, calendarConfig.firstDayOfWeek)
       },
       onFailure = { _ ->
-        if (shouldSuppressErrors) {
-          CategoryDetailState.Loading
-        } else {
-          CategoryDetailState.Error("Not found")
-        }
+        CategoryDetailState.Error("Not found")
       },
     )
   }.stateIn(
@@ -67,6 +63,14 @@ class CategoryDetailViewModel(
     started = SharingStarted.WhileSubscribed(5000),
     initialValue = CategoryDetailState.Loading
   )
+
+  val state: MutableStateFlow<CategoryDetailState> = MutableStateFlow(CategoryDetailState.Loading)
+
+  var job: Job? = null
+
+  init {
+    job = customState.onEach { detailState -> state.emit(detailState) }.launchIn(viewModelScope)
+  }
 
   fun onConsumeItem(item: ItemDetailUiModel) {
     when (item.status) {
@@ -170,7 +174,7 @@ class CategoryDetailViewModel(
 
   fun onDeleteCategory() {
     viewModelScope.launch {
-      suppressErrorsDuringRemoval.value = true
+      job?.cancel()
       try {
         val result = deleteCategoryUseCase.deleteCategory(categoryId)
         if (result.isSuccess) {
@@ -178,10 +182,9 @@ class CategoryDetailViewModel(
         } else {
           emitSideEffect(CategoryDetailSideEffect.DeleteCategoryFailed)
         }
-      } catch (exception: Exception) {
+      } catch (_: Exception) {
+        job?.join()
         emitSideEffect(CategoryDetailSideEffect.DeleteCategoryFailed)
-      } finally {
-        suppressErrorsDuringRemoval.value = false
       }
     }
   }

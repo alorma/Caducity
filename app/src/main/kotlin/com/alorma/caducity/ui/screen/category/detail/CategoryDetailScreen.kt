@@ -500,10 +500,6 @@ private fun SideEffectHandler(
         }
 
         CategoryDetailSideEffect.CategoryDeleted -> launch {
-          snackbarState.showSnackbar(
-            message = R.string.success_category_deleted,
-            type = AppFeedbackType.Success,
-          )
           // Navigate back after successful deletion
           backDispatcher?.onBackPressedDispatcher?.onBackPressed()
         }
