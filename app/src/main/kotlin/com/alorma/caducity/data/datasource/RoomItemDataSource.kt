@@ -2,7 +2,7 @@ package com.alorma.caducity.data.datasource
 
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.data.datasource.room.AppDatabase
-import com.alorma.caducity.data.datasource.room.RoomEntityMapper
+import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.domain.ItemDataSource
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.NewItem
@@ -12,7 +12,7 @@ import kotlin.time.Duration.Companion.days
 class RoomItemDataSource(
   database: AppDatabase,
   private val appClock: AppClock,
-  private val mapper: RoomEntityMapper,
+  private val itemMapper: ItemRoomMapper,
 ) : ItemDataSource {
 
   private val itemDao = database.itemDao()
@@ -24,7 +24,7 @@ class RoomItemDataSource(
     val id = UUID.randomUUID().toString()
 
     itemDao.insertItem(
-      mapper.mapNewItemToEntity(item, id = id, categoryId = categoryId),
+      itemMapper.toEntity(item, id = id, categoryId = categoryId),
     )
     return id
   }
@@ -34,7 +34,9 @@ class RoomItemDataSource(
   }
 
   override suspend fun getItem(itemId: String): Item? {
-    return itemDao.getItem(itemId)?.let { mapper.mapItemToModel(it) }
+    return itemDao.getItem(itemId)?.let { itemEntity ->
+      itemMapper.toModel(itemEntity)
+    }
   }
 
   override suspend fun markItemAsConsumed(itemId: String) {
