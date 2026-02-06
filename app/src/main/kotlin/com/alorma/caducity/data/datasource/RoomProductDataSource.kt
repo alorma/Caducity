@@ -18,6 +18,7 @@ class RoomProductDataSource(
 ) : ProductDataSource {
 
   private val productDao = database.productDao()
+  private val itemDao = database.itemDao()
 
   override fun getProductsByCategory(categoryId: String): Flow<ImmutableList<Product>> {
     return productDao.getProductsByCategory(categoryId)
@@ -48,5 +49,14 @@ class RoomProductDataSource(
 
   override suspend fun getActiveItemCount(productId: String): Int {
     return productDao.getActiveItemCount(productId)
+  }
+
+  override suspend fun moveItemsToProduct(fromProductId: String, toProductId: String?) {
+    itemDao.moveItemsToProduct(fromProductId, toProductId)
+  }
+
+  override suspend fun getProduct(productId: String): Product? {
+    val entity = productDao.getProduct(productId)
+    return entity?.let { productMapper.toModel(it) }
   }
 }

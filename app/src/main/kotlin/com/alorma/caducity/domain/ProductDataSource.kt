@@ -13,4 +13,8 @@ interface ProductDataSource {
   suspend fun deleteProduct(productId: String)
 
   suspend fun getActiveItemCount(productId: String): Int
+
+  suspend fun moveItemsToProduct(fromProductId: String, toProductId: String?)
+
+  suspend fun getProduct(productId: String): Product?
 }
