@@ -69,7 +69,9 @@ class CategoryDetailMapper(
       today = today,
       category = categoryUiModel,
       appCalendarConfig = appCalendarConfig,
-      productTabs = productTabs.sortedBy { it.name }.toImmutableList(),
+      productTabs = productTabs.sortedWith(
+        compareBy({ it.id == null }, { it.name })
+      ).toImmutableList(),
     )
   }
 }
