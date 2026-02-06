@@ -56,6 +56,9 @@ class CaducityApplication : Application() {
     // Initialize Firebase (must be done before using Firebase services)
     Firebase.initialize(this)
 
+    // Initialize Firebase Crashlytics
+    // Crashlytics is automatically initialized by Firebase
+
     // Initialize Firebase App Check
     val appCheckProvider = if (BuildConfig.DEBUG) {
       val storageHelper = StorageHelper(
