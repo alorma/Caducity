@@ -13,7 +13,6 @@ class ThemePreferencesImpl(private val settings: Settings) : ThemePreferences {
 
   override val themeMode = mutableStateOf(loadThemeMode())
   override val useDynamicColors = mutableStateOf(loadUseDynamicColors())
-  override val useAppFonts: MutableState<Boolean> = mutableStateOf(true)
 
   override fun loadThemeMode(): ThemeMode {
     val savedValue = settings.getStringOrNull(KEY_THEME_MODE)

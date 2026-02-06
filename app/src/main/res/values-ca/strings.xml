@@ -88,6 +88,11 @@
     <string name="settings_group_notifications">Notificacions</string>
     <string name="settings_enable_notifications">Activar notificacions</string>
 
+    <!-- About section -->
+    <string name="about_version">Versió</string>
+    <string name="about_developer">Desenvolupador</string>
+    <string name="about_github_link">Veure a GitHub</string>
+
     <string name="create_category_screen_title">Crear Categoria</string>
     <string name="create_category_name_label">Nom de la Categoria</string>
     <string name="create_category_name_placeholder">Introdueix el nom de la categoria</string>
@@ -225,6 +230,19 @@
     <string name="product_delete_dialog_cancel">Cancel·lar</string>
     <string name="success_product_deleted">Producte eliminat</string>
     <string name="error_delete_product_failed">Error en eliminar producte</string>
+
+    <!-- Product deletion with items -->
+    <string name="product_delete_with_items_title">Eliminar Producte amb %1$d Elements?</string>
+    <string name="product_delete_with_items_message">Aquest producte té elements actius. Tria què fer amb ells:</string>
+    <string name="product_delete_option_move_to_standalone">Moure a \"Altres\"</string>
+    <string name="product_delete_option_move_to_standalone_desc">Els elements es convertiran en elements independents a la pestanya \"Altres\"</string>
+    <string name="product_delete_option_move_to_product">Moure a Un Altre Producte</string>
+    <string name="product_delete_option_move_to_product_desc">Seleccionar un producte per transferir tots els elements</string>
+    <string name="product_delete_option_cascade_delete">Eliminar Elements</string>
+    <string name="product_delete_option_cascade_delete_desc">Eliminar permanentment tots els elements amb aquest producte</string>
+    <string name="product_delete_select_target_title">Seleccionar Producte de Destí</string>
+    <string name="product_delete_select_target_message">Tots els %1$d elements es mouran al producte seleccionat:</string>
+    <string name="product_delete_select_target_back">Enrere</string>
 
     <!-- Clear items -->
     <string name="success_items_cleared">Elements netejats</string>

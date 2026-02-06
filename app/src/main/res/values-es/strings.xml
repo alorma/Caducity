@@ -87,6 +87,11 @@
     <string name="settings_group_notifications">Notificaciones</string>
     <string name="settings_enable_notifications">Activar notificaciones</string>
 
+    <!-- About section -->
+    <string name="about_version">Versión</string>
+    <string name="about_developer">Desarrollador</string>
+    <string name="about_github_link">Ver en GitHub</string>
+
     <string name="create_category_screen_title">Crear Categoría</string>
     <string name="create_category_name_label">Nombre de la Categoría</string>
     <string name="create_category_name_placeholder">Introduce el nombre de la categoría</string>
@@ -224,6 +229,19 @@
     <string name="product_delete_dialog_cancel">Cancelar</string>
     <string name="success_product_deleted">Producto eliminado</string>
     <string name="error_delete_product_failed">Error al eliminar producto</string>
+
+    <!-- Product deletion with items -->
+    <string name="product_delete_with_items_title">¿Eliminar Producto con %1$d Elementos?</string>
+    <string name="product_delete_with_items_message">Este producto tiene elementos activos. Elige qué hacer con ellos:</string>
+    <string name="product_delete_option_move_to_standalone">Mover a \"Otros\"</string>
+    <string name="product_delete_option_move_to_standalone_desc">Los elementos se convertirán en elementos independientes en la pestaña \"Otros\"</string>
+    <string name="product_delete_option_move_to_product">Mover a Otro Producto</string>
+    <string name="product_delete_option_move_to_product_desc">Seleccionar un producto para transferir todos los elementos</string>
+    <string name="product_delete_option_cascade_delete">Eliminar Elementos</string>
+    <string name="product_delete_option_cascade_delete_desc">Eliminar permanentemente todos los elementos con este producto</string>
+    <string name="product_delete_select_target_title">Seleccionar Producto de Destino</string>
+    <string name="product_delete_select_target_message">Todos los %1$d elementos se moverán al producto seleccionado:</string>
+    <string name="product_delete_select_target_back">Atrás</string>
 
     <!-- Clear items -->
     <string name="success_items_cleared">Elementos limpiados</string>

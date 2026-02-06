@@ -82,7 +82,7 @@ fun AppThemeContent(
 
   MaterialExpressiveTheme(
     colorScheme = colorScheme,
-    typography = caducityTypography(themePreferences.useAppFonts.value),
+    typography = caducityTypography(),
     motionScheme = MotionScheme.expressive(),
     content = {
       InternalTheme(
