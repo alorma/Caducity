@@ -37,6 +37,7 @@ fun ProductActionsSplitButton(
   onClearItems: () -> Unit,
   onDeleteProduct: (() -> Unit)?,
   modifier: Modifier = Modifier,
+  hasItems: Boolean = true,
 ) {
   val checked = remember { mutableStateOf(false) }
   val size = SplitButtonDefaults.MediumContainerHeight
@@ -97,20 +98,22 @@ fun ProductActionsSplitButton(
           expanded = checked.value,
           onDismissRequest = { checked.value = false }
         ) {
-          // Clear items option (always shown)
-          DropdownMenuItem(
-            text = { Text(stringResource(R.string.product_clear_items_action)) },
-            onClick = {
-              checked.value = false
-              onClearItems()
-            },
-            leadingIcon = {
-              Icon(
-                imageVector = AppIcons.Outlined.Broom,
-                contentDescription = null,
-              )
-            }
-          )
+          // Clear items option (only shown if there are items)
+          if (hasItems) {
+            DropdownMenuItem(
+              text = { Text(stringResource(R.string.product_clear_items_action)) },
+              onClick = {
+                checked.value = false
+                onClearItems()
+              },
+              leadingIcon = {
+                Icon(
+                  imageVector = AppIcons.Outlined.Broom,
+                  contentDescription = null,
+                )
+              }
+            )
+          }
 
           // Delete product option (only if onDeleteProduct is not null)
           if (onDeleteProduct != null) {

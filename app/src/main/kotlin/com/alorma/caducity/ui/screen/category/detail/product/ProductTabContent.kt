@@ -79,12 +79,23 @@ fun ProductTabContent(
     snackbarState = snackbarState,
     bottomSheetState = bottomSheetState,
     floatingActionButton = {
+      // Calculate if there are any items in the product
+      val hasItems = when (val currentState = state) {
+        is ProductPageState.Success -> {
+          currentState.datedItemsGroups.isNotEmpty() ||
+            currentState.frozenItems.isNotEmpty() ||
+            currentState.consumedItems.isNotEmpty()
+        }
+        else -> false
+      }
+
       ProductActionsSplitButton(
         onAddItem = viewModel::onAddItemClick,
         onClearItems = viewModel::onClearProductItemsClick,
         onDeleteProduct = if (productTab.id != null) {
           { viewModel.onDeleteProductClick() }
-        } else null
+        } else null,
+        hasItems = hasItems,
       )
     }
   ) { paddingValues ->
