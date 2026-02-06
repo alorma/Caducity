@@ -1,11 +1,14 @@
-# Firebase Setup for Fake Data Generation
+# Firebase Setup for Caducity
 
-This document explains how to set up Firebase Vertex AI for the AI-powered fake data generation feature.
+This document explains how to set up Firebase services used by the Caducity app:
+- **Crashlytics**: Crash reporting and analytics
+- **Vertex AI**: AI-powered fake data generation feature
 
 ## Prerequisites
 
 1. A Firebase project (create one at https://console.firebase.google.com/)
-2. Vertex AI API enabled in your Firebase project
+2. For Vertex AI: Vertex AI API enabled in your Firebase project
+3. For Crashlytics: Crashlytics enabled in your Firebase project
 
 ## Step 1: Create/Configure Firebase Project
 
@@ -25,14 +28,45 @@ This document explains how to set up Firebase Vertex AI for the AI-powered fake 
    app/google-services.json
    ```
 
-## Step 3: Enable Vertex AI
+## Step 3: Enable Firebase Crashlytics
+
+Firebase Crashlytics is already integrated in the app for crash reporting and analytics.
+
+1. In Firebase Console, navigate to "Build" → "Crashlytics"
+2. Click "Get Started" if not already enabled
+3. The app will automatically start sending crash reports once built and run
+
+### Testing Crashlytics Integration
+
+To verify Crashlytics is working:
+
+1. Build and install the app: `./gradlew installDebug`
+2. Run the app on a device or emulator
+3. Force a test crash (add a button that throws an exception for testing)
+4. Restart the app (crashes are sent on next app launch)
+5. Check Firebase Console → Crashlytics for the crash report
+
+### Build Configuration
+
+The app is configured to:
+- **Debug builds**: Include Crashlytics but don't require mapping file upload
+- **Release builds**: Include Crashlytics with ProGuard/R8 mapping files for stack trace deobfuscation
+- **CI/CD**: GitHub Actions automatically uploads mapping files during release builds
+
+### Mapping File Upload
+
+ProGuard/R8 mapping files are automatically uploaded to Firebase Crashlytics during release builds in CI/CD environments (when `GITHUB_ACTIONS` environment variable is present). This allows Firebase to deobfuscate stack traces from minified release builds.
+
+For local release builds without network access, the upload task may fail but the build will still succeed. The mapping files are generated locally and can be uploaded manually if needed.
+
+## Step 4: Enable Vertex AI
 
 1. In Firebase Console, navigate to "Build" → "Vertex AI in Firebase"
 2. Click "Get Started" if not already enabled
 3. Accept terms and enable the Vertex AI API
 4. The gemini-1.5-flash model should be available by default
 
-## Step 4: Create Vertex AI Prompt Templates
+## Step 5: Create Vertex AI Prompt Templates
 
 The app uses two prompt templates for AI-powered features:
 
@@ -64,7 +98,7 @@ This template generates variants and instances for an existing product from the 
 
 **Important**: Template IDs must match exactly as specified above, as the code references them by these IDs.
 
-## Step 5: Verify Setup
+## Step 6: Verify Setup
 
 Build the project:
 ```bash
@@ -74,6 +108,17 @@ Build the project:
 If the build succeeds, Firebase is properly configured.
 
 ## Using the Features
+
+### Firebase Crashlytics
+
+Crashlytics works automatically once the app is installed and running:
+
+1. Crash reports are automatically collected when the app crashes
+2. Reports are sent to Firebase on the next app launch
+3. View crash reports in Firebase Console → Crashlytics
+4. Stack traces are automatically deobfuscated for release builds
+
+### AI-Powered Features
 
 ### AI-Powered Product Generation (Dashboard)
 
@@ -123,25 +168,43 @@ If the build succeeds, Firebase is properly configured.
 
 - The `google-services.json` file contains API keys
 - These keys are restricted to your app's package name in Firebase Console
-- Consider adding `app/google-services.json` to `.gitignore` for open-source projects
-- Provide a sample template file (`google-services.json.template`) instead
+- The file is already in `.gitignore` to prevent accidental commits
+- Firebase Crashlytics automatically collects crash reports but does NOT collect personally identifiable information (PII) by default
+- Review the [Firebase Crashlytics Privacy Policy](https://firebase.google.com/terms/crashlytics) for more information
 
 ## Cost
 
-Firebase Vertex AI (Gemini) pricing:
+**Firebase Crashlytics:**
+- Completely free with no quotas or limits
+- Includes unlimited crash reports and analytics
+
+**Firebase Vertex AI (Gemini):**
 - Free tier: Generous quotas for development/testing
 - Pay-as-you-go after free tier
 - gemini-1.5-flash is optimized for low cost
 
 Check current pricing: https://firebase.google.com/pricing
 
-## Alternative: Disable Feature
+## Features Included
 
-If you don't want to use Firebase, you can temporarily disable the fake data feature by removing the google-services plugin from `app/build.gradle.kts`:
+### Always Active (Required)
+- **Crashlytics**: Crash reporting and analytics - always enabled when Firebase is configured
+
+### Optional Features
+- **Vertex AI**: AI-powered fake data generation - only used when explicitly requested by user
+
+## Alternative: Disable Firebase
+
+If you don't want to use Firebase at all, you can disable it by removing the plugins from `app/build.gradle.kts`:
 
 ```kotlin
-// Comment out this line:
+// Comment out these lines:
 // alias(libs.plugins.google.services)
+// alias(libs.plugins.firebase.crashlytics)
 ```
 
-The app will build but the "Generate Fake Data" button will show a Firebase configuration error when clicked.
+**Note**: 
+- The app will still build without Firebase
+- Crashlytics will be disabled (no crash reports)
+- The "Generate Fake Data" feature will show a Firebase configuration error when clicked
+- You'll also need to remove or comment out the Firebase dependencies in `app/build.gradle.kts`

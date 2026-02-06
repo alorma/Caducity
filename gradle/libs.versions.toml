@@ -40,6 +40,7 @@ materialKolor = "5.0.0-alpha06"
 scanEngine = "1.6.2"
 
 googleServices = "4.4.4"
+firebaseCrashlytics = "3.0.2"
 
 strikt = "0.35.1"
 timber = "5.0.1"
@@ -120,6 +121,7 @@ firebase-ai = { group = "com.google.firebase", name = "firebase-ai" }
 firebase-appcheck = { group = "com.google.firebase", name = "firebase-appcheck" }
 firebase-appcheck-playintegrity = { group = "com.google.firebase", name = "firebase-appcheck-playintegrity" }
 firebase-appcheck-debug = { group = "com.google.firebase", name = "firebase-appcheck-debug" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 
 # Plugins
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
@@ -135,3 +137,4 @@ jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serializati
 google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 compose-screenshot = { id = "com.android.compose.screenshot", version.ref = "compose-screenshot-testing" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
