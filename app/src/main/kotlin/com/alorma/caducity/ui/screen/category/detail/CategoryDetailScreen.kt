@@ -1,8 +1,8 @@
 package com.alorma.caducity.ui.screen.category.detail
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,10 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SecondaryScrollableTabRow
@@ -38,6 +36,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.domain.model.ProductDeletionStrategy
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
@@ -52,10 +51,14 @@ import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.category.detail.product.ProductTabContent
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
@@ -439,100 +442,120 @@ private fun AppBottomSheetState.showDeleteProductWithItemsBottomSheet(
   coroutineScope.launch {
     show {
       Column(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(16.dp)
+        modifier = Modifier.fillMaxWidth()
       ) {
         if (!showProductSelection) {
           // Main options screen
-          Text(
-            text = stringResource(R.string.product_delete_with_items_title, itemCount),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
-          )
-
-          Text(
-            text = stringResource(R.string.product_delete_with_items_message),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 24.dp)
-          )
-
-          // Option 1: Move to standalone items
-          ListItem(
-            headlineContent = { Text(stringResource(R.string.product_delete_option_move_to_standalone)) },
-            supportingContent = { Text(stringResource(R.string.product_delete_option_move_to_standalone_desc)) },
-            modifier = Modifier.clickable {
-              onMoveToStandalone()
-            }
-          )
-
-          HorizontalDivider()
-
-          // Option 2: Move to another product (only if there are other products)
-          if (availableProducts.isNotEmpty()) {
-            ListItem(
-              headlineContent = { Text(stringResource(R.string.product_delete_option_move_to_product)) },
-              supportingContent = { Text(stringResource(R.string.product_delete_option_move_to_product_desc)) },
-              modifier = Modifier.clickable {
-                showProductSelection = true
-              }
+          Column(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+          ) {
+            Text(
+              text = stringResource(R.string.product_delete_with_items_title, itemCount),
+              style = MaterialTheme.typography.titleLarge,
             )
 
-            HorizontalDivider()
-          }
+            Text(
+              text = stringResource(R.string.product_delete_with_items_message),
+              style = MaterialTheme.typography.bodyMedium,
+            )
 
-          // Option 3: Delete all items (cascade delete)
-          ListItem(
-            headlineContent = {
-              Text(
-                text = stringResource(R.string.product_delete_option_cascade_delete),
-                color = CaducityTheme.colorScheme.error
+            // Options group
+            StyledSettingsGroup {
+              // Determine shape positions based on available products
+              val hasProductOption = availableProducts.isNotEmpty()
+              val standalonePosition =
+                if (hasProductOption) ShapePosition.Start else ShapePosition.Start
+              val productPosition = ShapePosition.Middle
+              val deletePosition = if (hasProductOption) ShapePosition.End else ShapePosition.End
+
+              // Option 1: Move to standalone items
+              StyledSettingsCard(
+                title = stringResource(R.string.product_delete_option_move_to_standalone),
+                subtitle = stringResource(R.string.product_delete_option_move_to_standalone_desc),
+                onClick = onMoveToStandalone,
+                position = standalonePosition,
               )
-            },
-            supportingContent = { Text(stringResource(R.string.product_delete_option_cascade_delete_desc)) },
-            leadingContent = {
-              Icon(
-                imageVector = AppIcons.Delete,
-                contentDescription = null,
-                tint = CaducityTheme.colorScheme.error
+
+              // Option 2: Move to another product (only if there are other products)
+              if (hasProductOption) {
+                StyledSettingsCard(
+                  title = stringResource(R.string.product_delete_option_move_to_product),
+                  subtitle = stringResource(R.string.product_delete_option_move_to_product_desc),
+                  onClick = { showProductSelection = true },
+                  position = productPosition,
+                )
+              }
+
+              // Option 3: Delete all items (cascade delete)
+              StyledSettingsCard(
+                action = {
+                  Icon(
+                    imageVector = AppIcons.Delete,
+                    contentDescription = null,
+                  )
+                },
+                title = stringResource(R.string.product_delete_option_cascade_delete),
+                subtitle = stringResource(R.string.product_delete_option_cascade_delete_desc),
+                colors = SettingsTileDefaults.colors(
+                  containerColor = CaducityTheme.colorScheme.errorContainer,
+                  titleColor = CaducityTheme.colorScheme.onErrorContainer,
+                  subtitleColor = CaducityTheme.colorScheme.onErrorContainer,
+                  iconColor = CaducityTheme.colorScheme.onErrorContainer,
+                  actionColor = CaducityTheme.colorScheme.onErrorContainer,
+                ),
+                onClick = onCascadeDelete,
+                position = deletePosition,
               )
-            },
-            modifier = Modifier.clickable {
-              onCascadeDelete()
             }
-          )
+          }
         } else {
-          // Product selection screen
-          Text(
-            text = stringResource(R.string.product_delete_select_target_title),
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
-          )
-
-          Text(
-            text = stringResource(R.string.product_delete_select_target_message, itemCount),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 24.dp)
-          )
-
-          // List all available products
-          availableProducts.forEach { product ->
-            ListItem(
-              headlineContent = { Text(product.name) },
-              modifier = Modifier.clickable {
-                product.id?.let { onMoveToProduct(it) }
+          // Product selection screen with top bar
+          StyledTopAppBar(
+            title = { Text(stringResource(R.string.product_delete_select_target_title)) },
+            navigationIcon = {
+              IconButton(onClick = { showProductSelection = false }) {
+                Icon(
+                  imageVector = AppIcons.Back,
+                  contentDescription = stringResource(R.string.product_delete_select_target_back),
+                )
               }
-            )
-            HorizontalDivider()
-          }
-
-          // Back button
-          ListItem(
-            headlineContent = { Text(stringResource(R.string.product_delete_select_target_back)) },
-            modifier = Modifier.clickable {
-              showProductSelection = false
             }
           )
+
+          Column(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+          ) {
+            Text(
+              text = stringResource(R.string.product_delete_select_target_message, itemCount),
+              style = MaterialTheme.typography.bodyMedium,
+            )
+
+            // List all available products with StyledSettingsGroup
+            StyledSettingsGroup {
+              availableProducts.forEachIndexed { index, product ->
+                val position = when {
+                  availableProducts.size == 1 -> ShapePosition.Single
+                  index == 0 -> ShapePosition.Start
+                  index == availableProducts.size - 1 -> ShapePosition.End
+                  else -> ShapePosition.Middle
+                }
+
+                StyledSettingsCard(
+                  title = product.name,
+                  onClick = {
+                    product.id?.let { onMoveToProduct(it) }
+                  },
+                  position = position,
+                )
+              }
+            }
+          }
         }
       }
     }
