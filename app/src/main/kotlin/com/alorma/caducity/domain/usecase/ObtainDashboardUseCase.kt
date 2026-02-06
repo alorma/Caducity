@@ -23,10 +23,10 @@ class ObtainDashboardUseCase(
 
   fun obtain(): Flow<DashboardData> {
     return categoryDataSource.getCategories().map { categories ->
-      // Collect all active items from all categories for summary
+      // Collect all non-consumed items from all categories for summary (including frozen)
       val allActiveItems = categories.flatMap { categoryWithItems ->
         categoryWithItems.products.flatMap { product -> product.items } + categoryWithItems.standaloneItems
-      }.filter { it.status != ItemStatus.Frozen && it.status != ItemStatus.Consumed }
+      }.filter { it.status != ItemStatus.Consumed }
 
       // Calculate summary counts by status
       val statusCounts = allActiveItems
