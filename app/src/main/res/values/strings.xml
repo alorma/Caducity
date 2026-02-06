@@ -120,6 +120,8 @@
     <string name="category_detail_product_empty_state">No items yet. Tap the + button to add one.</string>
     <string name="category_detail_product_other">Other</string>
     <string name="category_detail_add_item_title">Add Item</string>
+    <string name="category_detail_add_item_button">Add item</string>
+    <string name="category_detail_product_actions_tooltip">Product actions</string>
     <string name="category_detail_add_item_back">Back</string>
     <string name="category_detail_add_item_add_other">Add Other</string>
     <string name="category_detail_add_item_product_label">Product</string>

@@ -21,13 +21,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.SplitButtonDefaults
 import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -160,7 +165,7 @@ private fun CategoryDetailSuccessContent(
       val currentTab = state.productTabs.getOrNull(pagerState.currentPage)
 
       val checked = remember { mutableStateOf(false) }
-      val size = SplitButtonDefaults.LargeContainerHeight
+      val size = SplitButtonDefaults.MediumContainerHeight
 
       val freshColors = ExpirationDefaults.getSoftColors(
         itemStatus = ItemStatus.Fresh,
@@ -174,7 +179,6 @@ private fun CategoryDetailSuccessContent(
       SplitButtonLayout(
         modifier = Modifier.heightIn(size),
         leadingButton = {
-
           SplitButtonDefaults.LeadingButton(
             colors = buttonColors,
             shapes = SplitButtonDefaults.leadingButtonShapesFor(size),
@@ -189,7 +193,7 @@ private fun CategoryDetailSuccessContent(
             },
           ) {
             Text(
-              text = "Add item",
+              text = stringResource(R.string.category_detail_add_item_button),
               style = ButtonDefaults.textStyleFor(size)
             )
           }
@@ -204,21 +208,29 @@ private fun CategoryDetailSuccessContent(
               label = "Trailing Icon Rotation",
             )
 
-            SplitButtonDefaults.TrailingButton(
-              modifier = Modifier.heightIn(size),
-              colors = buttonColors,
-              checked = checked.value,
-              shapes = SplitButtonDefaults.trailingButtonShapesFor(size),
-              contentPadding = SplitButtonDefaults.trailingButtonContentPaddingFor(size),
-              onCheckedChange = { checked.value = it },
+            TooltipBox(
+              positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                TooltipAnchorPosition.Above,
+              ),
+              tooltip = { PlainTooltip { Text(stringResource(R.string.category_detail_product_actions_tooltip)) } },
+              state = rememberTooltipState(),
             ) {
-              Icon(
-                modifier = Modifier
-                  .size(SplitButtonDefaults.TrailingIconSize)
-                  .graphicsLayer { this.rotationZ = rotation },
-                imageVector = AppIcons.ArrowDown,
-                contentDescription = stringResource(R.string.product_delete_menu),
-              )
+              SplitButtonDefaults.TrailingButton(
+                modifier = Modifier.heightIn(size),
+                colors = buttonColors,
+                checked = checked.value,
+                shapes = SplitButtonDefaults.trailingButtonShapesFor(size),
+                contentPadding = SplitButtonDefaults.trailingButtonContentPaddingFor(size),
+                onCheckedChange = { checked.value = it },
+              ) {
+                Icon(
+                  modifier = Modifier
+                    .size(SplitButtonDefaults.TrailingIconSize)
+                    .graphicsLayer { this.rotationZ = rotation },
+                  imageVector = AppIcons.ArrowDown,
+                  contentDescription = stringResource(R.string.product_delete_menu),
+                )
+              }
             }
 
             DropdownMenu(

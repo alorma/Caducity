@@ -118,6 +118,8 @@
     <string name="category_detail_product_empty_state">Encara no hi ha elements. Toca el botó + per afegir-ne un.</string>
     <string name="category_detail_product_other">Altres</string>
     <string name="category_detail_add_item_title">Afegir Element</string>
+    <string name="category_detail_add_item_button">Afegir element</string>
+    <string name="category_detail_product_actions_tooltip">Accions de producte</string>
     <string name="category_detail_add_item_back">Enrere</string>
     <string name="category_detail_add_item_add_other">Afegir Altra</string>
     <string name="category_detail_add_item_product_label">Producte</string>
