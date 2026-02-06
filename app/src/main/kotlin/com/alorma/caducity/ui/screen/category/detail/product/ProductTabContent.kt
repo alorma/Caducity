@@ -30,13 +30,16 @@ import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.calendar.today
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
-import com.alorma.caducity.ui.components.feedback.bottomsheet.LocalAppBottomSheetState
-import com.alorma.caducity.ui.components.feedback.dialog.LocalAppDialogState
-import com.alorma.caducity.ui.components.feedback.snackbar.LocalAppSnackbarState
+import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.screen.category.detail.CategoryDetailState
 import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.DateItemsUiModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
+import kotlinx.coroutines.flow.StateFlow
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.kizitonwose.calendar.core.minusDays
@@ -49,22 +52,51 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun ProductTabContent(
   productTab: CategoryProductTabUiModel,
+  categoryState: StateFlow<CategoryDetailState>,
+  onNavigateToAddItem: (categoryId: String, productId: String?) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: ProductPageViewModel = koinViewModel(key = productTab.asKey()) {
-    parametersOf(productTab)
+    parametersOf(productTab, categoryState)
   }
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
 
+  // Initialize feedback states
+  val dialogState = rememberAppDialogState()
+  val snackbarState = rememberAppSnackbarState()
+  val bottomSheetState = rememberAppBottomSheetState()
+
+  // Side effect handler with explicit states
   ProductPageSideEffectHandler(
     viewModel = viewModel,
+    dialogState = dialogState,
+    snackbarState = snackbarState,
+    bottomSheetState = bottomSheetState,
+    onNavigateToAddItem = onNavigateToAddItem,
   )
 
-  ProductTabContentPage(
+  // Wrap with AppScaffold
+  AppScaffold(
     modifier = modifier,
-    state = state,
-    onItemClick = viewModel::onItemClick,
-  )
+    dialogState = dialogState,
+    snackbarState = snackbarState,
+    bottomSheetState = bottomSheetState,
+    floatingActionButton = {
+      ProductActionsSplitButton(
+        onAddItem = viewModel::onAddItemClick,
+        onClearItems = viewModel::onClearProductItemsClick,
+        onDeleteProduct = if (productTab.id != null) {
+          { viewModel.onDeleteProductClick() }
+        } else null
+      )
+    }
+  ) { paddingValues ->
+    ProductTabContentPage(
+      modifier = Modifier.padding(paddingValues),
+      state = state,
+      onItemClick = viewModel::onItemClick,
+    )
+  }
 }
 
 @Composable
@@ -107,7 +139,7 @@ private fun ProductTabContentPage(
             top = 16.dp,
             start = 16.dp,
             end = 16.dp,
-            bottom = 80.dp,
+            bottom = 16.dp,
           ),
           verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
