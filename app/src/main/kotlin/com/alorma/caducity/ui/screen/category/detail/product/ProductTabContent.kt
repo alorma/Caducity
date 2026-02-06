@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -22,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,7 +49,9 @@ import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
-import com.alorma.caducity.ui.screen.category.detail.CategoryDetailProductTabUiModel
+import com.alorma.caducity.ui.components.loading.FullscreenLoading
+import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
+import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.DateItemsUiModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -65,13 +67,10 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ProductTabContent(
-  productTab: CategoryDetailProductTabUiModel,
+  productTab: CategoryProductTabUiModel,
   modifier: Modifier = Modifier,
-  viewModel: ProductPageViewModel = koinViewModel(key = "${productTab.categoryId}-${productTab.id}") {
-    parametersOf(
-      productTab.categoryId,
-      if (productTab.id != "other") productTab.id else null
-    )
+  viewModel: ProductPageViewModel = koinViewModel(key = productTab.asKey()) {
+    parametersOf(productTab)
   }
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -87,16 +86,26 @@ fun ProductTabContent(
     bottomSheetState = bottomSheetState,
   )
 
+  ProductTabContentPage(
+    modifier = modifier,
+    state = state,
+    onItemClick = viewModel::onItemClick,
+  )
+}
+
+@Composable
+private fun ProductTabContentPage(
+  state: ProductPageState,
+  onItemClick: (ItemDetailUiModel) -> Unit,
+  modifier: Modifier = Modifier,
+) {
   when (val currentState = state) {
     is ProductPageState.Loading -> {
       Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
       ) {
-        Text(
-          text = "Loading...",
-          style = MaterialTheme.typography.bodyMedium,
-        )
+        FullscreenLoading()
       }
     }
 
@@ -141,7 +150,7 @@ fun ProductTabContent(
             item {
               StatusGroupCard(
                 items = datedItems.items,
-                onItemClick = viewModel::onItemClick,
+                onItemClick = onItemClick,
               )
             }
           }
@@ -158,7 +167,7 @@ fun ProductTabContent(
             item {
               StatusGroupCard(
                 items = currentState.frozenItems,
-                onItemClick = viewModel::onItemClick,
+                onItemClick = onItemClick,
               )
             }
           }
@@ -175,7 +184,7 @@ fun ProductTabContent(
             item {
               StatusGroupCard(
                 items = currentState.consumedItems,
-                onItemClick = viewModel::onItemClick,
+                onItemClick = onItemClick,
               )
             }
           }
@@ -283,19 +292,18 @@ private val yesterday = today.minusDays(1)
 private val nextWeek = LocalDate(2024, 2, 22)
 
 class ProductTabContentPreviewProvider :
-  CollectionPreviewParameterProvider<CategoryDetailProductTabUiModel>(
+  CollectionPreviewParameterProvider<ProductPageState>(
     listOf(
+      // Loading state
+      ProductPageState.Loading,
       // Empty state
-      CategoryDetailProductTabUiModel.Empty(
-        id = "1",
-        categoryId = "24",
-        name = "Milk",
+      ProductPageState.Success(
+        datedItemsGroups = persistentListOf(),
+        frozenItems = persistentListOf(),
+        consumedItems = persistentListOf(),
       ),
       // Product with all statuses
-      CategoryDetailProductTabUiModel.WithItems(
-        id = "3",
-        categoryId = "24",
-        name = "Cheese",
+      ProductPageState.Success(
         datedItemsGroups = persistentListOf(
           DateItemsUiModel(
             text = "Yesterday",
@@ -384,12 +392,24 @@ class ProductTabContentPreviewProvider :
           ),
         ),
       ),
+      // Error state
+      ProductPageState.Error("Failed to load items"),
     )
   ) {
   override fun getDisplayName(index: Int): String {
-    return when (values.toList()[index]) {
-      is CategoryDetailProductTabUiModel.Empty -> "Empty"
-      is CategoryDetailProductTabUiModel.WithItems -> "With status"
+    return when (val state = values.toList()[index]) {
+      is ProductPageState.Loading -> "Loading"
+      is ProductPageState.Success -> {
+        if (state.datedItemsGroups.isEmpty() &&
+          state.frozenItems.isEmpty() &&
+          state.consumedItems.isEmpty()
+        ) {
+          "Empty"
+        } else {
+          "With items"
+        }
+      }
+      is ProductPageState.Error -> "Error"
     }
   }
 }
@@ -398,87 +418,14 @@ class ProductTabContentPreviewProvider :
 @Composable
 fun ProductTabContentPreview(
   @PreviewParameter(provider = ProductTabContentPreviewProvider::class)
-  productTab: CategoryDetailProductTabUiModel,
+  state: ProductPageState,
 ) {
   PreviewTheme {
     Surface {
-      // Create a mock preview without the ViewModel since we can't use Koin in previews
-      when (productTab) {
-        is CategoryDetailProductTabUiModel.Empty -> {
-          Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center,
-          ) {
-            Text(
-              text = stringResource(R.string.category_detail_product_empty_state),
-              style = MaterialTheme.typography.bodyLarge,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-          }
-        }
-
-        is CategoryDetailProductTabUiModel.WithItems -> {
-          LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-              top = 16.dp,
-              start = 16.dp,
-              end = 16.dp,
-              bottom = 80.dp,
-            ),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-          ) {
-            productTab.datedItemsGroups.forEach { datedItems ->
-              item {
-                SectionHeader(
-                  status = datedItems.status,
-                  date = datedItems.text,
-                  title = ExpirationDefaults.getTitle(datedItems.status),
-                  count = datedItems.items.size,
-                )
-              }
-              item {
-                StatusGroupCard(
-                  items = datedItems.items,
-                  onItemClick = {},
-                )
-              }
-            }
-
-            if (productTab.frozenItems.isNotEmpty()) {
-              item {
-                SectionHeader(
-                  status = ItemStatus.Frozen,
-                  title = stringResource(R.string.category_detail_section_frozen),
-                  count = productTab.frozenItems.size,
-                )
-              }
-              item {
-                StatusGroupCard(
-                  items = productTab.frozenItems,
-                  onItemClick = {},
-                )
-              }
-            }
-
-            if (productTab.consumedItems.isNotEmpty()) {
-              item {
-                SectionHeader(
-                  status = ItemStatus.Consumed,
-                  title = stringResource(R.string.category_detail_section_consumed),
-                  count = productTab.consumedItems.size,
-                )
-              }
-              item {
-                StatusGroupCard(
-                  items = productTab.consumedItems,
-                  onItemClick = {},
-                )
-              }
-            }
-          }
-        }
-      }
+      ProductTabContentPage(
+        state = state,
+        onItemClick = {},
+      )
     }
   }
 }

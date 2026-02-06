@@ -10,6 +10,7 @@ import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
+import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -26,8 +27,7 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlin.time.Instant
 
 class ProductPageViewModel(
-  private val categoryId: String,
-  private val productId: String?,
+  productTab: CategoryProductTabUiModel,
   getProductItemsUseCase: GetProductItemsUseCase,
   productPageMapper: ProductPageMapper,
   private val appClock: AppClock,
@@ -40,7 +40,7 @@ class ProductPageViewModel(
   val sideEffect: Flow<ProductPageSideEffect> = _sideEffect.receiveAsFlow()
 
   val state: StateFlow<ProductPageState> = getProductItemsUseCase
-    .obtain(categoryId, productId)
+    .obtain(productTab.categoryId, productTab.id)
     .map<_, ProductPageState> { productItems ->
       productPageMapper.mapToUiModel(productItems)
     }

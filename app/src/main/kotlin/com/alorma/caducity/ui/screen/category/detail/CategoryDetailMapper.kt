@@ -5,7 +5,6 @@ import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.config.time.RelativeTimeFormatter
 import com.alorma.caducity.domain.model.CategoryDetail
-import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DayOfWeek
@@ -27,9 +26,8 @@ class CategoryDetailMapper(
       description = categoryDetail.category.description,
     )
 
-    // Create product tabs (empty tabs - ProductPageViewModel will load item data)
     val productTabs = categoryDetail.products.map { product ->
-      CategoryDetailProductTabUiModel.Empty(
+      CategoryProductTabUiModel(
         id = product.id,
         categoryId = categoryDetail.category.id,
         name = product.name,
@@ -38,7 +36,7 @@ class CategoryDetailMapper(
 
     // Add "Other" tab if there are standalone items (ProductPageViewModel handles loading)
     productTabs.add(
-      CategoryDetailProductTabUiModel.Empty(
+      CategoryProductTabUiModel(
         id = null,
         categoryId = categoryDetail.category.id,
         name = stringProvider.getString(R.string.category_detail_product_other),

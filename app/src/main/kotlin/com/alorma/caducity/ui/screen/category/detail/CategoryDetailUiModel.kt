@@ -28,25 +28,11 @@ data class CategoryDetailUiModel(
 )
 
 @Stable
-sealed class CategoryDetailProductTabUiModel {
-  abstract val id: String?
-  abstract val categoryId: String
-  abstract val name: String
-
-  @Stable
-  data class Empty(
-    override val id: String?,
-    override val categoryId: String,
-    override val name: String,
-  ) : CategoryDetailProductTabUiModel()
-
-  @Stable
-  data class WithItems(
-    override val id: String?,
-    override val categoryId: String,
-    override val name: String,
-    val datedItemsGroups: ImmutableList<DateItemsUiModel>,
-    val frozenItems: ImmutableList<ItemDetailUiModel>,
-    val consumedItems: ImmutableList<ItemDetailUiModel>,
-  ) : CategoryDetailProductTabUiModel()
+data class CategoryProductTabUiModel(
+  val id: String?,
+  val categoryId: String,
+  val name: String,
+) {
+  fun asKey() = "${categoryId}-${id}"
 }
+

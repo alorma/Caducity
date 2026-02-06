@@ -34,8 +34,8 @@ class DashboardViewModel(
   private fun obtainPerCategoryDashboard(firstDayOfWeek: kotlinx.datetime.DayOfWeek): Flow<DashboardState.Success> {
     return obtainDashboardCategoriesUseCase
       .obtainCategories()
-      .map { categories ->
-        dashboardMapper.mapToPerCategoryState(categories = categories, firstDayOfWeek = firstDayOfWeek)
+      .map { dashboardData ->
+        dashboardMapper.mapToPerCategoryState(dashboardData = dashboardData, firstDayOfWeek = firstDayOfWeek)
       }
   }
 }
