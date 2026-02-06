@@ -215,7 +215,6 @@
     <string name="product_delete_dialog_delete">Delete</string>
     <string name="product_delete_dialog_cancel">Cancel</string>
     <string name="success_product_deleted">Product deleted</string>
-    <string name="error_product_has_active_items">Cannot delete a product with active items</string>
     <string name="error_delete_product_failed">Failed to delete product</string>
 
     <!-- Product deletion with items -->

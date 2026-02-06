@@ -210,7 +210,6 @@
     <string name="product_delete_dialog_delete">Eliminar</string>
     <string name="product_delete_dialog_cancel">Cancelar</string>
     <string name="success_product_deleted">Producto eliminado</string>
-    <string name="error_product_has_active_items">No se puede eliminar un producto con artículos activos</string>
     <string name="error_delete_product_failed">Error al eliminar producto</string>
 
     <!-- Onboarding -->
