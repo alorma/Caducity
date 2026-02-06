@@ -45,7 +45,6 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun ProductTabContent(
   productTab: CategoryDetailProductTabUiModel,
-  onItemClick: (ItemDetailUiModel) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: ProductPageViewModel = koinViewModel(key = "${productTab.categoryId}-${productTab.id}") {
     parametersOf(
@@ -110,7 +109,7 @@ fun ProductTabContent(
             item {
               StatusGroupCard(
                 items = datedItems.items,
-                onItemClick = onItemClick,
+                onItemClick = viewModel::onItemClick,
               )
             }
           }
@@ -127,7 +126,7 @@ fun ProductTabContent(
             item {
               StatusGroupCard(
                 items = currentState.frozenItems,
-                onItemClick = onItemClick,
+                onItemClick = viewModel::onItemClick,
               )
             }
           }
@@ -144,7 +143,7 @@ fun ProductTabContent(
             item {
               StatusGroupCard(
                 items = currentState.consumedItems,
-                onItemClick = onItemClick,
+                onItemClick = viewModel::onItemClick,
               )
             }
           }
