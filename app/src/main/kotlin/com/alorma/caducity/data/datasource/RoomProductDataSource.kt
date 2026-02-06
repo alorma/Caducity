@@ -2,7 +2,7 @@ package com.alorma.caducity.data.datasource
 
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.data.datasource.room.AppDatabase
-import com.alorma.caducity.data.datasource.room.RoomEntityMapper
+import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.Product
 import kotlinx.collections.immutable.ImmutableList
@@ -14,7 +14,7 @@ import java.util.UUID
 class RoomProductDataSource(
   database: AppDatabase,
   private val appClock: AppClock,
-  private val mapper: RoomEntityMapper,
+  private val productMapper: ProductRoomMapper,
 ) : ProductDataSource {
 
   private val productDao = database.productDao()
@@ -22,7 +22,9 @@ class RoomProductDataSource(
   override fun getProductsByCategory(categoryId: String): Flow<ImmutableList<Product>> {
     return productDao.getProductsByCategory(categoryId)
       .map { entities ->
-        entities.map { mapper.mapProductToModel(it) }.toImmutableList()
+        entities.map { productEntity ->
+          productMapper.toModel(productEntity)
+        }.toImmutableList()
       }
   }
 
@@ -33,7 +35,7 @@ class RoomProductDataSource(
       name = name,
       createdAt = appClock.now(),
     )
-    productDao.insertProduct(mapper.mapProductToEntity(product))
+    productDao.insertProduct(productMapper.toEntity(product))
     return product
   }
 }
