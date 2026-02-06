@@ -2,20 +2,14 @@ package com.alorma.caducity.domain.model
 
 import kotlinx.datetime.LocalDate
 
+/**
+ * Simplified category detail for the category overview screen.
+ * Product tabs load their own item data via ProductPageViewModel.
+ */
 data class CategoryDetail(
   val category: Category,
-  val products: List<DetailProduct>,
-  val standaloneItems: List<ProductItem>,
-  val standaloneFrozenItems: List<ProductItem>,
-  val standaloneConsumedItems: List<ProductItem>,
-)
-
-data class DetailProduct(
-  val id: String,
-  val name: String,
-  val datedItemsGroups: List<ProductDatedItems>,
-  val frozenItems: List<ProductItem>,
-  val consumedItems: List<ProductItem>,
+  val products: List<Product>,
+  val calendarData: List<ProductDatedItems>,
 )
 
 data class ProductDatedItems(
