@@ -1,33 +1,42 @@
 package com.alorma.caducity.data.datasource.room
 
-import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
+import com.alorma.caducity.data.datasource.room.mapper.CategoryWithItemsRoomMapper
+import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
+import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.domain.model.Category
-import com.alorma.caducity.domain.model.CategoryProduct
 import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.NewItem
 import com.alorma.caducity.domain.model.Product
-import com.alorma.caducity.domain.usecase.ExpirationThresholds
-import kotlinx.collections.immutable.toImmutableList
-import kotlin.time.Instant
 
 /**
- * Mapper class for converting between Room entities and domain models.
+ * Facade mapper that delegates to specialized mappers.
  *
- * This class provides a testable way to map data between the data layer (Room entities)
- * and the domain layer (domain models). All mapping logic is centralized here to ensure
- * consistency and ease of testing.
+ * This class provides a unified interface for mapping between Room entities and domain models
+ * while delegating to specialized mappers that each handle their own responsibilities.
+ *
+ * Architecture:
+ * - Delegates category mapping to CategoryRoomMapper
+ * - Delegates product mapping to ProductRoomMapper
+ * - Delegates item mapping to ItemRoomMapper (with status calculation)
+ * - Delegates composite mapping to CategoryWithItemsRoomMapper
  *
  * Usage:
  * - Inject this mapper into your data source classes
  * - Use the map* methods for all entity-to-model and model-to-entity conversions
  *
- * @param appClock Clock instance for getting current time
- * @param expirationThresholds Thresholds for calculating item expiration status
+ * Dependencies:
+ * - CategoryRoomMapper: Category entity <-> model
+ * - ProductRoomMapper: Product entity <-> model
+ * - ItemRoomMapper: Item entity <-> model (with status calculation)
+ * - CategoryWithItemsRoomMapper: Composite entity <-> model
  */
 class RoomEntityMapper(
-  private val appClock: AppClock,
-  private val expirationThresholds: ExpirationThresholds,
+  private val categoryMapper: CategoryRoomMapper,
+  private val productMapper: ProductRoomMapper,
+  private val itemMapper: ItemRoomMapper,
+  private val categoryWithItemsMapper: CategoryWithItemsRoomMapper,
 ) {
 
   // ========== Room Entity -> Domain Model ==========
@@ -36,84 +45,30 @@ class RoomEntityMapper(
    * Maps CategoryRoomEntity to Category domain model
    */
   fun mapCategoryToModel(entity: CategoryRoomEntity): Category {
-    return Category(
-      id = entity.id,
-      name = entity.name,
-      description = entity.description,
-    )
+    return categoryMapper.toModel(entity)
   }
 
   /**
-   * Maps ItemRoomEntity to Item domain model
-   *
-   * Uses ItemRoomMapper for consistent status calculation.
+   * Maps ItemRoomEntity to Item domain model with status calculation
    */
   fun mapItemToModel(entity: ItemRoomEntity): Item {
-    val expirationInstant = Instant.fromEpochMilliseconds(entity.expirationDate)
-    val pausedInstant = entity.pausedDate?.let { Instant.fromEpochMilliseconds(it) }
-
-    // Determine status using ItemRoomMapper for consistency
-    val itemRoomMapper = com.alorma.caducity.data.datasource.ItemRoomMapper(
-      appClock = appClock,
-      expirationThresholds = expirationThresholds
-    )
-    val status = itemRoomMapper.toModel(entity).status
-
-    return Item(
-      id = entity.id,
-      identifier = entity.identifier,
-      productId = entity.productId,
-      expirationDate = expirationInstant,
-      status = status,
-      pausedDate = pausedInstant,
-    )
+    return itemMapper.toModel(entity)
   }
 
   /**
    * Maps ProductRoomEntity to Product domain model
    */
   fun mapProductToModel(entity: ProductRoomEntity): Product {
-    return Product(
-      id = entity.id,
-      categoryId = entity.categoryId,
-      name = entity.name,
-      createdAt = Instant.fromEpochMilliseconds(entity.createdAt),
-    )
+    return productMapper.toModel(entity)
   }
 
   /**
    * Maps CategoryWithItemsRoomEntity to CategoryWithItems domain model
    *
-   * This handles the complex mapping of a category with its products and items,
-   * including grouping items by product and handling standalone items.
+   * This handles the complex mapping of a category with its products and items.
    */
   fun mapCategoryWithItemsToModel(entity: CategoryWithItemsRoomEntity): CategoryWithItems {
-    val itemsModel = entity.items.map { mapItemToModel(it) }
-
-    // Group items by product
-    val itemsByProduct = itemsModel
-      .filter { it.productId != null }
-      .groupBy { it.productId!! }
-
-    // Include ALL products, even those with no items
-    val productsWithItems = entity.products.map { productEntity ->
-      val productItems = itemsByProduct[productEntity.id] ?: emptyList()
-      CategoryProduct(
-        product = mapProductToModel(productEntity),
-        items = productItems.toImmutableList()
-      )
-    }.toImmutableList()
-
-    // Get standalone items (no productId)
-    val standaloneItemsModel = itemsModel
-      .filter { it.productId == null }
-      .toImmutableList()
-
-    return CategoryWithItems(
-      category = mapCategoryToModel(entity.category),
-      products = productsWithItems,
-      standaloneItems = standaloneItemsModel,
-    )
+    return categoryWithItemsMapper.toModel(entity)
   }
 
   // ========== Domain Model -> Room Entity ==========
@@ -122,11 +77,7 @@ class RoomEntityMapper(
    * Maps Category domain model to CategoryRoomEntity
    */
   fun mapCategoryToEntity(model: Category): CategoryRoomEntity {
-    return CategoryRoomEntity(
-      id = model.id,
-      name = model.name,
-      description = model.description,
-    )
+    return categoryMapper.toEntity(model)
   }
 
   /**
@@ -136,16 +87,7 @@ class RoomEntityMapper(
    * @param categoryId The category ID this item belongs to
    */
   fun mapItemToEntity(model: Item, categoryId: String): ItemRoomEntity {
-    return ItemRoomEntity(
-      id = model.id,
-      categoryId = categoryId,
-      identifier = model.identifier,
-      productId = model.productId,
-      expirationDate = model.expirationDate.toEpochMilliseconds(),
-      pausedDate = model.pausedDate?.toEpochMilliseconds(),
-      remainingDays = null,
-      consumedDate = null,
-    )
+    return itemMapper.toEntity(model, categoryId)
   }
 
   /**
@@ -158,27 +100,13 @@ class RoomEntityMapper(
    * @param categoryId The category ID this item belongs to
    */
   fun mapNewItemToEntity(model: NewItem, id: String, categoryId: String): ItemRoomEntity {
-    return ItemRoomEntity(
-      id = id,
-      categoryId = categoryId,
-      identifier = model.identifier,
-      productId = model.productId,
-      expirationDate = model.expirationDate.toEpochMilliseconds(),
-      pausedDate = null,
-      remainingDays = null,
-      consumedDate = null,
-    )
+    return itemMapper.toEntity(model, id, categoryId)
   }
 
   /**
    * Maps Product domain model to ProductRoomEntity
    */
   fun mapProductToEntity(model: Product): ProductRoomEntity {
-    return ProductRoomEntity(
-      id = model.id,
-      categoryId = model.categoryId,
-      name = model.name,
-      createdAt = model.createdAt.toEpochMilliseconds(),
-    )
+    return productMapper.toEntity(model)
   }
 }
