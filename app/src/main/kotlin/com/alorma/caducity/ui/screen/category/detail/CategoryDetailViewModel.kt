@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.category.detail
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.model.ProductDeletionStrategy
+import com.alorma.caducity.domain.usecase.ClearProductItemsUseCase
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteProductUseCase
@@ -29,6 +30,7 @@ class CategoryDetailViewModel(
   private val createProductUseCase: CreateProductUseCase,
   private val deleteProductUseCase: DeleteProductUseCase,
   private val deleteCategoryUseCase: DeleteCategoryUseCase,
+  private val clearProductItemsUseCase: ClearProductItemsUseCase,
 ) : ViewModel() {
 
   private val _sideEffect = Channel<CategoryDetailSideEffect>(Channel.BUFFERED)
@@ -125,8 +127,20 @@ class CategoryDetailViewModel(
     )
   }
 
-  fun onClearProductItems(productId: String?, clearAll: Boolean) {
-    // TODO: Implement clear items use case
+  private fun onClearProductItems(productId: String?, clearAll: Boolean) {
+    viewModelScope.launch {
+      val result = if (clearAll) {
+        clearProductItemsUseCase.clearAllItems(categoryId, productId)
+      } else {
+        clearProductItemsUseCase.clearConsumedItems(categoryId, productId)
+      }
+
+      if (result.isSuccess) {
+        emitSideEffect(CategoryDetailSideEffect.ItemsCleared)
+      } else {
+        emitSideEffect(CategoryDetailSideEffect.ClearItemsFailed)
+      }
+    }
   }
 
   fun onDeleteCategoryClick() {

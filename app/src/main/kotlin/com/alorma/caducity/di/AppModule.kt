@@ -11,6 +11,7 @@ import com.alorma.caducity.data.datasource.RoomBackupDataSource
 import com.alorma.caducity.domain.backup.BackupDataSource
 import com.alorma.caducity.domain.domainModule
 import com.alorma.caducity.domain.usecase.AddItemToCategoryUseCase
+import com.alorma.caducity.domain.usecase.ClearProductItemsUseCase
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
@@ -81,6 +82,7 @@ val appModule = module {
   singleOf(::DeleteItemUseCase)
   singleOf(::DeleteCategoryUseCase)
   singleOf(::DeleteProductUseCase)
+  singleOf(::ClearProductItemsUseCase)
   singleOf(::ConsumeItemUseCase)
   singleOf(::FreezeItemUseCase)
   singleOf(::CategoryDetailMapper)

@@ -41,6 +41,18 @@ interface ItemDao {
   @Query("DELETE FROM items WHERE productId = :productId AND consumedDate IS NULL")
   suspend fun deleteActiveItemsByProduct(productId: String)
 
+  @Query("DELETE FROM items WHERE categoryId = :categoryId AND productId = :productId AND consumedDate IS NOT NULL")
+  suspend fun deleteConsumedItemsByProduct(categoryId: String, productId: String)
+
+  @Query("DELETE FROM items WHERE categoryId = :categoryId AND productId = :productId")
+  suspend fun deleteAllItemsByProduct(categoryId: String, productId: String)
+
+  @Query("DELETE FROM items WHERE categoryId = :categoryId AND productId IS NULL AND consumedDate IS NOT NULL")
+  suspend fun deleteConsumedStandaloneItems(categoryId: String)
+
+  @Query("DELETE FROM items WHERE categoryId = :categoryId AND productId IS NULL")
+  suspend fun deleteAllStandaloneItems(categoryId: String)
+
   // Backup & Restore methods
   @Query("SELECT * FROM items")
   suspend fun getAllItemsSync(): List<ItemRoomEntity>
