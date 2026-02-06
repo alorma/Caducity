@@ -206,11 +206,20 @@
     <string name="error_delete_category_failed">Error en eliminar categoria</string>
 
     <!-- Product deletion -->
+    <string name="product_delete_menu">Opcions de producte</string>
+    <string name="product_clear_items_action">Netejar Elements</string>
+    <string name="product_clear_items_dialog_title">Netejar Elements?</string>
+    <string name="product_clear_items_dialog_message">Què voldries netejar d\'aquest producte?</string>
+    <string name="product_clear_consumed_only">Netejar Elements Consumits</string>
+    <string name="product_clear_consumed_only_desc">Eliminar només elements consumits</string>
+    <string name="product_clear_all_items">Netejar Tots els Elements</string>
+    <string name="product_clear_all_items_desc">Eliminar tots els elements (consumits, frescos, caducats)</string>
+    <string name="product_delete_action">Eliminar Producte</string>
     <string name="product_delete_dialog_title">Eliminar Producte?</string>
     <string name="product_delete_dialog_message">Això eliminarà permanentment aquest producte. Els elements es mouran a la pestanya \"Altres\". Aquesta acció no es pot desfer.</string>
     <string name="product_delete_dialog_delete">Eliminar</string>
     <string name="product_delete_dialog_cancel">Cancel·lar</string>
-    <string name="success_product_deleted">Producte eliminat</string>
+    <string name="product_delete_dialog_success_product_deleted">Producte eliminat</string>
     <string name="error_delete_product_failed">Error en eliminar producte</string>
 
     <!-- Onboarding -->

@@ -116,6 +116,14 @@ class CategoryDetailViewModel(
     }
   }
 
+  fun onClearProductItemsClick(productId: String) {
+    emitSideEffect(CategoryDetailSideEffect.ShowClearProductItemsDialog(productId))
+  }
+
+  fun onClearProductItems(productId: String, clearAll: Boolean) {
+    // TODO: Implement clear items use case
+  }
+
   fun onDeleteCategoryClick() {
     emitSideEffect(CategoryDetailSideEffect.ShowDeleteCategoryDialog)
   }

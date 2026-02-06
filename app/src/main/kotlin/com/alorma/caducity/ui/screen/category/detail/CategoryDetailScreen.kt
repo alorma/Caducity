@@ -53,6 +53,7 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.ArrowDown
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.Delete
+import com.alorma.caducity.base.ui.icons.filled.Broom
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.ProductDeletionStrategy
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
@@ -116,6 +117,7 @@ fun CategoryDetailScreen(
         onNavigateToAddInstance = onNavigateToAddInstance,
         onShowAddProductDialog = viewModel::onShowAddProductDialog,
         onDeleteProductClick = viewModel::onDeleteProductClick,
+        onClearProductItemsClick = viewModel::onClearProductItemsClick,
         onDeleteCategoryClick = viewModel::onDeleteCategoryClick,
       )
     }
@@ -134,6 +136,7 @@ private fun CategoryDetailSuccessContent(
   onNavigateToAddInstance: (productId: String?) -> Unit,
   onShowAddProductDialog: () -> Unit,
   onDeleteProductClick: (productId: String) -> Unit,
+  onClearProductItemsClick: (productId: String) -> Unit,
   onDeleteCategoryClick: () -> Unit,
 ) {
   val pagerState = rememberPagerState(pageCount = { state.productTabs.size })
@@ -167,14 +170,7 @@ private fun CategoryDetailSuccessContent(
       val checked = remember { mutableStateOf(false) }
       val size = SplitButtonDefaults.MediumContainerHeight
 
-      val freshColors = ExpirationDefaults.getSoftColors(
-        itemStatus = ItemStatus.Fresh,
-      )
-
-      val buttonColors = ButtonDefaults.buttonColors(
-        containerColor = freshColors.container,
-        contentColor = freshColors.onContainer,
-      )
+      val buttonColors = ButtonDefaults.filledTonalButtonColors()
 
       SplitButtonLayout(
         modifier = Modifier.heightIn(size),
@@ -237,8 +233,22 @@ private fun CategoryDetailSuccessContent(
               expanded = checked.value,
               onDismissRequest = { checked.value = false }
             ) {
-              // Show delete product option only if current tab is a product (not "Other")
+              // Show clear items option only if current tab is a product (not "Other")
               if (currentTab?.id != null) {
+                DropdownMenuItem(
+                  text = { Text(stringResource(R.string.product_clear_items_action)) },
+                  onClick = {
+                    checked.value = false
+                    onClearProductItemsClick(currentTab.id)
+                  },
+                  leadingIcon = {
+                    Icon(
+                      imageVector = AppIcons.Outlined.Broom,
+                      contentDescription = null,
+                    )
+                  }
+                )
+
                 DropdownMenuItem(
                   text = { Text(stringResource(R.string.product_delete_action)) },
                   onClick = {
@@ -390,6 +400,18 @@ private fun SideEffectHandler(
           snackbarState.showSnackbar(
             message = R.string.error_create_product_failed,
             type = AppFeedbackType.Error,
+          )
+        }
+
+        is CategoryDetailSideEffect.ShowClearProductItemsDialog -> launch {
+          bottomSheetState.showClearItemsBottomSheet(
+            this,
+            onClearConsumed = {
+              viewModel.onClearProductItems(effect.productId, clearAll = false)
+            },
+            onClearAll = {
+              viewModel.onClearProductItems(effect.productId, clearAll = true)
+            },
           )
         }
 
@@ -623,6 +645,66 @@ private fun AppBottomSheetState.showDeleteProductWithItemsBottomSheet(
               }
             }
           }
+        }
+      }
+    }
+  }
+}
+
+
+private fun AppBottomSheetState.showClearItemsBottomSheet(
+  coroutineScope: CoroutineScope,
+  onClearConsumed: () -> Unit,
+  onClearAll: () -> Unit,
+) {
+  coroutineScope.launch {
+    show {
+      Column(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+      ) {
+        Text(
+          text = stringResource(R.string.product_clear_items_dialog_title),
+          style = MaterialTheme.typography.titleLarge,
+        )
+
+        Text(
+          text = stringResource(R.string.product_clear_items_dialog_message),
+          style = MaterialTheme.typography.bodyMedium,
+        )
+
+        // Options group
+        StyledSettingsGroup {
+          // Option 1: Clear consumed items only
+          StyledSettingsCard(
+            icon = {
+              Icon(
+                imageVector = AppIcons.Outlined.Broom,
+                contentDescription = null,
+              )
+            },
+            title = stringResource(R.string.product_clear_consumed_only),
+            subtitle = stringResource(R.string.product_clear_consumed_only_desc),
+            onClick = onClearConsumed,
+            position = ShapePosition.Start,
+          )
+
+          // Option 2: Clear all items
+          StyledSettingsCard(
+            icon = {
+              Icon(
+                imageVector = AppIcons.Delete,
+                contentDescription = null,
+                tint = CaducityTheme.colorScheme.error,
+              )
+            },
+            title = stringResource(R.string.product_clear_all_items),
+            subtitle = stringResource(R.string.product_clear_all_items_desc),
+            onClick = onClearAll,
+            position = ShapePosition.End,
+          )
         }
       }
     }
