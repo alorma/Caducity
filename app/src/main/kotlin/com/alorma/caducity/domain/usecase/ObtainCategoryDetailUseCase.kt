@@ -45,6 +45,7 @@ class ObtainCategoryDetailUseCase(
           category = categoryWithItems.category,
           products = categoryWithItems.products.map { it.product },
           calendarData = CalendarData(dateStatuses = dateStatuses),
+          hasStandaloneItems = categoryWithItems.standaloneItems.isNotEmpty(),
         )
       }
     }

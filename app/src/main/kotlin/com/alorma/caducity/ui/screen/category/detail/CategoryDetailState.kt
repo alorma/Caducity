@@ -9,6 +9,13 @@ sealed interface CategoryDetailState {
   data object Loading : CategoryDetailState
 
   @Stable
+  data class Empty(
+    val today: LocalDate,
+    val category: CategoryDetailUiModel,
+    val appCalendarConfig: AppCalendarConfig,
+  ) : CategoryDetailState
+
+  @Stable
   data class Success(
     val today: LocalDate,
     val category: CategoryDetailUiModel,
