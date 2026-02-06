@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
+import com.alorma.caducity.domain.usecase.DeleteProductUseCase
 import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.Job
@@ -25,6 +26,7 @@ class CategoryDetailViewModel(
   categoryDetailMapper: CategoryDetailMapper,
   calendarPreferences: CalendarPreferences,
   private val createProductUseCase: CreateProductUseCase,
+  private val deleteProductUseCase: DeleteProductUseCase,
   private val deleteCategoryUseCase: DeleteCategoryUseCase,
 ) : ViewModel() {
 
@@ -68,6 +70,26 @@ class CategoryDetailViewModel(
         emitSideEffect(CategoryDetailSideEffect.ProductCreated)
       } else {
         emitSideEffect(CategoryDetailSideEffect.CreateProductFailed)
+      }
+    }
+  }
+
+  fun onDeleteProductClick(productId: String) {
+    emitSideEffect(CategoryDetailSideEffect.ShowDeleteProductDialog(productId))
+  }
+
+  fun onDeleteProduct(productId: String) {
+    viewModelScope.launch {
+      val result = deleteProductUseCase.delete(productId)
+      if (result.isSuccess) {
+        emitSideEffect(CategoryDetailSideEffect.ProductDeleted)
+      } else {
+        val exception = result.exceptionOrNull()
+        if (exception?.message?.contains("active items") == true) {
+          emitSideEffect(CategoryDetailSideEffect.DeleteProductHasActiveItems)
+        } else {
+          emitSideEffect(CategoryDetailSideEffect.DeleteProductFailed)
+        }
       }
     }
   }

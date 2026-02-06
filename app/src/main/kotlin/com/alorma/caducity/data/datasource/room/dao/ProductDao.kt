@@ -1,6 +1,7 @@
 package com.alorma.caducity.data.datasource.room.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -21,4 +22,10 @@ interface ProductDao {
 
   @Query("SELECT * FROM products")
   suspend fun getAllProductsSync(): List<ProductRoomEntity>
+
+  @Delete
+  suspend fun deleteProduct(product: ProductRoomEntity)
+
+  @Query("SELECT COUNT(*) FROM items WHERE productId = :productId AND consumedDate IS NULL")
+  suspend fun getActiveItemCount(productId: String): Int
 }

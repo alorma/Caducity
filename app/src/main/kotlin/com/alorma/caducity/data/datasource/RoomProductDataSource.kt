@@ -38,4 +38,15 @@ class RoomProductDataSource(
     productDao.insertProduct(productMapper.toEntity(product))
     return product
   }
+
+  override suspend fun deleteProduct(productId: String) {
+    val product = productDao.getProduct(productId)
+    if (product != null) {
+      productDao.deleteProduct(product)
+    }
+  }
+
+  override suspend fun getActiveItemCount(productId: String): Int {
+    return productDao.getActiveItemCount(productId)
+  }
 }
