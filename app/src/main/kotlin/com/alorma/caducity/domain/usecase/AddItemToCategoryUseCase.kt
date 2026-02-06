@@ -1,12 +1,12 @@
 package com.alorma.caducity.domain.usecase
 
-import com.alorma.caducity.domain.CategoryDataSource
+import com.alorma.caducity.domain.ItemDataSource
 import com.alorma.caducity.domain.model.NewItem
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 
 class AddItemToCategoryUseCase(
-  private val categoryDataSource: CategoryDataSource,
+  private val itemDataSource: ItemDataSource,
 ) {
 
   @OptIn(ExperimentalUuidApi::class)
@@ -23,7 +23,7 @@ class AddItemToCategoryUseCase(
         expirationDate = expirationDate,
       )
 
-      val createdItem = categoryDataSource.addItem(categoryId, item)
+      val createdItem = itemDataSource.addItem(categoryId, item)
       Result.success(createdItem)
     } catch (e: Exception) {
       Result.failure(e)

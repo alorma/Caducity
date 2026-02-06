@@ -1,6 +1,6 @@
 package com.alorma.caducity.domain.usecase
 
-import com.alorma.caducity.domain.CategoryDataSource
+import com.alorma.caducity.domain.ItemDataSource
 import com.alorma.caducity.domain.model.InstanceActionError
 import com.alorma.caducity.domain.model.InstanceActionResult
 import com.alorma.caducity.config.clock.AppClock
@@ -8,7 +8,7 @@ import com.alorma.caducity.config.time.date
 import kotlin.time.Instant
 
 class FreezeItemUseCase(
-  private val categoryDataSource: CategoryDataSource,
+  private val itemDataSource: ItemDataSource,
   private val appClock: AppClock,
 ) {
 
@@ -25,7 +25,7 @@ class FreezeItemUseCase(
 
     // Only freeze if not already expired (allow freezing items expiring today)
     return if (remainingDays >= 0) {
-      categoryDataSource.freezeItem(itemId, remainingDays)
+      itemDataSource.freezeItem(itemId, remainingDays)
       InstanceActionResult.Success(Unit)
     } else {
       InstanceActionResult.Failure(InstanceActionError.CannotFreezeExpiredInstance)
@@ -33,6 +33,6 @@ class FreezeItemUseCase(
   }
 
   suspend fun unfreezeItem(itemId: String) {
-    categoryDataSource.unfreezeItem(itemId)
+    itemDataSource.unfreezeItem(itemId)
   }
 }
