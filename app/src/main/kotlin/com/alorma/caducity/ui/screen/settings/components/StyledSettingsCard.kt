@@ -4,10 +4,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.shape.toVerticalShape
 import com.alorma.compose.settings.ui.SettingsMenuLink
+import com.alorma.compose.settings.ui.base.internal.SettingsTileColors
+import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
 
 @Composable
 fun StyledSettingsCard(
@@ -18,6 +21,7 @@ fun StyledSettingsCard(
   position: ShapePosition = ShapePosition.Single,
   icon: (@Composable () -> Unit)? = null,
   action: (@Composable () -> Unit)? = null,
+  colors: SettingsTileColors = SettingsTileDefaults.colors(),
 ) {
   SettingsMenuLink(
     modifier = modifier.fillMaxWidth(),
@@ -37,5 +41,6 @@ fun StyledSettingsCard(
     },
     action = action,
     onClick = onClick,
+    colors = colors,
   )
 }
