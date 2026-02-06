@@ -332,18 +332,21 @@ All data sources are defined as interfaces in the domain layer and implemented i
 
 The data layer uses Room for local persistence with a clean mapping to domain models:
 
-### Room Entities (`data/datasource/room/`)
+### Room Entities (`data/datasource/room/model/`)
 
 **Core Entities:**
 - `CategoryRoomEntity` - Table: `categories`
+  - Location: `data/datasource/room/model/CategoryRoomEntity.kt`
   - Fields: id, name, description
 
 - `ProductRoomEntity` - Table: `products`
+  - Location: `data/datasource/room/model/ProductRoomEntity.kt`
   - Fields: id, categoryId (FK → categories), name, createdAt
   - Foreign Key: CASCADE delete when category is deleted
   - Index: categoryId
 
 - `ItemRoomEntity` - Table: `items`
+  - Location: `data/datasource/room/model/ItemRoomEntity.kt`
   - Fields: id, categoryId (FK → categories), productId? (FK → products), identifier, expirationDate, pausedDate?, remainingDays?, consumedDate?
   - Foreign Keys:
     - categoryId → CASCADE delete when category is deleted
@@ -352,9 +355,9 @@ The data layer uses Room for local persistence with a clean mapping to domain mo
 
 **Relation Entity:**
 - `CategoryWithItemsRoomEntity` - Join query result
+  - Location: `data/datasource/room/model/CategoryWithItemsRoomEntity.kt`
   - Embedded: CategoryRoomEntity
   - Relations: List<ItemRoomEntity>, List<ProductRoomEntity>
-  - Method: `filterConsumed()` - Filter out consumed items in memory
 
 ### DAOs (Data Access Objects)
 
@@ -387,10 +390,15 @@ The mapper architecture follows a separation of concerns pattern with specialize
 
 **CategoryRoomMapper:**
 - Location: `data/datasource/room/mapper/CategoryRoomMapper.kt`
-- Responsibility: Category entity ↔ domain model conversions
+- Constructor: `(ProductRoomMapper, ItemRoomMapper)`
+- Responsibilities:
+  - Category entity ↔ domain model conversions
+  - CategoryWithItems composite entity → domain model conversions
 - Methods:
   - `toModel(entity: CategoryRoomEntity)` → `Category`
   - `toEntity(model: Category)` → `CategoryRoomEntity`
+  - `toModel(entity: CategoryWithItemsRoomEntity)` → `CategoryWithItems`
+- Handles: Grouping items by product and standalone items (for CategoryWithItems)
 
 **ProductRoomMapper:**
 - Location: `data/datasource/room/mapper/ProductRoomMapper.kt`
@@ -402,36 +410,24 @@ The mapper architecture follows a separation of concerns pattern with specialize
 
 **ItemRoomMapper:**
 - Location: `data/datasource/room/mapper/ItemRoomMapper.kt`
-- Responsibility: Item entity ↔ domain model conversions with status calculation
 - Constructor: `(AppClock, ExpirationThresholds)`
+- Responsibility: Item entity ↔ domain model conversions with status calculation
 - Methods:
   - `toModel(entity: ItemRoomEntity)` → `Item` with calculated `ItemStatus`
   - `toEntity(model: Item, categoryId: String)` → `ItemRoomEntity`
   - `toEntity(model: NewItem, id: String, categoryId: String)` → `ItemRoomEntity`
 - Status logic: Consumed > Frozen > Calculated (based on expiration and thresholds)
 
-**CategoryWithItemsRoomMapper:**
-- Location: `data/datasource/room/mapper/CategoryWithItemsRoomMapper.kt`
-- Responsibility: Composite entity ↔ domain model conversions
-- Constructor: `(CategoryRoomMapper, ProductRoomMapper, ItemRoomMapper)`
-- Methods:
-  - `toModel(entity: CategoryWithItemsRoomEntity)` → `CategoryWithItems`
-- Dependencies: Delegates to specialized mappers for nested entities
-- Handles: Grouping items by product and standalone items
-
-**RoomEntityMapper (Facade):**
-- Location: `data/datasource/room/RoomEntityMapper.kt`
-- Responsibility: Unified interface that delegates to specialized mappers
-- Constructor: `(CategoryRoomMapper, ProductRoomMapper, ItemRoomMapper, CategoryWithItemsRoomMapper)`
-- Provides backward-compatible API for all entity conversions
-- All mapping methods delegate to the appropriate specialized mapper
+**Note:** `CategoryWithItemsRoomMapper` has been removed. The `CategoryRoomMapper` now handles both simple category mapping and the composite `CategoryWithItems` mapping by composing `ProductRoomMapper` and `ItemRoomMapper`.
 
 ### Data Source Implementations
 
 **RoomCategoryDataSource** (implements CategoryDataSource):
-- Uses: CategoryDao, ItemDao, RoomEntityMapper
+- Constructor: `(AppDatabase, CategoryRoomMapper, ItemRoomMapper)`
+- Uses: CategoryDao, ItemDao
 - Handles: Category CRUD operations (create, read, delete)
-- Queries: Get categories with items, filtered by date range
+- Queries: Get categories with items via CategoryRoomMapper
+- Mapping: Uses CategoryRoomMapper for CategoryWithItems conversions
 
 **RoomProductDataSource** (implements ProductDataSource):
 - Uses: ProductDao
@@ -439,10 +435,12 @@ The mapper architecture follows a separation of concerns pattern with specialize
 - Validation: Checks active item count before product deletion
 
 **RoomItemDataSource** (implements ItemDataSource):
-- Uses: ItemDao, AppClock, RoomEntityMapper
+- Constructor: `(AppDatabase, AppClock, ItemRoomMapper)`
+- Uses: ItemDao
 - Handles: Item CRUD operations (add, get, delete)
 - Item lifecycle: Consume, freeze, unfreeze items
 - Status management: Consumed, frozen, active items
+- Mapping: Uses ItemRoomMapper for entity ↔ model conversions
 
 **RoomBackupDataSource:**
 - Handles backup/restore operations for all entities
