@@ -30,6 +30,7 @@ import com.alorma.caducity.ui.screen.category.create.FutureDateSelectableDates
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailAddItemViewModel
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailMapper
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailViewModel
+import com.alorma.caducity.ui.screen.category.detail.product.ProductPageViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
@@ -81,6 +82,7 @@ val appModule = module {
   singleOf(::CategoryDetailMapper)
   viewModelOf(::CategoryDetailViewModel)
   viewModelOf(::CategoryDetailAddItemViewModel)
+  viewModelOf(::ProductPageViewModel)
 
   // Create category
   singleOf(::CreateCategoryUseCase)
