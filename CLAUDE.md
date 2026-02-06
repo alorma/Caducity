@@ -931,7 +931,7 @@ All dependencies are centralized in `gradle/libs.versions.toml`:
 - Use `alias()` to reference in build.gradle.kts
 
 ### Java Version
-- Source/target: Java 11
+- Source/target: Java 21
 - Ensure JDK 11+ is configured in IDE
 
 ## Localization and Language Support
