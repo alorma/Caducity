@@ -45,7 +45,7 @@ strikt = "0.35.1"
 timber = "5.0.1"
 
 # Firebase
-firebase-bom = "34.8.0"
+firebase-bom = "34.9.0"
 
 [libraries]
 # Compose BOM
