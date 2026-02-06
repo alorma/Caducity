@@ -4,7 +4,7 @@ compose-bom = "2026.01.01"
 compose-screenshot-testing = "0.0.1-alpha13"
 
 # Kotlin
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 ksp = "2.3.5"
 
 # Android
