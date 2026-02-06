@@ -1,6 +1,6 @@
 package com.alorma.caducity.data.datasource.room.mapper
 
-import com.alorma.caducity.data.datasource.room.ProductRoomEntity
+import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import com.alorma.caducity.domain.model.Product
 import kotlin.time.Instant
 

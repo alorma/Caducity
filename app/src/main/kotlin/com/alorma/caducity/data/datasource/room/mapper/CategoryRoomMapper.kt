@@ -1,6 +1,6 @@
 package com.alorma.caducity.data.datasource.room.mapper
 
-import com.alorma.caducity.data.datasource.room.CategoryRoomEntity
+import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.model.Category
 
 /**

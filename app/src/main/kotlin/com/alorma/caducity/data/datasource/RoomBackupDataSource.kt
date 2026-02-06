@@ -7,9 +7,9 @@ import com.alorma.caducity.data.backup.BackupData
 import com.alorma.caducity.data.backup.BackupProduct
 import com.alorma.caducity.data.backup.BackupProductItem
 import com.alorma.caducity.data.datasource.room.AppDatabase
-import com.alorma.caducity.data.datasource.room.CategoryRoomEntity
-import com.alorma.caducity.data.datasource.room.ItemRoomEntity
-import com.alorma.caducity.data.datasource.room.ProductRoomEntity
+import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
+import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
+import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import com.alorma.caducity.domain.backup.BackupDataSource
 
 class RoomBackupDataSource(

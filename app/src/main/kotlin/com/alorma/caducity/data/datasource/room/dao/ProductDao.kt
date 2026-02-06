@@ -1,9 +1,10 @@
-package com.alorma.caducity.data.datasource.room
+package com.alorma.caducity.data.datasource.room.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

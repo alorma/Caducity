@@ -1,4 +1,4 @@
-package com.alorma.caducity.data.datasource.room
+package com.alorma.caducity.data.datasource.room.model
 
 import androidx.room.Embedded
 import androidx.room.Relation
