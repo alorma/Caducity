@@ -20,42 +20,6 @@ import kotlinx.collections.immutable.toImmutableList
  */
 class CategoryWithItemsRoomMapper(
   private val categoryMapper: CategoryRoomMapper,
-  private val productMapper: ProductRoomMapper,
-  private val itemMapper: ItemRoomMapper,
 ) {
 
-  /**
-   * Maps CategoryWithItemsRoomEntity to CategoryWithItems domain model
-   *
-   * This handles the complex mapping of a category with its products and items,
-   * including grouping items by product and handling standalone items.
-   */
-  fun toModel(entity: CategoryWithItemsRoomEntity): CategoryWithItems {
-    val itemsModel = entity.items.map { itemMapper.toModel(it) }
-
-    // Group items by product
-    val itemsByProduct = itemsModel
-      .filter { it.productId != null }
-      .groupBy { it.productId!! }
-
-    // Include ALL products, even those with no items
-    val productsWithItems = entity.products.map { productEntity ->
-      val productItems = itemsByProduct[productEntity.id] ?: emptyList()
-      CategoryProduct(
-        product = productMapper.toModel(productEntity),
-        items = productItems.toImmutableList()
-      )
-    }.toImmutableList()
-
-    // Get standalone items (no productId)
-    val standaloneItemsModel = itemsModel
-      .filter { it.productId == null }
-      .toImmutableList()
-
-    return CategoryWithItems(
-      category = categoryMapper.toModel(entity.category),
-      products = productsWithItems,
-      standaloneItems = standaloneItemsModel,
-    )
-  }
 }

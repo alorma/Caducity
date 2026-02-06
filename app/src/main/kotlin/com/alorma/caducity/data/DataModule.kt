@@ -5,9 +5,7 @@ import com.alorma.caducity.data.datasource.RoomCategoryDataSource
 import com.alorma.caducity.data.datasource.RoomItemDataSource
 import com.alorma.caducity.data.datasource.RoomProductDataSource
 import com.alorma.caducity.data.datasource.room.AppDatabase
-import com.alorma.caducity.data.datasource.room.RoomEntityMapper
 import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
-import com.alorma.caducity.data.datasource.room.mapper.CategoryWithItemsRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.domain.CategoryDataSource
@@ -32,10 +30,6 @@ val dataModule = module {
   factoryOf(::CategoryRoomMapper)
   factoryOf(::ProductRoomMapper)
   factoryOf(::ItemRoomMapper)
-  factoryOf(::CategoryWithItemsRoomMapper)
-
-  // Facade Mapper (delegates to specialized mappers)
-  factoryOf(::RoomEntityMapper)
 
   // Item Comparator
   singleOf(::StatusItemComparator) bind ItemComparator::class
