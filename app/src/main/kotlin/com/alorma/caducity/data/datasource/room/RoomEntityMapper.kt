@@ -5,11 +5,9 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryWithItemsRoomMapp
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
-import com.alorma.caducity.data.datasource.room.model.CategoryWithItemsRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import com.alorma.caducity.domain.model.Category
-import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.NewItem
 import com.alorma.caducity.domain.model.Product
@@ -46,13 +44,6 @@ class RoomEntityMapper(
   // ========== Room Entity -> Domain Model ==========
 
   /**
-   * Maps CategoryRoomEntity to Category domain model
-   */
-  fun mapCategoryToModel(entity: CategoryRoomEntity): Category {
-    return categoryMapper.toModel(entity)
-  }
-
-  /**
    * Maps ItemRoomEntity to Item domain model with status calculation
    */
   fun mapItemToModel(entity: ItemRoomEntity): Item {
@@ -66,23 +57,7 @@ class RoomEntityMapper(
     return productMapper.toModel(entity)
   }
 
-  /**
-   * Maps CategoryWithItemsRoomEntity to CategoryWithItems domain model
-   *
-   * This handles the complex mapping of a category with its products and items.
-   */
-  fun mapCategoryWithItemsToModel(entity: CategoryWithItemsRoomEntity): CategoryWithItems {
-    return categoryWithItemsMapper.toModel(entity)
-  }
-
   // ========== Domain Model -> Room Entity ==========
-
-  /**
-   * Maps Category domain model to CategoryRoomEntity
-   */
-  fun mapCategoryToEntity(model: Category): CategoryRoomEntity {
-    return categoryMapper.toEntity(model)
-  }
 
   /**
    * Maps Item domain model to ItemRoomEntity
