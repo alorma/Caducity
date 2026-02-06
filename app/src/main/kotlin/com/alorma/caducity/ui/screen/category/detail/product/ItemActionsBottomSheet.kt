@@ -35,26 +35,24 @@ fun AppBottomSheetState.showItemActionsBottomSheet(
   onFreeze: () -> Unit,
   onDelete: () -> Unit,
 ) {
-  coroutineScope.launch {
-    show(
-      appFeedbackType = AppFeedbackType.Status(item.status),
-    ) {
-      ItemActionsBottomSheetContent(
-        item = item,
-        onConsume = {
-          onConsume()
-          coroutineScope.launch { this@showItemActionsBottomSheet.hide() }
-        },
-        onFreeze = {
-          onFreeze()
-          coroutineScope.launch { this@showItemActionsBottomSheet.hide() }
-        },
-        onDelete = {
-          onDelete()
-          coroutineScope.launch { this@showItemActionsBottomSheet.hide() }
-        },
-      )
-    }
+  show(
+    appFeedbackType = AppFeedbackType.Status(item.status),
+  ) {
+    ItemActionsBottomSheetContent(
+      item = item,
+      onConsume = {
+        onConsume()
+        coroutineScope.launch { this@showItemActionsBottomSheet.hide() }
+      },
+      onFreeze = {
+        onFreeze()
+        coroutineScope.launch { this@showItemActionsBottomSheet.hide() }
+      },
+      onDelete = {
+        onDelete()
+        coroutineScope.launch { this@showItemActionsBottomSheet.hide() }
+      },
+    )
   }
 }
 
