@@ -206,6 +206,8 @@
     <string name="error_delete_category_failed">Failed to delete category</string>
 
     <!-- Product deletion -->
+    <string name="product_delete_menu">Product options</string>
+    <string name="product_delete_action">Delete Product</string>
     <string name="product_delete_dialog_title">Delete Product?</string>
     <string name="product_delete_dialog_message">This will permanently delete this product. Items will be moved to the \"Other\" tab. This action cannot be undone.</string>
     <string name="product_delete_dialog_delete">Delete</string>
