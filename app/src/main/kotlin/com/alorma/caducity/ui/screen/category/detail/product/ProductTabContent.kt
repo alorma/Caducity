@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.category.detail.product
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,12 +12,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,9 +33,22 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Cooking
+import com.alorma.caducity.base.ui.icons.Delete
+import com.alorma.caducity.base.ui.icons.ThermometerSnow
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.calendar.today
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
+import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
+import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
+import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.DateItemsUiModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
@@ -38,6 +57,8 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.kizitonwose.calendar.core.minusDays
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -54,6 +75,17 @@ fun ProductTabContent(
   }
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+
+  val dialogState = rememberAppDialogState()
+  val snackbarState = rememberAppSnackbarState()
+  val bottomSheetState = rememberAppBottomSheetState()
+
+  ProductPageSideEffectHandler(
+    viewModel = viewModel,
+    dialogState = dialogState,
+    snackbarState = snackbarState,
+    bottomSheetState = bottomSheetState,
+  )
 
   when (val currentState = state) {
     is ProductPageState.Loading -> {
@@ -446,6 +478,202 @@ fun ProductTabContentPreview(
             }
           }
         }
+      }
+    }
+  }
+}
+
+@Composable
+private fun ProductPageSideEffectHandler(
+  viewModel: ProductPageViewModel,
+  dialogState: AppDialogState,
+  snackbarState: AppSnackbarState,
+  bottomSheetState: AppBottomSheetState,
+) {
+  LaunchedEffect(viewModel.sideEffect) {
+    viewModel.sideEffect.collect { effect ->
+      when (effect) {
+        ProductPageSideEffect.ItemConsumed -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.success_item_consumed,
+            type = AppFeedbackType.Success,
+          )
+        }
+
+        ProductPageSideEffect.ItemFrozen -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.success_item_frozen,
+            type = AppFeedbackType.Status(ItemStatus.Frozen),
+          )
+        }
+
+        ProductPageSideEffect.ItemDeleted -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.success_item_deleted,
+            type = AppFeedbackType.Success,
+          )
+        }
+
+        ProductPageSideEffect.ConsumeItemFailed -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.error_consume_item_failed,
+            type = AppFeedbackType.Error,
+          )
+        }
+
+        ProductPageSideEffect.FreezeItemFailed -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.error_freeze_item_failed,
+            type = AppFeedbackType.Error,
+          )
+        }
+
+        ProductPageSideEffect.DeleteItemFailed -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.error_delete_item_failed,
+            type = AppFeedbackType.Error,
+          )
+        }
+
+        is ProductPageSideEffect.FreezeNotAvailable -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.error_cannot_freeze_expired,
+            type = AppFeedbackType.Status(effect.status),
+          )
+        }
+
+        is ProductPageSideEffect.ShowConsumeExpiredWarning -> launch {
+          val result = dialogState.showAlertDialog(
+            title = AppFeedbackResource.AsResource(
+              R.string.warning_consume_expired_title
+            ),
+            text = AppFeedbackResource.AsResource(
+              R.string.warning_consume_expired_message
+            ),
+            type = AppFeedbackType.Status(effect.item.status),
+            positiveButton = AppFeedbackResource.AsResource(
+              R.string.warning_consume_expired_positive
+            ),
+            negativeButton = AppFeedbackResource.AsResource(
+              R.string.warning_consume_expired_negative
+            ),
+          )
+          if (result == DialogResult.Positive) {
+            viewModel.onConsumeItemConfirmed(effect.item)
+          }
+        }
+
+        is ProductPageSideEffect.ShowConsumeExpiredError -> launch {
+          val result = dialogState.showAlertDialog(
+            title = AppFeedbackResource.AsResource(
+              R.string.error_cannot_consume_expired
+            ),
+            text = AppFeedbackResource.AsResource(
+              R.string.error_cannot_consume_expired_message
+            ),
+            type = AppFeedbackType.Status(effect.status),
+            positiveButton = AppFeedbackResource.AsResource(
+              R.string.error_cannot_consume_expired_positive
+            ),
+            negativeButton = AppFeedbackResource.AsResource(
+              R.string.warning_consume_expired_negative
+            ),
+          )
+          if (result == DialogResult.Positive) {
+            viewModel.onDeleteItem(effect.item)
+          }
+        }
+
+        is ProductPageSideEffect.ShowItemActionsBottomSheet -> launch {
+          bottomSheetState.ItemActionsBottomSheet(
+            coroutineScope = this@LaunchedEffect,
+            item = effect.item,
+            onConsume = {
+              viewModel.onConsumeItem(effect.item)
+            },
+            onFreeze = {
+              viewModel.onFreezeItem(effect.item)
+            },
+            onDelete = {
+              viewModel.onDeleteItem(effect.item)
+            },
+          )
+        }
+      }
+    }
+  }
+}
+
+private fun AppBottomSheetState.ItemActionsBottomSheet(
+  coroutineScope: CoroutineScope,
+  item: ItemDetailUiModel,
+  onConsume: () -> Unit,
+  onFreeze: () -> Unit,
+  onDelete: () -> Unit,
+) {
+  coroutineScope.launch {
+    show(
+      appFeedbackType = AppFeedbackType.Status(item.status),
+    ) {
+      Column(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(bottom = 24.dp),
+      ) {
+        // Header with item info
+        Text(
+          text = item.text,
+          style = MaterialTheme.typography.titleMedium,
+          modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
+        )
+
+        HorizontalDivider()
+
+        // Consume action
+        ListItem(
+          headlineContent = { Text(stringResource(R.string.category_detail_action_consume)) },
+          leadingContent = {
+            Icon(
+              imageVector = AppIcons.Cooking,
+              contentDescription = null,
+            )
+          },
+          modifier = Modifier.clickable {
+            onConsume()
+            coroutineScope.launch { this@ItemActionsBottomSheet.hide() }
+          },
+        )
+
+        // Freeze action
+        ListItem(
+          headlineContent = { Text(stringResource(R.string.category_detail_action_freeze)) },
+          leadingContent = {
+            Icon(
+              imageVector = AppIcons.ThermometerSnow,
+              contentDescription = null,
+            )
+          },
+          modifier = Modifier.clickable {
+            onFreeze()
+            coroutineScope.launch { this@ItemActionsBottomSheet.hide() }
+          },
+        )
+
+        // Delete action
+        ListItem(
+          headlineContent = { Text(stringResource(R.string.category_detail_action_delete)) },
+          leadingContent = {
+            Icon(
+              imageVector = AppIcons.Delete,
+              contentDescription = null,
+              tint = MaterialTheme.colorScheme.error,
+            )
+          },
+          modifier = Modifier.clickable {
+            onDelete()
+            coroutineScope.launch { this@ItemActionsBottomSheet.hide() }
+          },
+        )
       }
     }
   }
