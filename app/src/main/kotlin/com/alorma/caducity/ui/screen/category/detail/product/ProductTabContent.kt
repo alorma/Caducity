@@ -47,7 +47,7 @@ fun ProductTabContent(
   productTab: CategoryDetailProductTabUiModel,
   onItemClick: (ItemDetailUiModel) -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: ProductPageViewModel = koinViewModel(key = "${productTab.categoryId}-${productTab?.id}") {
+  viewModel: ProductPageViewModel = koinViewModel(key = "${productTab.categoryId}-${productTab.id}") {
     parametersOf(
       productTab.categoryId,
       if (productTab.id != "other") productTab.id else null
@@ -56,33 +56,28 @@ fun ProductTabContent(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
 
-  Column(modifier = modifier) {
-    // Display UUID at the top
-    when (val currentState = state) {
-      is ProductPageState.Loading -> {
+  when (val currentState = state) {
+    is ProductPageState.Loading -> {
+      Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+      ) {
         Text(
           text = "Loading...",
-          modifier = Modifier.padding(16.dp),
           style = MaterialTheme.typography.bodyMedium,
-        )
-      }
-
-      is ProductPageState.Success -> {
-        Text(
-          text = "UUID: ${currentState.uuid}",
-          modifier = Modifier.padding(16.dp),
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.primary,
         )
       }
     }
 
-    // Original content
-    when (productTab) {
-      is CategoryDetailProductTabUiModel.Empty -> {
-        // Show empty state for products with no items
+    is ProductPageState.Success -> {
+      // Check if there are no items at all
+      if (currentState.datedItemsGroups.isEmpty() &&
+        currentState.frozenItems.isEmpty() &&
+        currentState.consumedItems.isEmpty()
+      ) {
+        // Show empty state
         Box(
-          modifier = Modifier.fillMaxSize(),
+          modifier = modifier.fillMaxSize(),
           contentAlignment = Alignment.Center,
         ) {
           Text(
@@ -91,11 +86,9 @@ fun ProductTabContent(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
-      }
-
-      is CategoryDetailProductTabUiModel.WithItems -> {
+      } else {
         LazyColumn(
-          modifier = Modifier.fillMaxSize(),
+          modifier = modifier.fillMaxSize(),
           contentPadding = PaddingValues(
             top = 16.dp,
             start = 16.dp,
@@ -104,8 +97,8 @@ fun ProductTabContent(
           ),
           verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-
-          productTab.datedItemsGroups.forEach { datedItems ->
+          // Show dated items groups
+          currentState.datedItemsGroups.forEach { datedItems ->
             item {
               SectionHeader(
                 status = datedItems.status,
@@ -114,7 +107,6 @@ fun ProductTabContent(
                 count = datedItems.items.size,
               )
             }
-            // Show each dated status group
             item {
               StatusGroupCard(
                 items = datedItems.items,
@@ -123,42 +115,53 @@ fun ProductTabContent(
             }
           }
 
-          // Sticky header for frozen items
-          if (productTab.frozenItems.isNotEmpty()) {
+          // Frozen items
+          if (currentState.frozenItems.isNotEmpty()) {
             item {
               SectionHeader(
                 status = ItemStatus.Frozen,
                 title = stringResource(R.string.category_detail_section_frozen),
-                count = productTab.frozenItems.size,
+                count = currentState.frozenItems.size,
               )
             }
-
             item {
               StatusGroupCard(
-                items = productTab.frozenItems,
+                items = currentState.frozenItems,
                 onItemClick = onItemClick,
               )
             }
           }
 
-          // Sticky header for consumed items
-          if (productTab.consumedItems.isNotEmpty()) {
+          // Consumed items
+          if (currentState.consumedItems.isNotEmpty()) {
             item {
               SectionHeader(
                 status = ItemStatus.Consumed,
                 title = stringResource(R.string.category_detail_section_consumed),
-                count = productTab.consumedItems.size,
+                count = currentState.consumedItems.size,
               )
             }
-
             item {
               StatusGroupCard(
-                items = productTab.consumedItems,
+                items = currentState.consumedItems,
                 onItemClick = onItemClick,
               )
             }
           }
         }
+      }
+    }
+
+    is ProductPageState.Error -> {
+      Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+      ) {
+        Text(
+          text = currentState.message,
+          style = MaterialTheme.typography.bodyLarge,
+          color = MaterialTheme.colorScheme.error,
+        )
       }
     }
   }
@@ -369,86 +372,77 @@ fun ProductTabContentPreview(
   PreviewTheme {
     Surface {
       // Create a mock preview without the ViewModel since we can't use Koin in previews
-      Column {
-        Text(
-          text = "UUID: preview-uuid",
-          modifier = Modifier.padding(16.dp),
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.primary,
-        )
-
-        when (productTab) {
-          is CategoryDetailProductTabUiModel.Empty -> {
-            Box(
-              modifier = Modifier.fillMaxSize(),
-              contentAlignment = Alignment.Center,
-            ) {
-              Text(
-                text = stringResource(R.string.category_detail_product_empty_state),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-              )
-            }
+      when (productTab) {
+        is CategoryDetailProductTabUiModel.Empty -> {
+          Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+          ) {
+            Text(
+              text = stringResource(R.string.category_detail_product_empty_state),
+              style = MaterialTheme.typography.bodyLarge,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
           }
+        }
 
-          is CategoryDetailProductTabUiModel.WithItems -> {
-            LazyColumn(
-              modifier = Modifier.fillMaxSize(),
-              contentPadding = PaddingValues(
-                top = 16.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 80.dp,
-              ),
-              verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-              productTab.datedItemsGroups.forEach { datedItems ->
-                item {
-                  SectionHeader(
-                    status = datedItems.status,
-                    date = datedItems.text,
-                    title = ExpirationDefaults.getTitle(datedItems.status),
-                    count = datedItems.items.size,
-                  )
-                }
-                item {
-                  StatusGroupCard(
-                    items = datedItems.items,
-                    onItemClick = {},
-                  )
-                }
+        is CategoryDetailProductTabUiModel.WithItems -> {
+          LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+              top = 16.dp,
+              start = 16.dp,
+              end = 16.dp,
+              bottom = 80.dp,
+            ),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+          ) {
+            productTab.datedItemsGroups.forEach { datedItems ->
+              item {
+                SectionHeader(
+                  status = datedItems.status,
+                  date = datedItems.text,
+                  title = ExpirationDefaults.getTitle(datedItems.status),
+                  count = datedItems.items.size,
+                )
               }
-
-              if (productTab.frozenItems.isNotEmpty()) {
-                item {
-                  SectionHeader(
-                    status = ItemStatus.Frozen,
-                    title = stringResource(R.string.category_detail_section_frozen),
-                    count = productTab.frozenItems.size,
-                  )
-                }
-                item {
-                  StatusGroupCard(
-                    items = productTab.frozenItems,
-                    onItemClick = {},
-                  )
-                }
+              item {
+                StatusGroupCard(
+                  items = datedItems.items,
+                  onItemClick = {},
+                )
               }
+            }
 
-              if (productTab.consumedItems.isNotEmpty()) {
-                item {
-                  SectionHeader(
-                    status = ItemStatus.Consumed,
-                    title = stringResource(R.string.category_detail_section_consumed),
-                    count = productTab.consumedItems.size,
-                  )
-                }
-                item {
-                  StatusGroupCard(
-                    items = productTab.consumedItems,
-                    onItemClick = {},
-                  )
-                }
+            if (productTab.frozenItems.isNotEmpty()) {
+              item {
+                SectionHeader(
+                  status = ItemStatus.Frozen,
+                  title = stringResource(R.string.category_detail_section_frozen),
+                  count = productTab.frozenItems.size,
+                )
+              }
+              item {
+                StatusGroupCard(
+                  items = productTab.frozenItems,
+                  onItemClick = {},
+                )
+              }
+            }
+
+            if (productTab.consumedItems.isNotEmpty()) {
+              item {
+                SectionHeader(
+                  status = ItemStatus.Consumed,
+                  title = stringResource(R.string.category_detail_section_consumed),
+                  count = productTab.consumedItems.size,
+                )
+              }
+              item {
+                StatusGroupCard(
+                  items = productTab.consumedItems,
+                  onItemClick = {},
+                )
               }
             }
           }

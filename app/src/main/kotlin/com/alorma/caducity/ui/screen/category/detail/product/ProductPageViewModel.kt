@@ -2,24 +2,31 @@ package com.alorma.caducity.ui.screen.category.detail.product
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import java.util.UUID
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 class ProductPageViewModel(
   private val categoryId: String,
   private val productId: String?,
+  getProductItemsUseCase: GetProductItemsUseCase,
+  productPageMapper: ProductPageMapper,
 ) : ViewModel() {
 
-  private val _state = MutableStateFlow<ProductPageState>(ProductPageState.Loading)
-  val state: StateFlow<ProductPageState> = _state
-
-  init {
-    viewModelScope.launch {
-      // Generate a random UUID for this product page
-      val uuid = UUID.randomUUID().toString()
-      _state.emit(ProductPageState.Success(uuid = uuid))
+  val state: StateFlow<ProductPageState> = getProductItemsUseCase
+    .obtain(categoryId, productId)
+    .map<_, ProductPageState> { productItems ->
+      productPageMapper.mapToUiModel(productItems)
     }
-  }
+    .catch { error ->
+      emit(ProductPageState.Error(error.message ?: "Unknown error"))
+    }
+    .stateIn(
+      viewModelScope,
+      started = SharingStarted.WhileSubscribed(5000),
+      initialValue = ProductPageState.Loading
+    )
 }

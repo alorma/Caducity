@@ -17,6 +17,7 @@ import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
+import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
 import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
@@ -30,6 +31,7 @@ import com.alorma.caducity.ui.screen.category.create.FutureDateSelectableDates
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailAddItemViewModel
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailMapper
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailViewModel
+import com.alorma.caducity.ui.screen.category.detail.product.ProductPageMapper
 import com.alorma.caducity.ui.screen.category.detail.product.ProductPageViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
@@ -82,6 +84,10 @@ val appModule = module {
   singleOf(::CategoryDetailMapper)
   viewModelOf(::CategoryDetailViewModel)
   viewModelOf(::CategoryDetailAddItemViewModel)
+
+  // Product page
+  factoryOf(::GetProductItemsUseCase)
+  factoryOf(::ProductPageMapper)
   viewModelOf(::ProductPageViewModel)
 
   // Create category
