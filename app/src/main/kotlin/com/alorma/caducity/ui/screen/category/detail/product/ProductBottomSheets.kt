@@ -19,6 +19,7 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.filled.Broom
+import com.alorma.caducity.base.ui.icons.outlined.MoveGroup
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
@@ -74,6 +75,12 @@ internal fun AppBottomSheetState.showDeleteProductWithItemsBottomSheet(
 
               // Option 1: Move to standalone items
               StyledSettingsCard(
+                icon = {
+                  Icon(
+                    imageVector = AppIcons.Outlined.MoveGroup,
+                    contentDescription = null,
+                  )
+                },
                 title = stringResource(R.string.product_delete_option_move_to_standalone),
                 subtitle = stringResource(R.string.product_delete_option_move_to_standalone_desc),
                 onClick = onMoveToStandalone,
@@ -83,6 +90,12 @@ internal fun AppBottomSheetState.showDeleteProductWithItemsBottomSheet(
               // Option 2: Move to another product (only if there are other products)
               if (hasProductOption) {
                 StyledSettingsCard(
+                  icon = {
+                    Icon(
+                      imageVector = AppIcons.Outlined.MoveGroup,
+                      contentDescription = null,
+                    )
+                  },
                   title = stringResource(R.string.product_delete_option_move_to_product),
                   subtitle = stringResource(R.string.product_delete_option_move_to_product_desc),
                   onClick = { showProductSelection = true },
@@ -92,7 +105,7 @@ internal fun AppBottomSheetState.showDeleteProductWithItemsBottomSheet(
 
               // Option 3: Delete all items (cascade delete)
               StyledSettingsCard(
-                action = {
+                icon = {
                   Icon(
                     imageVector = AppIcons.Delete,
                     contentDescription = null,

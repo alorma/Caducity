@@ -174,7 +174,7 @@ internal fun ProductPageSideEffectHandler(
             text = AppFeedbackResource.AsResource(
               R.string.product_delete_dialog_message
             ),
-            type = AppFeedbackType.Error,
+            type = AppFeedbackType.Info,
             positiveButton = AppFeedbackResource.AsResource(
               R.string.product_delete_dialog_delete
             ),
