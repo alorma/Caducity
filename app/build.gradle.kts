@@ -14,6 +14,7 @@ plugins {
   alias(libs.plugins.compose.screenshot)
 
   alias(libs.plugins.google.services)
+  alias(libs.plugins.firebase.crashlytics)
 
   id("caducity.version")
 }
@@ -165,6 +166,7 @@ dependencies {
   implementation(libs.firebase.appcheck)
   implementation(libs.firebase.appcheck.playintegrity)
   implementation(libs.firebase.appcheck.debug)
+  implementation(libs.firebase.crashlytics)
 
   // Testing
   testImplementation(libs.junit)
