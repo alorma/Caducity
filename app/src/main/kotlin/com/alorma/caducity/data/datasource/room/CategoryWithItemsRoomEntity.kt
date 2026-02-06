@@ -11,11 +11,11 @@ data class CategoryWithItemsRoomEntity(
     parentColumn = "id",
     entityColumn = "categoryId"
   )
-  val items: List<ItemRoomEntity>,
+  val products: List<ProductRoomEntity> = emptyList(),
 
   @Relation(
     parentColumn = "id",
     entityColumn = "categoryId"
   )
-  val products: List<ProductRoomEntity> = emptyList()
+  val items: List<ItemRoomEntity>,
 )
