@@ -383,26 +383,55 @@ The data layer uses Room for local persistence with a clean mapping to domain mo
 
 ### Mappers
 
-**RoomEntityMapper:**
-Maps between Room entities and domain models:
-- `CategoryRoomEntity.toModel()` → `Category`
-- `ItemRoomEntity.toModel()` → `Item` (via ItemRoomMapper with status calculation)
-- `ProductRoomEntity.toModel()` → `Product`
-- `CategoryWithItemsRoomEntity.toModel()` → `CategoryWithItems`
-- Reverse mappings: `Category.toEntity()`, `Item.toEntity()`, `Product.toEntity()`
+The mapper architecture follows a separation of concerns pattern with specialized mappers for each entity type. All mappers are located in `data/datasource/room/mapper/`:
+
+**CategoryRoomMapper:**
+- Location: `data/datasource/room/mapper/CategoryRoomMapper.kt`
+- Responsibility: Category entity ↔ domain model conversions
+- Methods:
+  - `toModel(entity: CategoryRoomEntity)` → `Category`
+  - `toEntity(model: Category)` → `CategoryRoomEntity`
+
+**ProductRoomMapper:**
+- Location: `data/datasource/room/mapper/ProductRoomMapper.kt`
+- Responsibility: Product entity ↔ domain model conversions
+- Methods:
+  - `toModel(entity: ProductRoomEntity)` → `Product`
+  - `toEntity(model: Product)` → `ProductRoomEntity`
+- Handles: Timestamp conversions for createdAt field
 
 **ItemRoomMapper:**
-Specialized mapper for items with status calculation:
+- Location: `data/datasource/room/mapper/ItemRoomMapper.kt`
+- Responsibility: Item entity ↔ domain model conversions with status calculation
 - Constructor: `(AppClock, ExpirationThresholds)`
-- Maps `ItemRoomEntity` → `Item` with calculated `InstanceStatus`
-- Status logic: Frozen > Consumed > Calculated (based on expiration and thresholds)
+- Methods:
+  - `toModel(entity: ItemRoomEntity)` → `Item` with calculated `ItemStatus`
+  - `toEntity(model: Item, categoryId: String)` → `ItemRoomEntity`
+  - `toEntity(model: NewItem, id: String, categoryId: String)` → `ItemRoomEntity`
+- Status logic: Consumed > Frozen > Calculated (based on expiration and thresholds)
+
+**CategoryWithItemsRoomMapper:**
+- Location: `data/datasource/room/mapper/CategoryWithItemsRoomMapper.kt`
+- Responsibility: Composite entity ↔ domain model conversions
+- Constructor: `(CategoryRoomMapper, ProductRoomMapper, ItemRoomMapper)`
+- Methods:
+  - `toModel(entity: CategoryWithItemsRoomEntity)` → `CategoryWithItems`
+- Dependencies: Delegates to specialized mappers for nested entities
+- Handles: Grouping items by product and standalone items
+
+**RoomEntityMapper (Facade):**
+- Location: `data/datasource/room/RoomEntityMapper.kt`
+- Responsibility: Unified interface that delegates to specialized mappers
+- Constructor: `(CategoryRoomMapper, ProductRoomMapper, ItemRoomMapper, CategoryWithItemsRoomMapper)`
+- Provides backward-compatible API for all entity conversions
+- All mapping methods delegate to the appropriate specialized mapper
 
 ### Data Source Implementations
 
 **RoomCategoryDataSource** (implements CategoryDataSource):
-- Uses: CategoryDao, ItemDao, ItemRoomMapper
-- Handles: Category CRUD, Item lifecycle (add, consume, freeze, unfreeze, delete)
-- Filtering: Supports date range and consumed item filtering
+- Uses: CategoryDao, ItemDao, RoomEntityMapper
+- Handles: Category CRUD operations (create, read, delete)
+- Queries: Get categories with items, filtered by date range
 
 **RoomProductDataSource** (implements ProductDataSource):
 - Uses: ProductDao
@@ -410,8 +439,10 @@ Specialized mapper for items with status calculation:
 - Validation: Checks active item count before product deletion
 
 **RoomItemDataSource** (implements ItemDataSource):
-- Uses: ItemDao, ItemRoomMapper
-- Handles: Item query operations
+- Uses: ItemDao, AppClock, RoomEntityMapper
+- Handles: Item CRUD operations (add, get, delete)
+- Item lifecycle: Consume, freeze, unfreeze items
+- Status management: Consumed, frozen, active items
 
 **RoomBackupDataSource:**
 - Handles backup/restore operations for all entities
