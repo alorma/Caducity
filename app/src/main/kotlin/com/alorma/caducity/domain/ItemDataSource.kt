@@ -18,4 +18,8 @@ interface ItemDataSource {
   suspend fun unfreezeItem(itemId: String)
 
   fun getItemsByProduct(categoryId: String, productId: String?): Flow<List<Item>>
+
+  suspend fun clearConsumedItems(categoryId: String, productId: String?)
+
+  suspend fun clearAllItems(categoryId: String, productId: String?)
 }

@@ -221,6 +221,10 @@
     <string name="success_product_deleted">Producto eliminado</string>
     <string name="error_delete_product_failed">Error al eliminar producto</string>
 
+    <!-- Clear items -->
+    <string name="success_items_cleared">Elementos limpiados</string>
+    <string name="error_clear_items_failed">Error al limpiar elementos</string>
+
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Bienvenido a Caducity</string>
     <string name="onboarding_welcome_message">Rastrea tus alimentos y reduce el desperdicio</string>

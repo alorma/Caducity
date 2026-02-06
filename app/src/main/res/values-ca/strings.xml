@@ -219,8 +219,12 @@
     <string name="product_delete_dialog_message">Això eliminarà permanentment aquest producte. Els elements es mouran a la pestanya \"Altres\". Aquesta acció no es pot desfer.</string>
     <string name="product_delete_dialog_delete">Eliminar</string>
     <string name="product_delete_dialog_cancel">Cancel·lar</string>
-    <string name="product_delete_dialog_success_product_deleted">Producte eliminat</string>
+    <string name="success_product_deleted">Producte eliminat</string>
     <string name="error_delete_product_failed">Error en eliminar producte</string>
+
+    <!-- Clear items -->
+    <string name="success_items_cleared">Elements netejats</string>
+    <string name="error_clear_items_failed">Error en netejar elements</string>
 
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Benvingut a Caducity</string>

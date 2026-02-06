@@ -513,6 +513,22 @@ private fun SideEffectHandler(
             type = AppFeedbackType.Error,
           )
         }
+
+        CategoryDetailSideEffect.ItemsCleared -> launch {
+          bottomSheetState.hide()
+          snackbarState.showSnackbar(
+            message = R.string.success_items_cleared,
+            type = AppFeedbackType.Success,
+          )
+        }
+
+        CategoryDetailSideEffect.ClearItemsFailed -> launch {
+          bottomSheetState.hide()
+          snackbarState.showSnackbar(
+            message = R.string.error_clear_items_failed,
+            type = AppFeedbackType.Error,
+          )
+        }
       }
     }
   }

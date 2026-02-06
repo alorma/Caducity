@@ -91,4 +91,20 @@ class RoomItemDataSource(
       entities.map { entity -> itemMapper.toModel(entity) }
     }
   }
+
+  override suspend fun clearConsumedItems(categoryId: String, productId: String?) {
+    if (productId != null) {
+      itemDao.deleteConsumedItemsByProduct(categoryId, productId)
+    } else {
+      itemDao.deleteConsumedStandaloneItems(categoryId)
+    }
+  }
+
+  override suspend fun clearAllItems(categoryId: String, productId: String?) {
+    if (productId != null) {
+      itemDao.deleteAllItemsByProduct(categoryId, productId)
+    } else {
+      itemDao.deleteAllStandaloneItems(categoryId)
+    }
+  }
 }

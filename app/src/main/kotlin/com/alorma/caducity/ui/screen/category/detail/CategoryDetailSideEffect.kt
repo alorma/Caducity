@@ -7,11 +7,13 @@ sealed interface CategoryDetailSideEffect {
   data object ProductCreated : CategoryDetailSideEffect
   data object ProductDeleted : CategoryDetailSideEffect
   data object CategoryDeleted : CategoryDetailSideEffect
+  data object ItemsCleared : CategoryDetailSideEffect
 
   // Error events
   data object CreateProductFailed : CategoryDetailSideEffect
   data object DeleteProductFailed : CategoryDetailSideEffect
   data object DeleteCategoryFailed : CategoryDetailSideEffect
+  data object ClearItemsFailed : CategoryDetailSideEffect
 
   // Dialog events
   data object ShowAddProductDialog : CategoryDetailSideEffect

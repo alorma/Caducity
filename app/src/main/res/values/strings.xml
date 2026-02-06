@@ -237,6 +237,10 @@
     <string name="product_delete_select_target_message">All %1$d items will be moved to the selected product:</string>
     <string name="product_delete_select_target_back">Back</string>
 
+    <!-- Clear items -->
+    <string name="success_items_cleared">Items cleared</string>
+    <string name="error_clear_items_failed">Failed to clear items</string>
+
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Welcome to Caducity</string>
     <string name="onboarding_welcome_message">Track your groceries and reduce food waste</string>
