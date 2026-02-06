@@ -22,18 +22,22 @@ class DashboardMapper(
         addAll(category.standaloneItems)
       }
 
+      // Filter out consumed items for calendar display
+      val activeItems = items.filter { it.status != ItemStatus.Consumed }
+
       CategoryCalendarState(
         id = category.category.id,
         name = category.category.name,
-        appCalendarConfig = appCalendarConfigMapper.createFromItems(items, firstDayOfWeek)
+        appCalendarConfig = appCalendarConfigMapper.createFromItems(activeItems, firstDayOfWeek)
       )
     }
 
-    val allItems = categories.flatMap { category ->
+    // Filter out consumed items from all categories for summary calculation
+    val allActiveItems = categories.flatMap { category ->
       category.products.flatMap { product -> product.items } + category.standaloneItems
-    }
+    }.filter { it.status != ItemStatus.Consumed }
 
-    val summary = calculateSummary(allItems)
+    val summary = calculateSummary(allActiveItems)
 
     return DashboardState.Success.PerCategory(
       summary = summary,
