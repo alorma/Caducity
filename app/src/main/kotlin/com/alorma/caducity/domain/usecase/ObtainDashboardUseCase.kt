@@ -15,13 +15,13 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 
-class ObtainDashboardCategoriesUseCase(
+class ObtainDashboardUseCase(
   private val appClock: AppClock,
   private val categoryDataSource: CategoryDataSource,
   private val expirationThresholds: ExpirationThresholds,
 ) {
 
-  fun obtainCategories(): Flow<DashboardData> {
+  fun obtain(): Flow<DashboardData> {
     return categoryDataSource.getCategories().map { categories ->
       // Collect all active items from all categories for summary
       val allActiveItems = categories.flatMap { categoryWithItems ->
