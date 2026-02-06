@@ -1,14 +1,14 @@
 package com.alorma.caducity.domain.usecase
 
-import com.alorma.caducity.domain.CategoryDataSource
+import com.alorma.caducity.domain.ItemDataSource
 
 class DeleteItemUseCase(
-  private val categoryDataSource: CategoryDataSource,
+  private val itemDataSource: ItemDataSource,
 ) {
 
   suspend fun deleteItem(itemId: String): Result<Unit> {
     return try {
-      categoryDataSource.deleteItem(itemId)
+      itemDataSource.deleteItem(itemId)
       Result.success(Unit)
     } catch (e: Exception) {
       Result.failure(e)
