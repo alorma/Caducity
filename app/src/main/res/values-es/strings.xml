@@ -205,6 +205,15 @@
     <string name="error_delete_category_failed">Error al eliminar categoría</string>
 
     <!-- Product deletion -->
+    <string name="product_delete_menu">Opciones de producto</string>
+    <string name="product_clear_items_action">Limpiar Elementos</string>
+    <string name="product_clear_items_dialog_title">¿Limpiar Elementos?</string>
+    <string name="product_clear_items_dialog_message">¿Qué te gustaría limpiar de este producto?</string>
+    <string name="product_clear_consumed_only">Limpiar Elementos Consumidos</string>
+    <string name="product_clear_consumed_only_desc">Eliminar solo elementos consumidos</string>
+    <string name="product_clear_all_items">Limpiar Todos los Elementos</string>
+    <string name="product_clear_all_items_desc">Eliminar todos los elementos (consumidos, frescos, caducados)</string>
+    <string name="product_delete_action">Eliminar Producto</string>
     <string name="product_delete_dialog_title">¿Eliminar Producto?</string>
     <string name="product_delete_dialog_message">Esto eliminará permanentemente este producto. Los artículos se moverán a la pestaña \"Otros\". Esta acción no se puede deshacer.</string>
     <string name="product_delete_dialog_delete">Eliminar</string>

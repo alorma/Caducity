@@ -16,6 +16,10 @@ sealed interface CategoryDetailSideEffect {
   // Dialog events
   data object ShowAddProductDialog : CategoryDetailSideEffect
 
+  data class ShowClearProductItemsDialog(
+    val productId: String,
+  ) : CategoryDetailSideEffect
+
   data class ShowDeleteProductDialog(
     val productId: String,
     val onDeleteProduct: (String, ProductDeletionStrategy) -> Unit,

@@ -209,6 +209,13 @@
 
     <!-- Product deletion -->
     <string name="product_delete_menu">Product options</string>
+    <string name="product_clear_items_action">Clear Items</string>
+    <string name="product_clear_items_dialog_title">Clear Items?</string>
+    <string name="product_clear_items_dialog_message">What would you like to clear from this product?</string>
+    <string name="product_clear_consumed_only">Clear Consumed Items</string>
+    <string name="product_clear_consumed_only_desc">Remove only consumed items</string>
+    <string name="product_clear_all_items">Clear All Items</string>
+    <string name="product_clear_all_items_desc">Remove all items (consumed, fresh, expired)</string>
     <string name="product_delete_action">Delete Product</string>
     <string name="product_delete_dialog_title">Delete Product?</string>
     <string name="product_delete_dialog_message">This will permanently delete this product. Items will be moved to the \"Other\" tab. This action cannot be undone.</string>
