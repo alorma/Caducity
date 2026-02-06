@@ -117,6 +117,8 @@
     <string name="category_detail_product_empty_state">Aún no hay elementos. Toca el botón + para añadir uno.</string>
     <string name="category_detail_product_other">Otras</string>
     <string name="category_detail_add_item_title">Añadir Elemento</string>
+    <string name="category_detail_add_item_button">Añadir elemento</string>
+    <string name="category_detail_product_actions_tooltip">Acciones de producto</string>
     <string name="category_detail_add_item_back">Atrás</string>
     <string name="category_detail_add_item_add_other">Añadir Otra</string>
     <string name="category_detail_add_item_product_label">Producto</string>
