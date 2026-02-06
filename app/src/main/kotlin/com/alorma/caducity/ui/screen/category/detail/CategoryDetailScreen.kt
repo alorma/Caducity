@@ -38,10 +38,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
-import com.alorma.caducity.base.ui.icons.ThermometerSnow
-import com.alorma.caducity.domain.model.ItemStatus
+import com.alorma.caducity.domain.model.ProductDeletionStrategy
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
@@ -81,6 +79,8 @@ fun CategoryDetailScreen(
     snackbarState = snackbarState,
     dialogState = dialogState,
     bottomSheetState = bottomSheetState,
+    onCreateProduct = viewModel::onCreateProduct,
+    onDeleteCategory = viewModel::onDeleteCategory,
   )
 
   when (val currentState = state.value) {
@@ -281,6 +281,8 @@ private fun SideEffectHandler(
   snackbarState: AppSnackbarState,
   dialogState: AppDialogState,
   bottomSheetState: AppBottomSheetState,
+  onCreateProduct: (String) -> Unit,
+  onDeleteCategory: () -> Unit,
 ) {
   val backDispatcher = LocalOnBackPressedDispatcherOwner.current
 
@@ -306,7 +308,7 @@ private fun SideEffectHandler(
             type = AppFeedbackType.Info,
           )
           if (result == DialogResult.Positive && productName.isNotBlank()) {
-            viewModel.onCreateProduct(productName)
+            onCreateProduct(productName)
           }
         }
 
@@ -338,25 +340,49 @@ private fun SideEffectHandler(
             ),
           )
           if (result == DialogResult.Positive) {
-            viewModel.onDeleteProduct(effect.productId)
+            effect.onDeleteProduct(
+              effect.productId,
+              ProductDeletionStrategy.CascadeDelete,
+            )
           }
         }
 
+        is CategoryDetailSideEffect.ShowDeleteProductWithItemsDialog -> launch {
+          bottomSheetState.showDeleteProductWithItemsBottomSheet(
+            this,
+            effect.activeItemCount,
+            effect.availableProducts,
+            onMoveToStandalone = {
+              effect.onDeleteProduct(
+                effect.productId,
+                ProductDeletionStrategy.MoveToStandalone,
+              )
+            },
+            onMoveToProduct = { targetProductId ->
+              effect.onDeleteProduct(
+                effect.productId,
+                ProductDeletionStrategy.MoveToProduct(targetProductId),
+              )
+            },
+            onCascadeDelete = {
+              effect.onDeleteProduct(
+                effect.productId,
+                ProductDeletionStrategy.CascadeDelete,
+              )
+            },
+          )
+        }
+
         CategoryDetailSideEffect.ProductDeleted -> launch {
+          bottomSheetState.hide()
           snackbarState.showSnackbar(
             message = R.string.success_product_deleted,
             type = AppFeedbackType.Success,
           )
         }
 
-        CategoryDetailSideEffect.DeleteProductHasActiveItems -> launch {
-          snackbarState.showSnackbar(
-            message = R.string.error_product_has_active_items,
-            type = AppFeedbackType.Error,
-          )
-        }
-
         CategoryDetailSideEffect.DeleteProductFailed -> launch {
+          bottomSheetState.hide()
           snackbarState.showSnackbar(
             message = R.string.error_delete_product_failed,
             type = AppFeedbackType.Error,
@@ -380,7 +406,7 @@ private fun SideEffectHandler(
             ),
           )
           if (result == DialogResult.Positive) {
-            viewModel.onDeleteCategory()
+            onDeleteCategory()
           }
         }
 
@@ -393,6 +419,119 @@ private fun SideEffectHandler(
           snackbarState.showSnackbar(
             message = R.string.error_delete_category_failed,
             type = AppFeedbackType.Error,
+          )
+        }
+      }
+    }
+  }
+}
+
+private fun AppBottomSheetState.showDeleteProductWithItemsBottomSheet(
+  coroutineScope: CoroutineScope,
+  itemCount: Int,
+  availableProducts: List<CategoryProductTabUiModel>,
+  onMoveToStandalone: () -> Unit,
+  onMoveToProduct: (String) -> Unit,
+  onCascadeDelete: () -> Unit,
+) {
+  var showProductSelection by mutableStateOf(false)
+
+  coroutineScope.launch {
+    show {
+      Column(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(16.dp)
+      ) {
+        if (!showProductSelection) {
+          // Main options screen
+          Text(
+            text = stringResource(R.string.product_delete_with_items_title, itemCount),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 16.dp)
+          )
+
+          Text(
+            text = stringResource(R.string.product_delete_with_items_message),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 24.dp)
+          )
+
+          // Option 1: Move to standalone items
+          ListItem(
+            headlineContent = { Text(stringResource(R.string.product_delete_option_move_to_standalone)) },
+            supportingContent = { Text(stringResource(R.string.product_delete_option_move_to_standalone_desc)) },
+            modifier = Modifier.clickable {
+              onMoveToStandalone()
+            }
+          )
+
+          HorizontalDivider()
+
+          // Option 2: Move to another product (only if there are other products)
+          if (availableProducts.isNotEmpty()) {
+            ListItem(
+              headlineContent = { Text(stringResource(R.string.product_delete_option_move_to_product)) },
+              supportingContent = { Text(stringResource(R.string.product_delete_option_move_to_product_desc)) },
+              modifier = Modifier.clickable {
+                showProductSelection = true
+              }
+            )
+
+            HorizontalDivider()
+          }
+
+          // Option 3: Delete all items (cascade delete)
+          ListItem(
+            headlineContent = {
+              Text(
+                text = stringResource(R.string.product_delete_option_cascade_delete),
+                color = CaducityTheme.colorScheme.error
+              )
+            },
+            supportingContent = { Text(stringResource(R.string.product_delete_option_cascade_delete_desc)) },
+            leadingContent = {
+              Icon(
+                imageVector = AppIcons.Delete,
+                contentDescription = null,
+                tint = CaducityTheme.colorScheme.error
+              )
+            },
+            modifier = Modifier.clickable {
+              onCascadeDelete()
+            }
+          )
+        } else {
+          // Product selection screen
+          Text(
+            text = stringResource(R.string.product_delete_select_target_title),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 16.dp)
+          )
+
+          Text(
+            text = stringResource(R.string.product_delete_select_target_message, itemCount),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = 24.dp)
+          )
+
+          // List all available products
+          availableProducts.forEach { product ->
+            ListItem(
+              headlineContent = { Text(product.name) },
+              modifier = Modifier.clickable {
+                product.id?.let { onMoveToProduct(it) }
+              }
+            )
+            HorizontalDivider()
+          }
+
+          // Back button
+          ListItem(
+            headlineContent = { Text(stringResource(R.string.product_delete_select_target_back)) },
+            modifier = Modifier.clickable {
+              showProductSelection = false
+            }
           )
         }
       }

@@ -211,8 +211,20 @@
     <string name="product_delete_dialog_delete">Delete</string>
     <string name="product_delete_dialog_cancel">Cancel</string>
     <string name="success_product_deleted">Product deleted</string>
-    <string name="error_product_has_active_items">Cannot delete product with active items</string>
     <string name="error_delete_product_failed">Failed to delete product</string>
+
+    <!-- Product deletion with items -->
+    <string name="product_delete_with_items_title">Delete Product with %1$d Items?</string>
+    <string name="product_delete_with_items_message">This product has active items. Choose what to do with them:</string>
+    <string name="product_delete_option_move_to_standalone">Move to "Other"</string>
+    <string name="product_delete_option_move_to_standalone_desc">Items will become standalone items in the "Other" tab</string>
+    <string name="product_delete_option_move_to_product">Move to Another Product</string>
+    <string name="product_delete_option_move_to_product_desc">Select a product to transfer all items to</string>
+    <string name="product_delete_option_cascade_delete">Delete Items</string>
+    <string name="product_delete_option_cascade_delete_desc">Permanently delete all items with this product</string>
+    <string name="product_delete_select_target_title">Select Target Product</string>
+    <string name="product_delete_select_target_message">All %1$d items will be moved to the selected product:</string>
+    <string name="product_delete_select_target_back">Back</string>
 
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Welcome to Caducity</string>

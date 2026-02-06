@@ -35,6 +35,12 @@ interface ItemDao {
   @Query("DELETE FROM items WHERE id = :itemId")
   suspend fun deleteItem(itemId: String)
 
+  @Query("UPDATE items SET productId = :toProductId WHERE productId = :fromProductId")
+  suspend fun moveItemsToProduct(fromProductId: String, toProductId: String?)
+
+  @Query("DELETE FROM items WHERE productId = :productId AND consumedDate IS NULL")
+  suspend fun deleteActiveItemsByProduct(productId: String)
+
   // Backup & Restore methods
   @Query("SELECT * FROM items")
   suspend fun getAllItemsSync(): List<ItemRoomEntity>
