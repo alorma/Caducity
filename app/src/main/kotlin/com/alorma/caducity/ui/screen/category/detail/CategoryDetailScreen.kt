@@ -211,8 +211,19 @@ private fun CategoryDetailSuccessContent(
   onShowAddProductDialog: () -> Unit,
   onDeleteCategoryClick: () -> Unit,
 ) {
-  val pagerState = rememberPagerState(pageCount = { state.productTabs.size })
+  val pagerState = rememberPagerState(
+    initialPage = 0,
+    pageCount = { state.productTabs.size.coerceAtLeast(1) }
+  )
   val coroutineScope = rememberCoroutineScope()
+
+  // Handle case where current page is out of bounds after tabs change
+  LaunchedEffect(state.productTabs.size) {
+    if (state.productTabs.isNotEmpty() && pagerState.currentPage >= state.productTabs.size) {
+      // Navigate to the first page to avoid index out of bounds
+      pagerState.scrollToPage(0)
+    }
+  }
 
   AppScaffold(
     modifier = modifier,
@@ -259,9 +270,12 @@ private fun CategoryDetailSuccessContent(
               ),
               verticalAlignment = Alignment.CenterVertically,
             ) {
+              // Ensure selected tab index is within bounds
+              val safeSelectedIndex = pagerState.currentPage.coerceIn(0, state.productTabs.size - 1)
+
               SecondaryScrollableTabRow(
                 modifier = Modifier.weight(1f),
-                selectedTabIndex = pagerState.currentPage,
+                selectedTabIndex = safeSelectedIndex,
                 edgePadding = 16.dp,
                 divider = {},
                 containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
@@ -295,15 +309,20 @@ private fun CategoryDetailSuccessContent(
       }
 
       // Horizontal Pager for variant content
-      HorizontalPager(
-        state = pagerState,
-        modifier = Modifier.fillMaxSize(),
-      ) { page ->
-        val productTab = state.productTabs[page]
-        ProductTabContent(
-          productTab = productTab,
-          onNavigateToAddItem = { _, productId -> onNavigateToAddInstance(productId) },
-        )
+      if (state.productTabs.isNotEmpty()) {
+        HorizontalPager(
+          state = pagerState,
+          modifier = Modifier.fillMaxSize(),
+        ) { page ->
+          // Bounds check to prevent crash when tabs are removed
+          if (page in state.productTabs.indices) {
+            val productTab = state.productTabs[page]
+            ProductTabContent(
+              productTab = productTab,
+              onNavigateToAddItem = { _, productId -> onNavigateToAddInstance(productId) },
+            )
+          }
+        }
       }
     }
   }
