@@ -50,7 +50,6 @@ import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.category.detail.product.ProductTabContent
 import com.alorma.caducity.ui.theme.CaducityTheme
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -87,7 +86,6 @@ fun CategoryDetailScreen(
         dialogState = dialogState,
         snackbarState = snackbarState,
         state = currentState,
-        categoryState = viewModel.state,
         onNavigateToAddInstance = onNavigateToAddInstance,
         onShowAddProductDialog = viewModel::onShowAddProductDialog,
         onDeleteCategoryClick = viewModel::onDeleteCategoryClick,
@@ -105,7 +103,6 @@ private fun CategoryDetailSuccessContent(
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
   state: CategoryDetailState.Success,
-  categoryState: StateFlow<CategoryDetailState>,
   onNavigateToAddInstance: (productId: String?) -> Unit,
   onShowAddProductDialog: () -> Unit,
   onDeleteCategoryClick: () -> Unit,
@@ -201,7 +198,6 @@ private fun CategoryDetailSuccessContent(
         val productTab = state.productTabs[page]
         ProductTabContent(
           productTab = productTab,
-          categoryState = categoryState,
           onNavigateToAddItem = { _, productId -> onNavigateToAddInstance(productId) },
         )
       }

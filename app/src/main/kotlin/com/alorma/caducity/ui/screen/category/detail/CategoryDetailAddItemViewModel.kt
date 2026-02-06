@@ -45,7 +45,7 @@ class CategoryDetailAddItemViewModel(
   private fun loadProducts() {
     viewModelScope.launch {
       _state.value = CategoryDetailAddItemState.Loading
-      getCategoryProductsUseCase(categoryId)
+      getCategoryProductsUseCase.obtain(categoryId)
         .collect { products ->
           allProducts = products.map { product ->
             ProductUiModel(
