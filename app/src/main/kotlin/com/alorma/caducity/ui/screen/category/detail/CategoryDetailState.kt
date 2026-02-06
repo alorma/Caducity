@@ -13,7 +13,7 @@ sealed interface CategoryDetailState {
     val today: LocalDate,
     val category: CategoryDetailUiModel,
     val appCalendarConfig: AppCalendarConfig,
-    val productTabs: ImmutableList<CategoryDetailProductTabUiModel>,
+    val productTabs: ImmutableList<CategoryProductTabUiModel>,
   ) : CategoryDetailState
 
   @Stable

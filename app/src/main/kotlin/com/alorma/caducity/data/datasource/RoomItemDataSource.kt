@@ -6,6 +6,8 @@ import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.domain.ItemDataSource
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.NewItem
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.util.UUID
 import kotlin.time.Duration.Companion.days
 
@@ -77,6 +79,16 @@ class RoomItemDataSource(
         )
         itemDao.updateItem(updatedItem)
       }
+    }
+  }
+
+  override fun getItemsByProduct(categoryId: String, productId: String?): Flow<List<Item>> {
+    return if (productId != null) {
+      itemDao.getProductItems(categoryId, productId)
+    } else {
+      itemDao.getStandaloneItems(categoryId)
+    }.map { entities ->
+      entities.map { entity -> itemMapper.toModel(entity) }
     }
   }
 }

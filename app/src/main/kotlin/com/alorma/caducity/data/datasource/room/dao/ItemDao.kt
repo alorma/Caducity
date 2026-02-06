@@ -17,6 +17,12 @@ interface ItemDao {
   @Query("SELECT * FROM items WHERE categoryId = :categoryId")
   fun getCategoryItems(categoryId: String): Flow<List<ItemRoomEntity>>
 
+  @Query("SELECT * FROM items WHERE categoryId = :categoryId AND productId = :productId")
+  fun getProductItems(categoryId: String, productId: String): Flow<List<ItemRoomEntity>>
+
+  @Query("SELECT * FROM items WHERE categoryId = :categoryId AND productId IS NULL")
+  fun getStandaloneItems(categoryId: String): Flow<List<ItemRoomEntity>>
+
   @Query("SELECT * FROM items WHERE id = :itemId")
   suspend fun getItem(itemId: String): ItemRoomEntity?
 

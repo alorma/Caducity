@@ -93,7 +93,6 @@ fun CategoryDetailScreen(
         snackbarState = snackbarState,
         state = currentState,
         onNavigateToAddInstance = onNavigateToAddInstance,
-        onItemClick = viewModel::onItemClick,
         onShowAddProductDialog = viewModel::onShowAddProductDialog,
         onDeleteCategoryClick = viewModel::onDeleteCategoryClick,
       )
@@ -111,7 +110,6 @@ private fun CategoryDetailSuccessContent(
   snackbarState: AppSnackbarState,
   state: CategoryDetailState.Success,
   onNavigateToAddInstance: (productId: String?) -> Unit,
-  onItemClick: (ItemDetailUiModel) -> Unit,
   onShowAddProductDialog: () -> Unit,
   onDeleteCategoryClick: () -> Unit,
 ) {
@@ -226,82 +224,6 @@ private fun CategoryDetailSuccessContent(
         val productTab = state.productTabs[page]
         ProductTabContent(
           productTab = productTab,
-          onItemClick = onItemClick,
-        )
-      }
-    }
-  }
-}
-
-private fun AppBottomSheetState.ItemActionsBottomSheet(
-  coroutineScope: CoroutineScope,
-  item: ItemDetailUiModel,
-  onConsume: () -> Unit,
-  onFreeze: () -> Unit,
-  onDelete: () -> Unit,
-) {
-  coroutineScope.launch {
-    show(
-      appFeedbackType = AppFeedbackType.Status(item.status),
-    ) {
-      Column(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(bottom = 24.dp),
-      ) {
-        // Header with item info
-        Text(
-          text = item.text,
-          style = MaterialTheme.typography.titleMedium,
-          modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-        )
-
-        HorizontalDivider()
-
-        // Consume action
-        ListItem(
-          headlineContent = { Text(stringResource(R.string.category_detail_action_consume)) },
-          leadingContent = {
-            Icon(
-              imageVector = AppIcons.Cooking,
-              contentDescription = null,
-            )
-          },
-          modifier = Modifier.clickable {
-            onConsume()
-            coroutineScope.launch { this@ItemActionsBottomSheet.hide() }
-          },
-        )
-
-        // Freeze action
-        ListItem(
-          headlineContent = { Text(stringResource(R.string.category_detail_action_freeze)) },
-          leadingContent = {
-            Icon(
-              imageVector = AppIcons.ThermometerSnow,
-              contentDescription = null,
-            )
-          },
-          modifier = Modifier.clickable {
-            onFreeze()
-            coroutineScope.launch { this@ItemActionsBottomSheet.hide() }
-          },
-        )
-
-        // Delete action
-        ListItem(
-          headlineContent = { Text(stringResource(R.string.category_detail_action_delete)) },
-          leadingContent = {
-            Icon(
-              imageVector = AppIcons.Delete,
-              contentDescription = null,
-              tint = MaterialTheme.colorScheme.error,
-            )
-          },
-          modifier = Modifier.clickable {
-            onDelete()
-            coroutineScope.launch { this@ItemActionsBottomSheet.hide() }
-          },
         )
       }
     }
@@ -334,97 +256,6 @@ private fun SideEffectHandler(
   LaunchedEffect(viewModel.sideEffect) {
     viewModel.sideEffect.collect { effect ->
       when (effect) {
-        CategoryDetailSideEffect.ItemConsumed -> launch {
-          snackbarState.showSnackbar(
-            message = R.string.success_item_consumed,
-            type = AppFeedbackType.Success,
-          )
-        }
-
-        CategoryDetailSideEffect.ItemFrozen -> launch {
-          snackbarState.showSnackbar(
-            message = R.string.success_item_frozen,
-            type = AppFeedbackType.Status(ItemStatus.Frozen),
-          )
-        }
-
-        CategoryDetailSideEffect.ItemDeleted -> launch {
-          snackbarState.showSnackbar(
-            message = R.string.success_item_deleted,
-            type = AppFeedbackType.Success,
-          )
-        }
-
-        CategoryDetailSideEffect.ConsumeItemFailed -> launch {
-          snackbarState.showSnackbar(
-            message = R.string.error_consume_item_failed,
-            type = AppFeedbackType.Error,
-          )
-        }
-
-        CategoryDetailSideEffect.FreezeItemFailed -> launch {
-          snackbarState.showSnackbar(
-            message = R.string.error_freeze_item_failed,
-            type = AppFeedbackType.Error,
-          )
-        }
-
-        CategoryDetailSideEffect.DeleteItemFailed -> launch {
-          snackbarState.showSnackbar(
-            message = R.string.error_delete_item_failed,
-            type = AppFeedbackType.Error,
-          )
-        }
-
-        is CategoryDetailSideEffect.FreezeNotAvailable -> launch {
-          snackbarState.showSnackbar(
-            message = R.string.error_cannot_freeze_expired,
-            type = AppFeedbackType.Status(effect.status),
-          )
-        }
-
-        is CategoryDetailSideEffect.ShowConsumeExpiredWarning -> launch {
-          val result = dialogState.showAlertDialog(
-            title = AppFeedbackResource.AsResource(
-              R.string.warning_consume_expired_title
-            ),
-            text = AppFeedbackResource.AsResource(
-              R.string.warning_consume_expired_message
-            ),
-            type = AppFeedbackType.Status(effect.item.status),
-            positiveButton = AppFeedbackResource.AsResource(
-              R.string.warning_consume_expired_positive
-            ),
-            negativeButton = AppFeedbackResource.AsResource(
-              R.string.warning_consume_expired_negative
-            ),
-          )
-          if (result == DialogResult.Positive) {
-            viewModel.onConsumeItemConfirmed(effect.item)
-          }
-        }
-
-        is CategoryDetailSideEffect.ShowConsumeExpiredError -> launch {
-          val result = dialogState.showAlertDialog(
-            title = AppFeedbackResource.AsResource(
-              R.string.error_cannot_consume_expired
-            ),
-            text = AppFeedbackResource.AsResource(
-              R.string.error_cannot_consume_expired_message
-            ),
-            type = AppFeedbackType.Status(effect.status),
-            positiveButton = AppFeedbackResource.AsResource(
-              R.string.error_cannot_consume_expired_positive
-            ),
-            negativeButton = AppFeedbackResource.AsResource(
-              R.string.warning_consume_expired_negative
-            ),
-          )
-          if (result == DialogResult.Positive) {
-            viewModel.onDeleteItem(effect.item)
-          }
-        }
-
         CategoryDetailSideEffect.ShowAddProductDialog -> launch {
           var productName by mutableStateOf("")
           val result = dialogState.showAlertDialog(
@@ -446,25 +277,6 @@ private fun SideEffectHandler(
           if (result == DialogResult.Positive && productName.isNotBlank()) {
             viewModel.onCreateProduct(productName)
           }
-        }
-
-        is CategoryDetailSideEffect.ShowItemActionsBottomSheet -> launch {
-          bottomSheetState.ItemActionsBottomSheet(
-            coroutineScope = this@LaunchedEffect,
-            item = effect.item,
-            onConsume = {
-              viewModel.onConsumeItem(effect.item)
-              this.launch { }
-            },
-            onFreeze = {
-              viewModel.onFreezeItem(effect.item)
-              this.launch { }
-            },
-            onDelete = {
-              viewModel.onDeleteItem(effect.item)
-              this.launch { }
-            },
-          )
         }
 
         CategoryDetailSideEffect.ProductCreated -> launch {

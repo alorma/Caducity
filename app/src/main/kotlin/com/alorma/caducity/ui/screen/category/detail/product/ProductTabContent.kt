@@ -16,6 +16,7 @@ import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,11 +25,16 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.calendar.today
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
-import com.alorma.caducity.ui.screen.category.detail.CategoryDetailProductTabUiModel
+import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
+import com.alorma.caducity.ui.components.loading.FullscreenLoading
+import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.DateItemsUiModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -37,92 +43,146 @@ import com.kizitonwose.calendar.core.minusDays
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ProductTabContent(
-  productTab: CategoryDetailProductTabUiModel,
-  onItemClick: (ItemDetailUiModel) -> Unit,
+  productTab: CategoryProductTabUiModel,
+  modifier: Modifier = Modifier,
+  viewModel: ProductPageViewModel = koinViewModel(key = productTab.asKey()) {
+    parametersOf(productTab)
+  }
 ) {
-  when (productTab) {
-    is CategoryDetailProductTabUiModel.Empty -> {
-      // Show empty state for products with no items
+  val state by viewModel.state.collectAsStateWithLifecycle()
+
+  val dialogState = rememberAppDialogState()
+  val snackbarState = rememberAppSnackbarState()
+  val bottomSheetState = rememberAppBottomSheetState()
+
+  ProductPageSideEffectHandler(
+    viewModel = viewModel,
+    dialogState = dialogState,
+    snackbarState = snackbarState,
+    bottomSheetState = bottomSheetState,
+  )
+
+  ProductTabContentPage(
+    modifier = modifier,
+    state = state,
+    onItemClick = viewModel::onItemClick,
+  )
+}
+
+@Composable
+private fun ProductTabContentPage(
+  state: ProductPageState,
+  onItemClick: (ItemDetailUiModel) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  when (val currentState = state) {
+    is ProductPageState.Loading -> {
       Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,
       ) {
-        Text(
-          text = stringResource(R.string.category_detail_product_empty_state),
-          style = MaterialTheme.typography.bodyLarge,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        FullscreenLoading()
       }
     }
 
-    is CategoryDetailProductTabUiModel.WithItems -> {
-      LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(
-          top = 16.dp,
-          start = 16.dp,
-          end = 16.dp,
-          bottom = 80.dp,
-        ),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+    is ProductPageState.Success -> {
+      // Check if there are no items at all
+      if (currentState.datedItemsGroups.isEmpty() &&
+        currentState.frozenItems.isEmpty() &&
+        currentState.consumedItems.isEmpty()
       ) {
-
-        productTab.datedItemsGroups.forEach { datedItems ->
-          item {
-            SectionHeader(
-              status = datedItems.status,
-              date = datedItems.text,
-              title = ExpirationDefaults.getTitle(datedItems.status),
-              count = datedItems.items.size,
-            )
+        // Show empty state
+        Box(
+          modifier = modifier.fillMaxSize(),
+          contentAlignment = Alignment.Center,
+        ) {
+          Text(
+            text = stringResource(R.string.category_detail_product_empty_state),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+      } else {
+        LazyColumn(
+          modifier = modifier.fillMaxSize(),
+          contentPadding = PaddingValues(
+            top = 16.dp,
+            start = 16.dp,
+            end = 16.dp,
+            bottom = 80.dp,
+          ),
+          verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+          // Show dated items groups
+          currentState.datedItemsGroups.forEach { datedItems ->
+            item {
+              SectionHeader(
+                status = datedItems.status,
+                date = datedItems.text,
+                title = ExpirationDefaults.getTitle(datedItems.status),
+                count = datedItems.items.size,
+              )
+            }
+            item {
+              StatusGroupCard(
+                items = datedItems.items,
+                onItemClick = onItemClick,
+              )
+            }
           }
-          // Show each dated status group
-          item {
-            StatusGroupCard(
-              items = datedItems.items,
-              onItemClick = onItemClick,
-            )
+
+          // Frozen items
+          if (currentState.frozenItems.isNotEmpty()) {
+            item {
+              SectionHeader(
+                status = ItemStatus.Frozen,
+                title = stringResource(R.string.category_detail_section_frozen),
+                count = currentState.frozenItems.size,
+              )
+            }
+            item {
+              StatusGroupCard(
+                items = currentState.frozenItems,
+                onItemClick = onItemClick,
+              )
+            }
+          }
+
+          // Consumed items
+          if (currentState.consumedItems.isNotEmpty()) {
+            item {
+              SectionHeader(
+                status = ItemStatus.Consumed,
+                title = stringResource(R.string.category_detail_section_consumed),
+                count = currentState.consumedItems.size,
+              )
+            }
+            item {
+              StatusGroupCard(
+                items = currentState.consumedItems,
+                onItemClick = onItemClick,
+              )
+            }
           }
         }
+      }
+    }
 
-        // Sticky header for frozen items
-        if (productTab.frozenItems.isNotEmpty()) {
-          item {
-            SectionHeader(
-              status = ItemStatus.Frozen,
-              title = stringResource(R.string.category_detail_section_frozen),
-              count = productTab.frozenItems.size,
-            )
-          }
-
-          item {
-            StatusGroupCard(
-              items = productTab.frozenItems,
-              onItemClick = onItemClick,
-            )
-          }
-        }
-
-        // Sticky header for consumed items
-        if (productTab.consumedItems.isNotEmpty()) {
-          item {
-            SectionHeader(
-              status = ItemStatus.Consumed,
-              title = stringResource(R.string.category_detail_section_consumed),
-              count = productTab.consumedItems.size,
-            )
-          }
-
-          item {
-            StatusGroupCard(
-              items = productTab.consumedItems,
-              onItemClick = onItemClick,
-            )
-          }
-        }
+    is ProductPageState.Error -> {
+      Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+      ) {
+        Text(
+          text = currentState.message,
+          style = MaterialTheme.typography.bodyLarge,
+          color = MaterialTheme.colorScheme.error,
+        )
       }
     }
   }
@@ -213,17 +273,18 @@ private val yesterday = today.minusDays(1)
 private val nextWeek = LocalDate(2024, 2, 22)
 
 class ProductTabContentPreviewProvider :
-  CollectionPreviewParameterProvider<CategoryDetailProductTabUiModel>(
+  CollectionPreviewParameterProvider<ProductPageState>(
     listOf(
+      // Loading state
+      ProductPageState.Loading,
       // Empty state
-      CategoryDetailProductTabUiModel.Empty(
-        id = "1",
-        name = "Milk",
+      ProductPageState.Success(
+        datedItemsGroups = persistentListOf(),
+        frozenItems = persistentListOf(),
+        consumedItems = persistentListOf(),
       ),
       // Product with all statuses
-      CategoryDetailProductTabUiModel.WithItems(
-        id = "3",
-        name = "Cheese",
+      ProductPageState.Success(
         datedItemsGroups = persistentListOf(
           DateItemsUiModel(
             text = "Yesterday",
@@ -312,12 +373,24 @@ class ProductTabContentPreviewProvider :
           ),
         ),
       ),
+      // Error state
+      ProductPageState.Error("Failed to load items"),
     )
   ) {
   override fun getDisplayName(index: Int): String {
-    return when (values.toList()[index]) {
-      is CategoryDetailProductTabUiModel.Empty -> "Empty"
-      is CategoryDetailProductTabUiModel.WithItems -> "With status"
+    return when (val state = values.toList()[index]) {
+      is ProductPageState.Loading -> "Loading"
+      is ProductPageState.Success -> {
+        if (state.datedItemsGroups.isEmpty() &&
+          state.frozenItems.isEmpty() &&
+          state.consumedItems.isEmpty()
+        ) {
+          "Empty"
+        } else {
+          "With items"
+        }
+      }
+      is ProductPageState.Error -> "Error"
     }
   }
 }
@@ -326,14 +399,15 @@ class ProductTabContentPreviewProvider :
 @Composable
 fun ProductTabContentPreview(
   @PreviewParameter(provider = ProductTabContentPreviewProvider::class)
-  productTab: CategoryDetailProductTabUiModel,
+  state: ProductPageState,
 ) {
   PreviewTheme {
     Surface {
-      ProductTabContent(
-        productTab = productTab,
+      ProductTabContentPage(
+        state = state,
         onItemClick = {},
       )
     }
   }
 }
+
