@@ -23,25 +23,27 @@ data class ItemDetailUiModel(
 
 @Stable
 data class CategoryDetailUiModel(
-  val id: String,
   val name: String,
   val description: String,
 )
 
 @Stable
 sealed class CategoryDetailProductTabUiModel {
-  abstract val id: String
+  abstract val id: String?
+  abstract val categoryId: String
   abstract val name: String
 
   @Stable
   data class Empty(
-    override val id: String,
+    override val id: String?,
+    override val categoryId: String,
     override val name: String,
   ) : CategoryDetailProductTabUiModel()
 
   @Stable
   data class WithItems(
-    override val id: String,
+    override val id: String?,
+    override val categoryId: String,
     override val name: String,
     val datedItemsGroups: ImmutableList<DateItemsUiModel>,
     val frozenItems: ImmutableList<ItemDetailUiModel>,

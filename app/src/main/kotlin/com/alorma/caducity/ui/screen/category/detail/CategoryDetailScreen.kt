@@ -117,7 +117,6 @@ private fun CategoryDetailSuccessContent(
 ) {
   val pagerState = rememberPagerState(pageCount = { state.productTabs.size })
   val coroutineScope = rememberCoroutineScope()
-  val categoryId = state.category.id
 
   AppScaffold(
     modifier = modifier,
@@ -226,7 +225,6 @@ private fun CategoryDetailSuccessContent(
       ) { page ->
         val productTab = state.productTabs[page]
         ProductTabContent(
-          categoryId = categoryId,
           productTab = productTab,
           onItemClick = onItemClick,
         )

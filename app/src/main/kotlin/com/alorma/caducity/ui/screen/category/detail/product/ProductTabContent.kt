@@ -44,15 +44,14 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun ProductTabContent(
-  categoryId: String,
   productTab: CategoryDetailProductTabUiModel,
   onItemClick: (ItemDetailUiModel) -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: ProductPageViewModel = koinViewModel { 
+  viewModel: ProductPageViewModel = koinViewModel(key = "${productTab.categoryId}-${productTab?.id}") {
     parametersOf(
-      categoryId,
+      productTab.categoryId,
       if (productTab.id != "other") productTab.id else null
-    ) 
+    )
   }
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -67,6 +66,7 @@ fun ProductTabContent(
           style = MaterialTheme.typography.bodyMedium,
         )
       }
+
       is ProductPageState.Success -> {
         Text(
           text = "UUID: ${currentState.uuid}",
@@ -254,11 +254,13 @@ class ProductTabContentPreviewProvider :
       // Empty state
       CategoryDetailProductTabUiModel.Empty(
         id = "1",
+        categoryId = "24",
         name = "Milk",
       ),
       // Product with all statuses
       CategoryDetailProductTabUiModel.WithItems(
         id = "3",
+        categoryId = "24",
         name = "Cheese",
         datedItemsGroups = persistentListOf(
           DateItemsUiModel(
@@ -374,7 +376,7 @@ fun ProductTabContentPreview(
           style = MaterialTheme.typography.bodyMedium,
           color = MaterialTheme.colorScheme.primary,
         )
-        
+
         when (productTab) {
           is CategoryDetailProductTabUiModel.Empty -> {
             Box(

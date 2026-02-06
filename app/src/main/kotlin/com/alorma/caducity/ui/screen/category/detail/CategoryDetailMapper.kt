@@ -25,7 +25,6 @@ class CategoryDetailMapper(
   ): CategoryDetailState.Success {
 
     val categoryUiModel = CategoryDetailUiModel(
-      id = categoryDetail.category.id,
       name = categoryDetail.category.name,
       description = categoryDetail.category.description,
     )
@@ -35,11 +34,13 @@ class CategoryDetailMapper(
       if (product.datedItemsGroups.isEmpty() && product.frozenItems.isEmpty() && product.consumedItems.isEmpty()) {
         CategoryDetailProductTabUiModel.Empty(
           id = product.id,
+          categoryId = categoryDetail.category.id,
           name = product.name,
         )
       } else {
         CategoryDetailProductTabUiModel.WithItems(
           id = product.id,
+          categoryId = categoryDetail.category.id,
           name = product.name,
           datedItemsGroups = product.datedItemsGroups
             .map { datedItems -> mapProductDatedContent(datedItems = datedItems) }
@@ -70,7 +71,8 @@ class CategoryDetailMapper(
       categoryDetail.standaloneConsumedItems.isNotEmpty()
     ) {
       val otherTab = CategoryDetailProductTabUiModel.WithItems(
-        id = "other",
+        id = null,
+        categoryId = categoryDetail.category.id,
         name = stringProvider.getString(R.string.category_detail_product_other),
         datedItemsGroups = listOf(
           DateItemsUiModel(
