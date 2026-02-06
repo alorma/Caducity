@@ -1,23 +1,29 @@
 package com.alorma.caducity.ui.screen.category.detail
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SecondaryScrollableTabRow
+import androidx.compose.material3.SplitButtonDefaults
+import androidx.compose.material3.SplitButtonLayout
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -26,20 +32,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.ArrowDown
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.Delete
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.ProductDeletionStrategy
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
+import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
@@ -145,24 +157,95 @@ private fun CategoryDetailSuccessContent(
       )
     },
     floatingActionButton = {
-      FloatingActionButton(
-        onClick = {
-          // Get the currently selected product ID
-          val selectedCategoryId = if (state.productTabs.isNotEmpty()) {
-            val currentTab = state.productTabs[pagerState.currentPage]
-            // Don't pass null (which represents "other" tab) as a product ID
-            currentTab.id
-          } else {
-            null
+      val currentTab = state.productTabs.getOrNull(pagerState.currentPage)
+
+      val checked = remember { mutableStateOf(false) }
+      val size = SplitButtonDefaults.LargeContainerHeight
+
+      val freshColors = ExpirationDefaults.getSoftColors(
+        itemStatus = ItemStatus.Fresh,
+      )
+
+      val buttonColors = ButtonDefaults.buttonColors(
+        containerColor = freshColors.container,
+        contentColor = freshColors.onContainer,
+      )
+
+      SplitButtonLayout(
+        modifier = Modifier.heightIn(size),
+        leadingButton = {
+
+          SplitButtonDefaults.LeadingButton(
+            colors = buttonColors,
+            shapes = SplitButtonDefaults.leadingButtonShapesFor(size),
+            contentPadding = SplitButtonDefaults.leadingButtonContentPaddingFor(size),
+            onClick = {
+              val selectedCategoryId = if (state.productTabs.isNotEmpty()) {
+                currentTab?.id
+              } else {
+                null
+              }
+              onNavigateToAddInstance(selectedCategoryId)
+            },
+          ) {
+            Text(
+              text = "Add item",
+              style = ButtonDefaults.textStyleFor(size)
+            )
           }
-          onNavigateToAddInstance(selectedCategoryId)
         },
-      ) {
-        Icon(
-          imageVector = AppIcons.Add,
-          contentDescription = null,
-        )
-      }
+        trailingButton = {
+          Box {
+            val rotation: Float by animateFloatAsState(
+              targetValue = if (checked.value) {
+                180f
+              } else
+                0f,
+              label = "Trailing Icon Rotation",
+            )
+
+            SplitButtonDefaults.TrailingButton(
+              modifier = Modifier.heightIn(size),
+              colors = buttonColors,
+              checked = checked.value,
+              shapes = SplitButtonDefaults.trailingButtonShapesFor(size),
+              contentPadding = SplitButtonDefaults.trailingButtonContentPaddingFor(size),
+              onCheckedChange = { checked.value = it },
+            ) {
+              Icon(
+                modifier = Modifier
+                  .size(SplitButtonDefaults.TrailingIconSize)
+                  .graphicsLayer { this.rotationZ = rotation },
+                imageVector = AppIcons.ArrowDown,
+                contentDescription = stringResource(R.string.product_delete_menu),
+              )
+            }
+
+            DropdownMenu(
+              expanded = checked.value,
+              onDismissRequest = { checked.value = false }
+            ) {
+              // Show delete product option only if current tab is a product (not "Other")
+              if (currentTab?.id != null) {
+                DropdownMenuItem(
+                  text = { Text(stringResource(R.string.product_delete_action)) },
+                  onClick = {
+                    checked.value = false
+                    onDeleteProductClick(currentTab.id)
+                  },
+                  leadingIcon = {
+                    Icon(
+                      imageVector = AppIcons.Delete,
+                      contentDescription = null,
+                      tint = CaducityTheme.colorScheme.error
+                    )
+                  }
+                )
+              }
+            }
+          }
+        },
+      )
     },
   ) { paddingValues ->
     Column(
@@ -202,18 +285,6 @@ private fun CategoryDetailSuccessContent(
                         pagerState.animateScrollToPage(index)
                       }
                     },
-                    modifier = Modifier.combinedClickable(
-                      onClick = {
-                        coroutineScope.launch {
-                          pagerState.animateScrollToPage(index)
-                        }
-                      },
-                      onLongClick = {
-                        if (productTab.id != null) {
-                          onDeleteProductClick(productTab.id)
-                        }
-                      }
-                    ),
                     text = { Text(text = productTab.name) },
                   )
                 }
@@ -228,22 +299,6 @@ private fun CategoryDetailSuccessContent(
                   imageVector = AppIcons.Add,
                   contentDescription = null,
                 )
-              }
-
-              // Delete product button - only show for non-"other" tabs (id != null)
-              val currentTab = state.productTabs.getOrNull(pagerState.currentPage)
-              if (currentTab?.id != null) {
-                IconButton(
-                  modifier = Modifier,
-                  onClick = { onDeleteProductClick(currentTab.id) },
-                ) {
-                  Icon(
-                    modifier = Modifier.size(18.dp),
-                    imageVector = AppIcons.Delete,
-                    contentDescription = null,
-                    tint = CaducityTheme.colorScheme.error,
-                  )
-                }
               }
             }
           }
