@@ -4,6 +4,10 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.CategoryWithItemsRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
+import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
+import com.alorma.caducity.data.datasource.room.model.CategoryWithItemsRoomEntity
+import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
+import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.Item

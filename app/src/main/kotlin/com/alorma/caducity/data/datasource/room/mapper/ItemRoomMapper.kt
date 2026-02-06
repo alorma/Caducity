@@ -1,7 +1,7 @@
 package com.alorma.caducity.data.datasource.room.mapper
 
 import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.data.datasource.room.ItemRoomEntity
+import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.NewItem
