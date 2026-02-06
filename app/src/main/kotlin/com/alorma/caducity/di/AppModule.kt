@@ -18,6 +18,7 @@ import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteProductUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
+import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
 import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
 import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase
@@ -89,6 +90,7 @@ val appModule = module {
 
   // Product page
   factoryOf(::GetProductItemsUseCase)
+  factoryOf(::GetCategoryProductsUseCase)
   factoryOf(::ProductPageMapper)
   factoryOf(::DeleteProductUseCase)
   factoryOf(::ClearProductItemsUseCase)

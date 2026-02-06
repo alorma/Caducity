@@ -35,11 +35,9 @@ import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.screen.category.detail.CategoryDetailState
 import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.DateItemsUiModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
-import kotlinx.coroutines.flow.StateFlow
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.kizitonwose.calendar.core.minusDays
@@ -52,11 +50,10 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun ProductTabContent(
   productTab: CategoryProductTabUiModel,
-  categoryState: StateFlow<CategoryDetailState>,
   onNavigateToAddItem: (categoryId: String, productId: String?) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: ProductPageViewModel = koinViewModel(key = productTab.asKey()) {
-    parametersOf(productTab, categoryState)
+    parametersOf(productTab)
   }
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()

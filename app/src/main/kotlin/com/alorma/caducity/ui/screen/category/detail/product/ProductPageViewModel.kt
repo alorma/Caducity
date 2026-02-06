@@ -12,8 +12,8 @@ import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteProductUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
+import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
-import com.alorma.caducity.ui.screen.category.detail.CategoryDetailState
 import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import kotlinx.coroutines.channels.Channel
@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -32,7 +33,7 @@ import kotlin.time.Instant
 
 class ProductPageViewModel(
   private val productTab: CategoryProductTabUiModel,
-  private val categoryState: StateFlow<CategoryDetailState>,
+  private val getCategoryProductsUseCase: GetCategoryProductsUseCase,
   getProductItemsUseCase: GetProductItemsUseCase,
   productPageMapper: ProductPageMapper,
   private val appClock: AppClock,
@@ -155,12 +156,20 @@ class ProductPageViewModel(
     viewModelScope.launch {
       val activeItemCount = deleteProductUseCase.getActiveItemCount(productId)
       if (activeItemCount > 0) {
-        // Get available products from observed category state
-        val availableProducts = categoryState.value.let { state ->
-          if (state is CategoryDetailState.Success) {
-            state.productTabs.filter { it.id != null && it.id != productId }
-          } else emptyList()
-        }
+        // Get available products from use case
+        val products = getCategoryProductsUseCase
+          .obtain(productTab.categoryId)
+          .first()
+
+        val availableProducts = products
+          .filter { it.id != productId }
+          .map { product ->
+            CategoryProductTabUiModel(
+              id = product.id,
+              categoryId = productTab.categoryId,
+              name = product.name,
+            )
+          }
         emitSideEffect(
           ProductPageSideEffect.ShowDeleteProductWithItemsDialog(
             productId = productId,
