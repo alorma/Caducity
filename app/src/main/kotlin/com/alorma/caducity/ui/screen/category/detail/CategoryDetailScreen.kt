@@ -136,7 +136,7 @@ private fun CategoryDetailSuccessContent(
   onNavigateToAddInstance: (productId: String?) -> Unit,
   onShowAddProductDialog: () -> Unit,
   onDeleteProductClick: (productId: String) -> Unit,
-  onClearProductItemsClick: (productId: String) -> Unit,
+  onClearProductItemsClick: (productId: String?) -> Unit,
   onDeleteCategoryClick: () -> Unit,
 ) {
   val pagerState = rememberPagerState(pageCount = { state.productTabs.size })
@@ -234,21 +234,21 @@ private fun CategoryDetailSuccessContent(
               onDismissRequest = { checked.value = false }
             ) {
               // Show clear items option only if current tab is a product (not "Other")
-              if (currentTab?.id != null) {
-                DropdownMenuItem(
-                  text = { Text(stringResource(R.string.product_clear_items_action)) },
-                  onClick = {
-                    checked.value = false
-                    onClearProductItemsClick(currentTab.id)
-                  },
-                  leadingIcon = {
-                    Icon(
-                      imageVector = AppIcons.Outlined.Broom,
-                      contentDescription = null,
-                    )
-                  }
-                )
+              DropdownMenuItem(
+                text = { Text(stringResource(R.string.product_clear_items_action)) },
+                onClick = {
+                  checked.value = false
+                  onClearProductItemsClick(currentTab?.id)
+                },
+                leadingIcon = {
+                  Icon(
+                    imageVector = AppIcons.Outlined.Broom,
+                    contentDescription = null,
+                  )
+                }
+              )
 
+              if (currentTab?.id != null) {
                 DropdownMenuItem(
                   text = { Text(stringResource(R.string.product_delete_action)) },
                   onClick = {
@@ -407,10 +407,10 @@ private fun SideEffectHandler(
           bottomSheetState.showClearItemsBottomSheet(
             this,
             onClearConsumed = {
-              viewModel.onClearProductItems(effect.productId, clearAll = false)
+              effect.onClearProductItems(effect.productId, false)
             },
             onClearAll = {
-              viewModel.onClearProductItems(effect.productId, clearAll = true)
+              effect.onClearProductItems(effect.productId, true)
             },
           )
         }
@@ -704,6 +704,13 @@ private fun AppBottomSheetState.showClearItemsBottomSheet(
             subtitle = stringResource(R.string.product_clear_all_items_desc),
             onClick = onClearAll,
             position = ShapePosition.End,
+            colors = SettingsTileDefaults.colors(
+              containerColor = CaducityTheme.colorScheme.errorContainer,
+              titleColor = CaducityTheme.colorScheme.onErrorContainer,
+              subtitleColor = CaducityTheme.colorScheme.onErrorContainer,
+              iconColor = CaducityTheme.colorScheme.onErrorContainer,
+              actionColor = CaducityTheme.colorScheme.onErrorContainer,
+            ),
           )
         }
       }
