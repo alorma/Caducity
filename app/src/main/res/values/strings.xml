@@ -118,6 +118,10 @@
     <string name="category_detail_add_product_dialog_cancel">Cancel</string>
     <string name="category_detail_add_product_dialog_add">Add</string>
     <string name="category_detail_product_empty_state">No items yet. Tap the + button to add one.</string>
+    <string name="category_detail_empty_category_title">No Products or Items Yet</string>
+    <string name="category_detail_empty_category_message">Get started by creating a product or adding an item directly</string>
+    <string name="category_detail_empty_category_create_product">Create Product</string>
+    <string name="category_detail_empty_category_add_item">Add Item</string>
     <string name="category_detail_product_other">Other</string>
     <string name="category_detail_add_item_title">Add Item</string>
     <string name="category_detail_add_item_button">Add item</string>

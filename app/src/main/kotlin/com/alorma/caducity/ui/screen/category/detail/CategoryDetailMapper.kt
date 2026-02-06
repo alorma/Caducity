@@ -19,7 +19,7 @@ class CategoryDetailMapper(
   fun mapToCategoryDetail(
     categoryDetail: CategoryDetail,
     firstDayOfWeek: DayOfWeek,
-  ): CategoryDetailState.Success {
+  ): CategoryDetailState {
 
     val categoryUiModel = CategoryDetailUiModel(
       name = categoryDetail.category.name,
@@ -34,14 +34,16 @@ class CategoryDetailMapper(
       )
     }.toMutableList()
 
-    // Add "Other" tab if there are standalone items (ProductPageViewModel handles loading)
-    productTabs.add(
-      CategoryProductTabUiModel(
-        id = null,
-        categoryId = categoryDetail.category.id,
-        name = stringProvider.getString(R.string.category_detail_product_other),
+    // Add "Other" tab only if there are standalone items
+    if (categoryDetail.hasStandaloneItems) {
+      productTabs.add(
+        CategoryProductTabUiModel(
+          id = null,
+          categoryId = categoryDetail.category.id,
+          name = stringProvider.getString(R.string.category_detail_product_other),
+        )
       )
-    )
+    }
 
     val today = appClock.nowDate()
 
@@ -65,13 +67,22 @@ class CategoryDetailMapper(
       firstDayOfWeek = firstDayOfWeek,
     )
 
-    return CategoryDetailState.Success(
-      today = today,
-      category = categoryUiModel,
-      appCalendarConfig = appCalendarConfig,
-      productTabs = productTabs.sortedWith(
-        compareBy({ it.id == null }, { it.name })
-      ).toImmutableList(),
-    )
+    // Return Empty state if there are no product tabs
+    return if (productTabs.isEmpty()) {
+      CategoryDetailState.Empty(
+        today = today,
+        category = categoryUiModel,
+        appCalendarConfig = appCalendarConfig,
+      )
+    } else {
+      CategoryDetailState.Success(
+        today = today,
+        category = categoryUiModel,
+        appCalendarConfig = appCalendarConfig,
+        productTabs = productTabs.sortedWith(
+          compareBy({ it.id == null }, { it.name })
+        ).toImmutableList(),
+      )
+    }
   }
 }

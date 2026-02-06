@@ -116,6 +116,10 @@
     <string name="category_detail_add_product_dialog_cancel">Cancel·lar</string>
     <string name="category_detail_add_product_dialog_add">Afegir</string>
     <string name="category_detail_product_empty_state">Encara no hi ha elements. Toca el botó + per afegir-ne un.</string>
+    <string name="category_detail_empty_category_title">Encara no hi ha Productes ni Elements</string>
+    <string name="category_detail_empty_category_message">Comença creant un producte o afegint un element directament</string>
+    <string name="category_detail_empty_category_create_product">Crear Producte</string>
+    <string name="category_detail_empty_category_add_item">Afegir Element</string>
     <string name="category_detail_product_other">Altres</string>
     <string name="category_detail_add_item_title">Afegir Element</string>
     <string name="category_detail_add_item_button">Afegir element</string>

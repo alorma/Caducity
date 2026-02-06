@@ -9,4 +9,5 @@ data class CategoryDetail(
   val category: Category,
   val products: List<Product>,
   val calendarData: CalendarData,
+  val hasStandaloneItems: Boolean,
 )

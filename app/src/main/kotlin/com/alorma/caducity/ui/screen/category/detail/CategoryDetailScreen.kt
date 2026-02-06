@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.category.detail
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -79,6 +80,18 @@ fun CategoryDetailScreen(
   when (val currentState = state.value) {
     is CategoryDetailState.Loading -> FullscreenLoading()
 
+    is CategoryDetailState.Empty -> {
+      CategoryDetailEmptyContent(
+        modifier = modifier,
+        dialogState = dialogState,
+        snackbarState = snackbarState,
+        state = currentState,
+        onNavigateToAddInstance = onNavigateToAddInstance,
+        onShowAddProductDialog = viewModel::onShowAddProductDialog,
+        onDeleteCategoryClick = viewModel::onDeleteCategoryClick,
+      )
+    }
+
     is CategoryDetailState.Success -> {
       CategoryDetailSuccessContent(
         modifier = modifier,
@@ -93,6 +106,97 @@ fun CategoryDetailScreen(
     }
 
     is CategoryDetailState.Error -> DetailError(currentState)
+  }
+}
+
+@Composable
+private fun CategoryDetailEmptyContent(
+  modifier: Modifier,
+  dialogState: AppDialogState,
+  snackbarState: AppSnackbarState,
+  state: CategoryDetailState.Empty,
+  onNavigateToAddInstance: (productId: String?) -> Unit,
+  onShowAddProductDialog: () -> Unit,
+  onDeleteCategoryClick: () -> Unit,
+) {
+  AppScaffold(
+    modifier = modifier,
+    dialogState = dialogState,
+    snackbarState = snackbarState,
+    topBar = {
+      StyledTopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+          containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
+        ),
+        title = { Text(text = state.category.name) },
+        navigationIcon = { NavigationIcon() },
+        actions = {
+          IconButton(onClick = onDeleteCategoryClick) {
+            Icon(
+              imageVector = AppIcons.Delete,
+              contentDescription = stringResource(R.string.category_detail_action_delete),
+            )
+          }
+        },
+      )
+    },
+  ) { paddingValues ->
+    Column(
+      modifier = Modifier.padding(paddingValues),
+    ) {
+      Surface(
+        color = CaducityTheme.colorScheme.surfaceContainerHigh,
+        shadowElevation = 2.dp,
+      ) {
+        CaducityWeekCalendar(
+          appCalendarConfig = state.appCalendarConfig,
+          todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
+          onDateClick = { },
+        )
+      }
+
+      // Empty state content
+      Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+      ) {
+        Column(
+          modifier = Modifier.padding(32.dp),
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+          Text(
+            text = stringResource(R.string.category_detail_empty_category_title),
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+          )
+          Text(
+            text = stringResource(R.string.category_detail_empty_category_message),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp),
+          )
+
+          Row(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(top = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+          ) {
+            androidx.compose.material3.OutlinedButton(
+              onClick = onShowAddProductDialog,
+            ) {
+              Text(stringResource(R.string.category_detail_empty_category_create_product))
+            }
+            androidx.compose.material3.Button(
+              onClick = { onNavigateToAddInstance(null) },
+            ) {
+              Text(stringResource(R.string.category_detail_empty_category_add_item))
+            }
+          }
+        }
+      }
+    }
   }
 }
 
