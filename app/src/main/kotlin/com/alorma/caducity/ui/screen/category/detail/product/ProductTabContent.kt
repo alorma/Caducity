@@ -30,9 +30,9 @@ import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.calendar.today
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
-import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
-import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
-import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
+import com.alorma.caducity.ui.components.feedback.bottomsheet.LocalAppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.dialog.LocalAppDialogState
+import com.alorma.caducity.ui.components.feedback.snackbar.LocalAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.DateItemsUiModel
@@ -56,15 +56,8 @@ fun ProductTabContent(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
 
-  val dialogState = rememberAppDialogState()
-  val snackbarState = rememberAppSnackbarState()
-  val bottomSheetState = rememberAppBottomSheetState()
-
   ProductPageSideEffectHandler(
     viewModel = viewModel,
-    dialogState = dialogState,
-    snackbarState = snackbarState,
-    bottomSheetState = bottomSheetState,
   )
 
   ProductTabContentPage(

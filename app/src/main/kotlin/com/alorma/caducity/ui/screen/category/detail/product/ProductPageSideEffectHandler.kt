@@ -6,19 +6,20 @@ import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
-import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
+import com.alorma.caducity.ui.components.feedback.bottomsheet.LocalAppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
-import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
+import com.alorma.caducity.ui.components.feedback.dialog.LocalAppDialogState
+import com.alorma.caducity.ui.components.feedback.snackbar.LocalAppSnackbarState
 import kotlinx.coroutines.launch
 
 @Composable
 internal fun ProductPageSideEffectHandler(
   viewModel: ProductPageViewModel,
-  dialogState: AppDialogState,
-  snackbarState: AppSnackbarState,
-  bottomSheetState: AppBottomSheetState,
 ) {
+  val dialogState = LocalAppDialogState.current
+  val snackbarState = LocalAppSnackbarState.current
+  val bottomSheetState = LocalAppBottomSheetState.current
+
   LaunchedEffect(viewModel.sideEffect) {
     viewModel.sideEffect.collect { effect ->
       when (effect) {
@@ -113,9 +114,9 @@ internal fun ProductPageSideEffectHandler(
           }
         }
 
-        is ProductPageSideEffect.ShowItemActionsBottomSheet -> launch {
+        is ProductPageSideEffect.ShowItemActionsBottomSheet -> {
           bottomSheetState.showItemActionsBottomSheet(
-            coroutineScope = this@LaunchedEffect,
+            coroutineScope = this,
             item = effect.item,
             onConsume = {
               viewModel.onConsumeItem(effect.item)
