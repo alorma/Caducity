@@ -5,9 +5,8 @@ import com.alorma.caducity.data.datasource.ItemRoomMapper
 import com.alorma.caducity.data.datasource.RoomCategoryDataSource
 import com.alorma.caducity.data.datasource.RoomProductDataSource
 import com.alorma.caducity.data.datasource.room.AppDatabase
-import com.alorma.caducity.data.datasource.room.RoomItemDataSource
+import com.alorma.caducity.data.datasource.room.RoomEntityMapper
 import com.alorma.caducity.domain.CategoryDataSource
-import com.alorma.caducity.domain.ItemDataSource
 import com.alorma.caducity.domain.NotificationConfigDataSource
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.ItemComparator
@@ -27,8 +26,8 @@ val dataModule = module {
 
   singleOf(::StatusItemComparator) bind ItemComparator::class
 
+  factoryOf(::RoomEntityMapper)
   singleOf(::RoomCategoryDataSource) bind CategoryDataSource::class
-  singleOf(::RoomItemDataSource) bind ItemDataSource::class
   singleOf(::RoomProductDataSource) bind ProductDataSource::class
   singleOf(::FakeNotificationConfigDataSource) bind NotificationConfigDataSource::class
 }

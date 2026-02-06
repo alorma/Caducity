@@ -8,13 +8,5 @@ interface ProductDataSource {
 
   fun getProductsByCategory(categoryId: String): Flow<ImmutableList<Product>>
 
-  suspend fun getProduct(categoryId: String): Product?
-
   suspend fun createProduct(categoryId: String, name: String): Product
-
-  suspend fun deleteProduct(categoryId: String): Result<Unit>
-
-  suspend fun getActiveItemCount(categoryId: String): Int
-
-  suspend fun clearAllProducts()
 }

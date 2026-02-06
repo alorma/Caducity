@@ -19,12 +19,11 @@ import kotlin.time.Duration.Companion.days
 class RoomCategoryDataSource(
   database: AppDatabase,
   private val appClock: AppClock,
-  private val expirationThresholds: ExpirationThresholds,
+  private val mapper: RoomEntityMapper,
 ) : CategoryDataSource {
 
   private val categoryDao = database.categoryDao()
   private val itemDao = database.itemDao()
-  private val mapper = RoomEntityMapper(appClock, expirationThresholds)
 
   override fun getCategories(): Flow<ImmutableList<CategoryWithItems>> {
     val daoFlow = categoryDao.getAllCategoriesWithItems()
