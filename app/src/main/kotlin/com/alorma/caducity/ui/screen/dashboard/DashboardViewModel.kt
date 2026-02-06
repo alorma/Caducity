@@ -2,7 +2,7 @@ package com.alorma.caducity.ui.screen.dashboard
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alorma.caducity.domain.usecase.ObtainDashboardCategoriesUseCase
+import com.alorma.caducity.domain.usecase.ObtainDashboardUseCase
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class DashboardViewModel(
   calendarPreferences: CalendarPreferences,
-  private val obtainDashboardCategoriesUseCase: ObtainDashboardCategoriesUseCase,
+  private val obtainDashboardUseCase: ObtainDashboardUseCase,
   private val dashboardMapper: DashboardMapper,
 ) : ViewModel() {
 
@@ -32,10 +32,10 @@ class DashboardViewModel(
     )
 
   private fun obtainPerCategoryDashboard(firstDayOfWeek: kotlinx.datetime.DayOfWeek): Flow<DashboardState.Success> {
-    return obtainDashboardCategoriesUseCase
-      .obtainCategories()
-      .map { categories ->
-        dashboardMapper.mapToPerCategoryState(categories = categories, firstDayOfWeek = firstDayOfWeek)
+    return obtainDashboardUseCase
+      .obtain()
+      .map { dashboardData ->
+        dashboardMapper.mapToPerCategoryState(dashboardData = dashboardData, firstDayOfWeek = firstDayOfWeek)
       }
   }
 }
