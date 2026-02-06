@@ -203,6 +203,15 @@
     <string name="success_category_deleted">Categoria eliminada</string>
     <string name="error_delete_category_failed">Error en eliminar categoria</string>
 
+    <!-- Product deletion -->
+    <string name="product_delete_dialog_title">Eliminar Producte?</string>
+    <string name="product_delete_dialog_message">Això eliminarà permanentment aquest producte. Els elements es mouran a la pestanya \"Altres\". Aquesta acció no es pot desfer.</string>
+    <string name="product_delete_dialog_delete">Eliminar</string>
+    <string name="product_delete_dialog_cancel">Cancel·lar</string>
+    <string name="success_product_deleted">Producte eliminat</string>
+    <string name="error_product_has_active_items">No es pot eliminar un producte amb elements actius</string>
+    <string name="error_delete_product_failed">Error en eliminar producte</string>
+
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Benvingut a Caducity</string>
     <string name="onboarding_welcome_message">Controla els teus aliments i redueix el malbaratament</string>

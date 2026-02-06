@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.category.detail
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -94,6 +95,7 @@ fun CategoryDetailScreen(
         state = currentState,
         onNavigateToAddInstance = onNavigateToAddInstance,
         onShowAddProductDialog = viewModel::onShowAddProductDialog,
+        onDeleteProductClick = viewModel::onDeleteProductClick,
         onDeleteCategoryClick = viewModel::onDeleteCategoryClick,
       )
     }
@@ -111,6 +113,7 @@ private fun CategoryDetailSuccessContent(
   state: CategoryDetailState.Success,
   onNavigateToAddInstance: (productId: String?) -> Unit,
   onShowAddProductDialog: () -> Unit,
+  onDeleteProductClick: (productId: String) -> Unit,
   onDeleteCategoryClick: () -> Unit,
 ) {
   val pagerState = rememberPagerState(pageCount = { state.productTabs.size })
@@ -142,14 +145,14 @@ private fun CategoryDetailSuccessContent(
       FloatingActionButton(
         onClick = {
           // Get the currently selected product ID
-          val selectedcategoryId = if (state.productTabs.isNotEmpty()) {
+          val selectedCategoryId = if (state.productTabs.isNotEmpty()) {
             val currentTab = state.productTabs[pagerState.currentPage]
-            // Don't pass "other" as a product ID
-            if (currentTab.id != "other") currentTab.id else null
+            // Don't pass null (which represents "other" tab) as a product ID
+            currentTab.id
           } else {
             null
           }
-          onNavigateToAddInstance(selectedcategoryId)
+          onNavigateToAddInstance(selectedCategoryId)
         },
       ) {
         Icon(
@@ -196,6 +199,18 @@ private fun CategoryDetailSuccessContent(
                         pagerState.animateScrollToPage(index)
                       }
                     },
+                    modifier = Modifier.combinedClickable(
+                      onClick = {
+                        coroutineScope.launch {
+                          pagerState.animateScrollToPage(index)
+                        }
+                      },
+                      onLongClick = {
+                        if (productTab.id != null) {
+                          onDeleteProductClick(productTab.id)
+                        }
+                      }
+                    ),
                     text = { Text(text = productTab.name) },
                   )
                 }
@@ -210,6 +225,22 @@ private fun CategoryDetailSuccessContent(
                   imageVector = AppIcons.Add,
                   contentDescription = null,
                 )
+              }
+
+              // Delete product button - only show for non-"other" tabs (id != null)
+              val currentTab = state.productTabs.getOrNull(pagerState.currentPage)
+              if (currentTab?.id != null) {
+                IconButton(
+                  modifier = Modifier,
+                  onClick = { onDeleteProductClick(currentTab.id) },
+                ) {
+                  Icon(
+                    modifier = Modifier.size(18.dp),
+                    imageVector = AppIcons.Delete,
+                    contentDescription = null,
+                    tint = CaducityTheme.colorScheme.error,
+                  )
+                }
               }
             }
           }
@@ -286,6 +317,48 @@ private fun SideEffectHandler(
         CategoryDetailSideEffect.CreateProductFailed -> launch {
           snackbarState.showSnackbar(
             message = R.string.error_create_product_failed,
+            type = AppFeedbackType.Error,
+          )
+        }
+
+        is CategoryDetailSideEffect.ShowDeleteProductDialog -> launch {
+          val result = dialogState.showAlertDialog(
+            title = AppFeedbackResource.AsResource(
+              R.string.product_delete_dialog_title
+            ),
+            text = AppFeedbackResource.AsResource(
+              R.string.product_delete_dialog_message
+            ),
+            type = AppFeedbackType.Error,
+            positiveButton = AppFeedbackResource.AsResource(
+              R.string.product_delete_dialog_delete
+            ),
+            negativeButton = AppFeedbackResource.AsResource(
+              R.string.product_delete_dialog_cancel
+            ),
+          )
+          if (result == DialogResult.Positive) {
+            viewModel.onDeleteProduct(effect.productId)
+          }
+        }
+
+        CategoryDetailSideEffect.ProductDeleted -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.success_product_deleted,
+            type = AppFeedbackType.Success,
+          )
+        }
+
+        CategoryDetailSideEffect.DeleteProductHasActiveItems -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.error_product_has_active_items,
+            type = AppFeedbackType.Error,
+          )
+        }
+
+        CategoryDetailSideEffect.DeleteProductFailed -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.error_delete_product_failed,
             type = AppFeedbackType.Error,
           )
         }

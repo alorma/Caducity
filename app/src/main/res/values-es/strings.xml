@@ -202,6 +202,15 @@
     <string name="success_category_deleted">Categoría eliminada</string>
     <string name="error_delete_category_failed">Error al eliminar categoría</string>
 
+    <!-- Product deletion -->
+    <string name="product_delete_dialog_title">¿Eliminar Producto?</string>
+    <string name="product_delete_dialog_message">Esto eliminará permanentemente este producto. Los artículos se moverán a la pestaña \"Otros\". Esta acción no se puede deshacer.</string>
+    <string name="product_delete_dialog_delete">Eliminar</string>
+    <string name="product_delete_dialog_cancel">Cancelar</string>
+    <string name="success_product_deleted">Producto eliminado</string>
+    <string name="error_product_has_active_items">No se puede eliminar un producto con artículos activos</string>
+    <string name="error_delete_product_failed">Error al eliminar producto</string>
+
     <!-- Onboarding -->
     <string name="onboarding_welcome_title">Bienvenido a Caducity</string>
     <string name="onboarding_welcome_message">Rastrea tus alimentos y reduce el desperdicio</string>
