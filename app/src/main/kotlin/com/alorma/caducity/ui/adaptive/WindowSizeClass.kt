@@ -1,9 +1,9 @@
 package com.alorma.caducity.ui.adaptive
 
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.window.core.layout.WindowSizeClass
 import org.koin.compose.koinInject
 
 /**
@@ -14,16 +14,15 @@ import org.koin.compose.koinInject
  * - Expanded: >840dp (large tablets, desktops)
  */
 fun WindowSizeClass.isExpanded(): Boolean {
-  return widthSizeClass == WindowWidthSizeClass.Expanded
+  return isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
 }
 
 fun WindowSizeClass.isExpandedOrMedium(): Boolean {
-  return widthSizeClass == WindowWidthSizeClass.Expanded ||
-    widthSizeClass == WindowWidthSizeClass.Medium
+  return isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
 }
 
 fun WindowSizeClass.isCompact(): Boolean {
-  return widthSizeClass == WindowWidthSizeClass.Compact
+  return !isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
 }
 
 /**
@@ -35,10 +34,9 @@ fun WindowSizeClass.isCompact(): Boolean {
  * - >840dp (Expanded): 7 columns
  */
 fun WindowSizeClass.calculateGridColumns(): Int {
-  return when (widthSizeClass) {
-    WindowWidthSizeClass.Compact -> 3
-    WindowWidthSizeClass.Medium -> 5
-    WindowWidthSizeClass.Expanded -> 7
+  return when {
+    isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) -> 7
+    isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> 5
     else -> 3
   }
 }
@@ -53,7 +51,7 @@ fun WindowSizeClass.calculateGridColumns(): Int {
 fun rememberIsExpanded(
   tabletModeRemoteConfig: TabletModeRemoteConfig = koinInject(),
 ): Boolean {
-  val windowSizeClass = LocalWindowSizeClass.current
+  val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
   return remember(windowSizeClass, tabletModeRemoteConfig) {
     tabletModeRemoteConfig.isEnabled() && windowSizeClass.isExpanded()
   }
@@ -67,7 +65,7 @@ fun rememberIsExpanded(
 fun rememberIsExpandedOrMedium(
   tabletModeRemoteConfig: TabletModeRemoteConfig = koinInject(),
 ): Boolean {
-  val windowSizeClass = LocalWindowSizeClass.current
+  val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
   return remember(windowSizeClass, tabletModeRemoteConfig) {
     tabletModeRemoteConfig.isEnabled() && windowSizeClass.isExpandedOrMedium()
   }
@@ -79,7 +77,7 @@ fun rememberIsExpandedOrMedium(
  */
 @Composable
 fun rememberIsCompact(): Boolean {
-  val windowSizeClass = LocalWindowSizeClass.current
+  val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
   return remember(windowSizeClass) {
     windowSizeClass.isCompact()
   }
@@ -93,7 +91,7 @@ fun rememberIsCompact(): Boolean {
 fun rememberGridColumns(
   tabletModeRemoteConfig: TabletModeRemoteConfig = koinInject(),
 ): Int {
-  val windowSizeClass = LocalWindowSizeClass.current
+  val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
   return remember(windowSizeClass, tabletModeRemoteConfig) {
     if (tabletModeRemoteConfig.isEnabled()) {
       windowSizeClass.calculateGridColumns()

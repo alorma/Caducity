@@ -10,7 +10,7 @@ import timber.log.Timber
  * Wraps Firebase Remote Config SDK and provides access to config values.
  */
 class FirebaseRemoteConfigProvider(
-  private val remoteConfig: FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
+  private val remoteConfig: FirebaseRemoteConfig,
 ) : RemoteConfigRunner() {
 
   init {

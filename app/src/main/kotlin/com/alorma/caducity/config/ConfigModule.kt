@@ -12,6 +12,7 @@ import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.config.version.AndroidAppVersionProvider
 import com.alorma.caducity.config.version.AppVersionProvider
 import com.alorma.caducity.ui.adaptive.TabletModeRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format.DateTimeFormat
@@ -53,10 +54,16 @@ val configModule = module {
 
   singleOf(::StringProvider)
 
+  single {
+    FirebaseRemoteConfig.getInstance()
+  }
+
   // Firebase Remote Config Runner
   single<RemoteConfigRunner> {
-    val firebaseRunner = FirebaseRemoteConfigProvider()
-    
+    val firebaseRunner = FirebaseRemoteConfigProvider(
+      remoteConfig = get(),
+    )
+
     // In debug builds, wrap with DebugRemoteConfigRunner for override capability
     if (BuildConfig.DEBUG) {
       DebugRemoteConfigRunner(

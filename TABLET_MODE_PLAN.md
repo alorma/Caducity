@@ -14,15 +14,15 @@ The architecture is already well-structured with clean separation of concerns, m
 
 ## GitHub Issues
 
-| Phase | Issue | Description |
-|-------|-------|-------------|
+| Phase   | Issue                                                 | Description                        |
+|---------|-------------------------------------------------------|------------------------------------|
 | Phase 1 | [#110](https://github.com/alorma/Caducity/issues/110) | Foundation - Window Size Detection |
-| Phase 2 | [#111](https://github.com/alorma/Caducity/issues/111) | Calendar Mode Adaptation |
-| Phase 3 | [#112](https://github.com/alorma/Caducity/issues/112) | Responsive Item Grids |
-| Phase 4 | [#113](https://github.com/alorma/Caducity/issues/113) | Dashboard Master-Detail Layout |
-| Phase 5 | [#114](https://github.com/alorma/Caducity/issues/114) | Category Detail Embedded Mode |
-| Phase 6 | [#115](https://github.com/alorma/Caducity/issues/115) | String Resources |
-| Phase 7 | [#116](https://github.com/alorma/Caducity/issues/116) | Testing & Verification |
+| Phase 2 | [#111](https://github.com/alorma/Caducity/issues/111) | Calendar Mode Adaptation           |
+| Phase 3 | [#112](https://github.com/alorma/Caducity/issues/112) | Responsive Item Grids              |
+| Phase 4 | [#113](https://github.com/alorma/Caducity/issues/113) | Dashboard Master-Detail Layout     |
+| Phase 5 | [#114](https://github.com/alorma/Caducity/issues/114) | Category Detail Embedded Mode      |
+| Phase 6 | [#115](https://github.com/alorma/Caducity/issues/115) | String Resources                   |
+| Phase 7 | [#116](https://github.com/alorma/Caducity/issues/116) | Testing & Verification             |
 
 **Project Board:** https://github.com/users/alorma/projects/3/views/1
 
@@ -185,11 +185,30 @@ fun App(windowSizeClass: WindowSizeClass, ...) {
 
 ---
 
-## Phase 2: Calendar Mode Adaptation
+## Phase 2: Calendar Mode Adaptation ✅ COMPLETED
 
 > **GitHub Issue:** [#111](https://github.com/alorma/Caducity/issues/111)
+> **Status:** ✅ Implemented and tested
+> **Implementation:** Automatic calendar adaptation without user settings
+
+### Implementation Summary
+
+Phase 2 implements automatic calendar adaptation based on screen size, without user-configurable settings. The calendar automatically switches between week and month views based on the device width.
+
+**Key Changes:**
+- Created `AdaptiveCalendar` composable that automatically switches views
+- Updated `WindowSizeClass` helpers to use new adaptive library with `isWidthAtLeastBreakpoint()`
+- Integrated adaptive calendars in Dashboard and Category Detail screens
+- No user settings required - purely automatic behavior
+
+**Behavior:**
+- **Compact (<600dp)**: Week calendar view
+- **Medium/Expanded (≥600dp)**: Month calendar view
+- Gated by `TabletModeRemoteConfig` feature flag
 
 ### 2.1 Add Calendar Mode Enum
+
+**SKIPPED:** User-configurable calendar mode was removed in favor of automatic adaptation only.
 
 **File:** `app/src/main/kotlin/com/alorma/caducity/ui/components/calendar/CalendarMode.kt` (new file)
 
@@ -213,9 +232,7 @@ enum class CalendarMode {
 
 ### 2.2 Extend Calendar Preferences
 
-**File:** `app/src/main/kotlin/com/alorma/caducity/ui/components/calendar/CalendarPreferences.kt`
-
-Add calendar mode preference:
+**SKIPPED:** No calendar preferences needed for automatic-only behavior.
 
 ```kotlin
 data class CalendarConfigState(
@@ -260,162 +277,86 @@ class CalendarPreferences(settings: Settings) {
 }
 ```
 
-### 2.3 Create Calendar Mode Selector Composable
+### 2.3 Create AdaptiveCalendar Composable ✅
 
-**File:** `app/src/main/kotlin/com/alorma/caducity/ui/components/calendar/AdaptiveCalendar.kt` (new file)
+**File:** `app/src/main/kotlin/com/alorma/caducity/ui/components/calendar/AdaptiveCalendar.kt`
+
+**Implemented:** Simplified automatic-only version
 
 ```kotlin
 package com.alorma.caducity.ui.components.calendar
 
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
-import com.alorma.caducity.ui.adaptive.LocalWindowSizeClass
-import com.alorma.caducity.ui.adaptive.isExpandedOrMedium
+import com.alorma.caducity.ui.adaptive.rememberIsExpandedOrMedium
 import kotlinx.datetime.LocalDate
 
 /**
- * Adaptive calendar that switches between week and month views based on:
- * - User preference (calendarMode)
- * - Screen size (when mode is AUTO)
+ * Adaptive calendar that switches between week and month views based on screen size:
+ * - Compact (<600dp): Week view
+ * - Medium/Expanded (≥600dp): Month view
  */
 @Composable
 fun AdaptiveCalendar(
-    appCalendarConfig: AppCalendarConfig,
-    calendarMode: CalendarMode,
-    todayColor: androidx.compose.ui.graphics.Color,
-    onDateClick: (LocalDate) -> Unit,
-    modifier: Modifier = Modifier,
+  appCalendarConfig: AppCalendarConfig,
+  todayColor: Color,
+  onDateClick: (LocalDate) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-    val windowSizeClass = LocalWindowSizeClass.current
+  val shouldShowMonth = rememberIsExpandedOrMedium()
 
-    val shouldShowMonth = when (calendarMode) {
-        CalendarMode.WEEK -> false
-        CalendarMode.MONTH -> true
-        CalendarMode.AUTO -> windowSizeClass.isExpandedOrMedium()
-    }
-
-    if (shouldShowMonth) {
-        CaducityMonthCalendar(
-            appCalendarConfig = appCalendarConfig,
-            todayColor = todayColor,
-            onDateClick = onDateClick,
-            modifier = modifier,
-        )
-    } else {
-        CaducityWeekCalendar(
-            appCalendarConfig = appCalendarConfig,
-            todayColor = todayColor,
-            onDateClick = onDateClick,
-            modifier = modifier,
-        )
-    }
+  if (shouldShowMonth) {
+    CaducityMonthCalendar(
+      appCalendarConfig = appCalendarConfig,
+      onDateClick = onDateClick,
+      modifier = modifier,
+    )
+  } else {
+    CaducityWeekCalendar(
+      appCalendarConfig = appCalendarConfig,
+      todayColor = todayColor,
+      onDateClick = onDateClick,
+      modifier = modifier,
+    )
+  }
 }
 ```
 
-### 2.4 Update Dashboard to Use Adaptive Calendar
+### 2.4 Update Dashboard to Use Adaptive Calendar ✅
 
-**File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/dashboard/DashboardScreen.kt`
+**Files Updated:**
+- `app/src/main/kotlin/com/alorma/caducity/ui/screen/dashboard/DashboardScreen.kt`
+- `app/src/main/kotlin/com/alorma/caducity/ui/screen/dashboard/components/DashboardSuccessContentList.kt`
 
-Pass calendar mode to success content:
+**Implemented:** Replaced `CaducityWeekCalendar` with `AdaptiveCalendar` in all dashboard views. No preferences injection needed - adaptation is automatic.
 
-```kotlin
-@Composable
-fun DashboardScreen(
-    viewModel: DashboardViewModel = koinViewModel(),
-) {
-    val calendarPreferences = koinInject<CalendarPreferences>()  // Inject preferences
-    val calendarState by calendarPreferences.asState().collectAsState()
-
-    // ... existing code ...
-
-    is DashboardState.Success -> {
-        DashboardSuccessContent(
-            state = state,
-            calendarMode = calendarState.calendarMode,  // Pass mode
-            // ... other parameters
-        )
-    }
-}
-```
-
-**File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/dashboard/components/DashboardSuccessContentList.kt`
-
-Replace hardcoded `CaducityWeekCalendar` with `AdaptiveCalendar`:
-
-```kotlin
-@Composable
-internal fun DashboardSuccessContentList(
-    categories: ImmutableList<CategoryCalendarState>,
-    calendarMode: CalendarMode,  // Add parameter
-    // ... existing parameters
-) {
-    LazyColumn(/* ... */) {
-        items(categories) { categoryCalendarState ->
-            // ... existing card setup ...
-
-            // Replace CaducityWeekCalendar with:
-            AdaptiveCalendar(
-                appCalendarConfig = categoryCalendarState.appCalendarConfig,
-                calendarMode = calendarMode,
-                todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
-                onDateClick = { onNavigateToCategory(categoryCalendarState.id) },
-            )
-
-            // ... rest of code
-        }
-    }
-}
-```
-
-### 2.5 Update Category Detail Screens
+### 2.5 Update Category Detail Screens ✅
 
 **File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/category/detail/CategoryDetailScreen.kt`
 
-Apply same adaptive calendar logic in CategoryDetailScreen (lines 151, 259):
-
-```kotlin
-val calendarPreferences = koinInject<CalendarPreferences>()
-val calendarState by calendarPreferences.asState().collectAsState()
-
-// Replace CaducityWeekCalendar with:
-AdaptiveCalendar(
-    appCalendarConfig = /* config */,
-    calendarMode = calendarState.calendarMode,
-    todayColor = /* color */,
-    onDateClick = { /* ... */ },
-)
-```
+**Implemented:** Category detail screens always show **week calendar** (non-adaptive).
+- **Rationale**: Detail screens have limited vertical space and always benefit from compact week view
+- Dashboard uses adaptive calendars, but detail views stay consistent across all screen sizes
 
 ### 2.6 Add Calendar Mode Settings UI
 
-**File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/settings/appearance/AppearanceSettingsScreen.kt`
+**SKIPPED:** No settings UI needed - automatic adaptation only.
 
-Add calendar mode preference tile:
+### 2.7 Update WindowSizeClass Helpers ✅
 
-```kotlin
-@Composable
-fun AppearanceSettingsScreen(/* ... */) {
-    val calendarPreferences = koinInject<CalendarPreferences>()
-    val calendarState by calendarPreferences.asState().collectAsState()
+**File:** `app/src/main/kotlin/com/alorma/caducity/ui/adaptive/WindowSizeClass.kt`
 
-    // ... existing settings tiles ...
+**Implemented:** Updated all window size helpers to use the new adaptive library:
+- Migrated from deprecated `androidx.compose.material3.windowsizeclass` to `androidx.compose.material3.adaptive`
+- Used `currentWindowAdaptiveInfo()` composable instead of passing WindowSizeClass
+- Updated extension functions to use `isWidthAtLeastBreakpoint()` with proper constants:
+  - `WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND` (600dp)
+  - `WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND` (840dp)
+- Created composable helpers: `rememberIsExpandedOrMedium()`, `rememberIsExpanded()`, `rememberIsCompact()`
+- All helpers now respect `TabletModeRemoteConfig` feature flag
 
-    SettingsMenuLink(
-        title = { Text(stringResource(R.string.settings_calendar_mode)) },
-        subtitle = {
-            val mode = when (calendarState.calendarMode) {
-                CalendarMode.WEEK -> stringResource(R.string.calendar_mode_week)
-                CalendarMode.MONTH -> stringResource(R.string.calendar_mode_month)
-                CalendarMode.AUTO -> stringResource(R.string.calendar_mode_auto)
-            }
-            Text(mode)
-        },
-        onClick = { /* Navigate to calendar mode selection screen */ }
-    )
-}
-```
-
-Create dedicated calendar mode selection screen similar to `FirstDayOfWeekSettingsScreen.kt`.
+**Files Updated:**
+- Removed WindowSizeClass parameter from `MainActivity.kt` and `App.kt`
+- Removed deprecated imports and calculations
 
 ---
 

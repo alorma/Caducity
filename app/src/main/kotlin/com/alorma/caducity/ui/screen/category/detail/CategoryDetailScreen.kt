@@ -60,7 +60,7 @@ fun CategoryDetailScreen(
   categoryId: String,
   onNavigateToAddInstance: (productId: String?) -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: CategoryDetailViewModel = koinViewModel { parametersOf(categoryId) }
+  viewModel: CategoryDetailViewModel = koinViewModel { parametersOf(categoryId) },
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
 
