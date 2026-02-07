@@ -4,6 +4,7 @@ import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import org.koin.compose.koinInject
 
 /**
  * Utility to determine if the current window is considered "expanded" (tablet/desktop).
@@ -46,31 +47,35 @@ fun WindowSizeClass.calculateGridColumns(): Int {
 
 /**
  * Composable helper to check if window is expanded (tablet/desktop).
- * Can be enhanced with feature flag checks.
+ * Returns true only if tablet mode is enabled AND window size is expanded.
  */
 @Composable
-fun rememberIsExpanded(): Boolean {
+fun rememberIsExpanded(
+  tabletModeRemoteConfig: TabletModeRemoteConfig = koinInject(),
+): Boolean {
   val windowSizeClass = LocalWindowSizeClass.current
-  return remember(windowSizeClass) {
-    windowSizeClass.isExpanded()
+  return remember(windowSizeClass, tabletModeRemoteConfig) {
+    tabletModeRemoteConfig.isEnabled() && windowSizeClass.isExpanded()
   }
 }
 
 /**
  * Composable helper to check if window is expanded or medium (tablet+).
- * Can be enhanced with feature flag checks.
+ * Returns true only if tablet mode is enabled AND window size is expanded or medium.
  */
 @Composable
-fun rememberIsExpandedOrMedium(): Boolean {
+fun rememberIsExpandedOrMedium(
+  tabletModeRemoteConfig: TabletModeRemoteConfig = koinInject(),
+): Boolean {
   val windowSizeClass = LocalWindowSizeClass.current
-  return remember(windowSizeClass) {
-    windowSizeClass.isExpandedOrMedium()
+  return remember(windowSizeClass, tabletModeRemoteConfig) {
+    tabletModeRemoteConfig.isEnabled() && windowSizeClass.isExpandedOrMedium()
   }
 }
 
 /**
  * Composable helper to check if window is compact (phone).
- * Can be enhanced with feature flag checks.
+ * Always returns the actual window size check (not affected by tablet mode flag).
  */
 @Composable
 fun rememberIsCompact(): Boolean {
@@ -82,12 +87,18 @@ fun rememberIsCompact(): Boolean {
 
 /**
  * Composable helper to calculate responsive grid columns.
- * Can be enhanced with feature flag checks to override behavior.
+ * Returns tablet column count (5/7) only if tablet mode is enabled, otherwise defaults to 3.
  */
 @Composable
-fun rememberGridColumns(): Int {
+fun rememberGridColumns(
+  tabletModeRemoteConfig: TabletModeRemoteConfig = koinInject(),
+): Int {
   val windowSizeClass = LocalWindowSizeClass.current
-  return remember(windowSizeClass) {
-    windowSizeClass.calculateGridColumns()
+  return remember(windowSizeClass, tabletModeRemoteConfig) {
+    if (tabletModeRemoteConfig.isEnabled()) {
+      windowSizeClass.calculateGridColumns()
+    } else {
+      3 // Always use phone layout (3 columns) when tablet mode is disabled
+    }
   }
 }
