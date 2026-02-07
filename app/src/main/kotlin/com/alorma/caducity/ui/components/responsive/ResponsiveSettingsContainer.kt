@@ -29,17 +29,21 @@ fun ResponsiveSettingsContainer(
 ) {
   val isExpanded = rememberIsExpanded()
 
-  Box(
-    modifier = modifier.fillMaxSize(),
-    contentAlignment = Alignment.TopCenter,
-  ) {
+  if (isExpanded) {
     Box(
-      modifier = if (isExpanded) {
-        Modifier.fillMaxWidth().widthIn(max = 600.dp)
-      } else {
-        Modifier.fillMaxWidth()
-      }
+      modifier = modifier.fillMaxSize(),
+      contentAlignment = Alignment.TopCenter,
     ) {
+      Box(
+        modifier = Modifier
+          .widthIn(max = 600.dp)
+          .fillMaxWidth()
+      ) {
+        content()
+      }
+    }
+  } else {
+    Box(modifier = modifier.fillMaxSize()) {
       content()
     }
   }

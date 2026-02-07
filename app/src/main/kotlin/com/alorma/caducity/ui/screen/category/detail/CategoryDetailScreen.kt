@@ -487,7 +487,6 @@ private fun CategoryDetailExpandedLayout(
       if (state.productTabs.isNotEmpty()) {
         Surface(
           color = CaducityTheme.colorScheme.surfaceContainerHigh,
-          shadowElevation = 2.dp,
         ) {
           Row(
             modifier = Modifier.padding(
