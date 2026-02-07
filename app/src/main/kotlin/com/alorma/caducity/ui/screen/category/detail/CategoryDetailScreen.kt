@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,6 +36,8 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Delete
+import com.alorma.caducity.ui.adaptive.rememberIsExpanded
+import com.alorma.caducity.ui.components.calendar.CaducityMonthCalendar
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
@@ -119,6 +122,8 @@ private fun CategoryDetailEmptyContent(
   onShowAddProductDialog: () -> Unit,
   onDeleteCategoryClick: () -> Unit,
 ) {
+  val isExpanded = rememberIsExpanded()
+
   AppScaffold(
     modifier = modifier,
     dialogState = dialogState,
@@ -141,58 +146,148 @@ private fun CategoryDetailEmptyContent(
       )
     },
   ) { paddingValues ->
-    Column(
-      modifier = Modifier.padding(paddingValues),
+    if (isExpanded) {
+      CategoryDetailEmptyExpandedLayout(
+        modifier = Modifier.padding(paddingValues),
+        state = state,
+        onNavigateToAddInstance = onNavigateToAddInstance,
+        onShowAddProductDialog = onShowAddProductDialog,
+      )
+    } else {
+      CategoryDetailEmptyCompactLayout(
+        modifier = Modifier.padding(paddingValues),
+        state = state,
+        onNavigateToAddInstance = onNavigateToAddInstance,
+        onShowAddProductDialog = onShowAddProductDialog,
+      )
+    }
+  }
+}
+
+@Composable
+private fun CategoryDetailEmptyCompactLayout(
+  state: CategoryDetailState.Empty,
+  onNavigateToAddInstance: (productId: String?) -> Unit,
+  onShowAddProductDialog: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier = modifier) {
+    Surface(
+      color = CaducityTheme.colorScheme.surfaceContainerHigh,
+      shadowElevation = 2.dp,
     ) {
-      Surface(
-        color = CaducityTheme.colorScheme.surfaceContainerHigh,
-        shadowElevation = 2.dp,
+      CaducityWeekCalendar(
+        appCalendarConfig = state.appCalendarConfig,
+        todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
+        onDateClick = { },
+      )
+    }
+
+    // Empty state content
+    Box(
+      modifier = Modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center,
+    ) {
+      Column(
+        modifier = Modifier.padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
-        CaducityWeekCalendar(
-          appCalendarConfig = state.appCalendarConfig,
-          todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
-          onDateClick = { },
+        Text(
+          text = stringResource(R.string.category_detail_empty_category_title),
+          style = MaterialTheme.typography.headlineSmall,
+          color = MaterialTheme.colorScheme.onSurface,
         )
-      }
+        Text(
+          text = stringResource(R.string.category_detail_empty_category_message),
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
 
-      // Empty state content
-      Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-      ) {
-        Column(
-          modifier = Modifier.padding(32.dp),
-          horizontalAlignment = Alignment.CenterHorizontally,
-          verticalArrangement = Arrangement.spacedBy(16.dp),
+        Row(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+          horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
         ) {
-          Text(
-            text = stringResource(R.string.category_detail_empty_category_title),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onSurface,
-          )
-          Text(
-            text = stringResource(R.string.category_detail_empty_category_message),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 16.dp),
-          )
-
-          Row(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(top = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+          androidx.compose.material3.OutlinedButton(
+            onClick = onShowAddProductDialog,
           ) {
-            androidx.compose.material3.OutlinedButton(
-              onClick = onShowAddProductDialog,
-            ) {
-              Text(stringResource(R.string.category_detail_empty_category_create_product))
-            }
-            androidx.compose.material3.Button(
-              onClick = { onNavigateToAddInstance(null) },
-            ) {
-              Text(stringResource(R.string.category_detail_empty_category_add_item))
-            }
+            Text(stringResource(R.string.category_detail_empty_category_create_product))
+          }
+          androidx.compose.material3.Button(
+            onClick = { onNavigateToAddInstance(null) },
+          ) {
+            Text(stringResource(R.string.category_detail_empty_category_add_item))
+          }
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun CategoryDetailEmptyExpandedLayout(
+  state: CategoryDetailState.Empty,
+  onNavigateToAddInstance: (productId: String?) -> Unit,
+  onShowAddProductDialog: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Row(modifier = modifier.fillMaxSize()) {
+    // Left pane: Month calendar (1/3)
+    Surface(
+      modifier = Modifier
+        .weight(0.33f)
+        .fillMaxHeight(),
+      color = CaducityTheme.colorScheme.surfaceContainerHigh,
+      shadowElevation = 2.dp,
+    ) {
+      CaducityMonthCalendar(
+        appCalendarConfig = state.appCalendarConfig,
+        onDateClick = { },
+      )
+    }
+
+    // Right pane: Empty message (2/3)
+    Box(
+      modifier = Modifier
+        .weight(0.67f)
+        .fillMaxHeight(),
+      contentAlignment = Alignment.Center,
+    ) {
+      Column(
+        modifier = Modifier.padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+      ) {
+        Text(
+          text = stringResource(R.string.category_detail_empty_category_title),
+          style = MaterialTheme.typography.headlineSmall,
+          color = MaterialTheme.colorScheme.onSurface,
+        )
+        Text(
+          text = stringResource(R.string.category_detail_empty_category_message),
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.padding(horizontal = 16.dp),
+        )
+
+        Row(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+          horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+        ) {
+          androidx.compose.material3.OutlinedButton(
+            onClick = onShowAddProductDialog,
+          ) {
+            Text(stringResource(R.string.category_detail_empty_category_create_product))
+          }
+          androidx.compose.material3.Button(
+            onClick = { onNavigateToAddInstance(null) },
+          ) {
+            Text(stringResource(R.string.category_detail_empty_category_add_item))
           }
         }
       }
@@ -211,19 +306,7 @@ private fun CategoryDetailSuccessContent(
   onShowAddProductDialog: () -> Unit,
   onDeleteCategoryClick: () -> Unit,
 ) {
-  val pagerState = rememberPagerState(
-    initialPage = 0,
-    pageCount = { state.productTabs.size.coerceAtLeast(1) }
-  )
-  val coroutineScope = rememberCoroutineScope()
-
-  // Handle case where current page is out of bounds after tabs change
-  LaunchedEffect(state.productTabs.size) {
-    if (state.productTabs.isNotEmpty() && pagerState.currentPage >= state.productTabs.size) {
-      // Navigate to the first page to avoid index out of bounds
-      pagerState.scrollToPage(0)
-    }
-  }
+  val isExpanded = rememberIsExpanded()
 
   AppScaffold(
     modifier = modifier,
@@ -248,73 +331,210 @@ private fun CategoryDetailSuccessContent(
       )
     },
   ) { paddingValues ->
-    Column(
-      modifier = Modifier.padding(paddingValues),
+    if (isExpanded) {
+      CategoryDetailExpandedLayout(
+        modifier = Modifier.padding(paddingValues),
+        state = state,
+        onNavigateToAddInstance = onNavigateToAddInstance,
+        onShowAddProductDialog = onShowAddProductDialog,
+      )
+    } else {
+      CategoryDetailCompactLayout(
+        modifier = Modifier.padding(paddingValues),
+        state = state,
+        onNavigateToAddInstance = onNavigateToAddInstance,
+        onShowAddProductDialog = onShowAddProductDialog,
+      )
+    }
+  }
+}
+
+@Composable
+private fun CategoryDetailCompactLayout(
+  state: CategoryDetailState.Success,
+  onNavigateToAddInstance: (productId: String?) -> Unit,
+  onShowAddProductDialog: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val pagerState = rememberPagerState(
+    initialPage = 0,
+    pageCount = { state.productTabs.size.coerceAtLeast(1) }
+  )
+  val coroutineScope = rememberCoroutineScope()
+
+  // Handle case where current page is out of bounds after tabs change
+  LaunchedEffect(state.productTabs.size) {
+    if (state.productTabs.isNotEmpty() && pagerState.currentPage >= state.productTabs.size) {
+      pagerState.scrollToPage(0)
+    }
+  }
+
+  Column(modifier = modifier) {
+    Surface(
+      color = CaducityTheme.colorScheme.surfaceContainerHigh,
+      shadowElevation = 2.dp,
     ) {
-      Surface(
-        color = CaducityTheme.colorScheme.surfaceContainerHigh,
-        shadowElevation = 2.dp,
-      ) {
-        Column {
-          CaducityWeekCalendar(
-            appCalendarConfig = state.appCalendarConfig,
-            todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
-            onDateClick = { },
-          )
+      Column {
+        CaducityWeekCalendar(
+          appCalendarConfig = state.appCalendarConfig,
+          todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
+          onDateClick = { },
+        )
 
-          if (state.productTabs.isNotEmpty()) {
-            Row(
-              modifier = Modifier.padding(
-                top = 8.dp,
-                end = 16.dp,
-              ),
-              verticalAlignment = Alignment.CenterVertically,
+        if (state.productTabs.isNotEmpty()) {
+          Row(
+            modifier = Modifier.padding(
+              top = 8.dp,
+              end = 16.dp,
+            ),
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            val safeSelectedIndex = pagerState.currentPage.coerceIn(0, state.productTabs.size - 1)
+
+            SecondaryScrollableTabRow(
+              modifier = Modifier.weight(1f),
+              selectedTabIndex = safeSelectedIndex,
+              edgePadding = 16.dp,
+              divider = {},
+              containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
             ) {
-              // Ensure selected tab index is within bounds
-              val safeSelectedIndex = pagerState.currentPage.coerceIn(0, state.productTabs.size - 1)
-
-              SecondaryScrollableTabRow(
-                modifier = Modifier.weight(1f),
-                selectedTabIndex = safeSelectedIndex,
-                edgePadding = 16.dp,
-                divider = {},
-                containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
-              ) {
-                state.productTabs.forEachIndexed { index, productTab ->
-                  Tab(
-                    selected = pagerState.currentPage == index,
-                    onClick = {
-                      coroutineScope.launch {
-                        pagerState.animateScrollToPage(index)
-                      }
-                    },
-                    text = { Text(text = productTab.name) },
-                  )
-                }
-              }
-
-              IconButton(
-                modifier = Modifier,
-                onClick = onShowAddProductDialog,
-              ) {
-                Icon(
-                  modifier = Modifier.size(18.dp),
-                  imageVector = AppIcons.Add,
-                  contentDescription = null,
+              state.productTabs.forEachIndexed { index, productTab ->
+                Tab(
+                  selected = pagerState.currentPage == index,
+                  onClick = {
+                    coroutineScope.launch {
+                      pagerState.animateScrollToPage(index)
+                    }
+                  },
+                  text = { Text(text = productTab.name) },
                 )
               }
+            }
+
+            IconButton(
+              onClick = onShowAddProductDialog,
+            ) {
+              Icon(
+                modifier = Modifier.size(18.dp),
+                imageVector = AppIcons.Add,
+                contentDescription = null,
+              )
             }
           }
         }
       }
+    }
 
-      // Horizontal Pager for variant content
+    // Horizontal Pager for product content
+    if (state.productTabs.isNotEmpty()) {
+      HorizontalPager(
+        state = pagerState,
+        modifier = Modifier.fillMaxSize(),
+      ) { page ->
+        if (page in state.productTabs.indices) {
+          val productTab = state.productTabs[page]
+          ProductTabContent(
+            productTab = productTab,
+            onNavigateToAddItem = { _, productId -> onNavigateToAddInstance(productId) },
+          )
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun CategoryDetailExpandedLayout(
+  state: CategoryDetailState.Success,
+  onNavigateToAddInstance: (productId: String?) -> Unit,
+  onShowAddProductDialog: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val pagerState = rememberPagerState(
+    initialPage = 0,
+    pageCount = { state.productTabs.size.coerceAtLeast(1) }
+  )
+  val coroutineScope = rememberCoroutineScope()
+
+  // Handle case where current page is out of bounds after tabs change
+  LaunchedEffect(state.productTabs.size) {
+    if (state.productTabs.isNotEmpty() && pagerState.currentPage >= state.productTabs.size) {
+      pagerState.scrollToPage(0)
+    }
+  }
+
+  Row(modifier = modifier.fillMaxSize()) {
+    // Left pane: Month calendar (1/3)
+    Surface(
+      modifier = Modifier
+        .weight(0.33f)
+        .fillMaxHeight(),
+      color = CaducityTheme.colorScheme.surfaceContainerHigh,
+      shadowElevation = 2.dp,
+    ) {
+      CaducityMonthCalendar(
+        appCalendarConfig = state.appCalendarConfig,
+        onDateClick = { },
+      )
+    }
+
+    // Right pane: Tabs + content (2/3)
+    Column(
+      modifier = Modifier
+        .weight(0.67f)
+        .fillMaxHeight()
+    ) {
       if (state.productTabs.isNotEmpty()) {
+        Surface(
+          color = CaducityTheme.colorScheme.surfaceContainerHigh,
+          shadowElevation = 2.dp,
+        ) {
+          Row(
+            modifier = Modifier.padding(
+              top = 8.dp,
+              end = 16.dp,
+            ),
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            val safeSelectedIndex = pagerState.currentPage.coerceIn(0, state.productTabs.size - 1)
+
+            SecondaryScrollableTabRow(
+              modifier = Modifier.weight(1f),
+              selectedTabIndex = safeSelectedIndex,
+              edgePadding = 16.dp,
+              divider = {},
+              containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
+            ) {
+              state.productTabs.forEachIndexed { index, productTab ->
+                Tab(
+                  selected = pagerState.currentPage == index,
+                  onClick = {
+                    coroutineScope.launch {
+                      pagerState.animateScrollToPage(index)
+                    }
+                  },
+                  text = { Text(text = productTab.name) },
+                )
+              }
+            }
+
+            IconButton(
+              onClick = onShowAddProductDialog,
+            ) {
+              Icon(
+                modifier = Modifier.size(18.dp),
+                imageVector = AppIcons.Add,
+                contentDescription = null,
+              )
+            }
+          }
+        }
+
+        // Horizontal Pager for product content
         HorizontalPager(
           state = pagerState,
           modifier = Modifier.fillMaxSize(),
         ) { page ->
-          // Bounds check to prevent crash when tabs are removed
           if (page in state.productTabs.indices) {
             val productTab = state.productTabs[page]
             ProductTabContent(
