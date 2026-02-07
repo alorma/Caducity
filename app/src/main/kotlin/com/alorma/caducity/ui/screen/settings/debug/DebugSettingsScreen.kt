@@ -2,10 +2,8 @@ package com.alorma.caducity.ui.screen.settings.debug
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
+import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
@@ -84,16 +83,14 @@ fun DebugSettingsScreen(
       )
     },
   ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(paddingValues)
-        .padding(horizontal = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
+    ResponsiveSettingsContainer(modifier = Modifier.padding(paddingValues)) {
+      LazyColumn(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+      ) {
       // Data Generation Group
-      StyledSettingsGroup {
+      item {
+        StyledSettingsGroup {
         StyledSettingsCard(
           title = "Populate Fake Data",
           subtitle = if (uiState.isGenerating) {
@@ -105,20 +102,24 @@ fun DebugSettingsScreen(
           onClick = { viewModel.onPopulateFakeData() },
           enabled = !uiState.isGenerating,
         )
+        }
       }
 
       // Notifications Group
-      StyledSettingsGroup {
+      item {
+        StyledSettingsGroup {
         StyledSettingsCard(
           title = "Test Notification",
           subtitle = "Trigger notification check immediately",
           position = ShapePosition.Single,
           onClick = { viewModel.onTriggerNotificationCheck() },
         )
+        }
       }
 
       // Remote Config Group
-      StyledSettingsGroup {
+      item {
+        StyledSettingsGroup {
         StyledSettingsCard(
           title = "Refresh Remote Config",
           subtitle = if (uiState.isRefreshingRemoteConfig) {
@@ -130,11 +131,13 @@ fun DebugSettingsScreen(
           onClick = { viewModel.onRefreshRemoteConfig() },
           enabled = !uiState.isRefreshingRemoteConfig,
         )
+        }
       }
       
       // Remote Configs Override Group
       if (uiState.remoteConfigValues.isNotEmpty()) {
-        Column(
+        item {
+          Column(
           verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
           Text(
@@ -167,7 +170,9 @@ fun DebugSettingsScreen(
               )
             }
           }
+          }
         }
+      }
       }
     }
   }

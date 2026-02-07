@@ -2,11 +2,8 @@ package com.alorma.caducity.ui.screen.settings.appearance
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,6 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.config.language.LocalizedDateFormatter
+import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import org.koin.compose.koinInject
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
@@ -53,15 +51,13 @@ fun AppearanceSettingsScreen(
       )
     },
   ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(paddingValues)
-        .padding(horizontal = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
-      StyledSettingsGroup {
+    ResponsiveSettingsContainer(modifier = Modifier.padding(paddingValues)) {
+      LazyColumn(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+      ) {
+      item {
+        StyledSettingsGroup {
 
         // Load all string resources at composable level
         val themeLight = stringResource(R.string.settings_theme_light)
@@ -90,10 +86,12 @@ fun AppearanceSettingsScreen(
             onCheckedChange = { onUseDynamicTheme(it) },
           )
         }
+        }
       }
 
       // Calendar settings group
-      StyledSettingsGroup {
+      item {
+        StyledSettingsGroup {
         StyledSettingsButtonGroupCard(
           title = stringResource(R.string.settings_first_day_of_week_title),
           selectedItem = firstDayOfWeek,
@@ -104,6 +102,8 @@ fun AppearanceSettingsScreen(
           },
           onItemSelected = { onFirstDayOfWeekChange(it) },
         )
+        }
+      }
       }
     }
   }
