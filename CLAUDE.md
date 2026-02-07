@@ -363,7 +363,6 @@ The data layer uses Room for local persistence with a clean mapping to domain mo
 
 **CategoryDao:**
 - `getAllCategoriesWithItems()` - All categories with their items and products
-- `getCategoriesWithItemsByDateRange(startDate, endDate)` - Filter by expiration date
 - `getCategoryWithItems(categoryId)` - Single category with items/products
 - `insertCategory()`, `deleteCategory()`, `getAllCategoriesSync()`, `clearAllCategories()`
 

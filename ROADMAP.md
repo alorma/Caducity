@@ -32,7 +32,7 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
 - **Implementation**: Update `CategoryDetailViewModel` and side effect handler
 - **Files**: `CategoryDetailViewModel.kt`, `CategoryDetailScreen.kt`
 
-**2. Delete Product Feature**
+**2. Delete Product Feature** ✅ *Completed*
 - **Problem**: Products cannot be deleted via UI (though validation exists)
 - **Solution**: Add delete action to product tabs
   - Long-press or swipe on product tab to show delete option
@@ -40,8 +40,9 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
   - Show error snackbar if product has active items
 - **Implementation**: Add delete product use case call, update UI
 - **Files**: `CategoryDetailViewModel.kt`, `CategoryDetailScreen.kt`
+- **Status**: Implemented with swipe-to-delete on product tabs, validation, and error feedback
 
-**3. Dashboard Status/Date Navigation**
+**3. Dashboard Status/Date Navigation** ✅ *Completed*
 - **Problem**: Clicking status cards or calendar dates does nothing (empty handlers)
 - **Solution**: Create filtered view showing matching items
   - Status filter: Show all items with selected status across categories
@@ -49,6 +50,12 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
   - New screen or modal with filtered list
 - **Implementation**: Create new route/screen, implement navigation handlers
 - **Files**: `App.kt`, new filtered view screen, `DashboardViewModel.kt`
+- **Status**: Implemented `FilteredItemsByStatusScreen` with:
+  - Status-based filtering across all categories
+  - Product grouping with clickable items
+  - Item actions (consume/freeze/delete) via reusable bottom sheet
+  - Category header navigation to detail screen
+  - Success/error feedback with snackbars
 
 ---
 
@@ -168,10 +175,10 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
 
 ## Recommended Implementation Order
 
-### Sprint 1: Complete Core Features ✅
-1. Fix item actions bottom sheet (freeze/unfreeze logic)
-2. Add delete product feature
-3. Implement dashboard status/date filtering
+### Sprint 1: Complete Core Features ✅ *COMPLETED*
+1. ✅ Fix item actions bottom sheet (freeze/unfreeze logic)
+2. ✅ Add delete product feature
+3. ✅ Implement dashboard status/date filtering
 
 **Why start here:** These complete existing flows and are the most straightforward. They fix incomplete functionality rather than adding new complexity.
 
@@ -227,4 +234,4 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
 
 ---
 
-*Last updated: 2026-02-06*
+*Last updated: 2026-02-07*

@@ -1,14 +1,21 @@
 package com.alorma.caducity.domain.model
 
 import com.alorma.caducity.config.time.date
+import kotlinx.serialization.Serializable
 import kotlin.time.Duration
 import kotlin.time.Instant
 
+@Serializable
 sealed class ItemStatus {
+  @Serializable
   data object Expired : ItemStatus()
+  @Serializable
   data object ExpiringSoon : ItemStatus()
+  @Serializable
   data object Fresh : ItemStatus()
+  @Serializable
   data object Frozen : ItemStatus()
+  @Serializable
   data object Consumed : ItemStatus()
 
   companion object Companion {

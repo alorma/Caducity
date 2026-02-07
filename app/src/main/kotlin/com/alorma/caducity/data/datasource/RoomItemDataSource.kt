@@ -92,6 +92,12 @@ class RoomItemDataSource(
     }
   }
 
+  override fun getAllItems(): Flow<List<Item>> {
+    return itemDao.getAllItems().map { entities ->
+      entities.map { entity -> itemMapper.toModel(entity) }
+    }
+  }
+
   override suspend fun clearConsumedItems(categoryId: String, productId: String?) {
     if (productId != null) {
       itemDao.deleteConsumedItemsByProduct(categoryId, productId)

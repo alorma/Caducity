@@ -17,48 +17,6 @@ interface CategoryDao {
   fun getAllCategoriesWithItems(): Flow<List<CategoryWithItemsRoomEntity>>
 
   @Transaction
-  @Query(
-    """
-    SELECT DISTINCT c.* FROM categories c
-    INNER JOIN items i ON c.id = i.categoryId
-    WHERE CASE
-            WHEN i.pausedDate IS NOT NULL THEN i.pausedDate
-            ELSE i.expirationDate
-          END >= :startDate
-      AND CASE
-            WHEN i.pausedDate IS NOT NULL THEN i.pausedDate
-            ELSE i.expirationDate
-          END < :endDate
-      AND i.consumedDate IS NULL
-  """
-  )
-  fun getCategoriesWithItemsByDateRange(
-    startDate: Long,
-    endDate: Long
-  ): Flow<List<CategoryWithItemsRoomEntity>>
-
-  @Transaction
-  @Query(
-    """
-    SELECT DISTINCT c.* FROM categories c
-    INNER JOIN items i ON c.id = i.categoryId
-    WHERE CASE
-            WHEN i.pausedDate IS NOT NULL THEN i.pausedDate
-            ELSE i.expirationDate
-          END >= :date
-      AND CASE
-            WHEN i.pausedDate IS NOT NULL THEN i.pausedDate
-            ELSE i.expirationDate
-          END < :nextDay
-      AND i.consumedDate IS NULL
-  """
-  )
-  fun getCategoriesWithItemsByDate(
-    date: Long,
-    nextDay: Long
-  ): Flow<List<CategoryWithItemsRoomEntity>>
-
-  @Transaction
   @Query("SELECT * FROM categories WHERE id = :categoryId")
   fun getCategoryWithItems(categoryId: String): Flow<CategoryWithItemsRoomEntity?>
 
