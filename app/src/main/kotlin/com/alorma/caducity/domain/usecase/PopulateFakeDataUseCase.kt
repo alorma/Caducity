@@ -91,12 +91,18 @@ class PopulateFakeDataUseCase(
             now = now
           )
 
-          // Add each item to the category and freeze the "Frozen" ones
+          // Add each item to the category and apply status-specific actions
           productItems.forEach { newItem ->
             val itemId = itemDataSource.addItem(category.id, newItem)
-            // Freeze items that have "Frozen" in their identifier
-            if (newItem.identifier.contains("Frozen")) {
-              itemDataSource.freezeItem(itemId, remainingDays = 5)
+            when {
+              // Freeze items that have "Frozen" in their identifier
+              newItem.identifier.contains("Frozen") -> {
+                itemDataSource.freezeItem(itemId, remainingDays = 5)
+              }
+              // Consume items that have "Consumed" in their identifier
+              newItem.identifier.contains("Consumed") -> {
+                itemDataSource.markItemAsConsumed(itemId)
+              }
             }
           }
         }
@@ -109,11 +115,12 @@ class PopulateFakeDataUseCase(
   }
 
   /**
-   * Creates 2 items for each status: Fresh, ExpiringSoon, Expired, Frozen
-   * Total: 8 items (2 per status)
+   * Creates 2 items for each status: Fresh, ExpiringSoon, Expired, Frozen, Consumed
+   * Total: 10 items (2 per status)
    *
    * Note: Status is calculated by the ItemMapper based on expiration date.
    * Frozen status is achieved by calling freezeItem after creation.
+   * Consumed status is achieved by calling markItemAsConsumed after creation.
    */
   private fun createItemsForAllStatuses(
     productId: String?,
@@ -147,16 +154,27 @@ class PopulateFakeDataUseCase(
     }
 
     // Expired items (past expiration date)
-    repeat(2) { index ->
-      val daysAgo = 1 + index // 1-2 days ago
-      items.add(
-        NewItem(
-          identifier = "$identifierPrefix Expired #${index + 1}",
-          productId = productId,
-          expirationDate = now.minus(daysAgo.days),
-        )
+    // 2 near expiration (less than consumeExpiredThreshold)
+    // 2 far from expiration (more than consumeExpiredThreshold)
+    val consumeThresholdDays = expirationThresholds.consumeExpiredThreshold.inWholeDays
+
+    // Near expired (within consume threshold - can be consumed)
+    items.add(
+      NewItem(
+        identifier = "$identifierPrefix Expired Near #1",
+        productId = productId,
+        expirationDate = now.minus(1.days), // 1 day ago
       )
-    }
+    )
+
+    // Far expired (beyond consume threshold - cannot be consumed)
+    items.add(
+      NewItem(
+        identifier = "$identifierPrefix Expired Far #1",
+        productId = productId,
+        expirationDate = now.minus((consumeThresholdDays + 1).days),
+      )
+    )
 
     // Frozen items (will be frozen after creation)
     repeat(2) { index ->
@@ -168,6 +186,25 @@ class PopulateFakeDataUseCase(
         )
       )
     }
+
+    // Consumed items (will be consumed after creation)
+    // 2 near expiration (less than consumeExpiredThreshold)
+    // 2 far from expiration (more than consumeExpiredThreshold)
+    items.add(
+      NewItem(
+        identifier = "$identifierPrefix Consumed Near #1",
+        productId = productId,
+        expirationDate = now.minus(1.days), // 1 day ago (within threshold)
+      )
+    )
+
+    items.add(
+      NewItem(
+        identifier = "$identifierPrefix Consumed Far #1",
+        productId = productId,
+        expirationDate = now.minus((consumeThresholdDays + 1).days), // Beyond threshold
+      )
+    )
 
     return items
   }
