@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
+import com.alorma.caducity.ui.adaptive.rememberIsExpanded
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.screen.dashboard.DashboardSummary
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -27,6 +28,29 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 
 @Composable
 fun DashboardSummaryCard(
+  summary: DashboardSummary,
+  onStatusClick: (ItemStatus) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val isExpanded = rememberIsExpanded()
+
+  if (isExpanded) {
+    DashboardSummaryCardExpanded(
+      summary = summary,
+      onStatusClick = onStatusClick,
+      modifier = modifier,
+    )
+  } else {
+    DashboardSummaryCardCompact(
+      summary = summary,
+      onStatusClick = onStatusClick,
+      modifier = modifier,
+    )
+  }
+}
+
+@Composable
+private fun DashboardSummaryCardCompact(
   summary: DashboardSummary,
   onStatusClick: (ItemStatus) -> Unit,
   modifier: Modifier = Modifier,
@@ -101,6 +125,74 @@ fun DashboardSummaryCard(
         onClick = { onStatusClick(it) },
       )
     }
+  }
+}
+
+@Composable
+private fun DashboardSummaryCardExpanded(
+  summary: DashboardSummary,
+  onStatusClick: (ItemStatus) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val arrangement = Arrangement.spacedBy(8.dp)
+
+  val largeShape = CaducityTheme.shapes.largeIncreased
+  val smallShape = CaducityTheme.shapes.small
+
+  Row(
+    modifier = Modifier
+      .fillMaxWidth()
+      .then(modifier),
+    horizontalArrangement = arrangement,
+  ) {
+    SummaryStatusCard(
+      modifier = Modifier.weight(1f),
+      shape = RoundedCornerShape(
+        topStart = largeShape.topStart,
+        topEnd = smallShape.topStart,
+        bottomStart = largeShape.topStart,
+        bottomEnd = smallShape.topStart,
+      ),
+      status = ItemStatus.Expired,
+      count = summary.expired,
+      onClick = { onStatusClick(it) },
+    )
+    SummaryStatusCard(
+      modifier = Modifier.weight(1f),
+      shape = RoundedCornerShape(
+        topStart = smallShape.topStart,
+        topEnd = smallShape.topStart,
+        bottomStart = smallShape.topStart,
+        bottomEnd = smallShape.topStart,
+      ),
+      status = ItemStatus.ExpiringSoon,
+      count = summary.expiringSoon,
+      onClick = { onStatusClick(it) },
+    )
+    SummaryStatusCard(
+      modifier = Modifier.weight(1f),
+      shape = RoundedCornerShape(
+        topStart = smallShape.topStart,
+        topEnd = smallShape.topStart,
+        bottomStart = smallShape.topStart,
+        bottomEnd = smallShape.topStart,
+      ),
+      status = ItemStatus.Fresh,
+      count = summary.fresh,
+      onClick = { onStatusClick(it) },
+    )
+    SummaryStatusCard(
+      modifier = Modifier.weight(1f),
+      shape = RoundedCornerShape(
+        topStart = smallShape.topStart,
+        topEnd = largeShape.topStart,
+        bottomStart = smallShape.topStart,
+        bottomEnd = largeShape.topStart,
+      ),
+      status = ItemStatus.Frozen,
+      count = summary.frozen,
+      onClick = { onStatusClick(it) },
+    )
   }
 }
 
