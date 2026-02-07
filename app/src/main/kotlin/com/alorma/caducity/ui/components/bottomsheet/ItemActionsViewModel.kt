@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.time.date
-import com.alorma.caducity.domain.model.InstanceActionResult
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
@@ -135,10 +134,11 @@ class ItemActionsViewModel(
     }
   }
 
-  private fun handleResult(result: InstanceActionResult<Unit>, successEffect: ItemActionSideEffect) {
-    when (result) {
-      is InstanceActionResult.Success -> emitSideEffect(successEffect)
-      is InstanceActionResult.Failure -> emitSideEffect(ItemActionSideEffect.ActionFailed(result.error.toString()))
+  private fun handleResult(result: Result<Unit>, successEffect: ItemActionSideEffect) {
+    result.onSuccess {
+      emitSideEffect(successEffect)
+    }.onFailure { error ->
+      emitSideEffect(ItemActionSideEffect.ActionFailed(error.message))
     }
   }
 
