@@ -6,10 +6,12 @@ import com.alorma.caducity.config.clock.KotlinAppClock
 import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.config.remoteconfig.DebugRemoteConfigRunner
 import com.alorma.caducity.config.remoteconfig.FirebaseRemoteConfigProvider
+import com.alorma.caducity.config.remoteconfig.RemoteConfig
 import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.config.version.AndroidAppVersionProvider
 import com.alorma.caducity.config.version.AppVersionProvider
+import com.alorma.caducity.ui.adaptive.TabletModeRemoteConfig
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format.DateTimeFormat
@@ -64,5 +66,9 @@ val configModule = module {
     } else {
       firebaseRunner
     }
+  }
+
+  singleOf(::TabletModeRemoteConfig) {
+    bind<RemoteConfig>()
   }
 }
