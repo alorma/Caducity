@@ -2,8 +2,10 @@ package com.alorma.caducity.ui.screen.settings.debug
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alorma.caducity.config.remoteconfig.RemoteConfigDefaults
-import com.alorma.caducity.config.remoteconfig.RemoteConfigProvider
+import com.alorma.caducity.config.remoteconfig.ExampleFeatureConfig
+import com.alorma.caducity.config.remoteconfig.ExampleMessageConfig
+import com.alorma.caducity.config.remoteconfig.ExampleNumberConfig
+import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.domain.usecase.PopulateFakeDataUseCase
 import com.alorma.caducity.feature.notification.NotificationDebugHelper
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,7 +23,10 @@ import kotlinx.coroutines.launch
 class DebugSettingsViewModel(
   private val notificationDebugHelper: NotificationDebugHelper,
   private val populateFakeDataUseCase: PopulateFakeDataUseCase,
-  private val remoteConfigProvider: RemoteConfigProvider,
+  private val remoteConfigRunner: RemoteConfigRunner,
+  private val exampleFeatureConfig: ExampleFeatureConfig,
+  private val exampleMessageConfig: ExampleMessageConfig,
+  private val exampleNumberConfig: ExampleNumberConfig,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(DebugSettingsUiState())
@@ -64,7 +69,7 @@ class DebugSettingsViewModel(
     viewModelScope.launch {
       _uiState.value = _uiState.value.copy(isRefreshingRemoteConfig = true)
 
-      remoteConfigProvider.fetchAndActivate()
+      remoteConfigRunner.fetchAndActivate()
         .onSuccess { activated ->
           _sideEffect.emit(
             DebugSettingsSideEffect.RemoteConfigRefreshed(activated)
@@ -82,15 +87,11 @@ class DebugSettingsViewModel(
   }
 
   private fun loadRemoteConfigValues() {
-    val exampleMessage = remoteConfigProvider.getString(RemoteConfigDefaults.Keys.EXAMPLE_MESSAGE)
-    val exampleFeatureEnabled = remoteConfigProvider.getBoolean(RemoteConfigDefaults.Keys.EXAMPLE_FEATURE_ENABLED)
-    val exampleNumber = remoteConfigProvider.getLong(RemoteConfigDefaults.Keys.EXAMPLE_NUMBER)
-
     _uiState.value = _uiState.value.copy(
       remoteConfigValues = mapOf(
-        RemoteConfigDefaults.Keys.EXAMPLE_MESSAGE to exampleMessage,
-        RemoteConfigDefaults.Keys.EXAMPLE_FEATURE_ENABLED to exampleFeatureEnabled.toString(),
-        RemoteConfigDefaults.Keys.EXAMPLE_NUMBER to exampleNumber.toString(),
+        exampleFeatureConfig.key to exampleFeatureConfig.isEnabled().toString(),
+        exampleMessageConfig.key to exampleMessageConfig.asString(),
+        exampleNumberConfig.key to exampleNumberConfig.asLong().toString(),
       )
     )
   }

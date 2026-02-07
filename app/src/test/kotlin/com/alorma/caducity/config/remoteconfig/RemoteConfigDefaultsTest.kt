@@ -16,9 +16,9 @@ class RemoteConfigDefaultsTest {
   fun `defaults map contains all defined keys`() {
     // Verify all keys have corresponding default values
     expectThat(RemoteConfigDefaults.defaults) {
-      containsKey(RemoteConfigDefaults.Keys.EXAMPLE_FEATURE_ENABLED)
-      containsKey(RemoteConfigDefaults.Keys.EXAMPLE_MESSAGE)
-      containsKey(RemoteConfigDefaults.Keys.EXAMPLE_NUMBER)
+      containsKey("example_feature_enabled")
+      containsKey("example_message")
+      containsKey("example_number")
     }
   }
 
@@ -30,27 +30,25 @@ class RemoteConfigDefaultsTest {
 
   @Test
   fun `example feature enabled has boolean default value`() {
-    val value = RemoteConfigDefaults.defaults[RemoteConfigDefaults.Keys.EXAMPLE_FEATURE_ENABLED]
+    val value = RemoteConfigDefaults.defaults["example_feature_enabled"]
     expectThat(value).isEqualTo(false)
   }
 
   @Test
   fun `example message has non-empty string default value`() {
-    val value = RemoteConfigDefaults.defaults[RemoteConfigDefaults.Keys.EXAMPLE_MESSAGE] as String
+    val value = RemoteConfigDefaults.defaults["example_message"] as String
     expectThat(value).isNotEmpty()
   }
 
   @Test
   fun `example number has positive long default value`() {
-    val value = RemoteConfigDefaults.defaults[RemoteConfigDefaults.Keys.EXAMPLE_NUMBER] as Long
+    val value = RemoteConfigDefaults.defaults["example_number"] as Long
     expectThat(value).isEqualTo(42L)
   }
 
   @Test
-  fun `keys object contains expected constants`() {
+  fun `keys are correctly defined`() {
     // Verify key constants are defined
-    expectThat(RemoteConfigDefaults.Keys.EXAMPLE_FEATURE_ENABLED).isEqualTo("example_feature_enabled")
-    expectThat(RemoteConfigDefaults.Keys.EXAMPLE_MESSAGE).isEqualTo("example_message")
-    expectThat(RemoteConfigDefaults.Keys.EXAMPLE_NUMBER).isEqualTo("example_number")
+    expectThat(RemoteConfigDefaults.defaults.keys).isNotEmpty()
   }
 }

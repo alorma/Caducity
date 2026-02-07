@@ -6,12 +6,12 @@ import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 
 /**
- * Firebase implementation of RemoteConfigProvider.
- * Wraps Firebase Remote Config SDK with type-safe interface.
+ * Firebase implementation of RemoteConfigRunner.
+ * Wraps Firebase Remote Config SDK and provides access to config values.
  */
 class FirebaseRemoteConfigProvider(
   private val remoteConfig: FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
-) : RemoteConfigProvider {
+) : RemoteConfigRunner() {
 
   init {
     // Configure Remote Config settings
@@ -26,20 +26,6 @@ class FirebaseRemoteConfigProvider(
     remoteConfig.setConfigSettingsAsync(configSettings)
   }
 
-  override suspend fun fetch(): Result<Unit> = runCatching {
-    remoteConfig.fetch().await()
-    Timber.d("Remote Config: Fetch successful")
-  }.onFailure { exception ->
-    Timber.e(exception, "Remote Config: Fetch failed")
-  }
-
-  override suspend fun activate(): Result<Unit> = runCatching {
-    remoteConfig.activate().await()
-    Timber.d("Remote Config: Activate successful")
-  }.onFailure { exception ->
-    Timber.e(exception, "Remote Config: Activate failed")
-  }
-
   override suspend fun fetchAndActivate(): Result<Boolean> = runCatching {
     val activated = remoteConfig.fetchAndActivate().await()
     Timber.d("Remote Config: Fetch and activate successful. Activated: $activated")
@@ -48,23 +34,27 @@ class FirebaseRemoteConfigProvider(
     Timber.e(exception, "Remote Config: Fetch and activate failed")
   }
 
-  override fun getString(key: String): String {
-    return remoteConfig.getString(key)
-  }
-
-  override fun getBoolean(key: String): Boolean {
+  override fun getBoolean(key: String, defaultValue: Boolean): Boolean {
     return remoteConfig.getBoolean(key)
   }
 
-  override fun getLong(key: String): Long {
+  override fun getString(key: String, defaultValue: String): String {
+    return remoteConfig.getString(key)
+  }
+
+  override fun getLong(key: String, defaultValue: Long): Long {
     return remoteConfig.getLong(key)
   }
 
-  override fun getDouble(key: String): Double {
+  override fun getDouble(key: String, defaultValue: Double): Double {
     return remoteConfig.getDouble(key)
   }
 
-  override fun setDefaults(defaults: Map<String, Any>) {
+  /**
+   * Sets default config values for all configs.
+   * @param defaults Map of default key-value pairs.
+   */
+  fun setDefaults(defaults: Map<String, Any>) {
     remoteConfig.setDefaultsAsync(defaults)
     Timber.d("Remote Config: Defaults set with ${defaults.size} values")
   }

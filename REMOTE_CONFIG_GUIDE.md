@@ -4,17 +4,40 @@ This guide explains how to use Firebase Remote Config in the Caducity app.
 
 ## Overview
 
-Firebase Remote Config allows you to change app configuration and behavior without requiring users to update the app. Config values are fetched from Firebase and can be updated on-demand through the Firebase Console.
+Firebase Remote Config allows you to change app configuration and behavior without requiring users to update the app. The implementation follows the same pattern as the FireAndForget library, using abstract classes for each configuration parameter.
 
 ## Architecture
 
-The Remote Config implementation follows clean architecture principles:
+The Remote Config implementation follows the FireAndForget pattern:
 
 ```
 config/remoteconfig/
-├── RemoteConfigProvider.kt        # Interface for config access
+├── RemoteConfigRunner.kt         # Abstract runner (like FireAndForgetRunner)
 ├── FirebaseRemoteConfigProvider.kt # Firebase implementation
-└── RemoteConfigDefaults.kt        # Default values and keys
+├── RemoteConfig.kt               # Abstract base class (like FireAndForget)
+└── RemoteConfigDefaults.kt       # Example configs and defaults
+```
+
+**Pattern Comparison:**
+
+FireAndForget pattern:
+```kotlin
+class OnboardingFlag(runner: FireAndForgetRunner) : FireAndForget(
+  fireAndForgetRunner = runner,
+  name = "user_onboarding",
+  defaultValue = true
+)
+// Usage: if (onboardingFlag.isEnabled()) { ... }
+```
+
+Remote Config pattern:
+```kotlin
+class ExampleFeatureConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "example_feature_enabled",
+  defaultValue = false
+)
+// Usage: if (exampleFeatureConfig.isEnabled()) { ... }
 ```
 
 ## Setup
@@ -23,107 +46,153 @@ Remote Config is automatically initialized when the app starts. See `FIREBASE_SE
 
 ## Adding a New Config Value
 
-### 1. Define the Key and Default Value
+### 1. Create a Config Class
 
-Add your config key and default value to `RemoteConfigDefaults.kt`:
+Create a class extending `RemoteConfig` in `RemoteConfigDefaults.kt`:
+
+```kotlin
+class MyFeatureConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "my_feature_enabled",
+  defaultValue = false
+)
+```
+
+### 2. Register in DI Module
+
+Add it to `ConfigModule.kt`:
+
+```kotlin
+val configModule = module {
+  // ...
+  
+  // Remote Configs
+  singleOf(::MyFeatureConfig)
+}
+```
+
+### 3. Add to Defaults Map
+
+Add the default value to `RemoteConfigDefaults.defaults`:
 
 ```kotlin
 object RemoteConfigDefaults {
-  object Keys {
-    const val MY_FEATURE_ENABLED = "my_feature_enabled"
-    const val MAX_ITEMS_COUNT = "max_items_count"
-    const val WELCOME_MESSAGE = "welcome_message"
-  }
-  
   val defaults: Map<String, Any> = mapOf(
-    Keys.MY_FEATURE_ENABLED to false,
-    Keys.MAX_ITEMS_COUNT to 100L,
-    Keys.WELCOME_MESSAGE to "Welcome to Caducity!",
+    "my_feature_enabled" to false,
+    // ... other defaults
   )
 }
 ```
 
-### 2. Create the Parameter in Firebase Console
+### 4. Create Parameter in Firebase Console
 
 1. Go to Firebase Console → Build → Remote Config
 2. Click "Add parameter"
 3. Enter the parameter key (e.g., `my_feature_enabled`)
 4. Set the default value
-5. Add conditions if needed (targeting specific users/versions)
+5. Add conditions if needed
 6. Click "Publish changes"
 
-### 3. Access the Config Value
+### 5. Use in Your Code
 
-Inject `RemoteConfigProvider` into your ViewModel or use case:
+Inject the config and use it:
 
 ```kotlin
 class MyViewModel(
-  private val remoteConfig: RemoteConfigProvider
+  private val myFeatureConfig: MyFeatureConfig
 ) : ViewModel() {
   
   fun checkFeature() {
-    val isEnabled = remoteConfig.getBoolean(RemoteConfigDefaults.Keys.MY_FEATURE_ENABLED)
-    if (isEnabled) {
+    if (myFeatureConfig.isEnabled()) {
       // Feature is enabled
       enableFeature()
     }
   }
-  
-  fun getMaxItems(): Long {
-    return remoteConfig.getLong(RemoteConfigDefaults.Keys.MAX_ITEMS_COUNT)
-  }
-  
-  fun getWelcomeMessage(): String {
-    return remoteConfig.getString(RemoteConfigDefaults.Keys.WELCOME_MESSAGE)
-  }
 }
 ```
 
-## Available Methods
+## Config Types
 
-### Type-Safe Getters
+### Boolean Configs
 
 ```kotlin
-// Get a boolean value
-val enabled = remoteConfig.getBoolean("feature_enabled")
+class FeatureFlagConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "feature_flag",
+  defaultValue = false
+)
 
-// Get a string value
-val message = remoteConfig.getString("welcome_message")
-
-// Get a long value
-val count = remoteConfig.getLong("max_items")
-
-// Get a double value
-val threshold = remoteConfig.getDouble("threshold_value")
+// Usage
+if (featureFlagConfig.isEnabled()) {
+  // Feature is enabled
+}
 ```
 
-### Fetch and Activate
+### String Configs
 
 ```kotlin
-// Fetch and activate latest config values
-viewModelScope.launch {
-  remoteConfig.fetchAndActivate()
-    .onSuccess { activated ->
-      // activated = true if new values were activated
-      // activated = false if no new values were available
-      if (activated) {
-        // Reload UI with new values
-        loadData()
-      }
-    }
-    .onFailure { exception ->
-      // Handle error (defaults will continue to be used)
-      Timber.e(exception, "Failed to fetch remote config")
-    }
-}
+class WelcomeMessageConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "welcome_message",
+  defaultValue = "Welcome!"
+)
 
-// Separate fetch and activate (advanced usage)
-viewModelScope.launch {
-  remoteConfig.fetch()
-    .onSuccess {
-      // Config fetched, now activate
-      remoteConfig.activate()
+// Usage
+val message = welcomeMessageConfig.asString()
+```
+
+### Long Configs
+
+```kotlin
+class MaxItemsConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "max_items",
+  defaultValue = 100L
+)
+
+// Usage
+val maxItems = maxItemsConfig.asLong()
+```
+
+### Double Configs
+
+```kotlin
+class ThresholdConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "threshold_value",
+  defaultValue = 0.75
+)
+
+// Usage
+val threshold = thresholdConfig.asDouble()
+```
+
+## Manual Fetch and Activate
+
+If you need to manually refresh config values:
+
+```kotlin
+class MyViewModel(
+  private val remoteConfigRunner: RemoteConfigRunner
+) : ViewModel() {
+  
+  fun refreshConfig() {
+    viewModelScope.launch {
+      remoteConfigRunner.fetchAndActivate()
+        .onSuccess { activated ->
+          // activated = true if new values were activated
+          // activated = false if no new values were available
+          if (activated) {
+            // Reload UI with new values
+            loadData()
+          }
+        }
+        .onFailure { exception ->
+          // Handle error (defaults will continue to be used)
+          Timber.e(exception, "Failed to fetch remote config")
+        }
     }
+  }
 }
 ```
 
@@ -156,62 +225,81 @@ These intervals are configured in `FirebaseRemoteConfigProvider`.
 
 ## Best Practices
 
-### 1. Always Define Default Values
+### 1. Create One Class Per Config
 
 ```kotlin
-// ✅ Good: Define defaults in RemoteConfigDefaults
-val defaults: Map<String, Any> = mapOf(
-  Keys.FEATURE_ENABLED to false,  // Safe default
+// ✅ Good: Each config has its own class
+class FeatureAConfig(runner: RemoteConfigRunner) : RemoteConfig(...)
+class FeatureBConfig(runner: RemoteConfigRunner) : RemoteConfig(...)
+
+// ❌ Bad: Sharing configs across features
+// Don't do this - create specific config classes instead
+```
+
+### 2. Use Descriptive Names
+
+```kotlin
+// ✅ Good: Clear, descriptive names
+class EnableNewDashboardConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "enable_new_dashboard",
+  defaultValue = false
 )
 
-// ❌ Bad: Relying only on remote values without defaults
+// ❌ Bad: Vague or generic names
+class Config1(runner: RemoteConfigRunner) : RemoteConfig(...)
 ```
 
-### 2. Use Constants for Keys
+### 3. Always Provide Safe Defaults
 
 ```kotlin
-// ✅ Good: Use constants to avoid typos
-val enabled = remoteConfig.getBoolean(RemoteConfigDefaults.Keys.FEATURE_ENABLED)
+// ✅ Good: Safe default that won't break functionality
+class ExperimentalFeatureConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "experimental_feature",
+  defaultValue = false  // Safe default
+)
 
-// ❌ Bad: Hard-coded strings
-val enabled = remoteConfig.getBoolean("feature_enabled")
+// ❌ Bad: Default that could cause issues
+class RequiredFeatureConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "required_feature",
+  defaultValue = true  // Risky if feature isn't ready
+)
 ```
 
-### 3. Handle Fetch Failures Gracefully
+### 4. Register in DI Module
 
 ```kotlin
-// ✅ Good: Handle both success and failure
-remoteConfig.fetchAndActivate()
-  .onSuccess { /* Update UI */ }
-  .onFailure { /* Log error, use defaults */ }
-
-// ❌ Bad: Assuming fetch always succeeds
-remoteConfig.fetchAndActivate()
-```
-
-### 4. Use Appropriate Types
-
-```kotlin
-// ✅ Good: Use correct types
-val count = remoteConfig.getLong("max_count")  // Numbers should be Long
-val threshold = remoteConfig.getDouble("threshold")  // Decimals should be Double
-
-// ❌ Bad: Using wrong types
-val count = remoteConfig.getString("max_count").toInt()  // Fragile
-```
-
-### 5. Consider User Experience
-
-```kotlin
-// ✅ Good: Fetch in background, don't block UI
-viewModelScope.launch {
-  remoteConfig.fetchAndActivate()  // Background operation
+// ✅ Good: Register in ConfigModule
+val configModule = module {
+  singleOf(::MyFeatureConfig)
 }
 
-// ✅ Good: Show loading state for user-initiated refresh
-_uiState.value = _uiState.value.copy(isRefreshing = true)
-remoteConfig.fetchAndActivate()
-_uiState.value = _uiState.value.copy(isRefreshing = false)
+// ❌ Bad: Creating instances manually
+// Don't do this - always use DI
+```
+
+### 5. Inject Individual Configs
+
+```kotlin
+// ✅ Good: Inject specific configs you need
+class MyViewModel(
+  private val featureAConfig: FeatureAConfig,
+  private val featureBConfig: FeatureBConfig
+) : ViewModel() {
+  fun checkFeatures() {
+    if (featureAConfig.isEnabled()) { /* ... */ }
+    if (featureBConfig.isEnabled()) { /* ... */ }
+  }
+}
+
+// ❌ Bad: Injecting the runner directly
+class MyViewModel(
+  private val remoteConfigRunner: RemoteConfigRunner
+) : ViewModel() {
+  // This works but doesn't benefit from the abstraction
+}
 ```
 
 ## Common Use Cases
@@ -221,11 +309,28 @@ _uiState.value = _uiState.value.copy(isRefreshing = false)
 Enable/disable features remotely without app updates:
 
 ```kotlin
-val enableNewDashboard = remoteConfig.getBoolean("enable_new_dashboard")
-if (enableNewDashboard) {
-  NewDashboardScreen()
-} else {
-  OldDashboardScreen()
+// 1. Create the config class
+class EnableNewDashboardConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "enable_new_dashboard",
+  defaultValue = false
+)
+
+// 2. Register in DI
+singleOf(::EnableNewDashboardConfig)
+
+// 3. Use in your code
+class DashboardViewModel(
+  private val enableNewDashboard: EnableNewDashboardConfig
+) : ViewModel() {
+  
+  fun getScreen() {
+    if (enableNewDashboard.isEnabled()) {
+      NewDashboardScreen()
+    } else {
+      OldDashboardScreen()
+    }
+  }
 }
 ```
 
@@ -234,8 +339,22 @@ if (enableNewDashboard) {
 Adjust app behavior based on remote config:
 
 ```kotlin
-val expirationThreshold = remoteConfig.getLong("expiration_warning_days")
-val isExpiringSoon = daysUntilExpiration <= expirationThreshold
+// 1. Create the config class
+class ExpirationThresholdConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "expiration_warning_days",
+  defaultValue = 7L
+)
+
+// 2. Use in your code
+class ExpirationViewModel(
+  private val expirationThreshold: ExpirationThresholdConfig
+) : ViewModel() {
+  
+  fun checkExpiration(daysUntilExpiration: Long): Boolean {
+    return daysUntilExpiration <= expirationThreshold.asLong()
+  }
+}
 ```
 
 ### A/B Testing
@@ -243,12 +362,25 @@ val isExpiringSoon = daysUntilExpiration <= expirationThreshold
 Show different experiences to different users:
 
 ```kotlin
-// In Firebase Console, create conditions for user segments
-val experimentVariant = remoteConfig.getString("experiment_variant")
-when (experimentVariant) {
-  "variant_a" -> ShowVariantA()
-  "variant_b" -> ShowVariantB()
-  else -> ShowDefault()
+// 1. Create the config class
+class ExperimentVariantConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "experiment_variant",
+  defaultValue = "control"
+)
+
+// 2. Use with Firebase Console conditions for user segments
+class ExperimentViewModel(
+  private val experimentVariant: ExperimentVariantConfig
+) : ViewModel() {
+  
+  fun getVariant() {
+    when (experimentVariant.asString()) {
+      "variant_a" -> ShowVariantA()
+      "variant_b" -> ShowVariantB()
+      else -> ShowControl()
+    }
+  }
 }
 ```
 
@@ -257,9 +389,24 @@ when (experimentVariant) {
 Display important messages to users:
 
 ```kotlin
-val emergencyMessage = remoteConfig.getString("emergency_message")
-if (emergencyMessage.isNotEmpty()) {
-  ShowEmergencyBanner(message = emergencyMessage)
+// 1. Create the config class
+class EmergencyMessageConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "emergency_message",
+  defaultValue = ""
+)
+
+// 2. Use in your code
+class MainViewModel(
+  private val emergencyMessage: EmergencyMessageConfig
+) : ViewModel() {
+  
+  fun checkEmergencyMessage() {
+    val message = emergencyMessage.asString()
+    if (message.isNotEmpty()) {
+      ShowEmergencyBanner(message = message)
+    }
+  }
 }
 ```
 

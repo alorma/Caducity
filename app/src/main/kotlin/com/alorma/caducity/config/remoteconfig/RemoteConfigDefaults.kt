@@ -1,37 +1,58 @@
 package com.alorma.caducity.config.remoteconfig
 
 /**
- * Default config values for Firebase Remote Config.
- * Define your config keys and default values here.
+ * Example remote configs for demonstration purposes.
  * 
- * Usage example:
+ * To add a new config:
+ * 1. Create a class extending RemoteConfig
+ * 2. Define the key and default value
+ * 3. Register it in the DI module (ConfigModule)
+ * 4. Create the parameter in Firebase Console
+ * 
+ * Example:
  * ```
- * // In ConfigModule:
- * remoteConfigProvider.setDefaults(RemoteConfigDefaults.defaults)
- * 
- * // Access values:
- * val featureEnabled = remoteConfigProvider.getBoolean(RemoteConfigDefaults.Keys.EXAMPLE_FEATURE_ENABLED)
+ * class MyFeatureConfig(runner: RemoteConfigRunner) : RemoteConfig(
+ *   remoteConfigRunner = runner,
+ *   key = "my_feature_enabled",
+ *   defaultValue = false
+ * )
  * ```
  */
+
+/**
+ * Example boolean config for a feature flag.
+ */
+class ExampleFeatureConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "example_feature_enabled",
+  defaultValue = false
+)
+
+/**
+ * Example string config for a message.
+ */
+class ExampleMessageConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "example_message",
+  defaultValue = "Hello from Remote Config!"
+)
+
+/**
+ * Example long config for a number.
+ */
+class ExampleNumberConfig(runner: RemoteConfigRunner) : RemoteConfig(
+  remoteConfigRunner = runner,
+  key = "example_number",
+  defaultValue = 42L
+)
+
+/**
+ * Default values helper for setting up Firebase Remote Config defaults.
+ */
 object RemoteConfigDefaults {
-  
-  /**
-   * Config keys used in Remote Config.
-   * Add new keys here as you create new remote configs.
-   */
-  object Keys {
-    const val EXAMPLE_FEATURE_ENABLED = "example_feature_enabled"
-    const val EXAMPLE_MESSAGE = "example_message"
-    const val EXAMPLE_NUMBER = "example_number"
-  }
-  
-  /**
-   * Default values for all config keys.
-   * These will be used until remote values are fetched and activated.
-   */
   val defaults: Map<String, Any> = mapOf(
-    Keys.EXAMPLE_FEATURE_ENABLED to false,
-    Keys.EXAMPLE_MESSAGE to "Hello from Remote Config!",
-    Keys.EXAMPLE_NUMBER to 42L,
+    "example_feature_enabled" to false,
+    "example_message" to "Hello from Remote Config!",
+    "example_number" to 42L,
   )
 }

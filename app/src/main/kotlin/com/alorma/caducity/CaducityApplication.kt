@@ -1,7 +1,7 @@
 package com.alorma.caducity
 
 import android.app.Application
-import com.alorma.caducity.config.remoteconfig.RemoteConfigProvider
+import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.di.appModule
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.notification.NotificationChannelManager
@@ -31,7 +31,7 @@ import timber.log.Timber
 class CaducityApplication : Application() {
 
   private val workScheduler: ExpirationWorkScheduler by inject()
-  private val remoteConfigProvider: RemoteConfigProvider by inject()
+  private val remoteConfigRunner: RemoteConfigRunner by inject()
   
   // Application-scoped coroutine scope for background operations
   private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -88,7 +88,7 @@ class CaducityApplication : Application() {
 
   private fun initializeRemoteConfig() {
     applicationScope.launch {
-      remoteConfigProvider.fetchAndActivate()
+      remoteConfigRunner.fetchAndActivate()
         .onSuccess { activated ->
           Timber.d("Remote Config initialized successfully. New values activated: $activated")
         }
