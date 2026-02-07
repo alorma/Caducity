@@ -18,8 +18,8 @@ import kotlin.time.Duration.Companion.days
  * Creates:
  * - 2 categories
  * - 2 products per category
- * - 2 items for each status (Fresh, ExpiringSoon, Expired, Frozen) per product
- * - 2 items for each status as standalone items (no product) per category
+ * - 6 items for each status (Fresh, ExpiringSoon, Expired, Frozen) per product
+ * - 6 items for each status as standalone items (no product) per category
  *
  * Dates are calculated relative to today based on expiration thresholds
  */
@@ -115,8 +115,8 @@ class PopulateFakeDataUseCase(
   }
 
   /**
-   * Creates 2 items for each status: Fresh, ExpiringSoon, Expired, Frozen, Consumed
-   * Total: 10 items (2 per status)
+   * Creates 6 items for each status: Fresh, ExpiringSoon, Expired, Frozen, Consumed
+   * Total: 30 items (6 per status)
    *
    * Note: Status is calculated by the ItemMapper based on expiration date.
    * Frozen status is achieved by calling freezeItem after creation.
@@ -130,7 +130,7 @@ class PopulateFakeDataUseCase(
     val items = mutableListOf<NewItem>()
 
     // Fresh items (beyond the soonExpiringThreshold)
-    repeat(2) { index ->
+    repeat(6) { index ->
       val daysAhead = expirationThresholds.soonExpiringThreshold.inWholeDays + 3 + index
       items.add(
         NewItem(
@@ -142,8 +142,8 @@ class PopulateFakeDataUseCase(
     }
 
     // ExpiringSoon items (within soonExpiringThreshold but not expired)
-    repeat(2) { index ->
-      val daysAhead = 1 + index // 1-2 days from now
+    repeat(6) { index ->
+      val daysAhead = 1 + index // 1-6 days from now
       items.add(
         NewItem(
           identifier = "$identifierPrefix Expiring #${index + 1}",
@@ -154,57 +154,65 @@ class PopulateFakeDataUseCase(
     }
 
     // Expired items (past expiration date)
-    // 2 near expiration (less than consumeExpiredThreshold)
-    // 2 far from expiration (more than consumeExpiredThreshold)
+    // 3 near expiration (less than consumeExpiredThreshold)
+    // 3 far from expiration (more than consumeExpiredThreshold)
     val consumeThresholdDays = expirationThresholds.consumeExpiredThreshold.inWholeDays
 
     // Near expired (within consume threshold - can be consumed)
-    items.add(
-      NewItem(
-        identifier = "$identifierPrefix Expired Near #1",
-        productId = productId,
-        expirationDate = now.minus(1.days), // 1 day ago
+    repeat(3) { index ->
+      items.add(
+        NewItem(
+          identifier = "$identifierPrefix Expired Near #${index + 1}",
+          productId = productId,
+          expirationDate = now.minus((index + 1).days), // 1-3 days ago
+        )
       )
-    )
+    }
 
     // Far expired (beyond consume threshold - cannot be consumed)
-    items.add(
-      NewItem(
-        identifier = "$identifierPrefix Expired Far #1",
-        productId = productId,
-        expirationDate = now.minus((consumeThresholdDays + 1).days),
+    repeat(3) { index ->
+      items.add(
+        NewItem(
+          identifier = "$identifierPrefix Expired Far #${index + 1}",
+          productId = productId,
+          expirationDate = now.minus((consumeThresholdDays + index + 1).days),
+        )
       )
-    )
+    }
 
     // Frozen items (will be frozen after creation)
-    repeat(2) { index ->
+    repeat(6) { index ->
       items.add(
         NewItem(
           identifier = "$identifierPrefix Frozen #${index + 1}",
           productId = productId,
-          expirationDate = now.plus(5.days), // Arbitrary future date
+          expirationDate = now.plus((5 + index).days), // Future dates
         )
       )
     }
 
     // Consumed items (will be consumed after creation)
-    // 2 near expiration (less than consumeExpiredThreshold)
-    // 2 far from expiration (more than consumeExpiredThreshold)
-    items.add(
-      NewItem(
-        identifier = "$identifierPrefix Consumed Near #1",
-        productId = productId,
-        expirationDate = now.minus(1.days), // 1 day ago (within threshold)
+    // 3 near expiration (less than consumeExpiredThreshold)
+    // 3 far from expiration (more than consumeExpiredThreshold)
+    repeat(3) { index ->
+      items.add(
+        NewItem(
+          identifier = "$identifierPrefix Consumed Near #${index + 1}",
+          productId = productId,
+          expirationDate = now.minus((index + 1).days), // 1-3 days ago (within threshold)
+        )
       )
-    )
+    }
 
-    items.add(
-      NewItem(
-        identifier = "$identifierPrefix Consumed Far #1",
-        productId = productId,
-        expirationDate = now.minus((consumeThresholdDays + 1).days), // Beyond threshold
+    repeat(3) { index ->
+      items.add(
+        NewItem(
+          identifier = "$identifierPrefix Consumed Far #${index + 1}",
+          productId = productId,
+          expirationDate = now.minus((consumeThresholdDays + index + 1).days), // Beyond threshold
+        )
       )
-    )
+    }
 
     return items
   }
