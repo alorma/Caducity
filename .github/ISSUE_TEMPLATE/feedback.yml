@@ -102,7 +102,6 @@ body:
         - label: Search & Filter
         - label: Theme/UI
         - label: Analytics & Insights
-        - label: Barcode Scanning
         - label: Multi-platform Support
         - label: Other
 

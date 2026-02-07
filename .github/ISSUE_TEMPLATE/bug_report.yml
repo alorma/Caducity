@@ -30,7 +30,6 @@ body:
         - Theme/UI
         - Notifications
         - Search & Filter
-        - Barcode Scanning
         - Settings
         - Navigation
         - Data Persistence

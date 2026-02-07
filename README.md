@@ -28,7 +28,6 @@ Caducity is a Kotlin Multiplatform grocery expiration tracker that helps you mon
 - 🔔 Expiration notifications
 - 📈 Waste statistics & insights
 - 🔎 Search and filter
-- 📱 Barcode scanning (mobile)
 
 See [**DEVELOPMENT_PLAN.md**](./DEVELOPMENT_PLAN.md) for the complete roadmap.
 

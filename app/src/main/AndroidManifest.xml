@@ -21,10 +21,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".barcode.BarcodeActivity"
-            android:exported="false" />
-
         <!-- Disable default WorkManager initialization when using Koin integration -->
         <provider
             android:name="androidx.startup.InitializationProvider"
@@ -37,9 +33,6 @@
                 tools:node="remove" />
         </provider>
 
-        <meta-data
-            android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="barcode" />
     </application>
 
 </manifest>
