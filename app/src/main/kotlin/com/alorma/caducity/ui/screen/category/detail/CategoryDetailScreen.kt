@@ -15,6 +15,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,7 +43,9 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Delete
+import com.alorma.caducity.base.ui.icons.MoreVert
 import com.alorma.caducity.ui.adaptive.rememberIsExpanded
+import com.alorma.caducity.ui.components.calendar.AppCalendarConfig
 import com.alorma.caducity.ui.components.calendar.CaducityMonthCalendar
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
@@ -140,12 +145,7 @@ private fun CategoryDetailEmptyContent(
         title = { Text(text = state.category.name) },
         navigationIcon = { NavigationIcon() },
         actions = {
-          IconButton(onClick = onDeleteCategoryClick) {
-            Icon(
-              imageVector = AppIcons.Delete,
-              contentDescription = stringResource(R.string.category_detail_action_delete),
-            )
-          }
+          CategoryDetailOverflowMenu(onDeleteCategoryClick = onDeleteCategoryClick)
         },
       )
     },
@@ -190,7 +190,9 @@ private fun CategoryDetailEmptyCompactLayout(
 
     // Empty state content
     Box(
-      modifier = Modifier.weight(1f).fillMaxWidth(),
+      modifier = Modifier
+        .weight(1f)
+        .fillMaxWidth(),
       contentAlignment = Alignment.Center,
     ) {
       Column(
@@ -232,6 +234,70 @@ private fun CategoryDetailEmptyCompactLayout(
   }
 }
 
+/**
+ * Overflow menu for category detail actions.
+ * Currently contains delete action, can be extended with more actions in the future.
+ */
+@Composable
+private fun CategoryDetailOverflowMenu(
+  onDeleteCategoryClick: () -> Unit,
+) {
+  var expanded by remember { mutableStateOf(false) }
+
+  IconButton(onClick = { expanded = true }) {
+    Icon(
+      imageVector = AppIcons.MoreVert,
+      contentDescription = stringResource(R.string.category_detail_action_menu),
+    )
+  }
+
+  DropdownMenu(
+    expanded = expanded,
+    onDismissRequest = { expanded = false },
+  ) {
+    DropdownMenuItem(
+      text = { Text(stringResource(R.string.category_detail_action_delete)) },
+      onClick = {
+        expanded = false
+        onDeleteCategoryClick()
+      },
+      leadingIcon = {
+        Icon(
+          imageVector = AppIcons.Delete,
+          contentDescription = null,
+        )
+      },
+    )
+  }
+}
+
+/**
+ * Reusable calendar pane for tablet expanded layout.
+ * Shows a month calendar in a surface with consistent styling.
+ */
+@Composable
+private fun CategoryDetailCalendarPane(
+  appCalendarConfig: AppCalendarConfig,
+  modifier: Modifier = Modifier,
+) {
+  Surface(
+    modifier = Modifier
+      .fillMaxHeight()
+      .then(modifier),
+    color = CaducityTheme.colorScheme.surfaceContainerHigh,
+    shadowElevation = 2.dp,
+  ) {
+    Column(
+      modifier = Modifier.padding(horizontal = 16.dp),
+    ) {
+      CaducityMonthCalendar(
+        appCalendarConfig = appCalendarConfig,
+        onDateClick = { },
+      )
+    }
+  }
+}
+
 @Composable
 private fun CategoryDetailEmptyExpandedLayout(
   state: CategoryDetailState.Empty,
@@ -246,18 +312,10 @@ private fun CategoryDetailEmptyExpandedLayout(
       .padding(top = paddingValues.calculateTopPadding())
   ) {
     // Left pane: Month calendar (1/3)
-    Surface(
-      modifier = Modifier
-        .weight(0.33f)
-        .fillMaxHeight(),
-      color = CaducityTheme.colorScheme.surfaceContainerHigh,
-      shadowElevation = 2.dp,
-    ) {
-      CaducityMonthCalendar(
-        appCalendarConfig = state.appCalendarConfig,
-        onDateClick = { },
-      )
-    }
+    CategoryDetailCalendarPane(
+      modifier = Modifier.weight(0.33f),
+      appCalendarConfig = state.appCalendarConfig,
+    )
 
     // Right pane: Empty message (2/3)
     Box(
@@ -317,13 +375,13 @@ private fun CategoryDetailSuccessContent(
   onDeleteCategoryClick: () -> Unit,
 ) {
   val isExpanded = rememberIsExpanded()
-  
+
   // Hoist PagerState to preserve across layout changes
   val pagerState = rememberPagerState(
     initialPage = 0,
     pageCount = { state.productTabs.size.coerceAtLeast(1) }
   )
-  
+
   // Handle case where current page is out of bounds after tabs change
   LaunchedEffect(state.productTabs.size) {
     if (state.productTabs.isNotEmpty() && pagerState.currentPage >= state.productTabs.size) {
@@ -344,12 +402,7 @@ private fun CategoryDetailSuccessContent(
         title = { Text(text = state.category.name) },
         navigationIcon = { NavigationIcon() },
         actions = {
-          IconButton(onClick = onDeleteCategoryClick) {
-            Icon(
-              imageVector = AppIcons.Delete,
-              contentDescription = stringResource(R.string.category_detail_action_delete),
-            )
-          }
+          CategoryDetailOverflowMenu(onDeleteCategoryClick = onDeleteCategoryClick)
         },
       )
     },
@@ -392,6 +445,7 @@ private fun CategoryDetailCompactLayout(
     ) {
       Column {
         CaducityWeekCalendar(
+          modifier = Modifier.padding(horizontal = 16.dp),
           appCalendarConfig = state.appCalendarConfig,
           todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
           onDateClick = { },
@@ -478,18 +532,10 @@ private fun CategoryDetailExpandedLayout(
       .padding(top = paddingValues.calculateTopPadding())
   ) {
     // Left pane: Month calendar (1/3)
-    Surface(
-      modifier = Modifier
-        .weight(0.33f)
-        .fillMaxHeight(),
-      color = CaducityTheme.colorScheme.surfaceContainerHigh,
-      shadowElevation = 2.dp,
-    ) {
-      CaducityMonthCalendar(
-        appCalendarConfig = state.appCalendarConfig,
-        onDateClick = { },
-      )
-    }
+    CategoryDetailCalendarPane(
+      modifier = Modifier.weight(0.33f),
+      appCalendarConfig = state.appCalendarConfig,
+    )
 
     // Right pane: Tabs + content (2/3)
     Column(

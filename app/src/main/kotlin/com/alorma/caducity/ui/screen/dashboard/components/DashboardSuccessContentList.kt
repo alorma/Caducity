@@ -191,7 +191,6 @@ private fun DashboardExpandedLayout(
               }
 
               CaducityMonthCalendar(
-                modifier = Modifier.fillMaxHeight(),
                 appCalendarConfig = categoryCalendarState.appCalendarConfig,
                 onDateClick = { onNavigateToCategory(categoryCalendarState.id) },
               )

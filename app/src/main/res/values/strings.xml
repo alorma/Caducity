@@ -145,6 +145,7 @@
     <string name="category_detail_add_item_quantity_label">Quantity</string>
     <string name="category_detail_add_item_quantity_more">More</string>
     <string name="category_detail_add_item_quantity_custom_label">Number of items</string>
+    <string name="category_detail_action_menu">Category options</string>
     <string name="category_detail_action_consume">Consume</string>
     <string name="category_detail_action_freeze">Freeze</string>
     <string name="category_detail_action_unfreeze">Unfreeze</string>
