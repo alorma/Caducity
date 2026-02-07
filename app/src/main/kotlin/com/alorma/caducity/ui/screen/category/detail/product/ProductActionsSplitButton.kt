@@ -41,7 +41,7 @@ fun ProductActionsSplitButton(
 ) {
   val checked = remember { mutableStateOf(false) }
   val size = SplitButtonDefaults.MediumContainerHeight
-  val buttonColors = ButtonDefaults.filledTonalButtonColors()
+  val buttonColors = ButtonDefaults.buttonColors()
 
   SplitButtonLayout(
     leadingButton = {
