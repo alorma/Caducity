@@ -148,6 +148,7 @@
     <string name="category_detail_add_item_quantity_label">Quantitat</string>
     <string name="category_detail_add_item_quantity_more">Més</string>
     <string name="category_detail_add_item_quantity_custom_label">Nombre d\'elements</string>
+    <string name="category_detail_action_menu">Opcions de categoria</string>
     <string name="category_detail_action_consume">Consumir</string>
     <string name="category_detail_action_freeze">Congelar</string>
     <string name="category_detail_action_unfreeze">Descongelar</string>
