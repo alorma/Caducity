@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
+import com.alorma.caducity.ui.adaptive.rememberGridColumns
 import com.alorma.caducity.ui.components.calendar.today
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
@@ -285,12 +286,14 @@ private fun StatusGroupCard(
   items: ImmutableList<ItemDetailUiModel>,
   onItemClick: (ItemDetailUiModel) -> Unit,
 ) {
+  val gridColumns = rememberGridColumns()
+
   // Show instances
   FlowRow(
     modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
-    maxItemsInEachRow = 3,
+    maxItemsInEachRow = gridColumns,
   ) {
     items.forEach { item ->
       SuggestionChip(

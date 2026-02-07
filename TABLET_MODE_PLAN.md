@@ -360,9 +360,31 @@ fun AdaptiveCalendar(
 
 ---
 
-## Phase 3: Responsive Item Grids
+## Phase 3: Responsive Item Grids ✅ COMPLETED
 
 > **GitHub Issue:** [#112](https://github.com/alorma/Caducity/issues/112)
+> **Status:** ✅ Implemented and tested
+> **Implementation:** Item grids now adapt column count based on screen size
+
+### Implementation Summary
+
+Phase 3 implements responsive item grids that adapt the number of columns based on screen size. The existing `rememberGridColumns()` helper from Phase 1 was utilized to make item grids in the product detail pages responsive.
+
+**Key Changes:**
+- Updated `StatusGroupCard` in `ProductTabContent.kt` to use `rememberGridColumns()`
+- Replaced hardcoded `maxItemsInEachRow = 3` with adaptive column count
+- Leverages existing window size detection infrastructure from Phase 1
+
+**Behavior:**
+- **Compact (<600dp)**: 3 columns (phones)
+- **Medium (600-840dp)**: 5 columns (small tablets)
+- **Expanded (>840dp)**: 7 columns (large tablets)
+- Gated by `TabletModeRemoteConfig` feature flag
+
+**Files Modified:**
+- `app/src/main/kotlin/com/alorma/caducity/ui/screen/category/detail/product/ProductTabContent.kt`
+  - Added import for `rememberGridColumns()`
+  - Updated `StatusGroupCard` composable to calculate column count dynamically
 
 ### 3.1 Create Responsive Column Calculator
 
