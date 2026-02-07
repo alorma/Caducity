@@ -36,9 +36,8 @@ class DebugRemoteConfigRunner(
       settings.getBoolean(valueKey, defaultValue)
     } else {
       // Fallback to default runner (Firebase)
-      // Create a temporary RemoteConfig to access the value via isEnabled()
-      val tempConfig = object : RemoteConfig(defaultRunner, key, defaultValue) {}
-      tempConfig.isEnabled()
+      // Use isEnabled() through a temporary config to access the protected getBoolean
+      defaultRunner.isEnabled(object : RemoteConfig(defaultRunner, key, defaultValue) {})
     }
   }
   

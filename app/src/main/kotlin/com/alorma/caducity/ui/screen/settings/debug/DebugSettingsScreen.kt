@@ -138,7 +138,7 @@ fun DebugSettingsScreen(
           verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
           Text(
-            text = "Remote configs",
+            text = "Remote Configs",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = 16.dp)
           )
