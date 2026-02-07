@@ -60,8 +60,10 @@ val configModule = module {
 
   // Firebase Remote Config Runner
   single<RemoteConfigRunner> {
-    val firebaseRunner = FirebaseRemoteConfigProvider()
-    
+    val firebaseRunner = FirebaseRemoteConfigProvider(
+      remoteConfig = get(),
+    )
+
     // In debug builds, wrap with DebugRemoteConfigRunner for override capability
     if (BuildConfig.DEBUG) {
       DebugRemoteConfigRunner(
