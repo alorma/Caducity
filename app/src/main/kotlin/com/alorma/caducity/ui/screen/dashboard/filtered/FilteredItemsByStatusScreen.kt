@@ -53,6 +53,7 @@ fun FilteredItemsByStatusScreen(
   SideEffectHandler(
     viewModel = viewModel,
     bottomSheetState = bottomSheetState,
+    snackbarState = snackbarState,
   )
 
   AppScaffold(

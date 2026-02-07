@@ -148,6 +148,7 @@
     <string name="category_detail_add_item_quantity_custom_label">Número de elementos</string>
     <string name="category_detail_action_consume">Consumir</string>
     <string name="category_detail_action_freeze">Congelar</string>
+    <string name="category_detail_action_unfreeze">Descongelar</string>
     <string name="category_detail_action_delete">Eliminar</string>
     <string name="category_detail_frozen_items">Congelados</string>
     <string name="category_detail_consumed_items">Consumidos</string>
@@ -201,6 +202,7 @@
     <!-- Item action success messages -->
     <string name="success_item_consumed">Elemento consumido</string>
     <string name="success_item_frozen">Elemento congelado</string>
+    <string name="success_item_unfrozen">Elemento descongelado</string>
     <string name="success_item_deleted">Elemento eliminado</string>
 
     <!-- Item action error messages -->

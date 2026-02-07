@@ -7,4 +7,15 @@ sealed interface FilteredItemsByStatusSideEffect {
     val productName: String,
     val items: List<Item>,
   ) : FilteredItemsByStatusSideEffect
+
+  data class ShowItemActionsBottomSheet(
+    val item: Item,
+  ) : FilteredItemsByStatusSideEffect
+
+  data object ItemConsumed : FilteredItemsByStatusSideEffect
+  data object ItemFrozen : FilteredItemsByStatusSideEffect
+  data object ItemUnfrozen : FilteredItemsByStatusSideEffect
+  data object ItemDeleted : FilteredItemsByStatusSideEffect
+
+  data class ItemActionFailed(val message: String) : FilteredItemsByStatusSideEffect
 }

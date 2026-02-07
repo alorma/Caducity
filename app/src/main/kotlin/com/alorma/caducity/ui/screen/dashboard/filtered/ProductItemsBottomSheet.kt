@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.dashboard.filtered
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,8 +12,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.ui.components.StatusBadge
@@ -28,12 +31,14 @@ fun AppBottomSheetState.showProductItemsBottomSheet(
   coroutineScope: CoroutineScope,
   productName: String,
   items: List<Item>,
+  onItemClick: (Item) -> Unit,
 ) {
   coroutineScope.launch {
     show(appFeedbackType = AppFeedbackType.Info) {
       ProductItemsBottomSheetContent(
         productName = productName,
-        items = items
+        items = items,
+        onItemClick = onItemClick,
       )
     }
   }
@@ -43,6 +48,7 @@ fun AppBottomSheetState.showProductItemsBottomSheet(
 private fun ProductItemsBottomSheetContent(
   productName: String,
   items: List<Item>,
+  onItemClick: (Item) -> Unit,
 ) {
   Column(
     modifier = Modifier
@@ -80,7 +86,10 @@ private fun ProductItemsBottomSheetContent(
       verticalArrangement = Arrangement.spacedBy(0.dp),
     ) {
       items.forEach { item ->
-        ItemRow(item = item)
+        ItemRow(
+          item = item,
+          onClick = { onItemClick(item) },
+        )
       }
     }
   }
@@ -89,11 +98,14 @@ private fun ProductItemsBottomSheetContent(
 @Composable
 private fun ItemRow(
   item: Item,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Row(
     modifier = modifier
       .fillMaxWidth()
+      .clip(CaducityTheme.shapes.small)
+      .clickable { onClick() }
       .padding(horizontal = 24.dp, vertical = 12.dp),
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(12.dp),

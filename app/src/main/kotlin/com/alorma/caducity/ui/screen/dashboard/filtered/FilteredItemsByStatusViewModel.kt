@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.ItemStatus
+import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
+import com.alorma.caducity.domain.usecase.DeleteItemUseCase
+import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.GetItemsByStatusUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,6 +21,9 @@ import kotlinx.coroutines.launch
 class FilteredItemsByStatusViewModel(
   private val status: ItemStatus,
   private val getItemsByStatusUseCase: GetItemsByStatusUseCase,
+  private val consumeItemUseCase: ConsumeItemUseCase,
+  private val freezeItemUseCase: FreezeItemUseCase,
+  private val deleteItemUseCase: DeleteItemUseCase,
 ) : ViewModel() {
 
   val state: StateFlow<FilteredItemsByStatusState> = getItemsByStatusUseCase.load(status)
@@ -53,6 +59,66 @@ class FilteredItemsByStatusViewModel(
         items = items,
       )
     )
+  }
+
+  fun onItemClick(item: Item) {
+    emitSideEffect(FilteredItemsByStatusSideEffect.ShowItemActionsBottomSheet(item))
+  }
+
+  fun onConsumeItem(item: Item) {
+    viewModelScope.launch {
+      val result = consumeItemUseCase.consumeItem(item.id)
+      when (result) {
+        is com.alorma.caducity.domain.model.InstanceActionResult.Success -> {
+          emitSideEffect(FilteredItemsByStatusSideEffect.ItemConsumed)
+        }
+        is com.alorma.caducity.domain.model.InstanceActionResult.Failure -> {
+          emitSideEffect(
+            FilteredItemsByStatusSideEffect.ItemActionFailed(
+              result.error.toString()
+            )
+          )
+        }
+      }
+    }
+  }
+
+  fun onFreezeItem(item: Item) {
+    viewModelScope.launch {
+      val result = freezeItemUseCase.freezeItem(item.id, item.expirationDate)
+      when (result) {
+        is com.alorma.caducity.domain.model.InstanceActionResult.Success -> {
+          val sideEffect = if (item.status == ItemStatus.Frozen) {
+            FilteredItemsByStatusSideEffect.ItemUnfrozen
+          } else {
+            FilteredItemsByStatusSideEffect.ItemFrozen
+          }
+          emitSideEffect(sideEffect)
+        }
+        is com.alorma.caducity.domain.model.InstanceActionResult.Failure -> {
+          emitSideEffect(
+            FilteredItemsByStatusSideEffect.ItemActionFailed(
+              result.error.toString()
+            )
+          )
+        }
+      }
+    }
+  }
+
+  fun onDeleteItem(item: Item) {
+    viewModelScope.launch {
+      val result = deleteItemUseCase.deleteItem(item.id)
+      result.onSuccess {
+        emitSideEffect(FilteredItemsByStatusSideEffect.ItemDeleted)
+      }.onFailure { error ->
+        emitSideEffect(
+          FilteredItemsByStatusSideEffect.ItemActionFailed(
+            error.message ?: "Failed to delete item"
+          )
+        )
+      }
+    }
   }
 }
 

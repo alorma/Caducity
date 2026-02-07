@@ -146,6 +146,7 @@
     <string name="category_detail_add_item_quantity_custom_label">Number of items</string>
     <string name="category_detail_action_consume">Consume</string>
     <string name="category_detail_action_freeze">Freeze</string>
+    <string name="category_detail_action_unfreeze">Unfreeze</string>
     <string name="category_detail_action_delete">Delete</string>
     <string name="category_detail_frozen_items">Frozen</string>
     <string name="category_detail_consumed_items">Consumed</string>
@@ -199,6 +200,7 @@
     <!-- Item action success messages -->
     <string name="success_item_consumed">Item consumed</string>
     <string name="success_item_frozen">Item frozen</string>
+    <string name="success_item_unfrozen">Item unfrozen</string>
     <string name="success_item_deleted">Item deleted</string>
 
     <!-- Item action error messages -->
