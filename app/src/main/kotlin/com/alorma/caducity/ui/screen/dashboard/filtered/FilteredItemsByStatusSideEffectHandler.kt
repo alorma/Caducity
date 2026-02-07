@@ -3,10 +3,14 @@ package com.alorma.caducity.ui.screen.dashboard.filtered
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.alorma.caducity.R
+import com.alorma.caducity.config.time.date
+import com.alorma.caducity.ui.components.bottomsheet.handleItemActionSideEffect
 import com.alorma.caducity.ui.components.bottomsheet.showItemActionsBottomSheet
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
+import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun SideEffectHandler(
@@ -29,17 +33,21 @@ fun SideEffectHandler(
         }
 
         is FilteredItemsByStatusSideEffect.ShowItemActionsBottomSheet -> {
+          // Convert Item domain model to ItemDetailUiModel
+          val itemUiModel = ItemDetailUiModel(
+            id = effect.item.id,
+            expirationDate = effect.item.expirationDate.date(),
+            status = effect.item.status,
+            text = effect.item.identifier,
+          )
+
           bottomSheetState.showItemActionsBottomSheet(
             coroutineScope = this,
-            item = effect.item,
-            onConsume = {
-              viewModel.onConsumeItem(effect.item)
-            },
-            onFreeze = {
-              viewModel.onFreezeItem(effect.item)
-            },
-            onDelete = {
-              viewModel.onDeleteItem(effect.item)
+            item = itemUiModel,
+            onActionPerformed = { actionSideEffect ->
+              launch {
+                handleItemActionSideEffect(actionSideEffect, snackbarState)
+              }
             },
           )
         }

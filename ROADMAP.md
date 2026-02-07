@@ -21,9 +21,9 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
 
 ## Feature Ideas (Organized by Priority)
 
-### 🎯 Phase 1: Complete Core Features
+### 🎯 Phase 1: Complete Core Features ✅ *Completed*
 
-**1. Fix Item Actions Bottom Sheet**
+**1. Fix Item Actions Bottom Sheet** ✅ *Completed*
 - **Problem**: Bottom sheet always shows same actions regardless of item state
 - **Solution**: Conditional action display based on item status
   - Fresh/ExpiringSoon items: Show "Freeze" + "Consume" + "Delete"
@@ -70,16 +70,7 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
   - Update item via new `UpdateItemUseCase`
 - **Complexity**: Low - reuses existing form components
 
-**5. Language Settings UI**
-- **Feature**: Add language selection to settings screen
-- **Why**: Multi-language support exists (en/es/ca) but no UI to change it
-- **Implementation**:
-  - Create `LanguageSettingsScreen` (similar to theme settings)
-  - Use existing `LanguageManager` infrastructure
-  - Add to settings navigation
-- **Complexity**: Very Low - infrastructure already exists
-
-**6. Search/Filter on Dashboard**
+**5. Search/Filter on Dashboard**
 - **Feature**: Search bar to filter categories or items by name
 - **Why**: Helps users with many categories find items quickly
 - **Implementation**:
@@ -88,7 +79,7 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
   - Maybe add status filter chips
 - **Complexity**: Medium - requires filtering logic in ViewModel
 
-**7. Bulk Item Operations**
+**5. Bulk Item Operations**
 - **Feature**: Select multiple items for batch consume/freeze/delete
 - **Why**: Common use case after grocery shopping or fridge cleaning
 - **Implementation**:
@@ -98,7 +89,7 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
   - Apply operations to all selected items
 - **Complexity**: Medium - requires selection state management
 
-**8. Notification Configuration**
+**7. Notification Configuration**
 - **Feature**: Configure when notifications appear and threshold
 - **Why**: Users want control over notification timing
 - **Implementation**:
@@ -114,7 +105,7 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
 
 ### 💡 Phase 3: Nice-to-Have Enhancements
 
-**9. Shopping List Mode**
+**8. Shopping List Mode**
 - **Feature**: Mark consumed items as "need to buy again"
 - **Why**: Natural workflow - track what you consumed, remember to buy more
 - **Implementation**:
@@ -123,7 +114,7 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
   - Check off items when purchased (auto-create new item?)
 - **Complexity**: High - new domain model and screen
 
-**10. Item History/Statistics**
+**9. Item History/Statistics**
 - **Feature**: Track consumption patterns over time
 - **Why**: Help users predict consumption rates ("you use 2L milk per week")
 - **Implementation**:
@@ -133,7 +124,7 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
   - "Suggested restock date" based on consumption pattern
 - **Complexity**: High - new domain model, calculations, UI
 
-**11. Calendar View Mode**
+**10. Calendar View Mode**
 - **Feature**: Alternative dashboard view with full month calendar
 - **Why**: Some users prefer calendar-first view to see all expiring items
 - **Implementation**:
@@ -143,7 +134,7 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
   - Reuse existing `AppCalendar` component
 - **Complexity**: Medium - requires aggregated data view
 
-**12. Quick Add Widget**
+**11. Quick Add Widget**
 - **Feature**: Android home screen widget for quick item entry
 - **Why**: Reduce friction - add item without opening app
 - **Implementation**:
@@ -152,7 +143,7 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
   - Deep link to add item screen or category detail
 - **Complexity**: High - requires widget development
 
-**13. Photo Attachments**
+**12. Photo Attachments**
 - **Feature**: Attach photo to item (receipt, product image)
 - **Why**: Visual identification, remember what item looks like
 - **Implementation**:
@@ -188,7 +179,7 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
 **Why later:** These are valuable for power users but not essential for basic functionality. They require more complex state management.
 
 ### Future Consideration (Post-MVP)
-10-14. Shopping list, statistics, widgets, scanning, photos
+8-12. Shopping list, statistics, calendar view, widgets, photos
 
 **Why defer:** These are substantial features that change the app's scope. They should be considered based on user feedback after core features are solid.
 

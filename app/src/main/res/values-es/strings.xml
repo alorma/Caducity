@@ -154,6 +154,7 @@
     <string name="category_detail_consumed_items">Consumidos</string>
     <string name="category_detail_section_frozen">Artículos congelados</string>
     <string name="category_detail_section_consumed">Artículos consumidos</string>
+    <string name="category_detail_consumed_item_placeholder">No hay acciones disponibles para elementos consumidos</string>
 
     <!-- Category Detail AI -->
     <string name="category_detail_ai_title">Añadir Productos con IA</string>
@@ -208,6 +209,7 @@
     <!-- Item action error messages -->
     <string name="error_consume_item_failed">Error al consumir elemento</string>
     <string name="error_freeze_item_failed">Error al congelar elemento</string>
+    <string name="error_unfreeze_item_failed">Error al descongelar elemento</string>
     <string name="error_delete_item_failed">Error al eliminar elemento</string>
     <string name="error_create_product_failed">Error al crear producto</string>
 

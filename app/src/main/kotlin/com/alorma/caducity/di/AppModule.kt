@@ -16,6 +16,7 @@ import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteProductUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
+import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
 import com.alorma.caducity.domain.usecase.GetItemsByStatusUseCase
@@ -38,6 +39,7 @@ import com.alorma.caducity.ui.screen.category.detail.product.ProductPageMapper
 import com.alorma.caducity.ui.screen.category.detail.product.ProductPageViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
+import com.alorma.caducity.ui.components.bottomsheet.ItemActionsViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
 import org.koin.android.ext.koin.androidContext
@@ -82,6 +84,7 @@ val appModule = module {
   singleOf(::DeleteCategoryUseCase)
   singleOf(::ConsumeItemUseCase)
   singleOf(::FreezeItemUseCase)
+  singleOf(::UnfreezeItemUseCase)
   singleOf(::CategoryDetailMapper)
   viewModelOf(::CategoryDetailViewModel)
   viewModelOf(::CategoryDetailAddItemViewModel)
@@ -115,4 +118,7 @@ val appModule = module {
 
   // Debug Settings
   viewModelOf(::DebugSettingsViewModel)
+
+  // Item Actions Bottom Sheet
+  viewModelOf(::ItemActionsViewModel)
 }
