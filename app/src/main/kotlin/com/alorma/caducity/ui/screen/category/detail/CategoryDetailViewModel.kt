@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
+import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
 import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.Job
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -26,18 +28,29 @@ class CategoryDetailViewModel(
   calendarPreferences: CalendarPreferences,
   private val createProductUseCase: CreateProductUseCase,
   private val deleteCategoryUseCase: DeleteCategoryUseCase,
+  private val getProductItemsUseCase: GetProductItemsUseCase,
 ) : ViewModel() {
 
   private val _sideEffect = Channel<CategoryDetailSideEffect>(Channel.BUFFERED)
   val sideEffect: Flow<CategoryDetailSideEffect> = _sideEffect.receiveAsFlow()
 
+  // Track the currently selected product ID (null means "Other" tab with standalone items)
+  private val _selectedProductId = MutableStateFlow<String?>(null)
+
   private val customState: StateFlow<CategoryDetailState> = combine(
     obtainCategoryDetailUseCase.obtain(categoryId),
     calendarPreferences.state,
-  ) { result, calendarConfig ->
+    _selectedProductId.flatMapLatest { productId ->
+      getProductItemsUseCase.obtain(categoryId, productId)
+    }
+  ) { result, calendarConfig, productItems ->
     result.fold(
       onSuccess = { category ->
-        categoryDetailMapper.mapToCategoryDetail(category, calendarConfig.firstDayOfWeek)
+        categoryDetailMapper.mapToCategoryDetail(
+          categoryDetail = category, 
+          firstDayOfWeek = calendarConfig.firstDayOfWeek,
+          productItems = productItems
+        )
       },
       onFailure = { _ ->
         CategoryDetailState.Error("Not found")
@@ -54,7 +67,19 @@ class CategoryDetailViewModel(
   var job: Job? = null
 
   init {
-    job = customState.onEach { detailState -> state.emit(detailState) }.launchIn(viewModelScope)
+    job = customState.onEach { detailState -> 
+      state.emit(detailState)
+      // Set initial selected product ID based on first tab if not already set
+      if (detailState is CategoryDetailState.Success && 
+          _selectedProductId.value == null && 
+          detailState.productTabs.isNotEmpty()) {
+        _selectedProductId.value = detailState.productTabs.first().id
+      }
+    }.launchIn(viewModelScope)
+  }
+
+  fun onProductTabChanged(productId: String?) {
+    _selectedProductId.value = productId
   }
 
   fun onShowAddProductDialog() {

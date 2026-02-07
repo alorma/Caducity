@@ -114,6 +114,7 @@ fun CategoryDetailScreen(
         onNavigateToAddInstance = onNavigateToAddInstance,
         onShowAddProductDialog = viewModel::onShowAddProductDialog,
         onDeleteCategoryClick = viewModel::onDeleteCategoryClick,
+        onProductTabChanged = viewModel::onProductTabChanged,
       )
     }
 
@@ -373,6 +374,7 @@ private fun CategoryDetailSuccessContent(
   onNavigateToAddInstance: (productId: String?) -> Unit,
   onShowAddProductDialog: () -> Unit,
   onDeleteCategoryClick: () -> Unit,
+  onProductTabChanged: (String?) -> Unit,
 ) {
   val isExpanded = rememberIsExpanded()
 
@@ -381,6 +383,13 @@ private fun CategoryDetailSuccessContent(
     initialPage = 0,
     pageCount = { state.productTabs.size.coerceAtLeast(1) }
   )
+
+  // Notify ViewModel when page changes
+  LaunchedEffect(pagerState.currentPage, state.productTabs.size) {
+    if (state.productTabs.isNotEmpty() && pagerState.currentPage < state.productTabs.size) {
+      onProductTabChanged(state.productTabs[pagerState.currentPage].id)
+    }
+  }
 
   // Handle case where current page is out of bounds after tabs change
   LaunchedEffect(state.productTabs.size) {
