@@ -169,7 +169,7 @@ private fun CategoryItemsCard(
       color = colors.container,
       contentColor = colors.onContainer,
     ) {
-      androidx.compose.foundation.layout.Row(
+      Row(
         modifier = Modifier
           .fillMaxWidth()
           .padding(12.dp),
@@ -183,14 +183,14 @@ private fun CategoryItemsCard(
           color = colors.onContainer,
         )
 
-        // Total count badge
-        val totalCount = categoryWithItems.allItems.size
+        // Filtered items count badge
+        val filteredItemsCount = categoryWithItems.allItems.size
         Text(
           modifier = Modifier
             .clip(MaterialTheme.shapes.extraSmall)
             .background(vibrantColors.container)
             .padding(horizontal = 8.dp, vertical = 4.dp),
-          text = totalCount.toString(),
+          text = filteredItemsCount.toString(),
           color = vibrantColors.onContainer,
           style = MaterialTheme.typography.labelMedium,
         )
