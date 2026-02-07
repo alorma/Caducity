@@ -4,6 +4,7 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -151,7 +152,8 @@ private fun CategoryDetailEmptyContent(
   ) { paddingValues ->
     if (isExpanded) {
       CategoryDetailEmptyExpandedLayout(
-        modifier = Modifier.padding(paddingValues),
+        modifier = Modifier,
+        paddingValues = paddingValues,
         state = state,
         onNavigateToAddInstance = onNavigateToAddInstance,
         onShowAddProductDialog = onShowAddProductDialog,
@@ -233,11 +235,16 @@ private fun CategoryDetailEmptyCompactLayout(
 @Composable
 private fun CategoryDetailEmptyExpandedLayout(
   state: CategoryDetailState.Empty,
+  paddingValues: PaddingValues,
   onNavigateToAddInstance: (productId: String?) -> Unit,
   onShowAddProductDialog: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Row(modifier = modifier.fillMaxSize()) {
+  Row(
+    modifier = modifier
+      .fillMaxSize()
+      .padding(top = paddingValues.calculateTopPadding())
+  ) {
     // Left pane: Month calendar (1/3)
     Surface(
       modifier = Modifier
@@ -349,7 +356,8 @@ private fun CategoryDetailSuccessContent(
   ) { paddingValues ->
     if (isExpanded) {
       CategoryDetailExpandedLayout(
-        modifier = Modifier.padding(paddingValues),
+        modifier = Modifier,
+        paddingValues = paddingValues,
         state = state,
         pagerState = pagerState,
         onNavigateToAddInstance = onNavigateToAddInstance,
@@ -457,13 +465,18 @@ private fun CategoryDetailCompactLayout(
 private fun CategoryDetailExpandedLayout(
   state: CategoryDetailState.Success,
   pagerState: PagerState,
+  paddingValues: PaddingValues,
   onNavigateToAddInstance: (productId: String?) -> Unit,
   onShowAddProductDialog: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val coroutineScope = rememberCoroutineScope()
 
-  Row(modifier = modifier.fillMaxSize()) {
+  Row(
+    modifier = modifier
+      .fillMaxSize()
+      .padding(top = paddingValues.calculateTopPadding())
+  ) {
     // Left pane: Month calendar (1/3)
     Surface(
       modifier = Modifier
