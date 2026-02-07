@@ -25,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
-import com.alorma.caducity.ui.adaptive.rememberIsExpanded
 import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.ItemStatus
@@ -33,6 +32,7 @@ import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
+import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
@@ -141,37 +141,25 @@ private fun FilteredItemsContent(
   onCategoryClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val isExpanded = rememberIsExpanded()
-
-  Box(
-    modifier = modifier.fillMaxSize(),
-    contentAlignment = Alignment.TopCenter,
+  ResponsiveCenteredContainer(
+    maxWidth = 800.dp,
+    modifier = modifier.padding(paddingValues),
   ) {
-    Box(
-      modifier = if (isExpanded) {
-        Modifier.widthIn(max = 800.dp).fillMaxWidth()
-      } else {
-        Modifier.fillMaxWidth()
-      }
+    LazyColumn(
+      modifier = Modifier.fillMaxSize(),
+      contentPadding = PaddingValues(16.dp),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-      LazyColumn(
-        modifier = Modifier
-          .fillMaxSize()
-          .padding(paddingValues),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-      ) {
-        items(
-          items = categories,
-          key = { it.category.id },
-        ) { categoryWithItems ->
-          CategoryItemsCard(
-            categoryWithItems = categoryWithItems,
-            status = status,
-            onProductClick = onProductClick,
-            onCategoryClick = onCategoryClick,
-          )
-        }
+      items(
+        items = categories,
+        key = { it.category.id },
+      ) { categoryWithItems ->
+        CategoryItemsCard(
+          categoryWithItems = categoryWithItems,
+          status = status,
+          onProductClick = onProductClick,
+          onCategoryClick = onCategoryClick,
+        )
       }
     }
   }

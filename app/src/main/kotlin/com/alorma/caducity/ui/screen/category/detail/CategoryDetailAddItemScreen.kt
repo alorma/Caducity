@@ -43,6 +43,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Check
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
+import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
@@ -102,14 +103,17 @@ fun CategoryDetailAddItemScreen(
         var expanded by remember { mutableStateOf(false) }
         var showDatePicker by remember { mutableStateOf(false) }
 
-        Column(
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .padding(horizontal = 24.dp)
-            .verticalScroll(rememberScrollState()),
-          verticalArrangement = Arrangement.spacedBy(16.dp),
+        ResponsiveCenteredContainer(
+          maxWidth = 600.dp,
+          modifier = Modifier.padding(paddingValues),
         ) {
+          Column(
+            modifier = Modifier
+              .fillMaxSize()
+              .padding(horizontal = 24.dp)
+              .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+          ) {
           // Variant selection with filter
           ExposedDropdownMenuBox(
             expanded = expanded,
@@ -249,6 +253,7 @@ fun CategoryDetailAddItemScreen(
               },
               onDismiss = { showDatePicker = false }
             )
+          }
           }
         }
       }
