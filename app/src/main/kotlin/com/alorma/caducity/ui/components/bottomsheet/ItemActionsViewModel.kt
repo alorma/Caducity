@@ -92,7 +92,7 @@ class ItemActionsViewModel(
       when (action) {
         ItemAction.Consume -> {
           val result = consumeItemUseCase.consumeItem(item.id)
-          handleResult(result, ItemActionSideEffect.ActionCompleted)
+          handleResult(result, action)
         }
 
         ItemAction.ConsumeWithWarning -> {
@@ -103,21 +103,17 @@ class ItemActionsViewModel(
         ItemAction.Freeze -> {
           val expirationInstant = item.expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault())
           val result = freezeItemUseCase.freezeItem(item.id, expirationInstant)
-          handleResult(result, ItemActionSideEffect.ActionCompleted)
+          handleResult(result, action)
         }
 
         ItemAction.Unfreeze -> {
           val result = unfreezeItemUseCase.unfreezeItem(item.id)
-          handleResult(result, ItemActionSideEffect.ActionCompleted)
+          handleResult(result, action)
         }
 
         ItemAction.Delete -> {
           val result = deleteItemUseCase.deleteItem(item.id)
-          result.onSuccess {
-            emitSideEffect(ItemActionSideEffect.ActionCompleted)
-          }.onFailure { error ->
-            emitSideEffect(ItemActionSideEffect.ActionFailed(error.message))
-          }
+          handleResult(result, action)
         }
 
         ItemAction.Placeholder -> {
@@ -130,15 +126,15 @@ class ItemActionsViewModel(
   fun onConfirmConsumeExpired() {
     viewModelScope.launch {
       val result = consumeItemUseCase.forceConsumeItem(item.id)
-      handleResult(result, ItemActionSideEffect.ActionCompleted)
+      handleResult(result, ItemAction.ConsumeWithWarning)
     }
   }
 
-  private fun handleResult(result: Result<Unit>, successEffect: ItemActionSideEffect) {
+  private fun handleResult(result: Result<Unit>, action: ItemAction) {
     result.onSuccess {
-      emitSideEffect(successEffect)
+      emitSideEffect(ItemActionSideEffect.ActionCompleted(action))
     }.onFailure { error ->
-      emitSideEffect(ItemActionSideEffect.ActionFailed(error.message))
+      emitSideEffect(ItemActionSideEffect.ActionFailed(action, error.message))
     }
   }
 
@@ -150,7 +146,7 @@ class ItemActionsViewModel(
 }
 
 sealed interface ItemActionSideEffect {
-  data object ActionCompleted : ItemActionSideEffect
-  data class ActionFailed(val message: String?) : ItemActionSideEffect
+  data class ActionCompleted(val action: ItemAction) : ItemActionSideEffect
+  data class ActionFailed(val action: ItemAction, val message: String?) : ItemActionSideEffect
   data object ShowConsumeExpiredWarning : ItemActionSideEffect
 }

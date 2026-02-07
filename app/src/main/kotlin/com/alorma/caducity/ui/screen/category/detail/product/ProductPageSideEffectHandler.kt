@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ProductDeletionStrategy
+import com.alorma.caducity.ui.components.bottomsheet.handleItemActionSideEffect
 import com.alorma.caducity.ui.components.bottomsheet.showItemActionsBottomSheet
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
@@ -42,6 +43,11 @@ internal fun ProductPageSideEffectHandler(
           bottomSheetState.showItemActionsBottomSheet(
             coroutineScope = this,
             item = effect.item,
+            onActionPerformed = { actionSideEffect ->
+              launch {
+                handleItemActionSideEffect(actionSideEffect, snackbarState)
+              }
+            },
           )
         }
 
