@@ -7,23 +7,29 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.adaptive.rememberIsExpanded
 
 /**
- * Responsive container for settings screens.
+ * Responsive centered container for tablet-optimized layouts.
  *
  * On tablets (≥840dp):
  * - Content is centered on screen
- * - Maximum width: 600dp
- * - Horizontal padding maintained by screen content (16dp)
+ * - Maximum width constraint applied (configurable)
+ * - Horizontal padding maintained by screen content
  *
  * On phones (<840dp):
  * - Full-width layout
- * - Existing 16dp horizontal padding maintained by screen content
+ * - No width constraints applied
+ *
+ * @param maxWidth Maximum width for centered content on tablets (default: 600dp for forms/settings)
+ * @param modifier Modifier to be applied to the container
+ * @param content Content to be displayed
  */
 @Composable
-fun ResponsiveSettingsContainer(
+fun ResponsiveCenteredContainer(
+  maxWidth: Dp = 600.dp,
   modifier: Modifier = Modifier,
   content: @Composable () -> Unit,
 ) {
@@ -36,7 +42,7 @@ fun ResponsiveSettingsContainer(
     ) {
       Box(
         modifier = Modifier
-          .widthIn(max = 600.dp)
+          .widthIn(max = maxWidth)
           .fillMaxWidth()
       ) {
         content()
@@ -47,4 +53,22 @@ fun ResponsiveSettingsContainer(
       content()
     }
   }
+}
+
+/**
+ * Responsive container for settings screens.
+ * Uses 600dp max width - optimal for form-like content.
+ *
+ * @see ResponsiveCenteredContainer
+ */
+@Composable
+fun ResponsiveSettingsContainer(
+  modifier: Modifier = Modifier,
+  content: @Composable () -> Unit,
+) {
+  ResponsiveCenteredContainer(
+    maxWidth = 600.dp,
+    modifier = modifier,
+    content = content,
+  )
 }
