@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.category.create
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
@@ -27,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.ui.adaptive.rememberIsExpanded
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
@@ -60,6 +63,8 @@ private fun CreateCategoryPage(
   onErrorDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val isExpanded = rememberIsExpanded()
+
   AppScaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
@@ -105,52 +110,65 @@ private fun CreateCategoryPage(
       }
     }
   ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues)
-        .padding(horizontal = 24.dp)
-        .verticalScroll(rememberScrollState()),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
+    Box(
+      modifier = Modifier.fillMaxSize(),
+      contentAlignment = Alignment.TopCenter,
     ) {
-      Spacer(modifier = Modifier.height(8.dp))
+      Box(
+        modifier = if (isExpanded) {
+          Modifier.widthIn(max = 600.dp).fillMaxWidth()
+        } else {
+          Modifier.fillMaxWidth()
+        }
+      ) {
+        Column(
+          modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(horizontal = 24.dp)
+            .verticalScroll(rememberScrollState()),
+          verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+          Spacer(modifier = Modifier.height(8.dp))
 
-      // Product Name Field
-      TextField(
-        value = state.name,
-        onValueChange = onNameChange,
-        label = { Text(stringResource(R.string.create_category_name_label)) },
-        placeholder = { Text(stringResource(R.string.create_category_name_placeholder)) },
-        modifier = Modifier.fillMaxWidth(),
-        enabled = !state.isLoading,
-        isError = state.error != null,
-      )
+          // Product Name Field
+          TextField(
+            value = state.name,
+            onValueChange = onNameChange,
+            label = { Text(stringResource(R.string.create_category_name_label)) },
+            placeholder = { Text(stringResource(R.string.create_category_name_placeholder)) },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !state.isLoading,
+            isError = state.error != null,
+          )
 
-      // Product Description Field
-      TextField(
-        value = state.description,
-        onValueChange = onDescriptionChange,
-        label = { Text(stringResource(R.string.create_category_description_label)) },
-        placeholder = { Text(stringResource(R.string.create_category_description_placeholder)) },
-        modifier = Modifier.fillMaxWidth(),
-        minLines = 3,
-        enabled = !state.isLoading,
-      )
+          // Product Description Field
+          TextField(
+            value = state.description,
+            onValueChange = onDescriptionChange,
+            label = { Text(stringResource(R.string.create_category_description_label)) },
+            placeholder = { Text(stringResource(R.string.create_category_description_placeholder)) },
+            modifier = Modifier.fillMaxWidth(),
+            minLines = 3,
+            enabled = !state.isLoading,
+          )
 
-      // Error Message
-      if (state.error != null) {
-        Text(
-          text = state.error,
-          color = MaterialTheme.colorScheme.error,
-          style = MaterialTheme.typography.bodySmall,
-        )
-        LaunchedEffect(state.error, onErrorDismiss) {
-          kotlinx.coroutines.delay(3000)
-          onErrorDismiss()
+          // Error Message
+          if (state.error != null) {
+            Text(
+              text = state.error,
+              color = MaterialTheme.colorScheme.error,
+              style = MaterialTheme.typography.bodySmall,
+            )
+            LaunchedEffect(state.error, onErrorDismiss) {
+              kotlinx.coroutines.delay(3000)
+              onErrorDismiss()
+            }
+          }
+
+          Spacer(modifier = Modifier.height(16.dp))
         }
       }
-
-      Spacer(modifier = Modifier.height(16.dp))
     }
   }
 }
