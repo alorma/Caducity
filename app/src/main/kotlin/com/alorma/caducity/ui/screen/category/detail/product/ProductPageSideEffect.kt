@@ -9,6 +9,7 @@ sealed interface ProductPageSideEffect {
   // Item-level success events
   data object ItemConsumed : ProductPageSideEffect
   data object ItemFrozen : ProductPageSideEffect
+  data object ItemUnfrozen : ProductPageSideEffect
   data object ItemDeleted : ProductPageSideEffect
 
   // Product-level success events
@@ -18,6 +19,7 @@ sealed interface ProductPageSideEffect {
   // Item-level error events
   data object ConsumeItemFailed : ProductPageSideEffect
   data object FreezeItemFailed : ProductPageSideEffect
+  data object UnfreezeItemFailed : ProductPageSideEffect
   data object DeleteItemFailed : ProductPageSideEffect
 
   // Product-level error events

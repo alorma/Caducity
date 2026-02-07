@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.ProductDeletionStrategy
+import com.alorma.caducity.ui.components.bottomsheet.showItemActionsBottomSheet
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
@@ -38,6 +39,13 @@ internal fun ProductPageSideEffectHandler(
           )
         }
 
+        ProductPageSideEffect.ItemUnfrozen -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.success_item_unfrozen,
+            type = AppFeedbackType.Success,
+          )
+        }
+
         ProductPageSideEffect.ItemDeleted -> launch {
           snackbarState.showSnackbar(
             message = R.string.success_item_deleted,
@@ -55,6 +63,13 @@ internal fun ProductPageSideEffectHandler(
         ProductPageSideEffect.FreezeItemFailed -> launch {
           snackbarState.showSnackbar(
             message = R.string.error_freeze_item_failed,
+            type = AppFeedbackType.Error,
+          )
+        }
+
+        ProductPageSideEffect.UnfreezeItemFailed -> launch {
+          snackbarState.showSnackbar(
+            message = R.string.error_unfreeze_item_failed,
             type = AppFeedbackType.Error,
           )
         }
@@ -124,6 +139,9 @@ internal fun ProductPageSideEffectHandler(
             },
             onFreeze = {
               viewModel.onFreezeItem(effect.item)
+            },
+            onUnfreeze = {
+              viewModel.onUnfreezeItem(effect.item)
             },
             onDelete = {
               viewModel.onDeleteItem(effect.item)

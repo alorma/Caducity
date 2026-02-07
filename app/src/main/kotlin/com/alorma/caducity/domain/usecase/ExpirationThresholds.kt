@@ -4,4 +4,5 @@ import kotlin.time.Duration
 
 interface ExpirationThresholds {
   val soonExpiringThreshold: Duration
+  val consumeExpiredThreshold: Duration
 }

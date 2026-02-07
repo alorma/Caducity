@@ -11,7 +11,9 @@ import com.alorma.caducity.domain.usecase.ClearProductItemsUseCase
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteProductUseCase
+import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
+import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
 import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
@@ -37,8 +39,10 @@ class ProductPageViewModel(
   getProductItemsUseCase: GetProductItemsUseCase,
   productPageMapper: ProductPageMapper,
   private val appClock: AppClock,
+  private val expirationThresholds: ExpirationThresholds,
   private val consumeItemUseCase: ConsumeItemUseCase,
   private val freezeItemUseCase: FreezeItemUseCase,
+  private val unfreezeItemUseCase: UnfreezeItemUseCase,
   private val deleteItemUseCase: DeleteItemUseCase,
   private val deleteProductUseCase: DeleteProductUseCase,
   private val clearProductItemsUseCase: ClearProductItemsUseCase,
@@ -78,8 +82,17 @@ class ProductPageViewModel(
       }
 
       ItemStatus.Expired -> {
-        // Show error dialog for expired items
-        emitSideEffect(ProductPageSideEffect.ShowConsumeExpiredError(item, item.status))
+        // Check if item is within consume threshold
+        val today = appClock.now().date()
+        val daysSinceExpiration = (today.toEpochDays() - item.expirationDate.toEpochDays()).toInt()
+
+        if (daysSinceExpiration <= expirationThresholds.consumeExpiredThreshold.inWholeDays) {
+          // Within threshold: Show warning, allow consume
+          emitSideEffect(ProductPageSideEffect.ShowConsumeExpiredWarning(item))
+        } else {
+          // Beyond threshold: Show error, delete only
+          emitSideEffect(ProductPageSideEffect.ShowConsumeExpiredError(item, item.status))
+        }
       }
 
       ItemStatus.Fresh -> {
@@ -87,7 +100,8 @@ class ProductPageViewModel(
       }
 
       ItemStatus.Frozen -> {
-        // Already consumed or frozen, no action needed
+        // Frozen items can still be consumed
+        onConsumeItemConfirmed(item)
       }
 
       ItemStatus.Consumed -> {
@@ -126,6 +140,20 @@ class ProductPageViewModel(
 
         is InstanceActionResult.Failure -> {
           emitSideEffect(ProductPageSideEffect.FreezeItemFailed)
+        }
+      }
+    }
+  }
+
+  fun onUnfreezeItem(item: ItemDetailUiModel) {
+    viewModelScope.launch {
+      when (unfreezeItemUseCase.unfreezeItem(item.id)) {
+        is InstanceActionResult.Success -> {
+          emitSideEffect(ProductPageSideEffect.ItemUnfrozen)
+        }
+
+        is InstanceActionResult.Failure -> {
+          emitSideEffect(ProductPageSideEffect.UnfreezeItemFailed)
         }
       }
     }
