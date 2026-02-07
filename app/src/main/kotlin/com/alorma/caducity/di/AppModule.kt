@@ -126,5 +126,5 @@ val appModule = module {
   viewModelOf(::DebugSettingsViewModel)
 
   // Item Actions Bottom Sheet
-  factoryOf(::ItemActionsViewModel)
+  viewModelOf(::ItemActionsViewModel)
 }
