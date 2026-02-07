@@ -1,5 +1,7 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
+rootProject.name = "Caducity"
+
 pluginManagement {
   includeBuild("build-logic")
   repositories {
