@@ -10,56 +10,48 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.ThermometerSnow
-import com.alorma.caducity.domain.model.Item
-import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
+import com.alorma.caducity.ui.components.feedback.dialog.LocalAppDialogState
+import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 /**
  * Shows a bottom sheet with actions for a specific item.
- * Actions: Consume, Freeze, Delete.
+ * Actions are conditional based on item status and expiration thresholds.
+ * All action handling is done internally by ItemActionsViewModel.
  *
  * @param item The item to show actions for
- * @param itemDisplayText Optional custom text to display in header (defaults to item.identifier)
+ * @param onActionCompleted Callback when an action is successfully completed
  */
 fun AppBottomSheetState.showItemActionsBottomSheet(
   coroutineScope: CoroutineScope,
-  item: Item,
-  itemDisplayText: String? = null,
-  onConsume: () -> Unit,
-  onFreeze: () -> Unit,
-  onDelete: () -> Unit,
+  item: ItemDetailUiModel,
 ) {
   show(
     appFeedbackType = AppFeedbackType.Status(item.status),
   ) {
     ItemActionsBottomSheetContent(
-      itemText = itemDisplayText ?: item.identifier,
       item = item,
-      onConsume = {
-        onConsume()
-        coroutineScope.launch { this@showItemActionsBottomSheet.hide() }
-      },
-      onFreeze = {
-        onFreeze()
-        coroutineScope.launch { this@showItemActionsBottomSheet.hide() }
-      },
-      onDelete = {
-        onDelete()
-        coroutineScope.launch { this@showItemActionsBottomSheet.hide() }
+      onActionCompleted = {
+        coroutineScope.launch {
+          this@showItemActionsBottomSheet.hide()
+        }
       },
     )
   }
@@ -67,12 +59,43 @@ fun AppBottomSheetState.showItemActionsBottomSheet(
 
 @Composable
 private fun ItemActionsBottomSheetContent(
-  itemText: String,
-  item: Item,
-  onConsume: () -> Unit,
-  onFreeze: () -> Unit,
-  onDelete: () -> Unit,
+  item: ItemDetailUiModel,
+  onActionCompleted: () -> Unit,
+  viewModel: ItemActionsViewModel = koinViewModel(
+    key = "item_actions_${item.id}_${item.status}",
+  ) { parametersOf(item) }
 ) {
+  val state by viewModel.state.collectAsStateWithLifecycle()
+  val dialogState = LocalAppDialogState.current
+
+  // Handle side effects
+  LaunchedEffect(viewModel) {
+    viewModel.sideEffect.collect { effect ->
+      when (effect) {
+        ItemActionSideEffect.ActionCompleted -> {
+          onActionCompleted()
+        }
+
+        is ItemActionSideEffect.ActionFailed -> {
+          onActionCompleted()
+        }
+
+        ItemActionSideEffect.ShowConsumeExpiredWarning -> {
+          val result = dialogState.showAlertDialog(
+            title = { Text(stringResource(R.string.warning_consume_expired_title)) },
+            text = { Text(stringResource(R.string.warning_consume_expired_message)) },
+            type = AppFeedbackType.Status(item.status),
+            positiveButton = { Text(stringResource(R.string.warning_consume_expired_positive)) },
+            negativeButton = { Text(stringResource(R.string.warning_consume_expired_negative)) },
+          )
+          if (result == DialogResult.Positive) {
+            viewModel.onConfirmConsumeExpired()
+          }
+        }
+      }
+    }
+  }
+
   Column(
     modifier = Modifier
       .fillMaxWidth()
@@ -80,54 +103,87 @@ private fun ItemActionsBottomSheetContent(
   ) {
     // Header with item info
     Text(
-      text = itemText,
+      text = item.text,
       style = MaterialTheme.typography.titleMedium,
       modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
     )
 
     HorizontalDivider()
 
-    // Consume action
-    ListItem(
-      headlineContent = { Text(stringResource(R.string.category_detail_action_consume)) },
-      leadingContent = {
-        Icon(
-          imageVector = AppIcons.Cooking,
-          contentDescription = null,
-        )
-      },
-      modifier = Modifier.clickable { onConsume() },
-    )
+    // Render actions based on state
+    state.actions.forEach { action ->
+      when (action) {
+        ItemAction.Consume -> {
+          ActionListItem(
+            text = stringResource(R.string.category_detail_action_consume),
+            icon = AppIcons.Cooking,
+            onClick = { viewModel.onActionClick(action) }
+          )
+        }
 
-    // Freeze/Unfreeze action
-    val freezeText = if (item.status == ItemStatus.Frozen) {
-      stringResource(R.string.category_detail_action_unfreeze)
-    } else {
-      stringResource(R.string.category_detail_action_freeze)
+        ItemAction.ConsumeWithWarning -> {
+          ActionListItem(
+            text = stringResource(R.string.category_detail_action_consume),
+            icon = AppIcons.Cooking,
+            onClick = { viewModel.onActionClick(action) }
+          )
+        }
+
+        ItemAction.Freeze -> {
+          ActionListItem(
+            text = stringResource(R.string.category_detail_action_freeze),
+            icon = AppIcons.ThermometerSnow,
+            onClick = { viewModel.onActionClick(action) }
+          )
+        }
+
+        ItemAction.Unfreeze -> {
+          ActionListItem(
+            text = stringResource(R.string.category_detail_action_unfreeze),
+            icon = AppIcons.ThermometerSnow,
+            onClick = { viewModel.onActionClick(action) }
+          )
+        }
+
+        ItemAction.Delete -> {
+          ActionListItem(
+            text = stringResource(R.string.category_detail_action_delete),
+            icon = AppIcons.Delete,
+            tint = MaterialTheme.colorScheme.error,
+            onClick = { viewModel.onActionClick(action) }
+          )
+        }
+
+        ItemAction.Placeholder -> {
+          // Placeholder for consumed items (future feature)
+          Text(
+            text = stringResource(R.string.category_detail_consumed_item_placeholder),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
+          )
+        }
+      }
     }
-
-    ListItem(
-      headlineContent = { Text(freezeText) },
-      leadingContent = {
-        Icon(
-          imageVector = AppIcons.ThermometerSnow,
-          contentDescription = null,
-        )
-      },
-      modifier = Modifier.clickable { onFreeze() },
-    )
-
-    // Delete action
-    ListItem(
-      headlineContent = { Text(stringResource(R.string.category_detail_action_delete)) },
-      leadingContent = {
-        Icon(
-          imageVector = AppIcons.Delete,
-          contentDescription = null,
-          tint = MaterialTheme.colorScheme.error,
-        )
-      },
-      modifier = Modifier.clickable { onDelete() },
-    )
   }
+}
+
+@Composable
+private fun ActionListItem(
+  text: String,
+  icon: androidx.compose.ui.graphics.vector.ImageVector,
+  onClick: () -> Unit,
+  tint: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSurface,
+) {
+  ListItem(
+    headlineContent = { Text(text) },
+    leadingContent = {
+      Icon(
+        imageVector = icon,
+        contentDescription = null,
+        tint = tint,
+      )
+    },
+    modifier = Modifier.clickable { onClick() },
+  )
 }
