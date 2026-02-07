@@ -152,16 +152,7 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
   - Deep link to add item screen or category detail
 - **Complexity**: High - requires widget development
 
-**13. Barcode Scanner**
-- **Feature**: Scan product barcode to auto-fill item name
-- **Why**: Faster data entry, fewer typos
-- **Implementation**:
-  - Integrate ML Kit Barcode Scanner
-  - Add scan button to add item screen
-  - Optional: lookup product name from barcode database
-- **Complexity**: High - requires ML Kit integration, camera permissions
-
-**14. Photo Attachments**
+**13. Photo Attachments**
 - **Feature**: Attach photo to item (receipt, product image)
 - **Why**: Visual identification, remember what item looks like
 - **Implementation**:
