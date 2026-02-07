@@ -23,29 +23,11 @@ package com.alorma.caducity.config.remoteconfig
 abstract class RemoteConfig(
   val remoteConfigRunner: RemoteConfigRunner,
   val key: String,
-  val defaultValue: Any,
+  val defaultValue: Boolean,
 ) {
   /**
-   * Checks if this config is enabled (for boolean configs).
+   * Checks if this config is enabled.
    * @return True if enabled, false otherwise.
    */
   open fun isEnabled(): Boolean = remoteConfigRunner.isEnabled(this)
-  
-  /**
-   * Gets the string value of this config (for string configs).
-   * @return The string value.
-   */
-  open fun asString(): String = remoteConfigRunner.getString(this)
-  
-  /**
-   * Gets the long value of this config (for long configs).
-   * @return The long value.
-   */
-  open fun asLong(): Long = remoteConfigRunner.getLong(this)
-  
-  /**
-   * Gets the double value of this config (for double configs).
-   * @return The double value.
-   */
-  open fun asDouble(): Double = remoteConfigRunner.getDouble(this)
 }

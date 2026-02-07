@@ -38,18 +38,6 @@ class FirebaseRemoteConfigProvider(
     return remoteConfig.getBoolean(key)
   }
 
-  override fun getString(key: String, defaultValue: String): String {
-    return remoteConfig.getString(key)
-  }
-
-  override fun getLong(key: String, defaultValue: Long): Long {
-    return remoteConfig.getLong(key)
-  }
-
-  override fun getDouble(key: String, defaultValue: Double): Double {
-    return remoteConfig.getDouble(key)
-  }
-
   /**
    * Sets default config values for all configs.
    * @param defaults Map of default key-value pairs.

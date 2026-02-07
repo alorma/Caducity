@@ -2,9 +2,7 @@ package com.alorma.caducity.ui.screen.settings.debug
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alorma.caducity.config.remoteconfig.ExampleFeatureConfig
-import com.alorma.caducity.config.remoteconfig.ExampleMessageConfig
-import com.alorma.caducity.config.remoteconfig.ExampleNumberConfig
+import com.alorma.caducity.config.remoteconfig.RemoteConfig
 import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.domain.usecase.PopulateFakeDataUseCase
 import com.alorma.caducity.feature.notification.NotificationDebugHelper
@@ -24,9 +22,7 @@ class DebugSettingsViewModel(
   private val notificationDebugHelper: NotificationDebugHelper,
   private val populateFakeDataUseCase: PopulateFakeDataUseCase,
   private val remoteConfigRunner: RemoteConfigRunner,
-  private val exampleFeatureConfig: ExampleFeatureConfig,
-  private val exampleMessageConfig: ExampleMessageConfig,
-  private val exampleNumberConfig: ExampleNumberConfig,
+  private val remoteConfigs: List<RemoteConfig>,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(DebugSettingsUiState())
@@ -88,11 +84,9 @@ class DebugSettingsViewModel(
 
   private fun loadRemoteConfigValues() {
     _uiState.value = _uiState.value.copy(
-      remoteConfigValues = mapOf(
-        exampleFeatureConfig.key to exampleFeatureConfig.isEnabled().toString(),
-        exampleMessageConfig.key to exampleMessageConfig.asString(),
-        exampleNumberConfig.key to exampleNumberConfig.asLong().toString(),
-      )
+      remoteConfigValues = remoteConfigs.associate { config ->
+        config.key to config.isEnabled().toString()
+      }
     )
   }
 
