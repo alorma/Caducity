@@ -1,7 +1,5 @@
 package com.alorma.caducity.di
 
-import com.alorma.caducity.barcode.base.BarcodeHandler
-import com.alorma.caducity.barcode.base.BarcodeHandlerNoOp
 import com.alorma.caducity.config.ConfigQualifier
 import com.alorma.caducity.config.configModule
 import com.alorma.caducity.config.resources.StringProvider
@@ -61,10 +59,6 @@ val appModule = module {
   includes(fireAndForgetModule)
 
   includes(dashboardModule)
-
-  factoryOf(::BarcodeHandlerNoOp) {
-    bind<BarcodeHandler>()
-  }
 
   single { Settings() }
 

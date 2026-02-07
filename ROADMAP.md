@@ -150,7 +150,7 @@ Caducity is a minimalist Android grocery expiration tracker built with Jetpack C
 **Why later:** These are valuable for power users but not essential for basic functionality. They require more complex state management.
 
 ### Future Consideration (Post-MVP)
-10-14. Shopping list, statistics, widgets, scanning, photos
+8-12. Shopping list, statistics, calendar view, widgets, photos
 
 **Why defer:** These are substantial features that change the app's scope. They should be considered based on user feedback after core features are solid.
 
