@@ -23,7 +23,7 @@ This plan implements comprehensive tablet mode support with:
 | Phase 4 | 🚧     | [#113](https://github.com/alorma/Caducity/issues/113) | Dashboard Responsive Layout (In Progress)      |
 | Phase 5 | 📋     | [#114](https://github.com/alorma/Caducity/issues/114) | Category Detail Side-by-Side Layout            |
 | Phase 6 | 📋     | [#123](https://github.com/alorma/Caducity/issues/123) | Settings Screens Centered Layout               |
-| Phase 7 | 📋     | [#124](https://github.com/alorma/Caducity/issues/124) | Create Category Centered Form                  |
+| Phase 7 | ✅     | [#124](https://github.com/alorma/Caducity/issues/124) | Create Category Centered Form                  |
 | Phase 8 | 📋     | [#125](https://github.com/alorma/Caducity/issues/125) | Filtered Items Centered List                   |
 | Phase 9 | 📋     | [#115](https://github.com/alorma/Caducity/issues/115) | String Resources (if needed)                   |
 | Phase 10| 📋     | [#116](https://github.com/alorma/Caducity/issues/116) | Testing & Verification                         |
@@ -675,10 +675,90 @@ fun DashboardSummaryCard(
 
 ---
 
-## Phase 7: Create Category Centered Form
+## Phase 7: Create Category Centered Form ✅ COMPLETED
 
-> **GitHub Issue:** [#TBD](https://github.com/alorma/Caducity/issues/TBD)
-> **Status:** 📋 Planned
+> **GitHub Issue:** [#124](https://github.com/alorma/Caducity/issues/124)
+> **Status:** ✅ Completed
+
+**File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/category/create/CreateCategoryScreen.kt`
+
+**Implementation Summary:**
+
+Successfully implemented centered form layout for the Create Category screen on tablet devices.
+
+**Changes Made:**
+1. Added `rememberIsExpanded()` for window size detection
+2. Wrapped form Column with responsive Box containers for centering
+3. Applied 600dp max width constraint on tablet mode (≥840dp)
+4. Centered bottomBar buttons to align with form content
+5. Maintained full-width topBar and bottomBar containers
+
+**Visual Behavior:**
+- **Phone mode (<840dp):** Full-width form and buttons (unchanged)
+- **Tablet mode (≥840dp):** Form and buttons centered with 600dp max width
+- TopBar remains full width on all devices
+- BottomAppBar container full width, buttons centered to match form
+
+**Implementation Pattern:**
+```kotlin
+val isExpanded = rememberIsExpanded()
+
+AppScaffold(
+  topBar = { /* Full width */ },
+  bottomBar = {
+    BottomAppBar {
+      Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.TopCenter,
+      ) {
+        Row(
+          modifier = if (isExpanded) {
+            Modifier.widthIn(max = 600.dp).fillMaxWidth()
+          } else {
+            Modifier.fillMaxWidth()
+          }
+        ) {
+          // Buttons centered on tablets
+        }
+      }
+    }
+  }
+) { paddingValues ->
+  Box(
+    modifier = Modifier.fillMaxSize(),
+    contentAlignment = Alignment.TopCenter,
+  ) {
+    Box(
+      modifier = if (isExpanded) {
+        Modifier.widthIn(max = 600.dp).fillMaxWidth()
+      } else {
+        Modifier.fillMaxWidth()
+      }
+    ) {
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(paddingValues)
+          .padding(horizontal = 24.dp)
+          .verticalScroll(rememberScrollState()),
+      ) {
+        // Form fields
+      }
+    }
+  }
+}
+```
+
+**Benefits:**
+- Form doesn't stretch across entire tablet width
+- Better readability and user focus
+- Consistent with planned settings screen approach
+- No changes to form validation or business logic
+- Improved visual hierarchy on tablets
+
+---
+
+## Phase 7 (Original - Settings Screens Content)
 
 **Files:**
 - `app/src/main/kotlin/com/alorma/caducity/ui/screen/settings/SettingsRootScreen.kt`
@@ -797,7 +877,7 @@ Tablet (≥840dp):
 
 ## Phase 8: Filtered Items Centered List
 
-> **GitHub Issue:** [#TBD](https://github.com/alorma/Caducity/issues/TBD)
+> **GitHub Issue:** [#125](https://github.com/alorma/Caducity/issues/125)
 > **Status:** 📋 Planned
 
 **File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/category/create/CreateCategoryScreen.kt`
@@ -1079,14 +1159,13 @@ This plan implements comprehensive tablet mode support through:
 - 🚧 Phase 4: Dashboard layout complete
 - 📋 Phase 5: Category Detail side-by-side layout (planned)
 - 📋 Phase 6: Settings screens centered layout (planned)
-- 📋 Phase 7: Create Category centered form (planned)
+- ✅ Phase 7: Create Category centered form (complete)
 - 📋 Phase 8: Filtered Items centered list (planned)
 - 📋 Phases 9-10: String resources and testing (planned)
 
 The implementation leverages existing components and maintains the current clean architecture. No breaking changes to data layer or domain logic are required—this is purely a UI adaptation layer.
 
-**Current Progress:** Dashboard fully responsive. Next steps:
+**Current Progress:** Dashboard fully responsive, Create Category form centered on tablets. Next steps:
 1. **Phase 5**: Category Detail with side-by-side layout (calendar left 1/3, tabs/content right 2/3)
 2. **Phase 6**: Settings screens with centered layout (max 600dp width)
-3. **Phase 7**: Create Category form with centered layout (max 600dp width)
-4. **Phase 8**: Filtered Items list with centered layout (max 800dp width)
+3. **Phase 8**: Filtered Items list with centered layout (max 800dp width)
