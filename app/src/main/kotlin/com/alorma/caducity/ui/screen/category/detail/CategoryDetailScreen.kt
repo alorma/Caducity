@@ -33,9 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
-import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.ui.adaptive.rememberIsExpanded
 import com.alorma.caducity.ui.components.calendar.CaducityMonthCalendar
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
