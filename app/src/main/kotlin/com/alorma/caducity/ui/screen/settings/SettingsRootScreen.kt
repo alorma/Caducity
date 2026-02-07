@@ -1,11 +1,8 @@
 package com.alorma.caducity.ui.screen.settings
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -54,15 +51,13 @@ fun SettingsRootScreen(
     },
   ) { paddingValues ->
     ResponsiveSettingsContainer(modifier = Modifier.padding(paddingValues)) {
-      Column(
-        modifier = Modifier
-          .fillMaxSize()
-          .verticalScroll(rememberScrollState())
-          .padding(horizontal = 16.dp),
+      LazyColumn(
+        modifier = Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
       ) {
       // Group 1: Appearance, Language & Notifications
-      StyledSettingsGroup {
+      item {
+        StyledSettingsGroup {
         StyledSettingsCard(
           icon = {
             Icon(
@@ -88,10 +83,12 @@ fun SettingsRootScreen(
           onClick = onNavigateToNotifications,
           position = ShapePosition.End,
         )
+        }
       }
 
       // Group 2: Backup
-      StyledSettingsGroup {
+      item {
+        StyledSettingsGroup {
         StyledSettingsCard(
           icon = {
             Icon(
@@ -104,11 +101,13 @@ fun SettingsRootScreen(
           onClick = onNavigateToBackup,
           position = ShapePosition.Single,
         )
+        }
       }
 
       // Group 3: Debug (only shown in debug mode)
       if (isDebug) {
-        StyledSettingsGroup {
+        item {
+          StyledSettingsGroup {
           StyledSettingsCard(
             icon = {
               Icon(
@@ -121,11 +120,13 @@ fun SettingsRootScreen(
             onClick = onNavigateToDebug,
             position = ShapePosition.Single,
           )
+          }
         }
       }
 
       // Group 4: About
-      StyledSettingsGroup {
+      item {
+        StyledSettingsGroup {
         StyledSettingsCard(
           icon = {
             Icon(
@@ -138,6 +139,7 @@ fun SettingsRootScreen(
           onClick = onNavigateToAbout,
           position = ShapePosition.Single,
         )
+        }
       }
       }
     }

@@ -2,11 +2,8 @@ package com.alorma.caducity.ui.screen.settings.backup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -154,15 +151,13 @@ private fun BackupScreenContent(
     },
   ) { paddingValues ->
     ResponsiveSettingsContainer(modifier = Modifier.padding(paddingValues)) {
-      Column(
-        modifier = Modifier
-          .fillMaxSize()
-          .verticalScroll(rememberScrollState())
-          .padding(horizontal = 16.dp),
+      LazyColumn(
+        modifier = Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
       ) {
       // Export & Restore Group
-      StyledSettingsGroup {
+      item {
+        StyledSettingsGroup {
         StyledSettingsCard(
           icon = {
             Icon(
@@ -188,6 +183,7 @@ private fun BackupScreenContent(
           onClick = onRestore,
           position = ShapePosition.End,
         )
+        }
       }
       }
     }

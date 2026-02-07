@@ -2,11 +2,8 @@ package com.alorma.caducity.ui.screen.settings.appearance
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,14 +52,12 @@ fun AppearanceSettingsScreen(
     },
   ) { paddingValues ->
     ResponsiveSettingsContainer(modifier = Modifier.padding(paddingValues)) {
-      Column(
-        modifier = Modifier
-          .fillMaxSize()
-          .verticalScroll(rememberScrollState())
-          .padding(horizontal = 16.dp),
+      LazyColumn(
+        modifier = Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
       ) {
-      StyledSettingsGroup {
+      item {
+        StyledSettingsGroup {
 
         // Load all string resources at composable level
         val themeLight = stringResource(R.string.settings_theme_light)
@@ -91,10 +86,12 @@ fun AppearanceSettingsScreen(
             onCheckedChange = { onUseDynamicTheme(it) },
           )
         }
+        }
       }
 
       // Calendar settings group
-      StyledSettingsGroup {
+      item {
+        StyledSettingsGroup {
         StyledSettingsButtonGroupCard(
           title = stringResource(R.string.settings_first_day_of_week_title),
           selectedItem = firstDayOfWeek,
@@ -105,6 +102,7 @@ fun AppearanceSettingsScreen(
           },
           onItemSelected = { onFirstDayOfWeekChange(it) },
         )
+        }
       }
       }
     }
