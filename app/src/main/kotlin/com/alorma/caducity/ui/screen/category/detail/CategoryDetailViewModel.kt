@@ -36,9 +36,12 @@ class CategoryDetailViewModel(
 
   // Track the currently selected product ID (null means "Other" tab with standalone items)
   private val _selectedProductId = MutableStateFlow<String?>(null)
+  
+  // Get the category detail first to determine initial product
+  private val categoryDetailFlow = obtainCategoryDetailUseCase.obtain(categoryId)
 
   private val customState: StateFlow<CategoryDetailState> = combine(
-    obtainCategoryDetailUseCase.obtain(categoryId),
+    categoryDetailFlow,
     calendarPreferences.state,
     _selectedProductId.flatMapLatest { productId ->
       getProductItemsUseCase.obtain(categoryId, productId)
@@ -67,14 +70,20 @@ class CategoryDetailViewModel(
   var job: Job? = null
 
   init {
+    // Set initial selected product ID based on first available product
+    viewModelScope.launch {
+      categoryDetailFlow.collect { result ->
+        result.onSuccess { categoryDetail ->
+          if (_selectedProductId.value == null) {
+            // Set to first product, or null if only standalone items exist
+            _selectedProductId.value = categoryDetail.products.firstOrNull()?.id
+          }
+        }
+      }
+    }
+    
     job = customState.onEach { detailState -> 
       state.emit(detailState)
-      // Set initial selected product ID based on first tab if not already set
-      if (detailState is CategoryDetailState.Success && 
-          _selectedProductId.value == null && 
-          detailState.productTabs.isNotEmpty()) {
-        _selectedProductId.value = detailState.productTabs.first().id
-      }
     }.launchIn(viewModelScope)
   }
 
