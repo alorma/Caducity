@@ -85,6 +85,24 @@ class FilteredItemsByStatusViewModel(
     }
   }
 
+  fun onForceConsumeItem(item: Item) {
+    viewModelScope.launch {
+      val result = consumeItemUseCase.forceConsumeItem(item.id)
+      when (result) {
+        is com.alorma.caducity.domain.model.InstanceActionResult.Success -> {
+          emitSideEffect(FilteredItemsByStatusSideEffect.ItemConsumed)
+        }
+        is com.alorma.caducity.domain.model.InstanceActionResult.Failure -> {
+          emitSideEffect(
+            FilteredItemsByStatusSideEffect.ItemActionFailed(
+              result.error.toString()
+            )
+          )
+        }
+      }
+    }
+  }
+
   fun onFreezeItem(item: Item) {
     viewModelScope.launch {
       val result = freezeItemUseCase.freezeItem(item.id, item.expirationDate)

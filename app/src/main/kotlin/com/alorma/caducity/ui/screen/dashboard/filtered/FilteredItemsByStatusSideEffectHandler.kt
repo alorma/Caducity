@@ -45,6 +45,9 @@ fun SideEffectHandler(
             onConsume = {
               viewModel.onConsumeItem(effect.item)
             },
+            onConsumeWithWarning = {
+              viewModel.onForceConsumeItem(effect.item)
+            },
             onFreeze = {
               viewModel.onFreezeItem(effect.item)
             },

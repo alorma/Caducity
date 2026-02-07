@@ -10,6 +10,15 @@ class UnfreezeItemUseCase(
 
   suspend fun unfreezeItem(itemId: String): InstanceActionResult<Unit> {
     return try {
+      // Verify item exists before unfreezing
+      val item = itemDataSource.getItem(itemId)
+        ?: return InstanceActionResult.Failure(InstanceActionError.InstanceNotFound)
+
+      // Only unfreeze if item is actually frozen
+      if (item.status != com.alorma.caducity.domain.model.ItemStatus.Frozen) {
+        return InstanceActionResult.Failure(InstanceActionError.InstanceNotFound)
+      }
+
       itemDataSource.unfreezeItem(itemId)
       InstanceActionResult.Success(Unit)
     } catch (e: Exception) {

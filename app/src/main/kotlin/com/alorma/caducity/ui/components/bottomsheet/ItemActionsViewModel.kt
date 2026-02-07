@@ -7,12 +7,8 @@ import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlin.time.Duration.Companion.days
 
 class ItemActionsViewModel(
   private val item: ItemDetailUiModel,
@@ -71,6 +67,6 @@ class ItemActionsViewModel(
       }
     }
 
-    return ItemActionsState(actions = actions.toImmutableList())
+    return ItemActionsState(actions = actions)
   }
 }

@@ -33,7 +33,8 @@ import org.koin.core.parameter.parametersOf
  * Actions are conditional based on item status and expiration thresholds.
  *
  * @param item The item to show actions for (ItemDetailUiModel version)
- * @param onConsume Callback when Consume action is clicked
+ * @param onConsume Callback when Consume action is clicked (for fresh items)
+ * @param onConsumeWithWarning Callback when ConsumeWithWarning action is clicked (for recently expired items)
  * @param onFreeze Callback when Freeze action is clicked
  * @param onUnfreeze Callback when Unfreeze action is clicked
  * @param onDelete Callback when Delete action is clicked
@@ -42,6 +43,7 @@ fun AppBottomSheetState.showItemActionsBottomSheet(
   coroutineScope: CoroutineScope,
   item: ItemDetailUiModel,
   onConsume: () -> Unit,
+  onConsumeWithWarning: () -> Unit = onConsume,
   onFreeze: () -> Unit,
   onUnfreeze: () -> Unit,
   onDelete: () -> Unit,
@@ -54,6 +56,7 @@ fun AppBottomSheetState.showItemActionsBottomSheet(
       coroutineScope = coroutineScope,
       bottomSheetState = this@showItemActionsBottomSheet,
       onConsume = onConsume,
+      onConsumeWithWarning = onConsumeWithWarning,
       onFreeze = onFreeze,
       onUnfreeze = onUnfreeze,
       onDelete = onDelete,
@@ -67,6 +70,7 @@ private fun ItemActionsBottomSheetContent(
   coroutineScope: CoroutineScope,
   bottomSheetState: AppBottomSheetState,
   onConsume: () -> Unit,
+  onConsumeWithWarning: () -> Unit,
   onFreeze: () -> Unit,
   onUnfreeze: () -> Unit,
   onDelete: () -> Unit,
@@ -109,7 +113,7 @@ private fun ItemActionsBottomSheetContent(
             text = stringResource(R.string.category_detail_action_consume),
             icon = AppIcons.Cooking,
             onClick = {
-              onConsume()
+              onConsumeWithWarning()
               coroutineScope.launch { bottomSheetState.hide() }
             }
           )
