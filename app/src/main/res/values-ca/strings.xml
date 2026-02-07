@@ -46,6 +46,7 @@
     <string name="settings_notifications_description">Gestionar preferències de notificacions</string>
     <string name="settings_debug_title">Depuració</string>
     <string name="settings_debug_description">Eines de desenvolupament i depuració</string>
+    <string name="debug_fake_data_success">Dades de prova creades amb èxit</string>
     <string name="settings_about_title">Quant a</string>
     <string name="settings_about_description">Informació i crèdits de l\'aplicació</string>
     <string name="settings_backup_title">Còpia de seguretat</string>

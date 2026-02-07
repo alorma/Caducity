@@ -14,10 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
@@ -26,6 +29,7 @@ import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -34,16 +38,26 @@ fun DebugSettingsScreen(
   viewModel: DebugSettingsViewModel = koinViewModel()
 ) {
   val uiState by viewModel.uiState.collectAsState()
+  val snackbarState = rememberAppSnackbarState()
+  val coroutineScope = rememberCoroutineScope()
 
   LaunchedEffect(Unit) {
     viewModel.sideEffect.collect { effect ->
       when (effect) {
-        else -> {}
+        DebugSettingsSideEffect.FakeDataPopulated -> {
+          coroutineScope.launch {
+            snackbarState.showSnackbar(
+              message = R.string.debug_fake_data_success,
+              type = AppFeedbackType.Success,
+            )
+          }
+        }
       }
     }
   }
   AppScaffold(
     modifier = Modifier.then(modifier),
+    snackbarState = snackbarState,
     topBar = {
       StyledTopAppBar(
         navigationIcon = { NavigationIcon() },
@@ -63,6 +77,21 @@ fun DebugSettingsScreen(
         .padding(horizontal = 16.dp),
       verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
+      // Data Generation Group
+      StyledSettingsGroup {
+        StyledSettingsCard(
+          title = "Populate Fake Data",
+          subtitle = if (uiState.isGenerating) {
+            "Generating test data..."
+          } else {
+            "Clear all data and create test items with all statuses"
+          },
+          position = ShapePosition.Single,
+          onClick = { viewModel.onPopulateFakeData() },
+          enabled = !uiState.isGenerating,
+        )
+      }
+
       // Notifications Group
       StyledSettingsGroup {
         StyledSettingsCard(

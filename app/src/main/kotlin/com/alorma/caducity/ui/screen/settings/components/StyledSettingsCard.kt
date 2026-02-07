@@ -21,6 +21,7 @@ fun StyledSettingsCard(
   position: ShapePosition = ShapePosition.Single,
   icon: (@Composable () -> Unit)? = null,
   action: (@Composable () -> Unit)? = null,
+  enabled: Boolean = true,
   colors: SettingsTileColors = SettingsTileDefaults.colors(),
 ) {
   SettingsMenuLink(
@@ -41,6 +42,7 @@ fun StyledSettingsCard(
     },
     action = action,
     onClick = onClick,
+    enabled = enabled,
     colors = colors,
   )
 }
