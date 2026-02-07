@@ -2,6 +2,8 @@ package com.alorma.caducity.ui.screen.settings.debug
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.config.remoteconfig.RemoteConfigDefaults
+import com.alorma.caducity.config.remoteconfig.RemoteConfigProvider
 import com.alorma.caducity.domain.usecase.PopulateFakeDataUseCase
 import com.alorma.caducity.feature.notification.NotificationDebugHelper
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,6 +21,7 @@ import kotlinx.coroutines.launch
 class DebugSettingsViewModel(
   private val notificationDebugHelper: NotificationDebugHelper,
   private val populateFakeDataUseCase: PopulateFakeDataUseCase,
+  private val remoteConfigProvider: RemoteConfigProvider,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow(DebugSettingsUiState())
@@ -26,6 +29,11 @@ class DebugSettingsViewModel(
 
   private val _sideEffect = MutableSharedFlow<DebugSettingsSideEffect>()
   val sideEffect: SharedFlow<DebugSettingsSideEffect> = _sideEffect.asSharedFlow()
+
+  init {
+    // Load current remote config values
+    loadRemoteConfigValues()
+  }
 
   fun onTriggerNotificationCheck() {
     notificationDebugHelper.triggerImmediateCheck()
@@ -52,6 +60,41 @@ class DebugSettingsViewModel(
     }
   }
 
+  fun onRefreshRemoteConfig() {
+    viewModelScope.launch {
+      _uiState.value = _uiState.value.copy(isRefreshingRemoteConfig = true)
+
+      remoteConfigProvider.fetchAndActivate()
+        .onSuccess { activated ->
+          _sideEffect.emit(
+            DebugSettingsSideEffect.RemoteConfigRefreshed(activated)
+          )
+          loadRemoteConfigValues()
+          _uiState.value = _uiState.value.copy(isRefreshingRemoteConfig = false)
+        }
+        .onFailure { error ->
+          _uiState.value = _uiState.value.copy(
+            isRefreshingRemoteConfig = false,
+            error = error.message ?: "Failed to refresh remote config"
+          )
+        }
+    }
+  }
+
+  private fun loadRemoteConfigValues() {
+    val exampleMessage = remoteConfigProvider.getString(RemoteConfigDefaults.Keys.EXAMPLE_MESSAGE)
+    val exampleFeatureEnabled = remoteConfigProvider.getBoolean(RemoteConfigDefaults.Keys.EXAMPLE_FEATURE_ENABLED)
+    val exampleNumber = remoteConfigProvider.getLong(RemoteConfigDefaults.Keys.EXAMPLE_NUMBER)
+
+    _uiState.value = _uiState.value.copy(
+      remoteConfigValues = mapOf(
+        RemoteConfigDefaults.Keys.EXAMPLE_MESSAGE to exampleMessage,
+        RemoteConfigDefaults.Keys.EXAMPLE_FEATURE_ENABLED to exampleFeatureEnabled.toString(),
+        RemoteConfigDefaults.Keys.EXAMPLE_NUMBER to exampleNumber.toString(),
+      )
+    )
+  }
+
   fun dismissError() {
     _uiState.value = _uiState.value.copy(error = null)
   }
@@ -62,7 +105,9 @@ class DebugSettingsViewModel(
  */
 data class DebugSettingsUiState(
   val isGenerating: Boolean = false,
+  val isRefreshingRemoteConfig: Boolean = false,
   val error: String? = null,
+  val remoteConfigValues: Map<String, String> = emptyMap(),
 )
 
 /**
@@ -70,4 +115,5 @@ data class DebugSettingsUiState(
  */
 sealed interface DebugSettingsSideEffect {
   data object FakeDataPopulated : DebugSettingsSideEffect
+  data class RemoteConfigRefreshed(val activated: Boolean) : DebugSettingsSideEffect
 }

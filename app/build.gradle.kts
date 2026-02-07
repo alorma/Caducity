@@ -177,6 +177,7 @@ dependencies {
   implementation(libs.firebase.appcheck.playintegrity)
   implementation(libs.firebase.appcheck.debug)
   implementation(libs.firebase.crashlytics)
+  implementation(libs.firebase.config)
 
   // Testing
   testImplementation(libs.junit)

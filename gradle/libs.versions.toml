@@ -119,6 +119,7 @@ firebase-appcheck = { group = "com.google.firebase", name = "firebase-appcheck" 
 firebase-appcheck-playintegrity = { group = "com.google.firebase", name = "firebase-appcheck-playintegrity" }
 firebase-appcheck-debug = { group = "com.google.firebase", name = "firebase-appcheck-debug" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 
 # Plugins
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
