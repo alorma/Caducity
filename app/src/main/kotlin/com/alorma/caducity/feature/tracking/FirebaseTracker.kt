@@ -1,13 +1,19 @@
 package com.alorma.caducity.feature.tracking
 
-import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.logEvent
 
 /**
  * Tracker implementation that sends events to Firebase Analytics.
  *
- * @property analytics Firebase Analytics instance
+ * This tracker:
+ * - Sends screen view events using the standard Firebase SCREEN_VIEW event
+ * - Sends custom action events with optional parameters
+ * - Leverages Firebase BOM for dependency version management
+ *
+ * All events are automatically uploaded to Firebase based on the Firebase SDK configuration.
+ *
+ * @property analytics Firebase Analytics instance provided via dependency injection
  */
 class FirebaseTracker(
   private val analytics: FirebaseAnalytics,

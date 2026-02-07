@@ -1,10 +1,12 @@
 package com.alorma.caducity.feature.tracking
 
 /**
- * Base class for screen tracking events.
- * Represents a screen view event that can be tracked.
+ * Base class representing a screen view tracking event.
  *
- * @property name The name of the screen being tracked
+ * Use this class to track when users navigate to different screens in the app.
+ * The screen name should be descriptive and consistent across the app.
+ *
+ * @property name The unique identifier/name of the screen being tracked
  */
 data class Screen(
   val name: String,
