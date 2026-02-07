@@ -36,7 +36,8 @@ class DebugRemoteConfigRunner(
       settings.getBoolean(valueKey, defaultValue)
     } else {
       // Fallback to default runner (Firebase)
-      // Use isEnabled() through a temporary config to access the protected getBoolean
+      // Note: We use isEnabled() via an anonymous RemoteConfig because getBoolean() is protected.
+      // This is only used in debug builds and the object creation overhead is negligible.
       defaultRunner.isEnabled(object : RemoteConfig(defaultRunner, key, defaultValue) {})
     }
   }
@@ -78,10 +79,10 @@ class DebugRemoteConfigRunner(
    * Clears all debug overrides.
    */
   fun clearAllDebugValues() {
-    settings.keys.filter { key ->
-      key.startsWith(KEY_PREFIX) || key.startsWith(KEY_OVERRIDE_PREFIX)
-    }.forEach { key ->
-      settings.remove(key)
+    settings.keys.forEach { key ->
+      if (key.startsWith(KEY_PREFIX) || key.startsWith(KEY_OVERRIDE_PREFIX)) {
+        settings.remove(key)
+      }
     }
   }
 }
