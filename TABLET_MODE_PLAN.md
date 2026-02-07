@@ -12,9 +12,25 @@ This plan implements comprehensive tablet mode support with:
 
 The architecture is already well-structured with clean separation of concerns, making this primarily a UI adaptation task rather than a fundamental restructure.
 
+## GitHub Issues
+
+| Phase | Issue | Description |
+|-------|-------|-------------|
+| Phase 1 | [#110](https://github.com/alorma/Caducity/issues/110) | Foundation - Window Size Detection |
+| Phase 2 | [#111](https://github.com/alorma/Caducity/issues/111) | Calendar Mode Adaptation |
+| Phase 3 | [#112](https://github.com/alorma/Caducity/issues/112) | Responsive Item Grids |
+| Phase 4 | [#113](https://github.com/alorma/Caducity/issues/113) | Dashboard Master-Detail Layout |
+| Phase 5 | [#114](https://github.com/alorma/Caducity/issues/114) | Category Detail Embedded Mode |
+| Phase 6 | [#115](https://github.com/alorma/Caducity/issues/115) | String Resources |
+| Phase 7 | [#116](https://github.com/alorma/Caducity/issues/116) | Testing & Verification |
+
+**Project Board:** https://github.com/users/alorma/projects/3/views/1
+
 ---
 
 ## Phase 1: Foundation - Window Size Detection
+
+> **GitHub Issue:** [#110](https://github.com/alorma/Caducity/issues/110)
 
 ### 1.1 Add Window Size Class Dependency
 
@@ -170,6 +186,8 @@ fun App(windowSizeClass: WindowSizeClass, ...) {
 ---
 
 ## Phase 2: Calendar Mode Adaptation
+
+> **GitHub Issue:** [#111](https://github.com/alorma/Caducity/issues/111)
 
 ### 2.1 Add Calendar Mode Enum
 
@@ -403,6 +421,8 @@ Create dedicated calendar mode selection screen similar to `FirstDayOfWeekSettin
 
 ## Phase 3: Responsive Item Grids
 
+> **GitHub Issue:** [#112](https://github.com/alorma/Caducity/issues/112)
+
 ### 3.1 Create Responsive Column Calculator
 
 **File:** `app/src/main/kotlin/com/alorma/caducity/ui/adaptive/ResponsiveColumns.kt` (new file)
@@ -514,6 +534,8 @@ private fun StatusGroupCard(
 ---
 
 ## Phase 4: Dashboard Master-Detail Layout
+
+> **GitHub Issue:** [#113](https://github.com/alorma/Caducity/issues/113)
 
 ### 4.1 Create Dashboard Layout Mode State
 
@@ -719,6 +741,8 @@ internal fun DashboardSuccessContentList(
 
 ## Phase 5: Category Detail Master-Detail Layout
 
+> **GitHub Issue:** [#114](https://github.com/alorma/Caducity/issues/114)
+
 ### 5.1 Update CategoryDetailScreen for Embedded Mode
 
 **File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/category/detail/CategoryDetailScreen.kt`
@@ -766,6 +790,8 @@ if (!isEmbeddedMode) {
 
 ## Phase 6: String Resources
 
+> **GitHub Issue:** [#115](https://github.com/alorma/Caducity/issues/115)
+
 ### 6.1 Add New String Resources
 
 **Files:** `app/src/main/res/values*/strings.xml`
@@ -798,6 +824,8 @@ Add strings for calendar mode settings:
 ---
 
 ## Phase 7: Testing & Verification
+
+> **GitHub Issue:** [#116](https://github.com/alorma/Caducity/issues/116)
 
 ### 7.1 Manual Testing Checklist
 
