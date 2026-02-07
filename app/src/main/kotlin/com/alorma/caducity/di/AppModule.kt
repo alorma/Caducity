@@ -20,6 +20,7 @@ import com.alorma.caducity.domain.usecase.DeleteProductUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
+import com.alorma.caducity.domain.usecase.GetItemsByStatusUseCase
 import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
 import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
@@ -27,6 +28,7 @@ import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.ui.screen.dashboard.dashboardModule
+import com.alorma.caducity.ui.screen.dashboard.filtered.FilteredItemsByStatusViewModel
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryViewModel
@@ -68,6 +70,8 @@ val appModule = module {
   singleOf(::OnboardingFlag)
   viewModelOf(::OnboardingViewModel)
   singleOf(::GetExpiringCategoriesUseCase)
+  singleOf(::GetItemsByStatusUseCase)
+  viewModelOf(::FilteredItemsByStatusViewModel)
 
   factory {
     RelativeTimeFormatter(

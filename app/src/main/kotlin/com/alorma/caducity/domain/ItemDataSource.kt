@@ -22,4 +22,6 @@ interface ItemDataSource {
   suspend fun clearConsumedItems(categoryId: String, productId: String?)
 
   suspend fun clearAllItems(categoryId: String, productId: String?)
+
+  fun getAllItems(): Flow<List<Item>>
 }

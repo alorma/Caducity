@@ -33,6 +33,10 @@
     <string name="dashboard_section_consumed">Consumit</string>
     <string name="dashboard_section_empty">Buit</string>
 
+    <string name="filtered_items_by_status_title">Articles %1$s</string>
+    <string name="filtered_items_empty">No hi ha articles que coincideixin amb aquest filtre</string>
+    <string name="filtered_items_count">%1$d articles</string>
+
     <string name="products_list_items_frozen">%1$d articles congelats</string>
 
     <string  name="settings_screen_title">Configuració</string>
@@ -145,6 +149,7 @@
     <string name="category_detail_add_item_quantity_custom_label">Nombre d\'elements</string>
     <string name="category_detail_action_consume">Consumir</string>
     <string name="category_detail_action_freeze">Congelar</string>
+    <string name="category_detail_action_unfreeze">Descongelar</string>
     <string name="category_detail_action_delete">Eliminar</string>
     <string name="category_detail_frozen_items">Congelats</string>
     <string name="category_detail_consumed_items">Consumits</string>
@@ -198,6 +203,7 @@
     <!-- Item action success messages -->
     <string name="success_item_consumed">Element consumit</string>
     <string name="success_item_frozen">Element congelat</string>
+    <string name="success_item_unfrozen">Element descongelat</string>
     <string name="success_item_deleted">Element eliminat</string>
 
     <!-- Item action error messages -->

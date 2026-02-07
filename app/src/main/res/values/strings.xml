@@ -51,6 +51,10 @@
     <string name="dashboard_section_consumed">Consumed</string>
     <string name="dashboard_section_empty">Empty</string>
 
+    <string name="filtered_items_by_status_title">%1$s Items</string>
+    <string name="filtered_items_empty">No items match this filter</string>
+    <string name="filtered_items_count">%1$d items</string>
+
     <string name="products_list_items_frozen">%1$d items frozen</string>
 
     <string name="settings_screen_title">Settings</string>
@@ -142,6 +146,7 @@
     <string name="category_detail_add_item_quantity_custom_label">Number of items</string>
     <string name="category_detail_action_consume">Consume</string>
     <string name="category_detail_action_freeze">Freeze</string>
+    <string name="category_detail_action_unfreeze">Unfreeze</string>
     <string name="category_detail_action_delete">Delete</string>
     <string name="category_detail_frozen_items">Frozen</string>
     <string name="category_detail_consumed_items">Consumed</string>
@@ -195,6 +200,7 @@
     <!-- Item action success messages -->
     <string name="success_item_consumed">Item consumed</string>
     <string name="success_item_frozen">Item frozen</string>
+    <string name="success_item_unfrozen">Item unfrozen</string>
     <string name="success_item_deleted">Item deleted</string>
 
     <!-- Item action error messages -->
