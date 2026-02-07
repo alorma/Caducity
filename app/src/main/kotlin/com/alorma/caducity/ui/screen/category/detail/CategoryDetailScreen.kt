@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.Surface
@@ -33,7 +36,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.ui.adaptive.rememberIsExpanded
 import com.alorma.caducity.ui.components.calendar.CaducityMonthCalendar
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
@@ -169,7 +174,7 @@ private fun CategoryDetailEmptyCompactLayout(
   onShowAddProductDialog: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier = modifier) {
+  Column(modifier = modifier.fillMaxSize()) {
     Surface(
       color = CaducityTheme.colorScheme.surfaceContainerHigh,
       shadowElevation = 2.dp,
@@ -183,7 +188,7 @@ private fun CategoryDetailEmptyCompactLayout(
 
     // Empty state content
     Box(
-      modifier = Modifier.fillMaxSize(),
+      modifier = Modifier.weight(1f).fillMaxWidth(),
       contentAlignment = Alignment.Center,
     ) {
       Column(
@@ -209,12 +214,12 @@ private fun CategoryDetailEmptyCompactLayout(
             .padding(top = 16.dp),
           horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
         ) {
-          androidx.compose.material3.OutlinedButton(
+          OutlinedButton(
             onClick = onShowAddProductDialog,
           ) {
             Text(stringResource(R.string.category_detail_empty_category_create_product))
           }
-          androidx.compose.material3.Button(
+          Button(
             onClick = { onNavigateToAddInstance(null) },
           ) {
             Text(stringResource(R.string.category_detail_empty_category_add_item))
@@ -277,12 +282,12 @@ private fun CategoryDetailEmptyExpandedLayout(
             .padding(top = 16.dp),
           horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
         ) {
-          androidx.compose.material3.OutlinedButton(
+          OutlinedButton(
             onClick = onShowAddProductDialog,
           ) {
             Text(stringResource(R.string.category_detail_empty_category_create_product))
           }
-          androidx.compose.material3.Button(
+          Button(
             onClick = { onNavigateToAddInstance(null) },
           ) {
             Text(stringResource(R.string.category_detail_empty_category_add_item))
@@ -305,6 +310,19 @@ private fun CategoryDetailSuccessContent(
   onDeleteCategoryClick: () -> Unit,
 ) {
   val isExpanded = rememberIsExpanded()
+  
+  // Hoist PagerState to preserve across layout changes
+  val pagerState = rememberPagerState(
+    initialPage = 0,
+    pageCount = { state.productTabs.size.coerceAtLeast(1) }
+  )
+  
+  // Handle case where current page is out of bounds after tabs change
+  LaunchedEffect(state.productTabs.size) {
+    if (state.productTabs.isNotEmpty() && pagerState.currentPage >= state.productTabs.size) {
+      pagerState.scrollToPage(0)
+    }
+  }
 
   AppScaffold(
     modifier = modifier,
@@ -333,6 +351,7 @@ private fun CategoryDetailSuccessContent(
       CategoryDetailExpandedLayout(
         modifier = Modifier.padding(paddingValues),
         state = state,
+        pagerState = pagerState,
         onNavigateToAddInstance = onNavigateToAddInstance,
         onShowAddProductDialog = onShowAddProductDialog,
       )
@@ -340,6 +359,7 @@ private fun CategoryDetailSuccessContent(
       CategoryDetailCompactLayout(
         modifier = Modifier.padding(paddingValues),
         state = state,
+        pagerState = pagerState,
         onNavigateToAddInstance = onNavigateToAddInstance,
         onShowAddProductDialog = onShowAddProductDialog,
       )
@@ -350,24 +370,14 @@ private fun CategoryDetailSuccessContent(
 @Composable
 private fun CategoryDetailCompactLayout(
   state: CategoryDetailState.Success,
+  pagerState: PagerState,
   onNavigateToAddInstance: (productId: String?) -> Unit,
   onShowAddProductDialog: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val pagerState = rememberPagerState(
-    initialPage = 0,
-    pageCount = { state.productTabs.size.coerceAtLeast(1) }
-  )
   val coroutineScope = rememberCoroutineScope()
 
-  // Handle case where current page is out of bounds after tabs change
-  LaunchedEffect(state.productTabs.size) {
-    if (state.productTabs.isNotEmpty() && pagerState.currentPage >= state.productTabs.size) {
-      pagerState.scrollToPage(0)
-    }
-  }
-
-  Column(modifier = modifier) {
+  Column(modifier = modifier.fillMaxSize()) {
     Surface(
       color = CaducityTheme.colorScheme.surfaceContainerHigh,
       shadowElevation = 2.dp,
@@ -427,7 +437,9 @@ private fun CategoryDetailCompactLayout(
     if (state.productTabs.isNotEmpty()) {
       HorizontalPager(
         state = pagerState,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+          .weight(1f)
+          .fillMaxWidth(),
       ) { page ->
         if (page in state.productTabs.indices) {
           val productTab = state.productTabs[page]
@@ -444,22 +456,12 @@ private fun CategoryDetailCompactLayout(
 @Composable
 private fun CategoryDetailExpandedLayout(
   state: CategoryDetailState.Success,
+  pagerState: PagerState,
   onNavigateToAddInstance: (productId: String?) -> Unit,
   onShowAddProductDialog: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val pagerState = rememberPagerState(
-    initialPage = 0,
-    pageCount = { state.productTabs.size.coerceAtLeast(1) }
-  )
   val coroutineScope = rememberCoroutineScope()
-
-  // Handle case where current page is out of bounds after tabs change
-  LaunchedEffect(state.productTabs.size) {
-    if (state.productTabs.isNotEmpty() && pagerState.currentPage >= state.productTabs.size) {
-      pagerState.scrollToPage(0)
-    }
-  }
 
   Row(modifier = modifier.fillMaxSize()) {
     // Left pane: Month calendar (1/3)
@@ -531,7 +533,9 @@ private fun CategoryDetailExpandedLayout(
         // Horizontal Pager for product content
         HorizontalPager(
           state = pagerState,
-          modifier = Modifier.fillMaxSize(),
+          modifier = Modifier
+            .weight(1f)
+            .fillMaxWidth(),
         ) { page ->
           if (page in state.productTabs.indices) {
             val productTab = state.productTabs[page]
