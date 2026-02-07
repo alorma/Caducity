@@ -44,6 +44,7 @@ firebaseCrashlytics = "3.0.2"
 
 strikt = "0.35.1"
 timber = "5.0.1"
+ktlint = "12.1.2"
 
 # Firebase
 firebase-bom = "34.9.0"
@@ -138,3 +139,4 @@ google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 compose-screenshot = { id = "com.android.compose.screenshot", version.ref = "compose-screenshot-testing" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }

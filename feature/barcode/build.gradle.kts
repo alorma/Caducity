@@ -8,9 +8,15 @@ plugins {
 android {
   namespace = "com.alorma.caducity.barcode"
 
-  compileSdk = libs.versions.android.compileSdk.get().toInt()
+  compileSdk =
+    libs.versions.android.compileSdk
+      .get()
+      .toInt()
   defaultConfig {
-    minSdk = libs.versions.android.minSdk.get().toInt()
+    minSdk =
+      libs.versions.android.minSdk
+        .get()
+        .toInt()
   }
 
   compileOptions {
@@ -40,5 +46,4 @@ dependencies {
   implementation(libs.koin.android)
 
   implementation(libs.scan.engine)
-
 }
