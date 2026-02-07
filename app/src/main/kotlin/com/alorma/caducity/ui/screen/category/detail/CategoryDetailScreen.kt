@@ -35,7 +35,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Delete
-import com.alorma.caducity.ui.components.calendar.AdaptiveCalendar
+import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
@@ -148,7 +148,7 @@ private fun CategoryDetailEmptyContent(
         color = CaducityTheme.colorScheme.surfaceContainerHigh,
         shadowElevation = 2.dp,
       ) {
-        AdaptiveCalendar(
+        CaducityWeekCalendar(
           appCalendarConfig = state.appCalendarConfig,
           todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
           onDateClick = { },
@@ -256,7 +256,7 @@ private fun CategoryDetailSuccessContent(
         shadowElevation = 2.dp,
       ) {
         Column {
-          AdaptiveCalendar(
+          CaducityWeekCalendar(
             appCalendarConfig = state.appCalendarConfig,
             todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
             onDateClick = { },
