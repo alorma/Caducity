@@ -25,19 +25,25 @@ import com.alorma.caducity.ui.adaptive.rememberIsExpanded
  *
  * @param maxWidth Maximum width for centered content on tablets (default: 600dp for forms/settings)
  * @param modifier Modifier to be applied to the container
+ * @param fillHeight Whether to fill maximum height (default: true). Set to false if content should wrap its height.
  * @param content Content to be displayed
  */
 @Composable
 fun ResponsiveCenteredContainer(
   maxWidth: Dp = 600.dp,
   modifier: Modifier = Modifier,
+  fillHeight: Boolean = true,
   content: @Composable () -> Unit,
 ) {
   val isExpanded = rememberIsExpanded()
 
   if (isExpanded) {
     Box(
-      modifier = modifier.fillMaxSize(),
+      modifier = if (fillHeight) {
+        modifier.fillMaxSize()
+      } else {
+        modifier.fillMaxWidth()
+      },
       contentAlignment = Alignment.TopCenter,
     ) {
       Box(
@@ -49,7 +55,13 @@ fun ResponsiveCenteredContainer(
       }
     }
   } else {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(
+      modifier = if (fillHeight) {
+        modifier.fillMaxSize()
+      } else {
+        modifier.fillMaxWidth()
+      }
+    ) {
       content()
     }
   }
