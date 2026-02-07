@@ -33,6 +33,10 @@
     <string name="dashboard_section_consumed">Consumit</string>
     <string name="dashboard_section_empty">Buit</string>
 
+    <string name="filtered_items_by_status_title">Articles %1$s</string>
+    <string name="filtered_items_empty">No hi ha articles que coincideixin amb aquest filtre</string>
+    <string name="filtered_items_count">%1$d articles</string>
+
     <string name="products_list_items_frozen">%1$d articles congelats</string>
 
     <string  name="settings_screen_title">Configuració</string>

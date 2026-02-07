@@ -32,6 +32,10 @@
     <string name="dashboard_section_consumed">Consumido</string>
     <string name="dashboard_section_empty">Vacío</string>
 
+    <string name="filtered_items_by_status_title">Artículos %1$s</string>
+    <string name="filtered_items_empty">No hay artículos que coincidan con este filtro</string>
+    <string name="filtered_items_count">%1$d artículos</string>
+
     <string name="products_list_items_frozen">%1$d artículos congelados</string>
 
     <string  name="settings_screen_title">Configuración</string>

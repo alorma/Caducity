@@ -13,6 +13,8 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.ui.screen.dashboard.DashboardRoute
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
+import com.alorma.caducity.ui.screen.dashboard.FilteredItemsRoute
+import com.alorma.caducity.ui.screen.dashboard.filtered.FilteredItemsByStatusScreen
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryRoute
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
@@ -72,7 +74,7 @@ fun App(
 
             },
             onNavigateToStatus = { status ->
-
+              appBackStack.add(FilteredItemsRoute.ByStatus(status))
             },
             onNavigateToSettings = { appBackStack.add(Settings) },
           )
@@ -91,6 +93,12 @@ fun App(
         entry<CategoryDetailRoute> {
           CategoryDetailContainer(
             categoryId = it.categoryId,
+            onBack = { appBackStack.removeLast() }
+          )
+        }
+        entry<FilteredItemsRoute.ByStatus> {
+          FilteredItemsByStatusScreen(
+            status = it.status,
             onBack = { appBackStack.removeLast() }
           )
         }
