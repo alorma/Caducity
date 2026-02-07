@@ -8,6 +8,7 @@ import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
+import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.GetItemsByStatusUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +24,7 @@ class FilteredItemsByStatusViewModel(
   private val getItemsByStatusUseCase: GetItemsByStatusUseCase,
   private val consumeItemUseCase: ConsumeItemUseCase,
   private val freezeItemUseCase: FreezeItemUseCase,
+  private val unfreezeItemUseCase: UnfreezeItemUseCase,
   private val deleteItemUseCase: DeleteItemUseCase,
 ) : ViewModel() {
 
@@ -88,12 +90,25 @@ class FilteredItemsByStatusViewModel(
       val result = freezeItemUseCase.freezeItem(item.id, item.expirationDate)
       when (result) {
         is com.alorma.caducity.domain.model.InstanceActionResult.Success -> {
-          val sideEffect = if (item.status == ItemStatus.Frozen) {
-            FilteredItemsByStatusSideEffect.ItemUnfrozen
-          } else {
-            FilteredItemsByStatusSideEffect.ItemFrozen
-          }
-          emitSideEffect(sideEffect)
+          emitSideEffect(FilteredItemsByStatusSideEffect.ItemFrozen)
+        }
+        is com.alorma.caducity.domain.model.InstanceActionResult.Failure -> {
+          emitSideEffect(
+            FilteredItemsByStatusSideEffect.ItemActionFailed(
+              result.error.toString()
+            )
+          )
+        }
+      }
+    }
+  }
+
+  fun onUnfreezeItem(item: Item) {
+    viewModelScope.launch {
+      val result = unfreezeItemUseCase.unfreezeItem(item.id)
+      when (result) {
+        is com.alorma.caducity.domain.model.InstanceActionResult.Success -> {
+          emitSideEffect(FilteredItemsByStatusSideEffect.ItemUnfrozen)
         }
         is com.alorma.caducity.domain.model.InstanceActionResult.Failure -> {
           emitSideEffect(

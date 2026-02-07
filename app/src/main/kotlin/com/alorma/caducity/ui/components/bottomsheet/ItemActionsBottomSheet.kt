@@ -20,8 +20,6 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.ThermometerSnow
-import com.alorma.caducity.domain.model.Item
-import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
@@ -58,48 +56,6 @@ fun AppBottomSheetState.showItemActionsBottomSheet(
       onConsume = onConsume,
       onFreeze = onFreeze,
       onUnfreeze = onUnfreeze,
-      onDelete = onDelete,
-    )
-  }
-}
-
-/**
- * Legacy overload for Item domain model compatibility.
- * Converts Item to ItemDetailUiModel and delegates to the main function.
- *
- * @deprecated Use the ItemDetailUiModel version instead
- */
-@Deprecated("Use ItemDetailUiModel version", ReplaceWith("showItemActionsBottomSheet with ItemDetailUiModel"))
-fun AppBottomSheetState.showItemActionsBottomSheet(
-  coroutineScope: CoroutineScope,
-  item: Item,
-  itemDisplayText: String? = null,
-  onConsume: () -> Unit,
-  onFreeze: () -> Unit,
-  onDelete: () -> Unit,
-) {
-  // Convert Item to ItemDetailUiModel
-  val itemUiModel = ItemDetailUiModel(
-    id = item.id,
-    expirationDate = kotlinx.datetime.LocalDate(
-      year = 2024,
-      monthNumber = 1,
-      dayOfMonth = 1
-    ), // Placeholder, will be recalculated by ViewModel
-    status = item.status,
-    text = itemDisplayText ?: item.identifier,
-  )
-
-  show(
-    appFeedbackType = AppFeedbackType.Status(item.status),
-  ) {
-    ItemActionsBottomSheetContent(
-      item = itemUiModel,
-      coroutineScope = coroutineScope,
-      bottomSheetState = this@showItemActionsBottomSheet,
-      onConsume = onConsume,
-      onFreeze = onFreeze,
-      onUnfreeze = onFreeze, // Legacy: Freeze and unfreeze use same callback
       onDelete = onDelete,
     )
   }
