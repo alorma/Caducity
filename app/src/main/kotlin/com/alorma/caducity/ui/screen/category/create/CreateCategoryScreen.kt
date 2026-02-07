@@ -77,33 +77,45 @@ private fun CreateCategoryPage(
     },
     bottomBar = {
       BottomAppBar {
-        Row(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
-          verticalAlignment = Alignment.CenterVertically,
+        Box(
+          modifier = Modifier.fillMaxWidth(),
+          contentAlignment = Alignment.TopCenter,
         ) {
-          val localBackPress = LocalOnBackPressedDispatcherOwner.current
-
-          TextButton(
-            onClick = {
-              localBackPress?.onBackPressedDispatcher?.onBackPressed()
-            },
-            enabled = !state.isLoading,
-            modifier = Modifier.weight(1f),
-          ) {
-            Text(stringResource(R.string.create_category_button_cancel))
-          }
-          Button(
-            onClick = onCreateClick,
-            enabled = !state.isLoading,
-            modifier = Modifier.weight(1f),
-          ) {
-            if (state.isLoading) {
-              CircularProgressIndicator()
+          Row(
+            modifier = if (isExpanded) {
+              Modifier
+                .widthIn(max = 600.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 16.dp)
             } else {
-              Text(stringResource(R.string.create_category_button_create))
+              Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 16.dp)
+            },
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            val localBackPress = LocalOnBackPressedDispatcherOwner.current
+
+            TextButton(
+              onClick = {
+                localBackPress?.onBackPressedDispatcher?.onBackPressed()
+              },
+              enabled = !state.isLoading,
+              modifier = Modifier.weight(1f),
+            ) {
+              Text(stringResource(R.string.create_category_button_cancel))
+            }
+            Button(
+              onClick = onCreateClick,
+              enabled = !state.isLoading,
+              modifier = Modifier.weight(1f),
+            ) {
+              if (state.isLoading) {
+                CircularProgressIndicator()
+              } else {
+                Text(stringResource(R.string.create_category_button_create))
+              }
             }
           }
         }
