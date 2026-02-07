@@ -8,9 +8,15 @@ plugins {
 android {
   namespace = "com.alorma.caducity.base.ui.icons"
 
-  compileSdk = libs.versions.android.compileSdk.get().toInt()
+  compileSdk =
+    libs.versions.android.compileSdk
+      .get()
+      .toInt()
   defaultConfig {
-    minSdk = libs.versions.android.minSdk.get().toInt()
+    minSdk =
+      libs.versions.android.minSdk
+        .get()
+        .toInt()
   }
 
   compileOptions {
