@@ -98,7 +98,10 @@ fun App(
         }
         entry<FilteredItemsRoute.ByStatus> {
           FilteredItemsByStatusScreen(
-            status = it.status
+            status = it.status,
+            onNavigateToCategory = { categoryId ->
+              appBackStack.add(CategoryDetailRoute(categoryId))
+            }
           )
         }
       },

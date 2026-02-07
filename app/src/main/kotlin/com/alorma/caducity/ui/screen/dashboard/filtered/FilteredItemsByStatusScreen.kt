@@ -45,6 +45,7 @@ fun FilteredItemsByStatusScreen(
   viewModel: FilteredItemsByStatusViewModel = koinViewModel {
     parametersOf(status)
   },
+  onNavigateToCategory: (String) -> Unit = {},
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val snackbarState = rememberAppSnackbarState()
@@ -92,6 +93,7 @@ fun FilteredItemsByStatusScreen(
           categories = currentState.categories,
           status = status,
           onProductClick = viewModel::onProductClick,
+          onCategoryClick = onNavigateToCategory,
         )
       }
 
@@ -133,6 +135,7 @@ private fun FilteredItemsContent(
   categories: List<CategoryWithItems>,
   status: ItemStatus,
   onProductClick: (String, List<Item>) -> Unit,
+  onCategoryClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
@@ -148,6 +151,7 @@ private fun FilteredItemsContent(
         categoryWithItems = categoryWithItems,
         status = status,
         onProductClick = onProductClick,
+        onCategoryClick = onCategoryClick,
       )
     }
   }
@@ -158,6 +162,7 @@ private fun CategoryItemsCard(
   categoryWithItems: CategoryWithItems,
   status: ItemStatus,
   onProductClick: (String, List<Item>) -> Unit,
+  onCategoryClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val colors = ExpirationDefaults.getSoftColors(status)
@@ -169,7 +174,9 @@ private fun CategoryItemsCard(
   ) {
     // Category header
     Surface(
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier
+        .fillMaxWidth()
+        .clickable { onCategoryClick(categoryWithItems.category.id) },
       shape = MaterialTheme.shapes.small,
       color = colors.container,
       contentColor = colors.onContainer,
