@@ -52,6 +52,19 @@ fun DebugSettingsScreen(
             )
           }
         }
+        is DebugSettingsSideEffect.RemoteConfigRefreshed -> {
+          coroutineScope.launch {
+            val message = if (effect.activated) {
+              "Remote Config refreshed with new values"
+            } else {
+              "Remote Config refreshed (no new values)"
+            }
+            snackbarState.showSnackbar(
+              message = message,
+              type = AppFeedbackType.Success,
+            )
+          }
+        }
       }
     }
   }
@@ -100,6 +113,36 @@ fun DebugSettingsScreen(
           position = ShapePosition.Single,
           onClick = { viewModel.onTriggerNotificationCheck() },
         )
+      }
+
+      // Remote Config Group
+      StyledSettingsGroup {
+        StyledSettingsCard(
+          title = "Refresh Remote Config",
+          subtitle = if (uiState.isRefreshingRemoteConfig) {
+            "Fetching latest config..."
+          } else {
+            "Fetch and activate latest config values"
+          },
+          position = ShapePosition.Start,
+          onClick = { viewModel.onRefreshRemoteConfig() },
+          enabled = !uiState.isRefreshingRemoteConfig,
+        )
+
+        // Display current Remote Config values
+        uiState.remoteConfigValues.entries.forEachIndexed { index, (key, value) ->
+          val position = when {
+            index == uiState.remoteConfigValues.size - 1 -> ShapePosition.End
+            else -> ShapePosition.Middle
+          }
+          StyledSettingsCard(
+            title = key,
+            subtitle = "Value: $value",
+            position = position,
+            onClick = {},
+            enabled = false,
+          )
+        }
       }
     }
   }

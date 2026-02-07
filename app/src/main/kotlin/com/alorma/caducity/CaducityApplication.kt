@@ -1,6 +1,7 @@
 package com.alorma.caducity
 
 import android.app.Application
+import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.di.appModule
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.notification.NotificationChannelManager
@@ -11,6 +12,10 @@ import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
 import com.google.firebase.appcheck.debug.internal.StorageHelper
 import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.initialize
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -26,6 +31,10 @@ import timber.log.Timber
 class CaducityApplication : Application() {
 
   private val workScheduler: ExpirationWorkScheduler by inject()
+  private val remoteConfigRunner: RemoteConfigRunner by inject()
+  
+  // Application-scoped coroutine scope for background operations
+  private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
   override fun onCreate() {
     super.onCreate()
@@ -50,6 +59,9 @@ class CaducityApplication : Application() {
 
     // Schedule expiration check work
     workScheduler.scheduleExpirationCheck()
+
+    // Initialize Remote Config (fetch and activate in background)
+    initializeRemoteConfig()
   }
 
   private fun initializeFirebase() {
@@ -72,5 +84,17 @@ class CaducityApplication : Application() {
     Firebase.appCheck.installAppCheckProviderFactory(
       appCheckProvider
     )
+  }
+
+  private fun initializeRemoteConfig() {
+    applicationScope.launch {
+      remoteConfigRunner.fetchAndActivate()
+        .onSuccess { activated ->
+          Timber.d("Remote Config initialized successfully. New values activated: $activated")
+        }
+        .onFailure { exception ->
+          Timber.w(exception, "Remote Config initialization failed. Using default values.")
+        }
+    }
   }
 }

@@ -3,12 +3,14 @@
 This document explains how to set up Firebase services used by the Caducity app:
 - **Crashlytics**: Crash reporting and analytics
 - **Vertex AI**: AI-powered fake data generation feature
+- **Remote Config**: Dynamic configuration values without app updates
 
 ## Prerequisites
 
 1. A Firebase project (create one at https://console.firebase.google.com/)
 2. For Vertex AI: Vertex AI API enabled in your Firebase project
 3. For Crashlytics: Crashlytics enabled in your Firebase project
+4. For Remote Config: Remote Config enabled in your Firebase project
 
 ## Step 1: Create/Configure Firebase Project
 
@@ -148,6 +150,97 @@ Crashlytics works automatically once the app is installed and running:
 3. Click "Generate"
 4. The app will use Gemini AI to create realistic grocery products
 
+## Step 7: Configure Firebase Remote Config
+
+Firebase Remote Config allows you to change app configuration and behavior without requiring users to update the app.
+
+1. In Firebase Console, navigate to "Build" → "Remote Config"
+2. Click "Get Started" if not already enabled
+3. The app will automatically fetch remote config values on startup
+
+### Creating Remote Config Parameters
+
+You can create config parameters on demand in the Firebase Console:
+
+1. In Firebase Console, go to "Build" → "Remote Config"
+2. Click "Add parameter"
+3. Enter parameter details:
+   - **Parameter key**: Use constants from `RemoteConfigDefaults.Keys` (e.g., `example_feature_enabled`)
+   - **Default value**: The value to use before remote config is fetched
+   - **Description**: What this parameter controls
+4. Set conditions (optional): Target specific users, app versions, or platforms
+5. Click "Publish changes"
+
+### Using Remote Config in Code
+
+The app includes a complete Remote Config abstraction:
+
+**Adding new config values:**
+
+1. Add the key constant to `RemoteConfigDefaults.Keys`:
+   ```kotlin
+   object Keys {
+     const val MY_NEW_FEATURE = "my_new_feature"
+   }
+   ```
+
+2. Add the default value to `RemoteConfigDefaults.defaults`:
+   ```kotlin
+   val defaults: Map<String, Any> = mapOf(
+     Keys.MY_NEW_FEATURE to true,
+   )
+   ```
+
+3. Access the config value in your code:
+   ```kotlin
+   class MyViewModel(
+     private val remoteConfig: RemoteConfigProvider
+   ) : ViewModel() {
+     fun checkFeature() {
+       val isEnabled = remoteConfig.getBoolean(RemoteConfigDefaults.Keys.MY_NEW_FEATURE)
+       if (isEnabled) {
+         // Feature is enabled
+       }
+     }
+   }
+   ```
+
+4. Create the parameter in Firebase Console with the same key
+5. Publish changes
+6. The app will fetch new values on next startup
+
+**Manual fetch and activate:**
+
+```kotlin
+// In a ViewModel or use case
+viewModelScope.launch {
+  remoteConfig.fetchAndActivate()
+    .onSuccess { activated ->
+      // New values fetched and activated
+    }
+    .onFailure { exception ->
+      // Handle error, defaults will be used
+    }
+}
+```
+
+### Remote Config Features
+
+- **Automatic initialization**: Remote Config is initialized on app startup
+- **Default values**: Defined in `RemoteConfigDefaults` for offline/fallback scenarios
+- **Type-safe access**: `getString()`, `getBoolean()`, `getLong()`, `getDouble()`
+- **Debug mode**: Faster fetch intervals (1 minute) in debug builds for testing
+- **Production mode**: Standard fetch intervals (1 hour) for production builds
+
+### Testing Remote Config
+
+1. Build and install the app: `./gradlew installDebug`
+2. Run the app - it will fetch remote config on startup
+3. Check logs for "Remote Config: Fetch and activate successful"
+4. Change parameter values in Firebase Console
+5. Restart the app to see new values (or trigger manual fetch)
+
+
 ## Troubleshooting
 
 ### Build Error: "File google-services.json is missing"
@@ -189,6 +282,7 @@ Check current pricing: https://firebase.google.com/pricing
 
 ### Always Active (Required)
 - **Crashlytics**: Crash reporting and analytics - always enabled when Firebase is configured
+- **Remote Config**: Dynamic configuration values - automatically fetched on app startup
 
 ### Optional Features
 - **Vertex AI**: AI-powered fake data generation - only used when explicitly requested by user
@@ -206,5 +300,6 @@ If you don't want to use Firebase at all, you can disable it by removing the plu
 **Note**: 
 - The app will still build without Firebase
 - Crashlytics will be disabled (no crash reports)
+- Remote Config will be disabled (only default values will be used)
 - The "Generate Fake Data" feature will show a Firebase configuration error when clicked
 - You'll also need to remove or comment out the Firebase dependencies in `app/build.gradle.kts`

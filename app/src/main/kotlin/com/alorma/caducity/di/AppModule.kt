@@ -117,7 +117,14 @@ val appModule = module {
   viewModelOf(::BackupViewModel)
 
   // Debug Settings
-  viewModelOf(::DebugSettingsViewModel)
+  factory {
+    DebugSettingsViewModel(
+      notificationDebugHelper = get(),
+      populateFakeDataUseCase = get(),
+      remoteConfigRunner = get(),
+      remoteConfigs = getAll(),
+    )
+  }
 
   // Item Actions Bottom Sheet
   viewModelOf(::ItemActionsViewModel)
