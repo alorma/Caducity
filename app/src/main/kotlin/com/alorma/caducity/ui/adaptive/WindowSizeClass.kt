@@ -2,6 +2,8 @@ package com.alorma.caducity.ui.adaptive
 
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 
 /**
  * Utility to determine if the current window is considered "expanded" (tablet/desktop).
@@ -37,5 +39,55 @@ fun WindowSizeClass.calculateGridColumns(): Int {
     WindowWidthSizeClass.Medium -> 5
     WindowWidthSizeClass.Expanded -> 7
     else -> 3
+  }
+}
+
+// Composable helpers for feature flag integration
+
+/**
+ * Composable helper to check if window is expanded (tablet/desktop).
+ * Can be enhanced with feature flag checks.
+ */
+@Composable
+fun rememberIsExpanded(): Boolean {
+  val windowSizeClass = LocalWindowSizeClass.current
+  return remember(windowSizeClass) {
+    windowSizeClass.isExpanded()
+  }
+}
+
+/**
+ * Composable helper to check if window is expanded or medium (tablet+).
+ * Can be enhanced with feature flag checks.
+ */
+@Composable
+fun rememberIsExpandedOrMedium(): Boolean {
+  val windowSizeClass = LocalWindowSizeClass.current
+  return remember(windowSizeClass) {
+    windowSizeClass.isExpandedOrMedium()
+  }
+}
+
+/**
+ * Composable helper to check if window is compact (phone).
+ * Can be enhanced with feature flag checks.
+ */
+@Composable
+fun rememberIsCompact(): Boolean {
+  val windowSizeClass = LocalWindowSizeClass.current
+  return remember(windowSizeClass) {
+    windowSizeClass.isCompact()
+  }
+}
+
+/**
+ * Composable helper to calculate responsive grid columns.
+ * Can be enhanced with feature flag checks to override behavior.
+ */
+@Composable
+fun rememberGridColumns(): Int {
+  val windowSizeClass = LocalWindowSizeClass.current
+  return remember(windowSizeClass) {
+    windowSizeClass.calculateGridColumns()
   }
 }
