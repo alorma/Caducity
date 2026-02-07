@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,6 +28,7 @@ import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.coroutines.launch
@@ -124,24 +126,47 @@ fun DebugSettingsScreen(
           } else {
             "Fetch and activate latest config values"
           },
-          position = ShapePosition.Start,
+          position = ShapePosition.Single,
           onClick = { viewModel.onRefreshRemoteConfig() },
           enabled = !uiState.isRefreshingRemoteConfig,
         )
-
-        // Display current Remote Config values
-        uiState.remoteConfigValues.entries.forEachIndexed { index, (key, value) ->
-          val position = when {
-            index == uiState.remoteConfigValues.size - 1 -> ShapePosition.End
-            else -> ShapePosition.Middle
-          }
-          StyledSettingsCard(
-            title = key,
-            subtitle = "Value: $value",
-            position = position,
-            onClick = {},
-            enabled = false,
+      }
+      
+      // Remote Configs Override Group
+      if (uiState.remoteConfigValues.isNotEmpty()) {
+        Column(
+          verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+          Text(
+            text = "Remote Configs",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(horizontal = 16.dp)
           )
+          
+          StyledSettingsGroup {
+            uiState.remoteConfigValues.entries.forEachIndexed { index, (key, configState) ->
+              val position = when {
+                uiState.remoteConfigValues.size == 1 -> ShapePosition.Single
+                index == 0 -> ShapePosition.Start
+                index == uiState.remoteConfigValues.size - 1 -> ShapePosition.End
+                else -> ShapePosition.Middle
+              }
+              
+              StyledSettingsSwitchCard(
+                title = key,
+                subtitle = if (configState.hasDebugOverride) {
+                  "Debug override active"
+                } else {
+                  "Using default value"
+                },
+                state = configState.value,
+                position = position,
+                onCheckedChange = { enabled ->
+                  viewModel.onToggleRemoteConfig(key, enabled)
+                },
+              )
+            }
+          }
         }
       }
     }
