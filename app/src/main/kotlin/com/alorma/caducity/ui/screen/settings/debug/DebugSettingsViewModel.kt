@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.settings.debug
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.config.remoteconfig.DebugRemoteConfigRunner
 import com.alorma.caducity.config.remoteconfig.RemoteConfig
 import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.domain.usecase.PopulateFakeDataUseCase
@@ -83,11 +84,32 @@ class DebugSettingsViewModel(
   }
 
   private fun loadRemoteConfigValues() {
+    val debugRunner = remoteConfigRunner as? DebugRemoteConfigRunner
+    
     _uiState.value = _uiState.value.copy(
       remoteConfigValues = remoteConfigs.associate { config ->
-        config.key to config.isEnabled().toString()
+        config.key to RemoteConfigUiState(
+          value = config.isEnabled(),
+          hasDebugOverride = debugRunner?.hasDebugOverride(config.key) ?: false
+        )
       }
     )
+  }
+  
+  fun onToggleRemoteConfig(key: String, enabled: Boolean) {
+    val debugRunner = remoteConfigRunner as? DebugRemoteConfigRunner
+    if (debugRunner != null) {
+      debugRunner.setDebugValue(key, enabled)
+      loadRemoteConfigValues()
+    }
+  }
+  
+  fun onClearRemoteConfigOverride(key: String) {
+    val debugRunner = remoteConfigRunner as? DebugRemoteConfigRunner
+    if (debugRunner != null) {
+      debugRunner.clearDebugValue(key)
+      loadRemoteConfigValues()
+    }
   }
 
   fun dismissError() {
@@ -96,13 +118,21 @@ class DebugSettingsViewModel(
 }
 
 /**
+ * UI state for a remote config value
+ */
+data class RemoteConfigUiState(
+  val value: Boolean,
+  val hasDebugOverride: Boolean,
+)
+
+/**
  * UI state for Debug Settings screen
  */
 data class DebugSettingsUiState(
   val isGenerating: Boolean = false,
   val isRefreshingRemoteConfig: Boolean = false,
   val error: String? = null,
-  val remoteConfigValues: Map<String, String> = emptyMap(),
+  val remoteConfigValues: Map<String, RemoteConfigUiState> = emptyMap(),
 )
 
 /**
