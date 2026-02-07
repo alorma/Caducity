@@ -5,4 +5,5 @@ import kotlin.time.Duration.Companion.days
 
 class AppExpirationThresholdsImpl : ExpirationThresholds {
   override val soonExpiringThreshold: Duration = 4.days
+  override val consumeExpiredThreshold: Duration = 2.days
 }

@@ -1,14 +1,11 @@
 package com.alorma.caducity.ui.screen.category.detail.product
 
-import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.ProductDeletionStrategy
 import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 
 sealed interface ProductPageSideEffect {
   // Item-level success events
-  data object ItemConsumed : ProductPageSideEffect
-  data object ItemFrozen : ProductPageSideEffect
   data object ItemDeleted : ProductPageSideEffect
 
   // Product-level success events
@@ -16,8 +13,6 @@ sealed interface ProductPageSideEffect {
   data object ItemsCleared : ProductPageSideEffect
 
   // Item-level error events
-  data object ConsumeItemFailed : ProductPageSideEffect
-  data object FreezeItemFailed : ProductPageSideEffect
   data object DeleteItemFailed : ProductPageSideEffect
 
   // Product-level error events
@@ -27,17 +22,6 @@ sealed interface ProductPageSideEffect {
   // Item-level bottom sheet events
   data class ShowItemActionsBottomSheet(
     val item: ItemDetailUiModel,
-  ) : ProductPageSideEffect
-
-  // Item-level validation events
-  data class FreezeNotAvailable(val status: ItemStatus) : ProductPageSideEffect
-  data class ShowConsumeExpiredWarning(
-    val item: ItemDetailUiModel,
-  ) : ProductPageSideEffect
-
-  data class ShowConsumeExpiredError(
-    val item: ItemDetailUiModel,
-    val status: ItemStatus
   ) : ProductPageSideEffect
 
   // Product-level dialog events

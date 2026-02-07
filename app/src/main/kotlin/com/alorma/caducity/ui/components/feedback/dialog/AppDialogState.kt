@@ -42,6 +42,7 @@ class AppDialogState() {
 
   var dialogInfo by mutableStateOf<DialogInfo?>(null)
 
+  @Deprecated(message = "Should use composable version")
   suspend fun showAlertDialog(
     title: AppFeedbackResource,
     text: AppFeedbackResource,

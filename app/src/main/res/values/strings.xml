@@ -152,6 +152,7 @@
     <string name="category_detail_consumed_items">Consumed</string>
     <string name="category_detail_section_frozen">Frozen items</string>
     <string name="category_detail_section_consumed">Consumed items</string>
+    <string name="category_detail_consumed_item_placeholder">No actions available for consumed items</string>
 
     <!-- Category Detail AI -->
     <string name="category_detail_ai_title">Add Products with AI</string>
@@ -206,6 +207,7 @@
     <!-- Item action error messages -->
     <string name="error_consume_item_failed">Failed to consume item</string>
     <string name="error_freeze_item_failed">Failed to freeze item</string>
+    <string name="error_unfreeze_item_failed">Failed to unfreeze item</string>
     <string name="error_delete_item_failed">Failed to delete item</string>
     <string name="error_create_product_failed">Failed to create product</string>
 
