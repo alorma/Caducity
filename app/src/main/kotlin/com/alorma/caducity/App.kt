@@ -2,9 +2,7 @@ package com.alorma.caducity
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.retain.retain
 import androidx.compose.ui.Modifier
@@ -13,15 +11,14 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.alorma.caducity.ui.adaptive.LocalWindowSizeClass
-import com.alorma.caducity.ui.screen.dashboard.DashboardRoute
-import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
-import com.alorma.caducity.ui.screen.dashboard.FilteredItemsRoute
-import com.alorma.caducity.ui.screen.dashboard.filtered.FilteredItemsByStatusScreen
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryRoute
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailRoute
+import com.alorma.caducity.ui.screen.dashboard.DashboardRoute
+import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
+import com.alorma.caducity.ui.screen.dashboard.FilteredItemsRoute
+import com.alorma.caducity.ui.screen.dashboard.filtered.FilteredItemsByStatusScreen
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingRoute
 import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
@@ -34,14 +31,12 @@ import org.koin.compose.koinInject
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun App(
-  windowSizeClass: WindowSizeClass,
   modifier: Modifier = Modifier,
   onboardingFlag: OnboardingFlag = koinInject(),
 ) {
   AppTheme(
     themePreferences = koinInject(),
   ) {
-    CompositionLocalProvider(LocalWindowSizeClass provides windowSizeClass) {
     val initialRoute = if (onboardingFlag.isEnabled()) {
       OnboardingRoute
     } else {
@@ -111,7 +106,6 @@ fun App(
         }
       },
     )
-    }
   }
 }
 

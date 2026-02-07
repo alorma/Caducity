@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.outlined.CircleChevronRight
 import com.alorma.caducity.domain.model.ItemStatus
-import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
+import com.alorma.caducity.ui.components.calendar.AdaptiveCalendar
 import com.alorma.caducity.ui.screen.dashboard.DashboardState
 import com.alorma.caducity.ui.theme.CaducityTheme
 
@@ -85,7 +85,7 @@ fun DashboardSuccessContentList(
               )
             }
 
-            CaducityWeekCalendar(
+            AdaptiveCalendar(
               appCalendarConfig = categoryCalendarState.appCalendarConfig,
               todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
               onDateClick = { onNavigateToCategory(categoryCalendarState.id) },
