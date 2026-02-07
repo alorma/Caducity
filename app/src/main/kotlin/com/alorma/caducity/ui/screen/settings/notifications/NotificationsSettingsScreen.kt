@@ -1,11 +1,8 @@
 package com.alorma.caducity.ui.screen.settings.notifications
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
+import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -61,21 +59,21 @@ fun NotificationsSettingsContent(
       )
     },
   ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(paddingValues)
-        .padding(horizontal = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
-      StyledSettingsGroup {
+    ResponsiveSettingsContainer(modifier = Modifier.padding(paddingValues)) {
+      LazyColumn(
+        modifier = Modifier.padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+      ) {
+      item {
+        StyledSettingsGroup {
         StyledSettingsSwitchCard(
           title = stringResource(R.string.settings_enable_notifications),
           state = areNotificationsEnabled,
           position = ShapePosition.Single,
           onCheckedChange = onNotificationStateChange,
         )
+        }
+      }
       }
     }
   }
