@@ -1,0 +1,125 @@
+package com.alorma.caducity.ui.screen.dashboard.filtered
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.alorma.caducity.R
+import com.alorma.caducity.domain.model.Item
+import com.alorma.caducity.ui.components.StatusBadge
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+
+fun AppBottomSheetState.showProductItemsBottomSheet(
+  coroutineScope: CoroutineScope,
+  productName: String,
+  items: List<Item>,
+) {
+  coroutineScope.launch {
+    show(appFeedbackType = AppFeedbackType.Info) {
+      ProductItemsBottomSheetContent(
+        productName = productName,
+        items = items
+      )
+    }
+  }
+}
+
+@Composable
+private fun ProductItemsBottomSheetContent(
+  productName: String,
+  items: List<Item>,
+) {
+  Column(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(bottom = 24.dp)
+  ) {
+    // Header with product name and count
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 24.dp, vertical = 16.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+      Text(
+        modifier = Modifier.weight(1f),
+        text = productName,
+        style = MaterialTheme.typography.titleMedium,
+      )
+
+      Text(
+        text = stringResource(R.string.filtered_items_count, items.size),
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    }
+
+    HorizontalDivider()
+
+    // Items list
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 8.dp),
+      verticalArrangement = Arrangement.spacedBy(0.dp),
+    ) {
+      items.forEach { item ->
+        ItemRow(item = item)
+      }
+    }
+  }
+}
+
+@Composable
+private fun ItemRow(
+  item: Item,
+  modifier: Modifier = Modifier,
+) {
+  Row(
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(horizontal = 24.dp, vertical = 12.dp),
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(12.dp),
+  ) {
+    Column(
+      modifier = Modifier.weight(1f),
+      verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+      Text(
+        text = item.identifier,
+        style = MaterialTheme.typography.bodyMedium,
+      )
+
+      Text(
+        text = formatExpirationDate(item.expirationDate),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+      )
+    }
+
+    StatusBadge(status = item.status)
+  }
+}
+
+@Composable
+private fun formatExpirationDate(instant: Instant): String {
+  val localDate = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
+  return localDate.toString()
+}

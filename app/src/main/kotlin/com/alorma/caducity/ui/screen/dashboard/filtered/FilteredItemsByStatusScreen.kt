@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.dashboard.filtered
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,13 +25,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.CategoryWithItems
+import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
+import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.theme.CaducityTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -44,6 +48,12 @@ fun FilteredItemsByStatusScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val snackbarState = rememberAppSnackbarState()
+  val bottomSheetState = rememberAppBottomSheetState()
+
+  SideEffectHandler(
+    viewModel = viewModel,
+    bottomSheetState = bottomSheetState,
+  )
 
   AppScaffold(
     modifier = modifier,
@@ -61,6 +71,7 @@ fun FilteredItemsByStatusScreen(
       )
     },
     snackbarState = snackbarState,
+    bottomSheetState = bottomSheetState,
   ) { paddingValues ->
     when (val currentState = state) {
       is FilteredItemsByStatusState.Loading -> {
@@ -79,6 +90,7 @@ fun FilteredItemsByStatusScreen(
           modifier = Modifier.padding(paddingValues),
           categories = currentState.categories,
           status = status,
+          onProductClick = viewModel::onProductClick,
         )
       }
 
@@ -119,6 +131,7 @@ fun FilteredItemsByStatusScreen(
 private fun FilteredItemsContent(
   categories: List<CategoryWithItems>,
   status: ItemStatus,
+  onProductClick: (String, List<Item>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
@@ -133,6 +146,7 @@ private fun FilteredItemsContent(
       CategoryItemsCard(
         categoryWithItems = categoryWithItems,
         status = status,
+        onProductClick = onProductClick,
       )
     }
   }
@@ -142,6 +156,7 @@ private fun FilteredItemsContent(
 private fun CategoryItemsCard(
   categoryWithItems: CategoryWithItems,
   status: ItemStatus,
+  onProductClick: (String, List<Item>) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val colors = ExpirationDefaults.getSoftColors(status)
@@ -191,14 +206,21 @@ private fun CategoryItemsCard(
       ProductItemsGroup(
         productName = categoryProduct.product.name,
         itemCount = categoryProduct.items.size,
+        onClick = {
+          onProductClick(categoryProduct.product.name, categoryProduct.items)
+        }
       )
     }
 
     // Standalone items
     if (categoryWithItems.standaloneItems.isNotEmpty()) {
+      val otherLabel = stringResource(R.string.category_detail_product_other)
       ProductItemsGroup(
-        productName = stringResource(R.string.category_detail_product_other),
+        productName = otherLabel,
         itemCount = categoryWithItems.standaloneItems.size,
+        onClick = {
+          onProductClick(otherLabel, categoryWithItems.standaloneItems)
+        }
       )
     }
   }
@@ -208,12 +230,15 @@ private fun CategoryItemsCard(
 private fun ProductItemsGroup(
   productName: String,
   itemCount: Int,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Row(
     modifier = modifier
       .fillMaxWidth()
-      .padding(horizontal = 8.dp),
+      .clip(CaducityTheme.shapes.small)
+      .clickable { onClick() }
+      .padding(horizontal = 8.dp, vertical = 8.dp),
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
