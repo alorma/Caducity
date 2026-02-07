@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.ui.adaptive.rememberIsExpanded
 import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.ItemStatus
@@ -138,21 +140,36 @@ private fun FilteredItemsContent(
   onCategoryClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  LazyColumn(
+  val isExpanded = rememberIsExpanded()
+
+  Box(
     modifier = modifier.fillMaxSize(),
-    contentPadding = PaddingValues(16.dp),
-    verticalArrangement = Arrangement.spacedBy(16.dp),
+    contentAlignment = Alignment.TopCenter,
   ) {
-    items(
-      items = categories,
-      key = { it.category.id },
-    ) { categoryWithItems ->
-      CategoryItemsCard(
-        categoryWithItems = categoryWithItems,
-        status = status,
-        onProductClick = onProductClick,
-        onCategoryClick = onCategoryClick,
-      )
+    Box(
+      modifier = if (isExpanded) {
+        Modifier.widthIn(max = 800.dp).fillMaxWidth()
+      } else {
+        Modifier.fillMaxWidth()
+      }
+    ) {
+      LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+      ) {
+        items(
+          items = categories,
+          key = { it.category.id },
+        ) { categoryWithItems ->
+          CategoryItemsCard(
+            categoryWithItems = categoryWithItems,
+            status = status,
+            onProductClick = onProductClick,
+            onCategoryClick = onCategoryClick,
+          )
+        }
+      }
     }
   }
 }
