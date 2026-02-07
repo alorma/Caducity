@@ -1,8 +1,10 @@
 package com.alorma.caducity.config
 
+import com.alorma.caducity.BuildConfig
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.clock.KotlinAppClock
 import com.alorma.caducity.config.language.LocalizedDateFormatter
+import com.alorma.caducity.config.remoteconfig.DebugRemoteConfigRunner
 import com.alorma.caducity.config.remoteconfig.FirebaseRemoteConfigProvider
 import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.config.resources.StringProvider
@@ -51,6 +53,16 @@ val configModule = module {
 
   // Firebase Remote Config Runner
   single<RemoteConfigRunner> {
-    FirebaseRemoteConfigProvider()
+    val firebaseRunner = FirebaseRemoteConfigProvider()
+    
+    // In debug builds, wrap with DebugRemoteConfigRunner for override capability
+    if (BuildConfig.DEBUG) {
+      DebugRemoteConfigRunner(
+        settings = get(),
+        defaultRunner = firebaseRunner
+      )
+    } else {
+      firebaseRunner
+    }
   }
 }
