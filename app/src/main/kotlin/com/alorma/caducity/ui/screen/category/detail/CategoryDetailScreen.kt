@@ -34,6 +34,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -385,10 +386,13 @@ private fun CategoryDetailSuccessContent(
   )
 
   // Notify ViewModel when page changes
-  LaunchedEffect(pagerState.currentPage, state.productTabs.size) {
-    if (state.productTabs.isNotEmpty() && pagerState.currentPage < state.productTabs.size) {
-      onProductTabChanged(state.productTabs[pagerState.currentPage].id)
-    }
+  LaunchedEffect(pagerState.currentPage) {
+    snapshotFlow { pagerState.currentPage }
+      .collect { page ->
+        if (state.productTabs.isNotEmpty() && page < state.productTabs.size) {
+          onProductTabChanged(state.productTabs[page].id)
+        }
+      }
   }
 
   // Handle case where current page is out of bounds after tabs change
