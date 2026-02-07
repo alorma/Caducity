@@ -38,11 +38,11 @@ fireandforget = "1.2.0"
 materialKolor = "5.0.0-alpha06"
 
 googleServices = "4.4.4"
-firebaseCrashlytics = "3.0.2"
+firebaseCrashlytics = "3.0.6"
 
 strikt = "0.35.1"
 timber = "5.0.1"
-ktlint = "12.1.2"
+ktlint = "14.0.1"
 
 # Firebase
 firebase-bom = "34.9.0"
