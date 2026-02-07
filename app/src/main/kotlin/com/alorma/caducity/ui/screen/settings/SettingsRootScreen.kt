@@ -20,6 +20,7 @@ import com.alorma.caducity.base.ui.icons.Info
 import com.alorma.caducity.base.ui.icons.Notifications
 import com.alorma.caducity.base.ui.icons.Palette
 import com.alorma.caducity.base.ui.icons.outlined.Settings
+import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
@@ -52,14 +53,14 @@ fun SettingsRootScreen(
       )
     },
   ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(paddingValues)
-        .padding(horizontal = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
+    ResponsiveSettingsContainer(modifier = Modifier.padding(paddingValues)) {
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .verticalScroll(rememberScrollState())
+          .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+      ) {
       // Group 1: Appearance, Language & Notifications
       StyledSettingsGroup {
         StyledSettingsCard(
@@ -137,6 +138,7 @@ fun SettingsRootScreen(
           onClick = onNavigateToAbout,
           position = ShapePosition.Single,
         )
+      }
       }
     }
   }

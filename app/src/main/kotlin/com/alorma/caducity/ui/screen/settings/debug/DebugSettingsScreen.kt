@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
+import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
@@ -84,14 +85,14 @@ fun DebugSettingsScreen(
       )
     },
   ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(paddingValues)
-        .padding(horizontal = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
+    ResponsiveSettingsContainer(modifier = Modifier.padding(paddingValues)) {
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .verticalScroll(rememberScrollState())
+          .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+      ) {
       // Data Generation Group
       StyledSettingsGroup {
         StyledSettingsCard(
@@ -168,6 +169,7 @@ fun DebugSettingsScreen(
             }
           }
         }
+      }
       }
     }
   }

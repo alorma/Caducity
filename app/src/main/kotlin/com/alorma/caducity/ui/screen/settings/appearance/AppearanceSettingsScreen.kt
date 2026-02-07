@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.config.language.LocalizedDateFormatter
+import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import org.koin.compose.koinInject
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
@@ -53,14 +54,14 @@ fun AppearanceSettingsScreen(
       )
     },
   ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(paddingValues)
-        .padding(horizontal = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
+    ResponsiveSettingsContainer(modifier = Modifier.padding(paddingValues)) {
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .verticalScroll(rememberScrollState())
+          .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+      ) {
       StyledSettingsGroup {
 
         // Load all string resources at composable level
@@ -104,6 +105,7 @@ fun AppearanceSettingsScreen(
           },
           onItemSelected = { onFirstDayOfWeekChange(it) },
         )
+      }
       }
     }
   }

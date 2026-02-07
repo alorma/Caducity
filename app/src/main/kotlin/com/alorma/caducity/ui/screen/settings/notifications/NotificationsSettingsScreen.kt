@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
+import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -61,14 +62,14 @@ fun NotificationsSettingsContent(
       )
     },
   ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(paddingValues)
-        .padding(horizontal = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
+    ResponsiveSettingsContainer(modifier = Modifier.padding(paddingValues)) {
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .verticalScroll(rememberScrollState())
+          .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+      ) {
       StyledSettingsGroup {
         StyledSettingsSwitchCard(
           title = stringResource(R.string.settings_enable_notifications),
@@ -76,6 +77,7 @@ fun NotificationsSettingsContent(
           position = ShapePosition.Single,
           onCheckedChange = onNotificationStateChange,
         )
+      }
       }
     }
   }

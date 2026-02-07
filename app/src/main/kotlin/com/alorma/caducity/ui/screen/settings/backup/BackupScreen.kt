@@ -22,6 +22,7 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Backup
 import com.alorma.caducity.base.ui.icons.Restore
 import com.alorma.caducity.feature.backup.BackupFileHandler
+import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
@@ -152,14 +153,14 @@ private fun BackupScreenContent(
       )
     },
   ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(paddingValues)
-        .padding(horizontal = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
+    ResponsiveSettingsContainer(modifier = Modifier.padding(paddingValues)) {
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .verticalScroll(rememberScrollState())
+          .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+      ) {
       // Export & Restore Group
       StyledSettingsGroup {
         StyledSettingsCard(
@@ -187,6 +188,7 @@ private fun BackupScreenContent(
           onClick = onRestore,
           position = ShapePosition.End,
         )
+      }
       }
     }
   }

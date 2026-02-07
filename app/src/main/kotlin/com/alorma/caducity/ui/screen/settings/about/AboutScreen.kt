@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
+import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -41,14 +42,14 @@ fun AboutScreen(
       )
     },
   ) { paddingValues ->
-    Column(
-      modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())
-        .padding(paddingValues)
-        .padding(horizontal = 16.dp),
-      verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
+    ResponsiveSettingsContainer(modifier = Modifier.padding(paddingValues)) {
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .verticalScroll(rememberScrollState())
+          .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+      ) {
       // Export & Restore Group
       StyledSettingsGroup {
         StyledSettingsCard(
@@ -64,6 +65,7 @@ fun AboutScreen(
           position = ShapePosition.End,
           onClick = onNavigateToRepo,
         )
+      }
       }
     }
   }
