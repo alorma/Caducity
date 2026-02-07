@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.ui.adaptive.rememberIsExpanded
 import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.ItemStatus
@@ -89,7 +91,7 @@ fun FilteredItemsByStatusScreen(
 
       is FilteredItemsByStatusState.Success -> {
         FilteredItemsContent(
-          modifier = Modifier.padding(paddingValues),
+          paddingValues = paddingValues,
           categories = currentState.categories,
           status = status,
           onProductClick = viewModel::onProductClick,
@@ -132,27 +134,45 @@ fun FilteredItemsByStatusScreen(
 
 @Composable
 private fun FilteredItemsContent(
+  paddingValues: PaddingValues,
   categories: List<CategoryWithItems>,
   status: ItemStatus,
   onProductClick: (String, List<Item>) -> Unit,
   onCategoryClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  LazyColumn(
+  val isExpanded = rememberIsExpanded()
+
+  Box(
     modifier = modifier.fillMaxSize(),
-    contentPadding = PaddingValues(16.dp),
-    verticalArrangement = Arrangement.spacedBy(16.dp),
+    contentAlignment = Alignment.TopCenter,
   ) {
-    items(
-      items = categories,
-      key = { it.category.id },
-    ) { categoryWithItems ->
-      CategoryItemsCard(
-        categoryWithItems = categoryWithItems,
-        status = status,
-        onProductClick = onProductClick,
-        onCategoryClick = onCategoryClick,
-      )
+    Box(
+      modifier = if (isExpanded) {
+        Modifier.widthIn(max = 800.dp).fillMaxWidth()
+      } else {
+        Modifier.fillMaxWidth()
+      }
+    ) {
+      LazyColumn(
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(paddingValues),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+      ) {
+        items(
+          items = categories,
+          key = { it.category.id },
+        ) { categoryWithItems ->
+          CategoryItemsCard(
+            categoryWithItems = categoryWithItems,
+            status = status,
+            onProductClick = onProductClick,
+            onCategoryClick = onCategoryClick,
+          )
+        }
+      }
     }
   }
 }
