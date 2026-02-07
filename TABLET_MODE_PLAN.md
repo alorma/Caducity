@@ -20,11 +20,11 @@ This plan implements comprehensive tablet mode support with:
 | Phase 1 | ✅     | [#110](https://github.com/alorma/Caducity/issues/110) | Foundation - Window Size Detection             |
 | Phase 2 | ✅     | [#111](https://github.com/alorma/Caducity/issues/111) | Calendar Mode Adaptation                       |
 | Phase 3 | ✅     | [#112](https://github.com/alorma/Caducity/issues/112) | Responsive Item Grids                          |
-| Phase 4 | 🚧     | [#113](https://github.com/alorma/Caducity/issues/113) | Dashboard Responsive Layout (In Progress)      |
-| Phase 5 | 📋     | [#114](https://github.com/alorma/Caducity/issues/114) | Category Detail Side-by-Side Layout            |
-| Phase 6 | 📋     | [#123](https://github.com/alorma/Caducity/issues/123) | Settings Screens Centered Layout               |
+| Phase 4 | ✅     | [#113](https://github.com/alorma/Caducity/issues/113) | Dashboard Responsive Layout (In Progress)      |
+| Phase 5 | ✅     | [#114](https://github.com/alorma/Caducity/issues/114) | Category Detail Side-by-Side Layout            |
+| Phase 6 | ✅     | [#123](https://github.com/alorma/Caducity/issues/123) | Settings Screens Centered Layout               |
 | Phase 7 | ✅     | [#124](https://github.com/alorma/Caducity/issues/124) | Create Category Centered Form                  |
-| Phase 8 | 📋     | [#125](https://github.com/alorma/Caducity/issues/125) | Filtered Items Centered List                   |
+| Phase 8 | ✅     | [#125](https://github.com/alorma/Caducity/issues/125) | Filtered Items Centered List                   |
 | Phase 9 | 📋     | [#115](https://github.com/alorma/Caducity/issues/115) | String Resources (if needed)                   |
 | Phase 10| 📋     | [#116](https://github.com/alorma/Caducity/issues/116) | Testing & Verification                         |
 
