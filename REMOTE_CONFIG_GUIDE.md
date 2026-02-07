@@ -15,7 +15,8 @@ config/remoteconfig/
 ├── RemoteConfigRunner.kt         # Abstract runner (like FireAndForgetRunner)
 ├── FirebaseRemoteConfigProvider.kt # Firebase implementation
 ├── RemoteConfig.kt               # Abstract base class (like FireAndForget)
-└── RemoteConfigDefaults.kt       # Example configs and defaults
+├── RemoteConfigDefaults.kt       # Example configs and defaults
+└── RememberRemoteConfig.kt       # Compose utilities
 ```
 
 **Pattern Comparison:**
@@ -43,6 +44,47 @@ class ExampleFeatureConfig(runner: RemoteConfigRunner) : RemoteConfig(
 ## Setup
 
 Remote Config is automatically initialized when the app starts. See `FIREBASE_SETUP.md` for Firebase project configuration.
+
+## Usage Options
+
+There are two ways to use Remote Config:
+
+### Option 1: In Composables (Recommended)
+
+Use `rememberRemoteConfig<T>()` directly in Composables:
+
+```kotlin
+@Composable
+fun MyScreen() {
+  val featureConfig = rememberRemoteConfig<ExampleFeatureConfig>()
+  
+  if (featureConfig.isEnabled()) {
+    // Show new feature
+    NewFeatureContent()
+  } else {
+    // Show old content
+    OldContent()
+  }
+}
+```
+
+### Option 2: In ViewModels
+
+Inject configs in ViewModels for business logic:
+
+```kotlin
+class MyViewModel(
+  private val featureConfig: ExampleFeatureConfig
+) : ViewModel() {
+  
+  fun checkFeature() {
+    if (featureConfig.isEnabled()) {
+      // Feature is enabled
+      enableFeature()
+    }
+  }
+}
+```
 
 ## Adding a New Config Value
 
@@ -95,17 +137,28 @@ object RemoteConfigDefaults {
 
 ### 5. Use in Your Code
 
-Inject the config and use it:
+**In Composables:**
+
+```kotlin
+@Composable
+fun MyScreen() {
+  val myFeatureConfig = rememberRemoteConfig<MyFeatureConfig>()
+  
+  if (myFeatureConfig.isEnabled()) {
+    // Show new feature
+  }
+}
+```
+
+**In ViewModels:**
 
 ```kotlin
 class MyViewModel(
   private val myFeatureConfig: MyFeatureConfig
 ) : ViewModel() {
-  
   fun checkFeature() {
     if (myFeatureConfig.isEnabled()) {
       // Feature is enabled
-      enableFeature()
     }
   }
 }
@@ -122,9 +175,23 @@ class FeatureFlagConfig(runner: RemoteConfigRunner) : RemoteConfig(
   defaultValue = false
 )
 
-// Usage
-if (featureFlagConfig.isEnabled()) {
-  // Feature is enabled
+// In Composable
+@Composable
+fun FeatureScreen() {
+  val featureFlag = rememberRemoteConfig<FeatureFlagConfig>()
+  
+  if (featureFlag.isEnabled()) {
+    // Feature is enabled
+  }
+}
+
+// In ViewModel
+class MyViewModel(
+  private val featureFlag: FeatureFlagConfig
+) : ViewModel() {
+  fun check() {
+    if (featureFlag.isEnabled()) { ... }
+  }
 }
 ```
 
@@ -137,8 +204,13 @@ class WelcomeMessageConfig(runner: RemoteConfigRunner) : RemoteConfig(
   defaultValue = "Welcome!"
 )
 
-// Usage
-val message = welcomeMessageConfig.asString()
+// In Composable
+@Composable
+fun WelcomeScreen() {
+  val messageConfig = rememberRemoteConfig<WelcomeMessageConfig>()
+  
+  Text(text = messageConfig.asString())
+}
 ```
 
 ### Long Configs
@@ -150,8 +222,18 @@ class MaxItemsConfig(runner: RemoteConfigRunner) : RemoteConfig(
   defaultValue = 100L
 )
 
-// Usage
-val maxItems = maxItemsConfig.asLong()
+// In Composable
+@Composable
+fun ItemsList() {
+  val maxItemsConfig = rememberRemoteConfig<MaxItemsConfig>()
+  val maxItems = maxItemsConfig.asLong()
+  
+  LazyColumn {
+    items(items.take(maxItems.toInt())) { item ->
+      // ...
+    }
+  }
+}
 ```
 
 ### Double Configs
@@ -163,8 +245,14 @@ class ThresholdConfig(runner: RemoteConfigRunner) : RemoteConfig(
   defaultValue = 0.75
 )
 
-// Usage
-val threshold = thresholdConfig.asDouble()
+// In Composable
+@Composable
+fun ThresholdIndicator() {
+  val thresholdConfig = rememberRemoteConfig<ThresholdConfig>()
+  val threshold = thresholdConfig.asDouble()
+  
+  // Use threshold value
+}
 ```
 
 ## Manual Fetch and Activate
@@ -319,16 +407,25 @@ class EnableNewDashboardConfig(runner: RemoteConfigRunner) : RemoteConfig(
 // 2. Register in DI
 singleOf(::EnableNewDashboardConfig)
 
-// 3. Use in your code
+// 3. Use in Composable
+@Composable
+fun DashboardScreen() {
+  val enableNewDashboard = rememberRemoteConfig<EnableNewDashboardConfig>()
+  
+  if (enableNewDashboard.isEnabled()) {
+    NewDashboardContent()
+  } else {
+    OldDashboardContent()
+  }
+}
+
+// OR use in ViewModel
 class DashboardViewModel(
   private val enableNewDashboard: EnableNewDashboardConfig
 ) : ViewModel() {
-  
   fun getScreen() {
     if (enableNewDashboard.isEnabled()) {
-      NewDashboardScreen()
-    } else {
-      OldDashboardScreen()
+      // Show new dashboard
     }
   }
 }
@@ -346,13 +443,14 @@ class ExpirationThresholdConfig(runner: RemoteConfigRunner) : RemoteConfig(
   defaultValue = 7L
 )
 
-// 2. Use in your code
-class ExpirationViewModel(
-  private val expirationThreshold: ExpirationThresholdConfig
-) : ViewModel() {
+// 2. Use in Composable
+@Composable
+fun ExpirationWarning(daysUntilExpiration: Long) {
+  val thresholdConfig = rememberRemoteConfig<ExpirationThresholdConfig>()
+  val threshold = thresholdConfig.asLong()
   
-  fun checkExpiration(daysUntilExpiration: Long): Boolean {
-    return daysUntilExpiration <= expirationThreshold.asLong()
+  if (daysUntilExpiration <= threshold) {
+    WarningBadge()
   }
 }
 ```
@@ -370,16 +468,14 @@ class ExperimentVariantConfig(runner: RemoteConfigRunner) : RemoteConfig(
 )
 
 // 2. Use with Firebase Console conditions for user segments
-class ExperimentViewModel(
-  private val experimentVariant: ExperimentVariantConfig
-) : ViewModel() {
+@Composable
+fun ExperimentScreen() {
+  val variantConfig = rememberRemoteConfig<ExperimentVariantConfig>()
   
-  fun getVariant() {
-    when (experimentVariant.asString()) {
-      "variant_a" -> ShowVariantA()
-      "variant_b" -> ShowVariantB()
-      else -> ShowControl()
-    }
+  when (variantConfig.asString()) {
+    "variant_a" -> VariantAContent()
+    "variant_b" -> VariantBContent()
+    else -> ControlContent()
   }
 }
 ```
@@ -396,16 +492,17 @@ class EmergencyMessageConfig(runner: RemoteConfigRunner) : RemoteConfig(
   defaultValue = ""
 )
 
-// 2. Use in your code
-class MainViewModel(
-  private val emergencyMessage: EmergencyMessageConfig
-) : ViewModel() {
+// 2. Use in Composable
+@Composable
+fun MainScreen() {
+  val emergencyConfig = rememberRemoteConfig<EmergencyMessageConfig>()
+  val message = emergencyConfig.asString()
   
-  fun checkEmergencyMessage() {
-    val message = emergencyMessage.asString()
+  Column {
     if (message.isNotEmpty()) {
-      ShowEmergencyBanner(message = message)
+      EmergencyBanner(message = message)
     }
+    // Rest of screen content
   }
 }
 ```
