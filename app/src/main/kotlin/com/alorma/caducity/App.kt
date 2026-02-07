@@ -98,8 +98,7 @@ fun App(
         }
         entry<FilteredItemsRoute.ByStatus> {
           FilteredItemsByStatusScreen(
-            status = it.status,
-            onBack = { appBackStack.removeLast() }
+            status = it.status
           )
         }
       },

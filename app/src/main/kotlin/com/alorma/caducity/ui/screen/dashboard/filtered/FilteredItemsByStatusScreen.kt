@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,14 +23,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
-import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -40,7 +37,6 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun FilteredItemsByStatusScreen(
   status: ItemStatus,
-  onBack: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: FilteredItemsByStatusViewModel = koinViewModel {
     parametersOf(status)
@@ -61,14 +57,7 @@ fun FilteredItemsByStatusScreen(
             )
           )
         },
-        navigationIcon = {
-          IconButton(onClick = onBack) {
-            Icon(
-              imageVector = AppIcons.Back,
-              contentDescription = null
-            )
-          }
-        }
+        navigationIcon = { NavigationIcon() },
       )
     },
     snackbarState = snackbarState,
