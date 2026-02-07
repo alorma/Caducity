@@ -4,11 +4,13 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,6 +27,7 @@ import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -39,16 +42,17 @@ import org.koin.core.parameter.parametersOf
 fun AppBottomSheetState.showItemActionsBottomSheet(
   coroutineScope: CoroutineScope,
   item: ItemDetailUiModel,
-  onActionCompleted: () -> Unit = {},
 ) {
   show(
     appFeedbackType = AppFeedbackType.Status(item.status),
   ) {
     ItemActionsBottomSheetContent(
       item = item,
-      coroutineScope = coroutineScope,
-      bottomSheetState = this@showItemActionsBottomSheet,
-      onActionCompleted = onActionCompleted,
+      onActionCompleted = {
+        coroutineScope.launch {
+          this@showItemActionsBottomSheet.hide()
+        }
+      },
     )
   }
 }
@@ -56,8 +60,6 @@ fun AppBottomSheetState.showItemActionsBottomSheet(
 @Composable
 private fun ItemActionsBottomSheetContent(
   item: ItemDetailUiModel,
-  coroutineScope: CoroutineScope,
-  bottomSheetState: AppBottomSheetState,
   onActionCompleted: () -> Unit,
   viewModel: ItemActionsViewModel = koinViewModel(
     key = "item_actions_${item.id}_${item.status}",
@@ -70,15 +72,33 @@ private fun ItemActionsBottomSheetContent(
     viewModel.sideEffect.collect { effect ->
       when (effect) {
         ItemActionSideEffect.ActionCompleted -> {
-          bottomSheetState.hide()
           onActionCompleted()
         }
+
         is ItemActionSideEffect.ActionFailed -> {
-          // TODO: Show error feedback (snackbar/toast)
-          bottomSheetState.hide()
+          onActionCompleted()
         }
       }
     }
+  }
+
+  // Show consume expired warning dialog
+  if (state.showConsumeExpiredWarning) {
+    AlertDialog(
+      onDismissRequest = { viewModel.onDismissConsumeExpiredWarning() },
+      title = { Text(stringResource(R.string.warning_consume_expired_title)) },
+      text = { Text(stringResource(R.string.warning_consume_expired_message)) },
+      confirmButton = {
+        TextButton(onClick = { viewModel.onConfirmConsumeExpired() }) {
+          Text(stringResource(R.string.warning_consume_expired_positive))
+        }
+      },
+      dismissButton = {
+        TextButton(onClick = { viewModel.onDismissConsumeExpiredWarning() }) {
+          Text(stringResource(R.string.warning_consume_expired_negative))
+        }
+      },
+    )
   }
 
   Column(

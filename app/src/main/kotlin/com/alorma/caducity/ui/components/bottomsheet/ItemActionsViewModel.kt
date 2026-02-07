@@ -85,7 +85,10 @@ class ItemActionsViewModel(
       }
     }
 
-    return ItemActionsState(actions = actions)
+    return ItemActionsState(
+      actions = actions,
+      showConsumeExpiredWarning = false,
+    )
   }
 
   fun onActionClick(action: ItemAction) {
@@ -97,8 +100,8 @@ class ItemActionsViewModel(
         }
 
         ItemAction.ConsumeWithWarning -> {
-          val result = consumeItemUseCase.forceConsumeItem(item.id)
-          handleResult(result, ItemActionSideEffect.ActionCompleted)
+          // Show warning dialog instead of consuming directly
+          _state.value = _state.value.copy(showConsumeExpiredWarning = true)
         }
 
         ItemAction.Freeze -> {
@@ -126,6 +129,18 @@ class ItemActionsViewModel(
         }
       }
     }
+  }
+
+  fun onConfirmConsumeExpired() {
+    viewModelScope.launch {
+      _state.value = _state.value.copy(showConsumeExpiredWarning = false)
+      val result = consumeItemUseCase.forceConsumeItem(item.id)
+      handleResult(result, ItemActionSideEffect.ActionCompleted)
+    }
+  }
+
+  fun onDismissConsumeExpiredWarning() {
+    _state.value = _state.value.copy(showConsumeExpiredWarning = false)
   }
 
   private fun handleResult(result: InstanceActionResult<Unit>, successEffect: ItemActionSideEffect) {

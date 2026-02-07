@@ -2,18 +2,9 @@ package com.alorma.caducity.ui.screen.category.detail.product
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.config.time.date
-import com.alorma.caducity.domain.model.InstanceActionResult
-import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.ProductDeletionStrategy
 import com.alorma.caducity.domain.usecase.ClearProductItemsUseCase
-import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
-import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteProductUseCase
-import com.alorma.caducity.domain.usecase.ExpirationThresholds
-import com.alorma.caducity.domain.usecase.FreezeItemUseCase
-import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
 import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
@@ -28,22 +19,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlin.time.Instant
 
 class ProductPageViewModel(
   private val productTab: CategoryProductTabUiModel,
   private val getCategoryProductsUseCase: GetCategoryProductsUseCase,
   getProductItemsUseCase: GetProductItemsUseCase,
   productPageMapper: ProductPageMapper,
-  private val appClock: AppClock,
-  private val expirationThresholds: ExpirationThresholds,
-  private val consumeItemUseCase: ConsumeItemUseCase,
-  private val freezeItemUseCase: FreezeItemUseCase,
-  private val unfreezeItemUseCase: UnfreezeItemUseCase,
-  private val deleteItemUseCase: DeleteItemUseCase,
   private val deleteProductUseCase: DeleteProductUseCase,
   private val clearProductItemsUseCase: ClearProductItemsUseCase,
 ) : ViewModel() {
@@ -67,107 +48,6 @@ class ProductPageViewModel(
 
   fun onItemClick(item: ItemDetailUiModel) {
     emitSideEffect(ProductPageSideEffect.ShowItemActionsBottomSheet(item))
-  }
-
-  fun onConsumeItem(item: ItemDetailUiModel) {
-    when (item.status) {
-      ItemStatus.ExpiringSoon -> {
-        // Only show warning if expiration date is today
-        val today = appClock.now().date()
-        if (item.expirationDate == today) {
-          emitSideEffect(ProductPageSideEffect.ShowConsumeExpiredWarning(item))
-        } else {
-          onConsumeItemConfirmed(item)
-        }
-      }
-
-      ItemStatus.Expired -> {
-        // Check if item is within consume threshold
-        val today = appClock.now().date()
-        val daysSinceExpiration = (today.toEpochDays() - item.expirationDate.toEpochDays()).toInt()
-
-        if (daysSinceExpiration <= expirationThresholds.consumeExpiredThreshold.inWholeDays) {
-          // Within threshold: Show warning, allow consume
-          emitSideEffect(ProductPageSideEffect.ShowConsumeExpiredWarning(item))
-        } else {
-          // Beyond threshold: Show error, delete only
-          emitSideEffect(ProductPageSideEffect.ShowConsumeExpiredError(item, item.status))
-        }
-      }
-
-      ItemStatus.Fresh -> {
-        onConsumeItemConfirmed(item)
-      }
-
-      ItemStatus.Frozen -> {
-        // Frozen items can still be consumed
-        onConsumeItemConfirmed(item)
-      }
-
-      ItemStatus.Consumed -> {
-        // Already consumed, no action needed
-      }
-    }
-  }
-
-  fun onConsumeItemConfirmed(item: ItemDetailUiModel) {
-    viewModelScope.launch {
-      when (consumeItemUseCase.forceConsumeItem(item.id)) {
-        is InstanceActionResult.Success -> {
-          emitSideEffect(ProductPageSideEffect.ItemConsumed)
-        }
-
-        is InstanceActionResult.Failure -> {
-          emitSideEffect(ProductPageSideEffect.ConsumeItemFailed)
-        }
-      }
-    }
-  }
-
-  fun onFreezeItem(item: ItemDetailUiModel) {
-    // Check if item is expired
-    if (item.status == ItemStatus.Expired) {
-      emitSideEffect(ProductPageSideEffect.FreezeNotAvailable(item.status))
-      return
-    }
-
-    viewModelScope.launch {
-      val expirationInstant = item.expirationDate.toInstant()
-      when (freezeItemUseCase.freezeItem(item.id, expirationInstant)) {
-        is InstanceActionResult.Success -> {
-          emitSideEffect(ProductPageSideEffect.ItemFrozen)
-        }
-
-        is InstanceActionResult.Failure -> {
-          emitSideEffect(ProductPageSideEffect.FreezeItemFailed)
-        }
-      }
-    }
-  }
-
-  fun onUnfreezeItem(item: ItemDetailUiModel) {
-    viewModelScope.launch {
-      when (unfreezeItemUseCase.unfreezeItem(item.id)) {
-        is InstanceActionResult.Success -> {
-          emitSideEffect(ProductPageSideEffect.ItemUnfrozen)
-        }
-
-        is InstanceActionResult.Failure -> {
-          emitSideEffect(ProductPageSideEffect.UnfreezeItemFailed)
-        }
-      }
-    }
-  }
-
-  fun onDeleteItem(item: ItemDetailUiModel) {
-    viewModelScope.launch {
-      val result = deleteItemUseCase.deleteItem(item.id)
-      if (result.isSuccess) {
-        emitSideEffect(ProductPageSideEffect.ItemDeleted)
-      } else {
-        emitSideEffect(ProductPageSideEffect.DeleteItemFailed)
-      }
-    }
   }
 
   fun onAddItemClick() {
@@ -251,10 +131,6 @@ class ProductPageViewModel(
         emitSideEffect(ProductPageSideEffect.ClearItemsFailed)
       }
     }
-  }
-
-  private fun LocalDate.toInstant(): Instant {
-    return this.atStartOfDayIn(TimeZone.currentSystemDefault())
   }
 
   private fun emitSideEffect(effect: ProductPageSideEffect) {
