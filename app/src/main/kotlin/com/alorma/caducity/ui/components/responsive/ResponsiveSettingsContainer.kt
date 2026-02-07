@@ -35,7 +35,7 @@ fun ResponsiveSettingsContainer(
   ) {
     Box(
       modifier = if (isExpanded) {
-        Modifier.widthIn(max = 600.dp).fillMaxWidth()
+        Modifier.fillMaxWidth().widthIn(max = 600.dp)
       } else {
         Modifier.fillMaxWidth()
       }
