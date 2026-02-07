@@ -5,24 +5,28 @@
 The Caducity app currently renders with a single fixed layout across all device sizes (phones, tablets, foldables). Despite documentation suggesting adaptive UI exists, there is no window size detection or responsive layouts implemented. All screens use hardcoded constraints that don't adapt to larger screens.
 
 This plan implements comprehensive tablet mode support with:
-- **Master-detail layouts** for Dashboard and Category Detail screens
+- **Responsive screen layouts** optimized for wider displays (no master-detail panes)
 - **Adaptive calendar views** (week on phones, month on tablets)
-- **Responsive item grids** (3 columns on phones, 5-8 on tablets)
+- **Responsive item grids** (3 columns on phones, 5-7 on tablets)
 - **Material 3 window size classes** (Compact <600dp, Medium 600-840dp, Expanded >840dp)
+- **Maintained navigation structure** - single-pane navigation across all devices
 
-The architecture is already well-structured with clean separation of concerns, making this primarily a UI adaptation task rather than a fundamental restructure.
+**Key Approach:** Instead of implementing complex master-detail pane systems, we optimize each individual screen for tablet displays while keeping the familiar single-pane navigation structure. This provides a better tablet experience without fundamentally changing the app's navigation patterns.
 
 ## GitHub Issues
 
-| Phase   | Issue                                                 | Description                        |
-|---------|-------------------------------------------------------|------------------------------------|
-| Phase 1 | [#110](https://github.com/alorma/Caducity/issues/110) | Foundation - Window Size Detection |
-| Phase 2 | [#111](https://github.com/alorma/Caducity/issues/111) | Calendar Mode Adaptation           |
-| Phase 3 | [#112](https://github.com/alorma/Caducity/issues/112) | Responsive Item Grids              |
-| Phase 4 | [#113](https://github.com/alorma/Caducity/issues/113) | Dashboard Master-Detail Layout     |
-| Phase 5 | [#114](https://github.com/alorma/Caducity/issues/114) | Category Detail Embedded Mode      |
-| Phase 6 | [#115](https://github.com/alorma/Caducity/issues/115) | String Resources                   |
-| Phase 7 | [#116](https://github.com/alorma/Caducity/issues/116) | Testing & Verification             |
+| Phase   | Status | Issue                                                 | Description                                    |
+|---------|--------|-------------------------------------------------------|------------------------------------------------|
+| Phase 1 | ✅     | [#110](https://github.com/alorma/Caducity/issues/110) | Foundation - Window Size Detection             |
+| Phase 2 | ✅     | [#111](https://github.com/alorma/Caducity/issues/111) | Calendar Mode Adaptation                       |
+| Phase 3 | ✅     | [#112](https://github.com/alorma/Caducity/issues/112) | Responsive Item Grids                          |
+| Phase 4 | 🚧     | [#113](https://github.com/alorma/Caducity/issues/113) | Dashboard Responsive Layout (In Progress)      |
+| Phase 5 | 📋     | [#114](https://github.com/alorma/Caducity/issues/114) | Category Detail Side-by-Side Layout            |
+| Phase 6 | 📋     | [#123](https://github.com/alorma/Caducity/issues/123) | Settings Screens Centered Layout               |
+| Phase 7 | 📋     | [#124](https://github.com/alorma/Caducity/issues/124) | Create Category Centered Form                  |
+| Phase 8 | 📋     | [#125](https://github.com/alorma/Caducity/issues/125) | Filtered Items Centered List                   |
+| Phase 9 | 📋     | [#115](https://github.com/alorma/Caducity/issues/115) | String Resources (if needed)                   |
+| Phase 10| 📋     | [#116](https://github.com/alorma/Caducity/issues/116) | Testing & Verification                         |
 
 **Project Board:** https://github.com/users/alorma/projects/3/views/1
 
@@ -496,266 +500,457 @@ private fun StatusGroupCard(
 
 ---
 
-## Phase 4: Dashboard Master-Detail Layout
+## Phase 4: Dashboard Responsive Layout ✅ IN PROGRESS
 
 > **GitHub Issue:** [#113](https://github.com/alorma/Caducity/issues/113)
+> **Status:** 🚧 Partially implemented - dashboard layout complete, working on other screens
+> **Approach:** No master-detail panes - keep existing navigation structure with responsive layouts
 
-### 4.1 Create Dashboard Layout Mode State
+### Design Decision: Single-Pane Responsive Layouts
 
-**File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/dashboard/DashboardLayoutMode.kt` (new file)
+**Rationale:** Instead of implementing complex master-detail pane navigation, we maintain the existing navigation structure while optimizing individual screens for tablet displays.
 
-```kotlin
-package com.alorma.caducity.ui.screen.dashboard
+**Key Principles:**
+- Keep existing navigation flow (no split-pane views)
+- Optimize layouts for wider screens
+- Better use of horizontal space
+- Maintain consistency with phone UX patterns
 
-/**
- * Dashboard layout mode for tablet adaptive UI.
- */
-sealed interface DashboardLayoutMode {
-    /** Full-screen mode: horizontal category scroll + full month calendar */
-    data object FullScreen : DashboardLayoutMode
-
-    /** Master-detail mode: category list (left) + category detail (right) */
-    data class MasterDetail(val selectedCategoryId: String) : DashboardLayoutMode
-}
-```
-
-### 4.2 Update DashboardViewModel for Layout Mode
-
-**File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/dashboard/DashboardViewModel.kt`
-
-Add layout mode state:
-
-```kotlin
-class DashboardViewModel(/* ... */) : ViewModel() {
-
-    private val _layoutMode = MutableStateFlow<DashboardLayoutMode>(
-        DashboardLayoutMode.FullScreen
-    )
-    val layoutMode: StateFlow<DashboardLayoutMode> = _layoutMode.asStateFlow()
-
-    fun onCategorySelected(categoryId: String) {
-        _layoutMode.value = DashboardLayoutMode.MasterDetail(categoryId)
-    }
-
-    fun onBackToFullScreen() {
-        _layoutMode.value = DashboardLayoutMode.FullScreen
-    }
-
-    // ... existing code
-}
-```
-
-### 4.3 Create Master-Detail Layout Composable
-
-**File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/dashboard/components/DashboardMasterDetailLayout.kt` (new file)
-
-```kotlin
-package com.alorma.caducity.ui.screen.dashboard.components
-
-import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.alorma.caducity.ui.screen.category.detail.CategoryDetailScreen
-
-/**
- * Master-detail layout for tablet dashboard.
- *
- * Layout: [Category List (40%)] | [Category Detail (60%)]
- */
-@Composable
-fun DashboardMasterDetailLayout(
-    selectedCategoryId: String,
-    categories: ImmutableList<CategoryCalendarState>,
-    calendarMode: CalendarMode,
-    onCategorySelected: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(modifier = modifier.fillMaxSize()) {
-        // Master pane: Category list (40% width)
-        Box(
-            modifier = Modifier
-                .weight(0.4f)
-                .fillMaxHeight()
-        ) {
-            DashboardSuccessContentList(
-                categories = categories,
-                calendarMode = CalendarMode.WEEK,  // Always week in collapsed mode
-                onNavigateToCategory = { categoryId ->
-                    onCategorySelected(categoryId)
-                },
-                // ... other parameters
-            )
-        }
-
-        // Detail pane: Category detail (60% width)
-        Box(
-            modifier = Modifier
-                .weight(0.6f)
-                .fillMaxHeight()
-                .padding(start = 16.dp)  // Separator margin
-        ) {
-            CategoryDetailScreen(
-                categoryId = selectedCategoryId,
-                // Embedded mode - no top bar, no back navigation
-                isEmbeddedMode = true,
-            )
-        }
-    }
-}
-```
-
-### 4.4 Update Dashboard Screen for Adaptive Layout
-
-**File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/dashboard/DashboardScreen.kt`
-
-Add layout mode handling:
-
-```kotlin
-@Composable
-fun DashboardScreen(
-    viewModel: DashboardViewModel = koinViewModel(),
-) {
-    val windowSizeClass = LocalWindowSizeClass.current
-    val layoutMode by viewModel.layoutMode.collectAsState()
-    val calendarState by calendarPreferences.asState().collectAsState()
-
-    // ... existing state collection ...
-
-    when (val state = uiState) {
-        is DashboardState.Success -> {
-            // Tablet mode: master-detail layout
-            if (windowSizeClass.isExpandedOrMedium() &&
-                layoutMode is DashboardLayoutMode.MasterDetail) {
-
-                DashboardMasterDetailLayout(
-                    selectedCategoryId = (layoutMode as DashboardLayoutMode.MasterDetail).selectedCategoryId,
-                    categories = state.categories,
-                    calendarMode = calendarState.calendarMode,
-                    onCategorySelected = { categoryId ->
-                        viewModel.onCategorySelected(categoryId)
-                    },
-                )
-            }
-            // Full-screen mode or phone
-            else {
-                DashboardSuccessContent(
-                    state = state,
-                    calendarMode = if (windowSizeClass.isExpandedOrMedium() &&
-                                     layoutMode is DashboardLayoutMode.FullScreen) {
-                        CalendarMode.MONTH  // Full month in tablet full-screen mode
-                    } else {
-                        calendarState.calendarMode  // Respect preference
-                    },
-                    onNavigateToCategory = { categoryId ->
-                        if (windowSizeClass.isExpandedOrMedium()) {
-                            viewModel.onCategorySelected(categoryId)
-                        } else {
-                            // Phone: navigate full-screen
-                            navController.navigate(CategoryDetailRoute(categoryId))
-                        }
-                    },
-                )
-            }
-        }
-        // ... other states
-    }
-}
-```
-
-### 4.5 Update DashboardSuccessContent for Horizontal Scroll
+### 4.1 Dashboard Responsive Layout ✅ COMPLETED
 
 **File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/dashboard/components/DashboardSuccessContentList.kt`
 
-Add horizontal scroll mode for tablet full-screen:
+**Implemented Changes:**
+- **Compact mode** (phones <600dp): Vertical LazyColumn with week calendars
+- **Expanded mode** (tablets ≥840dp): Horizontal LazyRow with full-height month calendars
+- Summary cards: 2x2 grid on phones, single row of 4 cards on tablets
+- Calendar spacing: 64dp between calendar columns on tablets
+- Each calendar card: 340dp wide with `fillMaxHeight()`
 
+**Implementation:**
 ```kotlin
 @Composable
-internal fun DashboardSuccessContentList(
-    categories: ImmutableList<CategoryCalendarState>,
-    calendarMode: CalendarMode,
-    isHorizontalLayout: Boolean = false,  // New parameter
-    // ... existing parameters
+fun DashboardSuccessContentList(
+  state: DashboardState.Success,
+  onNavigateToCategory: (String) -> Unit,
+  onNavigateToStatus: (ItemStatus) -> Unit,
+  lazyListState: LazyListState,
 ) {
-    if (isHorizontalLayout) {
-        // Tablet full-screen mode: horizontal scroll
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            items(categories) { category ->
-                CategoryCalendarCard(
-                    category = category,
-                    calendarMode = CalendarMode.MONTH,  // Force month in horizontal
-                    modifier = Modifier.width(400.dp),  // Fixed card width
-                )
-            }
-        }
-    } else {
-        // Existing vertical LazyColumn implementation
-        LazyColumn(/* ... */) {
-            // ... existing code
-        }
-    }
+  val isExpanded = rememberIsExpanded()
+
+  if (isExpanded) {
+    DashboardExpandedLayout(/* horizontal LazyRow */)
+  } else {
+    DashboardCompactLayout(/* vertical LazyColumn */)
+  }
+}
+```
+
+**Summary Cards Adaptation:**
+```kotlin
+// DashboardSummaryCard.kt
+@Composable
+fun DashboardSummaryCard(
+  summary: DashboardSummary,
+  onStatusClick: (ItemStatus) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val isExpanded = rememberIsExpanded()
+
+  if (isExpanded) {
+    // Single row with all 4 cards
+    DashboardSummaryCardExpanded(/* ... */)
+  } else {
+    // 2x2 grid
+    DashboardSummaryCardCompact(/* ... */)
+  }
 }
 ```
 
 ---
 
-## Phase 5: Category Detail Master-Detail Layout
+## Phase 6: Settings Screens Centered Layout
 
-> **GitHub Issue:** [#114](https://github.com/alorma/Caducity/issues/114)
+> **GitHub Issue:** [#TBD](https://github.com/alorma/Caducity/issues/TBD)
+> **Status:** 📋 Planned
 
-### 5.1 Update CategoryDetailScreen for Embedded Mode
+**Files:**
+- `app/src/main/kotlin/com/alorma/caducity/ui/screen/category/detail/CategoryDetailScreen.kt`
+- `app/src/main/kotlin/com/alorma/caducity/ui/screen/category/detail/product/ProductTabContent.kt`
 
-**File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/category/detail/CategoryDetailScreen.kt`
+**Planned Layout:**
 
-Add embedded mode parameter to hide top bar and navigation:
-
-```kotlin
-@Composable
-fun CategoryDetailScreen(
-    categoryId: String,
-    isEmbeddedMode: Boolean = false,  // New parameter
-    viewModel: CategoryDetailViewModel = koinViewModel { parametersOf(categoryId) },
-) {
-    // ... existing code ...
-
-    AppScaffold(
-        topBar = {
-            if (!isEmbeddedMode) {  // Only show top bar in standalone mode
-                TopAppBar(
-                    title = { Text(state.category.name) },
-                    navigationIcon = { /* back button */ }
-                )
-            }
-        },
-        // ... rest of scaffold
-    ) {
-        // ... content
-    }
-}
+**Tablet Mode (≥840dp):**
+```
+┌─────────────────────────────────────────────────────┐
+│ Top Bar (Title + Actions)                          │
+├─────────────────┬───────────────────────────────────┤
+│                 │                                   │
+│   Month         │   Tabs (Scrollable)               │
+│   Calendar      │   ─────────────────────           │
+│   (1/3 width)   │   Product Tab Content (2/3 width) │
+│                 │   - Status Groups                 │
+│                 │   - Item Chips (7 columns)        │
+│                 │   - FAB actions                   │
+│                 │                                   │
+└─────────────────┴───────────────────────────────────┘
 ```
 
-### 5.2 Handle Back Navigation in Embedded Mode
+**Phone Mode (<840dp):**
+- Keep existing vertical layout (calendar → tabs → content)
 
-The CategoryDetailScreen should not handle back navigation when embedded in master-detail layout. Update back press handling:
+**Implementation Plan:**
 
-```kotlin
-if (!isEmbeddedMode) {
-    BackHandler {
-        navController.popBackStack()
-    }
-}
+1. **Create Responsive Layout Composables:**
+   - `CategoryDetailCompactLayout` - Current vertical layout for phones
+   - `CategoryDetailExpandedLayout` - New side-by-side layout for tablets
+
+2. **Update CategoryDetailSuccessContent:**
+   ```kotlin
+   @Composable
+   private fun CategoryDetailSuccessContent(...) {
+     val isExpanded = rememberIsExpanded()
+
+     if (isExpanded) {
+       CategoryDetailExpandedLayout(
+         state = state,
+         // Calendar on left (1/3)
+         // Tabs + content on right (2/3)
+       )
+     } else {
+       CategoryDetailCompactLayout(
+         state = state,
+         // Existing vertical layout
+       )
+     }
+   }
+   ```
+
+3. **Calendar Changes:**
+   - Tablet: Use `CaducityMonthCalendar` (full month view)
+   - Phone: Keep `CaducityWeekCalendar`
+
+4. **Layout Structure for Expanded Mode:**
+   ```kotlin
+   Row(modifier = Modifier.fillMaxSize()) {
+     // Left pane: Month calendar (1/3)
+     Surface(
+       modifier = Modifier
+         .weight(0.33f)
+         .fillMaxHeight(),
+       color = surfaceContainerHigh,
+       shadowElevation = 2.dp,
+     ) {
+       CaducityMonthCalendar(
+         appCalendarConfig = state.appCalendarConfig,
+         onDateClick = { },
+       )
+     }
+
+     // Right pane: Tabs + content (2/3)
+     Column(
+       modifier = Modifier
+         .weight(0.67f)
+         .fillMaxHeight()
+     ) {
+       // Tabs row with add button
+       // HorizontalPager with ProductTabContent
+     }
+   }
+   ```
+
+5. **Product Tab Content:**
+   - Already responsive with `rememberGridColumns()` (shows 7 columns on tablets)
+   - No changes needed for item grids
+
+6. **Empty State:**
+   - Also needs responsive layout (calendar on left, empty message on right)
+
+**Benefits:**
+- Better use of horizontal space on tablets
+- Month calendar provides more context
+- Tabs and content area have more room (2/3 of screen)
+- Maintains single-pane navigation
+- Item grids already adaptive (will show 7 columns)
+
+---
+
+## Phase 7: Create Category Centered Form
+
+> **GitHub Issue:** [#TBD](https://github.com/alorma/Caducity/issues/TBD)
+> **Status:** 📋 Planned
+
+**Files:**
+- `app/src/main/kotlin/com/alorma/caducity/ui/screen/settings/SettingsRootScreen.kt`
+- `app/src/main/kotlin/com/alorma/caducity/ui/screen/settings/appearance/AppearanceSettingsScreen.kt`
+- `app/src/main/kotlin/com/alorma/caducity/ui/screen/settings/notifications/NotificationsSettingsScreen.kt`
+- `app/src/main/kotlin/com/alorma/caducity/ui/screen/settings/backup/BackupScreen.kt`
+- `app/src/main/kotlin/com/alorma/caducity/ui/screen/settings/about/AboutScreen.kt`
+- `app/src/main/kotlin/com/alorma/caducity/ui/screen/settings/debug/DebugSettingsScreen.kt`
+
+**Current Structure:**
+- `Column` with full width settings cards
+- `StyledSettingsGroup` wraps groups of settings with 2dp spacing
+- `StyledSettingsCard` for individual setting items
+
+**Planned Layout:**
+
+**Tablet Mode (≥840dp):**
+- Content centered on screen
+- Maximum width: 600dp (2/3 of typical tablet screen)
+- Horizontal padding ensures content doesn't stretch too wide
+
+**Phone Mode (<840dp):**
+- Keep current full-width layout with 16dp horizontal padding
+- Existing behavior unchanged
+
+**Implementation Approach:**
+
+1. **Create Responsive Content Container:**
+   ```kotlin
+   @Composable
+   fun ResponsiveSettingsContainer(
+     modifier: Modifier = Modifier,
+     content: @Composable () -> Unit,
+   ) {
+     val isExpanded = rememberIsExpanded()
+
+     Box(
+       modifier = modifier.fillMaxSize(),
+       contentAlignment = Alignment.TopCenter,
+     ) {
+       Box(
+         modifier = if (isExpanded) {
+           Modifier
+             .widthIn(max = 600.dp)
+             .fillMaxWidth()
+         } else {
+           Modifier.fillMaxWidth()
+         }
+       ) {
+         content()
+       }
+     }
+   }
+   ```
+
+2. **Update All Settings Screens:**
+   - Wrap the scrollable `Column` content with `ResponsiveSettingsContainer`
+   - Keep existing horizontal padding (16.dp) for both modes
+   - Tablet: Content will be centered with max 600dp width
+   - Phone: Content fills width as before
+
+3. **Example for SettingsRootScreen:**
+   ```kotlin
+   AppScaffold(
+     topBar = { /* ... */ }
+   ) { paddingValues ->
+     ResponsiveSettingsContainer {
+       Column(
+         modifier = Modifier
+           .fillMaxSize()
+           .verticalScroll(rememberScrollState())
+           .padding(paddingValues)
+           .padding(horizontal = 16.dp),
+         verticalArrangement = Arrangement.spacedBy(24.dp),
+       ) {
+         // Existing settings groups
+       }
+     }
+   }
+   ```
+
+4. **Apply to All Settings Screens:**
+   - Settings Root
+   - Appearance Settings
+   - Notifications Settings
+   - Backup Settings
+   - Debug Settings
+   - About Screen
+
+**Benefits:**
+- Better readability on tablets (content not stretched too wide)
+- Centered layout looks more professional
+- Maintains existing vertical structure and groupings
+- Consistent horizontal padding on both phone and tablet
+- Simple wrapper pattern that's easy to apply consistently
+
+**Visual Appearance:**
+
+Phone (<840dp):
+```
+┌──────────────────────────┐
+│ [Settings Card       ]   │ Full width with padding
+│ [Settings Card       ]   │
+└──────────────────────────┘
+```
+
+Tablet (≥840dp):
+```
+┌────────────────────────────────────────┐
+│        [Settings Card]                 │ Centered, max 600dp
+│        [Settings Card]                 │
+└────────────────────────────────────────┘
 ```
 
 ---
 
-## Phase 6: String Resources
+## Phase 8: Filtered Items Centered List
+
+> **GitHub Issue:** [#TBD](https://github.com/alorma/Caducity/issues/TBD)
+> **Status:** 📋 Planned
+
+**File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/category/create/CreateCategoryScreen.kt`
+
+**Current Structure:**
+- Full-width form with TextFields
+- BottomAppBar with Cancel/Create buttons
+- 24dp horizontal padding
+
+**Planned Layout:**
+
+**Tablet Mode (≥840dp):**
+- Form centered on screen
+- Maximum width: 600dp
+- Better visual hierarchy with more breathing room
+
+**Phone Mode (<840dp):**
+- Keep current full-width form
+- Existing 24dp padding
+
+**Implementation Approach:**
+
+1. **Use Same Pattern as Settings:**
+   ```kotlin
+   AppScaffold(
+     topBar = { /* ... */ },
+     bottomBar = { /* ... */ }
+   ) { paddingValues ->
+     Box(
+       modifier = Modifier.fillMaxSize(),
+       contentAlignment = Alignment.TopCenter,
+     ) {
+       Box(
+         modifier = if (isExpanded) {
+           Modifier.widthIn(max = 600.dp).fillMaxWidth()
+         } else {
+           Modifier.fillMaxWidth()
+         }
+       ) {
+         Column(
+           modifier = Modifier
+             .fillMaxSize()
+             .padding(paddingValues)
+             .padding(horizontal = 24.dp)
+             .verticalScroll(rememberScrollState()),
+           verticalArrangement = Arrangement.spacedBy(16.dp),
+         ) {
+           // Existing form fields
+         }
+       }
+     }
+   }
+   ```
+
+2. **Benefits:**
+   - Form doesn't stretch across entire tablet width
+   - Better readability and user focus
+   - Consistent with settings screen approach
+   - No changes to form validation or logic
+
+**Alternative Consideration:**
+- Could add side-by-side preview of category (calendar mockup?)
+- **Decision**: Start simple with centered form, evaluate preview later
+
+---
+
+## Phase 9: String Resources
 
 > **GitHub Issue:** [#115](https://github.com/alorma/Caducity/issues/115)
+> **Status:** ⏸️ On Hold - No new strings needed yet
 
-### 6.1 Add New String Resources
+**File:** `app/src/main/kotlin/com/alorma/caducity/ui/screen/dashboard/filtered/FilteredItemsByStatusScreen.kt`
+
+**Current Structure:**
+- LazyColumn with category groups
+- Each category shows filtered items
+- Full-width list with 16dp padding
+
+**Planned Layout:**
+
+**Tablet Mode (≥840dp):**
+- Content centered with max width 800dp (wider than settings for list content)
+- Category cards displayed with better spacing
+- Item chips within cards can use more columns (already responsive)
+
+**Phone Mode (<840dp):**
+- Keep current full-width layout
+- Existing behavior unchanged
+
+**Implementation Approach:**
+
+1. **Center Content Container:**
+   ```kotlin
+   AppScaffold(
+     topBar = { /* ... */ }
+   ) { paddingValues ->
+     Box(
+       modifier = Modifier.fillMaxSize(),
+       contentAlignment = Alignment.TopCenter,
+     ) {
+       Box(
+         modifier = if (isExpanded) {
+           Modifier.widthIn(max = 800.dp).fillMaxWidth()
+         } else {
+           Modifier.fillMaxWidth()
+         }
+       ) {
+         LazyColumn(
+           modifier = Modifier.fillMaxSize(),
+           contentPadding = PaddingValues(16.dp),
+           verticalArrangement = Arrangement.spacedBy(16.dp),
+         ) {
+           // Existing category items
+         }
+       }
+     }
+   }
+   ```
+
+2. **Why 800dp Max Width:**
+   - List content benefits from slightly wider max width than forms
+   - Allows category cards to breathe
+   - Still prevents content from stretching too wide
+   - Item grids already responsive (will show more columns)
+
+3. **Future Enhancement (Optional):**
+   - Could add filter chips at top (All, Expired, Expiring, Fresh, Frozen)
+   - Quick status switcher without navigation
+   - **Decision**: Start with centered layout, evaluate filters later
+
+**Benefits:**
+- Better list readability on tablets
+- Category cards don't stretch too wide
+- Item grids already adapt (rememberGridColumns() used in cards)
+- Consistent centered approach across app
+
+---
+
+## Phase 5: Category Detail Side-by-Side Layout
+
+> **GitHub Issue:** [#114](https://github.com/alorma/Caducity/issues/114)
+> **Status:** 📋 Planned
+
+---
+
+---
+
+## Phase 10: Testing & Verification
+
+> **GitHub Issue:** [#116](https://github.com/alorma/Caducity/issues/116)
+> **Status:** 📋 Planned
+
+### 10.1 Manual Testing Checklist
 
 **Files:** `app/src/main/res/values*/strings.xml`
 
@@ -782,54 +977,6 @@ Add strings for calendar mode settings:
 <string name="calendar_mode_week">Vista setmanal</string>
 <string name="calendar_mode_month">Vista mensual</string>
 <string name="calendar_mode_auto">Automàtic (adaptar a la mida de pantalla)</string>
-```
-
----
-
-## Phase 7: Testing & Verification
-
-> **GitHub Issue:** [#116](https://github.com/alorma/Caducity/issues/116)
-
-### 7.1 Manual Testing Checklist
-
-**Tablet Mode (>600dp width):**
-- [ ] Dashboard shows horizontal category scroll with month calendars (full-screen mode)
-- [ ] Clicking category enters master-detail mode (list left, detail right)
-- [ ] Selecting different categories updates detail pane without navigation
-- [ ] Item grids show 5-7 columns in category detail
-- [ ] Calendar mode setting works (Week/Month/Auto)
-- [ ] Rotation maintains state correctly
-
-**Phone Mode (<600dp width):**
-- [ ] Dashboard shows vertical category list with week calendars
-- [ ] Clicking category navigates to full-screen detail
-- [ ] Item grids show 3 columns
-- [ ] Calendar mode respects user preference
-- [ ] Back navigation works correctly
-
-**Settings:**
-- [ ] Calendar mode setting persists across app restarts
-- [ ] Auto mode switches between week/month based on screen size
-- [ ] Manual week/month modes work on all screen sizes
-
-### 7.2 Edge Cases
-
-- [ ] App handles screen size changes during runtime (foldables, split-screen)
-- [ ] Master-detail layout handles very narrow detail pane (small split-screen)
-- [ ] Horizontal category scroll handles single category gracefully
-- [ ] Empty states render correctly in both layouts
-- [ ] Loading states don't flash when switching modes
-
-### 7.3 Automated Testing
-
-Create screenshot tests for adaptive layouts:
-
-```bash
-# Generate golden images for both phone and tablet
-./gradlew updateDebugScreenshotTest
-
-# Validate screenshots after changes
-./gradlew testDebugScreenshotTest
 ```
 
 ---
@@ -919,12 +1066,27 @@ Create screenshot tests for adaptive layouts:
 
 This plan implements comprehensive tablet mode support through:
 
-1. **Window size detection** using Material 3 window size classes
-2. **Adaptive calendar** that switches between week (phones) and month (tablets)
-3. **Responsive item grids** that adapt column count to screen width
-4. **Master-detail layouts** for Dashboard and Category Detail screens
-5. **User preferences** for manual calendar mode override
+1. ✅ **Window size detection** using Material 3 adaptive window size classes
+2. ✅ **Adaptive calendar** that switches between week (phones) and month (tablets)
+3. ✅ **Responsive item grids** that adapt column count to screen width (3/5/7 columns)
+4. 🚧 **Responsive screen layouts** optimized for wider displays (no panes)
+5. ✅ **Firebase Remote Config** integration for gradual rollout via feature flag
 
-The implementation leverages existing components (CaducityMonthCalendar already exists but unused) and maintains the current clean architecture. No breaking changes to data layer or domain logic are required—this is purely a UI adaptation layer.
+**Design Philosophy:** Single-pane navigation with screen-by-screen optimizations rather than master-detail panes. This maintains consistency with phone UX while providing better layouts for tablets.
 
-Expected effort: ~3-5 days for implementation + testing + polish.
+**Implementation Status:**
+- ✅ Phases 1-3: Foundation, calendars, and grids complete
+- 🚧 Phase 4: Dashboard layout complete
+- 📋 Phase 5: Category Detail side-by-side layout (planned)
+- 📋 Phase 6: Settings screens centered layout (planned)
+- 📋 Phase 7: Create Category centered form (planned)
+- 📋 Phase 8: Filtered Items centered list (planned)
+- 📋 Phases 9-10: String resources and testing (planned)
+
+The implementation leverages existing components and maintains the current clean architecture. No breaking changes to data layer or domain logic are required—this is purely a UI adaptation layer.
+
+**Current Progress:** Dashboard fully responsive. Next steps:
+1. **Phase 5**: Category Detail with side-by-side layout (calendar left 1/3, tabs/content right 2/3)
+2. **Phase 6**: Settings screens with centered layout (max 600dp width)
+3. **Phase 7**: Create Category form with centered layout (max 600dp width)
+4. **Phase 8**: Filtered Items list with centered layout (max 800dp width)
