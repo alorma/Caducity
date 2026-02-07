@@ -134,18 +134,6 @@ internal fun ProductPageSideEffectHandler(
           bottomSheetState.showItemActionsBottomSheet(
             coroutineScope = this,
             item = effect.item,
-            onConsume = {
-              viewModel.onConsumeItem(effect.item)
-            },
-            onFreeze = {
-              viewModel.onFreezeItem(effect.item)
-            },
-            onUnfreeze = {
-              viewModel.onUnfreezeItem(effect.item)
-            },
-            onDelete = {
-              viewModel.onDeleteItem(effect.item)
-            },
           )
         }
 

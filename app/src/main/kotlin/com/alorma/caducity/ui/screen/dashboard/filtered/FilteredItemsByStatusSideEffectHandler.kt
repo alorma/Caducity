@@ -42,21 +42,6 @@ fun SideEffectHandler(
           bottomSheetState.showItemActionsBottomSheet(
             coroutineScope = this,
             item = itemUiModel,
-            onConsume = {
-              viewModel.onConsumeItem(effect.item)
-            },
-            onConsumeWithWarning = {
-              viewModel.onForceConsumeItem(effect.item)
-            },
-            onFreeze = {
-              viewModel.onFreezeItem(effect.item)
-            },
-            onUnfreeze = {
-              viewModel.onUnfreezeItem(effect.item)
-            },
-            onDelete = {
-              viewModel.onDeleteItem(effect.item)
-            },
           )
         }
 

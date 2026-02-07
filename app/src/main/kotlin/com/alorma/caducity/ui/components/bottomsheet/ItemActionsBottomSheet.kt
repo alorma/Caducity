@@ -10,6 +10,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -24,29 +25,21 @@ import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 /**
  * Shows a bottom sheet with actions for a specific item.
  * Actions are conditional based on item status and expiration thresholds.
+ * All action handling is done internally by ItemActionsViewModel.
  *
- * @param item The item to show actions for (ItemDetailUiModel version)
- * @param onConsume Callback when Consume action is clicked (for fresh items)
- * @param onConsumeWithWarning Callback when ConsumeWithWarning action is clicked (for recently expired items)
- * @param onFreeze Callback when Freeze action is clicked
- * @param onUnfreeze Callback when Unfreeze action is clicked
- * @param onDelete Callback when Delete action is clicked
+ * @param item The item to show actions for
+ * @param onActionCompleted Callback when an action is successfully completed
  */
 fun AppBottomSheetState.showItemActionsBottomSheet(
   coroutineScope: CoroutineScope,
   item: ItemDetailUiModel,
-  onConsume: () -> Unit,
-  onConsumeWithWarning: () -> Unit = onConsume,
-  onFreeze: () -> Unit,
-  onUnfreeze: () -> Unit,
-  onDelete: () -> Unit,
+  onActionCompleted: () -> Unit = {},
 ) {
   show(
     appFeedbackType = AppFeedbackType.Status(item.status),
@@ -55,11 +48,7 @@ fun AppBottomSheetState.showItemActionsBottomSheet(
       item = item,
       coroutineScope = coroutineScope,
       bottomSheetState = this@showItemActionsBottomSheet,
-      onConsume = onConsume,
-      onConsumeWithWarning = onConsumeWithWarning,
-      onFreeze = onFreeze,
-      onUnfreeze = onUnfreeze,
-      onDelete = onDelete,
+      onActionCompleted = onActionCompleted,
     )
   }
 }
@@ -69,16 +58,28 @@ private fun ItemActionsBottomSheetContent(
   item: ItemDetailUiModel,
   coroutineScope: CoroutineScope,
   bottomSheetState: AppBottomSheetState,
-  onConsume: () -> Unit,
-  onConsumeWithWarning: () -> Unit,
-  onFreeze: () -> Unit,
-  onUnfreeze: () -> Unit,
-  onDelete: () -> Unit,
+  onActionCompleted: () -> Unit,
   viewModel: ItemActionsViewModel = koinViewModel(
     key = "item_actions_${item.id}_${item.status}",
   ) { parametersOf(item) }
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+
+  // Handle side effects
+  LaunchedEffect(viewModel) {
+    viewModel.sideEffect.collect { effect ->
+      when (effect) {
+        ItemActionSideEffect.ActionCompleted -> {
+          bottomSheetState.hide()
+          onActionCompleted()
+        }
+        is ItemActionSideEffect.ActionFailed -> {
+          // TODO: Show error feedback (snackbar/toast)
+          bottomSheetState.hide()
+        }
+      }
+    }
+  }
 
   Column(
     modifier = Modifier
@@ -101,10 +102,7 @@ private fun ItemActionsBottomSheetContent(
           ActionListItem(
             text = stringResource(R.string.category_detail_action_consume),
             icon = AppIcons.Cooking,
-            onClick = {
-              onConsume()
-              coroutineScope.launch { bottomSheetState.hide() }
-            }
+            onClick = { viewModel.onActionClick(action) }
           )
         }
 
@@ -112,10 +110,7 @@ private fun ItemActionsBottomSheetContent(
           ActionListItem(
             text = stringResource(R.string.category_detail_action_consume),
             icon = AppIcons.Cooking,
-            onClick = {
-              onConsumeWithWarning()
-              coroutineScope.launch { bottomSheetState.hide() }
-            }
+            onClick = { viewModel.onActionClick(action) }
           )
         }
 
@@ -123,10 +118,7 @@ private fun ItemActionsBottomSheetContent(
           ActionListItem(
             text = stringResource(R.string.category_detail_action_freeze),
             icon = AppIcons.ThermometerSnow,
-            onClick = {
-              onFreeze()
-              coroutineScope.launch { bottomSheetState.hide() }
-            }
+            onClick = { viewModel.onActionClick(action) }
           )
         }
 
@@ -134,10 +126,7 @@ private fun ItemActionsBottomSheetContent(
           ActionListItem(
             text = stringResource(R.string.category_detail_action_unfreeze),
             icon = AppIcons.ThermometerSnow,
-            onClick = {
-              onUnfreeze()
-              coroutineScope.launch { bottomSheetState.hide() }
-            }
+            onClick = { viewModel.onActionClick(action) }
           )
         }
 
@@ -146,10 +135,7 @@ private fun ItemActionsBottomSheetContent(
             text = stringResource(R.string.category_detail_action_delete),
             icon = AppIcons.Delete,
             tint = MaterialTheme.colorScheme.error,
-            onClick = {
-              onDelete()
-              coroutineScope.launch { bottomSheetState.hide() }
-            }
+            onClick = { viewModel.onActionClick(action) }
           )
         }
 
