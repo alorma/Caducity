@@ -45,6 +45,7 @@
     <string name="settings_notifications_description">Gestionar preferencias de notificaciones</string>
     <string name="settings_debug_title">Depuración</string>
     <string name="settings_debug_description">Herramientas de desarrollo y depuración</string>
+    <string name="debug_fake_data_success">Datos de prueba creados exitosamente</string>
     <string name="settings_about_title">Acerca de</string>
     <string name="settings_about_description">Información y créditos de la aplicación</string>
     <string name="settings_backup_title">Respaldo</string>

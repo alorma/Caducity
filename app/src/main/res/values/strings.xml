@@ -64,6 +64,7 @@
     <string name="settings_notifications_description">Manage notification preferences</string>
     <string name="settings_debug_title">Debug</string>
     <string name="settings_debug_description">Developer and debugging tools</string>
+    <string name="debug_fake_data_success">Fake data populated successfully</string>
     <string name="settings_about_title">About</string>
     <string name="settings_about_description">App information and credits</string>
     <string name="settings_backup_title">Backup</string>
