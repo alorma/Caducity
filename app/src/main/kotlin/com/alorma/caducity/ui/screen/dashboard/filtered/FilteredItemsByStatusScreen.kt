@@ -91,7 +91,7 @@ fun FilteredItemsByStatusScreen(
 
       is FilteredItemsByStatusState.Success -> {
         FilteredItemsContent(
-          modifier = Modifier.padding(paddingValues),
+          paddingValues = paddingValues,
           categories = currentState.categories,
           status = status,
           onProductClick = viewModel::onProductClick,
@@ -134,6 +134,7 @@ fun FilteredItemsByStatusScreen(
 
 @Composable
 private fun FilteredItemsContent(
+  paddingValues: PaddingValues,
   categories: List<CategoryWithItems>,
   status: ItemStatus,
   onProductClick: (String, List<Item>) -> Unit,
@@ -154,7 +155,9 @@ private fun FilteredItemsContent(
       }
     ) {
       LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(paddingValues),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
