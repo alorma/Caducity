@@ -4,7 +4,10 @@ import com.alorma.caducity.BuildConfig
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.clock.KotlinAppClock
 import com.alorma.caducity.config.language.LocalizedDateFormatter
+import com.alorma.caducity.config.remoteconfig.BetaFeatureConfig
 import com.alorma.caducity.config.remoteconfig.DebugRemoteConfigRunner
+import com.alorma.caducity.config.remoteconfig.ExampleFeatureConfig
+import com.alorma.caducity.config.remoteconfig.ExperimentalUiConfig
 import com.alorma.caducity.config.remoteconfig.FirebaseRemoteConfigProvider
 import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.config.resources.StringProvider
@@ -65,4 +68,9 @@ val configModule = module {
       firebaseRunner
     }
   }
+  
+  // Sample Remote Config instances for testing
+  singleOf(::ExampleFeatureConfig)
+  singleOf(::BetaFeatureConfig)
+  singleOf(::ExperimentalUiConfig)
 }
