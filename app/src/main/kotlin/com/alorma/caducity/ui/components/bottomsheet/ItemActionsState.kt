@@ -4,5 +4,4 @@ import kotlinx.collections.immutable.ImmutableList
 
 data class ItemActionsState(
   val actions: ImmutableList<ItemAction>,
-  val showConsumeExpiredWarning: Boolean = false,
 )

@@ -4,13 +4,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,6 +23,8 @@ import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.ThermometerSnow
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
+import com.alorma.caducity.ui.components.feedback.dialog.LocalAppDialogState
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -66,6 +66,7 @@ private fun ItemActionsBottomSheetContent(
   ) { parametersOf(item) }
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val dialogState = LocalAppDialogState.current
 
   // Handle side effects
   LaunchedEffect(viewModel) {
@@ -78,27 +79,21 @@ private fun ItemActionsBottomSheetContent(
         is ItemActionSideEffect.ActionFailed -> {
           onActionCompleted()
         }
+
+        ItemActionSideEffect.ShowConsumeExpiredWarning -> {
+          val result = dialogState.showAlertDialog(
+            title = { Text(stringResource(R.string.warning_consume_expired_title)) },
+            text = { Text(stringResource(R.string.warning_consume_expired_message)) },
+            type = AppFeedbackType.Status(item.status),
+            positiveButton = { Text(stringResource(R.string.warning_consume_expired_positive)) },
+            negativeButton = { Text(stringResource(R.string.warning_consume_expired_negative)) },
+          )
+          if (result == DialogResult.Positive) {
+            viewModel.onConfirmConsumeExpired()
+          }
+        }
       }
     }
-  }
-
-  // Show consume expired warning dialog
-  if (state.showConsumeExpiredWarning) {
-    AlertDialog(
-      onDismissRequest = { viewModel.onDismissConsumeExpiredWarning() },
-      title = { Text(stringResource(R.string.warning_consume_expired_title)) },
-      text = { Text(stringResource(R.string.warning_consume_expired_message)) },
-      confirmButton = {
-        TextButton(onClick = { viewModel.onConfirmConsumeExpired() }) {
-          Text(stringResource(R.string.warning_consume_expired_positive))
-        }
-      },
-      dismissButton = {
-        TextButton(onClick = { viewModel.onDismissConsumeExpiredWarning() }) {
-          Text(stringResource(R.string.warning_consume_expired_negative))
-        }
-      },
-    )
   }
 
   Column(
