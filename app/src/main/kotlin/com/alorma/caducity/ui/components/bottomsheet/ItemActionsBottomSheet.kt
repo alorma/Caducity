@@ -37,20 +37,25 @@ import org.koin.core.parameter.parametersOf
  * All action handling is done internally by ItemActionsViewModel.
  *
  * @param item The item to show actions for
- * @param onActionCompleted Callback when an action is successfully completed
+ * @param onActionPerformed Callback for side effects (ActionCompleted, ActionFailed)
  */
 fun AppBottomSheetState.showItemActionsBottomSheet(
   coroutineScope: CoroutineScope,
   item: ItemDetailUiModel,
+  onActionPerformed: (ItemActionSideEffect) -> Unit,
 ) {
   show(
     appFeedbackType = AppFeedbackType.Status(item.status),
   ) {
     ItemActionsBottomSheetContent(
       item = item,
-      onActionCompleted = {
-        coroutineScope.launch {
-          this@showItemActionsBottomSheet.hide()
+      onActionPerformed = { sideEffect ->
+        onActionPerformed(sideEffect)
+        // Hide bottom sheet after action (except for warning dialog)
+        if (sideEffect !is ItemActionSideEffect.ShowConsumeExpiredWarning) {
+          coroutineScope.launch {
+            this@showItemActionsBottomSheet.hide()
+          }
         }
       },
     )
@@ -60,7 +65,7 @@ fun AppBottomSheetState.showItemActionsBottomSheet(
 @Composable
 private fun ItemActionsBottomSheetContent(
   item: ItemDetailUiModel,
-  onActionCompleted: () -> Unit,
+  onActionPerformed: (ItemActionSideEffect) -> Unit,
   viewModel: ItemActionsViewModel = koinViewModel(
     key = "item_actions_${item.id}_${item.status}",
   ) { parametersOf(item) }
@@ -72,15 +77,14 @@ private fun ItemActionsBottomSheetContent(
   LaunchedEffect(viewModel) {
     viewModel.sideEffect.collect { effect ->
       when (effect) {
-        ItemActionSideEffect.ActionCompleted -> {
-          onActionCompleted()
-        }
-
+        is ItemActionSideEffect.ActionCompleted,
         is ItemActionSideEffect.ActionFailed -> {
-          onActionCompleted()
+          // Pass success/error feedback to caller
+          onActionPerformed(effect)
         }
 
         ItemActionSideEffect.ShowConsumeExpiredWarning -> {
+          // Handle warning dialog internally
           val result = dialogState.showAlertDialog(
             title = { Text(stringResource(R.string.warning_consume_expired_title)) },
             text = { Text(stringResource(R.string.warning_consume_expired_message)) },
@@ -186,4 +190,55 @@ private fun ActionListItem(
     },
     modifier = Modifier.clickable { onClick() },
   )
+}
+
+/**
+ * Handles item action side effects by showing appropriate snackbar feedback.
+ * Use this in side effect handlers where item actions are performed.
+ *
+ * @param sideEffect The side effect to handle
+ * @param snackbarState The snackbar state to show feedback
+ * @return The resource ID for the message, or null if no message should be shown
+ */
+suspend fun handleItemActionSideEffect(
+  sideEffect: ItemActionSideEffect,
+  snackbarState: com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState,
+) {
+  when (sideEffect) {
+    is ItemActionSideEffect.ActionCompleted -> {
+      val messageRes = when (sideEffect.action) {
+        ItemAction.Consume, ItemAction.ConsumeWithWarning -> R.string.success_item_consumed
+        ItemAction.Freeze -> R.string.success_item_frozen
+        ItemAction.Unfreeze -> R.string.success_item_unfrozen
+        ItemAction.Delete -> R.string.success_item_deleted
+        ItemAction.Placeholder -> null
+      }
+      messageRes?.let {
+        snackbarState.showSnackbar(
+          message = it,
+          type = AppFeedbackType.Success,
+        )
+      }
+    }
+
+    is ItemActionSideEffect.ActionFailed -> {
+      val messageRes = when (sideEffect.action) {
+        ItemAction.Consume, ItemAction.ConsumeWithWarning -> R.string.error_consume_item_failed
+        ItemAction.Freeze -> R.string.error_freeze_item_failed
+        ItemAction.Unfreeze -> R.string.error_unfreeze_item_failed
+        ItemAction.Delete -> R.string.error_delete_item_failed
+        ItemAction.Placeholder -> null
+      }
+      messageRes?.let {
+        snackbarState.showSnackbar(
+          message = it,
+          type = AppFeedbackType.Error,
+        )
+      }
+    }
+
+    ItemActionSideEffect.ShowConsumeExpiredWarning -> {
+      // Warning dialog is handled internally by the bottom sheet
+    }
+  }
 }
