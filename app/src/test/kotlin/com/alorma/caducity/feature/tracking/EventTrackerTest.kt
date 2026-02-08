@@ -12,7 +12,7 @@ class EventTrackerTest {
     val tracker1 = TestTracker()
     val tracker2 = TestTracker()
     val eventTracker = EventTracker(listOf(tracker1, tracker2))
-    val screen = Screen("TestScreen")
+    val screen = TestScreen("TestScreen")
 
     // When
     eventTracker.trackScreen(screen)
@@ -42,7 +42,7 @@ class EventTrackerTest {
   fun `trackScreen works with empty tracker list`() {
     // Given
     val eventTracker = EventTracker(emptyList())
-    val screen = Screen("TestScreen")
+    val screen = TestScreen("TestScreen")
 
     // When/Then - should not throw
     eventTracker.trackScreen(screen)
@@ -63,8 +63,8 @@ class EventTrackerTest {
     // Given
     val tracker = TestTracker()
     val eventTracker = EventTracker(listOf(tracker))
-    val screen1 = Screen("Screen1")
-    val screen2 = Screen("Screen2")
+    val screen1 = TestScreen("Screen1")
+    val screen2 = TestScreen("Screen2")
 
     // When
     eventTracker.trackScreen(screen1)
@@ -103,4 +103,12 @@ class EventTrackerTest {
       trackedActions.add(action)
     }
   }
+
+  // Test implementations
+  private class TestScreen(name: String) : Screen(name)
+
+  private class TestAction(
+    name: String,
+    parameters: Map<String, String> = emptyMap()
+  ) : Action(name, parameters)
 }
