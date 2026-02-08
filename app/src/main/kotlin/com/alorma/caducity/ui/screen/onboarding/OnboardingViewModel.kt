@@ -1,5 +1,8 @@
 package com.alorma.caducity.ui.screen.onboarding
 
+import com.alorma.caducity.feature.consent.ConsentFlag
+import com.alorma.caducity.feature.consent.ConsentManager
+import com.alorma.caducity.feature.consent.ConsentPreferences
 import com.alorma.caducity.feature.tracking.CompleteOnboardingAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.base.BaseViewModel
@@ -12,6 +15,8 @@ import kotlinx.coroutines.flow.update
 
 class OnboardingViewModel(
   private val onboardingFlag: OnboardingFlag,
+  private val consentFlag: ConsentFlag,
+  private val consentManager: ConsentManager,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<OnboardingNavigation, OnboardingNavigationSideEffect, NoSideEffect>() {
 
@@ -51,6 +56,12 @@ class OnboardingViewModel(
   fun acceptDisclaimer() {
     _state.update { it.copy(isDisclaimerAccepted = true) }
     completeOnboarding()
+  }
+
+  fun setConsentPreferences(preferences: ConsentPreferences) {
+    consentManager.setConsentPreferences(preferences)
+    consentFlag.disable()
+    _state.update { it.copy(consentPreferences = preferences) }
   }
 
   private fun completeOnboarding() {

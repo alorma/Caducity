@@ -271,6 +271,13 @@
     <string name="onboarding_tutorial_message">Add your first category to start tracking expiration dates</string>
     <string name="onboarding_disclaimer_title">Important Disclaimer</string>
     <string name="onboarding_disclaimer_message">This app helps track product expiration dates but is not a substitute for proper food safety practices. Always use your judgment and follow food safety guidelines. The developers are not responsible for any health issues arising from consuming expired products.</string>
+
+    <!-- Consent Screen -->
+    <string name="onboarding_consent_title">Your Privacy Matters</string>
+    <string name="onboarding_consent_description">Help us improve the app by sharing anonymous usage data. You can change this later in settings.</string>
+    <string name="onboarding_consent_analytics_title">Analytics</string>
+    <string name="onboarding_consent_analytics_description">Share anonymous usage data to help us improve the app</string>
+    <string name="onboarding_consent_privacy_note">We respect your privacy. No personal data is collected or shared with third parties.</string>
     <string name="onboarding_button_next">Next</string>
     <string name="onboarding_button_skip">Skip</string>
     <string name="onboarding_button_previous">Previous</string>

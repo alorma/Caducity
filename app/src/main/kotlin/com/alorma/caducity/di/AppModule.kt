@@ -25,6 +25,7 @@ import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
+import com.alorma.caducity.feature.consent.consentModule
 import com.alorma.caducity.feature.tracking.trackingModule
 import com.alorma.caducity.ui.screen.dashboard.dashboardModule
 import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusViewModel
@@ -56,6 +57,7 @@ val appModule = module {
   includes(dataModule)
   includes(domainModule)
   includes(fireAndForgetModule)
+  includes(consentModule)
   includes(trackingModule)
 
   includes(dashboardModule)
