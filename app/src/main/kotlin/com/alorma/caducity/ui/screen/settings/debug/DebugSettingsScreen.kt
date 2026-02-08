@@ -34,9 +34,23 @@ import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import com.alorma.caducity.feature.tracking.DebugSettingsScreen as DebugSettingsScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun DebugSettingsScreen(
+  modifier: Modifier = Modifier,
+  viewModel: DebugSettingsViewModel = koinViewModel()
+) {
+  TrackScreen(screen = DebugSettingsScreenEvent())
+  DebugSettingsContent(
+    modifier = modifier,
+    viewModel = viewModel,
+  )
+}
+
+@Composable
+private fun DebugSettingsContent(
   modifier: Modifier = Modifier,
   viewModel: DebugSettingsViewModel = koinViewModel()
 ) {
@@ -200,7 +214,7 @@ fun DebugSettingsScreen(
 fun DebugSettingsScreenPreview() {
   PreviewTheme {
     Surface {
-      DebugSettingsScreen()
+      DebugSettingsContent()
     }
   }
 }

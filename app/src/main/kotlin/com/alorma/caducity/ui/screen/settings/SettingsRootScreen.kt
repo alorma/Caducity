@@ -27,9 +27,33 @@ import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import com.alorma.caducity.feature.tracking.SettingsScreen
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun SettingsRootScreen(
+  isDebug: Boolean,
+  onNavigateToAppearance: () -> Unit,
+  onNavigateToNotifications: () -> Unit,
+  onNavigateToBackup: () -> Unit,
+  onNavigateToDebug: () -> Unit,
+  onNavigateToAbout: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  TrackScreen(screen = SettingsScreen())
+  SettingsRootContent(
+    isDebug = isDebug,
+    onNavigateToAppearance = onNavigateToAppearance,
+    onNavigateToNotifications = onNavigateToNotifications,
+    onNavigateToBackup = onNavigateToBackup,
+    onNavigateToDebug = onNavigateToDebug,
+    onNavigateToAbout = onNavigateToAbout,
+    modifier = modifier,
+  )
+}
+
+@Composable
+private fun SettingsRootContent(
   isDebug: Boolean,
   onNavigateToAppearance: () -> Unit,
   onNavigateToNotifications: () -> Unit,
@@ -153,7 +177,7 @@ fun SettingsRootScreen(
 fun SettingsScreenPreview() {
   PreviewTheme {
     Surface {
-      SettingsRootScreen(
+      SettingsRootContent(
         isDebug = true,
         onNavigateToAppearance = {},
         onNavigateToNotifications = {},

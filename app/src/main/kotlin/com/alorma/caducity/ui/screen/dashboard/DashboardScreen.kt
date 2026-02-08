@@ -35,6 +35,8 @@ import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardSuccessContentList
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import org.koin.compose.viewmodel.koinViewModel
+import com.alorma.caducity.feature.tracking.DashboardScreen as DashboardScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun DashboardScreen(
@@ -45,6 +47,7 @@ fun DashboardScreen(
   modifier: Modifier = Modifier,
   viewModel: DashboardViewModel = koinViewModel(),
 ) {
+  TrackScreen(screen = DashboardScreenEvent())
   val dashboardState = viewModel.state.collectAsStateWithLifecycle()
   val snackbarHostState = rememberAppSnackbarState()
 

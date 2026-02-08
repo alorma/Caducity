@@ -28,6 +28,8 @@ import com.alorma.caducity.ui.screen.onboarding.pages.TutorialOnboardingPage
 import com.alorma.caducity.ui.screen.onboarding.pages.WelcomeOnboardingPage
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
+import com.alorma.caducity.feature.tracking.OnboardingScreen as OnboardingScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun OnboardingScreen(
@@ -35,6 +37,7 @@ fun OnboardingScreen(
   modifier: Modifier = Modifier,
   viewModel: OnboardingViewModel = koinViewModel(),
 ) {
+  TrackScreen(screen = OnboardingScreenEvent())
   val state by viewModel.state.collectAsStateWithLifecycle()
   val pagerState = rememberPagerState(pageCount = { state.totalPages })
   val coroutineScope = rememberCoroutineScope()

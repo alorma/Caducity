@@ -23,6 +23,8 @@ import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCar
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import org.koin.compose.koinInject
+import com.alorma.caducity.feature.tracking.NotificationsSettingsScreen as NotificationsSettingsScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun NotificationsSettingsScreen(
@@ -30,6 +32,7 @@ fun NotificationsSettingsScreen(
   modifier: Modifier = Modifier,
   notificationHelper: ExpirationNotificationHelper = koinInject(),
 ) {
+  TrackScreen(screen = NotificationsSettingsScreenEvent())
 
   notificationHelper.registerContracts()
 

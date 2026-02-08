@@ -53,6 +53,8 @@ import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.alorma.caducity.feature.tracking.AddItemScreen
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,6 +65,7 @@ fun CategoryDetailAddItemScreen(
   modifier: Modifier = Modifier,
   viewModel: CategoryDetailAddItemViewModel = koinViewModel { parametersOf(categoryId, productId) }
 ) {
+  TrackScreen(screen = AddItemScreen())
   val state = viewModel.state.collectAsStateWithLifecycle()
   val formState = viewModel.formState.collectAsStateWithLifecycle()
 

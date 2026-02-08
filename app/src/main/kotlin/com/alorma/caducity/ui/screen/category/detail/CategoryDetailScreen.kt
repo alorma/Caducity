@@ -67,6 +67,8 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import com.alorma.caducity.feature.tracking.CategoryDetailScreen as CategoryDetailScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun CategoryDetailScreen(
@@ -76,6 +78,7 @@ fun CategoryDetailScreen(
   viewModel: CategoryDetailViewModel = koinViewModel { parametersOf(categoryId) },
 ) {
   val state = viewModel.state.collectAsStateWithLifecycle()
+  TrackScreen(screen = CategoryDetailScreenEvent())
 
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarState()
