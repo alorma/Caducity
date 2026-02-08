@@ -4,7 +4,6 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.window.core.layout.WindowSizeClass
-import org.koin.compose.koinInject
 
 /**
  * Utility to determine if the current window is considered "expanded" (tablet/desktop).
@@ -48,12 +47,10 @@ fun WindowSizeClass.calculateGridColumns(): Int {
  * Returns true only if tablet mode is enabled AND window size is expanded.
  */
 @Composable
-fun rememberIsExpanded(
-  tabletModeRemoteConfig: TabletModeRemoteConfig = koinInject(),
-): Boolean {
+fun rememberIsExpanded(): Boolean {
   val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-  return remember(windowSizeClass, tabletModeRemoteConfig) {
-    tabletModeRemoteConfig.isEnabled() && windowSizeClass.isExpanded()
+  return remember(windowSizeClass) {
+    windowSizeClass.isExpanded()
   }
 }
 
@@ -62,12 +59,10 @@ fun rememberIsExpanded(
  * Returns true only if tablet mode is enabled AND window size is expanded or medium.
  */
 @Composable
-fun rememberIsExpandedOrMedium(
-  tabletModeRemoteConfig: TabletModeRemoteConfig = koinInject(),
-): Boolean {
+fun rememberIsExpandedOrMedium(): Boolean {
   val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-  return remember(windowSizeClass, tabletModeRemoteConfig) {
-    tabletModeRemoteConfig.isEnabled() && windowSizeClass.isExpandedOrMedium()
+  return remember(windowSizeClass) {
+    windowSizeClass.isExpandedOrMedium()
   }
 }
 
@@ -88,15 +83,9 @@ fun rememberIsCompact(): Boolean {
  * Returns tablet column count (5/7) only if tablet mode is enabled, otherwise defaults to 3.
  */
 @Composable
-fun rememberGridColumns(
-  tabletModeRemoteConfig: TabletModeRemoteConfig = koinInject(),
-): Int {
+fun rememberGridColumns(): Int {
   val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
-  return remember(windowSizeClass, tabletModeRemoteConfig) {
-    if (tabletModeRemoteConfig.isEnabled()) {
-      windowSizeClass.calculateGridColumns()
-    } else {
-      3 // Always use phone layout (3 columns) when tablet mode is disabled
-    }
+  return remember(windowSizeClass) {
+    windowSizeClass.calculateGridColumns()
   }
 }

@@ -33,14 +33,12 @@ import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardSuccessContentList
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
-import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DashboardScreen(
   onNavigateToCreateProduct: () -> Unit,
   onNavigateToCategory: (String) -> Unit,
-  onNavigateToDate: (LocalDate) -> Unit,
   onNavigateToStatus: (ItemStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
   modifier: Modifier = Modifier,
