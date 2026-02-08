@@ -7,6 +7,9 @@ import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.domain.usecase.PopulateFakeDataUseCase
 import com.alorma.caducity.domain.usecase.fakedata.FakePlayStoreDataStrategy
 import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
+import com.alorma.caducity.feature.consent.ConsentManager
+import com.alorma.caducity.feature.consent.ConsentPreferences
+import com.alorma.caducity.feature.consent.ConsentStatus
 import com.alorma.caducity.feature.notification.NotificationDebugHelper
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.base.NoNavigation
@@ -26,6 +29,7 @@ class DebugSettingsViewModel(
   private val fakePlayStoreDataStrategy: FakePlayStoreDataStrategy,
   private val remoteConfigRunner: RemoteConfigRunner,
   private val remoteConfigs: List<RemoteConfig>,
+  private val consentManager: ConsentManager,
 ) : BaseViewModel<NoNavigation, DebugSettingsSideEffect, DebugSettingsSideEffect>() {
 
   // Alias for backward compatibility
@@ -37,6 +41,8 @@ class DebugSettingsViewModel(
   init {
     // Load current remote config values
     loadRemoteConfigValues()
+    // Load current consent preferences
+    loadConsentPreferences()
   }
 
   fun onTriggerNotificationCheck() {
@@ -135,6 +141,42 @@ class DebugSettingsViewModel(
     }
   }
 
+  private fun loadConsentPreferences() {
+    val preferences = consentManager.getConsentPreferences()
+    _uiState.value = _uiState.value.copy(
+      adStorageEnabled = preferences.adStorage == ConsentStatus.GRANTED,
+      adUserDataEnabled = preferences.adUserData == ConsentStatus.GRANTED,
+      adPersonalizationEnabled = preferences.adPersonalization == ConsentStatus.GRANTED,
+    )
+  }
+
+  fun onToggleAdStorage(enabled: Boolean) {
+    val current = consentManager.getConsentPreferences()
+    val updated = current.copy(
+      adStorage = if (enabled) ConsentStatus.GRANTED else ConsentStatus.DENIED
+    )
+    consentManager.setConsentPreferences(updated)
+    loadConsentPreferences()
+  }
+
+  fun onToggleAdUserData(enabled: Boolean) {
+    val current = consentManager.getConsentPreferences()
+    val updated = current.copy(
+      adUserData = if (enabled) ConsentStatus.GRANTED else ConsentStatus.DENIED
+    )
+    consentManager.setConsentPreferences(updated)
+    loadConsentPreferences()
+  }
+
+  fun onToggleAdPersonalization(enabled: Boolean) {
+    val current = consentManager.getConsentPreferences()
+    val updated = current.copy(
+      adPersonalization = if (enabled) ConsentStatus.GRANTED else ConsentStatus.DENIED
+    )
+    consentManager.setConsentPreferences(updated)
+    loadConsentPreferences()
+  }
+
   fun dismissError() {
     _uiState.value = _uiState.value.copy(error = null)
   }
@@ -161,6 +203,9 @@ data class DebugSettingsUiState(
   val isRefreshingRemoteConfig: Boolean = false,
   val error: String? = null,
   val remoteConfigValues: Map<String, RemoteConfigUiState> = emptyMap(),
+  val adStorageEnabled: Boolean = false,
+  val adUserDataEnabled: Boolean = false,
+  val adPersonalizationEnabled: Boolean = false,
 )
 
 /**

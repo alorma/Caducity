@@ -24,6 +24,7 @@ import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import com.alorma.caducity.ui.screen.settings.backup.BackupScreen
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsScreen
 import com.alorma.caducity.ui.screen.settings.notifications.NotificationsSettingsScreen
+import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsScreen
 import com.alorma.caducity.ui.theme.ThemePreferences
 import org.koin.compose.koinInject
 
@@ -53,6 +54,7 @@ fun SettingsContainer(
           isDebug = debugModeProvider.isDebugMode(),
           onNavigateToAppearance = { settingsBackStack.add(SettingsRoute.Appearance) },
           onNavigateToNotifications = { settingsBackStack.add(SettingsRoute.Notifications) },
+          onNavigateToPrivacy = { settingsBackStack.add(SettingsRoute.Privacy) },
           onNavigateToBackup = { settingsBackStack.add(SettingsRoute.Backup) },
           onNavigateToDebug = { settingsBackStack.add(SettingsRoute.Debug) },
           onNavigateToAbout = { settingsBackStack.add(SettingsRoute.About) },
@@ -72,6 +74,11 @@ fun SettingsContainer(
       }
       entry<SettingsRoute.Notifications> {
         NotificationsSettingsScreen(
+          onClose = { settingsBackStack.removeLastOrNull() },
+        )
+      }
+      entry<SettingsRoute.Privacy> {
+        PrivacySettingsScreen(
           onClose = { settingsBackStack.removeLastOrNull() },
         )
       }

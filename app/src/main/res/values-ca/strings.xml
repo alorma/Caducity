@@ -51,6 +51,8 @@
     <string name="settings_about_description">Informació i crèdits de l\'aplicació</string>
     <string name="settings_backup_title">Còpia de seguretat</string>
     <string name="settings_backup_description">Exportar i restaurar les teves dades</string>
+    <string name="settings_privacy_title">Privacitat</string>
+    <string name="settings_privacy_description">Gestionar consentiment i preferències de dades</string>
 
     <string name="dashboard_fab_manual">Manual</string>
     <string name="dashboard_fab_ai">IA</string>
@@ -92,6 +94,21 @@
 
     <string name="settings_group_notifications">Notificacions</string>
     <string name="settings_enable_notifications">Activar notificacions</string>
+
+    <string name="settings_group_privacy">Privacitat i Dades</string>
+    <string name="settings_privacy_screen_title">Privacitat</string>
+    <string name="settings_privacy_analytics_title">Analítiques</string>
+    <string name="settings_privacy_analytics_description">Compartir dades d\'ús anònimes per ajudar a millorar l\'aplicació</string>
+    <string name="settings_privacy_info">Els canvis en aquesta configuració tenen efecte immediatament. Respectem la teva privacitat i només recopilem dades d\'ús anònimes quan atorgues permís explícit.</string>
+
+    <!-- Debug - Consent Settings -->
+    <string name="debug_consent_section_title">Configuració de Consentiment (Debug)</string>
+    <string name="debug_consent_ad_storage_title">Emmagatzematge d\'Anuncis</string>
+    <string name="debug_consent_ad_storage_description">Permetre emmagatzematge de dades relacionades amb anuncis</string>
+    <string name="debug_consent_ad_user_data_title">Dades d\'Usuari per Anuncis</string>
+    <string name="debug_consent_ad_user_data_description">Permetre compartir dades d\'usuari amb Google per publicitat</string>
+    <string name="debug_consent_ad_personalization_title">Personalització d\'Anuncis</string>
+    <string name="debug_consent_ad_personalization_description">Habilitar publicitat personalitzada</string>
 
     <!-- About section -->
     <string name="about_version">Versió</string>
@@ -273,6 +290,13 @@
     <string name="onboarding_tutorial_message">Afegeix la teva primera categoria per començar a controlar dates de caducitat</string>
     <string name="onboarding_disclaimer_title">Avís Important</string>
     <string name="onboarding_disclaimer_message">Aquesta aplicació ajuda a controlar les dates de caducitat de productes però no substitueix les pràctiques adequades de seguretat alimentària. Utilitza sempre el teu criteri i segueix les pautes de seguretat alimentària. Els desenvolupadors no són responsables de cap problema de salut derivat del consum de productes caducats.</string>
+
+    <!-- Consent Screen -->
+    <string name="onboarding_consent_title">La Teva Privacitat és Important</string>
+    <string name="onboarding_consent_description">Ajuda\'ns a millorar l\'aplicació compartint dades d\'ús anònimes. Pots canviar això més tard a la configuració.</string>
+    <string name="onboarding_consent_analytics_title">Analítiques</string>
+    <string name="onboarding_consent_analytics_description">Compartir dades d\'ús anònimes per ajudar-nos a millorar l\'aplicació</string>
+    <string name="onboarding_consent_privacy_note">Respectem la teva privacitat. No es recopila ni comparteix cap dada personal amb tercers.</string>
     <string name="onboarding_button_next">Següent</string>
     <string name="onboarding_button_skip">Ometre</string>
     <string name="onboarding_button_previous">Anterior</string>
