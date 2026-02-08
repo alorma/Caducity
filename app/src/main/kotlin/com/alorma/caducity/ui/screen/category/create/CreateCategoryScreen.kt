@@ -37,18 +37,31 @@ import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun CreateCategoryScreen(
-  onCategoryCreated: (String) -> Unit,
+  onNavigateBack: () -> Unit,
+  onNavigateToCategory: (String) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: CreateCategoryViewModel = koinViewModel(),
 ) {
   TrackScreen(screen = CreateCategoryScreenEvent())
   val state = viewModel.state.collectAsStateWithLifecycle()
 
+  // Handle navigation side effects
+  LaunchedEffect(viewModel) {
+    viewModel.navigationSideEffects.collect { effect ->
+      when (effect) {
+        CreateCategoryNavigationSideEffect.NavigateBack -> onNavigateBack()
+        is CreateCategoryNavigationSideEffect.NavigateToCategoryDetail ->
+          onNavigateToCategory(effect.categoryId)
+      }
+    }
+  }
+
   CreateCategoryPage(
     state = state.value,
     onNameChange = viewModel::updateName,
     onDescriptionChange = viewModel::updateDescription,
-    onCreateClick = { viewModel.createCategory(onCategoryCreated) },
+    onCreateClick = viewModel::createCategory,
+    onCancelClick = { viewModel.navigate(CreateCategoryNavigation.Cancel) },
     onErrorDismiss = viewModel::clearError,
     modifier = modifier,
   )
@@ -61,6 +74,7 @@ private fun CreateCategoryPage(
   onNameChange: (String) -> Unit,
   onDescriptionChange: (String) -> Unit,
   onCreateClick: () -> Unit,
+  onCancelClick: () -> Unit,
   onErrorDismiss: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -71,7 +85,7 @@ private fun CreateCategoryPage(
         title = {
           Text(text = stringResource(R.string.create_category_screen_title))
         },
-        navigationIcon = { NavigationIcon() },
+        navigationIcon = { NavigationIcon(onClick = onCancelClick) },
       )
     },
     bottomBar = {
@@ -84,12 +98,8 @@ private fun CreateCategoryPage(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
           ) {
-            val localBackPress = LocalOnBackPressedDispatcherOwner.current
-
             TextButton(
-              onClick = {
-                localBackPress?.onBackPressedDispatcher?.onBackPressed()
-              },
+              onClick = onCancelClick,
               enabled = !state.isLoading,
               modifier = Modifier.weight(1f),
             ) {

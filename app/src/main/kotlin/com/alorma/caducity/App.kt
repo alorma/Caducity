@@ -81,7 +81,8 @@ fun App(
         }
         entry<CreateCategoryRoute> {
           CreateCategoryScreen(
-            onCategoryCreated = { categoryId ->
+            onNavigateBack = { appBackStack.removeLast() },
+            onNavigateToCategory = { categoryId ->
               appBackStack.removeLast()
               appBackStack.add(CategoryDetailRoute(categoryId)) // Navigate to detail
             }

@@ -61,7 +61,7 @@ import com.alorma.caducity.feature.tracking.TrackScreen
 fun CategoryDetailAddItemScreen(
   categoryId: String,
   productId: String?,
-  onClose: () -> Unit,
+  onNavigateBack: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: CategoryDetailAddItemViewModel = koinViewModel { parametersOf(categoryId, productId) }
 ) {
@@ -69,17 +69,26 @@ fun CategoryDetailAddItemScreen(
   val state = viewModel.state.collectAsStateWithLifecycle()
   val formState = viewModel.formState.collectAsStateWithLifecycle()
 
+  // Handle navigation side effects
+  androidx.compose.runtime.LaunchedEffect(viewModel) {
+    viewModel.navigationSideEffects.collect { effect ->
+      when (effect) {
+        AddItemNavigationSideEffect.NavigateBack -> onNavigateBack()
+      }
+    }
+  }
+
   AppScaffold(
     modifier = modifier,
     topBar = {
       StyledTopAppBar(
         title = { Text(text = stringResource(R.string.category_detail_add_item_title)) },
-        navigationIcon = { NavigationIcon() },
+        navigationIcon = {
+          NavigationIcon(onClick = { viewModel.navigate(AddItemNavigation.Cancel) })
+        },
         actions = {
           IconButton(
-            onClick = {
-              viewModel.save(onSuccess = onClose)
-            }
+            onClick = viewModel::save
           ) {
             Icon(
               imageVector = AppIcons.Check,
