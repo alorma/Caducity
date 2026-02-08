@@ -15,6 +15,12 @@
         android:localeConfig="@xml/locales_config"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+        
+        <!-- Disable Google Analytics ADID collection -->
+        <meta-data
+            android:name="google_analytics_adid_collection_enabled"
+            android:value="false" />
+        
         <activity
             android:name=".MainActivity"
             android:exported="true">
