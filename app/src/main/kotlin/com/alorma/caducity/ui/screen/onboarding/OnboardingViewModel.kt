@@ -60,11 +60,12 @@ class OnboardingViewModel(
 
   fun setConsentPreferences(preferences: ConsentPreferences) {
     consentManager.setConsentPreferences(preferences)
-    consentFlag.disable()
     _state.update { it.copy(consentPreferences = preferences) }
   }
 
   private fun completeOnboarding() {
+    // Disable consent flag when user completes onboarding
+    consentFlag.disable()
     onboardingFlag.disable()
     _state.update { it.copy(isCompleted = true) }
     navigate(OnboardingNavigation.CompleteOnboarding)

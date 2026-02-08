@@ -8,7 +8,7 @@ data class OnboardingState(
   val isCompleted: Boolean = false,
   val consentPreferences: ConsentPreferences = ConsentPreferences.DEFAULT,
 ) {
-  val totalPages: Int = 6 // Welcome, Features, Permissions, Tutorial, Consent, Disclaimer
+  val totalPages: Int = 6 // Pages: 0=Welcome, 1=Features, 2=Permissions, 3=Tutorial, 4=Consent, 5=Disclaimer
   val isFirstPage: Boolean get() = currentPage == 0
   val isLastPage: Boolean get() = currentPage == totalPages - 1
   val canSkip: Boolean get() = currentPage < 4 // Can skip Welcome, Features, Permissions, Tutorial but not Consent or Disclaimer
