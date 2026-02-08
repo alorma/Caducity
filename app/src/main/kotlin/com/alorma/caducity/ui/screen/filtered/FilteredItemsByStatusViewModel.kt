@@ -6,6 +6,8 @@ import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.GetItemsByStatusUseCase
+import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.feature.tracking.NavigateToCategoryFromFilteredAction
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,6 +20,7 @@ import kotlinx.coroutines.launch
 class FilteredItemsByStatusViewModel(
   status: ItemStatus,
   getItemsByStatusUseCase: GetItemsByStatusUseCase,
+  private val eventTracker: EventTracker,
 ) : ViewModel() {
 
   val state: StateFlow<FilteredItemsByStatusState> = getItemsByStatusUseCase.load(status)
@@ -57,6 +60,15 @@ class FilteredItemsByStatusViewModel(
 
   fun onItemClick(item: Item) {
     emitSideEffect(FilteredItemsByStatusSideEffect.ShowItemActionsBottomSheet(item))
+  }
+
+  fun navigate(navigation: FilteredItemsNavigation) {
+    when (navigation) {
+      is FilteredItemsNavigation.Category -> {
+        eventTracker.trackAction(NavigateToCategoryFromFilteredAction(navigation.source))
+        emitSideEffect(FilteredItemsByStatusSideEffect.NavigateToCategory(navigation.categoryId))
+      }
+    }
   }
 }
 

@@ -7,6 +7,9 @@ import com.alorma.caducity.domain.usecase.ClearProductItemsUseCase
 import com.alorma.caducity.domain.usecase.DeleteProductUseCase
 import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
+import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.feature.tracking.NavigateToAddItemFromProductAction
+import com.alorma.caducity.feature.tracking.ProductDeletedAction
 import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import kotlinx.coroutines.channels.Channel
@@ -27,6 +30,7 @@ class ProductPageViewModel(
   productPageMapper: ProductPageMapper,
   private val deleteProductUseCase: DeleteProductUseCase,
   private val clearProductItemsUseCase: ClearProductItemsUseCase,
+  private val eventTracker: EventTracker,
 ) : ViewModel() {
 
   private val _sideEffect = Channel<ProductPageSideEffect>(Channel.BUFFERED)
@@ -51,12 +55,7 @@ class ProductPageViewModel(
   }
 
   fun onAddItemClick() {
-    emitSideEffect(
-      ProductPageSideEffect.NavigateToAddItem(
-        categoryId = productTab.categoryId,
-        productId = productTab.id
-      )
-    )
+    navigate(ProductPageNavigation.AddItem)
   }
 
   fun onDeleteProductClick() {
@@ -101,6 +100,7 @@ class ProductPageViewModel(
     viewModelScope.launch {
       val result = deleteProductUseCase.delete(productId, strategy)
       if (result.isSuccess) {
+        navigate(ProductPageNavigation.ProductDeleted)
         emitSideEffect(ProductPageSideEffect.ProductDeleted)
       } else {
         emitSideEffect(ProductPageSideEffect.DeleteProductFailed)
@@ -136,6 +136,24 @@ class ProductPageViewModel(
   private fun emitSideEffect(effect: ProductPageSideEffect) {
     viewModelScope.launch {
       _sideEffect.send(effect)
+    }
+  }
+
+  fun navigate(navigation: ProductPageNavigation) {
+    when (navigation) {
+      ProductPageNavigation.AddItem -> {
+        eventTracker.trackAction(NavigateToAddItemFromProductAction())
+        emitSideEffect(
+          ProductPageSideEffect.NavigateToAddItem(
+            categoryId = productTab.categoryId,
+            productId = productTab.id
+          )
+        )
+      }
+      ProductPageNavigation.ProductDeleted -> {
+        eventTracker.trackAction(ProductDeletedAction())
+        // Navigation side effect handled by existing ProductPageSideEffect.ProductDeleted
+      }
     }
   }
 }
