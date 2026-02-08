@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.filtered
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.Item
@@ -8,12 +7,11 @@ import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.GetItemsByStatusUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.NavigateToCategoryFromFilteredAction
-import kotlinx.coroutines.channels.Channel
+import com.alorma.caducity.ui.base.BaseViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -21,7 +19,7 @@ class FilteredItemsByStatusViewModel(
   status: ItemStatus,
   getItemsByStatusUseCase: GetItemsByStatusUseCase,
   private val eventTracker: EventTracker,
-) : ViewModel() {
+) : BaseViewModel<FilteredItemsNavigation, FilteredItemsByStatusSideEffect, FilteredItemsByStatusSideEffect>() {
 
   val state: StateFlow<FilteredItemsByStatusState> = getItemsByStatusUseCase.load(status)
     .map { categories ->
@@ -40,15 +38,6 @@ class FilteredItemsByStatusViewModel(
       initialValue = FilteredItemsByStatusState.Loading
     )
 
-  private val sideEffectChannel = Channel<FilteredItemsByStatusSideEffect>()
-  val sideEffects = sideEffectChannel.receiveAsFlow()
-
-  private fun emitSideEffect(effect: FilteredItemsByStatusSideEffect) {
-    viewModelScope.launch {
-      sideEffectChannel.send(effect)
-    }
-  }
-
   fun onProductClick(productName: String, items: List<Item>) {
     emitSideEffect(
       FilteredItemsByStatusSideEffect.ShowProductItemsBottomSheet(
@@ -62,11 +51,11 @@ class FilteredItemsByStatusViewModel(
     emitSideEffect(FilteredItemsByStatusSideEffect.ShowItemActionsBottomSheet(item))
   }
 
-  fun navigate(navigation: FilteredItemsNavigation) {
+  override fun navigate(navigation: FilteredItemsNavigation) {
     when (navigation) {
       is FilteredItemsNavigation.Category -> {
         eventTracker.trackAction(NavigateToCategoryFromFilteredAction(navigation.source))
-        emitSideEffect(FilteredItemsByStatusSideEffect.NavigateToCategory(navigation.categoryId))
+        emitNavigationSideEffect(FilteredItemsByStatusSideEffect.NavigateToCategory(navigation.categoryId))
       }
     }
   }

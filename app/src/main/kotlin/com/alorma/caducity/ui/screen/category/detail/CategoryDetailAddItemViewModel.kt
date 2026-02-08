@@ -2,7 +2,6 @@ package com.alorma.caducity.ui.screen.category.detail
 
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
@@ -14,12 +13,12 @@ import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.feature.tracking.CancelAddItemAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemSavedAction
-import kotlinx.coroutines.channels.Channel
+import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.base.NoSideEffect
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlin.time.Instant
 
@@ -32,7 +31,7 @@ class CategoryDetailAddItemViewModel(
   private val stringProvider: StringProvider,
   private val appClock: AppClock,
   private val eventTracker: EventTracker,
-) : ViewModel() {
+) : BaseViewModel<AddItemNavigation, AddItemNavigationSideEffect, NoSideEffect>() {
 
   private val _state = MutableStateFlow<CategoryDetailAddItemState>(
     CategoryDetailAddItemState.Loading
@@ -41,9 +40,6 @@ class CategoryDetailAddItemViewModel(
 
   private val _formState = MutableStateFlow(FormState())
   val formState: StateFlow<FormState> = _formState.asStateFlow()
-
-  private val navigationSideEffectChannel = Channel<AddItemNavigationSideEffect>()
-  val navigationSideEffects = navigationSideEffectChannel.receiveAsFlow()
 
   private var allProducts: List<ProductUiModel> = emptyList()
 
@@ -205,7 +201,7 @@ class CategoryDetailAddItemViewModel(
     }
   }
 
-  fun navigate(navigation: AddItemNavigation) {
+  override fun navigate(navigation: AddItemNavigation) {
     when (navigation) {
       AddItemNavigation.Cancel -> {
         eventTracker.trackAction(CancelAddItemAction())
@@ -215,12 +211,6 @@ class CategoryDetailAddItemViewModel(
         eventTracker.trackAction(ItemSavedAction(navigation.hasProduct, navigation.quantity))
         emitNavigationSideEffect(AddItemNavigationSideEffect.NavigateBack)
       }
-    }
-  }
-
-  private fun emitNavigationSideEffect(effect: AddItemNavigationSideEffect) {
-    viewModelScope.launch {
-      navigationSideEffectChannel.send(effect)
     }
   }
 }

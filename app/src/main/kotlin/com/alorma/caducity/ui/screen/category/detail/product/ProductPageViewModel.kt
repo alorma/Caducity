@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.category.detail.product
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.model.ProductDeletionStrategy
 import com.alorma.caducity.domain.usecase.ClearProductItemsUseCase
@@ -10,16 +9,14 @@ import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.NavigateToAddItemFromProductAction
 import com.alorma.caducity.feature.tracking.ProductDeletedAction
+import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -31,10 +28,10 @@ class ProductPageViewModel(
   private val deleteProductUseCase: DeleteProductUseCase,
   private val clearProductItemsUseCase: ClearProductItemsUseCase,
   private val eventTracker: EventTracker,
-) : ViewModel() {
+) : BaseViewModel<ProductPageNavigation, ProductPageSideEffect, ProductPageSideEffect>() {
 
-  private val _sideEffect = Channel<ProductPageSideEffect>(Channel.BUFFERED)
-  val sideEffect: Flow<ProductPageSideEffect> = _sideEffect.receiveAsFlow()
+  // Alias for backward compatibility - sideEffects contains both navigation and other side effects
+  val sideEffect = sideEffects
 
   val state: StateFlow<ProductPageState> = getProductItemsUseCase
     .obtain(productTab.categoryId, productTab.id)
@@ -133,17 +130,11 @@ class ProductPageViewModel(
     }
   }
 
-  private fun emitSideEffect(effect: ProductPageSideEffect) {
-    viewModelScope.launch {
-      _sideEffect.send(effect)
-    }
-  }
-
-  fun navigate(navigation: ProductPageNavigation) {
+  override fun navigate(navigation: ProductPageNavigation) {
     when (navigation) {
       ProductPageNavigation.AddItem -> {
         eventTracker.trackAction(NavigateToAddItemFromProductAction())
-        emitSideEffect(
+        emitNavigationSideEffect(
           ProductPageSideEffect.NavigateToAddItem(
             categoryId = productTab.categoryId,
             productId = productTab.id

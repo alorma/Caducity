@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.dashboard
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.ObtainDashboardUseCase
@@ -9,18 +8,17 @@ import com.alorma.caducity.feature.tracking.NavigateToCreateCategoryAction
 import com.alorma.caducity.feature.tracking.NavigateToCategoryAction
 import com.alorma.caducity.feature.tracking.NavigateToFilteredItemsAction
 import com.alorma.caducity.feature.tracking.NavigateToSettingsAction
+import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.base.NoSideEffect
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 class DashboardViewModel(
@@ -28,7 +26,7 @@ class DashboardViewModel(
   private val obtainDashboardUseCase: ObtainDashboardUseCase,
   private val dashboardMapper: DashboardMapper,
   private val eventTracker: EventTracker,
-) : ViewModel() {
+) : BaseViewModel<DashboardNavigation, DashboardNavigationSideEffect, NoSideEffect>() {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   val state: StateFlow<DashboardState> = calendarPreferences.state
@@ -41,9 +39,6 @@ class DashboardViewModel(
       initialValue = DashboardState.Loading,
     )
 
-  private val navigationSideEffectChannel = Channel<DashboardNavigationSideEffect>()
-  val navigationSideEffects = navigationSideEffectChannel.receiveAsFlow()
-
   private fun obtainPerCategoryDashboard(firstDayOfWeek: kotlinx.datetime.DayOfWeek): Flow<DashboardState.Success> {
     return obtainDashboardUseCase
       .obtain()
@@ -52,7 +47,7 @@ class DashboardViewModel(
       }
   }
 
-  fun navigate(navigation: DashboardNavigation) {
+  override fun navigate(navigation: DashboardNavigation) {
     when (navigation) {
       DashboardNavigation.CreateCategory -> {
         eventTracker.trackAction(NavigateToCreateCategoryAction())
@@ -77,12 +72,6 @@ class DashboardViewModel(
         eventTracker.trackAction(NavigateToSettingsAction())
         emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToSettings)
       }
-    }
-  }
-
-  private fun emitNavigationSideEffect(effect: DashboardNavigationSideEffect) {
-    viewModelScope.launch {
-      navigationSideEffectChannel.send(effect)
     }
   }
 }

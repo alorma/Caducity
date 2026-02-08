@@ -1,16 +1,14 @@
 package com.alorma.caducity.ui.screen.settings.backup
 
 import android.net.Uri
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.BackupFileHandler
-import kotlinx.coroutines.flow.MutableSharedFlow
+import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.base.NoNavigation
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -18,13 +16,13 @@ class BackupViewModel(
   private val exportBackupUseCase: ExportBackupUseCase,
   private val importBackupUseCase: ImportBackupUseCase,
   private val backupFileHandler: BackupFileHandler
-) : ViewModel() {
+) : BaseViewModel<NoNavigation, BackupSideEffect, BackupSideEffect>() {
+
+  // Alias for backward compatibility
+  val sideEffect = sideEffects
 
   private val _uiState = MutableStateFlow<BackupUiState>(BackupUiState.Idle)
   val uiState: StateFlow<BackupUiState> = _uiState.asStateFlow()
-
-  private val _sideEffect = MutableSharedFlow<BackupSideEffect>()
-  val sideEffect: SharedFlow<BackupSideEffect> = _sideEffect.asSharedFlow()
 
   fun onExportBackup(uri: Uri) {
     viewModelScope.launch {
@@ -35,22 +33,22 @@ class BackupViewModel(
             backupFileHandler.writeBackupToUri(uri, backupData).fold(
               onSuccess = {
                 _uiState.value = BackupUiState.Idle
-                _sideEffect.emit(BackupSideEffect.ExportSuccess)
+                emitSideEffect(BackupSideEffect.ExportSuccess)
               },
               onFailure = { error ->
                 _uiState.value = BackupUiState.Idle
-                _sideEffect.emit(BackupSideEffect.Error(BackupError.ExportFailed(error.message)))
+                emitSideEffect(BackupSideEffect.Error(BackupError.ExportFailed(error.message)))
               }
             )
           },
           onFailure = { error ->
             _uiState.value = BackupUiState.Idle
-            _sideEffect.emit(BackupSideEffect.Error(BackupError.ExportFailed(error.message)))
+            emitSideEffect(BackupSideEffect.Error(BackupError.ExportFailed(error.message)))
           }
         )
       } catch (e: Exception) {
         _uiState.value = BackupUiState.Idle
-        _sideEffect.emit(BackupSideEffect.Error(BackupError.ExportFailed(e.message)))
+        emitSideEffect(BackupSideEffect.Error(BackupError.ExportFailed(e.message)))
       }
     }
   }
@@ -65,7 +63,7 @@ class BackupViewModel(
             importBackupUseCase.import(backupData).fold(
               onSuccess = {
                 _uiState.value = BackupUiState.Idle
-                _sideEffect.emit(BackupSideEffect.RestoreSuccess)
+                emitSideEffect(BackupSideEffect.RestoreSuccess)
               },
               onFailure = { error ->
                 _uiState.value = BackupUiState.Idle
@@ -76,18 +74,18 @@ class BackupViewModel(
                   else ->
                     BackupError.RestoreFailed(error.message)
                 }
-                _sideEffect.emit(BackupSideEffect.Error(backupError))
+                emitSideEffect(BackupSideEffect.Error(backupError))
               }
             )
           },
           onFailure = { error ->
             _uiState.value = BackupUiState.Idle
-            _sideEffect.emit(BackupSideEffect.Error(BackupError.InvalidFile(error.message)))
+            emitSideEffect(BackupSideEffect.Error(BackupError.InvalidFile(error.message)))
           }
         )
       } catch (e: Exception) {
         _uiState.value = BackupUiState.Idle
-        _sideEffect.emit(BackupSideEffect.Error(BackupError.InvalidFile(e.message)))
+        emitSideEffect(BackupSideEffect.Error(BackupError.InvalidFile(e.message)))
       }
     }
   }
@@ -100,10 +98,14 @@ class BackupViewModel(
 
       is BackupFileHandler.BackupResult.RestoreUriObtained -> {
         viewModelScope.launch {
-          _sideEffect.emit(BackupSideEffect.ConfirmRestore(uri = result.uri))
+          emitSideEffect(BackupSideEffect.ConfirmRestore(uri = result.uri))
         }
       }
     }
+  }
+
+  override fun navigate(navigation: NoNavigation) {
+    // Empty - this ViewModel doesn't navigate
   }
 }
 
