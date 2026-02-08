@@ -50,6 +50,8 @@
     <string name="settings_about_description">Información y créditos de la aplicación</string>
     <string name="settings_backup_title">Respaldo</string>
     <string name="settings_backup_description">Exportar y restaurar tus datos</string>
+    <string name="settings_privacy_title">Privacidad</string>
+    <string name="settings_privacy_description">Gestionar consentimiento y preferencias de datos</string>
 
     <string name="dashboard_fab_manual">Manual</string>
     <string name="dashboard_fab_ai">IA</string>
@@ -91,6 +93,21 @@
 
     <string name="settings_group_notifications">Notificaciones</string>
     <string name="settings_enable_notifications">Activar notificaciones</string>
+
+    <string name="settings_group_privacy">Privacidad y Datos</string>
+    <string name="settings_privacy_screen_title">Privacidad</string>
+    <string name="settings_privacy_analytics_title">Análisis</string>
+    <string name="settings_privacy_analytics_description">Compartir datos de uso anónimos para ayudar a mejorar la aplicación</string>
+    <string name="settings_privacy_info">Los cambios en esta configuración surten efecto inmediatamente. Respetamos tu privacidad y solo recopilamos datos de uso anónimos cuando otorgas permiso explícito.</string>
+
+    <!-- Debug - Consent Settings -->
+    <string name="debug_consent_section_title">Configuración de Consentimiento (Debug)</string>
+    <string name="debug_consent_ad_storage_title">Almacenamiento de Anuncios</string>
+    <string name="debug_consent_ad_storage_description">Permitir almacenamiento de datos relacionados con anuncios</string>
+    <string name="debug_consent_ad_user_data_title">Datos de Usuario para Anuncios</string>
+    <string name="debug_consent_ad_user_data_description">Permitir compartir datos de usuario con Google para publicidad</string>
+    <string name="debug_consent_ad_personalization_title">Personalización de Anuncios</string>
+    <string name="debug_consent_ad_personalization_description">Habilitar publicidad personalizada</string>
 
     <!-- About section -->
     <string name="about_version">Versión</string>

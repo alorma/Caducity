@@ -28,6 +28,7 @@ import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCheckboxCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
@@ -166,6 +167,45 @@ private fun DebugSettingsContent(
           onClick = { viewModel.onRefreshRemoteConfig() },
           enabled = !uiState.isRefreshingRemoteConfig,
         )
+        }
+      }
+
+      // Consent Settings Group (Debug Only)
+      item {
+        Column(
+          verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+          Text(
+            text = stringResource(R.string.debug_consent_section_title),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(horizontal = 16.dp)
+          )
+
+          StyledSettingsGroup {
+            StyledSettingsCheckboxCard(
+              title = stringResource(R.string.debug_consent_ad_storage_title),
+              subtitle = stringResource(R.string.debug_consent_ad_storage_description),
+              state = uiState.adStorageEnabled,
+              position = ShapePosition.Start,
+              onCheckedChange = { viewModel.onToggleAdStorage(it) },
+            )
+
+            StyledSettingsCheckboxCard(
+              title = stringResource(R.string.debug_consent_ad_user_data_title),
+              subtitle = stringResource(R.string.debug_consent_ad_user_data_description),
+              state = uiState.adUserDataEnabled,
+              position = ShapePosition.Middle,
+              onCheckedChange = { viewModel.onToggleAdUserData(it) },
+            )
+
+            StyledSettingsCheckboxCard(
+              title = stringResource(R.string.debug_consent_ad_personalization_title),
+              subtitle = stringResource(R.string.debug_consent_ad_personalization_description),
+              state = uiState.adPersonalizationEnabled,
+              position = ShapePosition.End,
+              onCheckedChange = { viewModel.onToggleAdPersonalization(it) },
+            )
+          }
         }
       }
 

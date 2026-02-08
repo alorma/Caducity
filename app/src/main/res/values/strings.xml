@@ -70,6 +70,8 @@
     <string name="settings_about_description">App information and credits</string>
     <string name="settings_backup_title">Backup</string>
     <string name="settings_backup_description">Export and restore your data</string>
+    <string name="settings_privacy_title">Privacy</string>
+    <string name="settings_privacy_description">Manage consent and data preferences</string>
 
     <string name="settings_group_appearance">Appearance</string>
     <string name="settings_theme_title">Theme</string>
@@ -91,6 +93,21 @@
 
     <string name="settings_group_notifications">Notifications</string>
     <string name="settings_enable_notifications">Enable Notifications</string>
+
+    <string name="settings_group_privacy">Privacy &amp; Data</string>
+    <string name="settings_privacy_screen_title">Privacy</string>
+    <string name="settings_privacy_analytics_title">Analytics</string>
+    <string name="settings_privacy_analytics_description">Share anonymous usage data to help improve the app</string>
+    <string name="settings_privacy_info">Changes to these settings take effect immediately. We respect your privacy and only collect anonymous usage data when you explicitly grant permission.</string>
+
+    <!-- Debug - Consent Settings -->
+    <string name="debug_consent_section_title">Consent Settings (Debug)</string>
+    <string name="debug_consent_ad_storage_title">Ad Storage</string>
+    <string name="debug_consent_ad_storage_description">Allow storage of ad-related data</string>
+    <string name="debug_consent_ad_user_data_title">Ad User Data</string>
+    <string name="debug_consent_ad_user_data_description">Allow sharing user data with Google for advertising</string>
+    <string name="debug_consent_ad_personalization_title">Ad Personalization</string>
+    <string name="debug_consent_ad_personalization_description">Enable personalized advertising</string>
 
     <string name="about_version">Version</string>
     <string name="about_developer">Developer</string>

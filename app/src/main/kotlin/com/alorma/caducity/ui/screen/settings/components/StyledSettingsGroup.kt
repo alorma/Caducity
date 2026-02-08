@@ -18,11 +18,13 @@ import com.alorma.compose.settings.ui.SettingsGroup
 @Composable
 fun StyledSettingsGroup(
   modifier: Modifier = Modifier,
+  title: @Composable (() -> Unit)? = null,
   content: @Composable ColumnScope.() -> Unit
 ) {
   SettingsGroup(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(2.dp),
+    title = title,
     content = content,
   )
 }

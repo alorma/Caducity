@@ -40,6 +40,7 @@ import com.alorma.caducity.ui.screen.category.detail.product.ProductPageMapper
 import com.alorma.caducity.ui.screen.category.detail.product.ProductPageViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
+import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsViewModel
 import com.alorma.caducity.ui.components.bottomsheet.ItemActionsViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
@@ -118,6 +119,9 @@ val appModule = module {
   singleOf(::ImportBackupUseCase)
   viewModelOf(::BackupViewModel)
 
+  // Privacy Settings
+  viewModelOf(::PrivacySettingsViewModel)
+
   // Debug Settings
   factory {
     DebugSettingsViewModel(
@@ -127,6 +131,7 @@ val appModule = module {
       fakePlayStoreDataStrategy = get(),
       remoteConfigRunner = get(),
       remoteConfigs = getAll(),
+      consentManager = get(),
     )
   }
 

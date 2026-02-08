@@ -19,6 +19,9 @@ import com.alorma.caducity.base.ui.icons.Info
 import com.alorma.caducity.base.ui.icons.Notifications
 import com.alorma.caducity.base.ui.icons.Palette
 import com.alorma.caducity.base.ui.icons.outlined.Settings
+import com.alorma.caducity.base.ui.icons.outlined.Shield
+import com.alorma.caducity.feature.tracking.SettingsScreen
+import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
@@ -27,14 +30,13 @@ import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
-import com.alorma.caducity.feature.tracking.SettingsScreen
-import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun SettingsRootScreen(
   isDebug: Boolean,
   onNavigateToAppearance: () -> Unit,
   onNavigateToNotifications: () -> Unit,
+  onNavigateToPrivacy: () -> Unit,
   onNavigateToBackup: () -> Unit,
   onNavigateToDebug: () -> Unit,
   onNavigateToAbout: () -> Unit,
@@ -45,6 +47,7 @@ fun SettingsRootScreen(
     isDebug = isDebug,
     onNavigateToAppearance = onNavigateToAppearance,
     onNavigateToNotifications = onNavigateToNotifications,
+    onNavigateToPrivacy = onNavigateToPrivacy,
     onNavigateToBackup = onNavigateToBackup,
     onNavigateToDebug = onNavigateToDebug,
     onNavigateToAbout = onNavigateToAbout,
@@ -57,6 +60,7 @@ private fun SettingsRootContent(
   isDebug: Boolean,
   onNavigateToAppearance: () -> Unit,
   onNavigateToNotifications: () -> Unit,
+  onNavigateToPrivacy: () -> Unit,
   onNavigateToBackup: () -> Unit,
   onNavigateToDebug: () -> Unit,
   onNavigateToAbout: () -> Unit,
@@ -80,92 +84,105 @@ private fun SettingsRootContent(
         modifier = Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
       ) {
-      // Group 1: Appearance, Language & Notifications
-      item {
-        StyledSettingsGroup {
-        StyledSettingsCard(
-          icon = {
-            Icon(
-              imageVector = AppIcons.Palette,
-              contentDescription = null,
-            )
-          },
-          title = stringResource(R.string.settings_appearance_title),
-          subtitle = stringResource(R.string.settings_appearance_description),
-          onClick = onNavigateToAppearance,
-          position = ShapePosition.Start,
-        )
-
-        StyledSettingsCard(
-          icon = {
-            Icon(
-              imageVector = AppIcons.Notifications,
-              contentDescription = null,
-            )
-          },
-          title = stringResource(R.string.settings_notifications_title),
-          subtitle = stringResource(R.string.settings_notifications_description),
-          onClick = onNavigateToNotifications,
-          position = ShapePosition.End,
-        )
-        }
-      }
-
-      // Group 2: Backup
-      item {
-        StyledSettingsGroup {
-        StyledSettingsCard(
-          icon = {
-            Icon(
-              imageVector = AppIcons.Backup,
-              contentDescription = null,
-            )
-          },
-          title = stringResource(R.string.settings_backup_title),
-          subtitle = stringResource(R.string.settings_backup_description),
-          onClick = onNavigateToBackup,
-          position = ShapePosition.Single,
-        )
-        }
-      }
-
-      // Group 3: Debug (only shown in debug mode)
-      if (isDebug) {
+        // Group 1: Appearance, Language & Notifications
         item {
           StyledSettingsGroup {
-          StyledSettingsCard(
-            icon = {
-              Icon(
-                imageVector = AppIcons.Outlined.Settings,
-                contentDescription = null,
-              )
-            },
-            title = stringResource(R.string.settings_debug_title),
-            subtitle = stringResource(R.string.settings_debug_description),
-            onClick = onNavigateToDebug,
-            position = ShapePosition.Single,
-          )
+            StyledSettingsCard(
+              icon = {
+                Icon(
+                  imageVector = AppIcons.Palette,
+                  contentDescription = null,
+                )
+              },
+              title = stringResource(R.string.settings_appearance_title),
+              subtitle = stringResource(R.string.settings_appearance_description),
+              onClick = onNavigateToAppearance,
+              position = ShapePosition.Start,
+            )
+
+            StyledSettingsCard(
+              icon = {
+                Icon(
+                  imageVector = AppIcons.Notifications,
+                  contentDescription = null,
+                )
+              },
+              title = stringResource(R.string.settings_notifications_title),
+              subtitle = stringResource(R.string.settings_notifications_description),
+              onClick = onNavigateToNotifications,
+              position = ShapePosition.End,
+            )
           }
         }
-      }
 
-      // Group 4: About
-      item {
-        StyledSettingsGroup {
-        StyledSettingsCard(
-          icon = {
-            Icon(
-              imageVector = AppIcons.Info,
-              contentDescription = null,
+        // Group 2: Privacy & Backup
+        item {
+          StyledSettingsGroup {
+            StyledSettingsCard(
+              icon = {
+                Icon(
+                  imageVector = AppIcons.Outlined.Shield,
+                  contentDescription = null,
+                )
+              },
+              title = stringResource(R.string.settings_privacy_title),
+              subtitle = stringResource(R.string.settings_privacy_description),
+              onClick = onNavigateToPrivacy,
+              position = ShapePosition.Start,
             )
-          },
-          title = stringResource(R.string.settings_about_title),
-          subtitle = stringResource(R.string.settings_about_description),
-          onClick = onNavigateToAbout,
-          position = ShapePosition.Single,
-        )
+
+            StyledSettingsCard(
+              icon = {
+                Icon(
+                  imageVector = AppIcons.Backup,
+                  contentDescription = null,
+                )
+              },
+              title = stringResource(R.string.settings_backup_title),
+              subtitle = stringResource(R.string.settings_backup_description),
+              onClick = onNavigateToBackup,
+              position = ShapePosition.End,
+            )
+          }
         }
-      }
+
+        // Group 3: Debug (only shown in debug mode)
+        if (isDebug) {
+          item {
+            StyledSettingsGroup {
+              StyledSettingsCard(
+                icon = {
+                  Icon(
+                    imageVector = AppIcons.Outlined.Settings,
+                    contentDescription = null,
+                  )
+                },
+                title = stringResource(R.string.settings_debug_title),
+                subtitle = stringResource(R.string.settings_debug_description),
+                onClick = onNavigateToDebug,
+                position = ShapePosition.Single,
+              )
+            }
+          }
+        }
+
+        // Group 4: About
+        item {
+          StyledSettingsGroup {
+            StyledSettingsCard(
+              icon = {
+                Icon(
+                  imageVector = AppIcons.Info,
+                  contentDescription = null,
+                )
+              },
+              title = stringResource(R.string.settings_about_title),
+              subtitle = stringResource(R.string.settings_about_description),
+              onClick = onNavigateToAbout,
+              position = ShapePosition.Single,
+            )
+          }
+        }
       }
     }
   }
@@ -181,6 +198,7 @@ fun SettingsScreenPreview() {
         isDebug = true,
         onNavigateToAppearance = {},
         onNavigateToNotifications = {},
+        onNavigateToPrivacy = {},
         onNavigateToBackup = {},
         onNavigateToDebug = {},
         onNavigateToAbout = {},

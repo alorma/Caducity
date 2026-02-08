@@ -26,7 +26,7 @@ class ThemePreferencesImpl(private val settings: Settings) : ThemePreferences {
   }
 
   override fun loadUseDynamicColors(): Boolean {
-    return settings.getBoolean(KEY_USE_DYNAMIC_COLORS, supportsDynamicColors())
+    return settings.getBoolean(KEY_USE_DYNAMIC_COLORS, false)
   }
 
   override fun setThemeModeState(mode: ThemeMode) {
