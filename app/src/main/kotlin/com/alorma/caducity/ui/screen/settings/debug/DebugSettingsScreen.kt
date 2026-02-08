@@ -182,9 +182,7 @@ private fun DebugSettingsContent(
           StyledSettingsGroup(
             title = {
               Text(
-                text = stringResource(R.string.debug_consent_section_title),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                text = stringResource(R.string.debug_consent_section_title)
               )
             },
           ) {
