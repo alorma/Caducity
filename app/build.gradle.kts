@@ -180,6 +180,7 @@ dependencies {
   implementation(libs.firebase.appcheck.debug)
   implementation(libs.firebase.crashlytics)
   implementation(libs.firebase.config)
+  implementation(libs.firebase.analytics)
 
   // Testing
   testImplementation(libs.junit)
