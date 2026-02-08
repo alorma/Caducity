@@ -75,7 +75,9 @@ fun PrivacySettingsContent(
         verticalArrangement = Arrangement.spacedBy(24.dp),
       ) {
         item {
-          StyledSettingsGroup {
+          StyledSettingsGroup(
+            title = { Text(stringResource(R.string.settings_privacy_title)) }
+          ) {
             StyledSettingsSwitchCard(
               title = stringResource(R.string.settings_privacy_analytics_title),
               subtitle = stringResource(R.string.settings_privacy_analytics_description),

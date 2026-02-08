@@ -86,7 +86,9 @@ private fun SettingsRootContent(
       ) {
         // Group 1: Appearance, Language & Notifications
         item {
-          StyledSettingsGroup {
+          StyledSettingsGroup(
+            title = { Text(stringResource(R.string.settings_appearance_title)) }
+          ) {
             StyledSettingsCard(
               icon = {
                 Icon(
@@ -117,7 +119,9 @@ private fun SettingsRootContent(
 
         // Group 2: Privacy & Backup
         item {
-          StyledSettingsGroup {
+          StyledSettingsGroup(
+            title = { Text(stringResource(R.string.settings_privacy_title)) }
+          ) {
             StyledSettingsCard(
               icon = {
                 Icon(
@@ -149,7 +153,9 @@ private fun SettingsRootContent(
         // Group 3: Debug (only shown in debug mode)
         if (isDebug) {
           item {
-            StyledSettingsGroup {
+            StyledSettingsGroup(
+              title = { Text(stringResource(R.string.settings_debug_title)) }
+            ) {
               StyledSettingsCard(
                 icon = {
                   Icon(
@@ -168,7 +174,9 @@ private fun SettingsRootContent(
 
         // Group 4: About
         item {
-          StyledSettingsGroup {
+          StyledSettingsGroup(
+            title = { Text(stringResource(R.string.settings_about_title)) }
+          ) {
             StyledSettingsCard(
               icon = {
                 Icon(

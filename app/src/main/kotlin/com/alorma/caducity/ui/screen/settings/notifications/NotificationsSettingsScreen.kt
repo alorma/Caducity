@@ -70,7 +70,9 @@ fun NotificationsSettingsContent(
         verticalArrangement = Arrangement.spacedBy(24.dp),
       ) {
       item {
-        StyledSettingsGroup {
+        StyledSettingsGroup(
+          title = { Text(stringResource(R.string.settings_notifications_title)) }
+        ) {
         StyledSettingsSwitchCard(
           title = stringResource(R.string.settings_enable_notifications),
           state = areNotificationsEnabled,
