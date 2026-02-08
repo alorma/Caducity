@@ -21,9 +21,25 @@ import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import com.alorma.caducity.feature.tracking.AboutScreen as AboutScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun AboutScreen(
+  appVersion: String,
+  onNavigateToRepo: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  TrackScreen(screen = AboutScreenEvent())
+  AboutScreenContent(
+    appVersion = appVersion,
+    onNavigateToRepo = onNavigateToRepo,
+    modifier = modifier,
+  )
+}
+
+@Composable
+private fun AboutScreenContent(
   appVersion: String,
   onNavigateToRepo: () -> Unit,
   modifier: Modifier = Modifier,
@@ -75,7 +91,7 @@ fun AboutScreen(
 fun AboutScreenPreview() {
   PreviewTheme {
     Surface {
-      AboutScreen(
+      AboutScreenContent(
         appVersion = "1.1.2",
         onNavigateToRepo = {},
       )

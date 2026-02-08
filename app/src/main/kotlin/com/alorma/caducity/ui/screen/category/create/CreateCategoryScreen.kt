@@ -32,6 +32,8 @@ import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import org.koin.compose.viewmodel.koinViewModel
+import com.alorma.caducity.feature.tracking.CreateCategoryScreen as CreateCategoryScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun CreateCategoryScreen(
@@ -39,6 +41,7 @@ fun CreateCategoryScreen(
   modifier: Modifier = Modifier,
   viewModel: CreateCategoryViewModel = koinViewModel(),
 ) {
+  TrackScreen(screen = CreateCategoryScreenEvent())
   val state = viewModel.state.collectAsStateWithLifecycle()
 
   CreateCategoryPage(

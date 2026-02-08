@@ -41,6 +41,8 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import com.alorma.caducity.feature.tracking.BackupScreen as BackupScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun BackupScreen(
@@ -48,6 +50,7 @@ fun BackupScreen(
   viewModel: BackupViewModel = koinViewModel(),
   backupFileHandler: BackupFileHandler = koinInject()
 ) {
+  TrackScreen(screen = BackupScreenEvent())
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
   backupFileHandler.registerContracts()

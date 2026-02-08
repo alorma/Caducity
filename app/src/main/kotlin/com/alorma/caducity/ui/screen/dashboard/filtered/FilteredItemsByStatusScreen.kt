@@ -39,6 +39,8 @@ import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import com.alorma.caducity.feature.tracking.FilteredItemsByStatusScreen as FilteredItemsByStatusScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun FilteredItemsByStatusScreen(
@@ -49,6 +51,7 @@ fun FilteredItemsByStatusScreen(
   },
   onNavigateToCategory: (String) -> Unit = {},
 ) {
+  TrackScreen(screen = FilteredItemsByStatusScreenEvent())
   val state by viewModel.state.collectAsStateWithLifecycle()
   val snackbarState = rememberAppSnackbarState()
   val bottomSheetState = rememberAppBottomSheetState()

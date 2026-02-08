@@ -28,9 +28,35 @@ import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.datetime.DayOfWeek
+import com.alorma.caducity.feature.tracking.AppearanceSettingsScreen as AppearanceSettingsScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun AppearanceSettingsScreen(
+  themeMode: ThemeMode,
+  onThemeModeChange: (ThemeMode) -> Unit,
+  useDynamicTheme: Boolean,
+  onUseDynamicTheme: (Boolean) -> Unit,
+  firstDayOfWeek: DayOfWeek,
+  onFirstDayOfWeekChange: (DayOfWeek) -> Unit,
+  modifier: Modifier = Modifier,
+  localizedDateFormatter: LocalizedDateFormatter = koinInject(),
+) {
+  TrackScreen(screen = AppearanceSettingsScreenEvent())
+  AppearanceSettingsContent(
+    themeMode = themeMode,
+    onThemeModeChange = onThemeModeChange,
+    useDynamicTheme = useDynamicTheme,
+    onUseDynamicTheme = onUseDynamicTheme,
+    firstDayOfWeek = firstDayOfWeek,
+    onFirstDayOfWeekChange = onFirstDayOfWeekChange,
+    modifier = modifier,
+    localizedDateFormatter = localizedDateFormatter,
+  )
+}
+
+@Composable
+private fun AppearanceSettingsContent(
   themeMode: ThemeMode,
   onThemeModeChange: (ThemeMode) -> Unit,
   useDynamicTheme: Boolean,
@@ -122,7 +148,7 @@ fun AppearanceSettingsScreenPreview() {
       } else {
         ThemeMode.LIGHT
       }
-      AppearanceSettingsScreen(
+      AppearanceSettingsContent(
         themeMode = themeMode,
         useDynamicTheme = true,
         firstDayOfWeek = DayOfWeek.MONDAY,
