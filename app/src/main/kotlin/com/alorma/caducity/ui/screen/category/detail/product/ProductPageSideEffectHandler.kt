@@ -1,7 +1,9 @@
 package com.alorma.caducity.ui.screen.category.detail.product
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.res.stringResource
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ProductDeletionStrategy
 import com.alorma.caducity.ui.components.bottomsheet.handleItemActionSideEffect
