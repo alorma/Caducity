@@ -19,6 +19,7 @@ Caducity is an Android grocery expiration tracker application built with Jetpack
 - **Database**: Room 2.8.4
 - **Date/Time**: kotlinx-datetime 0.7.1
 - **Background Work**: WorkManager 2.11.0 (for expiration notifications)
+- **Analytics**: Firebase Analytics with Timber logging (composite pattern)
 
 ## Build Commands
 
@@ -92,6 +93,8 @@ app/src/main/kotlin/com/alorma/caducity/
 │   ├── theme/             # Theming (Material 3 with dynamic colors)
 │   ├── icons/             # Custom icons
 │   └── adaptive/          # Adaptive/responsive utilities
+├── feature/               # Cross-cutting feature modules
+│   └── tracking/          # Analytics and action tracking system
 ├── notification/          # Notification system (WorkManager, NotificationChannelManager)
 ├── language/              # Language manager
 ├── di/                    # Dependency injection modules
@@ -203,6 +206,288 @@ One-time operation flags for features like onboarding, announcements, and first-
 - `isEnabled()`: Check if the flag is enabled (operation should run)
 - `disable()`: Mark the operation as completed (won't run again)
 - `enable()`: Re-enable the flag (for "Reset tutorials" features)
+
+### Analytics & Action Tracking System
+
+The app uses a dual-layer tracking system for user behavior analytics:
+1. **Screen Tracking**: Automatically tracks when users navigate to different screens
+2. **Action Tracking**: Tracks user interactions and navigation actions within screens
+
+Both tracking types use Firebase Analytics (via `FirebaseTracker`) and Timber logging (via `TimberTracker`) simultaneously through a composite pattern.
+
+#### Core Components (`feature/tracking/`)
+
+**Base Classes:**
+
+- **`Action.kt`**: Base class for all trackable actions
+  ```kotlin
+  abstract class Action(
+    val name: String,
+    val parameters: Map<String, String> = emptyMap(),
+  )
+  ```
+
+- **`NavigationAction`**: Specialized base class for navigation actions
+  - Automatically prefixes event name with `nav_`
+  - Automatically adds `origin` parameter identifying source screen
+  ```kotlin
+  abstract class NavigationAction(
+    actionName: String,
+    origin: String,
+    parameters: Map<String, String> = emptyMap(),
+  ) : Action(
+    name = "nav_$actionName",
+    parameters = parameters + ("origin" to origin),
+  )
+  ```
+
+- **`Screen.kt`**: Base class for screen tracking events
+  ```kotlin
+  abstract class Screen(
+    val name: String,
+  )
+  ```
+
+- **`EventTracker`**: Composite tracker that delegates to multiple implementations (Firebase + Timber)
+  ```kotlin
+  class EventTracker(
+    private val trackers: List<Tracker>,
+  ) : Tracker {
+    override fun trackScreen(screen: Screen)
+    override fun trackAction(action: Action)
+  }
+  ```
+
+**Tracker Implementations:**
+- **`FirebaseTracker`**: Sends events to Firebase Analytics
+- **`TimberTracker`**: Logs events to Timber for debugging
+
+#### Implementation Pattern
+
+**1. Define Navigation Actions**
+
+Create action classes that extend `NavigationAction` in `feature/tracking/Actions.kt`:
+
+```kotlin
+class NavigateToCreateCategoryAction : NavigationAction(
+  actionName = "create_category",
+  origin = "dashboard",
+  parameters = mapOf("source" to "fab")
+)
+
+class NavigateToCategoryAction(source: String) : NavigationAction(
+  actionName = "category",
+  origin = "dashboard",
+  parameters = mapOf("source" to source)
+)
+```
+
+**2. Define Navigation Sealed Interface**
+
+Create a sealed interface representing user navigation intents in `ui/screen/<feature>/<Feature>Navigation.kt`:
+
+```kotlin
+sealed interface DashboardNavigation {
+  data object CreateCategory : DashboardNavigation
+  data class Category(val categoryId: String, val source: String) : DashboardNavigation
+  data class FilteredItems(val status: ItemStatus) : DashboardNavigation
+  data object Settings : DashboardNavigation
+}
+
+sealed interface DashboardNavigationSideEffect {
+  data object NavigateToCreateCategory : DashboardNavigationSideEffect
+  data class NavigateToCategory(val categoryId: String) : DashboardNavigationSideEffect
+  data class NavigateToFilteredItems(val status: ItemStatus) : DashboardNavigationSideEffect
+  data object NavigateToSettings : DashboardNavigationSideEffect
+}
+```
+
+**3. Implement ViewModel Navigation**
+
+Add single `navigate()` method that tracks actions and emits side effects:
+
+```kotlin
+class DashboardViewModel(
+  private val obtainDashboardUseCase: ObtainDashboardUseCase,
+  private val eventTracker: EventTracker, // Injected via Koin
+  // ... other dependencies
+) : ViewModel() {
+
+  private val navigationSideEffectChannel = Channel<DashboardNavigationSideEffect>()
+  val navigationSideEffects = navigationSideEffectChannel.receiveAsFlow()
+
+  fun navigate(navigation: DashboardNavigation) {
+    when (navigation) {
+      DashboardNavigation.CreateCategory -> {
+        eventTracker.trackAction(NavigateToCreateCategoryAction())
+        emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToCreateCategory)
+      }
+      is DashboardNavigation.Category -> {
+        eventTracker.trackAction(NavigateToCategoryAction(navigation.source))
+        emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToCategory(navigation.categoryId))
+      }
+      // ... other cases
+    }
+  }
+
+  private fun emitNavigationSideEffect(effect: DashboardNavigationSideEffect) {
+    viewModelScope.launch {
+      navigationSideEffectChannel.send(effect)
+    }
+  }
+}
+```
+
+**4. Handle Navigation in Screen Composable**
+
+Observe navigation side effects and call external navigation callbacks:
+
+```kotlin
+@Composable
+fun DashboardScreen(
+  onNavigateToCreateProduct: () -> Unit,
+  onNavigateToCategory: (String) -> Unit,
+  onNavigateToStatus: (ItemStatus) -> Unit,
+  onNavigateToSettings: () -> Unit,
+  modifier: Modifier = Modifier,
+  viewModel: DashboardViewModel = koinViewModel(),
+) {
+  TrackScreen(screen = DashboardScreenEvent())
+
+  // Handle navigation side effects
+  LaunchedEffect(viewModel) {
+    viewModel.navigationSideEffects.collect { navigationEffect ->
+      when (navigationEffect) {
+        DashboardNavigationSideEffect.NavigateToCreateCategory -> onNavigateToCreateProduct()
+        is DashboardNavigationSideEffect.NavigateToCategory -> onNavigateToCategory(navigationEffect.categoryId)
+        is DashboardNavigationSideEffect.NavigateToFilteredItems -> onNavigateToStatus(navigationEffect.status)
+        DashboardNavigationSideEffect.NavigateToSettings -> onNavigateToSettings()
+      }
+    }
+  }
+
+  // UI calls viewModel.navigate()
+  Box(modifier) {
+    DashboardContent(
+      state = dashboardState.value,
+      onNavigateToCreateProduct = {
+        viewModel.navigate(DashboardNavigation.CreateCategory)
+      },
+      onNavigateToCategory = { categoryId, source ->
+        viewModel.navigate(DashboardNavigation.Category(categoryId, source))
+      },
+      // ... other callbacks
+    )
+  }
+}
+```
+
+#### Key Principles
+
+**1. Track User Intent, Not Implementation Details**
+- ✅ Good: Track `nav_category` with `source="calendar_date"`
+- ❌ Bad: Track `onClickCalendarItem` or `handleCalendarDateSelection`
+
+**2. Never Track User-Entered Data**
+- ✅ Good: Track categorical parameters like `status="expired"`, `source="fab"`
+- ❌ Bad: Track category IDs, names, user input text
+
+**3. Use "origin" for Screen Context**
+
+All navigation actions include an `origin` parameter identifying the source screen:
+- `origin: "dashboard"` - Navigation from dashboard
+- `origin: "category_detail"` - Navigation from category detail
+- `origin: "settings"` - Navigation from settings
+
+**4. Use "source" for UI Element Context**
+
+Use `source` to identify specific UI elements that triggered the action:
+- `source: "fab"` - Floating action button
+- `source: "topbar"` - Top app bar
+- `source: "category_title"` - Category title/card click
+- `source: "calendar_date"` - Calendar date click
+- `source: "summary"` - Summary statistics card
+
+**5. Separate Navigation Side Effects**
+
+Keep navigation side effects separate from other side effects (dialogs, snackbars):
+- `navigationSideEffectChannel` - For navigation only
+- `sideEffectChannel` - For dialogs, snackbars, bottom sheets, etc.
+
+#### Dashboard Actions Reference
+
+| User Action | Event Name | Parameters | Trigger |
+|-------------|-----------|------------|---------|
+| Click FAB | `nav_create_category` | `origin: dashboard`<br>`source: fab` | FAB click |
+| Click category title | `nav_category` | `origin: dashboard`<br>`source: category_title` | Title/card click |
+| Click calendar date | `nav_category` | `origin: dashboard`<br>`source: calendar_date` | Calendar date click |
+| Click Expired badge | `nav_filtered_items` | `origin: dashboard`<br>`source: summary`<br>`status: expired` | Status badge |
+| Click Expiring Soon | `nav_filtered_items` | `origin: dashboard`<br>`source: summary`<br>`status: expiring_soon` | Status badge |
+| Click Fresh badge | `nav_filtered_items` | `origin: dashboard`<br>`source: summary`<br>`status: fresh` | Status badge |
+| Click Frozen badge | `nav_filtered_items` | `origin: dashboard`<br>`source: summary`<br>`status: frozen` | Status badge |
+| Click Settings icon | `nav_settings` | `origin: dashboard`<br>`source: topbar` | Top bar icon |
+
+**Example Firebase Event Data:**
+
+```json
+{
+  "event_name": "nav_category",
+  "params": {
+    "origin": "dashboard",
+    "source": "category_title"
+  }
+}
+```
+
+#### Benefits of This Architecture
+
+1. **Single Entry Point**: Only one `navigate()` method per ViewModel reduces API surface area
+2. **Type Safety**: Sealed interfaces ensure all navigation cases are handled with compile-time checks
+3. **Discoverable**: All navigation options visible in sealed interface with IDE auto-completion
+4. **Testable**: Single method to mock in tests, action classes simple to verify
+5. **Separation of Concerns**: Navigation logic in ViewModel, tracking happens automatically
+6. **Extensible**: Add new navigation actions without new methods
+7. **Consistent Event Naming**: `nav_` prefix and `origin` parameter standardized across all actions
+
+#### Adding Action Tracking to New Screens
+
+**Checklist:**
+
+1. Create action classes in `feature/tracking/Actions.kt` (extend `NavigationAction` or `Action`)
+2. Create navigation sealed interface in `ui/screen/<feature>/<Feature>Navigation.kt`
+3. Update ViewModel: inject `EventTracker`, add navigation channel, implement `navigate()` method
+4. Update Screen composable: add `LaunchedEffect` to observe navigation side effects
+5. Add callback parameters with `source` parameter where needed
+6. Write tests for action classes verifying correct event names and parameters
+7. Document in this file: add action tracking reference table with event names
+
+**Remaining Screens for Action Tracking:**
+- Category Detail Screen (add item, product actions, item lifecycle)
+- Create Category Screen (form submission, cancel)
+- Settings Screens (sub-settings navigation, toggles, backup/restore)
+- Filtered Items Screen (item actions, navigate to category)
+
+**Potential Non-Navigation Actions:**
+
+Consider tracking non-navigation actions by extending `Action` base class (not `NavigationAction`):
+- Form submissions (create category, add item)
+- Item lifecycle events (consume, freeze, delete)
+- Settings changes (theme toggle, language change)
+- Search/filter operations (categorical parameters only)
+- Error events (failed operations without user data)
+
+#### Testing
+
+**Run tracking tests:**
+```bash
+./gradlew :app:testDebugUnitTest --tests "com.alorma.caducity.feature.tracking.*"
+```
+
+**Manual testing:**
+1. Build: `./gradlew installDebug`
+2. Navigate through app
+3. Check Timber logs for tracking events
+4. Verify events in Firebase Analytics Debug View (requires debug build)
 
 ### Base Module Organization
 
@@ -503,32 +788,185 @@ The UI layer follows MVI/MVVM pattern with Jetpack Compose:
 
 ### ViewModels Pattern
 
-All ViewModels follow the same structure:
+All ViewModels follow a consistent structure with clear separation between state, side effects, and navigation:
+
+#### Core ViewModel Structure
+
 ```kotlin
-class CategoryDetailViewModel(
-  // Use cases injected via constructor
-  private val obtainCategoryDetailUseCase: ObtainCategoryDetailUseCase,
-  private val consumeItemUseCase: ConsumeItemUseCase,
-  private val freezeItemUseCase: FreezeItemUseCase,
-  // ... other use cases
+class DashboardViewModel(
+  // Use cases and dependencies injected via constructor
+  private val obtainDashboardUseCase: ObtainDashboardUseCase,
+  private val eventTracker: EventTracker,
+  calendarPreferences: CalendarPreferences,
+  private val dashboardMapper: DashboardMapper,
 ) : ViewModel() {
 
-  // State as StateFlow
-  val state: StateFlow<CategoryDetailState> = ...
+  // 1. STATE: Exposed as StateFlow for UI observation
+  val state: StateFlow<DashboardState> = calendarPreferences.state
+    .flatMapLatest { config ->
+      obtainDashboardUseCase.obtain()
+        .map { data -> dashboardMapper.map(data, config) }
+    }
+    .stateIn(
+      scope = viewModelScope,
+      started = SharingStarted.WhileSubscribed(5.seconds),
+      initialValue = DashboardState.Loading,
+    )
 
-  // Side effects channel
-  private val sideEffectChannel = Channel<CategoryDetailSideEffect>()
-  val sideEffects = sideEffectChannel.receiveAsFlow()
+  // 2. NAVIGATION SIDE EFFECTS: Separate channel for navigation events
+  private val navigationSideEffectChannel = Channel<DashboardNavigationSideEffect>()
+  val navigationSideEffects: Flow<DashboardNavigationSideEffect> = navigationSideEffectChannel.receiveAsFlow()
 
-  // Public methods for user actions
-  fun onItemClick(item: ItemDetailUiModel) { ... }
-  fun onConsumeItem(item: ItemDetailUiModel) { ... }
+  // 3. OTHER SIDE EFFECTS: Separate channel for dialogs, snackbars, bottom sheets
+  private val sideEffectChannel = Channel<DashboardSideEffect>()
+  val sideEffects: Flow<DashboardSideEffect> = sideEffectChannel.receiveAsFlow()
 
-  // Private method to emit side effects
-  private fun emitSideEffect(effect: CategoryDetailSideEffect) {
+  // 4. NAVIGATION METHOD: Single entry point for all navigation actions
+  fun navigate(navigation: DashboardNavigation) {
+    when (navigation) {
+      DashboardNavigation.CreateCategory -> {
+        eventTracker.trackAction(NavigateToCreateCategoryAction())
+        emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToCreateCategory)
+      }
+      is DashboardNavigation.Category -> {
+        eventTracker.trackAction(NavigateToCategoryAction(navigation.source))
+        emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToCategory(navigation.categoryId))
+      }
+      is DashboardNavigation.FilteredItems -> {
+        eventTracker.trackAction(NavigateToFilteredItemsAction(mapStatus(navigation.status)))
+        emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToFilteredItems(navigation.status))
+      }
+      DashboardNavigation.Settings -> {
+        eventTracker.trackAction(NavigateToSettingsAction())
+        emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToSettings)
+      }
+    }
+  }
+
+  // 5. OTHER PUBLIC METHODS: For non-navigation user actions
+  fun onRefresh() {
+    // Handle refresh action
+  }
+
+  fun onShowDialog() {
+    emitSideEffect(DashboardSideEffect.ShowDialog)
+  }
+
+  // 6. PRIVATE HELPER METHODS
+  private fun emitNavigationSideEffect(effect: DashboardNavigationSideEffect) {
+    viewModelScope.launch {
+      navigationSideEffectChannel.send(effect)
+    }
+  }
+
+  private fun emitSideEffect(effect: DashboardSideEffect) {
     viewModelScope.launch {
       sideEffectChannel.send(effect)
     }
+  }
+}
+```
+
+#### Navigation Sealed Interfaces
+
+Each screen defines two sealed interfaces for type-safe navigation:
+
+**Navigation Intent** - Represents user's navigation intent with all required data:
+```kotlin
+sealed interface DashboardNavigation {
+  data object CreateCategory : DashboardNavigation
+  data class Category(val categoryId: String, val source: String) : DashboardNavigation
+  data class FilteredItems(val status: ItemStatus) : DashboardNavigation
+  data object Settings : DashboardNavigation
+}
+```
+
+**Navigation Side Effect** - Represents the actual navigation action to be performed:
+```kotlin
+sealed interface DashboardNavigationSideEffect {
+  data object NavigateToCreateCategory : DashboardNavigationSideEffect
+  data class NavigateToCategory(val categoryId: String) : DashboardNavigationSideEffect
+  data class NavigateToFilteredItems(val status: ItemStatus) : DashboardNavigationSideEffect
+  data object NavigateToSettings : DashboardNavigationSideEffect
+}
+```
+
+**Key Differences:**
+- **Navigation Intent**: May include extra data needed for tracking (e.g., `source` parameter)
+- **Navigation Side Effect**: Contains only data needed for actual navigation (e.g., `categoryId`)
+
+#### ViewModel API Design Principles
+
+**1. Single `navigate()` Method**
+- All navigation goes through one method
+- Takes sealed interface parameter for type safety
+- Automatically tracks actions via EventTracker
+- Emits appropriate navigation side effects
+
+**2. Separate Navigation Side Effects**
+- `navigationSideEffectChannel` - For navigation events only
+- `sideEffectChannel` - For dialogs, snackbars, bottom sheets
+- Clear separation of concerns
+
+**3. Method Naming Conventions**
+- `navigate(navigation: <Screen>Navigation)` - Navigation actions
+- `on<Action>()` - User interactions (onRefresh, onItemClick)
+- `emit<Type>SideEffect()` - Private helpers for side effect emission
+
+**4. Minimal Public API**
+- Expose only what the UI needs to call
+- Keep implementation details private
+- Use sealed interfaces for exhaustive when expressions
+
+#### Benefits of This Pattern
+
+- **Type Safety**: Sealed interfaces ensure all cases are handled at compile time
+- **Discoverable**: All navigation options visible in one sealed interface
+- **Testable**: Single method to mock/verify in tests
+- **Trackable**: Analytics tracking happens automatically in one place
+- **Maintainable**: Add new navigation without adding new methods
+- **Separation**: Clear distinction between navigation and other side effects
+- **Single Responsibility**: Each method has one clear purpose
+
+#### Example: Calling from UI
+
+```kotlin
+@Composable
+fun DashboardScreen(
+  viewModel: DashboardViewModel = koinViewModel(),
+) {
+  // Observe navigation side effects
+  LaunchedEffect(viewModel) {
+    viewModel.navigationSideEffects.collect { effect ->
+      when (effect) {
+        DashboardNavigationSideEffect.NavigateToCreateCategory ->
+          navController.navigate("create_category")
+        is DashboardNavigationSideEffect.NavigateToCategory ->
+          navController.navigate("category/${effect.categoryId}")
+        // ... other navigation cases
+      }
+    }
+  }
+
+  // UI calls viewModel.navigate() with sealed interface
+  Column {
+    Button(onClick = {
+      viewModel.navigate(DashboardNavigation.CreateCategory)
+    }) {
+      Text("Create Category")
+    }
+
+    CategoryCard(
+      category = category,
+      onClick = {
+        viewModel.navigate(
+          DashboardNavigation.Category(
+            categoryId = category.id,
+            source = "category_title"
+          )
+        )
+      }
+    )
   }
 }
 ```
@@ -547,9 +985,14 @@ class CategoryDetailViewModel(
 - Exposed as `Flow<SideEffect>` from ViewModel (Channel-based)
 - Handled in `SideEffectHandler` composable
 
-### Navigation
+### Navigation Architecture
 
-**Routes (`TopLevelRoute.kt`):**
+The app uses a multi-layered navigation architecture that separates routing, navigation intent, and navigation side effects.
+
+#### Top-Level Routes (`TopLevelRoute.kt`)
+
+Type-safe navigation routes using sealed classes:
+
 - `DashboardRoute` - Main dashboard
 - `CreateCategoryRoute` - Create new category
 - `CategoryDetailRoute` - Category detail with nested routes:
@@ -557,10 +1000,170 @@ class CategoryDetailViewModel(
   - `CategoryDetailRoutes.AddItem(categoryId, productId?)` - Add item screen
 - `SettingsRoute` - Settings screens
 
-**Navigation Pattern:**
-- Type-safe navigation with sealed classes
+**Navigation Configuration:**
 - ViewModel scoping via `rememberViewModelStoreNavEntryDecorator()`
 - State preservation via `rememberSaveableStateHolderNavEntryDecorator()`
+
+#### Screen-Level Navigation Pattern
+
+Each screen implements a three-part navigation system:
+
+**1. Navigation Intent Sealed Interface** (`<Screen>Navigation.kt`)
+
+Represents user's navigation intent with all required data including tracking parameters:
+
+```kotlin
+sealed interface DashboardNavigation {
+  data object CreateCategory : DashboardNavigation
+  data class Category(
+    val categoryId: String,
+    val source: String  // For tracking: "category_title", "calendar_date"
+  ) : DashboardNavigation
+  data class FilteredItems(val status: ItemStatus) : DashboardNavigation
+  data object Settings : DashboardNavigation
+}
+```
+
+**2. Navigation Side Effect Sealed Interface** (`<Screen>Navigation.kt`)
+
+Represents the actual navigation action to be performed (minimal data needed):
+
+```kotlin
+sealed interface DashboardNavigationSideEffect {
+  data object NavigateToCreateCategory : DashboardNavigationSideEffect
+  data class NavigateToCategory(val categoryId: String) : DashboardNavigationSideEffect
+  data class NavigateToFilteredItems(val status: ItemStatus) : DashboardNavigationSideEffect
+  data object NavigateToSettings : DashboardNavigationSideEffect
+}
+```
+
+**3. ViewModel Navigation Method**
+
+Single `navigate()` method that:
+- Takes navigation intent as parameter
+- Tracks action via EventTracker
+- Emits navigation side effect
+
+```kotlin
+fun navigate(navigation: DashboardNavigation) {
+  when (navigation) {
+    DashboardNavigation.CreateCategory -> {
+      eventTracker.trackAction(NavigateToCreateCategoryAction())
+      emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToCreateCategory)
+    }
+    is DashboardNavigation.Category -> {
+      eventTracker.trackAction(NavigateToCategoryAction(navigation.source))
+      emitNavigationSideEffect(
+        DashboardNavigationSideEffect.NavigateToCategory(navigation.categoryId)
+      )
+    }
+    // ... other cases
+  }
+}
+```
+
+**4. Screen Composable Navigation Handling**
+
+Observe navigation side effects and trigger actual navigation:
+
+```kotlin
+@Composable
+fun DashboardScreen(
+  onNavigateToCreateCategory: () -> Unit,
+  onNavigateToCategory: (String) -> Unit,
+  // ... other navigation callbacks
+  viewModel: DashboardViewModel = koinViewModel(),
+) {
+  // Observe and handle navigation side effects
+  LaunchedEffect(viewModel) {
+    viewModel.navigationSideEffects.collect { effect ->
+      when (effect) {
+        DashboardNavigationSideEffect.NavigateToCreateCategory ->
+          onNavigateToCreateCategory()
+        is DashboardNavigationSideEffect.NavigateToCategory ->
+          onNavigateToCategory(effect.categoryId)
+        is DashboardNavigationSideEffect.NavigateToFilteredItems ->
+          onNavigateToStatus(effect.status)
+        DashboardNavigationSideEffect.NavigateToSettings ->
+          onNavigateToSettings()
+      }
+    }
+  }
+
+  // UI calls viewModel.navigate()
+  DashboardContent(
+    onCreateCategoryClick = {
+      viewModel.navigate(DashboardNavigation.CreateCategory)
+    },
+    onCategoryClick = { categoryId ->
+      viewModel.navigate(
+        DashboardNavigation.Category(
+          categoryId = categoryId,
+          source = "category_title"
+        )
+      )
+    }
+  )
+}
+```
+
+#### Navigation Data Flow
+
+```
+User Interaction
+    ↓
+UI calls viewModel.navigate(NavigationIntent)
+    ↓
+ViewModel:
+  1. Tracks action via EventTracker
+  2. Emits NavigationSideEffect
+    ↓
+Screen LaunchedEffect collects NavigationSideEffect
+    ↓
+Screen calls navigation callback
+    ↓
+Top-level navigation (NavController) handles route
+```
+
+#### Key Principles
+
+**1. Separation of Concerns**
+- **Navigation Intent**: User's intent + tracking data
+- **Navigation Side Effect**: Minimal data for actual navigation
+- **ViewModel**: Coordinates tracking and side effect emission
+- **Screen**: Observes side effects and triggers navigation
+
+**2. Why Two Sealed Interfaces?**
+- **Navigation Intent** may include extra data not needed for navigation (e.g., `source` for tracking)
+- **Navigation Side Effect** contains only essential navigation data
+- Keeps concerns separated and APIs clean
+
+**3. Benefits**
+- Type-safe navigation with compile-time guarantees
+- Automatic analytics tracking for all navigation
+- Single entry point per ViewModel (`navigate()` method)
+- Testable navigation logic
+- Clear separation between UI and navigation logic
+
+**4. File Organization**
+```
+ui/screen/dashboard/
+├── DashboardScreen.kt           # Screen composable
+├── DashboardViewModel.kt        # ViewModel with navigate() method
+├── DashboardNavigation.kt       # Navigation sealed interfaces
+├── DashboardState.kt            # Screen state
+└── DashboardSideEffect.kt       # Non-navigation side effects (optional)
+```
+
+#### Adding Navigation to a New Screen
+
+1. Create `<Screen>Navigation.kt` with both sealed interfaces
+2. Add `navigate()` method to ViewModel
+3. Inject `EventTracker` in ViewModel
+4. Create action classes in `feature/tracking/Actions.kt`
+5. Add `LaunchedEffect` in screen composable to observe navigation side effects
+6. Pass navigation callbacks from parent composable
+7. UI calls `viewModel.navigate()` with intent objects
 
 ### Components (`base/ui/components/`)
 
@@ -877,15 +1480,197 @@ LazyColumn(verticalArrangement = Arrangement.spacedBy(0.dp)) {
 - ✅ Item status tracking (Fresh, ExpiringSoon, Expired, Frozen)
 - ✅ FireAndForget system for onboarding and tutorials
 - ✅ Multi-language support (en, es, ca)
+- ✅ Analytics & action tracking system (Firebase + Timber)
+- ✅ Dashboard screen action tracking fully implemented
 
 ## Development Notes
 
 ### Adding New Screens
-1. Create screen composable in `ui/screen/<feature>/`
-2. Add corresponding ViewModel in same package
-3. Define route in `TopLevelRoute.kt`
-4. Register in `App.kt` `entryProvider` block
-5. Add navigation item to `CompactContent`/`ExpandedContent`
+
+Complete checklist for adding a new screen with proper navigation and tracking:
+
+#### 1. File Structure Setup
+
+Create the following files in `ui/screen/<feature>/`:
+
+```
+ui/screen/<feature>/
+├── <Feature>Screen.kt           # Main screen composable
+├── <Feature>ViewModel.kt        # ViewModel with navigate() method
+├── <Feature>Navigation.kt       # Navigation sealed interfaces
+├── <Feature>State.kt            # Screen state sealed interface
+├── <Feature>SideEffect.kt       # Non-navigation side effects (optional)
+├── <Feature>Mapper.kt           # Domain to UI model mapper (if needed)
+└── <Feature>UiModel.kt          # UI models (if needed)
+```
+
+#### 2. Define Navigation Sealed Interfaces
+
+Create `<Feature>Navigation.kt`:
+
+```kotlin
+sealed interface FeatureNavigation {
+  data object Action1 : FeatureNavigation
+  data class Action2(val id: String, val source: String) : FeatureNavigation
+}
+
+sealed interface FeatureNavigationSideEffect {
+  data object NavigateToAction1 : FeatureNavigationSideEffect
+  data class NavigateToAction2(val id: String) : FeatureNavigationSideEffect
+}
+```
+
+#### 3. Create ViewModel with Navigation Method
+
+```kotlin
+class FeatureViewModel(
+  private val eventTracker: EventTracker,
+  // ... other dependencies
+) : ViewModel() {
+
+  val state: StateFlow<FeatureState> = ...
+
+  private val navigationSideEffectChannel = Channel<FeatureNavigationSideEffect>()
+  val navigationSideEffects = navigationSideEffectChannel.receiveAsFlow()
+
+  private val sideEffectChannel = Channel<FeatureSideEffect>()
+  val sideEffects = sideEffectChannel.receiveAsFlow()
+
+  fun navigate(navigation: FeatureNavigation) {
+    when (navigation) {
+      FeatureNavigation.Action1 -> {
+        eventTracker.trackAction(NavigateToAction1Action())
+        emitNavigationSideEffect(FeatureNavigationSideEffect.NavigateToAction1)
+      }
+      is FeatureNavigation.Action2 -> {
+        eventTracker.trackAction(NavigateToAction2Action(navigation.source))
+        emitNavigationSideEffect(
+          FeatureNavigationSideEffect.NavigateToAction2(navigation.id)
+        )
+      }
+    }
+  }
+
+  private fun emitNavigationSideEffect(effect: FeatureNavigationSideEffect) {
+    viewModelScope.launch {
+      navigationSideEffectChannel.send(effect)
+    }
+  }
+
+  private fun emitSideEffect(effect: FeatureSideEffect) {
+    viewModelScope.launch {
+      sideEffectChannel.send(effect)
+    }
+  }
+}
+```
+
+#### 4. Create Screen Composable
+
+```kotlin
+@Composable
+fun FeatureScreen(
+  onNavigateToDestination: () -> Unit,
+  // ... other navigation callbacks
+  viewModel: FeatureViewModel = koinViewModel(),
+) {
+  TrackScreen(screen = FeatureScreenEvent())
+
+  // Handle navigation side effects
+  LaunchedEffect(viewModel) {
+    viewModel.navigationSideEffects.collect { effect ->
+      when (effect) {
+        FeatureNavigationSideEffect.NavigateToAction1 -> onNavigateToDestination()
+        // ... other cases
+      }
+    }
+  }
+
+  // Handle other side effects (dialogs, snackbars)
+  val dialogState = rememberAppDialogState()
+  val snackbarState = rememberAppSnackbarState()
+  val bottomSheetState = rememberAppBottomSheetState()
+
+  LaunchedEffect(viewModel) {
+    viewModel.sideEffects.collect { effect ->
+      when (effect) {
+        // Handle dialogs, snackbars, bottom sheets
+      }
+    }
+  }
+
+  // Screen content
+  AppScaffold(
+    dialogState = dialogState,
+    snackbarState = snackbarState,
+    bottomSheetState = bottomSheetState,
+  ) {
+    FeatureContent(
+      state = viewModel.state.collectAsState().value,
+      onAction = { viewModel.navigate(FeatureNavigation.Action1) }
+    )
+  }
+}
+```
+
+#### 5. Define Tracking Actions
+
+Add to `feature/tracking/Actions.kt`:
+
+```kotlin
+class NavigateToAction1Action : NavigationAction(
+  actionName = "action1",
+  origin = "feature",
+  parameters = mapOf("source" to "button")
+)
+```
+
+#### 6. Register in Navigation System
+
+1. Define route in `TopLevelRoute.kt`:
+   ```kotlin
+   data object FeatureRoute : TopLevelRoute
+   ```
+
+2. Register in `App.kt` `entryProvider` block:
+   ```kotlin
+   entry<FeatureRoute> { _, _ ->
+     FeatureScreen(
+       onNavigateToDestination = { navController.navigate(...) }
+     )
+   }
+   ```
+
+3. Add navigation item to `CompactContent`/`ExpandedContent` (if top-level)
+
+#### 7. Register ViewModel in Koin
+
+Add to `di/AppModule.kt`:
+
+```kotlin
+viewModelOf(::FeatureViewModel)
+```
+
+#### 8. Write Tests
+
+Create tests for:
+- Action classes verify correct event names and parameters
+- ViewModel navigation logic (if complex)
+- UI state transformations
+
+#### Summary Checklist
+
+- [ ] Create navigation sealed interfaces (`<Feature>Navigation.kt`)
+- [ ] Create ViewModel with `navigate()` method
+- [ ] Create tracking actions in `feature/tracking/Actions.kt`
+- [ ] Create screen composable with navigation side effect handling
+- [ ] Create state sealed interface
+- [ ] Register route in `TopLevelRoute.kt`
+- [ ] Register screen in `App.kt`
+- [ ] Register ViewModel in Koin
+- [ ] Add screen tracking event
+- [ ] Write tests for tracking actions
+- [ ] Document navigation actions in CLAUDE.md (if public screen)
 
 ### Using Interfaces for Abstraction
 
