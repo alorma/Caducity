@@ -18,7 +18,7 @@ import com.alorma.caducity.ui.screen.category.detail.CategoryDetailRoute
 import com.alorma.caducity.ui.screen.dashboard.DashboardRoute
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
 import com.alorma.caducity.ui.screen.dashboard.FilteredItemsRoute
-import com.alorma.caducity.ui.screen.dashboard.filtered.FilteredItemsByStatusScreen
+import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusScreen
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingRoute
 import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen

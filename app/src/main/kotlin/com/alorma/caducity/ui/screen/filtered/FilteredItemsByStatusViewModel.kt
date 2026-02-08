@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.dashboard.filtered
+package com.alorma.caducity.ui.screen.filtered
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

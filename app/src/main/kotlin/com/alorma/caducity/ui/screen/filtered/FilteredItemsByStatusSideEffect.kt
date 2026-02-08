@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.dashboard.filtered
+package com.alorma.caducity.ui.screen.filtered
 
 import com.alorma.caducity.domain.model.Item
 
