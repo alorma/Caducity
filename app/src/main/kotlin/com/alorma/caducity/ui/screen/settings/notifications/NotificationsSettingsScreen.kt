@@ -8,6 +8,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
@@ -79,7 +81,8 @@ fun NotificationsSettingsContent(
   }
 }
 
-@PreviewDynamicLightDark
+@PreviewLightDark
+@PreviewScreenSizes
 @Composable
 fun NotificationsSettingsScreenPreview() {
   PreviewTheme {

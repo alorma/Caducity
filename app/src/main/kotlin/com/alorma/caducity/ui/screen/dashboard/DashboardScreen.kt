@@ -18,7 +18,9 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
@@ -31,7 +33,6 @@ import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardSuccessContentList
-import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -147,8 +148,8 @@ fun DashboardSuccessContent(
   }
 }
 
-
-@PreviewDynamicLightDark
+@PreviewLightDark
+@PreviewScreenSizes
 @Composable
 fun DashboardSuccessContentPreview(
   @PreviewParameter(provider = DashboardPreviewProvider::class) state: DashboardState,

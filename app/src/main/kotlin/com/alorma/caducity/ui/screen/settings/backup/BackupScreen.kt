@@ -12,6 +12,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
@@ -190,7 +192,8 @@ private fun BackupScreenContent(
   }
 }
 
-@PreviewDynamicLightDark
+@PreviewLightDark
+@PreviewScreenSizes
 @Composable
 fun BackupScreenContentPreview() {
   PreviewTheme {
