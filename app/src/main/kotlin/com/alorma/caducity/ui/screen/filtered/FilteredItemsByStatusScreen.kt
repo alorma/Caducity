@@ -55,6 +55,18 @@ fun FilteredItemsByStatusScreen(
   val snackbarState = rememberAppSnackbarState()
   val bottomSheetState = rememberAppBottomSheetState()
 
+  // Handle navigation side effects
+  androidx.compose.runtime.LaunchedEffect(viewModel) {
+    viewModel.sideEffects.collect { effect ->
+      when (effect) {
+        is FilteredItemsByStatusSideEffect.NavigateToCategory -> {
+          onNavigateToCategory(effect.categoryId)
+        }
+        else -> { /* Other side effects handled in SideEffectHandler */ }
+      }
+    }
+  }
+
   SideEffectHandler(
     viewModel = viewModel,
     bottomSheetState = bottomSheetState,
@@ -97,7 +109,9 @@ fun FilteredItemsByStatusScreen(
           categories = currentState.categories,
           status = status,
           onProductClick = viewModel::onProductClick,
-          onCategoryClick = onNavigateToCategory,
+          onCategoryClick = { categoryId ->
+            viewModel.navigate(FilteredItemsNavigation.Category(categoryId, "category_header"))
+          },
         )
       }
 

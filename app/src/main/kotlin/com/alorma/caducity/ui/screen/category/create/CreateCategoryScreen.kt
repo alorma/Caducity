@@ -15,6 +15,8 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,6 +29,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
@@ -85,7 +89,15 @@ private fun CreateCategoryPage(
         title = {
           Text(text = stringResource(R.string.create_category_screen_title))
         },
-        navigationIcon = { NavigationIcon(onClick = onCancelClick) },
+        navigationIcon = {
+          IconButton(onClick = onCancelClick) {
+            Icon(
+              imageVector = AppIcons.Back,
+              contentDescription = null,
+              tint = MaterialTheme.colorScheme.primary,
+            )
+          }
+        },
       )
     },
     bottomBar = {

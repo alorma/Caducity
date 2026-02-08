@@ -36,11 +36,30 @@ fun CategoryDetailContainer(
     ),
     entryProvider = entryProvider {
       entry<CategoryDetailRoutes.Root> {
+        val viewModel = org.koin.compose.viewmodel.koinViewModel<CategoryDetailViewModel> {
+          org.koin.core.parameter.parametersOf(categoryId)
+        }
+
+        // Handle navigation side effects
+        androidx.compose.runtime.LaunchedEffect(viewModel) {
+          viewModel.sideEffect.collect { effect ->
+            when (effect) {
+              is CategoryDetailSideEffect.NavigateToAddItem -> {
+                productDetailBackStack.add(
+                  CategoryDetailRoutes.AddInstance(categoryId, effect.productId)
+                )
+              }
+              CategoryDetailSideEffect.NavigateBack -> {
+                onBack()
+              }
+              else -> { /* Other side effects handled in screen */ }
+            }
+          }
+        }
+
         CategoryDetailScreen(
           categoryId = it.categoryId,
-          onNavigateToAddInstance = { productId ->
-            productDetailBackStack.add(CategoryDetailRoutes.AddInstance(categoryId, productId))
-          },
+          viewModel = viewModel,
         )
       }
       entry<CategoryDetailRoutes.AddInstance> {

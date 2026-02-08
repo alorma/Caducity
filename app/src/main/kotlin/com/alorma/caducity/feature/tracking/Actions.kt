@@ -68,3 +68,39 @@ class ItemSavedAction(hasProduct: Boolean, quantity: Int) : NavigationAction(
     }
   )
 )
+
+// Product Page Actions
+class NavigateToAddItemFromProductAction : NavigationAction(
+  actionName = "add_item",
+  origin = "product_page",
+  parameters = mapOf("source" to "fab")
+)
+
+class ProductDeletedAction : NavigationAction(
+  actionName = "product_deleted",
+  origin = "product_page",
+  parameters = mapOf("source" to "delete_dialog")
+)
+
+// Category Detail Actions
+class NavigateToAddItemFromCategoryAction(source: String, hasProduct: Boolean) : NavigationAction(
+  actionName = "add_item",
+  origin = "category_detail",
+  parameters = mapOf(
+    "source" to source,  // "fab", "product_tab"
+    "has_product" to hasProduct.toString()
+  )
+)
+
+class CategoryDeletedAction : NavigationAction(
+  actionName = "category_deleted",
+  origin = "category_detail",
+  parameters = mapOf("source" to "delete_dialog")
+)
+
+// Filtered Items Actions
+class NavigateToCategoryFromFilteredAction(source: String) : NavigationAction(
+  actionName = "category",
+  origin = "filtered_items",
+  parameters = mapOf("source" to source)  // "category_header"
+)

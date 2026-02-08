@@ -73,7 +73,6 @@ import com.alorma.caducity.feature.tracking.TrackScreen
 @Composable
 fun CategoryDetailScreen(
   categoryId: String,
-  onNavigateToAddInstance: (productId: String?) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: CategoryDetailViewModel = koinViewModel { parametersOf(categoryId) },
 ) {
@@ -102,7 +101,9 @@ fun CategoryDetailScreen(
         dialogState = dialogState,
         snackbarState = snackbarState,
         state = currentState,
-        onNavigateToAddInstance = onNavigateToAddInstance,
+        onNavigateToAddInstance = { productId ->
+          viewModel.navigate(CategoryDetailNavigation.AddItem(productId, "fab"))
+        },
         onShowAddProductDialog = viewModel::onShowAddProductDialog,
         onDeleteCategoryClick = viewModel::onDeleteCategoryClick,
       )
@@ -115,7 +116,9 @@ fun CategoryDetailScreen(
         dialogState = dialogState,
         snackbarState = snackbarState,
         state = currentState,
-        onNavigateToAddInstance = onNavigateToAddInstance,
+        onNavigateToAddInstance = { productId ->
+          viewModel.navigate(CategoryDetailNavigation.AddItem(productId, "fab"))
+        },
         onShowAddProductDialog = viewModel::onShowAddProductDialog,
         onDeleteCategoryClick = viewModel::onDeleteCategoryClick,
         onProductTabChanged = viewModel::onProductTabChanged,
@@ -652,6 +655,11 @@ private fun SideEffectHandler(
   LaunchedEffect(viewModel.sideEffect) {
     viewModel.sideEffect.collect { effect ->
       when (effect) {
+        is CategoryDetailSideEffect.NavigateToAddItem,
+        CategoryDetailSideEffect.NavigateBack -> {
+          // Navigation is handled by CategoryDetailContainer
+        }
+
         CategoryDetailSideEffect.ShowAddProductDialog -> launch {
           var productName by mutableStateOf("")
           val result = dialogState.showAlertDialog(
@@ -707,9 +715,8 @@ private fun SideEffectHandler(
           }
         }
 
-        CategoryDetailSideEffect.CategoryDeleted -> launch {
-          // Navigate back after successful deletion
-          backDispatcher?.onBackPressedDispatcher?.onBackPressed()
+        CategoryDetailSideEffect.CategoryDeleted -> {
+          // Snackbar or success feedback - navigation handled by NavigateBack side effect
         }
 
         CategoryDetailSideEffect.DeleteCategoryFailed -> launch {

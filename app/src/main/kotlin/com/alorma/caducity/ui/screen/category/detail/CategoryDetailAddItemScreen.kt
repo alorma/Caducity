@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.Check
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
@@ -84,7 +85,13 @@ fun CategoryDetailAddItemScreen(
       StyledTopAppBar(
         title = { Text(text = stringResource(R.string.category_detail_add_item_title)) },
         navigationIcon = {
-          NavigationIcon(onClick = { viewModel.navigate(AddItemNavigation.Cancel) })
+          IconButton(onClick = { viewModel.navigate(AddItemNavigation.Cancel) }) {
+            Icon(
+              imageVector = AppIcons.Back,
+              contentDescription = null,
+              tint = MaterialTheme.colorScheme.primary,
+            )
+          }
         },
         actions = {
           IconButton(

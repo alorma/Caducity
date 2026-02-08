@@ -6,6 +6,9 @@ import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
 import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase
+import com.alorma.caducity.feature.tracking.CategoryDeletedAction
+import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.feature.tracking.NavigateToAddItemFromCategoryAction
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -30,6 +33,7 @@ class CategoryDetailViewModel(
   private val createProductUseCase: CreateProductUseCase,
   private val deleteCategoryUseCase: DeleteCategoryUseCase,
   private val getProductItemsUseCase: GetProductItemsUseCase,
+  private val eventTracker: EventTracker,
 ) : ViewModel() {
 
   private val _sideEffect = Channel<CategoryDetailSideEffect>(Channel.BUFFERED)
@@ -116,6 +120,7 @@ class CategoryDetailViewModel(
       try {
         val result = deleteCategoryUseCase.deleteCategory(categoryId)
         if (result.isSuccess) {
+          navigate(CategoryDetailNavigation.CategoryDeleted)
           emitSideEffect(CategoryDetailSideEffect.CategoryDeleted)
         } else {
           emitSideEffect(CategoryDetailSideEffect.DeleteCategoryFailed)
@@ -130,6 +135,24 @@ class CategoryDetailViewModel(
   private fun emitSideEffect(effect: CategoryDetailSideEffect) {
     viewModelScope.launch {
       _sideEffect.send(effect)
+    }
+  }
+
+  fun navigate(navigation: CategoryDetailNavigation) {
+    when (navigation) {
+      is CategoryDetailNavigation.AddItem -> {
+        eventTracker.trackAction(
+          NavigateToAddItemFromCategoryAction(
+            source = navigation.source,
+            hasProduct = navigation.productId != null
+          )
+        )
+        emitSideEffect(CategoryDetailSideEffect.NavigateToAddItem(navigation.productId))
+      }
+      CategoryDetailNavigation.CategoryDeleted -> {
+        eventTracker.trackAction(CategoryDeletedAction())
+        emitSideEffect(CategoryDetailSideEffect.NavigateBack)
+      }
     }
   }
 }
