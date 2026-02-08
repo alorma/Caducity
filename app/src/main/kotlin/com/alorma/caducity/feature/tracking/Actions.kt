@@ -1,25 +1,29 @@
 package com.alorma.caducity.feature.tracking
 
 // Dashboard Actions
-class NavigateToCreateCategoryAction : Action(
-  name = "navigate_to_create_category",
-  parameters = mapOf("source" to "dashboard_fab")
+class NavigateToCreateCategoryAction : NavigationAction(
+  actionName = "create_category",
+  origin = "dashboard",
+  parameters = mapOf("source" to "fab")
 )
 
-class NavigateToCategoryAction(source: String) : Action(
-  name = "navigate_to_category",
+class NavigateToCategoryAction(source: String) : NavigationAction(
+  actionName = "category",
+  origin = "dashboard",
   parameters = mapOf("source" to source) // "category_title" or "calendar_date"
 )
 
-class NavigateToFilteredItemsAction(status: String) : Action(
-  name = "navigate_to_filtered_items",
+class NavigateToFilteredItemsAction(status: String) : NavigationAction(
+  actionName = "filtered_items",
+  origin = "dashboard",
   parameters = mapOf(
     "status" to status, // "expired", "expiring_soon", "fresh", "frozen"
-    "source" to "dashboard_summary"
+    "source" to "summary"
   )
 )
 
-class NavigateToSettingsAction : Action(
-  name = "navigate_to_settings",
-  parameters = mapOf("source" to "dashboard_topbar")
+class NavigateToSettingsAction : NavigationAction(
+  actionName = "settings",
+  origin = "dashboard",
+  parameters = mapOf("source" to "topbar")
 )

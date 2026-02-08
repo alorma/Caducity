@@ -23,13 +23,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
-sealed interface DashboardNavigationSideEffect {
-  data object NavigateToCreateCategory : DashboardNavigationSideEffect
-  data class NavigateToCategory(val categoryId: String) : DashboardNavigationSideEffect
-  data class NavigateToFilteredItems(val status: ItemStatus) : DashboardNavigationSideEffect
-  data object NavigateToSettings : DashboardNavigationSideEffect
-}
-
 class DashboardViewModel(
   calendarPreferences: CalendarPreferences,
   private val obtainDashboardUseCase: ObtainDashboardUseCase,
@@ -59,31 +52,32 @@ class DashboardViewModel(
       }
   }
 
-  fun onNavigateToCreateCategory() {
-    eventTracker.trackAction(NavigateToCreateCategoryAction())
-    emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToCreateCategory)
-  }
-
-  fun onNavigateToCategory(categoryId: String, source: String) {
-    eventTracker.trackAction(NavigateToCategoryAction(source))
-    emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToCategory(categoryId))
-  }
-
-  fun onNavigateToFilteredItems(status: ItemStatus) {
-    val statusParam = when (status) {
-      ItemStatus.Expired -> "expired"
-      ItemStatus.ExpiringSoon -> "expiring_soon"
-      ItemStatus.Fresh -> "fresh"
-      ItemStatus.Frozen -> "frozen"
-      ItemStatus.Consumed -> "consumed"
+  fun navigate(navigation: DashboardNavigation) {
+    when (navigation) {
+      DashboardNavigation.CreateCategory -> {
+        eventTracker.trackAction(NavigateToCreateCategoryAction())
+        emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToCreateCategory)
+      }
+      is DashboardNavigation.Category -> {
+        eventTracker.trackAction(NavigateToCategoryAction(navigation.source))
+        emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToCategory(navigation.categoryId))
+      }
+      is DashboardNavigation.FilteredItems -> {
+        val statusParam = when (navigation.status) {
+          ItemStatus.Expired -> "expired"
+          ItemStatus.ExpiringSoon -> "expiring_soon"
+          ItemStatus.Fresh -> "fresh"
+          ItemStatus.Frozen -> "frozen"
+          ItemStatus.Consumed -> "consumed"
+        }
+        eventTracker.trackAction(NavigateToFilteredItemsAction(statusParam))
+        emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToFilteredItems(navigation.status))
+      }
+      DashboardNavigation.Settings -> {
+        eventTracker.trackAction(NavigateToSettingsAction())
+        emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToSettings)
+      }
     }
-    eventTracker.trackAction(NavigateToFilteredItemsAction(statusParam))
-    emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToFilteredItems(status))
-  }
-
-  fun onNavigateToSettings() {
-    eventTracker.trackAction(NavigateToSettingsAction())
-    emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToSettings)
   }
 
   private fun emitNavigationSideEffect(effect: DashboardNavigationSideEffect) {
