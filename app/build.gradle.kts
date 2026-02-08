@@ -109,6 +109,7 @@ kotlin {
   compilerOptions {
     jvmTarget = JvmTarget.JVM_21
     optIn.add("kotlin.time.ExperimentalTime")
+    optIn.add("kotlinx.coroutines.ExperimentalCoroutinesApi")
     optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
     optIn.add("androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")
     optIn.add("androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi")
