@@ -55,10 +55,12 @@ fun OnboardingScreen(
     }
   }
 
-  // Handle completion
-  LaunchedEffect(state.isCompleted, onComplete) {
-    if (state.isCompleted) {
-      onComplete()
+  // Handle navigation side effects
+  LaunchedEffect(viewModel) {
+    viewModel.navigationSideEffects.collect { effect ->
+      when (effect) {
+        OnboardingNavigationSideEffect.NavigateToApp -> onComplete()
+      }
     }
   }
 

@@ -47,7 +47,7 @@ fun CategoryDetailContainer(
         CategoryDetailAddItemScreen(
           categoryId = it.categoryId,
           productId = it.productId,
-          onClose = { productDetailBackStack.removeLastOrNull() },
+          onNavigateBack = { productDetailBackStack.removeLastOrNull() },
         )
       }
     },

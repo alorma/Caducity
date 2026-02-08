@@ -11,10 +11,15 @@ import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.usecase.AddItemToCategoryUseCase
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
+import com.alorma.caducity.feature.tracking.CancelAddItemAction
+import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.feature.tracking.ItemSavedAction
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlin.time.Instant
 
@@ -26,6 +31,7 @@ class CategoryDetailAddItemViewModel(
   private val addItemToCategoryUseCase: AddItemToCategoryUseCase,
   private val stringProvider: StringProvider,
   private val appClock: AppClock,
+  private val eventTracker: EventTracker,
 ) : ViewModel() {
 
   private val _state = MutableStateFlow<CategoryDetailAddItemState>(
@@ -35,6 +41,9 @@ class CategoryDetailAddItemViewModel(
 
   private val _formState = MutableStateFlow(FormState())
   val formState: StateFlow<FormState> = _formState.asStateFlow()
+
+  private val navigationSideEffectChannel = Channel<AddItemNavigationSideEffect>()
+  val navigationSideEffects = navigationSideEffectChannel.receiveAsFlow()
 
   private var allProducts: List<ProductUiModel> = emptyList()
 
@@ -120,7 +129,7 @@ class CategoryDetailAddItemViewModel(
     _formState.value = _formState.value.copy(customQuantity = text)
   }
 
-  fun save(onSuccess: () -> Unit) {
+  fun save() {
     viewModelScope.launch {
       val currentFormState = _formState.value
       val productText = currentFormState.productText.text.trim()
@@ -188,11 +197,30 @@ class CategoryDetailAddItemViewModel(
           )
         }
 
-        onSuccess()
+        navigate(AddItemNavigation.ItemSaved(hasProduct = productId != null, quantity = quantity))
       } catch (e: Exception) {
         // TODO: Handle error
         e.printStackTrace()
       }
+    }
+  }
+
+  fun navigate(navigation: AddItemNavigation) {
+    when (navigation) {
+      AddItemNavigation.Cancel -> {
+        eventTracker.trackAction(CancelAddItemAction())
+        emitNavigationSideEffect(AddItemNavigationSideEffect.NavigateBack)
+      }
+      is AddItemNavigation.ItemSaved -> {
+        eventTracker.trackAction(ItemSavedAction(navigation.hasProduct, navigation.quantity))
+        emitNavigationSideEffect(AddItemNavigationSideEffect.NavigateBack)
+      }
+    }
+  }
+
+  private fun emitNavigationSideEffect(effect: AddItemNavigationSideEffect) {
+    viewModelScope.launch {
+      navigationSideEffectChannel.send(effect)
     }
   }
 }
