@@ -1,6 +1,7 @@
 package com.alorma.caducity.feature.consent
 
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.setConsent
 import com.russhwolf.settings.Settings
 
 /**
@@ -72,13 +73,12 @@ class ConsentManager(
   }
 
   private fun applyConsentToFirebase(preferences: ConsentPreferences) {
-    val consentMap = mapOf(
-      FirebaseAnalytics.ConsentType.ANALYTICS_STORAGE to toFirebaseConsentStatus(preferences.analyticsStorage),
-      FirebaseAnalytics.ConsentType.AD_STORAGE to toFirebaseConsentStatus(preferences.adStorage),
-      FirebaseAnalytics.ConsentType.AD_USER_DATA to toFirebaseConsentStatus(preferences.adUserData),
-      FirebaseAnalytics.ConsentType.AD_PERSONALIZATION to toFirebaseConsentStatus(preferences.adPersonalization),
-    )
-    analytics.setConsent(consentMap)
+    analytics.setConsent {
+      analyticsStorage = toFirebaseConsentStatus(preferences.analyticsStorage)
+      adStorage = toFirebaseConsentStatus(preferences.adStorage)
+      adUserData = toFirebaseConsentStatus(preferences.adUserData)
+      adPersonalization = toFirebaseConsentStatus(preferences.adPersonalization)
+    }
   }
 
   private fun getConsentStatus(key: String): ConsentStatus {
