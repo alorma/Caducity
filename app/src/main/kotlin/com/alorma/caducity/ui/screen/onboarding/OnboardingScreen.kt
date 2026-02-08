@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingButtons
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingPagerIndicator
@@ -86,38 +87,40 @@ fun OnboardingScreen(
       }
     },
   ) { paddingValues ->
-    Box(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues),
+    ResponsiveCenteredContainer(
+      modifier = Modifier.padding(paddingValues),
     ) {
-      Column(
+      Box(
         modifier = Modifier.fillMaxSize(),
       ) {
-        // Pager
-        HorizontalPager(
-          state = pagerState,
-          modifier = Modifier
-            .fillMaxWidth()
-            .weight(1f),
-        ) { page ->
-          when (page) {
-            0 -> WelcomeOnboardingPage()
-            1 -> FeaturesOnboardingPage()
-            2 -> PermissionsOnboardingPage()
-            3 -> TutorialOnboardingPage()
-            4 -> DisclaimerOnboardingPage()
+        Column(
+          modifier = Modifier.fillMaxSize(),
+        ) {
+          // Pager
+          HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+              .fillMaxWidth()
+              .weight(1f),
+          ) { page ->
+            when (page) {
+              0 -> WelcomeOnboardingPage()
+              1 -> FeaturesOnboardingPage()
+              2 -> PermissionsOnboardingPage()
+              3 -> TutorialOnboardingPage()
+              4 -> DisclaimerOnboardingPage()
+            }
           }
-        }
 
-        // Page Indicator
-        OnboardingPagerIndicator(
-          pageCount = state.totalPages,
-          currentPage = state.currentPage,
-          modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .padding(16.dp),
-        )
+          // Page Indicator
+          OnboardingPagerIndicator(
+            pageCount = state.totalPages,
+            currentPage = state.currentPage,
+            modifier = Modifier
+              .align(Alignment.CenterHorizontally)
+              .padding(16.dp),
+          )
+        }
       }
     }
   }
