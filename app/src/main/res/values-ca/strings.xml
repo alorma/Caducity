@@ -80,6 +80,7 @@
     <string name="settings_theme_dark">Fosc</string>
     <string name="settings_theme_system">Sistema</string>
     <string name="settings_dynamic_colors">Colors dinàmics</string>
+    <string name="settings_calendar_options">Opcions de calendari</string>
     <string name="settings_first_day_of_week_title">Primer dia de la setmana</string>
 
     <string name="settings_group_expiration_colors">Colors de caducitat</string>

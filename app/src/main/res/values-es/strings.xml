@@ -79,6 +79,7 @@
     <string name="settings_theme_dark">Oscuro</string>
     <string name="settings_theme_system">Sistema</string>
     <string name="settings_dynamic_colors">Colores dinámicos</string>
+    <string name="settings_calendar_options">Opciones de calendario</string>
     <string name="settings_first_day_of_week_title">Primer día de la semana</string>
 
     <string name="settings_group_expiration_colors">Colores de caducidad</string>
