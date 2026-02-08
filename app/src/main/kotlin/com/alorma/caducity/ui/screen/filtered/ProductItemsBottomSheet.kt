@@ -43,8 +43,8 @@ fun AppBottomSheetState.showProductItemsBottomSheet(
         onItemClick = { item ->
           coroutineScope.launch {
             hide()
+            onItemClick(item)
           }
-          onItemClick(item)
         },
       )
     }
