@@ -36,7 +36,7 @@ See [**DEVELOPMENT_PLAN.md**](./DEVELOPMENT_PLAN.md) for the complete roadmap.
 ## 🚀 Quick Start
 
 ### Prerequisites
-- JDK 11 or higher
+- JDK 21 or higher
 - Android SDK (for Android builds)
 
 ### Run on Desktop

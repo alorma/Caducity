@@ -6,6 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Caducity is an Android grocery expiration tracker application built with Jetpack Compose. The app helps users track their groceries and avoid food waste by monitoring expiration dates.
 
+## Requirements
+
+- **JDK 21** - Required for building the project
+- **Gradle 9.3.1** - Included via wrapper
+- **Android SDK** - For Android builds
+
 ## Build Commands
 
 ### Development Build
