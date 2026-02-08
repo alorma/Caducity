@@ -69,6 +69,14 @@ private fun DebugSettingsContent(
             )
           }
         }
+        DebugSettingsSideEffect.FakePlayStoreDataPopulated -> {
+          coroutineScope.launch {
+            snackbarState.showSnackbar(
+              message = R.string.debug_fake_playstore_data_success,
+              type = AppFeedbackType.Success,
+            )
+          }
+        }
         is DebugSettingsSideEffect.RemoteConfigRefreshed -> {
           coroutineScope.launch {
             val message = if (effect.activated) {
@@ -114,9 +122,20 @@ private fun DebugSettingsContent(
           } else {
             "Clear all data and create test items with all statuses"
           },
-          position = ShapePosition.Single,
+          position = ShapePosition.Start,
           onClick = { viewModel.onPopulateFakeData() },
           enabled = !uiState.isGenerating,
+        )
+        StyledSettingsCard(
+          title = "Populate Fake PlayStore Data",
+          subtitle = if (uiState.isGeneratingPlayStore) {
+            "Generating PlayStore data..."
+          } else {
+            "Create 5 categories with consistent products for screenshots"
+          },
+          position = ShapePosition.End,
+          onClick = { viewModel.onPopulateFakePlayStoreData() },
+          enabled = !uiState.isGeneratingPlayStore,
         )
         }
       }
