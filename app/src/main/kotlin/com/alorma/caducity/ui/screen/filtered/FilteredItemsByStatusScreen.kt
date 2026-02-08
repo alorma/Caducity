@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,13 +57,12 @@ fun FilteredItemsByStatusScreen(
   val bottomSheetState = rememberAppBottomSheetState()
 
   // Handle navigation side effects
-  androidx.compose.runtime.LaunchedEffect(viewModel) {
-    viewModel.sideEffects.collect { effect ->
-      when (effect) {
-        is FilteredItemsByStatusSideEffect.NavigateToCategory -> {
-          onNavigateToCategory(effect.categoryId)
+  LaunchedEffect(viewModel) {
+    viewModel.navigationSideEffects.collect { navigationEffect ->
+      when (navigationEffect) {
+        is FilteredItemsByStatusNavigationSideEffect.NavigateToCategory -> {
+          onNavigateToCategory(navigationEffect.categoryId)
         }
-        else -> { /* Other side effects handled in SideEffectHandler */ }
       }
     }
   }

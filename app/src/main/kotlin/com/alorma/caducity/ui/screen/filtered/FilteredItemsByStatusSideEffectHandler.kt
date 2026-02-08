@@ -21,10 +21,6 @@ fun SideEffectHandler(
   LaunchedEffect(viewModel) {
     viewModel.sideEffects.collect { effect ->
       when (effect) {
-        is FilteredItemsByStatusSideEffect.NavigateToCategory -> {
-          // Navigation is handled in FilteredItemsByStatusScreen
-        }
-
         is FilteredItemsByStatusSideEffect.ShowProductItemsBottomSheet -> {
           bottomSheetState.showProductItemsBottomSheet(
             coroutineScope = this,

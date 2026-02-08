@@ -19,7 +19,7 @@ class FilteredItemsByStatusViewModel(
   status: ItemStatus,
   getItemsByStatusUseCase: GetItemsByStatusUseCase,
   private val eventTracker: EventTracker,
-) : BaseViewModel<FilteredItemsNavigation, FilteredItemsByStatusSideEffect, FilteredItemsByStatusSideEffect>() {
+) : BaseViewModel<FilteredItemsNavigation, FilteredItemsByStatusNavigationSideEffect, FilteredItemsByStatusSideEffect>() {
 
   val state: StateFlow<FilteredItemsByStatusState> = getItemsByStatusUseCase.load(status)
     .map { categories ->
@@ -55,7 +55,7 @@ class FilteredItemsByStatusViewModel(
     when (navigation) {
       is FilteredItemsNavigation.Category -> {
         eventTracker.trackAction(NavigateToCategoryFromFilteredAction(navigation.source))
-        emitNavigationSideEffect(FilteredItemsByStatusSideEffect.NavigateToCategory(navigation.categoryId))
+        emitNavigationSideEffect(FilteredItemsByStatusNavigationSideEffect.NavigateToCategory(navigation.categoryId))
       }
     }
   }

@@ -2,10 +2,11 @@ package com.alorma.caducity.ui.screen.filtered
 
 import com.alorma.caducity.domain.model.Item
 
-sealed interface FilteredItemsByStatusSideEffect {
-  // Navigation side effects
-  data class NavigateToCategory(val categoryId: String) : FilteredItemsByStatusSideEffect
+sealed interface FilteredItemsByStatusNavigationSideEffect {
+  data class NavigateToCategory(val categoryId: String) : FilteredItemsByStatusNavigationSideEffect
+}
 
+sealed interface FilteredItemsByStatusSideEffect {
   // Bottom sheet side effects
   data class ShowProductItemsBottomSheet(
     val productName: String,
