@@ -116,7 +116,9 @@ private fun DebugSettingsContent(
       ) {
         // Data Generation Group
         item {
-          StyledSettingsGroup {
+          StyledSettingsGroup(
+            title = { Text("Data Generation") }
+          ) {
             StyledSettingsCard(
               title = "Populate Fake Data",
               subtitle = if (uiState.isGenerating) {
@@ -144,7 +146,9 @@ private fun DebugSettingsContent(
 
         // Notifications Group
         item {
-          StyledSettingsGroup {
+          StyledSettingsGroup(
+            title = { Text("Notifications") }
+          ) {
             StyledSettingsCard(
               title = "Test Notification",
               subtitle = "Trigger notification check immediately",
@@ -156,7 +160,9 @@ private fun DebugSettingsContent(
 
         // Remote Config Group
         item {
-          StyledSettingsGroup {
+          StyledSettingsGroup(
+            title = { Text("Remote Config") }
+          ) {
             StyledSettingsCard(
               title = "Refresh Remote Config",
               subtitle = if (uiState.isRefreshingRemoteConfig) {
@@ -214,13 +220,15 @@ private fun DebugSettingsContent(
             Column(
               verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-              Text(
-                text = "Remote Configs",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(horizontal = 16.dp)
-              )
-
-              StyledSettingsGroup {
+              StyledSettingsGroup(
+                title = {
+                  Text(
+                    text = "Remote Configs",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                  )
+                }
+              ) {
                 uiState.remoteConfigValues.entries.forEachIndexed { index, (key, configState) ->
                   val position = when {
                     uiState.remoteConfigValues.size == 1 -> ShapePosition.Single

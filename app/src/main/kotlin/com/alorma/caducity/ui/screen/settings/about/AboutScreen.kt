@@ -64,7 +64,9 @@ private fun AboutScreenContent(
       ) {
       // Export & Restore Group
       item {
-        StyledSettingsGroup {
+        StyledSettingsGroup(
+          title = { Text(stringResource(R.string.settings_about_title)) }
+        ) {
         StyledSettingsCard(
           title = appVersion,
           subtitle = "Current version",

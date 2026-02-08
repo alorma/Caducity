@@ -85,7 +85,9 @@ private fun AppearanceSettingsContent(
         verticalArrangement = Arrangement.spacedBy(24.dp),
       ) {
       item {
-        StyledSettingsGroup {
+        StyledSettingsGroup(
+          title = { Text(stringResource(R.string.settings_theme_title)) }
+        ) {
 
         // Load all string resources at composable level
         val themeLight = stringResource(R.string.settings_theme_light)
@@ -119,7 +121,9 @@ private fun AppearanceSettingsContent(
 
       // Calendar settings group
       item {
-        StyledSettingsGroup {
+        StyledSettingsGroup(
+          title = { Text(stringResource(R.string.settings_first_day_of_week_title)) }
+        ) {
         StyledSettingsButtonGroupCard(
           title = stringResource(R.string.settings_first_day_of_week_title),
           selectedItem = firstDayOfWeek,

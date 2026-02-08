@@ -162,7 +162,9 @@ private fun BackupScreenContent(
       ) {
       // Export & Restore Group
       item {
-        StyledSettingsGroup {
+        StyledSettingsGroup(
+          title = { Text(stringResource(R.string.settings_backup_title)) }
+        ) {
         StyledSettingsCard(
           icon = {
             Icon(
