@@ -273,6 +273,13 @@
     <string name="onboarding_tutorial_message">Afegeix la teva primera categoria per començar a controlar dates de caducitat</string>
     <string name="onboarding_disclaimer_title">Avís Important</string>
     <string name="onboarding_disclaimer_message">Aquesta aplicació ajuda a controlar les dates de caducitat de productes però no substitueix les pràctiques adequades de seguretat alimentària. Utilitza sempre el teu criteri i segueix les pautes de seguretat alimentària. Els desenvolupadors no són responsables de cap problema de salut derivat del consum de productes caducats.</string>
+
+    <!-- Consent Screen -->
+    <string name="onboarding_consent_title">La Teva Privacitat és Important</string>
+    <string name="onboarding_consent_description">Ajuda\'ns a millorar l\'aplicació compartint dades d\'ús anònimes. Pots canviar això més tard a la configuració.</string>
+    <string name="onboarding_consent_analytics_title">Analítiques</string>
+    <string name="onboarding_consent_analytics_description">Compartir dades d\'ús anònimes per ajudar-nos a millorar l\'aplicació</string>
+    <string name="onboarding_consent_privacy_note">Respectem la teva privacitat. No es recopila ni comparteix cap dada personal amb tercers.</string>
     <string name="onboarding_button_next">Següent</string>
     <string name="onboarding_button_skip">Ometre</string>
     <string name="onboarding_button_previous">Anterior</string>
