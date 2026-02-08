@@ -696,19 +696,11 @@ private fun SideEffectHandler(
 
         CategoryDetailSideEffect.ShowDeleteCategoryDialog -> launch {
           val result = dialogState.showAlertDialog(
-            title = AppFeedbackResource.AsResource(
-              R.string.category_detail_delete_dialog_title
-            ),
-            text = AppFeedbackResource.AsResource(
-              R.string.category_detail_delete_dialog_message
-            ),
+            title = { Text(stringResource(R.string.category_detail_delete_dialog_title)) },
+            text = { Text(stringResource(R.string.category_detail_delete_dialog_message)) },
             type = AppFeedbackType.Info,
-            positiveButton = AppFeedbackResource.AsResource(
-              R.string.category_detail_delete_dialog_delete
-            ),
-            negativeButton = AppFeedbackResource.AsResource(
-              R.string.category_detail_delete_dialog_cancel
-            ),
+            positiveButton = { Text(stringResource(R.string.category_detail_delete_dialog_delete)) },
+            negativeButton = { Text(stringResource(R.string.category_detail_delete_dialog_cancel)) },
           )
           if (result == DialogResult.Positive) {
             onDeleteCategory()

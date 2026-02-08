@@ -88,19 +88,11 @@ internal fun ProductPageSideEffectHandler(
         // Product-level dialog events
         is ProductPageSideEffect.ShowDeleteProductDialog -> launch {
           val result = dialogState.showAlertDialog(
-            title = AppFeedbackResource.AsResource(
-              R.string.product_delete_dialog_title
-            ),
-            text = AppFeedbackResource.AsResource(
-              R.string.product_delete_dialog_message
-            ),
+            title = { Text(stringResource(R.string.product_delete_dialog_title)) },
+            text = { Text(stringResource(R.string.product_delete_dialog_message)) },
             type = AppFeedbackType.Info,
-            positiveButton = AppFeedbackResource.AsResource(
-              R.string.product_delete_dialog_delete
-            ),
-            negativeButton = AppFeedbackResource.AsResource(
-              R.string.product_delete_dialog_cancel
-            ),
+            positiveButton = { Text(stringResource(R.string.product_delete_dialog_delete)) },
+            negativeButton = { Text(stringResource(R.string.product_delete_dialog_cancel)) },
           )
           if (result == DialogResult.Positive) {
             effect.onDeleteProduct(

@@ -2,7 +2,6 @@ package com.alorma.caducity.ui.components.feedback.dialog
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -12,14 +11,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.DialogProperties
-import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.exposeResource
 import com.alorma.caducity.ui.components.feedback.softColors
+import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlin.coroutines.resume
 
 /**
  * Creates a [AppDialogState].
@@ -41,29 +38,6 @@ class AppDialogState() {
   private val mutex = Mutex()
 
   var dialogInfo by mutableStateOf<DialogInfo?>(null)
-
-  @Deprecated(message = "Should use composable version")
-  suspend fun showAlertDialog(
-    title: AppFeedbackResource,
-    text: AppFeedbackResource,
-    type: AppFeedbackType,
-    positiveButton: AppFeedbackResource,
-    negativeButton: AppFeedbackResource? = null,
-    properties: DialogProperties = DialogProperties(
-      usePlatformDefaultWidth = true,
-    ),
-  ): DialogResult = showAlertDialog(
-    title = { Text(text = exposeResource(title)) },
-    text = { Text(text = exposeResource(text)) },
-    positiveButton = { Text(text = exposeResource(positiveButton)) },
-    negativeButton = if (negativeButton != null) {
-      { Text(text = exposeResource(negativeButton)) }
-    } else {
-      null
-    },
-    type = type,
-    properties = properties,
-  )
 
   suspend fun showAlertDialog(
     title: @Composable () -> Unit,

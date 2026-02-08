@@ -83,6 +83,12 @@ android {
       isShrinkResources = true
 
       signingConfig = signingConfigs["release"]
+
+      // Enable NDK symbol upload for Firebase Crashlytics
+      configure<com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension> {
+        nativeSymbolUploadEnabled = true
+        unstrippedNativeLibsDir = "build/intermediates/merged_native_libs/release/out/lib"
+      }
     }
     debug {
       applicationIdSuffix = ".dev"
