@@ -70,9 +70,6 @@ fun App(
                 CategoryDetailRoute(categoryId)
               )
             },
-            onNavigateToDate = { date ->
-
-            },
             onNavigateToStatus = { status ->
               appBackStack.add(FilteredItemsRoute.ByStatus(status))
             },
