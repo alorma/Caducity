@@ -26,6 +26,8 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import com.alorma.caducity.feature.tracking.ProductItemsBottomSheetScreen
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 fun AppBottomSheetState.showProductItemsBottomSheet(
   coroutineScope: CoroutineScope,
@@ -50,6 +52,7 @@ private fun ProductItemsBottomSheetContent(
   items: List<Item>,
   onItemClick: (Item) -> Unit,
 ) {
+  TrackScreen(screen = ProductItemsBottomSheetScreen())
   Column(
     modifier = Modifier
       .fillMaxWidth()

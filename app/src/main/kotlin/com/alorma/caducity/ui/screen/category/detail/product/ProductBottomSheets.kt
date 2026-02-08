@@ -8,6 +8,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -30,6 +31,9 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import com.alorma.caducity.feature.tracking.ProductDeleteBottomSheetScreen
+import com.alorma.caducity.feature.tracking.ProductClearItemsBottomSheetScreen
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 internal fun AppBottomSheetState.showDeleteProductWithItemsBottomSheet(
   coroutineScope: CoroutineScope,
@@ -43,7 +47,31 @@ internal fun AppBottomSheetState.showDeleteProductWithItemsBottomSheet(
 
   coroutineScope.launch {
     show {
-      Column(
+      DeleteProductWithItemsBottomSheetContent(
+        itemCount = itemCount,
+        availableProducts = availableProducts,
+        showProductSelection = showProductSelection,
+        onShowProductSelection = { showProductSelection = it },
+        onMoveToStandalone = onMoveToStandalone,
+        onMoveToProduct = onMoveToProduct,
+        onCascadeDelete = onCascadeDelete,
+      )
+    }
+  }
+}
+
+@Composable
+private fun DeleteProductWithItemsBottomSheetContent(
+  itemCount: Int,
+  availableProducts: List<CategoryProductTabUiModel>,
+  showProductSelection: Boolean,
+  onShowProductSelection: (Boolean) -> Unit,
+  onMoveToStandalone: () -> Unit,
+  onMoveToProduct: (String) -> Unit,
+  onCascadeDelete: () -> Unit,
+) {
+  TrackScreen(screen = ProductDeleteBottomSheetScreen())
+  Column(
         modifier = Modifier.fillMaxWidth()
       ) {
         if (!showProductSelection) {
@@ -98,7 +126,7 @@ internal fun AppBottomSheetState.showDeleteProductWithItemsBottomSheet(
                   },
                   title = stringResource(R.string.product_delete_option_move_to_product),
                   subtitle = stringResource(R.string.product_delete_option_move_to_product_desc),
-                  onClick = { showProductSelection = true },
+                  onClick = { onShowProductSelection(true) },
                   position = productPosition,
                 )
               }
@@ -130,7 +158,7 @@ internal fun AppBottomSheetState.showDeleteProductWithItemsBottomSheet(
           StyledTopAppBar(
             title = { Text(stringResource(R.string.product_delete_select_target_title)) },
             navigationIcon = {
-              IconButton(onClick = { showProductSelection = false }) {
+              IconButton(onClick = { onShowProductSelection(false) }) {
                 Icon(
                   imageVector = AppIcons.Back,
                   contentDescription = stringResource(R.string.product_delete_select_target_back),
@@ -172,8 +200,6 @@ internal fun AppBottomSheetState.showDeleteProductWithItemsBottomSheet(
           }
         }
       }
-    }
-  }
 }
 
 internal fun AppBottomSheetState.showClearItemsBottomSheet(
@@ -183,7 +209,21 @@ internal fun AppBottomSheetState.showClearItemsBottomSheet(
 ) {
   coroutineScope.launch {
     show {
-      Column(
+      ClearItemsBottomSheetContent(
+        onClearConsumed = onClearConsumed,
+        onClearAll = onClearAll,
+      )
+    }
+  }
+}
+
+@Composable
+private fun ClearItemsBottomSheetContent(
+  onClearConsumed: () -> Unit,
+  onClearAll: () -> Unit,
+) {
+  TrackScreen(screen = ProductClearItemsBottomSheetScreen())
+  Column(
         modifier = Modifier
           .fillMaxWidth()
           .padding(16.dp),
@@ -238,6 +278,4 @@ internal fun AppBottomSheetState.showClearItemsBottomSheet(
           )
         }
       }
-    }
-  }
 }
