@@ -12,8 +12,13 @@ class DashboardActionsTest {
     val action = NavigateToCreateCategoryAction()
 
     // Then
-    expectThat(action.name).isEqualTo("navigate_to_create_category")
-    expectThat(action.parameters).isEqualTo(mapOf("source" to "dashboard_fab"))
+    expectThat(action.name).isEqualTo("nav_create_category")
+    expectThat(action.parameters).isEqualTo(
+      mapOf(
+        "origin" to "dashboard",
+        "source" to "fab"
+      )
+    )
   }
 
   @Test
@@ -22,8 +27,13 @@ class DashboardActionsTest {
     val action = NavigateToCategoryAction("category_title")
 
     // Then
-    expectThat(action.name).isEqualTo("navigate_to_category")
-    expectThat(action.parameters).isEqualTo(mapOf("source" to "category_title"))
+    expectThat(action.name).isEqualTo("nav_category")
+    expectThat(action.parameters).isEqualTo(
+      mapOf(
+        "origin" to "dashboard",
+        "source" to "category_title"
+      )
+    )
   }
 
   @Test
@@ -32,8 +42,13 @@ class DashboardActionsTest {
     val action = NavigateToCategoryAction("calendar_date")
 
     // Then
-    expectThat(action.name).isEqualTo("navigate_to_category")
-    expectThat(action.parameters).isEqualTo(mapOf("source" to "calendar_date"))
+    expectThat(action.name).isEqualTo("nav_category")
+    expectThat(action.parameters).isEqualTo(
+      mapOf(
+        "origin" to "dashboard",
+        "source" to "calendar_date"
+      )
+    )
   }
 
   @Test
@@ -42,11 +57,12 @@ class DashboardActionsTest {
     val action = NavigateToFilteredItemsAction("expired")
 
     // Then
-    expectThat(action.name).isEqualTo("navigate_to_filtered_items")
+    expectThat(action.name).isEqualTo("nav_filtered_items")
     expectThat(action.parameters).isEqualTo(
       mapOf(
+        "origin" to "dashboard",
         "status" to "expired",
-        "source" to "dashboard_summary"
+        "source" to "summary"
       )
     )
   }
@@ -57,11 +73,12 @@ class DashboardActionsTest {
     val action = NavigateToFilteredItemsAction("expiring_soon")
 
     // Then
-    expectThat(action.name).isEqualTo("navigate_to_filtered_items")
+    expectThat(action.name).isEqualTo("nav_filtered_items")
     expectThat(action.parameters).isEqualTo(
       mapOf(
+        "origin" to "dashboard",
         "status" to "expiring_soon",
-        "source" to "dashboard_summary"
+        "source" to "summary"
       )
     )
   }
@@ -72,11 +89,12 @@ class DashboardActionsTest {
     val action = NavigateToFilteredItemsAction("fresh")
 
     // Then
-    expectThat(action.name).isEqualTo("navigate_to_filtered_items")
+    expectThat(action.name).isEqualTo("nav_filtered_items")
     expectThat(action.parameters).isEqualTo(
       mapOf(
+        "origin" to "dashboard",
         "status" to "fresh",
-        "source" to "dashboard_summary"
+        "source" to "summary"
       )
     )
   }
@@ -87,11 +105,12 @@ class DashboardActionsTest {
     val action = NavigateToFilteredItemsAction("frozen")
 
     // Then
-    expectThat(action.name).isEqualTo("navigate_to_filtered_items")
+    expectThat(action.name).isEqualTo("nav_filtered_items")
     expectThat(action.parameters).isEqualTo(
       mapOf(
+        "origin" to "dashboard",
         "status" to "frozen",
-        "source" to "dashboard_summary"
+        "source" to "summary"
       )
     )
   }
@@ -102,7 +121,12 @@ class DashboardActionsTest {
     val action = NavigateToSettingsAction()
 
     // Then
-    expectThat(action.name).isEqualTo("navigate_to_settings")
-    expectThat(action.parameters).isEqualTo(mapOf("source" to "dashboard_topbar"))
+    expectThat(action.name).isEqualTo("nav_settings")
+    expectThat(action.parameters).isEqualTo(
+      mapOf(
+        "origin" to "dashboard",
+        "source" to "topbar"
+      )
+    )
   }
 }

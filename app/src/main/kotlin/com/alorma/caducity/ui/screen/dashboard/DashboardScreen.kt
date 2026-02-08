@@ -67,15 +67,17 @@ fun DashboardScreen(
   Box(modifier) {
     DashboardContent(
       state = dashboardState.value,
-      onNavigateToCreateProduct = { viewModel.onNavigateToCreateCategory() },
+      onNavigateToCreateProduct = {
+        viewModel.navigate(DashboardNavigation.CreateCategory)
+      },
       onNavigateToCategory = { categoryId, source ->
-        viewModel.onNavigateToCategory(categoryId, source)
+        viewModel.navigate(DashboardNavigation.Category(categoryId, source))
       },
       onNavigateToStatus = { status ->
-        viewModel.onNavigateToFilteredItems(status)
+        viewModel.navigate(DashboardNavigation.FilteredItems(status))
       },
       onNavigateToSettings = {
-        viewModel.onNavigateToSettings()
+        viewModel.navigate(DashboardNavigation.Settings)
       },
       snackbarHostState = snackbarHostState,
     )
