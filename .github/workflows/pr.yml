@@ -43,7 +43,8 @@ jobs:
 
           echo "**Building Version:** \`$VERSION_NAME\` **(code: $VERSION_CODE)**" >> $GITHUB_STEP_SUMMARY
 
-  build:
+  build-debug:
+    name: Build Android - PR
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -78,3 +79,10 @@ jobs:
       - name: Run Unit Tests
         continue-on-error: false
         run: ./gradlew test
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: caducity-pr-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 5
