@@ -8,6 +8,6 @@ package com.alorma.caducity.feature.tracking
  *
  * @property name The unique identifier/name of the screen being tracked
  */
-data class Screen(
+abstract class Screen(
   val name: String,
 )

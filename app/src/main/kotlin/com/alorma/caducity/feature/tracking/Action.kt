@@ -9,7 +9,7 @@ package com.alorma.caducity.feature.tracking
  * @property name The unique identifier/name of the action being tracked
  * @property parameters Optional key-value pairs providing additional context for the action
  */
-data class Action(
+abstract class Action(
   val name: String,
   val parameters: Map<String, String> = emptyMap(),
 )
