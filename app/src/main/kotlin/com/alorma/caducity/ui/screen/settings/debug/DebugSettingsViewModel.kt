@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.settings.debug
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.remoteconfig.DebugRemoteConfigRunner
 import com.alorma.caducity.config.remoteconfig.RemoteConfig
@@ -9,11 +8,10 @@ import com.alorma.caducity.domain.usecase.PopulateFakeDataUseCase
 import com.alorma.caducity.domain.usecase.fakedata.FakePlayStoreDataStrategy
 import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
 import com.alorma.caducity.feature.notification.NotificationDebugHelper
-import kotlinx.coroutines.flow.MutableSharedFlow
+import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.base.NoNavigation
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -28,13 +26,13 @@ class DebugSettingsViewModel(
   private val fakePlayStoreDataStrategy: FakePlayStoreDataStrategy,
   private val remoteConfigRunner: RemoteConfigRunner,
   private val remoteConfigs: List<RemoteConfig>,
-) : ViewModel() {
+) : BaseViewModel<NoNavigation, DebugSettingsSideEffect, DebugSettingsSideEffect>() {
+
+  // Alias for backward compatibility
+  val sideEffect = sideEffects
 
   private val _uiState = MutableStateFlow(DebugSettingsUiState())
   val uiState: StateFlow<DebugSettingsUiState> = _uiState.asStateFlow()
-
-  private val _sideEffect = MutableSharedFlow<DebugSettingsSideEffect>()
-  val sideEffect: SharedFlow<DebugSettingsSideEffect> = _sideEffect.asSharedFlow()
 
   init {
     // Load current remote config values
@@ -53,7 +51,7 @@ class DebugSettingsViewModel(
 
       result.fold(
         onSuccess = {
-          _sideEffect.emit(DebugSettingsSideEffect.FakeDataPopulated)
+          emitSideEffect(DebugSettingsSideEffect.FakeDataPopulated)
           _uiState.value = _uiState.value.copy(isGenerating = false)
         },
         onFailure = { error ->
@@ -74,7 +72,7 @@ class DebugSettingsViewModel(
 
       result.fold(
         onSuccess = {
-          _sideEffect.emit(DebugSettingsSideEffect.FakePlayStoreDataPopulated)
+          emitSideEffect(DebugSettingsSideEffect.FakePlayStoreDataPopulated)
           _uiState.value = _uiState.value.copy(isGeneratingPlayStore = false)
         },
         onFailure = { error ->
@@ -93,7 +91,7 @@ class DebugSettingsViewModel(
 
       remoteConfigRunner.fetchAndActivate()
         .onSuccess { activated ->
-          _sideEffect.emit(
+          emitSideEffect(
             DebugSettingsSideEffect.RemoteConfigRefreshed(activated)
           )
           loadRemoteConfigValues()
@@ -139,6 +137,10 @@ class DebugSettingsViewModel(
 
   fun dismissError() {
     _uiState.value = _uiState.value.copy(error = null)
+  }
+
+  override fun navigate(navigation: NoNavigation) {
+    // Empty - this ViewModel doesn't navigate
   }
 }
 

@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.components.bottomsheet
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.time.date
@@ -10,12 +9,12 @@ import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
+import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.base.NoNavigation
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -28,13 +27,13 @@ class ItemActionsViewModel(
   private val freezeItemUseCase: FreezeItemUseCase,
   private val unfreezeItemUseCase: UnfreezeItemUseCase,
   private val deleteItemUseCase: DeleteItemUseCase,
-) : ViewModel() {
+) : BaseViewModel<NoNavigation, ItemActionSideEffect, ItemActionSideEffect>() {
+
+  // Alias for backward compatibility
+  val sideEffect = sideEffects
 
   private val _state = MutableStateFlow(calculateState())
   val state: StateFlow<ItemActionsState> = _state
-
-  private val _sideEffect = Channel<ItemActionSideEffect>(Channel.BUFFERED)
-  val sideEffect = _sideEffect.receiveAsFlow()
 
   private fun calculateState(): ItemActionsState {
     val actions = when (item.status) {
@@ -138,10 +137,8 @@ class ItemActionsViewModel(
     }
   }
 
-  private fun emitSideEffect(effect: ItemActionSideEffect) {
-    viewModelScope.launch {
-      _sideEffect.send(effect)
-    }
+  override fun navigate(navigation: NoNavigation) {
+    // Empty - this ViewModel doesn't navigate
   }
 }
 

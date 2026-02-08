@@ -302,9 +302,82 @@ sealed interface DashboardNavigationSideEffect {
 }
 ```
 
-**3. Implement ViewModel Navigation**
+**3. Use BaseViewModel**
 
-Add single `navigate()` method that tracks actions and emits side effects:
+All ViewModels should extend `BaseViewModel` which provides the common navigation and side effect pattern:
+
+```kotlin
+// ui/base/BaseViewModel.kt
+abstract class BaseViewModel<NavigationIntent, NavigationSideEffect, SideEffect> : ViewModel() {
+  val navigationSideEffects: Flow<NavigationSideEffect>
+  val sideEffects: Flow<SideEffect>
+
+  abstract fun navigate(navigation: NavigationIntent)
+
+  protected fun emitNavigationSideEffect(effect: NavigationSideEffect)
+  protected fun emitSideEffect(effect: SideEffect)
+}
+```
+
+**For ViewModels with only navigation (no dialogs/snackbars):**
+
+```kotlin
+class DashboardViewModel(
+  private val eventTracker: EventTracker,
+  // ... other dependencies
+) : BaseViewModel<DashboardNavigation, DashboardNavigationSideEffect, NoSideEffect>() {
+
+  val state: StateFlow<DashboardState> = ...
+
+  override fun navigate(navigation: DashboardNavigation) {
+    when (navigation) {
+      DashboardNavigation.CreateCategory -> {
+        eventTracker.trackAction(NavigateToCreateCategoryAction())
+        emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToCreateCategory)
+      }
+      // ... other cases
+    }
+  }
+}
+```
+
+**For ViewModels with both navigation and other side effects:**
+
+```kotlin
+class CategoryDetailViewModel(
+  private val eventTracker: EventTracker,
+  // ... other dependencies
+) : BaseViewModel<CategoryDetailNavigation, CategoryDetailSideEffect, CategoryDetailSideEffect>() {
+
+  val state: StateFlow<CategoryDetailState> = ...
+
+  override fun navigate(navigation: CategoryDetailNavigation) {
+    when (navigation) {
+      is CategoryDetailNavigation.AddItem -> {
+        eventTracker.trackAction(NavigateToAddItemFromCategoryAction(...))
+        emitNavigationSideEffect(CategoryDetailSideEffect.NavigateToAddItem(...))
+      }
+      // ... other cases
+    }
+  }
+
+  fun onShowDialog() {
+    emitSideEffect(CategoryDetailSideEffect.ShowDialog)
+  }
+}
+```
+
+**Benefits of BaseViewModel:**
+- ✅ **Reduces Boilerplate**: No need to manually create channels and flows in each ViewModel
+- ✅ **Type Safety**: Generic type parameters ensure compile-time safety
+- ✅ **Consistency**: All ViewModels follow the same pattern
+- ✅ **Clear Separation**: Navigation side effects vs other side effects
+- ✅ **Protected Methods**: `emitNavigationSideEffect()` and `emitSideEffect()` are protected, enforcing the pattern
+- ✅ **Abstract Navigate**: Forces implementation of `navigate()` method in all ViewModels
+
+**4. Implement ViewModel Navigation (Old Pattern - DEPRECATED)**
+
+The old pattern without BaseViewModel (DO NOT USE for new code):
 
 ```kotlin
 class DashboardViewModel(

@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.category.detail
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
@@ -9,10 +8,9 @@ import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase
 import com.alorma.caducity.feature.tracking.CategoryDeletedAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.NavigateToAddItemFromCategoryAction
+import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +19,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -34,10 +31,11 @@ class CategoryDetailViewModel(
   private val deleteCategoryUseCase: DeleteCategoryUseCase,
   private val getProductItemsUseCase: GetProductItemsUseCase,
   private val eventTracker: EventTracker,
-) : ViewModel() {
+) : BaseViewModel<CategoryDetailNavigation, CategoryDetailSideEffect, CategoryDetailSideEffect>() {
 
-  private val _sideEffect = Channel<CategoryDetailSideEffect>(Channel.BUFFERED)
-  val sideEffect: Flow<CategoryDetailSideEffect> = _sideEffect.receiveAsFlow()
+  // Note: Navigation side effects are now part of CategoryDetailSideEffect
+  // This is a temporary alias until we fully separate them
+  val sideEffect = sideEffects
 
   // Track the currently selected product ID (null means "Other" tab with standalone items)
   private val _selectedProductId = MutableStateFlow<String?>(null)
@@ -132,13 +130,7 @@ class CategoryDetailViewModel(
     }
   }
 
-  private fun emitSideEffect(effect: CategoryDetailSideEffect) {
-    viewModelScope.launch {
-      _sideEffect.send(effect)
-    }
-  }
-
-  fun navigate(navigation: CategoryDetailNavigation) {
+  override fun navigate(navigation: CategoryDetailNavigation) {
     when (navigation) {
       is CategoryDetailNavigation.AddItem -> {
         eventTracker.trackAction(
@@ -147,11 +139,11 @@ class CategoryDetailViewModel(
             hasProduct = navigation.productId != null
           )
         )
-        emitSideEffect(CategoryDetailSideEffect.NavigateToAddItem(navigation.productId))
+        emitNavigationSideEffect(CategoryDetailSideEffect.NavigateToAddItem(navigation.productId))
       }
       CategoryDetailNavigation.CategoryDeleted -> {
         eventTracker.trackAction(CategoryDeletedAction())
-        emitSideEffect(CategoryDetailSideEffect.NavigateBack)
+        emitNavigationSideEffect(CategoryDetailSideEffect.NavigateBack)
       }
     }
   }
