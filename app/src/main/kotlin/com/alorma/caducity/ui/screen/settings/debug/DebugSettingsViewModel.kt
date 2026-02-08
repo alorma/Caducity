@@ -6,6 +6,8 @@ import com.alorma.caducity.config.remoteconfig.DebugRemoteConfigRunner
 import com.alorma.caducity.config.remoteconfig.RemoteConfig
 import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.domain.usecase.PopulateFakeDataUseCase
+import com.alorma.caducity.domain.usecase.fakedata.FakePlayStoreDataStrategy
+import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
 import com.alorma.caducity.feature.notification.NotificationDebugHelper
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +24,8 @@ import kotlinx.coroutines.launch
 class DebugSettingsViewModel(
   private val notificationDebugHelper: NotificationDebugHelper,
   private val populateFakeDataUseCase: PopulateFakeDataUseCase,
+  private val fakeTestDataStrategy: FakeTestDataStrategy,
+  private val fakePlayStoreDataStrategy: FakePlayStoreDataStrategy,
   private val remoteConfigRunner: RemoteConfigRunner,
   private val remoteConfigs: List<RemoteConfig>,
 ) : ViewModel() {
@@ -45,7 +49,7 @@ class DebugSettingsViewModel(
     viewModelScope.launch {
       _uiState.value = _uiState.value.copy(isGenerating = true, error = null)
 
-      val result = populateFakeDataUseCase.execute()
+      val result = populateFakeDataUseCase.execute(fakeTestDataStrategy)
 
       result.fold(
         onSuccess = {
@@ -55,6 +59,27 @@ class DebugSettingsViewModel(
         onFailure = { error ->
           _uiState.value = _uiState.value.copy(
             isGenerating = false,
+            error = error.message ?: "Unknown error occurred"
+          )
+        }
+      )
+    }
+  }
+
+  fun onPopulateFakePlayStoreData() {
+    viewModelScope.launch {
+      _uiState.value = _uiState.value.copy(isGeneratingPlayStore = true, error = null)
+
+      val result = populateFakeDataUseCase.execute(fakePlayStoreDataStrategy)
+
+      result.fold(
+        onSuccess = {
+          _sideEffect.emit(DebugSettingsSideEffect.FakePlayStoreDataPopulated)
+          _uiState.value = _uiState.value.copy(isGeneratingPlayStore = false)
+        },
+        onFailure = { error ->
+          _uiState.value = _uiState.value.copy(
+            isGeneratingPlayStore = false,
             error = error.message ?: "Unknown error occurred"
           )
         }
@@ -130,6 +155,7 @@ data class RemoteConfigUiState(
  */
 data class DebugSettingsUiState(
   val isGenerating: Boolean = false,
+  val isGeneratingPlayStore: Boolean = false,
   val isRefreshingRemoteConfig: Boolean = false,
   val error: String? = null,
   val remoteConfigValues: Map<String, RemoteConfigUiState> = emptyMap(),
@@ -140,5 +166,6 @@ data class DebugSettingsUiState(
  */
 sealed interface DebugSettingsSideEffect {
   data object FakeDataPopulated : DebugSettingsSideEffect
+  data object FakePlayStoreDataPopulated : DebugSettingsSideEffect
   data class RemoteConfigRefreshed(val activated: Boolean) : DebugSettingsSideEffect
 }

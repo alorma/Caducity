@@ -123,6 +123,8 @@ val appModule = module {
     DebugSettingsViewModel(
       notificationDebugHelper = get(),
       populateFakeDataUseCase = get(),
+      fakeTestDataStrategy = get(),
+      fakePlayStoreDataStrategy = get(),
       remoteConfigRunner = get(),
       remoteConfigs = getAll(),
     )
