@@ -104,10 +104,10 @@ fun BackupScreen(
         is BackupSideEffect.ConfirmRestore -> {
           val result = dialogState.showAlertDialog(
             type = AppFeedbackType.Success,
-            title = AppFeedbackResource.AsResource(R.string.backup_restore_warning_title),
-            text = AppFeedbackResource.AsResource(R.string.backup_restore_warning_message),
-            positiveButton = AppFeedbackResource.AsResource(R.string.backup_restore_confirm),
-            negativeButton = AppFeedbackResource.AsResource(R.string.backup_cancel),
+            title = { Text(stringResource(R.string.backup_restore_warning_title)) },
+            text = { Text(stringResource(R.string.backup_restore_warning_message)) },
+            positiveButton = { Text(stringResource(R.string.backup_restore_confirm)) },
+            negativeButton = { Text(stringResource(R.string.backup_cancel)) },
           )
 
           if (result is DialogResult.Positive) {
