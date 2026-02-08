@@ -5,6 +5,7 @@ import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.config.time.RelativeTimeFormatter
 import com.alorma.caducity.domain.model.CategoryDetail
+import com.alorma.caducity.domain.model.ProductItems
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DayOfWeek
@@ -19,6 +20,7 @@ class CategoryDetailMapper(
   fun mapToCategoryDetail(
     categoryDetail: CategoryDetail,
     firstDayOfWeek: DayOfWeek,
+    productItems: ProductItems,
   ): CategoryDetailState {
 
     val categoryUiModel = CategoryDetailUiModel(
@@ -47,18 +49,18 @@ class CategoryDetailMapper(
 
     val today = appClock.nowDate()
 
-    // Build calendar from calendar data (dates and statuses only, no items)
-    val calendarDatedContent = categoryDetail.calendarData.dateStatuses.map { dateStatus ->
+    // Build calendar from product items instead of all category items
+    val calendarDatedContent = productItems.datedItemsGroups.map { datedItems ->
       DateItemsUiModel(
-        text = relativeTimeFormatter.format(today, dateStatus.date),
-        status = dateStatus.status,
-        date = dateStatus.date,
+        text = relativeTimeFormatter.format(today, datedItems.date),
+        status = datedItems.status,
+        date = datedItems.date,
         items = kotlinx.collections.immutable.persistentListOf(), // Empty - calendar doesn't need item details
       )
     }.toImmutableList()
 
-    val startDate = categoryDetail.calendarData.dateStatuses.minOfOrNull { it.date } ?: today
-    val endDate = categoryDetail.calendarData.dateStatuses.maxOfOrNull { it.date } ?: today
+    val startDate = productItems.datedItemsGroups.minOfOrNull { it.date } ?: today
+    val endDate = productItems.datedItemsGroups.maxOfOrNull { it.date } ?: today
 
     val appCalendarConfig = appCalendarConfigMapper.createWithDatedContent(
       startDate = startDate,

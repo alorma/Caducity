@@ -18,8 +18,8 @@ class EventTrackerTest {
     eventTracker.trackScreen(screen)
 
     // Then
-    expectThat(tracker1.trackedScreens).isEqualTo(listOf(screen))
-    expectThat(tracker2.trackedScreens).isEqualTo(listOf(screen))
+    expectThat(tracker1.trackedScreens as List<Screen>).isEqualTo(listOf(screen))
+    expectThat(tracker2.trackedScreens as List<Screen>).isEqualTo(listOf(screen))
   }
 
   @Test
@@ -34,8 +34,8 @@ class EventTrackerTest {
     eventTracker.trackAction(action)
 
     // Then
-    expectThat(tracker1.trackedActions).isEqualTo(listOf(action))
-    expectThat(tracker2.trackedActions).isEqualTo(listOf(action))
+    expectThat(tracker1.trackedActions as List<Action>).isEqualTo(listOf(action))
+    expectThat(tracker2.trackedActions as List<Action>).isEqualTo(listOf(action))
   }
 
   @Test
@@ -71,7 +71,7 @@ class EventTrackerTest {
     eventTracker.trackScreen(screen2)
 
     // Then
-    expectThat(tracker.trackedScreens).isEqualTo(listOf(screen1, screen2))
+    expectThat(tracker.trackedScreens as List<Screen>).isEqualTo(listOf(screen1, screen2))
   }
 
   @Test
@@ -87,7 +87,7 @@ class EventTrackerTest {
     eventTracker.trackAction(action2)
 
     // Then
-    expectThat(tracker.trackedActions).isEqualTo(listOf(action1, action2))
+    expectThat(tracker.trackedActions as List<Action>).isEqualTo(listOf(action1, action2))
   }
 
   // Test double for Tracker
