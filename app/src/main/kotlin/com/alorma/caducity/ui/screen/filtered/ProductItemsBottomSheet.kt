@@ -40,7 +40,12 @@ fun AppBottomSheetState.showProductItemsBottomSheet(
       ProductItemsBottomSheetContent(
         productName = productName,
         items = items,
-        onItemClick = onItemClick,
+        onItemClick = { item ->
+          coroutineScope.launch {
+            hide()
+          }
+          onItemClick(item)
+        },
       )
     }
   }
