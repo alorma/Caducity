@@ -14,6 +14,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -51,13 +52,31 @@ fun DashboardScreen(
   val dashboardState = viewModel.state.collectAsStateWithLifecycle()
   val snackbarHostState = rememberAppSnackbarState()
 
+  // Handle navigation side effects
+  LaunchedEffect(viewModel) {
+    viewModel.navigationSideEffects.collect { navigationEffect ->
+      when (navigationEffect) {
+        DashboardNavigationSideEffect.NavigateToCreateCategory -> onNavigateToCreateProduct()
+        is DashboardNavigationSideEffect.NavigateToCategory -> onNavigateToCategory(navigationEffect.categoryId)
+        is DashboardNavigationSideEffect.NavigateToFilteredItems -> onNavigateToStatus(navigationEffect.status)
+        DashboardNavigationSideEffect.NavigateToSettings -> onNavigateToSettings()
+      }
+    }
+  }
+
   Box(modifier) {
     DashboardContent(
       state = dashboardState.value,
-      onNavigateToCreateProduct = onNavigateToCreateProduct,
-      onNavigateToCategory = onNavigateToCategory,
-      onNavigateToStatus = onNavigateToStatus,
-      onNavigateToSettings = onNavigateToSettings,
+      onNavigateToCreateProduct = { viewModel.onNavigateToCreateCategory() },
+      onNavigateToCategory = { categoryId, source ->
+        viewModel.onNavigateToCategory(categoryId, source)
+      },
+      onNavigateToStatus = { status ->
+        viewModel.onNavigateToFilteredItems(status)
+      },
+      onNavigateToSettings = {
+        viewModel.onNavigateToSettings()
+      },
       snackbarHostState = snackbarHostState,
     )
   }
@@ -67,7 +86,7 @@ fun DashboardScreen(
 private fun DashboardContent(
   state: DashboardState,
   onNavigateToCreateProduct: () -> Unit,
-  onNavigateToCategory: (String) -> Unit,
+  onNavigateToCategory: (String, String) -> Unit,
   onNavigateToStatus: (ItemStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
   snackbarHostState: AppSnackbarState,
@@ -133,7 +152,7 @@ private fun DashboardLoadingContent() {
 fun DashboardSuccessContent(
   state: DashboardState.Success,
   lazyListState: LazyListState,
-  onNavigateToCategory: (String) -> Unit,
+  onNavigateToCategory: (String, String) -> Unit,
   onNavigateToStatus: (ItemStatus) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -162,7 +181,7 @@ fun DashboardSuccessContentPreview(
       DashboardContent(
         state = state,
         onNavigateToCreateProduct = {},
-        onNavigateToCategory = {},
+        onNavigateToCategory = { _, _ -> },
         onNavigateToStatus = {},
         onNavigateToSettings = {},
         snackbarHostState = rememberAppSnackbarState(),
