@@ -28,7 +28,7 @@ class EventTrackerTest {
     val tracker1 = TestTracker()
     val tracker2 = TestTracker()
     val eventTracker = EventTracker(listOf(tracker1, tracker2))
-    val action = Action("TestAction", mapOf("key" to "value"))
+    val action = TestAction("TestAction", mapOf("key" to "value"))
 
     // When
     eventTracker.trackAction(action)
@@ -52,7 +52,7 @@ class EventTrackerTest {
   fun `trackAction works with empty tracker list`() {
     // Given
     val eventTracker = EventTracker(emptyList())
-    val action = Action("TestAction")
+    val action = TestAction("TestAction")
 
     // When/Then - should not throw
     eventTracker.trackAction(action)
@@ -79,8 +79,8 @@ class EventTrackerTest {
     // Given
     val tracker = TestTracker()
     val eventTracker = EventTracker(listOf(tracker))
-    val action1 = Action("Action1")
-    val action2 = Action("Action2", mapOf("param" to "value"))
+    val action1 = TestAction("Action1")
+    val action2 = TestAction("Action2", mapOf("param" to "value"))
 
     // When
     eventTracker.trackAction(action1)

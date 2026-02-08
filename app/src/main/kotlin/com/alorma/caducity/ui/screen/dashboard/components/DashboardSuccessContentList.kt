@@ -34,7 +34,7 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 @Composable
 fun DashboardSuccessContentList(
   state: DashboardState.Success,
-  onNavigateToCategory: (String) -> Unit,
+  onNavigateToCategory: (String, String) -> Unit,
   onNavigateToStatus: (ItemStatus) -> Unit,
   lazyListState: LazyListState,
 ) {
@@ -60,7 +60,7 @@ fun DashboardSuccessContentList(
 private fun DashboardCompactLayout(
   state: DashboardState.Success,
   lazyListState: LazyListState,
-  onNavigateToCategory: (String) -> Unit,
+  onNavigateToCategory: (String, String) -> Unit,
   onNavigateToStatus: (ItemStatus) -> Unit,
 ) {
   LazyColumn(
@@ -98,7 +98,7 @@ private fun DashboardCompactLayout(
                 .fillMaxWidth()
                 .clip(CaducityTheme.shapes.small)
                 .clickable {
-                  onNavigateToCategory(categoryCalendarState.id)
+                  onNavigateToCategory(categoryCalendarState.id, "category_title")
                 }
                 .padding(horizontal = 4.dp, vertical = 8.dp),
               verticalAlignment = Alignment.CenterVertically,
@@ -119,7 +119,7 @@ private fun DashboardCompactLayout(
             CaducityWeekCalendar(
               appCalendarConfig = categoryCalendarState.appCalendarConfig,
               todayColor = CaducityTheme.colorScheme.surfaceContainerHighest,
-              onDateClick = { onNavigateToCategory(categoryCalendarState.id) },
+              onDateClick = { onNavigateToCategory(categoryCalendarState.id, "calendar_date") },
             )
           }
         }
@@ -131,7 +131,7 @@ private fun DashboardCompactLayout(
 @Composable
 private fun DashboardExpandedLayout(
   state: DashboardState.Success,
-  onNavigateToCategory: (String) -> Unit,
+  onNavigateToCategory: (String, String) -> Unit,
   onNavigateToStatus: (ItemStatus) -> Unit,
 ) {
   Column(
@@ -172,7 +172,7 @@ private fun DashboardExpandedLayout(
                   .fillMaxWidth()
                   .clip(CaducityTheme.shapes.small)
                   .clickable {
-                    onNavigateToCategory(categoryCalendarState.id)
+                    onNavigateToCategory(categoryCalendarState.id, "category_title")
                   }
                   .padding(horizontal = 4.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -192,7 +192,7 @@ private fun DashboardExpandedLayout(
 
               CaducityMonthCalendar(
                 appCalendarConfig = categoryCalendarState.appCalendarConfig,
-                onDateClick = { onNavigateToCategory(categoryCalendarState.id) },
+                onDateClick = { onNavigateToCategory(categoryCalendarState.id, "calendar_date") },
               )
             }
           }
