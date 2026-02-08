@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.dashboard.filtered
+package com.alorma.caducity.ui.screen.filtered
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

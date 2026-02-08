@@ -2,7 +2,6 @@ package com.alorma.caducity.di
 
 import com.alorma.caducity.config.ConfigQualifier
 import com.alorma.caducity.config.configModule
-import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.config.time.RelativeTimeFormatter
 import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.data.datasource.RoomBackupDataSource
@@ -28,7 +27,7 @@ import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.feature.tracking.trackingModule
 import com.alorma.caducity.ui.screen.dashboard.dashboardModule
-import com.alorma.caducity.ui.screen.dashboard.filtered.FilteredItemsByStatusViewModel
+import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusViewModel
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryViewModel
@@ -44,7 +43,6 @@ import com.alorma.caducity.ui.components.bottomsheet.ItemActionsViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
