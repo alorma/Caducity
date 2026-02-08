@@ -30,6 +30,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import com.alorma.caducity.feature.tracking.ItemActionsBottomSheetScreen
+import com.alorma.caducity.feature.tracking.TrackScreen
 
 /**
  * Shows a bottom sheet with actions for a specific item.
@@ -70,6 +72,7 @@ private fun ItemActionsBottomSheetContent(
     key = "item_actions_${item.id}_${item.status}",
   ) { parametersOf(item) }
 ) {
+  TrackScreen(screen = ItemActionsBottomSheetScreen())
   val state by viewModel.state.collectAsStateWithLifecycle()
   val dialogState = LocalAppDialogState.current
 

@@ -3,20 +3,28 @@ package com.alorma.caducity.feature.tracking
 /**
  * Concrete Screen event classes for all screens in the app.
  * Each screen has its own type-safe tracking event.
+ *
+ * All screen names include the "Screen" suffix for consistency in analytics.
  */
 
 // Main feature screens
-class DashboardScreen : Screen("Dashboard")
-class CategoryDetailScreen : Screen("CategoryDetail")
-class AddItemScreen : Screen("AddItem")
-class CreateCategoryScreen : Screen("CreateCategory")
-class FilteredItemsByStatusScreen : Screen("FilteredItemsByStatus")
-class OnboardingScreen : Screen("Onboarding")
+class DashboardScreen : Screen("DashboardScreen")
+class CategoryDetailScreen : Screen("CategoryDetailScreen")
+class AddItemScreen : Screen("AddItemScreen")
+class CreateCategoryScreen : Screen("CreateCategoryScreen")
+class FilteredItemsByStatusScreen : Screen("FilteredItemsByStatusScreen")
+class OnboardingScreen : Screen("OnboardingScreen")
 
 // Settings screens
-class SettingsScreen : Screen("Settings")
-class AppearanceSettingsScreen : Screen("AppearanceSettings")
-class BackupScreen : Screen("Backup")
-class NotificationsSettingsScreen : Screen("NotificationsSettings")
-class DebugSettingsScreen : Screen("DebugSettings")
-class AboutScreen : Screen("About")
+class SettingsScreen : Screen("SettingsScreen")
+class AppearanceSettingsScreen : Screen("AppearanceSettingsScreen")
+class BackupScreen : Screen("BackupScreen")
+class NotificationsSettingsScreen : Screen("NotificationsSettingsScreen")
+class DebugSettingsScreen : Screen("DebugSettingsScreen")
+class AboutScreen : Screen("AboutScreen")
+
+// Bottom sheets (tracked as screens)
+class ItemActionsBottomSheetScreen : Screen("ItemActionsBottomSheetScreen")
+class ProductDeleteBottomSheetScreen : Screen("ProductDeleteBottomSheetScreen")
+class ProductClearItemsBottomSheetScreen : Screen("ProductClearItemsBottomSheetScreen")
+class ProductItemsBottomSheetScreen : Screen("ProductItemsBottomSheetScreen")
