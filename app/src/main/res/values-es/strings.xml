@@ -50,6 +50,8 @@
     <string name="settings_about_description">Información y créditos de la aplicación</string>
     <string name="settings_backup_title">Respaldo</string>
     <string name="settings_backup_description">Exportar y restaurar tus datos</string>
+    <string name="settings_privacy_title">Privacidad</string>
+    <string name="settings_privacy_description">Gestionar consentimiento y preferencias de datos</string>
 
     <string name="dashboard_fab_manual">Manual</string>
     <string name="dashboard_fab_ai">IA</string>
@@ -91,6 +93,21 @@
 
     <string name="settings_group_notifications">Notificaciones</string>
     <string name="settings_enable_notifications">Activar notificaciones</string>
+
+    <string name="settings_group_privacy">Privacidad y Datos</string>
+    <string name="settings_privacy_screen_title">Privacidad</string>
+    <string name="settings_privacy_analytics_title">Análisis</string>
+    <string name="settings_privacy_analytics_description">Compartir datos de uso anónimos para ayudar a mejorar la aplicación</string>
+    <string name="settings_privacy_info">Los cambios en esta configuración surten efecto inmediatamente. Respetamos tu privacidad y solo recopilamos datos de uso anónimos cuando otorgas permiso explícito.</string>
+
+    <!-- Debug - Consent Settings -->
+    <string name="debug_consent_section_title">Configuración de Consentimiento (Debug)</string>
+    <string name="debug_consent_ad_storage_title">Almacenamiento de Anuncios</string>
+    <string name="debug_consent_ad_storage_description">Permitir almacenamiento de datos relacionados con anuncios</string>
+    <string name="debug_consent_ad_user_data_title">Datos de Usuario para Anuncios</string>
+    <string name="debug_consent_ad_user_data_description">Permitir compartir datos de usuario con Google para publicidad</string>
+    <string name="debug_consent_ad_personalization_title">Personalización de Anuncios</string>
+    <string name="debug_consent_ad_personalization_description">Habilitar publicidad personalizada</string>
 
     <!-- About section -->
     <string name="about_version">Versión</string>
@@ -272,6 +289,13 @@
     <string name="onboarding_tutorial_message">Añade tu primera categoría para empezar a rastrear fechas de caducidad</string>
     <string name="onboarding_disclaimer_title">Aviso Importante</string>
     <string name="onboarding_disclaimer_message">Esta aplicación ayuda a rastrear las fechas de caducidad de productos pero no sustituye las prácticas adecuadas de seguridad alimentaria. Usa siempre tu criterio y sigue las pautas de seguridad alimentaria. Los desarrolladores no son responsables de ningún problema de salud derivado del consumo de productos caducados.</string>
+
+    <!-- Consent Screen -->
+    <string name="onboarding_consent_title">Tu Privacidad es Importante</string>
+    <string name="onboarding_consent_description">Ayúdanos a mejorar la aplicación compartiendo datos de uso anónimos. Puedes cambiar esto más tarde en la configuración.</string>
+    <string name="onboarding_consent_analytics_title">Análisis</string>
+    <string name="onboarding_consent_analytics_description">Compartir datos de uso anónimos para ayudarnos a mejorar la aplicación</string>
+    <string name="onboarding_consent_privacy_note">Respetamos tu privacidad. No se recopila ni comparte ningún dato personal con terceros.</string>
     <string name="onboarding_button_next">Siguiente</string>
     <string name="onboarding_button_skip">Omitir</string>
     <string name="onboarding_button_previous">Anterior</string>

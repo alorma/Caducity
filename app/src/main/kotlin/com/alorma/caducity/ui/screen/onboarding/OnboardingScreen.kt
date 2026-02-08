@@ -21,6 +21,7 @@ import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingButtons
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingPagerIndicator
+import com.alorma.caducity.ui.screen.onboarding.pages.ConsentOnboardingPage
 import com.alorma.caducity.ui.screen.onboarding.pages.DisclaimerOnboardingPage
 import com.alorma.caducity.ui.screen.onboarding.pages.FeaturesOnboardingPage
 import com.alorma.caducity.ui.screen.onboarding.pages.PermissionsOnboardingPage
@@ -113,7 +114,12 @@ fun OnboardingScreen(
               1 -> FeaturesOnboardingPage()
               2 -> PermissionsOnboardingPage()
               3 -> TutorialOnboardingPage()
-              4 -> DisclaimerOnboardingPage()
+              4 -> ConsentOnboardingPage(
+                onConsentChanged = { preferences ->
+                  viewModel.setConsentPreferences(preferences)
+                }
+              )
+              5 -> DisclaimerOnboardingPage()
             }
           }
 

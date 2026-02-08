@@ -20,6 +20,7 @@ class SettingsScreen : Screen("SettingsScreen")
 class AppearanceSettingsScreen : Screen("AppearanceSettingsScreen")
 class BackupScreen : Screen("BackupScreen")
 class NotificationsSettingsScreen : Screen("NotificationsSettingsScreen")
+class PrivacySettingsScreen : Screen("PrivacySettingsScreen")
 class DebugSettingsScreen : Screen("DebugSettingsScreen")
 class AboutScreen : Screen("AboutScreen")
 

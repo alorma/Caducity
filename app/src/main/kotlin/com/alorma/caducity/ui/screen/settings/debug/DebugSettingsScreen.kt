@@ -20,6 +20,8 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
+import com.alorma.caducity.feature.tracking.DebugSettingsScreen as DebugSettingsScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
@@ -28,14 +30,12 @@ import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCheckboxCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
-import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
-import com.alorma.caducity.feature.tracking.DebugSettingsScreen as DebugSettingsScreenEvent
-import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun DebugSettingsScreen(
@@ -69,6 +69,7 @@ private fun DebugSettingsContent(
             )
           }
         }
+
         DebugSettingsSideEffect.FakePlayStoreDataPopulated -> {
           coroutineScope.launch {
             snackbarState.showSnackbar(
@@ -77,6 +78,7 @@ private fun DebugSettingsContent(
             )
           }
         }
+
         is DebugSettingsSideEffect.RemoteConfigRefreshed -> {
           coroutineScope.launch {
             val message = if (effect.activated) {
@@ -112,102 +114,139 @@ private fun DebugSettingsContent(
         modifier = Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
       ) {
-      // Data Generation Group
-      item {
-        StyledSettingsGroup {
-        StyledSettingsCard(
-          title = "Populate Fake Data",
-          subtitle = if (uiState.isGenerating) {
-            "Generating test data..."
-          } else {
-            "Clear all data and create test items with all statuses"
-          },
-          position = ShapePosition.Start,
-          onClick = { viewModel.onPopulateFakeData() },
-          enabled = !uiState.isGenerating,
-        )
-        StyledSettingsCard(
-          title = "Populate Fake PlayStore Data",
-          subtitle = if (uiState.isGeneratingPlayStore) {
-            "Generating PlayStore data..."
-          } else {
-            "Create 5 categories with consistent products for screenshots"
-          },
-          position = ShapePosition.End,
-          onClick = { viewModel.onPopulateFakePlayStoreData() },
-          enabled = !uiState.isGeneratingPlayStore,
-        )
-        }
-      }
-
-      // Notifications Group
-      item {
-        StyledSettingsGroup {
-        StyledSettingsCard(
-          title = "Test Notification",
-          subtitle = "Trigger notification check immediately",
-          position = ShapePosition.Single,
-          onClick = { viewModel.onTriggerNotificationCheck() },
-        )
-        }
-      }
-
-      // Remote Config Group
-      item {
-        StyledSettingsGroup {
-        StyledSettingsCard(
-          title = "Refresh Remote Config",
-          subtitle = if (uiState.isRefreshingRemoteConfig) {
-            "Fetching latest config..."
-          } else {
-            "Fetch and activate latest config values"
-          },
-          position = ShapePosition.Single,
-          onClick = { viewModel.onRefreshRemoteConfig() },
-          enabled = !uiState.isRefreshingRemoteConfig,
-        )
-        }
-      }
-
-      // Remote Configs Override Group
-      if (uiState.remoteConfigValues.isNotEmpty()) {
+        // Data Generation Group
         item {
-          Column(
-          verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-          Text(
-            text = "Remote Configs",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(horizontal = 16.dp)
-          )
-
           StyledSettingsGroup {
-            uiState.remoteConfigValues.entries.forEachIndexed { index, (key, configState) ->
-              val position = when {
-                uiState.remoteConfigValues.size == 1 -> ShapePosition.Single
-                index == 0 -> ShapePosition.Start
-                index == uiState.remoteConfigValues.size - 1 -> ShapePosition.End
-                else -> ShapePosition.Middle
-              }
+            StyledSettingsCard(
+              title = "Populate Fake Data",
+              subtitle = if (uiState.isGenerating) {
+                "Generating test data..."
+              } else {
+                "Clear all data and create test items with all statuses"
+              },
+              position = ShapePosition.Start,
+              onClick = { viewModel.onPopulateFakeData() },
+              enabled = !uiState.isGenerating,
+            )
+            StyledSettingsCard(
+              title = "Populate Fake PlayStore Data",
+              subtitle = if (uiState.isGeneratingPlayStore) {
+                "Generating PlayStore data..."
+              } else {
+                "Create 5 categories with consistent products for screenshots"
+              },
+              position = ShapePosition.End,
+              onClick = { viewModel.onPopulateFakePlayStoreData() },
+              enabled = !uiState.isGeneratingPlayStore,
+            )
+          }
+        }
 
-              StyledSettingsSwitchCard(
-                title = key,
-                subtitle = if (configState.hasDebugOverride) {
-                  "Debug override active"
-                } else {
-                  "Using default value"
-                },
-                state = configState.value,
-                position = position,
-                onCheckedChange = { enabled ->
-                  viewModel.onToggleRemoteConfig(key, enabled)
-                },
+        // Notifications Group
+        item {
+          StyledSettingsGroup {
+            StyledSettingsCard(
+              title = "Test Notification",
+              subtitle = "Trigger notification check immediately",
+              position = ShapePosition.Single,
+              onClick = { viewModel.onTriggerNotificationCheck() },
+            )
+          }
+        }
+
+        // Remote Config Group
+        item {
+          StyledSettingsGroup {
+            StyledSettingsCard(
+              title = "Refresh Remote Config",
+              subtitle = if (uiState.isRefreshingRemoteConfig) {
+                "Fetching latest config..."
+              } else {
+                "Fetch and activate latest config values"
+              },
+              position = ShapePosition.Single,
+              onClick = { viewModel.onRefreshRemoteConfig() },
+              enabled = !uiState.isRefreshingRemoteConfig,
+            )
+          }
+        }
+
+        // Consent Settings Group (Debug Only)
+        item {
+          StyledSettingsGroup(
+            title = {
+              Text(
+                text = stringResource(R.string.debug_consent_section_title),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = 16.dp)
               )
+            },
+          ) {
+            StyledSettingsCheckboxCard(
+              title = stringResource(R.string.debug_consent_ad_storage_title),
+              subtitle = stringResource(R.string.debug_consent_ad_storage_description),
+              state = uiState.adStorageEnabled,
+              position = ShapePosition.Start,
+              onCheckedChange = { viewModel.onToggleAdStorage(it) },
+            )
+
+            StyledSettingsCheckboxCard(
+              title = stringResource(R.string.debug_consent_ad_user_data_title),
+              subtitle = stringResource(R.string.debug_consent_ad_user_data_description),
+              state = uiState.adUserDataEnabled,
+              position = ShapePosition.Middle,
+              onCheckedChange = { viewModel.onToggleAdUserData(it) },
+            )
+
+            StyledSettingsCheckboxCard(
+              title = stringResource(R.string.debug_consent_ad_personalization_title),
+              subtitle = stringResource(R.string.debug_consent_ad_personalization_description),
+              state = uiState.adPersonalizationEnabled,
+              position = ShapePosition.End,
+              onCheckedChange = { viewModel.onToggleAdPersonalization(it) },
+            )
+          }
+        }
+
+        // Remote Configs Override Group
+        if (uiState.remoteConfigValues.isNotEmpty()) {
+          item {
+            Column(
+              verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+              Text(
+                text = "Remote Configs",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = 16.dp)
+              )
+
+              StyledSettingsGroup {
+                uiState.remoteConfigValues.entries.forEachIndexed { index, (key, configState) ->
+                  val position = when {
+                    uiState.remoteConfigValues.size == 1 -> ShapePosition.Single
+                    index == 0 -> ShapePosition.Start
+                    index == uiState.remoteConfigValues.size - 1 -> ShapePosition.End
+                    else -> ShapePosition.Middle
+                  }
+
+                  StyledSettingsSwitchCard(
+                    title = key,
+                    subtitle = if (configState.hasDebugOverride) {
+                      "Debug override active"
+                    } else {
+                      "Using default value"
+                    },
+                    state = configState.value,
+                    position = position,
+                    onCheckedChange = { enabled ->
+                      viewModel.onToggleRemoteConfig(key, enabled)
+                    },
+                  )
+                }
+              }
             }
           }
-          }
         }
-      }
       }
     }
   }

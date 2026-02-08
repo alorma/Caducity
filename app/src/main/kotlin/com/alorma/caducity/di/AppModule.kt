@@ -25,6 +25,7 @@ import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
+import com.alorma.caducity.feature.consent.consentModule
 import com.alorma.caducity.feature.tracking.trackingModule
 import com.alorma.caducity.ui.screen.dashboard.dashboardModule
 import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusViewModel
@@ -39,6 +40,7 @@ import com.alorma.caducity.ui.screen.category.detail.product.ProductPageMapper
 import com.alorma.caducity.ui.screen.category.detail.product.ProductPageViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
+import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsViewModel
 import com.alorma.caducity.ui.components.bottomsheet.ItemActionsViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
@@ -56,6 +58,7 @@ val appModule = module {
   includes(dataModule)
   includes(domainModule)
   includes(fireAndForgetModule)
+  includes(consentModule)
   includes(trackingModule)
 
   includes(dashboardModule)
@@ -116,6 +119,9 @@ val appModule = module {
   singleOf(::ImportBackupUseCase)
   viewModelOf(::BackupViewModel)
 
+  // Privacy Settings
+  viewModelOf(::PrivacySettingsViewModel)
+
   // Debug Settings
   factory {
     DebugSettingsViewModel(
@@ -125,6 +131,7 @@ val appModule = module {
       fakePlayStoreDataStrategy = get(),
       remoteConfigRunner = get(),
       remoteConfigs = getAll(),
+      consentManager = get(),
     )
   }
 

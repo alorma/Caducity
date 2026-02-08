@@ -104,6 +104,31 @@ One-time operation flags for features like onboarding, announcements, and first-
 - `disable()`: Mark the operation as completed (won't run again)
 - `enable()`: Re-enable the flag (for "Reset tutorials" features)
 
+### Firebase Analytics Consent Mode
+
+The app implements Google's consent mode for Firebase Analytics to respect user privacy preferences:
+
+**Components**:
+- **ConsentManager**: Manages consent preferences and applies them to Firebase Analytics
+- **ConsentPreferences**: Data class with predefined consent options (DEFAULT, ANALYTICS_ONLY, ALL_GRANTED)
+- **ConsentFlag**: FireAndForget flag ensuring consent screen is shown only once
+- **ConsentOnboardingPage**: UI component in onboarding flow for collecting user consent
+
+**Consent Flow**:
+1. On app startup in `MainActivity.onCreate()`, default consent (all denied) is applied
+2. During onboarding (page 5 of 6), user sees consent screen with analytics toggle
+3. User's choice is persisted via SharedPreferences
+4. ConsentManager applies settings to Firebase Analytics using `setConsent()` API
+5. Consent flag is disabled after onboarding completion
+
+**Key Features**:
+- Default deny approach (privacy-first)
+- One-time consent screen using FireAndForget
+- Persistent storage of user preferences
+- Integration with Firebase Analytics consent API
+
+**Based on**: [Google's App Consent Guide](https://developers.google.com/tag-platform/security/guides/app-consent)
+
 ### Analytics & Action Tracking System
 
 The app uses a dual-layer tracking system for user behavior analytics:
