@@ -16,6 +16,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
@@ -133,7 +135,7 @@ fun DebugSettingsScreen(
         )
         }
       }
-      
+
       // Remote Configs Override Group
       if (uiState.remoteConfigValues.isNotEmpty()) {
         item {
@@ -145,7 +147,7 @@ fun DebugSettingsScreen(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = 16.dp)
           )
-          
+
           StyledSettingsGroup {
             uiState.remoteConfigValues.entries.forEachIndexed { index, (key, configState) ->
               val position = when {
@@ -154,7 +156,7 @@ fun DebugSettingsScreen(
                 index == uiState.remoteConfigValues.size - 1 -> ShapePosition.End
                 else -> ShapePosition.Middle
               }
-              
+
               StyledSettingsSwitchCard(
                 title = key,
                 subtitle = if (configState.hasDebugOverride) {
@@ -192,8 +194,8 @@ fun DebugSettingsScreen(
   }
 }
 
-
-@PreviewDynamicLightDark
+@PreviewLightDark
+@PreviewScreenSizes
 @Composable
 fun DebugSettingsScreenPreview() {
   PreviewTheme {
