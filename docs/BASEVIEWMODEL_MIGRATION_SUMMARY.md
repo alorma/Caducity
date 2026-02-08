@@ -81,7 +81,7 @@ All applicable ViewModels in the Caducity app have been successfully migrated to
 ## Code Metrics
 
 ### Total Lines Saved
-- **~84-96 lines** of boilerplate code removed across 7 ViewModels
+- **~120-132 lines** of boilerplate code removed across 10 ViewModels
 - Average: ~12 lines per ViewModel
 
 ### Before BaseViewModel (per ViewModel)
@@ -186,6 +186,26 @@ class CategoryDetailViewModel : BaseViewModel<
 }
 ```
 
+### For ViewModels with Only Side Effects (No Navigation)
+
+Use `NoNavigation` marker type:
+
+```kotlin
+class ItemActionsViewModel : BaseViewModel<
+  NoNavigation,  // No screen navigation
+  ItemActionSideEffect,
+  ItemActionSideEffect
+>() {
+  override fun navigate(navigation: NoNavigation) {
+    // Empty - this ViewModel doesn't navigate
+  }
+
+  fun onActionClick(action: ItemAction) {
+    emitSideEffect(ItemActionSideEffect.ActionCompleted(action))
+  }
+}
+```
+
 ## Build Verification
 
 **Status**: ✅ BUILD SUCCESSFUL in 6s
@@ -222,10 +242,14 @@ When creating a new ViewModel:
 - ✅ `CategoryDetailViewModel.kt`
 - ✅ `ProductPageViewModel.kt`
 - ✅ `FilteredItemsByStatusViewModel.kt`
+- ✅ `BackupViewModel.kt`
+- ✅ `DebugSettingsViewModel.kt`
+- ✅ `ItemActionsViewModel.kt`
 
 ### Base Classes
 - ✅ `BaseViewModel.kt` (created)
 - ✅ `NoSideEffect` marker (created)
+- ✅ `NoNavigation` marker (created)
 
 ### Documentation
 - ✅ `BASE_VIEWMODEL_GUIDE.md` (created)
