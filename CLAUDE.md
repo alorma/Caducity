@@ -359,6 +359,51 @@ sealed interface DashboardNavigationSideEffect {
 - Keep implementation details private
 - Use sealed interfaces for exhaustive when expressions
 
+#### BaseViewModel Generic Parameters
+
+All ViewModels extend `BaseViewModel<NavigationIntent, NavigationSideEffect, SideEffect>` with three generic parameters:
+
+**Parameter 1: NavigationIntent** - User's intent to navigate
+- Sealed interface with data needed for tracking
+- Example: `DashboardNavigation`, `CategoryDetailNavigation`
+- Use `Unit` if ViewModel doesn't navigate
+
+**Parameter 2: NavigationSideEffect** - Actual navigation action
+- Sealed interface with data needed for navigation
+- Example: `DashboardNavigationSideEffect`, `CategoryDetailNavigationSideEffect`
+- **Must be separate from SideEffect** - NEVER mix with dialogs/snackbars
+- Use `Unit` if ViewModel doesn't navigate
+
+**Parameter 3: SideEffect** - Non-navigation UI feedback
+- Sealed interface for dialogs, snackbars, bottom sheets
+- Example: `DashboardSideEffect`, `CategoryDetailSideEffect`
+- **Must be separate from NavigationSideEffect** - NEVER mix with navigation
+- Use `Unit` if ViewModel has no UI feedback
+
+**Examples:**
+```kotlin
+// ViewModel with both navigation and side effects
+class CategoryDetailViewModel : BaseViewModel<
+  CategoryDetailNavigation,           // Navigation intents
+  CategoryDetailNavigationSideEffect, // Navigation actions (separate!)
+  CategoryDetailSideEffect            // Dialogs/snackbars (separate!)
+>()
+
+// ViewModel with only navigation, no dialogs/snackbars
+class DashboardViewModel : BaseViewModel<
+  DashboardNavigation,
+  DashboardNavigationSideEffect,
+  Unit  // No dialogs/snackbars
+>()
+
+// ViewModel with only dialogs/snackbars, no navigation
+class BackupViewModel : BaseViewModel<
+  Unit,  // No navigation
+  Unit,  // No navigation side effects
+  BackupSideEffect  // Only dialogs/snackbars
+>()
+```
+
 ### State Management Pattern
 
 **State:**
