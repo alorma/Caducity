@@ -44,6 +44,12 @@ strikt = "0.35.1"
 timber = "5.0.1"
 ktlint = "14.0.1"
 
+# Testing
+turbine = "1.2.1"
+mockito-kotlin = "6.2.3"
+mockito-core = "5.21.0"
+kotlinx-coroutines-test = "1.10.2"
+
 # Firebase
 firebase-bom = "34.9.0"
 adaptive = "1.2.0"
@@ -109,6 +115,14 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 junit = { group = "junit", name = "junit", version = "4.13.2" }
 
 strikt-core = { group = "io.strikt", name = "strikt-core", version.ref = "strikt" }
+
+# Testing libraries
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito-core" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
+koin-test = { group = "io.insert-koin", name = "koin-test" }
+koin-test-junit4 = { group = "io.insert-koin", name = "koin-test-junit4" }
 
 material-kolor = { group = "com.materialkolor", name = "material-kolor", version.ref = "materialKolor" }
 
