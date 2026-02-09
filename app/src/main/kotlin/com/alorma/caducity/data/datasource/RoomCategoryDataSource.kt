@@ -1,6 +1,7 @@
 package com.alorma.caducity.data.datasource
 
-import com.alorma.caducity.data.datasource.room.AppDatabase
+import com.alorma.caducity.data.datasource.room.dao.CategoryDao
+import com.alorma.caducity.data.datasource.room.dao.ItemDao
 import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.domain.CategoryDataSource
@@ -13,13 +14,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class RoomCategoryDataSource(
-  database: AppDatabase,
+  private val categoryDao: CategoryDao,
+  private val itemDao: ItemDao,
   private val categoryMapper: CategoryRoomMapper,
   private val itemRoomMapper: ItemRoomMapper,
 ) : CategoryDataSource {
-
-  private val categoryDao = database.categoryDao()
-  private val itemDao = database.itemDao()
 
   override fun getCategories(): Flow<ImmutableList<CategoryWithItems>> {
     val daoFlow = categoryDao.getAllCategoriesWithItems()

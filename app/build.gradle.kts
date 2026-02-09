@@ -198,7 +198,12 @@ dependencies {
   testImplementation(libs.kotlinx.coroutines.test)
   testImplementation(libs.koin.test)
   testImplementation(libs.koin.test.junit4)
+
+  // Room testing
   testImplementation(libs.androidx.room.runtime)
+  testImplementation(libs.androidx.room.ktx)
+  testImplementation(libs.androidx.test.runner)
+  testImplementation(libs.androidx.test.rules)
 
   // Screenshot testing
   screenshotTestImplementation(libs.screenshot.validation.api)

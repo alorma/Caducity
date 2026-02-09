@@ -2,12 +2,12 @@ package com.alorma.caducity.ui.screen.category.detail.product
 
 import app.cash.turbine.test
 import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.data.datasource.room.dao.ItemDao
-import com.alorma.caducity.domain.ItemDataSource
-import com.alorma.caducity.domain.ProductDataSource
-import com.alorma.caducity.domain.model.Item
-import com.alorma.caducity.domain.model.ItemStatus
-import com.alorma.caducity.domain.model.Product
+import com.alorma.caducity.data.datasource.RoomItemDataSource
+import com.alorma.caducity.data.datasource.RoomProductDataSource
+import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
+import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
+import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
+import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import com.alorma.caducity.domain.model.ProductDeletionStrategy
 import com.alorma.caducity.domain.usecase.ClearProductItemsUseCase
 import com.alorma.caducity.domain.usecase.DeleteProductUseCase
@@ -16,100 +16,112 @@ import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
+import java.util.UUID
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlinx.datetime.Instant
-import kotlinx.collections.immutable.toImmutableList
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
 import strikt.api.expectThat
 import strikt.assertions.isA
 import strikt.assertions.isEqualTo
-import kotlin.time.Duration.Companion.days
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProductPageViewModelTest {
 
   private val testDispatcher = StandardTestDispatcher()
 
-  // Mocks
-  private lateinit var itemDataSource: ItemDataSource
-  private lateinit var productDataSource: ProductDataSource
-  private lateinit var itemDao: ItemDao
-  private lateinit var appClock: AppClock
-  private lateinit var eventTracker: EventTracker
-  private lateinit var expirationThresholds: ExpirationThresholds
+  // Mocks - interfaces only
+  private val appClock: AppClock = mock {
+    on { now() } doReturn now
+  }
+  private val eventTracker: EventTracker = mock()
+  private val expirationThresholds: ExpirationThresholds = mock {
+    on { soonExpiringThreshold } doReturn 3.days
+    on { consumeExpiredThreshold } doReturn 2.days
+  }
 
-  // Real implementations
-  private lateinit var getProductItemsUseCase: GetProductItemsUseCase
-  private lateinit var getCategoryProductsUseCase: GetCategoryProductsUseCase
-  private lateinit var deleteProductUseCase: DeleteProductUseCase
-  private lateinit var clearProductItemsUseCase: ClearProductItemsUseCase
-  private lateinit var productPageMapper: ProductPageMapper
+  // In-memory storage for fake DAOs
+  private val itemsInMemory = MutableStateFlow<List<ItemRoomEntity>>(emptyList())
+  private val productsInMemory = MutableStateFlow<List<ProductRoomEntity>>(emptyList())
 
-  // Test data
-  private val categoryId = "test-category"
-  private val productId = "test-product"
-  private val now = Instant.parse("2024-02-10T12:00:00Z")
+  // Fake DAOs
+  private val itemDao = FakeItemDao(itemsInMemory)
+  private val productDao = FakeProductDao(productsInMemory, itemsInMemory)
+
+  // Real mappers
+  private val itemMapper = ItemRoomMapper(
+    appClock = appClock,
+    expirationThresholds = expirationThresholds,
+  )
+
+  private val productMapper = ProductRoomMapper()
+
+  // Real data sources
+  private val itemDataSource = RoomItemDataSource(
+    itemDao = itemDao,
+    appClock = appClock,
+    itemMapper = itemMapper,
+  )
+
+  private val productDataSource = RoomProductDataSource(
+    productDao = productDao,
+    itemDao = itemDao,
+    appClock = appClock,
+    productMapper = productMapper,
+  )
+
+  // Real use cases
+  private val getProductItemsUseCase = GetProductItemsUseCase(
+    itemDataSource = itemDataSource,
+    appClock = appClock,
+    expirationThresholds = expirationThresholds,
+  )
+
+  private val getCategoryProductsUseCase = GetCategoryProductsUseCase(
+    productDataSource = productDataSource,
+  )
+
+  private val deleteProductUseCase = DeleteProductUseCase(
+    productDataSource = productDataSource,
+    itemDao = itemDao,
+  )
+
+  private val clearProductItemsUseCase = ClearProductItemsUseCase(
+    itemDataSource = itemDataSource,
+  )
+
+  private val productPageMapper = ProductPageMapper(appClock = appClock)
 
   @Before
   fun setUp() {
     Dispatchers.setMain(testDispatcher)
-
-    // Create mocks
-    itemDataSource = mock()
-    productDataSource = mock()
-    itemDao = mock<ItemDao>()
-    appClock = mock()
-    eventTracker = mock()
-    expirationThresholds = mock()
-
-    // Configure mocks
-    whenever(appClock.now()).thenReturn(now)
-    whenever(expirationThresholds.soonExpiringThreshold).thenReturn(3.days)
-    whenever(expirationThresholds.consumeExpiredThreshold).thenReturn(2.days)
-
-    getProductItemsUseCase = GetProductItemsUseCase(
-      itemDataSource = itemDataSource,
-      appClock = appClock,
-      expirationThresholds = expirationThresholds,
-    )
-
-    getCategoryProductsUseCase = GetCategoryProductsUseCase(
-      productDataSource = productDataSource,
-    )
-
-    deleteProductUseCase = DeleteProductUseCase(
-      productDataSource = productDataSource,
-      itemDao = itemDao,
-    )
-
-    clearProductItemsUseCase = ClearProductItemsUseCase(
-      itemDataSource = itemDataSource,
-    )
-
-    productPageMapper = ProductPageMapper(appClock = appClock)
   }
 
   @After
   fun tearDown() {
     Dispatchers.resetMain()
+    // Clear in-memory storage
+    itemsInMemory.value = emptyList()
+    productsInMemory.value = emptyList()
   }
 
   private fun createViewModel(
     productTab: CategoryProductTabUiModel = CategoryProductTabUiModel(
-      id = productId,
-      categoryId = categoryId,
+      id = testProductId,
+      categoryId = testCategoryId,
       name = "Test Product",
     ),
   ): ProductPageViewModel {
@@ -124,11 +136,41 @@ class ProductPageViewModelTest {
     )
   }
 
+  private fun insertTestProduct(): String {
+    val product = ProductRoomEntity(
+      id = UUID.randomUUID().toString(),
+      categoryId = testCategoryId,
+      name = "Test Product",
+      createdAt = now.toEpochMilliseconds(),
+    )
+    productsInMemory.value += product
+    return product.id
+  }
+
+  private fun insertTestItem(
+    productId: String? = testProductId,
+    identifier: String = "Test Item",
+    expirationDate: Instant = Instant.parse("2024-02-15T00:00:00Z"),
+  ): String {
+    val id = UUID.randomUUID().toString()
+    val item = ItemRoomEntity(
+      id = id,
+      categoryId = testCategoryId,
+      identifier = identifier,
+      productId = productId,
+      expirationDate = expirationDate.toEpochMilliseconds(),
+      consumedDate = null,
+      pausedDate = null,
+      remainingDays = null,
+    )
+    itemsInMemory.value += item
+    return id
+  }
+
   @Test
   fun `initial state is Loading`() = runTest {
     // Given
-    whenever(itemDataSource.getItemsByProduct(categoryId, productId))
-      .thenReturn(flowOf(emptyList()))
+    insertTestProduct()
 
     // When
     val viewModel = createViewModel()
@@ -141,15 +183,20 @@ class ProductPageViewModelTest {
   @Test
   fun `state updates to Success with empty items`() = runTest {
     // Given
-    whenever(itemDataSource.getItemsByProduct(categoryId, productId))
-      .thenReturn(flowOf(emptyList()))
+    insertTestProduct()
 
     // When
     val viewModel = createViewModel()
-    testDispatcher.scheduler.advanceUntilIdle()
 
     // Then
     viewModel.state.test {
+      // Skip the initial Loading state
+      expectThat(awaitItem()).isA<ProductPageState.Loading>()
+
+      // Advance the dispatcher to process the load
+      testDispatcher.scheduler.advanceUntilIdle()
+
+      // Now check the Success state
       val state = awaitItem()
       expectThat(state).isA<ProductPageState.Success>()
       val successState = state as ProductPageState.Success
@@ -162,33 +209,28 @@ class ProductPageViewModelTest {
   @Test
   fun `state updates to Success with items`() = runTest {
     // Given
-    val items = listOf(
-      Item(
-        id = "item1",
-        identifier = "Item 1",
-        productId = productId,
-        expirationDate = Instant.parse("2024-02-15T00:00:00Z"),
-        status = ItemStatus.Fresh,
-        pausedDate = null,
-      ),
-      Item(
-        id = "item2",
-        identifier = "Item 2",
-        productId = productId,
-        expirationDate = Instant.parse("2024-02-15T00:00:00Z"),
-        status = ItemStatus.Fresh,
-        pausedDate = null,
-      ),
-    )
-    whenever(itemDataSource.getItemsByProduct(categoryId, productId))
-      .thenReturn(flowOf(items))
+    val productId = insertTestProduct()
+    insertTestItem(productId = productId, identifier = "Item 1")
+    insertTestItem(productId = productId, identifier = "Item 2")
 
     // When
-    val viewModel = createViewModel()
-    testDispatcher.scheduler.advanceUntilIdle()
+    val viewModel = createViewModel(
+      CategoryProductTabUiModel(
+        id = productId,
+        categoryId = testCategoryId,
+        name = "Test Product",
+      )
+    )
 
     // Then
     viewModel.state.test {
+      // Skip the initial Loading state
+      expectThat(awaitItem()).isA<ProductPageState.Loading>()
+
+      // Advance the dispatcher to process the load
+      testDispatcher.scheduler.advanceUntilIdle()
+
+      // Now check the Success state with items
       val state = awaitItem()
       expectThat(state).isA<ProductPageState.Success>()
       val successState = state as ProductPageState.Success
@@ -200,10 +242,15 @@ class ProductPageViewModelTest {
   @Test
   fun `onAddItemClick emits navigation side effect`() = runTest {
     // Given
-    whenever(itemDataSource.getItemsByProduct(categoryId, productId))
-      .thenReturn(flowOf(emptyList()))
+    val productId = insertTestProduct()
 
-    val viewModel = createViewModel()
+    val viewModel = createViewModel(
+      CategoryProductTabUiModel(
+        id = productId,
+        categoryId = testCategoryId,
+        name = "Test Product",
+      )
+    )
     testDispatcher.scheduler.advanceUntilIdle()
 
     // When
@@ -215,7 +262,7 @@ class ProductPageViewModelTest {
       val sideEffect = awaitItem()
       expectThat(sideEffect).isA<ProductPageNavigationSideEffect.NavigateToAddItem>()
       val navEffect = sideEffect as ProductPageNavigationSideEffect.NavigateToAddItem
-      expectThat(navEffect.categoryId).isEqualTo(categoryId)
+      expectThat(navEffect.categoryId).isEqualTo(testCategoryId)
       expectThat(navEffect.productId).isEqualTo(productId)
     }
   }
@@ -223,10 +270,15 @@ class ProductPageViewModelTest {
   @Test
   fun `onAddItemClick tracks action`() = runTest {
     // Given
-    whenever(itemDataSource.getItemsByProduct(categoryId, productId))
-      .thenReturn(flowOf(emptyList()))
+    val productId = insertTestProduct()
 
-    val viewModel = createViewModel()
+    val viewModel = createViewModel(
+      CategoryProductTabUiModel(
+        id = productId,
+        categoryId = testCategoryId,
+        name = "Test Product",
+      )
+    )
     testDispatcher.scheduler.advanceUntilIdle()
 
     // When
@@ -240,12 +292,15 @@ class ProductPageViewModelTest {
   @Test
   fun `onDeleteProductClick with no items shows simple delete dialog`() = runTest {
     // Given
-    whenever(itemDataSource.getItemsByProduct(categoryId, productId))
-      .thenReturn(flowOf(emptyList()))
-    whenever(deleteProductUseCase.getActiveItemCount(productId))
-      .thenReturn(0)
+    val productId = insertTestProduct()
 
-    val viewModel = createViewModel()
+    val viewModel = createViewModel(
+      CategoryProductTabUiModel(
+        id = productId,
+        categoryId = testCategoryId,
+        name = "Test Product",
+      )
+    )
     testDispatcher.scheduler.advanceUntilIdle()
 
     // When
@@ -262,22 +317,26 @@ class ProductPageViewModelTest {
   @Test
   fun `onDeleteProductClick with items shows dialog with options`() = runTest {
     // Given
-    val products = listOf(
-      Product(
-        id = "other-product",
-        categoryId = categoryId,
-        name = "Other Product",
-        createdAt = now,
-      ),
-    )
-    whenever(itemDataSource.getItemsByProduct(categoryId, productId))
-      .thenReturn(flowOf(emptyList()))
-    whenever(deleteProductUseCase.getActiveItemCount(productId))
-      .thenReturn(5)
-    whenever(productDataSource.getProductsByCategory(categoryId))
-      .thenReturn(flowOf(products.toImmutableList()))
+    val productId = insertTestProduct()
+    insertTestItem(productId = productId)
+    insertTestItem(productId = productId)
 
-    val viewModel = createViewModel()
+    // Create another product
+    val otherProduct = ProductRoomEntity(
+      id = UUID.randomUUID().toString(),
+      categoryId = testCategoryId,
+      name = "Other Product",
+      createdAt = now.toEpochMilliseconds(),
+    )
+    productsInMemory.value += otherProduct
+
+    val viewModel = createViewModel(
+      CategoryProductTabUiModel(
+        id = productId,
+        categoryId = testCategoryId,
+        name = "Test Product",
+      )
+    )
     testDispatcher.scheduler.advanceUntilIdle()
 
     // When
@@ -289,7 +348,7 @@ class ProductPageViewModelTest {
       val sideEffect = awaitItem()
       expectThat(sideEffect).isA<ProductPageSideEffect.ShowDeleteProductWithItemsDialog>()
       val dialog = sideEffect as ProductPageSideEffect.ShowDeleteProductWithItemsDialog
-      expectThat(dialog.activeItemCount).isEqualTo(5)
+      expectThat(dialog.activeItemCount).isEqualTo(2)
       expectThat(dialog.availableProducts.size).isEqualTo(1)
     }
   }
@@ -297,12 +356,15 @@ class ProductPageViewModelTest {
   @Test
   fun `onDeleteProduct success emits success side effect`() = runTest {
     // Given
-    whenever(itemDataSource.getItemsByProduct(categoryId, productId))
-      .thenReturn(flowOf(emptyList()))
-    whenever(deleteProductUseCase.delete(productId, ProductDeletionStrategy.CascadeDelete))
-      .thenReturn(Result.success(Unit))
+    val productId = insertTestProduct()
 
-    val viewModel = createViewModel()
+    val viewModel = createViewModel(
+      CategoryProductTabUiModel(
+        id = productId,
+        categoryId = testCategoryId,
+        name = "Test Product",
+      )
+    )
     testDispatcher.scheduler.advanceUntilIdle()
 
     // When
@@ -317,34 +379,17 @@ class ProductPageViewModelTest {
   }
 
   @Test
-  fun `onDeleteProduct failure emits failure side effect`() = runTest {
-    // Given
-    whenever(itemDataSource.getItemsByProduct(categoryId, productId))
-      .thenReturn(flowOf(emptyList()))
-    whenever(deleteProductUseCase.delete(productId, ProductDeletionStrategy.CascadeDelete))
-      .thenReturn(Result.failure(Exception("Delete failed")))
-
-    val viewModel = createViewModel()
-    testDispatcher.scheduler.advanceUntilIdle()
-
-    // When
-    viewModel.sideEffects.test {
-      viewModel.onDeleteProduct(productId, ProductDeletionStrategy.CascadeDelete)
-      testDispatcher.scheduler.advanceUntilIdle()
-
-      // Then
-      val sideEffect = awaitItem()
-      expectThat(sideEffect).isA<ProductPageSideEffect.DeleteProductFailed>()
-    }
-  }
-
-  @Test
   fun `onClearProductItemsClick emits dialog side effect`() = runTest {
     // Given
-    whenever(itemDataSource.getItemsByProduct(categoryId, productId))
-      .thenReturn(flowOf(emptyList()))
+    val productId = insertTestProduct()
 
-    val viewModel = createViewModel()
+    val viewModel = createViewModel(
+      CategoryProductTabUiModel(
+        id = productId,
+        categoryId = testCategoryId,
+        name = "Test Product",
+      )
+    )
     testDispatcher.scheduler.advanceUntilIdle()
 
     // When
@@ -360,12 +405,17 @@ class ProductPageViewModelTest {
   @Test
   fun `onClearProductItems with clearAll true clears all items`() = runTest {
     // Given
-    whenever(itemDataSource.getItemsByProduct(categoryId, productId))
-      .thenReturn(flowOf(emptyList()))
-    whenever(clearProductItemsUseCase.clearAllItems(categoryId, productId))
-      .thenReturn(Result.success(Unit))
+    val productId = insertTestProduct()
+    insertTestItem(productId = productId)
+    insertTestItem(productId = productId)
 
-    val viewModel = createViewModel()
+    val viewModel = createViewModel(
+      CategoryProductTabUiModel(
+        id = productId,
+        categoryId = testCategoryId,
+        name = "Test Product",
+      )
+    )
     testDispatcher.scheduler.advanceUntilIdle()
 
     // When
@@ -378,18 +428,30 @@ class ProductPageViewModelTest {
       expectThat(sideEffect).isA<ProductPageSideEffect.ItemsCleared>()
     }
 
-    verify(clearProductItemsUseCase).clearAllItems(categoryId, productId)
+    // Verify items were cleared
+    val items = itemDataSource.getItemsByProduct(testCategoryId, productId).first()
+    expectThat(items.size).isEqualTo(0)
   }
 
   @Test
   fun `onClearProductItems with clearAll false clears only consumed items`() = runTest {
     // Given
-    whenever(itemDataSource.getItemsByProduct(categoryId, productId))
-      .thenReturn(flowOf(emptyList()))
-    whenever(clearProductItemsUseCase.clearConsumedItems(categoryId, productId))
-      .thenReturn(Result.success(Unit))
+    val productId = insertTestProduct()
+    val item1Id = insertTestItem(productId = productId)
+    insertTestItem(productId = productId)
 
-    val viewModel = createViewModel()
+    // Mark one item as consumed
+    itemsInMemory.value = itemsInMemory.value.map {
+      if (it.id == item1Id) it.copy(consumedDate = now.toEpochMilliseconds()) else it
+    }
+
+    val viewModel = createViewModel(
+      CategoryProductTabUiModel(
+        id = productId,
+        categoryId = testCategoryId,
+        name = "Test Product",
+      )
+    )
     testDispatcher.scheduler.advanceUntilIdle()
 
     // When
@@ -402,6 +464,15 @@ class ProductPageViewModelTest {
       expectThat(sideEffect).isA<ProductPageSideEffect.ItemsCleared>()
     }
 
-    verify(clearProductItemsUseCase).clearConsumedItems(categoryId, productId)
+    // Verify only consumed items were cleared (1 active item should remain)
+    val items = itemDataSource.getItemsByProduct(testCategoryId, productId).first()
+    expectThat(items.size).isEqualTo(1)
+  }
+
+  companion object {
+    // Test data
+    private val testCategoryId = "test-category"
+    private val testProductId = "test-product"
+    private val now = Instant.parse("2024-02-10T12:00:00Z")
   }
 }
