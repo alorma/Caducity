@@ -30,10 +30,7 @@ class DebugSettingsViewModel(
   private val remoteConfigRunner: RemoteConfigRunner,
   private val remoteConfigs: List<RemoteConfig>,
   private val consentManager: ConsentManager,
-) : BaseViewModel<NoNavigation, DebugSettingsSideEffect, DebugSettingsSideEffect>() {
-
-  // Alias for backward compatibility
-  val sideEffect = sideEffects
+) : BaseViewModel<Unit, DebugSettingsSideEffect, DebugSettingsSideEffect>() {
 
   private val _uiState = MutableStateFlow(DebugSettingsUiState())
   val uiState: StateFlow<DebugSettingsUiState> = _uiState.asStateFlow()
@@ -114,7 +111,7 @@ class DebugSettingsViewModel(
 
   private fun loadRemoteConfigValues() {
     val debugRunner = remoteConfigRunner as? DebugRemoteConfigRunner
-    
+
     _uiState.value = _uiState.value.copy(
       remoteConfigValues = remoteConfigs.associate { config ->
         config.key to RemoteConfigUiState(
@@ -124,7 +121,7 @@ class DebugSettingsViewModel(
       }
     )
   }
-  
+
   fun onToggleRemoteConfig(key: String, enabled: Boolean) {
     val debugRunner = remoteConfigRunner as? DebugRemoteConfigRunner
     if (debugRunner != null) {
@@ -132,7 +129,7 @@ class DebugSettingsViewModel(
       loadRemoteConfigValues()
     }
   }
-  
+
   fun onClearRemoteConfigOverride(key: String) {
     val debugRunner = remoteConfigRunner as? DebugRemoteConfigRunner
     if (debugRunner != null) {
@@ -181,7 +178,7 @@ class DebugSettingsViewModel(
     _uiState.value = _uiState.value.copy(error = null)
   }
 
-  override fun navigate(navigation: NoNavigation) {
+  override fun navigate(navigation: Unit) {
     // Empty - this ViewModel doesn't navigate
   }
 }

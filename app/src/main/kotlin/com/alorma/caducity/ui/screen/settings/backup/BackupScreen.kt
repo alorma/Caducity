@@ -65,8 +65,8 @@ fun BackupScreen(
   val snackbarHostState = rememberAppSnackbarState()
 
   // Handle side effects (success/error messages)
-  LaunchedEffect(viewModel.sideEffect) {
-    viewModel.sideEffect.collect { sideEffect ->
+  LaunchedEffect(viewModel.sideEffects) {
+    viewModel.sideEffects.collect { sideEffect ->
       when (sideEffect) {
         is BackupSideEffect.ExportSuccess -> {
           launch {

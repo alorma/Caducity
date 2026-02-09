@@ -24,8 +24,20 @@ internal fun ProductPageSideEffectHandler(
   bottomSheetState: AppBottomSheetState,
   onNavigateToAddItem: (categoryId: String, productId: String?) -> Unit,
 ) {
-  LaunchedEffect(viewModel.sideEffect) {
-    viewModel.sideEffect.collect { effect ->
+  // Collect navigation side effects
+  LaunchedEffect(viewModel.navigationSideEffects) {
+    viewModel.navigationSideEffects.collect { effect ->
+      when (effect) {
+        is ProductPageNavigationSideEffect.NavigateToAddItem -> {
+          onNavigateToAddItem(effect.categoryId, effect.productId)
+        }
+      }
+    }
+  }
+
+  // Collect other side effects
+  LaunchedEffect(viewModel.sideEffects) {
+    viewModel.sideEffects.collect { effect ->
       when (effect) {
         ProductPageSideEffect.ItemDeleted -> launch {
           snackbarState.showSnackbar(
@@ -140,11 +152,6 @@ internal fun ProductPageSideEffectHandler(
               effect.onClearProductItems(effect.productId, true)
             },
           )
-        }
-
-        // Navigation events
-        is ProductPageSideEffect.NavigateToAddItem -> {
-          onNavigateToAddItem(effect.categoryId, effect.productId)
         }
       }
     }

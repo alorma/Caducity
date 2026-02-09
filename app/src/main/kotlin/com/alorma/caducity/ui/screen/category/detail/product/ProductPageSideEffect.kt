@@ -4,6 +4,13 @@ import com.alorma.caducity.domain.model.ProductDeletionStrategy
 import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 
+sealed interface ProductPageNavigationSideEffect {
+  data class NavigateToAddItem(
+    val categoryId: String,
+    val productId: String?
+  ) : ProductPageNavigationSideEffect
+}
+
 sealed interface ProductPageSideEffect {
   // Item-level success events
   data object ItemDeleted : ProductPageSideEffect
@@ -40,11 +47,5 @@ sealed interface ProductPageSideEffect {
   data class ShowClearProductItemsDialog(
     val productId: String?,
     val onClearProductItems: (String?, Boolean) -> Unit,
-  ) : ProductPageSideEffect
-
-  // Navigation events
-  data class NavigateToAddItem(
-    val categoryId: String,
-    val productId: String?
   ) : ProductPageSideEffect
 }

@@ -10,7 +10,6 @@ import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.ui.base.BaseViewModel
-import com.alorma.caducity.ui.base.NoNavigation
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,10 +26,7 @@ class ItemActionsViewModel(
   private val freezeItemUseCase: FreezeItemUseCase,
   private val unfreezeItemUseCase: UnfreezeItemUseCase,
   private val deleteItemUseCase: DeleteItemUseCase,
-) : BaseViewModel<NoNavigation, ItemActionSideEffect, ItemActionSideEffect>() {
-
-  // Alias for backward compatibility
-  val sideEffect = sideEffects
+) : BaseViewModel<Unit, ItemActionSideEffect, ItemActionSideEffect>() {
 
   private val _state = MutableStateFlow(calculateState())
   val state: StateFlow<ItemActionsState> = _state
@@ -137,7 +133,7 @@ class ItemActionsViewModel(
     }
   }
 
-  override fun navigate(navigation: NoNavigation) {
+  override fun navigate(navigation: Unit) {
     // Empty - this ViewModel doesn't navigate
   }
 }

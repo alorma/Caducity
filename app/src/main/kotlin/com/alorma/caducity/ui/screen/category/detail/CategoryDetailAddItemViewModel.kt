@@ -31,7 +31,7 @@ class CategoryDetailAddItemViewModel(
   private val stringProvider: StringProvider,
   private val appClock: AppClock,
   private val eventTracker: EventTracker,
-) : BaseViewModel<AddItemNavigation, AddItemNavigationSideEffect, NoSideEffect>() {
+) : BaseViewModel<AddItemNavigation, AddItemNavigationSideEffect, Unit>() {
 
   private val _state = MutableStateFlow<CategoryDetailAddItemState>(
     CategoryDetailAddItemState.Loading
@@ -148,11 +148,12 @@ class CategoryDetailAddItemViewModel(
       }
 
       // Determine quantity
-      val quantity = if (currentFormState.showCustomQuantityInput && currentFormState.customQuantity.text.isNotBlank()) {
-        currentFormState.customQuantity.text.toIntOrNull()?.coerceAtLeast(1) ?: 1
-      } else {
-        currentFormState.quantity
-      }
+      val quantity =
+        if (currentFormState.showCustomQuantityInput && currentFormState.customQuantity.text.isNotBlank()) {
+          currentFormState.customQuantity.text.toIntOrNull()?.coerceAtLeast(1) ?: 1
+        } else {
+          currentFormState.quantity
+        }
 
       try {
         // Determine product ID (use existing or create new)
@@ -207,6 +208,7 @@ class CategoryDetailAddItemViewModel(
         eventTracker.trackAction(CancelAddItemAction())
         emitNavigationSideEffect(AddItemNavigationSideEffect.NavigateBack)
       }
+
       is AddItemNavigation.ItemSaved -> {
         eventTracker.trackAction(ItemSavedAction(navigation.hasProduct, navigation.quantity))
         emitNavigationSideEffect(AddItemNavigationSideEffect.NavigateBack)

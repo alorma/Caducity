@@ -6,24 +6,16 @@ import com.alorma.caducity.feature.tracking.CancelCreateCategoryAction
 import com.alorma.caducity.feature.tracking.CategoryCreatedAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.base.BaseViewModel
-import com.alorma.caducity.ui.base.NoSideEffect
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.format.DateTimeFormat
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 class CreateCategoryViewModel(
   private val createCategoryUseCase: CreateCategoryUseCase,
   private val eventTracker: EventTracker,
-) : BaseViewModel<CreateCategoryNavigation, CreateCategoryNavigationSideEffect, NoSideEffect>() {
+) : BaseViewModel<CreateCategoryNavigation, CreateCategoryNavigationSideEffect, Unit>() {
 
   private val _state = MutableStateFlow(CreateCategoryState())
   val state: StateFlow<CreateCategoryState> = _state.asStateFlow()
@@ -87,6 +79,7 @@ class CreateCategoryViewModel(
         eventTracker.trackAction(CancelCreateCategoryAction())
         emitNavigationSideEffect(CreateCategoryNavigationSideEffect.NavigateBack)
       }
+
       is CreateCategoryNavigation.CategoryCreated -> {
         eventTracker.trackAction(CategoryCreatedAction("form_submit"))
         emitNavigationSideEffect(

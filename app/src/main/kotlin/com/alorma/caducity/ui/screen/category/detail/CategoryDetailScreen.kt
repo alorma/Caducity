@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.category.detail
 
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,7 +48,6 @@ import com.alorma.caducity.ui.adaptive.rememberIsExpanded
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfig
 import com.alorma.caducity.ui.components.calendar.CaducityMonthCalendar
 import com.alorma.caducity.ui.components.calendar.CaducityWeekCalendar
-import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
@@ -87,7 +85,6 @@ fun CategoryDetailScreen(
     viewModel = viewModel,
     snackbarState = snackbarState,
     dialogState = dialogState,
-    bottomSheetState = bottomSheetState,
     onCreateProduct = viewModel::onCreateProduct,
     onDeleteCategory = viewModel::onDeleteCategory,
   )
@@ -646,20 +643,12 @@ private fun SideEffectHandler(
   viewModel: CategoryDetailViewModel,
   snackbarState: AppSnackbarState,
   dialogState: AppDialogState,
-  bottomSheetState: AppBottomSheetState,
   onCreateProduct: (String) -> Unit,
   onDeleteCategory: () -> Unit,
 ) {
-  val backDispatcher = LocalOnBackPressedDispatcherOwner.current
-
-  LaunchedEffect(viewModel.sideEffect) {
-    viewModel.sideEffect.collect { effect ->
+  LaunchedEffect(viewModel.sideEffects) {
+    viewModel.sideEffects.collect { effect ->
       when (effect) {
-        is CategoryDetailSideEffect.NavigateToAddItem,
-        CategoryDetailSideEffect.NavigateBack -> {
-          // Navigation is handled by CategoryDetailContainer
-        }
-
         CategoryDetailSideEffect.ShowAddProductDialog -> launch {
           var productName by mutableStateOf("")
           val result = dialogState.showAlertDialog(
