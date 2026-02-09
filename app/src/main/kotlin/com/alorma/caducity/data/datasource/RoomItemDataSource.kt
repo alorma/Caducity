@@ -1,23 +1,21 @@
 package com.alorma.caducity.data.datasource
 
 import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.data.datasource.room.AppDatabase
+import com.alorma.caducity.data.datasource.room.dao.ItemDao
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.domain.ItemDataSource
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.NewItem
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import java.util.UUID
 import kotlin.time.Duration.Companion.days
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class RoomItemDataSource(
-  database: AppDatabase,
+  private val itemDao: ItemDao,
   private val appClock: AppClock,
   private val itemMapper: ItemRoomMapper,
 ) : ItemDataSource {
-
-  private val itemDao = database.itemDao()
 
   override suspend fun addItem(
     categoryId: String,

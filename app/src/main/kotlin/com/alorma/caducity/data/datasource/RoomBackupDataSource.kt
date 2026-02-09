@@ -7,6 +7,9 @@ import com.alorma.caducity.data.backup.BackupData
 import com.alorma.caducity.data.backup.BackupProduct
 import com.alorma.caducity.data.backup.BackupProductItem
 import com.alorma.caducity.data.datasource.room.AppDatabase
+import com.alorma.caducity.data.datasource.room.dao.CategoryDao
+import com.alorma.caducity.data.datasource.room.dao.ItemDao
+import com.alorma.caducity.data.datasource.room.dao.ProductDao
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
@@ -14,12 +17,11 @@ import com.alorma.caducity.domain.backup.BackupDataSource
 
 class RoomBackupDataSource(
   private val database: AppDatabase,
+  private val categoryDao: CategoryDao,
+  private val itemDao: ItemDao,
+  private val productDao: ProductDao,
   private val appClock: AppClock
 ) : BackupDataSource {
-
-  private val categoryDao = database.categoryDao()
-  private val itemDao = database.itemDao()
-  private val productDao = database.productDao()
 
   override suspend fun exportBackup(): BackupData {
     val categories = categoryDao.getAllCategoriesSync()
