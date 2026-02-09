@@ -42,17 +42,16 @@ fun CategoryDetailContainer(
 
         // Handle navigation side effects
         androidx.compose.runtime.LaunchedEffect(viewModel) {
-          viewModel.sideEffect.collect { effect ->
+          viewModel.navigationSideEffects.collect { effect ->
             when (effect) {
-              is CategoryDetailSideEffect.NavigateToAddItem -> {
+              is CategoryDetailNavigationSideEffect.NavigateToAddItem -> {
                 productDetailBackStack.add(
                   CategoryDetailRoutes.AddInstance(categoryId, effect.productId)
                 )
               }
-              CategoryDetailSideEffect.NavigateBack -> {
+              CategoryDetailNavigationSideEffect.NavigateBack -> {
                 onBack()
               }
-              else -> { /* Other side effects handled in screen */ }
             }
           }
         }

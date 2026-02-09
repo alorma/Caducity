@@ -78,7 +78,7 @@ private fun ItemActionsBottomSheetContent(
 
   // Handle side effects
   LaunchedEffect(viewModel) {
-    viewModel.sideEffect.collect { effect ->
+    viewModel.sideEffects.collect { effect ->
       when (effect) {
         is ItemActionSideEffect.ActionCompleted,
         is ItemActionSideEffect.ActionFailed -> {

@@ -59,7 +59,7 @@ private fun DebugSettingsContent(
   val coroutineScope = rememberCoroutineScope()
 
   LaunchedEffect(Unit) {
-    viewModel.sideEffect.collect { effect ->
+    viewModel.sideEffects.collect { effect ->
       when (effect) {
         DebugSettingsSideEffect.FakeDataPopulated -> {
           coroutineScope.launch {

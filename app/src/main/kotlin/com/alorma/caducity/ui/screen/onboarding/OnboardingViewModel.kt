@@ -6,8 +6,6 @@ import com.alorma.caducity.feature.consent.ConsentPreferences
 import com.alorma.caducity.feature.tracking.CompleteOnboardingAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.base.BaseViewModel
-import com.alorma.caducity.ui.base.NoSideEffect
-import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +16,7 @@ class OnboardingViewModel(
   private val consentFlag: ConsentFlag,
   private val consentManager: ConsentManager,
   private val eventTracker: EventTracker,
-) : BaseViewModel<OnboardingNavigation, OnboardingNavigationSideEffect, NoSideEffect>() {
+) : BaseViewModel<OnboardingNavigation, OnboardingNavigationSideEffect, Unit>() {
 
   private val _state = MutableStateFlow(OnboardingState())
   val state: StateFlow<OnboardingState> = _state.asStateFlow()

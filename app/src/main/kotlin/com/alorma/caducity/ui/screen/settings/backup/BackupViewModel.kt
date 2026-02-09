@@ -6,7 +6,6 @@ import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.ui.base.BaseViewModel
-import com.alorma.caducity.ui.base.NoNavigation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,10 +15,7 @@ class BackupViewModel(
   private val exportBackupUseCase: ExportBackupUseCase,
   private val importBackupUseCase: ImportBackupUseCase,
   private val backupFileHandler: BackupFileHandler
-) : BaseViewModel<NoNavigation, BackupSideEffect, BackupSideEffect>() {
-
-  // Alias for backward compatibility
-  val sideEffect = sideEffects
+) : BaseViewModel<Unit, BackupSideEffect, BackupSideEffect>() {
 
   private val _uiState = MutableStateFlow<BackupUiState>(BackupUiState.Idle)
   val uiState: StateFlow<BackupUiState> = _uiState.asStateFlow()
@@ -104,7 +100,7 @@ class BackupViewModel(
     }
   }
 
-  override fun navigate(navigation: NoNavigation) {
+  override fun navigate(navigation: Unit) {
     // Empty - this ViewModel doesn't navigate
   }
 }

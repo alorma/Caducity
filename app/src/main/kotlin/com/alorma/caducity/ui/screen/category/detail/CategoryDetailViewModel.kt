@@ -31,15 +31,11 @@ class CategoryDetailViewModel(
   private val deleteCategoryUseCase: DeleteCategoryUseCase,
   private val getProductItemsUseCase: GetProductItemsUseCase,
   private val eventTracker: EventTracker,
-) : BaseViewModel<CategoryDetailNavigation, CategoryDetailSideEffect, CategoryDetailSideEffect>() {
-
-  // Note: Navigation side effects are now part of CategoryDetailSideEffect
-  // This is a temporary alias until we fully separate them
-  val sideEffect = sideEffects
+) : BaseViewModel<CategoryDetailNavigation, CategoryDetailNavigationSideEffect, CategoryDetailSideEffect>() {
 
   // Track the currently selected product ID (null means "Other" tab with standalone items)
   private val _selectedProductId = MutableStateFlow<String?>(null)
-  
+
   // Get the category detail first to determine initial product
   private val categoryDetailFlow = obtainCategoryDetailUseCase.obtain(categoryId)
 
@@ -53,7 +49,7 @@ class CategoryDetailViewModel(
     result.fold(
       onSuccess = { category ->
         categoryDetailMapper.mapToCategoryDetail(
-          categoryDetail = category, 
+          categoryDetail = category,
           firstDayOfWeek = calendarConfig.firstDayOfWeek,
           productItems = productItems
         )
@@ -83,8 +79,8 @@ class CategoryDetailViewModel(
         }
       }
     }
-    
-    job = customState.onEach { detailState -> 
+
+    job = customState.onEach { detailState ->
       state.emit(detailState)
     }.launchIn(viewModelScope)
   }
@@ -139,11 +135,11 @@ class CategoryDetailViewModel(
             hasProduct = navigation.productId != null
           )
         )
-        emitNavigationSideEffect(CategoryDetailSideEffect.NavigateToAddItem(navigation.productId))
+        emitNavigationSideEffect(CategoryDetailNavigationSideEffect.NavigateToAddItem(navigation.productId))
       }
       CategoryDetailNavigation.CategoryDeleted -> {
         eventTracker.trackAction(CategoryDeletedAction())
-        emitNavigationSideEffect(CategoryDetailSideEffect.NavigateBack)
+        emitNavigationSideEffect(CategoryDetailNavigationSideEffect.NavigateBack)
       }
     }
   }

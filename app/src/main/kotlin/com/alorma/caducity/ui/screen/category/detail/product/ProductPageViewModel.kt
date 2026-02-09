@@ -28,10 +28,7 @@ class ProductPageViewModel(
   private val deleteProductUseCase: DeleteProductUseCase,
   private val clearProductItemsUseCase: ClearProductItemsUseCase,
   private val eventTracker: EventTracker,
-) : BaseViewModel<ProductPageNavigation, ProductPageSideEffect, ProductPageSideEffect>() {
-
-  // Alias for backward compatibility - sideEffects contains both navigation and other side effects
-  val sideEffect = sideEffects
+) : BaseViewModel<ProductPageNavigation, ProductPageNavigationSideEffect, ProductPageSideEffect>() {
 
   val state: StateFlow<ProductPageState> = getProductItemsUseCase
     .obtain(productTab.categoryId, productTab.id)
@@ -135,7 +132,7 @@ class ProductPageViewModel(
       ProductPageNavigation.AddItem -> {
         eventTracker.trackAction(NavigateToAddItemFromProductAction())
         emitNavigationSideEffect(
-          ProductPageSideEffect.NavigateToAddItem(
+          ProductPageNavigationSideEffect.NavigateToAddItem(
             categoryId = productTab.categoryId,
             productId = productTab.id
           )
