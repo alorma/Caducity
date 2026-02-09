@@ -345,6 +345,9 @@ sealed interface DashboardNavigationSideEffect {
 - `navigationSideEffectChannel` - For navigation events only
 - `sideEffectChannel` - For dialogs, snackbars, bottom sheets
 - Clear separation of concerns
+- **IMPORTANT**: NEVER mix navigation and non-navigation side effects in the same sealed interface
+- **IMPORTANT**: Use `Unit` for `NavigationSideEffect` when ViewModel doesn't navigate
+- **IMPORTANT**: Use `Unit` for `SideEffect` when ViewModel has no dialogs/snackbars/bottom sheets
 
 **3. Method Naming Conventions**
 - `navigate(navigation: <Screen>Navigation)` - Navigation actions

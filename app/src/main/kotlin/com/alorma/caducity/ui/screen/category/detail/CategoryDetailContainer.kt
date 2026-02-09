@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.category.detail
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.retain.retain
@@ -11,6 +12,8 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun CategoryDetailContainer(
@@ -36,12 +39,12 @@ fun CategoryDetailContainer(
     ),
     entryProvider = entryProvider {
       entry<CategoryDetailRoutes.Root> {
-        val viewModel = org.koin.compose.viewmodel.koinViewModel<CategoryDetailViewModel> {
-          org.koin.core.parameter.parametersOf(categoryId)
+        val viewModel = koinViewModel<CategoryDetailViewModel> {
+          parametersOf(categoryId)
         }
 
         // Handle navigation side effects
-        androidx.compose.runtime.LaunchedEffect(viewModel) {
+        LaunchedEffect(viewModel) {
           viewModel.navigationSideEffects.collect { effect ->
             when (effect) {
               is CategoryDetailNavigationSideEffect.NavigateToAddItem -> {

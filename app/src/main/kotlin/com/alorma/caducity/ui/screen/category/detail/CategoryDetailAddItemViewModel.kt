@@ -4,9 +4,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.R
-import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.resources.StringProvider
-import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.usecase.AddItemToCategoryUseCase
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
@@ -14,22 +12,19 @@ import com.alorma.caducity.feature.tracking.CancelAddItemAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemSavedAction
 import com.alorma.caducity.ui.base.BaseViewModel
-import com.alorma.caducity.ui.base.NoSideEffect
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlin.time.Instant
 
 class CategoryDetailAddItemViewModel(
   private val categoryId: String,
-  private val preselectedcategoryId: String?,
+  private val preSelectedProductId: String?,
   private val getCategoryProductsUseCase: GetCategoryProductsUseCase,
   private val createProductUseCase: CreateProductUseCase,
   private val addItemToCategoryUseCase: AddItemToCategoryUseCase,
   private val stringProvider: StringProvider,
-  private val appClock: AppClock,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<AddItemNavigation, AddItemNavigationSideEffect, Unit>() {
 
@@ -63,8 +58,8 @@ class CategoryDetailAddItemViewModel(
           )
 
           // Pre-select product if provided
-          if (preselectedcategoryId != null) {
-            val preselectedProduct = allProducts.find { it.id == preselectedcategoryId }
+          if (preSelectedProductId != null) {
+            val preselectedProduct = allProducts.find { it.id == preSelectedProductId }
             if (preselectedProduct != null) {
               onProductSelected(preselectedProduct.id, preselectedProduct.name)
             }
