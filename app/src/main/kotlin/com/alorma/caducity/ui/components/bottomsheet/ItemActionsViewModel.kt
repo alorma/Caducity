@@ -26,7 +26,7 @@ class ItemActionsViewModel(
   private val freezeItemUseCase: FreezeItemUseCase,
   private val unfreezeItemUseCase: UnfreezeItemUseCase,
   private val deleteItemUseCase: DeleteItemUseCase,
-) : BaseViewModel<Unit, ItemActionSideEffect, ItemActionSideEffect>() {
+) : BaseViewModel<Unit, Unit, ItemActionSideEffect>() {
 
   private val _state = MutableStateFlow(calculateState())
   val state: StateFlow<ItemActionsState> = _state

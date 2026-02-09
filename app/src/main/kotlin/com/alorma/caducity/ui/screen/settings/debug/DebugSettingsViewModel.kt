@@ -8,11 +8,9 @@ import com.alorma.caducity.domain.usecase.PopulateFakeDataUseCase
 import com.alorma.caducity.domain.usecase.fakedata.FakePlayStoreDataStrategy
 import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
 import com.alorma.caducity.feature.consent.ConsentManager
-import com.alorma.caducity.feature.consent.ConsentPreferences
 import com.alorma.caducity.feature.consent.ConsentStatus
 import com.alorma.caducity.feature.notification.NotificationDebugHelper
 import com.alorma.caducity.ui.base.BaseViewModel
-import com.alorma.caducity.ui.base.NoNavigation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
