@@ -23,11 +23,11 @@ import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import com.alorma.caducity.feature.tracking.ProductItemsBottomSheetScreen
 import com.alorma.caducity.feature.tracking.TrackScreen
+import kotlin.time.Instant
 
 fun AppBottomSheetState.showProductItemsBottomSheet(
   coroutineScope: CoroutineScope,

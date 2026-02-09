@@ -192,6 +192,18 @@ dependencies {
   // Testing
   testImplementation(libs.junit)
   testImplementation(libs.strikt.core)
+  testImplementation(libs.turbine)
+  testImplementation(libs.mockito.kotlin)
+  testImplementation(libs.mockito.core)
+  testImplementation(libs.kotlinx.coroutines.test)
+  testImplementation(libs.koin.test)
+  testImplementation(libs.koin.test.junit4)
+
+  // Room testing
+  testImplementation(libs.androidx.room.runtime)
+  testImplementation(libs.androidx.room.ktx)
+  testImplementation(libs.androidx.test.runner)
+  testImplementation(libs.androidx.test.rules)
 
   // Screenshot testing
   screenshotTestImplementation(libs.screenshot.validation.api)
