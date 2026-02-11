@@ -16,6 +16,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 
@@ -114,7 +115,8 @@ class ItemActionsViewModel(
 
         ItemAction.Reschedule -> {
           // Emit side effect to show date picker
-          val currentExpirationMillis = item.expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+          val currentExpirationMillis =
+            item.expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
           emitSideEffect(ItemActionSideEffect.ShowRescheduleDatePicker(currentExpirationMillis))
         }
 
@@ -137,11 +139,13 @@ class ItemActionsViewModel(
     }
   }
 
-  fun onConfirmReschedule(newExpirationDateMillis: Long) {
+  fun onConfirmReschedule(newDate: LocalDate) {
     viewModelScope.launch {
-      val instant = kotlin.time.Instant.fromEpochMilliseconds(newExpirationDateMillis)
-      val result = rescheduleItemUseCase.rescheduleItem(item.id, instant)
-      handleResult(result, ItemAction.Reschedule)
+      if (newDate != item.expirationDate) {
+        val instant = newDate.atStartOfDayIn(TimeZone.currentSystemDefault())
+        val result = rescheduleItemUseCase.rescheduleItem(item.id, instant)
+        handleResult(result, ItemAction.Reschedule)
+      }
     }
   }
 

@@ -105,7 +105,7 @@ class AppDialogState() {
 
   suspend fun showDatePickerDialog(
     datePickerState: DatePickerState,
-    positiveButton: @Composable (Boolean) -> Unit,
+    positiveButton: @Composable () -> Unit,
     negativeButton: (@Composable () -> Unit)? = null,
     type: AppFeedbackType,
     properties: DialogProperties = DialogProperties(
@@ -122,23 +122,50 @@ class AppDialogState() {
 
             val colors = type.softColors()
 
+            val pickerColors = DatePickerDefaults.colors(
+              containerColor = colors.container,
+              titleContentColor = colors.onContainer,
+              navigationContentColor = colors.onContainer,
+              disabledDayContentColor = colors.onContainer,
+            )
             DatePickerDialog(
-              colors = DatePickerDefaults.colors(
-                containerColor = colors.container,
-                titleContentColor = colors.onContainer,
-                navigationContentColor = colors.onContainer,
-                disabledDayContentColor = colors.onContainer,
-              ),
+              colors = pickerColors,
               onDismissRequest = {
                 if (!cancellation.isCompleted) {
-                  cancellation.resume(DialogResult.Positive)
+                  cancellation.resume(DialogResult.Dismissed)
                 }
                 dialogInfo = null
               },
-              confirmButton = { positiveButton(confirmEnabled) },
-              dismissButton = negativeButton,
+              confirmButton = {
+                TextButton(
+                  enabled = confirmEnabled,
+                  colors = ButtonDefaults.textButtonColors(
+                    containerColor = colors.container,
+                    contentColor = colors.onContainer,
+                  ),
+                  onClick = { dismiss(DialogResult.Positive) },
+                  content = { positiveButton() },
+                )
+              },
+              dismissButton = if (negativeButton != null) {
+                {
+                  TextButton(
+                    colors = ButtonDefaults.textButtonColors(
+                      containerColor = colors.container,
+                      contentColor = colors.onContainer,
+                    ),
+                    onClick = { dismiss(DialogResult.Negative) },
+                    content = { negativeButton() },
+                  )
+                }
+              } else {
+                null
+              },
             ) {
-              DatePicker(state = datePickerState)
+              DatePicker(
+                state = datePickerState,
+                colors = pickerColors,
+              )
             }
           }
           override val properties: DialogProperties = properties
@@ -202,6 +229,7 @@ fun AppDialogHost(hostState: AppDialogState) {
     is DialogInfo.CustomAlertDialog -> {
       currentDialogData.content()
     }
+
     null -> {}
   }
 }

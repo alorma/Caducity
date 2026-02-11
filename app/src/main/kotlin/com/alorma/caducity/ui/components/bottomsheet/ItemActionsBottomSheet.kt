@@ -34,8 +34,12 @@ import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.LocalAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
+import kotlin.time.Instant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -83,8 +87,13 @@ private fun ItemActionsBottomSheetContent(
   val state by viewModel.state.collectAsStateWithLifecycle()
   val dialogState = LocalAppDialogState.current
 
+  val itemDate = item
+    .expirationDate
+    .atStartOfDayIn(TimeZone.UTC)
+    .toEpochMilliseconds()
+
   val datePickerState: DatePickerState = rememberDatePickerState(
-    initialSelectedDateMillis = null,
+    initialSelectedDateMillis = itemDate,
   )
 
   // Handle side effects
@@ -114,14 +123,24 @@ private fun ItemActionsBottomSheetContent(
         is ItemActionSideEffect.ShowRescheduleDatePicker -> {
           val result = dialogState.showDatePickerDialog(
             datePickerState = datePickerState,
-            positiveButton = {},
+            positiveButton = {
+              Text(stringResource(R.string.category_detail_add_item_date_picker_ok))
+            },
+            negativeButton = {
+              Text(stringResource(R.string.category_detail_add_item_date_picker_cancel))
+            },
             type = AppFeedbackType.Success,
           )
 
           if (result == DialogResult.Positive) {
             val newDateMillis = datePickerState.selectedDateMillis
             if (newDateMillis != null) {
-              viewModel.onConfirmReschedule(newDateMillis)
+              viewModel.onConfirmReschedule(
+                newDate = Instant
+                  .fromEpochMilliseconds(newDateMillis)
+                  .toLocalDateTime(TimeZone.currentSystemDefault())
+                  .date
+              )
             }
           }
         }
