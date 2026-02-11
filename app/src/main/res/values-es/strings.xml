@@ -169,6 +169,7 @@
     <string name="category_detail_action_consume">Consumir</string>
     <string name="category_detail_action_freeze">Congelar</string>
     <string name="category_detail_action_unfreeze">Descongelar</string>
+    <string name="category_detail_action_reschedule">Reprogramar</string>
     <string name="category_detail_action_delete">Eliminar</string>
     <string name="category_detail_frozen_items">Congelados</string>
     <string name="category_detail_consumed_items">Consumidos</string>
@@ -224,12 +225,14 @@
     <string name="success_item_consumed">Elemento consumido</string>
     <string name="success_item_frozen">Elemento congelado</string>
     <string name="success_item_unfrozen">Elemento descongelado</string>
+    <string name="success_item_rescheduled">Elemento reprogramado</string>
     <string name="success_item_deleted">Elemento eliminado</string>
 
     <!-- Item action error messages -->
     <string name="error_consume_item_failed">Error al consumir elemento</string>
     <string name="error_freeze_item_failed">Error al congelar elemento</string>
     <string name="error_unfreeze_item_failed">Error al descongelar elemento</string>
+    <string name="error_reschedule_item_failed">Error al reprogramar elemento</string>
     <string name="error_delete_item_failed">Error al eliminar elemento</string>
     <string name="error_create_product_failed">Error al crear producto</string>
 

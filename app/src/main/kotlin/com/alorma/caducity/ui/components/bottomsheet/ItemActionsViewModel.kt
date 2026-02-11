@@ -139,7 +139,8 @@ class ItemActionsViewModel(
 
   fun onConfirmReschedule(newExpirationDateMillis: Long) {
     viewModelScope.launch {
-      val result = rescheduleItemUseCase.rescheduleItem(item.id, newExpirationDateMillis)
+      val instant = kotlin.time.Instant.fromEpochMilliseconds(newExpirationDateMillis)
+      val result = rescheduleItemUseCase.rescheduleItem(item.id, instant)
       handleResult(result, ItemAction.Reschedule)
     }
   }
