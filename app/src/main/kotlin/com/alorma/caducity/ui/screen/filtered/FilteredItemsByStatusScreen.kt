@@ -37,6 +37,8 @@ import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.ThemePreferences
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import com.alorma.caducity.feature.tracking.FilteredItemsByStatusScreen as FilteredItemsByStatusScreenEvent
@@ -188,9 +190,9 @@ private fun CategoryItemsCard(
   onProductClick: (String, List<Item>) -> Unit,
   onCategoryClick: (String) -> Unit,
   modifier: Modifier = Modifier,
+  themePreferences: ThemePreferences = koinInject(),
 ) {
-  val colors = ExpirationDefaults.getSoftColors(status)
-  val vibrantColors = ExpirationDefaults.getVibrantColors(status)
+  val colors = ExpirationDefaults.getTonalColors(status, themePreferences)
 
   Column(
     modifier = modifier.fillMaxWidth(),
@@ -224,10 +226,10 @@ private fun CategoryItemsCard(
         Text(
           modifier = Modifier
             .clip(MaterialTheme.shapes.extraSmall)
-            .background(vibrantColors.container)
+            .background(colors.container)
             .padding(horizontal = 8.dp, vertical = 4.dp),
           text = filteredItemsCount.toString(),
-          color = vibrantColors.onContainer,
+          color = colors.onContainer,
           style = MaterialTheme.typography.labelMedium,
         )
       }

@@ -66,9 +66,11 @@ fun SettingsContainer(
         AppearanceSettingsScreen(
           themeMode = themePreferences.themeMode.value,
           useDynamicTheme = themePreferences.useDynamicColors.value,
+          tonalColorMode = themePreferences.tonalColorMode.value,
           firstDayOfWeek = calendarConfigState.firstDayOfWeek,
           onThemeModeChange = { themePreferences.setThemeModeState(it) },
           onUseDynamicTheme = { themePreferences.setDynamicColorsEnabled(it) },
+          onTonalColorModeChange = { themePreferences.setTonalColorMode(it) },
           onFirstDayOfWeekChange = { calendarPreferences.setFirstDayOfWeek(it) },
         )
       }

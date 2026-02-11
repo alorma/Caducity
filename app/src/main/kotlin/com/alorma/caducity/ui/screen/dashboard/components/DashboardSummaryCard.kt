@@ -24,7 +24,9 @@ import com.alorma.caducity.ui.adaptive.rememberIsExpanded
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.screen.dashboard.DashboardSummary
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.ThemePreferences
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import org.koin.compose.koinInject
 
 @Composable
 fun DashboardSummaryCard(
@@ -202,9 +204,10 @@ private fun SummaryStatusCard(
   count: Int,
   onClick: (ItemStatus) -> Unit,
   shape: Shape,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  themePreferences: ThemePreferences = koinInject(),
 ) {
-  val colors = ExpirationDefaults.getVibrantColors(status)
+  val colors = ExpirationDefaults.getTonalColors(status, themePreferences)
 
   val dim = if (count > 0) {
     CaducityTheme.dims.noDim

@@ -25,6 +25,7 @@ import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGro
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.theme.ThemeMode
+import com.alorma.caducity.ui.theme.TonalColorMode
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.datetime.DayOfWeek
@@ -36,6 +37,8 @@ fun AppearanceSettingsScreen(
   onThemeModeChange: (ThemeMode) -> Unit,
   useDynamicTheme: Boolean,
   onUseDynamicTheme: (Boolean) -> Unit,
+  tonalColorMode: TonalColorMode,
+  onTonalColorModeChange: (TonalColorMode) -> Unit,
   firstDayOfWeek: DayOfWeek,
   onFirstDayOfWeekChange: (DayOfWeek) -> Unit,
   modifier: Modifier = Modifier,
@@ -47,6 +50,8 @@ fun AppearanceSettingsScreen(
     onThemeModeChange = onThemeModeChange,
     useDynamicTheme = useDynamicTheme,
     onUseDynamicTheme = onUseDynamicTheme,
+    tonalColorMode = tonalColorMode,
+    onTonalColorModeChange = onTonalColorModeChange,
     firstDayOfWeek = firstDayOfWeek,
     onFirstDayOfWeekChange = onFirstDayOfWeekChange,
     modifier = modifier,
@@ -60,6 +65,8 @@ private fun AppearanceSettingsContent(
   onThemeModeChange: (ThemeMode) -> Unit,
   useDynamicTheme: Boolean,
   onUseDynamicTheme: (Boolean) -> Unit,
+  tonalColorMode: TonalColorMode,
+  onTonalColorModeChange: (TonalColorMode) -> Unit,
   firstDayOfWeek: DayOfWeek,
   onFirstDayOfWeekChange: (DayOfWeek) -> Unit,
   modifier: Modifier = Modifier,
@@ -115,6 +122,31 @@ private fun AppearanceSettingsContent(
           }
         }
 
+        // Tonal color mode settings group
+        item {
+          StyledSettingsGroup(
+            title = { Text(stringResource(R.string.settings_group_expiration_colors)) }
+          ) {
+            // Load all string resources at composable level
+            val colorVibrant = stringResource(R.string.settings_color_scheme_vibrant)
+            val colorSoft = stringResource(R.string.settings_color_scheme_soft)
+
+            StyledSettingsButtonGroupCard(
+              title = stringResource(R.string.settings_color_scheme_title),
+              selectedItem = tonalColorMode,
+              position = ShapePosition.Single,
+              items = TonalColorMode.entries,
+              itemTitleMap = { mode ->
+                when (mode) {
+                  TonalColorMode.VIBRANT -> colorVibrant
+                  TonalColorMode.SOFT -> colorSoft
+                }
+              },
+              onItemSelected = { onTonalColorModeChange(it) },
+            )
+          }
+        }
+
         // Calendar settings group
         item {
           StyledSettingsGroup(
@@ -151,9 +183,11 @@ fun AppearanceSettingsScreenPreview() {
       AppearanceSettingsContent(
         themeMode = themeMode,
         useDynamicTheme = true,
+        tonalColorMode = TonalColorMode.VIBRANT,
         firstDayOfWeek = DayOfWeek.MONDAY,
         onThemeModeChange = {},
         onUseDynamicTheme = {},
+        onTonalColorModeChange = {},
         onFirstDayOfWeekChange = {},
       )
     }

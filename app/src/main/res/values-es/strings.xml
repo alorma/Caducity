@@ -85,7 +85,7 @@
     <string name="settings_group_expiration_colors">Colores de caducidad</string>
     <string name="settings_color_scheme_title">Esquema de color</string>
     <string name="settings_color_scheme_vibrant">Vibrante</string>
-    <string name="settings_color_scheme_harmony">Armonico</string>
+    <string name="settings_color_scheme_soft">Suave</string>
     <string name="settings_expiration_legend_fresh">Fresco</string>
     <string name="settings_expiration_legend_expiring_soon">Próximo</string>
     <string name="settings_expiration_legend_expired">Caducado</string>
