@@ -79,7 +79,7 @@ private fun ItemActionsBottomSheetContent(
   item: ItemDetailUiModel,
   onActionPerformed: (ItemActionSideEffect) -> Unit,
   viewModel: ItemActionsViewModel = koinViewModel(
-    key = "item_actions_${item.id}_${item.status}",
+    key = "item_actions_${item.id}_${item.status}_${item.expirationDate}",
   ) { parametersOf(item) }
 ) {
   TrackScreen(screen = ItemActionsBottomSheetScreen())
@@ -129,7 +129,7 @@ private fun ItemActionsBottomSheetContent(
             negativeButton = {
               Text(stringResource(R.string.category_detail_add_item_date_picker_cancel))
             },
-            type = AppFeedbackType.Success,
+            type = AppFeedbackType.Status(item.status),
           )
 
           if (result == DialogResult.Positive) {

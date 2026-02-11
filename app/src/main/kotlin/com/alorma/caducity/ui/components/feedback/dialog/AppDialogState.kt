@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.DialogProperties
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.softColors
+import com.alorma.caducity.ui.components.feedback.vibrantColors
 import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
@@ -120,13 +121,18 @@ class AppDialogState() {
               derivedStateOf { datePickerState.selectedDateMillis != null }
             }
 
-            val colors = type.softColors()
+            val softColors = type.softColors()
+            val vibrantColors = type.vibrantColors()
 
             val pickerColors = DatePickerDefaults.colors(
-              containerColor = colors.container,
-              titleContentColor = colors.onContainer,
-              navigationContentColor = colors.onContainer,
-              disabledDayContentColor = colors.onContainer,
+              containerColor = softColors.container,
+              titleContentColor = softColors.onContainer,
+              selectedDayContainerColor = vibrantColors.container,
+              selectedDayContentColor = vibrantColors.onContainer,
+              todayDateBorderColor = vibrantColors.container,
+              todayContentColor = softColors.onContainer,
+              navigationContentColor = softColors.onContainer,
+              disabledDayContentColor = softColors.onContainer,
             )
             DatePickerDialog(
               colors = pickerColors,
@@ -140,8 +146,8 @@ class AppDialogState() {
                 TextButton(
                   enabled = confirmEnabled,
                   colors = ButtonDefaults.textButtonColors(
-                    containerColor = colors.container,
-                    contentColor = colors.onContainer,
+                    containerColor = softColors.container,
+                    contentColor = softColors.onContainer,
                   ),
                   onClick = { dismiss(DialogResult.Positive) },
                   content = { positiveButton() },
@@ -151,8 +157,8 @@ class AppDialogState() {
                 {
                   TextButton(
                     colors = ButtonDefaults.textButtonColors(
-                      containerColor = colors.container,
-                      contentColor = colors.onContainer,
+                      containerColor = softColors.container,
+                      contentColor = softColors.onContainer,
                     ),
                     onClick = { dismiss(DialogResult.Negative) },
                     content = { negativeButton() },
