@@ -26,7 +26,7 @@ class CategoryDetailAddItemViewModel(
   private val addItemToCategoryUseCase: AddItemToCategoryUseCase,
   private val stringProvider: StringProvider,
   private val eventTracker: EventTracker,
-) : BaseViewModel<AddItemNavigation, AddItemNavigationSideEffect, Unit>() {
+) : BaseViewModel<AddItemNavigation, AddItemNavigationSideEffect, AddItemSideEffect>() {
 
   private val _state = MutableStateFlow<CategoryDetailAddItemState>(
     CategoryDetailAddItemState.Loading
@@ -96,6 +96,10 @@ class CategoryDetailAddItemViewModel(
       identifierText = text,
       identifierError = null // Clear error when user types
     )
+  }
+
+  fun onShowDatePicker() {
+    emitSideEffect(AddItemSideEffect.ShowDatePicker(_formState.value.expirationDateMillis))
   }
 
   fun onExpirationDateChanged(dateMillis: Long?) {
