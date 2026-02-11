@@ -206,7 +206,8 @@ class CategoryDetailAddItemViewModel(
 
       // Determine pack size
       val packSize = if (currentFormState.isPack && currentFormState.packSize.text.isNotBlank()) {
-        currentFormState.packSize.text.toIntOrNull()?.coerceAtLeast(2)
+        // At this point, we know packSize is valid (≥ 2) due to validation above
+        currentFormState.packSize.text.toIntOrNull()
       } else {
         null
       }
