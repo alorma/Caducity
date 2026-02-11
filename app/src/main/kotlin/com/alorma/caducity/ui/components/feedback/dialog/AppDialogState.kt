@@ -2,10 +2,15 @@ package com.alorma.caducity.ui.components.feedback.dialog
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,7 +46,7 @@ class AppDialogState() {
 
   suspend fun showAlertDialog(
     title: @Composable () -> Unit,
-    text: @Composable () -> Unit,
+    content: @Composable () -> Unit,
     positiveButton: @Composable () -> Unit,
     negativeButton: (@Composable () -> Unit)? = null,
     type: AppFeedbackType,
@@ -51,9 +56,9 @@ class AppDialogState() {
   ): DialogResult = mutex.withLock {
     try {
       suspendCancellableCoroutine { cancellation ->
-        dialogInfo = object : DialogInfo {
+        dialogInfo = object : DialogInfo.AlertDialog {
           override val title: @Composable () -> Unit = title
-          override val text: @Composable () -> Unit = text
+          override val content: @Composable () -> Unit = content
           override val positiveButton: @Composable (() -> Unit) = {
             val colors = type.softColors()
 
@@ -97,44 +102,107 @@ class AppDialogState() {
       dialogInfo = null
     }
   }
+
+  suspend fun showDatePickerDialog(
+    datePickerState: DatePickerState,
+    positiveButton: @Composable (Boolean) -> Unit,
+    negativeButton: (@Composable () -> Unit)? = null,
+    type: AppFeedbackType,
+    properties: DialogProperties = DialogProperties(
+      usePlatformDefaultWidth = true,
+    ),
+  ): DialogResult = mutex.withLock {
+    try {
+      suspendCancellableCoroutine { cancellation ->
+        dialogInfo = object : DialogInfo.CustomAlertDialog {
+          override val content: @Composable (() -> Unit) = {
+            val confirmEnabled by remember {
+              derivedStateOf { datePickerState.selectedDateMillis != null }
+            }
+
+            val colors = type.softColors()
+
+            DatePickerDialog(
+              colors = DatePickerDefaults.colors(
+                containerColor = colors.container,
+                titleContentColor = colors.onContainer,
+                navigationContentColor = colors.onContainer,
+                disabledDayContentColor = colors.onContainer,
+              ),
+              onDismissRequest = {
+                if (!cancellation.isCompleted) {
+                  cancellation.resume(DialogResult.Positive)
+                }
+                dialogInfo = null
+              },
+              confirmButton = { positiveButton(confirmEnabled) },
+              dismissButton = negativeButton,
+            ) {
+              DatePicker(state = datePickerState)
+            }
+          }
+          override val properties: DialogProperties = properties
+          override val dismiss: (DialogResult) -> Unit = { result ->
+            if (!cancellation.isCompleted) {
+              cancellation.resume(result)
+            }
+            dialogInfo = null
+          }
+        }
+      }
+    } finally {
+      dialogInfo = null
+    }
+  }
 }
 
-interface DialogInfo {
+
+sealed interface DialogInfo {
   val properties: DialogProperties
-  val type: AppFeedbackType
-
   val dismiss: (DialogResult) -> Unit
-
-  val title: @Composable () -> Unit
-  val text: @Composable () -> Unit
-  val positiveButton: @Composable () -> Unit
-  val negativeButton: (@Composable () -> Unit)?
 
   fun dismiss(result: DialogResult = DialogResult.Dismissed) {
     this.dismiss.invoke(result)
+  }
+
+  interface AlertDialog : DialogInfo {
+    val title: @Composable (() -> Unit)?
+    val content: (@Composable () -> Unit)?
+    val type: AppFeedbackType
+    val negativeButton: (@Composable () -> Unit)?
+    val positiveButton: @Composable () -> Unit
+  }
+
+  interface CustomAlertDialog : DialogInfo {
+    val content: @Composable () -> Unit
   }
 }
 
 @Suppress("ModifierRequired")
 @Composable
 fun AppDialogHost(hostState: AppDialogState) {
-  val currentDialogData = hostState.dialogInfo
+  when (val currentDialogData = hostState.dialogInfo) {
+    is DialogInfo.AlertDialog -> {
+      val colors = currentDialogData.type.softColors()
 
-  if (currentDialogData != null) {
-    val colors = currentDialogData.type.softColors()
+      AlertDialog(
+        properties = currentDialogData.properties,
+        onDismissRequest = { currentDialogData.dismiss(DialogResult.Dismissed) },
+        containerColor = colors.container,
+        iconContentColor = colors.onContainer,
+        titleContentColor = colors.onContainer,
+        textContentColor = colors.onContainer,
+        title = currentDialogData.title,
+        text = currentDialogData.content,
+        confirmButton = currentDialogData.positiveButton,
+        dismissButton = currentDialogData.negativeButton,
+      )
+    }
 
-    AlertDialog(
-      properties = currentDialogData.properties,
-      onDismissRequest = { currentDialogData.dismiss(DialogResult.Dismissed) },
-      containerColor = colors.container,
-      iconContentColor = colors.onContainer,
-      titleContentColor = colors.onContainer,
-      textContentColor = colors.onContainer,
-      title = currentDialogData.title,
-      text = currentDialogData.text,
-      confirmButton = currentDialogData.positiveButton,
-      dismissButton = currentDialogData.negativeButton,
-    )
+    is DialogInfo.CustomAlertDialog -> {
+      currentDialogData.content()
+    }
+    null -> {}
   }
 }
 

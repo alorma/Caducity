@@ -653,7 +653,7 @@ private fun SideEffectHandler(
           var productName by mutableStateOf("")
           val result = dialogState.showAlertDialog(
             title = { Text(stringResource(R.string.category_detail_add_product_dialog_title)) },
-            text = {
+            content = {
               OutlinedTextField(
                 value = productName,
                 onValueChange = { productName = it },
@@ -686,7 +686,7 @@ private fun SideEffectHandler(
         CategoryDetailSideEffect.ShowDeleteCategoryDialog -> launch {
           val result = dialogState.showAlertDialog(
             title = { Text(stringResource(R.string.category_detail_delete_dialog_title)) },
-            text = { Text(stringResource(R.string.category_detail_delete_dialog_message)) },
+            content = { Text(stringResource(R.string.category_detail_delete_dialog_message)) },
             type = AppFeedbackType.Info,
             positiveButton = { Text(stringResource(R.string.category_detail_delete_dialog_delete)) },
             negativeButton = { Text(stringResource(R.string.category_detail_delete_dialog_cancel)) },
