@@ -17,6 +17,7 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -171,6 +172,7 @@ fun CategoryDetailAddItemScreen(
               .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
           ) {
+            // Product and Item Details Section
             // Variant selection with filter
             ExposedDropdownMenuBox(
               expanded = expanded,
@@ -251,6 +253,9 @@ fun CategoryDetailAddItemScreen(
               ),
             )
 
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            // Item Type and Pack Size Section
             // Item Type (Single/Pack) selection
             StyledSettingsGroup {
               val singleLabel = stringResource(R.string.category_detail_add_item_type_single)
@@ -288,12 +293,22 @@ fun CategoryDetailAddItemScreen(
               )
             }
 
-            // Quantity controls
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            // Quantity Section
+            // Quantity controls with context-aware label
             Column(
               verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+              // Use context-aware label based on item type
+              val quantityLabel = if (formState.value.itemType == ItemType.PACK) {
+                stringResource(R.string.category_detail_add_item_quantity_packs_label)
+              } else {
+                stringResource(R.string.category_detail_add_item_quantity_items_label)
+              }
+              
               Text(
-                text = stringResource(R.string.category_detail_add_item_quantity_label),
+                text = quantityLabel,
                 style = MaterialTheme.typography.bodyLarge,
               )
 
