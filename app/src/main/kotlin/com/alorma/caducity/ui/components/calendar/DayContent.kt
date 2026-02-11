@@ -25,11 +25,9 @@ import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.shape.toHorizontalShape
 import com.alorma.caducity.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.theme.ThemePreferences
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.datetime.LocalDate
-import org.koin.compose.koinInject
 
 @Composable
 fun DayContent(
@@ -41,11 +39,10 @@ fun DayContent(
   onClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
   todayColor: Color = CaducityTheme.colorScheme.surfaceContainerHighest,
-  themePreferences: ThemePreferences = koinInject(),
 ) {
 
   val backgroundColor = if (status != null) {
-    val color = ExpirationDefaults.getTonalColors(status, themePreferences).container
+    val color = ExpirationDefaults.getTonalColors(status).container
 
     if (isOutDay) {
       color.copy(alpha = CaducityTheme.dims.dim2)
@@ -57,7 +54,7 @@ fun DayContent(
   }
 
   val textColor = if (status != null) {
-    ExpirationDefaults.getTonalColors(status, themePreferences).onContainer
+    ExpirationDefaults.getTonalColors(status).onContainer
   } else {
     CaducityTheme.colorScheme.onSurface
   }.let { color ->

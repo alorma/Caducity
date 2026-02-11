@@ -5,8 +5,6 @@ import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.colors.ContainerColors
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.theme.ThemePreferences
-import org.koin.compose.koinInject
 
 sealed class AppFeedbackType {
   data class Status(val status: ItemStatus) : AppFeedbackType()
@@ -18,22 +16,16 @@ sealed class AppFeedbackType {
 
 @Suppress("ContentEmission")
 @Composable
-fun AppFeedbackType.vibrantColors(
-  themePreferences: ThemePreferences = koinInject(),
-): ContainerColors = tonalColors(themePreferences)
+fun AppFeedbackType.vibrantColors(): ContainerColors = tonalColors()
 
 @Suppress("ContentEmission")
 @Composable
-fun AppFeedbackType.softColors(
-  themePreferences: ThemePreferences = koinInject(),
-): ContainerColors = tonalColors(themePreferences)
+fun AppFeedbackType.softColors(): ContainerColors = tonalColors()
 
 @Suppress("ContentEmission")
 @Composable
-fun AppFeedbackType.tonalColors(
-  themePreferences: ThemePreferences = koinInject(),
-): ContainerColors = when (this) {
-  is AppFeedbackType.Status -> ExpirationDefaults.getTonalColors(status, themePreferences)
+fun AppFeedbackType.tonalColors(): ContainerColors = when (this) {
+  is AppFeedbackType.Status -> ExpirationDefaults.getTonalColors(status)
 
   AppFeedbackType.Success -> ContainerColors(
     container = CaducityTheme.colorScheme.primary,

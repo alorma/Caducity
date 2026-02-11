@@ -21,8 +21,6 @@ import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.theme.ThemePreferences
-import org.koin.compose.koinInject
 
 enum class StatusBadgeSize {
   Small,
@@ -70,9 +68,8 @@ fun StatusBadge(
   status: ItemStatus,
   modifier: Modifier = Modifier,
   size: StatusBadgeSize = StatusBadgeSize.Small,
-  themePreferences: ThemePreferences = koinInject(),
 ) {
-  val colors = ExpirationDefaults.getTonalColors(status, themePreferences)
+  val colors = ExpirationDefaults.getTonalColors(status)
 
   Row(
     modifier = modifier

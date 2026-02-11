@@ -40,13 +40,11 @@ import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
 import com.alorma.caducity.ui.screen.category.detail.DateItemsUiModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import com.alorma.caducity.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.theme.ThemePreferences
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.kizitonwose.calendar.core.minusDays
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -231,9 +229,8 @@ private fun SectionHeader(
   count: Int,
   modifier: Modifier = Modifier,
   date: String? = null,
-  themePreferences: ThemePreferences = koinInject(),
 ) {
-  val colors = ExpirationDefaults.getTonalColors(status, themePreferences)
+  val colors = ExpirationDefaults.getTonalColors(status)
 
   Surface(
     modifier = Modifier

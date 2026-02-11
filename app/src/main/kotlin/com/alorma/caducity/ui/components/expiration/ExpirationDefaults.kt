@@ -9,7 +9,6 @@ import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.colors.ContainerColors
 import com.alorma.caducity.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.theme.ThemePreferences
 import com.alorma.caducity.ui.theme.TonalColorMode
 import com.alorma.caducity.ui.theme.colors.ExpirationColorsPalette
 import com.materialkolor.ktx.isLight
@@ -50,8 +49,8 @@ object ExpirationDefaults {
   @Composable
   fun getTonalColors(
     itemStatus: ItemStatus,
-    themePreferences: ThemePreferences,
   ): ContainerColors {
+    val themePreferences = CaducityTheme.themePreferences
     val palette = when (themePreferences.tonalColorMode.value) {
       TonalColorMode.VIBRANT -> CaducityTheme.expirationColors.vibrant
       TonalColorMode.SOFT -> CaducityTheme.expirationColors.soft
