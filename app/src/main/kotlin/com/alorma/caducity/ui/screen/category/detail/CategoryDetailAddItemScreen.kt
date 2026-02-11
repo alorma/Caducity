@@ -49,7 +49,10 @@ import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.theme.CaducityTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -249,46 +252,40 @@ fun CategoryDetailAddItemScreen(
             )
 
             // Item Type (Single/Pack) selection
-            Column(
-              verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-              Text(
-                text = stringResource(R.string.category_detail_add_item_type_label),
-                style = MaterialTheme.typography.bodyLarge,
+            StyledSettingsGroup {
+              val singleLabel = stringResource(R.string.category_detail_add_item_type_single)
+              val packLabel = stringResource(R.string.category_detail_add_item_type_pack)
+
+              StyledSettingsButtonGroupCard(
+                title = stringResource(R.string.category_detail_add_item_type_label),
+                selectedItem = formState.value.itemType,
+                items = ItemType.entries,
+                position = ShapePosition.Single,
+                itemTitleMap = { itemType ->
+                  when (itemType) {
+                    ItemType.SINGLE -> singleLabel
+                    ItemType.PACK -> packLabel
+                  }
+                },
+                onItemSelected = { viewModel.onItemTypeChanged(it) },
               )
+            }
 
-              FlowRow(
+            // Pack size input (shown when "Pack" is selected)
+            if (formState.value.itemType == ItemType.PACK) {
+              TextField(
+                value = formState.value.packSize.text,
+                onValueChange = { viewModel.onPackSizeChanged(TextFieldValue(it)) },
+                label = { Text(stringResource(R.string.category_detail_add_item_pack_size_label)) },
+                placeholder = { Text(stringResource(R.string.category_detail_add_item_pack_size_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-              ) {
-                FilterChip(
-                  selected = !formState.value.isPack,
-                  onClick = { viewModel.onIsPackChanged(false) },
-                  label = { Text(text = stringResource(R.string.category_detail_add_item_type_single)) },
-                )
-                FilterChip(
-                  selected = formState.value.isPack,
-                  onClick = { viewModel.onIsPackChanged(true) },
-                  label = { Text(text = stringResource(R.string.category_detail_add_item_type_pack)) },
-                )
-              }
-
-              // Pack size input (shown when "Pack" is selected)
-              if (formState.value.isPack) {
-                TextField(
-                  value = formState.value.packSize.text,
-                  onValueChange = { viewModel.onPackSizeChanged(TextFieldValue(it)) },
-                  label = { Text(stringResource(R.string.category_detail_add_item_pack_size_label)) },
-                  placeholder = { Text(stringResource(R.string.category_detail_add_item_pack_size_placeholder)) },
-                  modifier = Modifier.fillMaxWidth(),
-                  singleLine = true,
-                  keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                  isError = formState.value.packSizeError != null,
-                  supportingText = formState.value.packSizeError?.let { error ->
-                    { Text(text = error) }
-                  },
-                )
-              }
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                isError = formState.value.packSizeError != null,
+                supportingText = formState.value.packSizeError?.let { error ->
+                  { Text(text = error) }
+                },
+              )
             }
 
             // Quantity controls

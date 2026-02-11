@@ -143,10 +143,11 @@ class CategoryDetailAddItemViewModel(
     _formState.value = _formState.value.copy(customQuantity = text)
   }
 
-  fun onIsPackChanged(isPack: Boolean) {
+  fun onItemTypeChanged(itemType: ItemType) {
     _formState.value = _formState.value.copy(
-      isPack = isPack,
-      packSize = if (!isPack) TextFieldValue() else _formState.value.packSize
+      itemType = itemType,
+      packSize = if (itemType == ItemType.SINGLE) TextFieldValue() else _formState.value.packSize,
+      packSizeError = null // Clear error when switching
     )
   }
 
@@ -180,7 +181,7 @@ class CategoryDetailAddItemViewModel(
       }
 
       // Validation: Pack size must be valid if pack is selected
-      if (currentFormState.isPack) {
+      if (currentFormState.itemType == ItemType.PACK) {
         if (currentFormState.packSize.text.isBlank()) {
           _formState.value = currentFormState.copy(
             packSizeError = "Pack size is required"
@@ -205,7 +206,7 @@ class CategoryDetailAddItemViewModel(
         }
 
       // Determine pack size
-      val packSize = if (currentFormState.isPack && currentFormState.packSize.text.isNotBlank()) {
+      val packSize = if (currentFormState.itemType == ItemType.PACK && currentFormState.packSize.text.isNotBlank()) {
         // At this point, we know packSize is valid (≥ 2) due to validation above
         currentFormState.packSize.text.toIntOrNull()
       } else {
@@ -285,10 +286,15 @@ data class FormState(
   val quantity: Int = 1,
   val showCustomQuantityInput: Boolean = false,
   val customQuantity: TextFieldValue = TextFieldValue(),
-  val isPack: Boolean = false,
+  val itemType: ItemType = ItemType.SINGLE,
   val packSize: TextFieldValue = TextFieldValue(),
   val packSizeError: String? = null,
 )
+
+enum class ItemType {
+  SINGLE,
+  PACK
+}
 
 sealed interface CategoryDetailAddItemState {
   data object Loading : CategoryDetailAddItemState
