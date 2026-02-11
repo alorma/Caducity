@@ -521,6 +521,69 @@ When you need to show a dialog:
 - `AppFeedbackType.Error` - Red error styling
 - `AppFeedbackType.Status(status)` - Status-based styling (Fresh, Expired, etc.)
 
+#### Date Picker Dialog Pattern
+
+When you need to show a date picker dialog:
+
+1. **Add a side effect** with the current date information:
+   ```kotlin
+   sealed interface ItemActionSideEffect {
+     data class ShowRescheduleDatePicker(val currentExpirationMillis: Long) : ItemActionSideEffect
+   }
+   ```
+
+2. **Emit the side effect** from ViewModel:
+   ```kotlin
+   fun onRescheduleClick() {
+     val currentExpirationMillis =
+       item.expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+     emitSideEffect(ItemActionSideEffect.ShowRescheduleDatePicker(currentExpirationMillis))
+   }
+   ```
+
+3. **Handle in SideEffectHandler** using `AppDialogState` and `DatePickerState`:
+   ```kotlin
+   val datePickerState = rememberDatePickerState(
+     initialSelectedDateMillis = item.expirationDate
+       .atStartOfDayIn(TimeZone.UTC)
+       .toEpochMilliseconds()
+   )
+
+   LaunchedEffect(viewModel) {
+     viewModel.sideEffects.collect { effect ->
+       when (effect) {
+         is ItemActionSideEffect.ShowRescheduleDatePicker -> {
+           val result = dialogState.showDatePickerDialog(
+             datePickerState = datePickerState,
+             positiveButton = { Text("OK") },
+             negativeButton = { Text("Cancel") },
+             type = AppFeedbackType.Status(item.status),
+           )
+
+           if (result == DialogResult.Positive) {
+             val newDateMillis = datePickerState.selectedDateMillis
+             if (newDateMillis != null) {
+               viewModel.onConfirmReschedule(
+                 newDate = Instant
+                   .fromEpochMilliseconds(newDateMillis)
+                   .toLocalDateTime(TimeZone.currentSystemDefault())
+                   .date
+               )
+             }
+           }
+         }
+       }
+     }
+   }
+   ```
+
+**Key Points**:
+- Use `rememberDatePickerState()` with `initialSelectedDateMillis` to show current date
+- Use `dialogState.showDatePickerDialog()` instead of `showAlertDialog()`
+- Date picker state maintains selected date across dialog dismissal
+- Convert millis back to `LocalDate` when confirming selection
+- Date picker allows past dates by default (configure validation if needed)
+
 #### Snackbar Pattern
 
 When you need to show a snackbar:
@@ -615,7 +678,8 @@ When you need to show a bottom sheet:
 - **NEVER** create separate `@Composable` dialog/bottom sheet functions in screens
 - **NEVER** use `remember { mutableStateOf(false) }` for dialog/bottom sheet visibility
 - **NEVER** use `rememberModalBottomSheetState()` directly in screen composables
-- **ALWAYS** use `dialogState.showAlertDialog()` for dialogs
+- **ALWAYS** use `dialogState.showAlertDialog()` for alert dialogs
+- **ALWAYS** use `dialogState.showDatePickerDialog()` for date picker dialogs
 - **ALWAYS** use `snackbarState.showSnackbar()` for snackbars
 - **ALWAYS** use `bottomSheetState.show { }` for bottom sheets (via extension function)
 - **ALWAYS** emit side effects from ViewModel, handle in `SideEffectHandler`
