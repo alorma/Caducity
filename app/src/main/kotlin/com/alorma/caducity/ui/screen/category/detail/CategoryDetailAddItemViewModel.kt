@@ -151,7 +151,10 @@ class CategoryDetailAddItemViewModel(
   }
 
   fun onPackSizeChanged(text: TextFieldValue) {
-    _formState.value = _formState.value.copy(packSize = text)
+    _formState.value = _formState.value.copy(
+      packSize = text,
+      packSizeError = null // Clear error when user types
+    )
   }
 
   fun save() {
@@ -174,6 +177,23 @@ class CategoryDetailAddItemViewModel(
           expirationDateError = "Expiration date is required"
         )
         return@launch
+      }
+
+      // Validation: Pack size must be valid if pack is selected
+      if (currentFormState.isPack) {
+        if (currentFormState.packSize.text.isBlank()) {
+          _formState.value = currentFormState.copy(
+            packSizeError = "Pack size is required"
+          )
+          return@launch
+        }
+        val packSizeValue = currentFormState.packSize.text.toIntOrNull()
+        if (packSizeValue == null || packSizeValue < 2) {
+          _formState.value = currentFormState.copy(
+            packSizeError = "Pack size must be at least 2"
+          )
+          return@launch
+        }
       }
 
       // Determine quantity
@@ -266,6 +286,7 @@ data class FormState(
   val customQuantity: TextFieldValue = TextFieldValue(),
   val isPack: Boolean = false,
   val packSize: TextFieldValue = TextFieldValue(),
+  val packSizeError: String? = null,
 )
 
 sealed interface CategoryDetailAddItemState {
