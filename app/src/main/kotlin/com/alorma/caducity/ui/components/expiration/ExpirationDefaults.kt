@@ -62,6 +62,21 @@ object ExpirationDefaults {
   }
 
   @Composable
+  fun getTonalInverseColors(
+    itemStatus: ItemStatus,
+  ): ContainerColors {
+    val themePreferences = CaducityTheme.themePreferences
+    val palette = when (themePreferences.tonalColorMode.value) {
+      TonalColorMode.VIBRANT -> CaducityTheme.expirationColors.soft
+      TonalColorMode.SOFT -> CaducityTheme.expirationColors.vibrant
+    }
+    return expirationColorByStatus(
+      itemStatus = itemStatus,
+      expirationColors = palette,
+    )
+  }
+
+  @Composable
   private fun expirationColorByStatus(
     itemStatus: ItemStatus,
     expirationColors: ExpirationColorsPalette,
