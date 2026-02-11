@@ -143,6 +143,17 @@ class CategoryDetailAddItemViewModel(
     _formState.value = _formState.value.copy(customQuantity = text)
   }
 
+  fun onIsPackChanged(isPack: Boolean) {
+    _formState.value = _formState.value.copy(
+      isPack = isPack,
+      packSize = if (!isPack) TextFieldValue() else _formState.value.packSize
+    )
+  }
+
+  fun onPackSizeChanged(text: TextFieldValue) {
+    _formState.value = _formState.value.copy(packSize = text)
+  }
+
   fun save() {
     viewModelScope.launch {
       val currentFormState = _formState.value
@@ -172,6 +183,13 @@ class CategoryDetailAddItemViewModel(
         } else {
           currentFormState.quantity
         }
+
+      // Determine pack size
+      val packSize = if (currentFormState.isPack && currentFormState.packSize.text.isNotBlank()) {
+        currentFormState.packSize.text.toIntOrNull()?.coerceAtLeast(2)
+      } else {
+        null
+      }
 
       try {
         // Determine product ID (use existing or create new)
@@ -209,6 +227,7 @@ class CategoryDetailAddItemViewModel(
             identifier = identifier,
             productId = productId,
             expirationDate = expirationDate,
+            packSize = packSize,
           )
         }
 
@@ -245,6 +264,8 @@ data class FormState(
   val quantity: Int = 1,
   val showCustomQuantityInput: Boolean = false,
   val customQuantity: TextFieldValue = TextFieldValue(),
+  val isPack: Boolean = false,
+  val packSize: TextFieldValue = TextFieldValue(),
 )
 
 sealed interface CategoryDetailAddItemState {

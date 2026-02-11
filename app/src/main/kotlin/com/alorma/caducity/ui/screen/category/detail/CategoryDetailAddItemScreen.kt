@@ -246,6 +246,44 @@ fun CategoryDetailAddItemScreen(
               ),
             )
 
+            // Item Type (Single/Pack) selection
+            Column(
+              verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+              Text(
+                text = stringResource(R.string.category_detail_add_item_type_label),
+                style = MaterialTheme.typography.bodyLarge,
+              )
+
+              FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+              ) {
+                FilterChip(
+                  selected = !formState.value.isPack,
+                  onClick = { viewModel.onIsPackChanged(false) },
+                  label = { Text(text = stringResource(R.string.category_detail_add_item_type_single)) },
+                )
+                FilterChip(
+                  selected = formState.value.isPack,
+                  onClick = { viewModel.onIsPackChanged(true) },
+                  label = { Text(text = stringResource(R.string.category_detail_add_item_type_pack)) },
+                )
+              }
+
+              // Pack size input (shown when "Pack" is selected)
+              if (formState.value.isPack) {
+                TextField(
+                  value = formState.value.packSize.text,
+                  onValueChange = { viewModel.onPackSizeChanged(TextFieldValue(it)) },
+                  label = { Text(stringResource(R.string.category_detail_add_item_pack_size_label)) },
+                  placeholder = { Text(stringResource(R.string.category_detail_add_item_pack_size_placeholder)) },
+                  modifier = Modifier.fillMaxWidth(),
+                  singleLine = true,
+                )
+              }
+            }
+
             // Quantity controls
             Column(
               verticalArrangement = Arrangement.spacedBy(8.dp),

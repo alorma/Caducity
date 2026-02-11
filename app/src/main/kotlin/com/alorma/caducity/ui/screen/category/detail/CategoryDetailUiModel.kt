@@ -19,6 +19,7 @@ data class ItemDetailUiModel(
   val expirationDate: LocalDate,
   val status: ItemStatus,
   val text: String,
+  val packSize: Int? = null,
 )
 
 @Stable
