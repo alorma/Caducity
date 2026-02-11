@@ -104,3 +104,35 @@ class NavigateToCategoryFromFilteredAction(source: String) : NavigationAction(
   origin = "filtered_items",
   parameters = mapOf("source" to source)  // "category_header"
 )
+
+// Item Actions (non-navigation)
+class ItemConsumedAction(itemStatus: String) : Action(
+  name = "item_consumed",
+  parameters = mapOf("item_status" to itemStatus)  // "fresh", "expiring_soon", "expired", "frozen"
+)
+
+class ItemFrozenAction(itemStatus: String) : Action(
+  name = "item_frozen",
+  parameters = mapOf("item_status" to itemStatus)  // "fresh", "expiring_soon"
+)
+
+class ItemUnfrozenAction : Action(
+  name = "item_unfrozen",
+  parameters = emptyMap()
+)
+
+class ItemRescheduledAction(
+  itemStatus: String,
+  daysChanged: String,
+) : Action(
+  name = "item_rescheduled",
+  parameters = mapOf(
+    "item_status" to itemStatus,  // "fresh", "expiring_soon", "expired", "frozen"
+    "days_changed" to daysChanged  // "earlier", "later", "no_change"
+  )
+)
+
+class ItemDeletedAction(itemStatus: String) : Action(
+  name = "item_deleted",
+  parameters = mapOf("item_status" to itemStatus)  // "fresh", "expiring_soon", "expired", "frozen"
+)

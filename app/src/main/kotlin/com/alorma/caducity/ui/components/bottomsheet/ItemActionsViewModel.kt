@@ -10,6 +10,12 @@ import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
+import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.feature.tracking.ItemConsumedAction
+import com.alorma.caducity.feature.tracking.ItemDeletedAction
+import com.alorma.caducity.feature.tracking.ItemFrozenAction
+import com.alorma.caducity.feature.tracking.ItemRescheduledAction
+import com.alorma.caducity.feature.tracking.ItemUnfrozenAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import kotlinx.collections.immutable.persistentListOf
@@ -29,10 +35,19 @@ class ItemActionsViewModel(
   private val unfreezeItemUseCase: UnfreezeItemUseCase,
   private val rescheduleItemUseCase: RescheduleItemUseCase,
   private val deleteItemUseCase: DeleteItemUseCase,
+  private val eventTracker: EventTracker,
 ) : BaseViewModel<Unit, Unit, ItemActionSideEffect>() {
 
   private val _state = MutableStateFlow(calculateState())
   val state: StateFlow<ItemActionsState> = _state
+
+  private fun ItemStatus.toTrackingString(): String = when (this) {
+    ItemStatus.Fresh -> "fresh"
+    ItemStatus.ExpiringSoon -> "expiring_soon"
+    ItemStatus.Expired -> "expired"
+    ItemStatus.Frozen -> "frozen"
+    ItemStatus.Consumed -> "consumed"
+  }
 
   private fun calculateState(): ItemActionsState {
     val actions = when (item.status) {
@@ -94,7 +109,9 @@ class ItemActionsViewModel(
       when (action) {
         ItemAction.Consume -> {
           val result = consumeItemUseCase.consumeItem(item.id)
-          handleResult(result, action)
+          handleResult(result, action) {
+            eventTracker.trackAction(ItemConsumedAction(item.status.toTrackingString()))
+          }
         }
 
         ItemAction.ConsumeWithWarning -> {
@@ -105,12 +122,16 @@ class ItemActionsViewModel(
         ItemAction.Freeze -> {
           val expirationInstant = item.expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault())
           val result = freezeItemUseCase.freezeItem(item.id, expirationInstant)
-          handleResult(result, action)
+          handleResult(result, action) {
+            eventTracker.trackAction(ItemFrozenAction(item.status.toTrackingString()))
+          }
         }
 
         ItemAction.Unfreeze -> {
           val result = unfreezeItemUseCase.unfreezeItem(item.id)
-          handleResult(result, action)
+          handleResult(result, action) {
+            eventTracker.trackAction(ItemUnfrozenAction())
+          }
         }
 
         ItemAction.Reschedule -> {
@@ -122,7 +143,9 @@ class ItemActionsViewModel(
 
         ItemAction.Delete -> {
           val result = deleteItemUseCase.deleteItem(item.id)
-          handleResult(result, action)
+          handleResult(result, action) {
+            eventTracker.trackAction(ItemDeletedAction(item.status.toTrackingString()))
+          }
         }
 
         ItemAction.Placeholder -> {
@@ -135,22 +158,38 @@ class ItemActionsViewModel(
   fun onConfirmConsumeExpired() {
     viewModelScope.launch {
       val result = consumeItemUseCase.forceConsumeItem(item.id)
-      handleResult(result, ItemAction.ConsumeWithWarning)
+      handleResult(result, ItemAction.ConsumeWithWarning) {
+        eventTracker.trackAction(ItemConsumedAction(item.status.toTrackingString()))
+      }
     }
   }
 
   fun onConfirmReschedule(newDate: LocalDate) {
     viewModelScope.launch {
       if (newDate != item.expirationDate) {
+        val daysChanged = when {
+          newDate < item.expirationDate -> "earlier"
+          newDate > item.expirationDate -> "later"
+          else -> "no_change"
+        }
+
         val instant = newDate.atStartOfDayIn(TimeZone.currentSystemDefault())
         val result = rescheduleItemUseCase.rescheduleItem(item.id, instant)
-        handleResult(result, ItemAction.Reschedule)
+        handleResult(result, ItemAction.Reschedule) {
+          eventTracker.trackAction(
+            ItemRescheduledAction(
+              itemStatus = item.status.toTrackingString(),
+              daysChanged = daysChanged
+            )
+          )
+        }
       }
     }
   }
 
-  private fun handleResult(result: Result<Unit>, action: ItemAction) {
+  private fun handleResult(result: Result<Unit>, action: ItemAction, onSuccess: () -> Unit = {}) {
     result.onSuccess {
+      onSuccess()
       emitSideEffect(ItemActionSideEffect.ActionCompleted(action))
     }.onFailure { error ->
       emitSideEffect(ItemActionSideEffect.ActionFailed(action, error.message))
