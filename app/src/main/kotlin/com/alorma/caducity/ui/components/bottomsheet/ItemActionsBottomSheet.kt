@@ -130,6 +130,9 @@ private fun ItemActionsBottomSheetContent(
               Text(stringResource(R.string.category_detail_add_item_date_picker_cancel))
             },
             type = AppFeedbackType.Status(item.status),
+            onDateSelected = { selectedDateMillis ->
+              viewModel.calculateStatusForDate(selectedDateMillis)
+            }
           )
 
           if (result == DialogResult.Positive) {

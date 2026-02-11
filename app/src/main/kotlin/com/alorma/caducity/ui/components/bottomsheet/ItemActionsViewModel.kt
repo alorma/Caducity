@@ -17,7 +17,9 @@ import com.alorma.caducity.feature.tracking.ItemFrozenAction
 import com.alorma.caducity.feature.tracking.ItemRescheduledAction
 import com.alorma.caducity.feature.tracking.ItemUnfrozenAction
 import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
+import kotlin.time.Instant
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,6 +49,19 @@ class ItemActionsViewModel(
     ItemStatus.Expired -> "expired"
     ItemStatus.Frozen -> "frozen"
     ItemStatus.Consumed -> "consumed"
+  }
+
+  fun calculateStatusForDate(dateMillis: Long?): AppFeedbackType {
+    if (dateMillis == null) return AppFeedbackType.Status(item.status)
+
+    val selectedDate = Instant.fromEpochMilliseconds(dateMillis)
+    return ItemStatus.calculateStatus(
+      expirationDate = selectedDate,
+      now = appClock.now(),
+      soonExpiringThreshold = expirationThresholds.soonExpiringThreshold
+    ).let {
+      AppFeedbackType.Status(it)
+    }
   }
 
   private fun calculateState(): ItemActionsState {

@@ -112,6 +112,7 @@ class AppDialogState() {
     properties: DialogProperties = DialogProperties(
       usePlatformDefaultWidth = true,
     ),
+    onDateSelected: ((Long?) -> AppFeedbackType)? = null,
   ): DialogResult = mutex.withLock {
     try {
       suspendCancellableCoroutine { cancellation ->
@@ -121,8 +122,19 @@ class AppDialogState() {
               derivedStateOf { datePickerState.selectedDateMillis != null }
             }
 
-            val softColors = type.softColors()
-            val vibrantColors = type.vibrantColors()
+            // Calculate dynamic type based on selected date
+            val dynamicType by remember {
+              derivedStateOf {
+                if (onDateSelected != null && datePickerState.selectedDateMillis != null) {
+                  onDateSelected(datePickerState.selectedDateMillis)
+                } else {
+                  type
+                }
+              }
+            }
+
+            val softColors = dynamicType.softColors()
+            val vibrantColors = dynamicType.vibrantColors()
 
             val pickerColors = DatePickerDefaults.colors(
               containerColor = softColors.container,
