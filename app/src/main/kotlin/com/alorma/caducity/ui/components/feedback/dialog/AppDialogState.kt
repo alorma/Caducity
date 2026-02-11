@@ -169,6 +169,7 @@ class AppDialogState() {
               },
             ) {
               DatePicker(
+                showModeToggle = false,
                 state = datePickerState,
                 colors = pickerColors,
               )
