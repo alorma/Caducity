@@ -4,14 +4,23 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -21,6 +30,7 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.ThermometerSnow
+import com.alorma.caducity.base.ui.icons.outlined.Calendar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
@@ -75,6 +85,8 @@ private fun ItemActionsBottomSheetContent(
   TrackScreen(screen = ItemActionsBottomSheetScreen())
   val state by viewModel.state.collectAsStateWithLifecycle()
   val dialogState = LocalAppDialogState.current
+  var showDatePicker by remember { mutableStateOf(false) }
+  var datePickerInitialMillis by remember { mutableStateOf<Long?>(null) }
 
   // Handle side effects
   LaunchedEffect(viewModel) {
@@ -99,8 +111,30 @@ private fun ItemActionsBottomSheetContent(
             viewModel.onConfirmConsumeExpired()
           }
         }
+
+        is ItemActionSideEffect.ShowRescheduleDatePicker -> {
+          // Show date picker dialog
+          datePickerInitialMillis = effect.currentExpirationMillis
+          showDatePicker = true
+        }
       }
     }
+  }
+
+  // Date picker dialog
+  if (showDatePicker) {
+    ExpirationDatePickerDialog(
+      initialDateMillis = datePickerInitialMillis,
+      onDateSelected = { newDateMillis ->
+        showDatePicker = false
+        if (newDateMillis != null) {
+          viewModel.onConfirmReschedule(newDateMillis)
+        }
+      },
+      onDismiss = {
+        showDatePicker = false
+      }
+    )
   }
 
   Column(
@@ -148,6 +182,14 @@ private fun ItemActionsBottomSheetContent(
           ActionListItem(
             text = stringResource(R.string.category_detail_action_unfreeze),
             icon = AppIcons.ThermometerSnow,
+            onClick = { viewModel.onActionClick(action) }
+          )
+        }
+
+        ItemAction.Reschedule -> {
+          ActionListItem(
+            text = stringResource(R.string.category_detail_action_reschedule),
+            icon = AppIcons.Outlined.Calendar,
             onClick = { viewModel.onActionClick(action) }
           )
         }
@@ -213,6 +255,7 @@ suspend fun handleItemActionSideEffect(
         ItemAction.Consume, ItemAction.ConsumeWithWarning -> R.string.success_item_consumed
         ItemAction.Freeze -> R.string.success_item_frozen
         ItemAction.Unfreeze -> R.string.success_item_unfrozen
+        ItemAction.Reschedule -> R.string.success_item_rescheduled
         ItemAction.Delete -> R.string.success_item_deleted
         ItemAction.Placeholder -> null
       }
@@ -229,6 +272,7 @@ suspend fun handleItemActionSideEffect(
         ItemAction.Consume, ItemAction.ConsumeWithWarning -> R.string.error_consume_item_failed
         ItemAction.Freeze -> R.string.error_freeze_item_failed
         ItemAction.Unfreeze -> R.string.error_unfreeze_item_failed
+        ItemAction.Reschedule -> R.string.error_reschedule_item_failed
         ItemAction.Delete -> R.string.error_delete_item_failed
         ItemAction.Placeholder -> null
       }
@@ -243,5 +287,46 @@ suspend fun handleItemActionSideEffect(
     ItemActionSideEffect.ShowConsumeExpiredWarning -> {
       // Warning dialog is handled internally by the bottom sheet
     }
+
+    is ItemActionSideEffect.ShowRescheduleDatePicker -> {
+      // Date picker dialog is handled internally by the bottom sheet
+    }
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ExpirationDatePickerDialog(
+  initialDateMillis: Long?,
+  onDateSelected: (Long?) -> Unit,
+  onDismiss: () -> Unit,
+) {
+  val datePickerState = rememberDatePickerState(
+    initialSelectedDateMillis = initialDateMillis
+  )
+
+  val confirmEnabled by remember {
+    derivedStateOf { datePickerState.selectedDateMillis != null }
+  }
+
+  DatePickerDialog(
+    onDismissRequest = onDismiss,
+    confirmButton = {
+      TextButton(
+        onClick = {
+          onDateSelected(datePickerState.selectedDateMillis)
+        },
+        enabled = confirmEnabled
+      ) {
+        Text(stringResource(R.string.category_detail_add_item_date_picker_ok))
+      }
+    },
+    dismissButton = {
+      TextButton(onClick = onDismiss) {
+        Text(stringResource(R.string.category_detail_add_item_date_picker_cancel))
+      }
+    }
+  ) {
+    DatePicker(state = datePickerState)
   }
 }

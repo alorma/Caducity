@@ -5,6 +5,7 @@ sealed interface ItemAction {
   data object ConsumeWithWarning : ItemAction
   data object Freeze : ItemAction
   data object Unfreeze : ItemAction
+  data object Reschedule : ItemAction
   data object Delete : ItemAction
   data object Placeholder : ItemAction
 }
