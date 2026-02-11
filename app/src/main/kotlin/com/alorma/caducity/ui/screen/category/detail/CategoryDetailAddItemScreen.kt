@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -48,15 +47,11 @@ import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityTheme
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.time.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -101,11 +96,16 @@ fun CategoryDetailAddItemScreen(
               Text(stringResource(R.string.category_detail_add_item_date_picker_cancel))
             },
             type = AppFeedbackType.Info,
+            onDateSelected = { selectedDateMillis ->
+              viewModel.calculateStatusForDate(selectedDateMillis)
+            }
           )
 
           if (result == DialogResult.Positive) {
             val newDateMillis = datePickerState.selectedDateMillis
             viewModel.onExpirationDateChanged(newDateMillis)
+          } else {
+            datePickerState.selectedDateMillis = formState.value.expirationDateMillis
           }
         }
       }
@@ -166,135 +166,135 @@ fun CategoryDetailAddItemScreen(
               .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
           ) {
-          // Variant selection with filter
-          ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = it },
-          ) {
-            TextField(
-              value = formState.value.productText.text,
-              onValueChange = { viewModel.onProductTextChanged(TextFieldValue(it)) },
-              label = { Text(stringResource(R.string.category_detail_add_item_product_label)) },
-              placeholder = { Text(stringResource(R.string.category_detail_add_item_product_placeholder)) },
-              trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-              },
-              modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true),
-              singleLine = true,
-            )
+            // Variant selection with filter
+            ExposedDropdownMenuBox(
+              expanded = expanded,
+              onExpandedChange = { expanded = it },
+            ) {
+              TextField(
+                value = formState.value.productText.text,
+                onValueChange = { viewModel.onProductTextChanged(TextFieldValue(it)) },
+                label = { Text(stringResource(R.string.category_detail_add_item_product_label)) },
+                placeholder = { Text(stringResource(R.string.category_detail_add_item_product_placeholder)) },
+                trailingIcon = {
+                  ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true),
+                singleLine = true,
+              )
 
-            val filteredProducts = viewModel.getFilteredProducts()
-            if (filteredProducts.isNotEmpty()) {
-              ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-              ) {
-                filteredProducts.forEach { product ->
-                  DropdownMenuItem(
-                    text = { Text(product.name) },
-                    onClick = {
-                      viewModel.onProductSelected(product.id, product.name)
-                      expanded = false
-                    },
-                  )
+              val filteredProducts = viewModel.getFilteredProducts()
+              if (filteredProducts.isNotEmpty()) {
+                ExposedDropdownMenu(
+                  expanded = expanded,
+                  onDismissRequest = { expanded = false },
+                ) {
+                  filteredProducts.forEach { product ->
+                    DropdownMenuItem(
+                      text = { Text(product.name) },
+                      onClick = {
+                        viewModel.onProductSelected(product.id, product.name)
+                        expanded = false
+                      },
+                    )
+                  }
                 }
               }
             }
-          }
 
-          // Identifier field
-          TextField(
-            value = formState.value.identifierText.text,
-            onValueChange = { viewModel.onIdentifierTextChanged(TextFieldValue(it)) },
-            label = { Text(stringResource(R.string.category_detail_add_item_identifier_label)) },
-            placeholder = { Text(stringResource(R.string.category_detail_add_item_identifier_placeholder)) },
-            isError = formState.value.identifierError != null,
-            supportingText = formState.value.identifierError?.let { error ->
-              { Text(text = error) }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-          )
-
-          // Expiration date field
-          TextField(
-            modifier = Modifier
-              .fillMaxWidth()
-              .clickable { viewModel.onShowDatePicker() },
-            value = formState.value.expirationDateMillis?.let {
-              val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-              dateFormat.format(Date(it))
-            } ?: "",
-            onValueChange = { },
-            readOnly = true,
-            enabled = false,
-            label = { Text(stringResource(R.string.category_detail_add_item_expiration_date_label)) },
-            placeholder = { Text(stringResource(R.string.category_detail_add_item_expiration_date_placeholder)) },
-            isError = formState.value.expirationDateError != null,
-            supportingText = formState.value.expirationDateError?.let { error ->
-              { Text(text = error) }
-            },
-            singleLine = true,
-            colors = TextFieldDefaults.colors(
-              disabledTextColor = MaterialTheme.colorScheme.onSurface,
-              disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-              disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-              disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-              disabledIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            ),
-          )
-
-          // Quantity controls
-          Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-          ) {
-            Text(
-              text = stringResource(R.string.category_detail_add_item_quantity_label),
-              style = MaterialTheme.typography.bodyLarge,
+            // Identifier field
+            TextField(
+              value = formState.value.identifierText.text,
+              onValueChange = { viewModel.onIdentifierTextChanged(TextFieldValue(it)) },
+              label = { Text(stringResource(R.string.category_detail_add_item_identifier_label)) },
+              placeholder = { Text(stringResource(R.string.category_detail_add_item_identifier_placeholder)) },
+              isError = formState.value.identifierError != null,
+              supportingText = formState.value.identifierError?.let { error ->
+                { Text(text = error) }
+              },
+              modifier = Modifier.fillMaxWidth(),
+              singleLine = true,
             )
 
-            // Quick selection chips (1-6 + More)
-            FlowRow(
-              modifier = Modifier.fillMaxWidth(),
-              horizontalArrangement = Arrangement.spacedBy(8.dp),
+            // Expiration date field
+            TextField(
+              modifier = Modifier
+                .fillMaxWidth()
+                .clickable { viewModel.onShowDatePicker() },
+              value = formState.value.expirationDateMillis?.let {
+                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                dateFormat.format(Date(it))
+              } ?: "",
+              onValueChange = { },
+              readOnly = true,
+              enabled = false,
+              label = { Text(stringResource(R.string.category_detail_add_item_expiration_date_label)) },
+              placeholder = { Text(stringResource(R.string.category_detail_add_item_expiration_date_placeholder)) },
+              isError = formState.value.expirationDateError != null,
+              supportingText = formState.value.expirationDateError?.let { error ->
+                { Text(text = error) }
+              },
+              singleLine = true,
+              colors = TextFieldDefaults.colors(
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+              ),
+            )
+
+            // Quantity controls
+            Column(
               verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-              // Chips for quantities 1-6
-              (1..6).forEach { num ->
+              Text(
+                text = stringResource(R.string.category_detail_add_item_quantity_label),
+                style = MaterialTheme.typography.bodyLarge,
+              )
+
+              // Quick selection chips (1-6 + More)
+              FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+              ) {
+                // Chips for quantities 1-6
+                (1..6).forEach { num ->
+                  FilterChip(
+                    selected = formState.value.quantity == num && !formState.value.showCustomQuantityInput,
+                    onClick = {
+                      viewModel.onQuantityChanged(num)
+                      viewModel.onShowCustomQuantityInputChanged(false)
+                    },
+                    label = { Text(text = num.toString()) },
+                  )
+                }
+
+                // "More" chip to reveal custom input
                 FilterChip(
-                  selected = formState.value.quantity == num && !formState.value.showCustomQuantityInput,
+                  selected = formState.value.showCustomQuantityInput,
                   onClick = {
-                    viewModel.onQuantityChanged(num)
-                    viewModel.onShowCustomQuantityInputChanged(false)
+                    viewModel.onShowCustomQuantityInputChanged(!formState.value.showCustomQuantityInput)
                   },
-                  label = { Text(text = num.toString()) },
+                  label = { Text(text = stringResource(R.string.category_detail_add_item_quantity_more)) },
                 )
               }
 
-              // "More" chip to reveal custom input
-              FilterChip(
-                selected = formState.value.showCustomQuantityInput,
-                onClick = {
-                  viewModel.onShowCustomQuantityInputChanged(!formState.value.showCustomQuantityInput)
-                },
-                label = { Text(text = stringResource(R.string.category_detail_add_item_quantity_more)) },
-              )
+              // Custom quantity TextField (shown when "More" is selected)
+              if (formState.value.showCustomQuantityInput) {
+                TextField(
+                  value = formState.value.customQuantity.text,
+                  onValueChange = { viewModel.onCustomQuantityChanged(TextFieldValue(it)) },
+                  label = { Text(stringResource(R.string.category_detail_add_item_quantity_custom_label)) },
+                  placeholder = { Text("7") },
+                  modifier = Modifier.fillMaxWidth(),
+                  singleLine = true,
+                )
+              }
             }
-
-            // Custom quantity TextField (shown when "More" is selected)
-            if (formState.value.showCustomQuantityInput) {
-              TextField(
-                value = formState.value.customQuantity.text,
-                onValueChange = { viewModel.onCustomQuantityChanged(TextFieldValue(it)) },
-                label = { Text(stringResource(R.string.category_detail_add_item_quantity_custom_label)) },
-                placeholder = { Text("7") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-              )
-            }
-          }
           }
         }
       }

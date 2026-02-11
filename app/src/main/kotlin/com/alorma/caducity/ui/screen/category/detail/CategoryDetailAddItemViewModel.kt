@@ -4,14 +4,18 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.R
+import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.resources.StringProvider
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.AddItemToCategoryUseCase
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
+import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.feature.tracking.CancelAddItemAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemSavedAction
 import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +30,8 @@ class CategoryDetailAddItemViewModel(
   private val addItemToCategoryUseCase: AddItemToCategoryUseCase,
   private val stringProvider: StringProvider,
   private val eventTracker: EventTracker,
+  private val appClock: AppClock,
+  private val expirationThresholds: ExpirationThresholds,
 ) : BaseViewModel<AddItemNavigation, AddItemNavigationSideEffect, AddItemSideEffect>() {
 
   private val _state = MutableStateFlow<CategoryDetailAddItemState>(
@@ -100,6 +106,19 @@ class CategoryDetailAddItemViewModel(
 
   fun onShowDatePicker() {
     emitSideEffect(AddItemSideEffect.ShowDatePicker(_formState.value.expirationDateMillis))
+  }
+
+  fun calculateStatusForDate(dateMillis: Long?): AppFeedbackType {
+    if (dateMillis == null) return AppFeedbackType.Info
+
+    val selectedDate = Instant.fromEpochMilliseconds(dateMillis)
+    return ItemStatus.calculateStatus(
+      expirationDate = selectedDate,
+      now = appClock.now(),
+      soonExpiringThreshold = expirationThresholds.soonExpiringThreshold
+    ).let {
+      AppFeedbackType.Status(it)
+    }
   }
 
   fun onExpirationDateChanged(dateMillis: Long?) {
