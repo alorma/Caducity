@@ -8,3 +8,7 @@ sealed interface AddItemNavigation {
 sealed interface AddItemNavigationSideEffect {
   data object NavigateBack : AddItemNavigationSideEffect
 }
+
+sealed interface AddItemSideEffect {
+  data class ShowDatePicker(val currentDateMillis: Long?) : AddItemSideEffect
+}

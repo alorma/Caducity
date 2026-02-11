@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -23,12 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,19 +40,25 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.Check
+import com.alorma.caducity.feature.tracking.AddItemScreen
+import com.alorma.caducity.feature.tracking.TrackScreen
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
+import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityTheme
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import com.alorma.caducity.feature.tracking.AddItemScreen
-import com.alorma.caducity.feature.tracking.TrackScreen
+import kotlin.time.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,9 +72,14 @@ fun CategoryDetailAddItemScreen(
   TrackScreen(screen = AddItemScreen())
   val state = viewModel.state.collectAsStateWithLifecycle()
   val formState = viewModel.formState.collectAsStateWithLifecycle()
+  val dialogState = rememberAppDialogState()
+
+  val datePickerState = rememberDatePickerState(
+    initialSelectedDateMillis = formState.value.expirationDateMillis
+  )
 
   // Handle navigation side effects
-  androidx.compose.runtime.LaunchedEffect(viewModel) {
+  LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
         AddItemNavigationSideEffect.NavigateBack -> onNavigateBack()
@@ -79,8 +87,34 @@ fun CategoryDetailAddItemScreen(
     }
   }
 
+  // Handle side effects
+  LaunchedEffect(viewModel) {
+    viewModel.sideEffects.collect { effect ->
+      when (effect) {
+        is AddItemSideEffect.ShowDatePicker -> {
+          val result = dialogState.showDatePickerDialog(
+            datePickerState = datePickerState,
+            positiveButton = {
+              Text(stringResource(R.string.category_detail_add_item_date_picker_ok))
+            },
+            negativeButton = {
+              Text(stringResource(R.string.category_detail_add_item_date_picker_cancel))
+            },
+            type = AppFeedbackType.Info,
+          )
+
+          if (result == DialogResult.Positive) {
+            val newDateMillis = datePickerState.selectedDateMillis
+            viewModel.onExpirationDateChanged(newDateMillis)
+          }
+        }
+      }
+    }
+  }
+
   AppScaffold(
     modifier = modifier,
+    dialogState = dialogState,
     topBar = {
       StyledTopAppBar(
         title = { Text(text = stringResource(R.string.category_detail_add_item_title)) },
@@ -120,7 +154,6 @@ fun CategoryDetailAddItemScreen(
 
       is CategoryDetailAddItemState.Success -> {
         var expanded by remember { mutableStateOf(false) }
-        var showDatePicker by remember { mutableStateOf(false) }
 
         ResponsiveCenteredContainer(
           maxWidth = 600.dp,
@@ -189,7 +222,7 @@ fun CategoryDetailAddItemScreen(
           TextField(
             modifier = Modifier
               .fillMaxWidth()
-              .clickable { showDatePicker = true },
+              .clickable { viewModel.onShowDatePicker() },
             value = formState.value.expirationDateMillis?.let {
               val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
               dateFormat.format(Date(it))
@@ -262,17 +295,6 @@ fun CategoryDetailAddItemScreen(
               )
             }
           }
-
-          if (showDatePicker) {
-            ExpirationDatePickerDialog(
-              initialDateMillis = formState.value.expirationDateMillis,
-              onDateSelected = { dateMillis ->
-                viewModel.onExpirationDateChanged(dateMillis)
-                showDatePicker = false
-              },
-              onDismiss = { showDatePicker = false }
-            )
-          }
           }
         }
       }
@@ -292,42 +314,5 @@ fun CategoryDetailAddItemScreen(
         }
       }
     }
-  }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ExpirationDatePickerDialog(
-  initialDateMillis: Long?,
-  onDateSelected: (Long?) -> Unit,
-  onDismiss: () -> Unit,
-) {
-  val datePickerState = rememberDatePickerState(
-    initialSelectedDateMillis = initialDateMillis
-  )
-
-  val confirmEnabled by remember {
-    derivedStateOf { datePickerState.selectedDateMillis != null }
-  }
-
-  DatePickerDialog(
-    onDismissRequest = onDismiss,
-    confirmButton = {
-      TextButton(
-        onClick = {
-          onDateSelected(datePickerState.selectedDateMillis)
-        },
-        enabled = confirmEnabled
-      ) {
-        Text(stringResource(R.string.category_detail_add_item_date_picker_ok))
-      }
-    },
-    dismissButton = {
-      TextButton(onClick = onDismiss) {
-        Text(stringResource(R.string.category_detail_add_item_date_picker_cancel))
-      }
-    }
-  ) {
-    DatePicker(state = datePickerState)
   }
 }
