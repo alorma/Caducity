@@ -8,6 +8,7 @@ import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
+import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
@@ -15,6 +16,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 
@@ -25,6 +27,7 @@ class ItemActionsViewModel(
   private val consumeItemUseCase: ConsumeItemUseCase,
   private val freezeItemUseCase: FreezeItemUseCase,
   private val unfreezeItemUseCase: UnfreezeItemUseCase,
+  private val rescheduleItemUseCase: RescheduleItemUseCase,
   private val deleteItemUseCase: DeleteItemUseCase,
 ) : BaseViewModel<Unit, Unit, ItemActionSideEffect>() {
 
@@ -34,19 +37,21 @@ class ItemActionsViewModel(
   private fun calculateState(): ItemActionsState {
     val actions = when (item.status) {
       ItemStatus.Fresh, ItemStatus.ExpiringSoon -> {
-        // Fresh and expiring soon items can be consumed, frozen, or deleted
+        // Fresh and expiring soon items can be consumed, frozen, rescheduled, or deleted
         persistentListOf(
           ItemAction.Consume,
           ItemAction.Freeze,
+          ItemAction.Reschedule,
           ItemAction.Delete,
         )
       }
 
       ItemStatus.Frozen -> {
-        // Frozen items can be consumed, unfrozen, or deleted
+        // Frozen items can be consumed, unfrozen, rescheduled, or deleted
         persistentListOf(
           ItemAction.Consume,
           ItemAction.Unfreeze,
+          ItemAction.Reschedule,
           ItemAction.Delete,
         )
       }
@@ -58,14 +63,16 @@ class ItemActionsViewModel(
         val daysSinceExpiration = (today.toEpochDays() - expirationDate.toEpochDays()).toInt()
 
         if (daysSinceExpiration <= expirationThresholds.consumeExpiredThreshold.inWholeDays) {
-          // Within threshold: Show consume with warning + delete
+          // Within threshold: Show consume with warning, reschedule, and delete
           persistentListOf(
             ItemAction.ConsumeWithWarning,
+            ItemAction.Reschedule,
             ItemAction.Delete,
           )
         } else {
-          // Beyond threshold: Show only delete
+          // Beyond threshold: Show reschedule and delete
           persistentListOf(
+            ItemAction.Reschedule,
             ItemAction.Delete,
           )
         }
@@ -106,6 +113,13 @@ class ItemActionsViewModel(
           handleResult(result, action)
         }
 
+        ItemAction.Reschedule -> {
+          // Emit side effect to show date picker
+          val currentExpirationMillis =
+            item.expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()
+          emitSideEffect(ItemActionSideEffect.ShowRescheduleDatePicker(currentExpirationMillis))
+        }
+
         ItemAction.Delete -> {
           val result = deleteItemUseCase.deleteItem(item.id)
           handleResult(result, action)
@@ -122,6 +136,16 @@ class ItemActionsViewModel(
     viewModelScope.launch {
       val result = consumeItemUseCase.forceConsumeItem(item.id)
       handleResult(result, ItemAction.ConsumeWithWarning)
+    }
+  }
+
+  fun onConfirmReschedule(newDate: LocalDate) {
+    viewModelScope.launch {
+      if (newDate != item.expirationDate) {
+        val instant = newDate.atStartOfDayIn(TimeZone.currentSystemDefault())
+        val result = rescheduleItemUseCase.rescheduleItem(item.id, instant)
+        handleResult(result, ItemAction.Reschedule)
+      }
     }
   }
 
@@ -142,4 +166,5 @@ sealed interface ItemActionSideEffect {
   data class ActionCompleted(val action: ItemAction) : ItemActionSideEffect
   data class ActionFailed(val action: ItemAction, val message: String?) : ItemActionSideEffect
   data object ShowConsumeExpiredWarning : ItemActionSideEffect
+  data class ShowRescheduleDatePicker(val currentExpirationMillis: Long) : ItemActionSideEffect
 }

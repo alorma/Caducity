@@ -24,7 +24,6 @@ import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
-import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
@@ -36,7 +35,6 @@ import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
-import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
@@ -105,7 +103,7 @@ fun BackupScreen(
           val result = dialogState.showAlertDialog(
             type = AppFeedbackType.Success,
             title = { Text(stringResource(R.string.backup_restore_warning_title)) },
-            text = { Text(stringResource(R.string.backup_restore_warning_message)) },
+            content = { Text(stringResource(R.string.backup_restore_warning_message)) },
             positiveButton = { Text(stringResource(R.string.backup_restore_confirm)) },
             negativeButton = { Text(stringResource(R.string.backup_cancel)) },
           )

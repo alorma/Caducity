@@ -17,6 +17,8 @@ interface ItemDataSource {
 
   suspend fun unfreezeItem(itemId: String)
 
+  suspend fun rescheduleItem(itemId: String, newExpirationDateMillis: Long)
+
   fun getItemsByProduct(categoryId: String, productId: String?): Flow<List<Item>>
 
   suspend fun clearConsumedItems(categoryId: String, productId: String?)

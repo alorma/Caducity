@@ -80,6 +80,18 @@ class RoomItemDataSource(
     }
   }
 
+  override suspend fun rescheduleItem(itemId: String, newExpirationDateMillis: Long) {
+    itemDao.getItem(itemId)?.let { item ->
+      val updatedItem = item.copy(
+        expirationDate = newExpirationDateMillis,
+        // Clear frozen state when rescheduling
+        pausedDate = null,
+        remainingDays = null
+      )
+      itemDao.updateItem(updatedItem)
+    }
+  }
+
   override fun getItemsByProduct(categoryId: String, productId: String?): Flow<List<Item>> {
     return if (productId != null) {
       itemDao.getProductItems(categoryId, productId)

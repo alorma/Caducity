@@ -168,6 +168,7 @@
     <string name="category_detail_action_consume">Consume</string>
     <string name="category_detail_action_freeze">Freeze</string>
     <string name="category_detail_action_unfreeze">Unfreeze</string>
+    <string name="category_detail_action_reschedule">Reschedule</string>
     <string name="category_detail_action_delete">Delete</string>
     <string name="category_detail_frozen_items">Frozen</string>
     <string name="category_detail_consumed_items">Consumed</string>
@@ -223,12 +224,14 @@
     <string name="success_item_consumed">Item consumed</string>
     <string name="success_item_frozen">Item frozen</string>
     <string name="success_item_unfrozen">Item unfrozen</string>
+    <string name="success_item_rescheduled">Item rescheduled</string>
     <string name="success_item_deleted">Item deleted</string>
 
     <!-- Item action error messages -->
     <string name="error_consume_item_failed">Failed to consume item</string>
     <string name="error_freeze_item_failed">Failed to freeze item</string>
     <string name="error_unfreeze_item_failed">Failed to unfreeze item</string>
+    <string name="error_reschedule_item_failed">Failed to reschedule item</string>
     <string name="error_delete_item_failed">Failed to delete item</string>
     <string name="error_create_product_failed">Failed to create product</string>
 

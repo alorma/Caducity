@@ -8,7 +8,6 @@ import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ProductDeletionStrategy
 import com.alorma.caducity.ui.components.bottomsheet.handleItemActionSideEffect
 import com.alorma.caducity.ui.components.bottomsheet.showItemActionsBottomSheet
-import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
@@ -103,7 +102,7 @@ internal fun ProductPageSideEffectHandler(
         is ProductPageSideEffect.ShowDeleteProductDialog -> launch {
           val result = dialogState.showAlertDialog(
             title = { Text(stringResource(R.string.product_delete_dialog_title)) },
-            text = { Text(stringResource(R.string.product_delete_dialog_message)) },
+            content = { Text(stringResource(R.string.product_delete_dialog_message)) },
             type = AppFeedbackType.Info,
             positiveButton = { Text(stringResource(R.string.product_delete_dialog_delete)) },
             negativeButton = { Text(stringResource(R.string.product_delete_dialog_cancel)) },

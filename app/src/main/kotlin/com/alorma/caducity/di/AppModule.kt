@@ -15,6 +15,7 @@ import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteProductUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
+import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
@@ -87,6 +88,7 @@ val appModule = module {
   singleOf(::DeleteCategoryUseCase)
   singleOf(::ConsumeItemUseCase)
   singleOf(::FreezeItemUseCase)
+  singleOf(::RescheduleItemUseCase)
   singleOf(::UnfreezeItemUseCase)
   singleOf(::CategoryDetailMapper)
   viewModelOf(::CategoryDetailViewModel)
