@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,7 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import androidx.core.graphics.drawable.toBitmap
 import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.CategoryWithItems
@@ -35,6 +38,11 @@ class AndroidExpirationNotificationHelper(
       // Initialize based on both permission status and saved preference
       settings.getBoolean(NotificationsEnabledKey, false) && checkNotificationPermission(),
     )
+
+  // Cache large icon bitmap to avoid repeated conversions
+  private val largeIconBitmap by lazy {
+    ContextCompat.getDrawable(context, R.drawable.ic_launcher_foreground)?.toBitmap()
+  }
 
   private fun checkNotificationPermission(): Boolean {
     return context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
@@ -111,7 +119,10 @@ class AndroidExpirationNotificationHelper(
     // Build notification
     val notification =
       NotificationCompat.Builder(context, NotificationChannelManager.CHANNEL_ID_EXPIRATION)
-        .setSmallIcon(R.drawable.ic_launcher_foreground)
+        .setSmallIcon(R.drawable.ic_notification)
+        .also { builder ->
+          largeIconBitmap?.let { builder.setLargeIcon(it) }
+        }
         .setContentTitle(buildNotificationTitle(expiringProducts.size))
         .setContentText(buildNotificationText(expiringProducts))
         .setPriority(NotificationCompat.PRIORITY_HIGH)
