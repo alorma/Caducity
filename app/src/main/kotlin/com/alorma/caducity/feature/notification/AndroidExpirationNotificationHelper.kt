@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,7 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
+import androidx.core.graphics.drawable.toBitmap
 import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.CategoryWithItems
@@ -109,9 +112,15 @@ class AndroidExpirationNotificationHelper(
     )
 
     // Build notification
+    val largeIcon = ContextCompat.getDrawable(context, R.drawable.ic_launcher_foreground)?.toBitmap()
     val notification =
       NotificationCompat.Builder(context, NotificationChannelManager.CHANNEL_ID_EXPIRATION)
-        .setSmallIcon(R.drawable.ic_launcher_foreground)
+        .setSmallIcon(R.drawable.ic_notification)
+        .apply {
+          if (largeIcon != null) {
+            setLargeIcon(largeIcon)
+          }
+        }
         .setContentTitle(buildNotificationTitle(expiringProducts.size))
         .setContentText(buildNotificationText(expiringProducts))
         .setPriority(NotificationCompat.PRIORITY_HIGH)
