@@ -39,6 +39,11 @@ class AndroidExpirationNotificationHelper(
       settings.getBoolean(NotificationsEnabledKey, false) && checkNotificationPermission(),
     )
 
+  // Cache large icon bitmap to avoid repeated conversions
+  private val largeIconBitmap by lazy {
+    ContextCompat.getDrawable(context, R.drawable.ic_launcher_foreground)?.toBitmap()
+  }
+
   private fun checkNotificationPermission(): Boolean {
     return context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
         PackageManager.PERMISSION_GRANTED
@@ -112,14 +117,11 @@ class AndroidExpirationNotificationHelper(
     )
 
     // Build notification
-    val largeIcon = ContextCompat.getDrawable(context, R.drawable.ic_launcher_foreground)?.toBitmap()
     val notification =
       NotificationCompat.Builder(context, NotificationChannelManager.CHANNEL_ID_EXPIRATION)
         .setSmallIcon(R.drawable.ic_notification)
-        .apply {
-          if (largeIcon != null) {
-            setLargeIcon(largeIcon)
-          }
+        .also { builder ->
+          largeIconBitmap?.let { builder.setLargeIcon(it) }
         }
         .setContentTitle(buildNotificationTitle(expiringProducts.size))
         .setContentText(buildNotificationText(expiringProducts))
