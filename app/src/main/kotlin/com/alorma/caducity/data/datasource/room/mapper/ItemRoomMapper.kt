@@ -34,6 +34,7 @@ class ItemRoomMapper(
       expirationDate = Instant.fromEpochMilliseconds(entity.expirationDate),
       status = calculateStatus(entity),
       pausedDate = entity.pausedDate?.let { Instant.fromEpochMilliseconds(it) },
+      packSize = entity.packSize,
     )
   }
 
@@ -53,6 +54,7 @@ class ItemRoomMapper(
       pausedDate = model.pausedDate?.toEpochMilliseconds(),
       remainingDays = null,
       consumedDate = null,
+      packSize = model.packSize,
     )
   }
 
@@ -73,6 +75,7 @@ class ItemRoomMapper(
       pausedDate = null,
       remainingDays = null,
       consumedDate = null,
+      packSize = model.packSize,
     )
   }
 

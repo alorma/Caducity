@@ -40,6 +40,7 @@ class GetProductItemsUseCase(
             ProductItem(
               id = item.id,
               name = item.identifier.takeIf { it.isNotEmpty() } ?: "",
+              packSize = item.packSize,
             )
           }
 
@@ -54,6 +55,7 @@ class GetProductItemsUseCase(
         ProductItem(
           id = item.id,
           name = item.identifier.takeIf { it.isNotEmpty() } ?: "",
+          packSize = item.packSize,
         )
       }
 
@@ -61,6 +63,7 @@ class GetProductItemsUseCase(
         ProductItem(
           id = item.id,
           name = item.identifier.takeIf { it.isNotEmpty() } ?: "",
+          packSize = item.packSize,
         )
       }
 

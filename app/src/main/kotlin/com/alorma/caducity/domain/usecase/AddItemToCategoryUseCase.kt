@@ -15,12 +15,14 @@ class AddItemToCategoryUseCase(
     identifier: String,
     productId: String? = null,
     expirationDate: Instant,
+    packSize: Int? = null,
   ): Result<String> {
     return try {
       val item = NewItem(
         identifier = identifier,
         productId = productId,
         expirationDate = expirationDate,
+        packSize = packSize,
       )
 
       val createdItem = itemDataSource.addItem(categoryId, item)

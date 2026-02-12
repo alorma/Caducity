@@ -15,4 +15,5 @@ data class ProductDatedItems(
 data class ProductItem(
   val id: String,
   val name: String,
+  val packSize: Int? = null,
 )
