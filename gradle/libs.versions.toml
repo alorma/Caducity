@@ -1,6 +1,6 @@
 [versions]
 # Compose
-compose-bom = "2026.01.01"
+compose-bom = "2026.02.00"
 compose-screenshot-testing = "0.0.1-alpha13"
 
 # Kotlin
