@@ -33,4 +33,5 @@ data class ItemRoomEntity(
   val pausedDate: Long? = null, // When frozen - null means not frozen
   val remainingDays: Int? = null, // Days remaining when frozen
   val consumedDate: Long? = null, // When consumed - null means not consumed
+  val packSize: Int? = null, // Pack size - null means single item, >1 means pack
 )

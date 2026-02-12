@@ -28,6 +28,7 @@ class ProductPageMapper(
             expirationDate = datedItems.date,
             status = datedItems.status,
             text = item.name.ifEmpty { "Item" },
+            packSize = item.packSize,
           )
         }.toImmutableList(),
       )
@@ -39,6 +40,7 @@ class ProductPageMapper(
         expirationDate = appClock.now().date(),
         status = ItemStatus.Frozen,
         text = item.name.ifEmpty { "Item" },
+        packSize = item.packSize,
       )
     }.toImmutableList()
 
@@ -48,6 +50,7 @@ class ProductPageMapper(
         expirationDate = appClock.now().date(),
         status = ItemStatus.Consumed,
         text = item.name.ifEmpty { "Item" },
+        packSize = item.packSize,
       )
     }.toImmutableList()
 

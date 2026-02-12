@@ -39,6 +39,7 @@ fun SideEffectHandler(
             expirationDate = effect.item.expirationDate.date(),
             status = effect.item.status,
             text = effect.item.identifier,
+            packSize = effect.item.packSize,
           )
 
           bottomSheetState.showItemActionsBottomSheet(

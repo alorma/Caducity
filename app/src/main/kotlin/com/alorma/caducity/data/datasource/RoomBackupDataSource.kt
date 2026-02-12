@@ -69,7 +69,8 @@ class RoomBackupDataSource(
     expirationDate = item.expirationDate,
     pausedDate = item.pausedDate,
     remainingDays = item.remainingDays,
-    consumedDate = item.consumedDate
+    consumedDate = item.consumedDate,
+    packSize = item.packSize,
   )
 
 
@@ -106,7 +107,8 @@ class RoomBackupDataSource(
             expirationDate = item.expirationDate,
             pausedDate = item.pausedDate,
             remainingDays = item.remainingDays,
-            consumedDate = item.consumedDate
+            consumedDate = item.consumedDate,
+            packSize = item.packSize,
           )
           itemDao.insertItem(itemEntity)
         }
@@ -121,7 +123,8 @@ class RoomBackupDataSource(
               expirationDate = item.expirationDate,
               pausedDate = item.pausedDate,
               remainingDays = item.remainingDays,
-              consumedDate = item.consumedDate
+              consumedDate = item.consumedDate,
+              packSize = item.packSize,
             )
             itemDao.insertItem(itemEntity)
           }

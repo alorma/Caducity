@@ -38,5 +38,6 @@ data class BackupProductItem(
   val expirationDate: Long,
   val pausedDate: Long? = null,
   val remainingDays: Int? = null,
-  val consumedDate: Long? = null
+  val consumedDate: Long? = null,
+  val packSize: Int? = null,
 )

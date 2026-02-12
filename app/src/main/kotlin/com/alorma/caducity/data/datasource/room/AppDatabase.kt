@@ -15,7 +15,7 @@ import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
     ItemRoomEntity::class,
     ProductRoomEntity::class,
   ],
-  version = 1,
+  version = 2,
   exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

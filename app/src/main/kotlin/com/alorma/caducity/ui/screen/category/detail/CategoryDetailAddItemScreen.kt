@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,6 +17,7 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,7 +50,10 @@ import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.theme.CaducityTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -166,6 +172,7 @@ fun CategoryDetailAddItemScreen(
               .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
           ) {
+            // Product and Item Details Section
             // Variant selection with filter
             ExposedDropdownMenuBox(
               expanded = expanded,
@@ -246,12 +253,62 @@ fun CategoryDetailAddItemScreen(
               ),
             )
 
-            // Quantity controls
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            // Item Type and Pack Size Section
+            // Item Type (Single/Pack) selection
+            StyledSettingsGroup {
+              val singleLabel = stringResource(R.string.category_detail_add_item_type_single)
+              val packLabel = stringResource(R.string.category_detail_add_item_type_pack)
+
+              StyledSettingsButtonGroupCard(
+                title = stringResource(R.string.category_detail_add_item_type_label),
+                selectedItem = formState.value.itemType,
+                items = ItemType.entries,
+                position = ShapePosition.Single,
+                itemTitleMap = { itemType ->
+                  when (itemType) {
+                    ItemType.SINGLE -> singleLabel
+                    ItemType.PACK -> packLabel
+                  }
+                },
+                onItemSelected = { viewModel.onItemTypeChanged(it) },
+              )
+            }
+
+            // Pack size input (shown when "Pack" is selected)
+            if (formState.value.itemType == ItemType.PACK) {
+              TextField(
+                value = formState.value.packSize.text,
+                onValueChange = { viewModel.onPackSizeChanged(TextFieldValue(it)) },
+                label = { Text(stringResource(R.string.category_detail_add_item_pack_size_label)) },
+                placeholder = { Text(stringResource(R.string.category_detail_add_item_pack_size_placeholder)) },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                isError = formState.value.packSizeError != null,
+                supportingText = formState.value.packSizeError?.let { error ->
+                  { Text(text = error) }
+                },
+              )
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            // Quantity Section
+            // Quantity controls with context-aware label
             Column(
               verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+              // Use context-aware label based on item type
+              val quantityLabel = if (formState.value.itemType == ItemType.PACK) {
+                stringResource(R.string.category_detail_add_item_quantity_packs_label)
+              } else {
+                stringResource(R.string.category_detail_add_item_quantity_items_label)
+              }
+              
               Text(
-                text = stringResource(R.string.category_detail_add_item_quantity_label),
+                text = quantityLabel,
                 style = MaterialTheme.typography.bodyLarge,
               )
 

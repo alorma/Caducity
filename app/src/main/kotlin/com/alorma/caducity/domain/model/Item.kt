@@ -9,4 +9,5 @@ data class Item(
   val expirationDate: Instant,
   val status: ItemStatus,
   val pausedDate: Instant? = null,
+  val packSize: Int? = null,
 )

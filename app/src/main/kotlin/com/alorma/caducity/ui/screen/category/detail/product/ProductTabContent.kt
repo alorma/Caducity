@@ -298,7 +298,26 @@ private fun StatusGroupCard(
     items.forEach { item ->
       SuggestionChip(
         onClick = { onItemClick(item) },
-        label = { Text(text = item.text) },
+        label = {
+          Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Text(text = item.text)
+            // Show pack badge if packSize > 1
+            if (item.packSize != null && item.packSize > 1) {
+              Text(
+                text = "×${item.packSize}",
+                modifier = Modifier
+                  .clip(CaducityTheme.shapes.extraSmall)
+                  .background(MaterialTheme.colorScheme.primaryContainer)
+                  .padding(horizontal = 4.dp, vertical = 2.dp),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+              )
+            }
+          }
+        },
       )
     }
   }

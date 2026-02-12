@@ -6,4 +6,5 @@ data class NewItem(
   val identifier: String,
   val productId: String? = null,
   val expirationDate: Instant,
+  val packSize: Int? = null,
 )

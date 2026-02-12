@@ -151,6 +151,7 @@ class ProductPageViewModelTest {
     productId: String? = testProductId,
     identifier: String = "Test Item",
     expirationDate: Instant = Instant.parse("2024-02-15T00:00:00Z"),
+    packSize: Int? = null,
   ): String {
     val id = UUID.randomUUID().toString()
     val item = ItemRoomEntity(
@@ -162,6 +163,7 @@ class ProductPageViewModelTest {
       consumedDate = null,
       pausedDate = null,
       remainingDays = null,
+      packSize = packSize,
     )
     itemsInMemory.value += item
     return id

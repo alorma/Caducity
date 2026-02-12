@@ -143,6 +143,21 @@ class CategoryDetailAddItemViewModel(
     _formState.value = _formState.value.copy(customQuantity = text)
   }
 
+  fun onItemTypeChanged(itemType: ItemType) {
+    _formState.value = _formState.value.copy(
+      itemType = itemType,
+      packSize = if (itemType == ItemType.SINGLE) TextFieldValue() else _formState.value.packSize,
+      packSizeError = null // Clear error when switching
+    )
+  }
+
+  fun onPackSizeChanged(text: TextFieldValue) {
+    _formState.value = _formState.value.copy(
+      packSize = text,
+      packSizeError = null // Clear error when user types
+    )
+  }
+
   fun save() {
     viewModelScope.launch {
       val currentFormState = _formState.value
@@ -165,6 +180,23 @@ class CategoryDetailAddItemViewModel(
         return@launch
       }
 
+      // Validation: Pack size must be valid if pack is selected
+      if (currentFormState.itemType == ItemType.PACK) {
+        if (currentFormState.packSize.text.isBlank()) {
+          _formState.value = currentFormState.copy(
+            packSizeError = "Pack size is required"
+          )
+          return@launch
+        }
+        val packSizeValue = currentFormState.packSize.text.toIntOrNull()
+        if (packSizeValue == null || packSizeValue < 2) {
+          _formState.value = currentFormState.copy(
+            packSizeError = "Pack size must be at least 2"
+          )
+          return@launch
+        }
+      }
+
       // Determine quantity
       val quantity =
         if (currentFormState.showCustomQuantityInput && currentFormState.customQuantity.text.isNotBlank()) {
@@ -172,6 +204,14 @@ class CategoryDetailAddItemViewModel(
         } else {
           currentFormState.quantity
         }
+
+      // Determine pack size
+      val packSize = if (currentFormState.itemType == ItemType.PACK && currentFormState.packSize.text.isNotBlank()) {
+        // At this point, we know packSize is valid (≥ 2) due to validation above
+        currentFormState.packSize.text.toIntOrNull()
+      } else {
+        null
+      }
 
       try {
         // Determine product ID (use existing or create new)
@@ -209,6 +249,7 @@ class CategoryDetailAddItemViewModel(
             identifier = identifier,
             productId = productId,
             expirationDate = expirationDate,
+            packSize = packSize,
           )
         }
 
@@ -245,7 +286,15 @@ data class FormState(
   val quantity: Int = 1,
   val showCustomQuantityInput: Boolean = false,
   val customQuantity: TextFieldValue = TextFieldValue(),
+  val itemType: ItemType = ItemType.SINGLE,
+  val packSize: TextFieldValue = TextFieldValue(),
+  val packSizeError: String? = null,
 )
+
+enum class ItemType {
+  SINGLE,
+  PACK
+}
 
 sealed interface CategoryDetailAddItemState {
   data object Loading : CategoryDetailAddItemState
