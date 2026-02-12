@@ -23,7 +23,7 @@ androidx-navigation3 = "1.0.0"
 androidx-navigation3-lifecycle = "2.10.0"
 lifecycle = "2.10.0"
 
-material3 = "1.5.0-alpha13"
+material3 = "1.5.0-alpha14"
 
 kotlinx-serialization = "1.10.0"
 kotlinx-datetime = "0.7.1"
