@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.components.bottomsheet
 
+import android.app.Activity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +29,7 @@ import com.alorma.caducity.base.ui.icons.ThermometerSnow
 import com.alorma.caducity.base.ui.icons.outlined.Calendar
 import com.alorma.caducity.feature.tracking.ItemActionsBottomSheetScreen
 import com.alorma.caducity.feature.tracking.TrackScreen
+import com.alorma.caducity.feature.review.InAppReviewManager
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
@@ -101,8 +103,9 @@ private fun ItemActionsBottomSheetContent(
     viewModel.sideEffects.collect { effect ->
       when (effect) {
         is ItemActionSideEffect.ActionCompleted,
-        is ItemActionSideEffect.ActionFailed -> {
-          // Pass success/error feedback to caller
+        is ItemActionSideEffect.ActionFailed,
+        ItemActionSideEffect.RequestInAppReview -> {
+          // Pass success/error feedback and review request to caller
           onActionPerformed(effect)
         }
 
@@ -257,11 +260,15 @@ private fun ActionListItem(
  *
  * @param sideEffect The side effect to handle
  * @param snackbarState The snackbar state to show feedback
+ * @param activity The activity context (optional, needed for in-app review)
+ * @param inAppReviewManager The in-app review manager (optional, needed for in-app review)
  * @return The resource ID for the message, or null if no message should be shown
  */
 suspend fun handleItemActionSideEffect(
   sideEffect: ItemActionSideEffect,
   snackbarState: AppSnackbarState,
+  activity: Activity? = null,
+  inAppReviewManager: InAppReviewManager? = null,
 ) {
   when (sideEffect) {
     is ItemActionSideEffect.ActionCompleted -> {
@@ -304,6 +311,21 @@ suspend fun handleItemActionSideEffect(
 
     is ItemActionSideEffect.ShowRescheduleDatePicker -> {
       // Date picker dialog is handled internally by the bottom sheet
+    }
+
+    ItemActionSideEffect.RequestInAppReview -> {
+      // Request in-app review if activity and manager are available
+      if (activity != null && inAppReviewManager != null) {
+        val result = inAppReviewManager.requestReview(activity)
+        
+        // Show debug snackbar (won't show in release builds on device, but useful for testing)
+        if (result.isSuccess) {
+          snackbarState.showSnackbar(
+            message = R.string.debug_inapp_review_requested,
+            type = AppFeedbackType.Info,
+          )
+        }
+      }
     }
   }
 }
