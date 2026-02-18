@@ -189,6 +189,10 @@ dependencies {
   implementation(libs.firebase.config)
   implementation(libs.firebase.analytics)
 
+  // Google Play In-App Review
+  implementation(libs.play.review)
+  implementation(libs.play.review.ktx)
+
   // Testing
   testImplementation(libs.junit)
   testImplementation(libs.strikt.core)

@@ -55,6 +55,9 @@ robolectric = "4.15"
 firebase-bom = "34.9.0"
 adaptive = "1.2.0"
 
+# Google Play
+play-review = "2.0.2"
+
 [libraries]
 # Compose BOM
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
@@ -138,6 +141,10 @@ firebase-appcheck-debug = { group = "com.google.firebase", name = "firebase-appc
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+
+# Google Play
+play-review = { group = "com.google.android.play", name = "review", version.ref = "play-review" }
+play-review-ktx = { group = "com.google.android.play", name = "review-ktx", version.ref = "play-review" }
 
 # Plugins
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }

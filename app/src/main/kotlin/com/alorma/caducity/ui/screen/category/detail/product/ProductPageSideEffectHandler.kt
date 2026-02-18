@@ -3,9 +3,11 @@ package com.alorma.caducity.ui.screen.category.detail.product
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ProductDeletionStrategy
+import com.alorma.caducity.feature.review.InAppReviewManager
 import com.alorma.caducity.ui.components.bottomsheet.handleItemActionSideEffect
 import com.alorma.caducity.ui.components.bottomsheet.showItemActionsBottomSheet
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
@@ -13,7 +15,9 @@ import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetStat
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
+import com.alorma.caducity.ui.utils.findActivity
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @Composable
 internal fun ProductPageSideEffectHandler(
@@ -23,6 +27,10 @@ internal fun ProductPageSideEffectHandler(
   bottomSheetState: AppBottomSheetState,
   onNavigateToAddItem: (categoryId: String, productId: String?) -> Unit,
 ) {
+  val context = LocalContext.current
+  val activity = context.findActivity()
+  val inAppReviewManager: InAppReviewManager = koinInject()
+  
   // Collect navigation side effects
   LaunchedEffect(viewModel.navigationSideEffects) {
     viewModel.navigationSideEffects.collect { effect ->
@@ -58,7 +66,12 @@ internal fun ProductPageSideEffectHandler(
             item = effect.item,
             onActionPerformed = { actionSideEffect ->
               launch {
-                handleItemActionSideEffect(actionSideEffect, snackbarState)
+                handleItemActionSideEffect(
+                  sideEffect = actionSideEffect,
+                  snackbarState = snackbarState,
+                  activity = activity,
+                  inAppReviewManager = inAppReviewManager,
+                )
               }
             },
           )

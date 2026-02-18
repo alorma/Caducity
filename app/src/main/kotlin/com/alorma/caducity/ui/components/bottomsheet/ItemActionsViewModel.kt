@@ -16,6 +16,7 @@ import com.alorma.caducity.feature.tracking.ItemDeletedAction
 import com.alorma.caducity.feature.tracking.ItemFrozenAction
 import com.alorma.caducity.feature.tracking.ItemRescheduledAction
 import com.alorma.caducity.feature.tracking.ItemUnfrozenAction
+import com.alorma.caducity.feature.review.InAppReviewManager
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
@@ -38,6 +39,7 @@ class ItemActionsViewModel(
   private val rescheduleItemUseCase: RescheduleItemUseCase,
   private val deleteItemUseCase: DeleteItemUseCase,
   private val eventTracker: EventTracker,
+  private val inAppReviewManager: InAppReviewManager,
 ) : BaseViewModel<Unit, Unit, ItemActionSideEffect>() {
 
   private val _state = MutableStateFlow(calculateState())
@@ -206,6 +208,8 @@ class ItemActionsViewModel(
     result.onSuccess {
       onSuccess()
       emitSideEffect(ItemActionSideEffect.ActionCompleted(action))
+      // Request in-app review after successful action
+      emitSideEffect(ItemActionSideEffect.RequestInAppReview)
     }.onFailure { error ->
       emitSideEffect(ItemActionSideEffect.ActionFailed(action, error.message))
     }
@@ -221,4 +225,5 @@ sealed interface ItemActionSideEffect {
   data class ActionFailed(val action: ItemAction, val message: String?) : ItemActionSideEffect
   data object ShowConsumeExpiredWarning : ItemActionSideEffect
   data class ShowRescheduleDatePicker(val currentExpirationMillis: Long) : ItemActionSideEffect
+  data object RequestInAppReview : ItemActionSideEffect
 }

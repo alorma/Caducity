@@ -2,15 +2,19 @@ package com.alorma.caducity.ui.screen.filtered
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import com.alorma.caducity.R
 import com.alorma.caducity.config.time.date
+import com.alorma.caducity.feature.review.InAppReviewManager
 import com.alorma.caducity.ui.components.bottomsheet.handleItemActionSideEffect
 import com.alorma.caducity.ui.components.bottomsheet.showItemActionsBottomSheet
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
+import com.alorma.caducity.ui.utils.findActivity
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @Composable
 fun SideEffectHandler(
@@ -18,6 +22,10 @@ fun SideEffectHandler(
   bottomSheetState: AppBottomSheetState,
   snackbarState: AppSnackbarState,
 ) {
+  val context = LocalContext.current
+  val activity = context.findActivity()
+  val inAppReviewManager: InAppReviewManager = koinInject()
+  
   LaunchedEffect(viewModel) {
     viewModel.sideEffects.collect { effect ->
       when (effect) {
@@ -47,7 +55,12 @@ fun SideEffectHandler(
             item = itemUiModel,
             onActionPerformed = { actionSideEffect ->
               launch {
-                handleItemActionSideEffect(actionSideEffect, snackbarState)
+                handleItemActionSideEffect(
+                  sideEffect = actionSideEffect,
+                  snackbarState = snackbarState,
+                  activity = activity,
+                  inAppReviewManager = inAppReviewManager,
+                )
               }
             },
           )
