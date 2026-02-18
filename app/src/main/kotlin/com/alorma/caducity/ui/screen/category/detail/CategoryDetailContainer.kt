@@ -4,14 +4,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.retain.retain
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
+import com.alorma.caducity.feature.review.ShowAppReviewFlag
+import com.alorma.caducity.feature.review.InAppReviewManager
+import com.alorma.caducity.ui.utils.findActivity
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -28,6 +35,12 @@ fun CategoryDetailContainer(
   val bottomSheetStrategy = remember {
     BottomSheetSceneStrategy<NavKey>()
   }
+
+  val context = LocalContext.current
+  val activity = context.findActivity()
+  val inAppReviewManager: InAppReviewManager = koinInject()
+  val showAppReviewFlag: ShowAppReviewFlag = koinInject()
+  val coroutineScope = rememberCoroutineScope()
 
   NavDisplay(
     modifier = modifier,
@@ -53,6 +66,12 @@ fun CategoryDetailContainer(
                 )
               }
               CategoryDetailNavigationSideEffect.NavigateBack -> {
+                // Request review before navigating back, only after 3 actions (when counter reaches 0)
+                if (showAppReviewFlag.isEnabled() && activity != null) {
+                  coroutineScope.launch {
+                    inAppReviewManager.requestReview(activity)
+                  }
+                }
                 onBack()
               }
             }
