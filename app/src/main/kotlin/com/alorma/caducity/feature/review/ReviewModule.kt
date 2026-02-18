@@ -6,5 +6,5 @@ import org.koin.dsl.module
 
 val reviewModule = module {
   singleOf(::PlayStoreInAppReviewManager) bind InAppReviewManager::class
-  singleOf(::AppReviewCounterFlag)
+  singleOf(::ShowAppReviewFlag)
 }

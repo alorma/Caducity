@@ -16,7 +16,7 @@ import com.alorma.caducity.feature.tracking.ItemDeletedAction
 import com.alorma.caducity.feature.tracking.ItemFrozenAction
 import com.alorma.caducity.feature.tracking.ItemRescheduledAction
 import com.alorma.caducity.feature.tracking.ItemUnfrozenAction
-import com.alorma.caducity.feature.review.AppReviewCounterFlag
+import com.alorma.caducity.feature.review.ShowAppReviewFlag
 import com.alorma.caducity.feature.review.InAppReviewManager
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
@@ -41,7 +41,7 @@ class ItemActionsViewModel(
   private val deleteItemUseCase: DeleteItemUseCase,
   private val eventTracker: EventTracker,
   private val inAppReviewManager: InAppReviewManager,
-  private val appReviewCounterFlag: AppReviewCounterFlag,
+  private val showAppReviewFlag: ShowAppReviewFlag,
 ) : BaseViewModel<Unit, Unit, ItemActionSideEffect>() {
 
   private val _state = MutableStateFlow(calculateState())
@@ -211,7 +211,7 @@ class ItemActionsViewModel(
       onSuccess()
       emitSideEffect(ItemActionSideEffect.ActionCompleted(action))
       // Request in-app review after successful action, but only after 3 actions (when counter reaches 0)
-      if (!appReviewCounterFlag.isEnabled()) {
+      if (showAppReviewFlag.isEnabled()) {
         emitSideEffect(ItemActionSideEffect.RequestInAppReview)
       }
     }.onFailure { error ->

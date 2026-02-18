@@ -14,7 +14,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
-import com.alorma.caducity.feature.review.AppReviewCounterFlag
+import com.alorma.caducity.feature.review.ShowAppReviewFlag
 import com.alorma.caducity.feature.review.InAppReviewManager
 import com.alorma.caducity.ui.utils.findActivity
 import kotlinx.coroutines.launch
@@ -39,7 +39,7 @@ fun CategoryDetailContainer(
   val context = LocalContext.current
   val activity = context.findActivity()
   val inAppReviewManager: InAppReviewManager = koinInject()
-  val appReviewCounterFlag: AppReviewCounterFlag = koinInject()
+  val showAppReviewFlag: ShowAppReviewFlag = koinInject()
   val coroutineScope = rememberCoroutineScope()
 
   NavDisplay(
@@ -67,7 +67,7 @@ fun CategoryDetailContainer(
               }
               CategoryDetailNavigationSideEffect.NavigateBack -> {
                 // Request review before navigating back, only after 3 actions (when counter reaches 0)
-                if (!appReviewCounterFlag.isEnabled() && activity != null) {
+                if (showAppReviewFlag.isEnabled() && activity != null) {
                   coroutineScope.launch {
                     inAppReviewManager.requestReview(activity)
                   }
