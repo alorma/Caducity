@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.filtered
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -122,10 +123,29 @@ private fun ItemRow(
       modifier = Modifier.weight(1f),
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-      Text(
-        text = item.identifier,
-        style = MaterialTheme.typography.bodyMedium,
-      )
+      // Item identifier with pack badge
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+          text = item.identifier,
+          style = MaterialTheme.typography.bodyMedium,
+        )
+
+        // Show pack badge if packSize > 1
+        if (item.packSize != null && item.packSize > 1) {
+          Text(
+            text = "×${item.packSize}",
+            modifier = Modifier
+              .clip(CaducityTheme.shapes.extraSmall)
+              .background(MaterialTheme.colorScheme.primaryContainer)
+              .padding(horizontal = 4.dp, vertical = 2.dp),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+          )
+        }
+      }
 
       Text(
         text = formatExpirationDate(item.expirationDate),

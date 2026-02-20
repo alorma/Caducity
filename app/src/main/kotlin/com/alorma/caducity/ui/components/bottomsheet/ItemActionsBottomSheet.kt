@@ -1,8 +1,11 @@
 package com.alorma.caducity.ui.components.bottomsheet
 
 import android.app.Activity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DatePickerState
@@ -16,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -36,6 +41,7 @@ import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.LocalAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
+import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlin.time.Instant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -283,12 +289,30 @@ private fun ItemActionsBottomSheetContent(
       .fillMaxWidth()
       .padding(bottom = 24.dp),
   ) {
-    // Header with item info
-    Text(
-      text = item.text,
-      style = MaterialTheme.typography.titleMedium,
+    // Header with item info and pack badge
+    Row(
       modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-    )
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(
+        text = item.text,
+        style = MaterialTheme.typography.titleMedium,
+      )
+
+      // Show pack badge if packSize > 1
+      if (item.packSize != null && item.packSize > 1) {
+        Text(
+          text = "×${item.packSize}",
+          modifier = Modifier
+            .clip(CaducityTheme.shapes.extraSmall)
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(horizontal = 6.dp, vertical = 3.dp),
+          style = MaterialTheme.typography.labelMedium,
+          color = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
+      }
+    }
 
     HorizontalDivider()
 
