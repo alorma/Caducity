@@ -129,7 +129,6 @@ fun FilteredItemsByStatusScreen(
           Text(
             text = stringResource(R.string.filtered_items_empty),
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
       }
@@ -282,13 +281,11 @@ private fun ProductItemsGroup(
       modifier = Modifier.weight(1f),
       text = productName,
       style = MaterialTheme.typography.bodyMedium,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 
     Text(
       text = stringResource(R.string.filtered_items_count, itemCount),
       style = MaterialTheme.typography.labelMedium,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
   }
 }
