@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
@@ -254,6 +255,7 @@ private fun SummaryStatusCard(
   }
 }
 
+@PreviewScreenSizes
 @PreviewLightDark
 @Composable
 private fun DashboardSummaryCardPreviewTheme() {
