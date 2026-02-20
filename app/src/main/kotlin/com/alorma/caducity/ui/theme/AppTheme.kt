@@ -25,7 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.ui.theme.colors.DefaultExpirationColors
+import com.alorma.caducity.ui.theme.colors.BaseExpirationColors
 import com.alorma.caducity.ui.theme.colors.ExpirationColors
 import com.alorma.caducity.ui.theme.colors.SoftExpirationColors
 import com.alorma.caducity.ui.theme.colors.VibrantExpirationColors
@@ -111,7 +111,7 @@ fun InternalTheme(
 ) {
   val colorScheme = CaducityTheme.colorScheme
 
-  val defaultExpirationColors = DefaultExpirationColors(
+  val baseExpirationColors = BaseExpirationColors(
     error = colorScheme.error,
   )
 
@@ -119,11 +119,11 @@ fun InternalTheme(
 
   val expirationColors = ExpirationColors(
     vibrant = VibrantExpirationColors(
-      default = defaultExpirationColors,
+      default = baseExpirationColors,
       baseColor = baseColor,
     ),
     soft = SoftExpirationColors(
-      default = defaultExpirationColors,
+      default = baseExpirationColors,
       baseColor = baseColor,
     ),
   )
