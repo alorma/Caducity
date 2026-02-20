@@ -9,6 +9,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.colors.ContainerColors
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.ThemeTone
 import com.alorma.caducity.ui.theme.colors.ExpirationColorsPalette
 import com.materialkolor.ktx.isLight
 
@@ -43,6 +44,28 @@ object ExpirationDefaults {
       itemStatus = itemStatus,
       expirationColors = CaducityTheme.expirationColors.soft,
     )
+  }
+
+  @Composable
+  fun getColors(
+    itemStatus: ItemStatus,
+  ): ContainerColors {
+    val tone = CaducityTheme.themeTone
+    return when (tone) {
+      ThemeTone.VIBRANT -> getVibrantColors(itemStatus)
+      ThemeTone.SOFT -> getSoftColors(itemStatus)
+    }
+  }
+
+  @Composable
+  fun getInverseColors(
+    itemStatus: ItemStatus,
+  ): ContainerColors {
+    val tone = CaducityTheme.themeTone
+    return when (tone) {
+      ThemeTone.VIBRANT -> getSoftColors(itemStatus)
+      ThemeTone.SOFT -> getVibrantColors(itemStatus)
+    }
   }
 
   @Composable

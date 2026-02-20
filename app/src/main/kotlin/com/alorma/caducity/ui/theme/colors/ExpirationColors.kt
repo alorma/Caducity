@@ -16,7 +16,7 @@ interface ExpirationColorsPalette {
   val consumed: Color
 }
 
-class DefaultExpirationColors(
+class BaseExpirationColors(
   val error: Color,
 ) : ExpirationColorsPalette {
   override val fresh: Color = Color.Green

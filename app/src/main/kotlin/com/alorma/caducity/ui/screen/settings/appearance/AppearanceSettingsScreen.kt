@@ -25,6 +25,7 @@ import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGro
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.theme.ThemeMode
+import com.alorma.caducity.ui.theme.ThemeTone
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.datetime.DayOfWeek
@@ -36,6 +37,8 @@ fun AppearanceSettingsScreen(
   onThemeModeChange: (ThemeMode) -> Unit,
   useDynamicTheme: Boolean,
   onUseDynamicTheme: (Boolean) -> Unit,
+  themeTone: com.alorma.caducity.ui.theme.ThemeTone,
+  onThemeToneChange: (com.alorma.caducity.ui.theme.ThemeTone) -> Unit,
   firstDayOfWeek: DayOfWeek,
   onFirstDayOfWeekChange: (DayOfWeek) -> Unit,
   modifier: Modifier = Modifier,
@@ -47,6 +50,8 @@ fun AppearanceSettingsScreen(
     onThemeModeChange = onThemeModeChange,
     useDynamicTheme = useDynamicTheme,
     onUseDynamicTheme = onUseDynamicTheme,
+    themeTone = themeTone,
+    onThemeToneChange = onThemeToneChange,
     firstDayOfWeek = firstDayOfWeek,
     onFirstDayOfWeekChange = onFirstDayOfWeekChange,
     modifier = modifier,
@@ -60,6 +65,8 @@ private fun AppearanceSettingsContent(
   onThemeModeChange: (ThemeMode) -> Unit,
   useDynamicTheme: Boolean,
   onUseDynamicTheme: (Boolean) -> Unit,
+  themeTone: com.alorma.caducity.ui.theme.ThemeTone,
+  onThemeToneChange: (com.alorma.caducity.ui.theme.ThemeTone) -> Unit,
   firstDayOfWeek: DayOfWeek,
   onFirstDayOfWeekChange: (DayOfWeek) -> Unit,
   modifier: Modifier = Modifier,
@@ -115,6 +122,29 @@ private fun AppearanceSettingsContent(
           }
         }
 
+        // Tone settings group
+        item {
+          StyledSettingsGroup {
+            // Load all string resources at composable level
+            val toneVibrant = stringResource(R.string.settings_tone_vibrant)
+            val toneSoft = stringResource(R.string.settings_tone_soft)
+
+            StyledSettingsButtonGroupCard(
+              title = stringResource(R.string.settings_tone_title),
+              selectedItem = themeTone,
+              position = ShapePosition.Single,
+              items = ThemeTone.entries,
+              itemTitleMap = { tone ->
+                when (tone) {
+                  ThemeTone.VIBRANT -> toneVibrant
+                  ThemeTone.SOFT -> toneSoft
+                }
+              },
+              onItemSelected = { onThemeToneChange(it) },
+            )
+          }
+        }
+
         // Calendar settings group
         item {
           StyledSettingsGroup(
@@ -151,10 +181,12 @@ fun AppearanceSettingsScreenPreview() {
       AppearanceSettingsContent(
         themeMode = themeMode,
         useDynamicTheme = true,
+        themeTone = ThemeTone.VIBRANT,
         localizedDateFormatter = LocalizedDateFormatter(),
         firstDayOfWeek = DayOfWeek.MONDAY,
         onThemeModeChange = {},
         onUseDynamicTheme = {},
+        onThemeToneChange = {},
         onFirstDayOfWeekChange = {},
       )
     }

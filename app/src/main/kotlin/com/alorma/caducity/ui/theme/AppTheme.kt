@@ -25,7 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.ui.theme.colors.DefaultExpirationColors
+import com.alorma.caducity.ui.theme.colors.BaseExpirationColors
 import com.alorma.caducity.ui.theme.colors.ExpirationColors
 import com.alorma.caducity.ui.theme.colors.SoftExpirationColors
 import com.alorma.caducity.ui.theme.colors.VibrantExpirationColors
@@ -87,6 +87,7 @@ fun AppThemeContent(
       InternalTheme(
         dims = dims,
         darkMode = darkTheme,
+        themeTone = themePreferences.themeTone.value,
         content = content,
       )
     },
@@ -107,23 +108,24 @@ fun AppThemeContent(
 fun InternalTheme(
   dims: CaducityDims,
   darkMode: Boolean,
+  themeTone: ThemeTone,
   content: @Composable () -> Unit,
 ) {
   val colorScheme = CaducityTheme.colorScheme
 
-  val defaultExpirationColors = DefaultExpirationColors(
+  val baseExpirationColors = BaseExpirationColors(
     error = colorScheme.error,
   )
 
-  val baseColor = colorScheme.surfaceContainerHighest
+  val baseColor = colorScheme.surfaceContainer
 
   val expirationColors = ExpirationColors(
     vibrant = VibrantExpirationColors(
-      default = defaultExpirationColors,
+      default = baseExpirationColors,
       baseColor = baseColor,
     ),
     soft = SoftExpirationColors(
-      default = defaultExpirationColors,
+      default = baseExpirationColors,
       baseColor = baseColor,
     ),
   )
@@ -131,6 +133,7 @@ fun InternalTheme(
   CompositionLocalProvider(
     LocalCaducityDims provides dims,
     LocalDarkMode provides darkMode,
+    LocalThemeTone provides themeTone,
     LocalExpirationColors provides expirationColors,
   ) {
     val settingsColors = SettingsTileDefaults.colors(

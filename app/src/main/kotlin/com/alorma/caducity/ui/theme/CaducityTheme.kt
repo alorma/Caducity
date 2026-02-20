@@ -31,6 +31,10 @@ internal val LocalCaducityDims = staticCompositionLocalOf<CaducityDims> {
   error("No CaducityDims defined")
 }
 
+internal val LocalThemeTone = staticCompositionLocalOf<ThemeTone> {
+  error("No ThemeTone defined")
+}
+
 object CaducityTheme {
 
   val isDark: Boolean
@@ -67,5 +71,10 @@ object CaducityTheme {
     @Composable
     @ReadOnlyComposable
     get() = MaterialTheme.motionScheme
+
+  val themeTone: ThemeTone
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalThemeTone.current
 
 }
