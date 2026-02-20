@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,6 +29,8 @@ import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.ItemStatus
+import com.alorma.caducity.feature.tracking.FilteredItemsByStatusScreen as FilteredItemsByStatusScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
@@ -39,8 +42,6 @@ import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityTheme
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import com.alorma.caducity.feature.tracking.FilteredItemsByStatusScreen as FilteredItemsByStatusScreenEvent
-import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun FilteredItemsByStatusScreen(
@@ -73,7 +74,7 @@ fun FilteredItemsByStatusScreen(
     snackbarState = snackbarState,
   )
 
-  val statusColors = ExpirationDefaults.getVibrantColors(status)
+  val statusColors = ExpirationDefaults.getColors(status)
 
   AppScaffold(
     modifier = modifier,
@@ -87,13 +88,19 @@ fun FilteredItemsByStatusScreen(
             )
           )
         },
+        colors = TopAppBarDefaults.topAppBarColors(
+          containerColor = statusColors.container,
+          scrolledContainerColor = statusColors.container,
+          navigationIconContentColor = statusColors.onContainer,
+          titleContentColor = statusColors.onContainer,
+          actionIconContentColor = statusColors.onContainer,
+          subtitleContentColor = statusColors.onContainer,
+        ),
         navigationIcon = { NavigationIcon() },
       )
     },
     snackbarState = snackbarState,
     bottomSheetState = bottomSheetState,
-    containerColor = statusColors.container,
-    contentColor = statusColors.onContainer,
   ) { paddingValues ->
     when (val currentState = state) {
       is FilteredItemsByStatusState.Loading -> {

@@ -17,7 +17,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.Dp
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
-import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 
 @Composable
@@ -32,7 +31,6 @@ fun NavigationIcon() {
     Icon(
       imageVector = AppIcons.Back,
       contentDescription = null,
-      tint = CaducityTheme.colorScheme.primary,
     )
   }
 }
