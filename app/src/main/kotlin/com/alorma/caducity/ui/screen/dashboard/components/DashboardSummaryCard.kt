@@ -11,14 +11,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
@@ -26,6 +27,8 @@ import com.alorma.caducity.ui.adaptive.rememberIsExpanded
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.screen.dashboard.DashboardSummary
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.LocalThemeTone
+import com.alorma.caducity.ui.theme.ThemeTone
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 
 @Composable
@@ -255,22 +258,35 @@ private fun SummaryStatusCard(
   }
 }
 
-@PreviewScreenSizes
+class ThemeModePreviewParams : CollectionPreviewParameterProvider<ThemeTone>(
+  ThemeTone.entries
+) {
+  override fun getDisplayName(index: Int): String {
+    return ThemeTone.entries[index].toString()
+  }
+}
+
 @PreviewLightDark
 @Composable
-private fun DashboardSummaryCardPreviewTheme() {
+private fun DashboardSummaryCardPreviewTheme(
+  @PreviewParameter(provider = ThemeModePreviewParams::class) themeTone: ThemeTone,
+) {
   PreviewTheme {
-    Surface {
-      Row {
-        DashboardSummaryCard(
-          summary = DashboardSummary(
-            expired = 3,
-            expiringSoon = 5,
-            fresh = 12,
-            frozen = 2,
-          ),
-          onStatusClick = {},
-        )
+    CompositionLocalProvider(
+      LocalThemeTone provides themeTone,
+    ) {
+      Surface {
+        Row {
+          DashboardSummaryCard(
+            summary = DashboardSummary(
+              expired = 3,
+              expiringSoon = 5,
+              fresh = 12,
+              frozen = 2,
+            ),
+            onStatusClick = {},
+          )
+        }
       }
     }
   }
