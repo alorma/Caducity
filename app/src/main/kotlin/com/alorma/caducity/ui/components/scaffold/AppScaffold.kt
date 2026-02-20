@@ -27,7 +27,6 @@ import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHost
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.LocalAppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
-import com.alorma.caducity.ui.theme.CaducityTheme
 
 @Suppress("ModifierTopMost")
 @Composable
@@ -40,6 +39,8 @@ fun AppScaffold(
   snackbarState: AppSnackbarState = rememberAppSnackbarState(),
   floatingActionButton: @Composable () -> Unit = {},
   floatingActionButtonPosition: FabPosition = FabPosition.End,
+  containerColor: Color = MaterialTheme.colorScheme.background,
+  contentColor: Color = contentColorFor(containerColor),
   contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
   content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -55,6 +56,8 @@ fun AppScaffold(
       snackbarHost = { AppSnackbarHost(LocalAppSnackbarState.current) },
       floatingActionButton = floatingActionButton,
       floatingActionButtonPosition = floatingActionButtonPosition,
+      containerColor = containerColor,
+      contentColor = contentColor,
       contentWindowInsets = contentWindowInsets,
     ) { paddingValues ->
       Box(
