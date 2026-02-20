@@ -32,8 +32,8 @@ import com.alorma.caducity.ui.theme.colors.VibrantExpirationColors
 import com.alorma.caducity.ui.theme.colors.darkColorScheme
 import com.alorma.caducity.ui.theme.colors.dynamicColorScheme
 import com.alorma.caducity.ui.theme.colors.lightColorScheme
-import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.alorma.compose.settings.ui.base.internal.LocalSettingsTileColors
 import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
 import org.koin.compose.koinInject
@@ -117,7 +117,7 @@ fun InternalTheme(
     error = colorScheme.error,
   )
 
-  val baseColor = colorScheme.surfaceContainerHighest
+  val baseColor = colorScheme.surfaceContainer
 
   val expirationColors = ExpirationColors(
     vibrant = VibrantExpirationColors(
