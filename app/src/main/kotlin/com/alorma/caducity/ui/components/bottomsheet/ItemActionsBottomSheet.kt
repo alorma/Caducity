@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,8 +19,8 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -32,9 +33,9 @@ import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.ThermometerSnow
 import com.alorma.caducity.base.ui.icons.outlined.Calendar
+import com.alorma.caducity.feature.review.InAppReviewManager
 import com.alorma.caducity.feature.tracking.ItemActionsBottomSheetScreen
 import com.alorma.caducity.feature.tracking.TrackScreen
-import com.alorma.caducity.feature.review.InAppReviewManager
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
@@ -76,11 +77,12 @@ fun AppBottomSheetState.showItemActionsBottomSheet(
         onActionPerformed(sideEffect)
         // Hide bottom sheet after action (except for warning dialog and quantity selectors)
         if (sideEffect !is ItemActionSideEffect.ShowConsumeExpiredWarning &&
-            sideEffect !is ItemActionSideEffect.ShowConsumeQuantitySelector &&
-            sideEffect !is ItemActionSideEffect.ShowConsumeExpiredQuantitySelector &&
-            sideEffect !is ItemActionSideEffect.ShowFreezeQuantitySelector &&
-            sideEffect !is ItemActionSideEffect.ShowUnfreezeQuantitySelector &&
-            sideEffect !is ItemActionSideEffect.ShowDeleteQuantitySelector) {
+          sideEffect !is ItemActionSideEffect.ShowConsumeQuantitySelector &&
+          sideEffect !is ItemActionSideEffect.ShowConsumeExpiredQuantitySelector &&
+          sideEffect !is ItemActionSideEffect.ShowFreezeQuantitySelector &&
+          sideEffect !is ItemActionSideEffect.ShowUnfreezeQuantitySelector &&
+          sideEffect !is ItemActionSideEffect.ShowDeleteQuantitySelector
+        ) {
           coroutineScope.launch {
             this@showItemActionsBottomSheet.hide()
           }
@@ -155,6 +157,7 @@ private fun ItemActionsBottomSheetContent(
                 viewModel.onActionClick(ItemAction.ConsumeQuantity(result.quantity))
               }
             }
+
             QuantitySelectorResult.Dismissed -> {
               // User cancelled
             }
@@ -178,6 +181,7 @@ private fun ItemActionsBottomSheetContent(
                 viewModel.onActionClick(ItemAction.ConsumeWithWarningQuantity(result.quantity))
               }
             }
+
             QuantitySelectorResult.Dismissed -> {
               // User cancelled
             }
@@ -201,6 +205,7 @@ private fun ItemActionsBottomSheetContent(
                 viewModel.onActionClick(ItemAction.FreezeQuantity(result.quantity))
               }
             }
+
             QuantitySelectorResult.Dismissed -> {
               // User cancelled
             }
@@ -224,6 +229,7 @@ private fun ItemActionsBottomSheetContent(
                 viewModel.onActionClick(ItemAction.UnfreezeQuantity(result.quantity))
               }
             }
+
             QuantitySelectorResult.Dismissed -> {
               // User cancelled
             }
@@ -247,6 +253,7 @@ private fun ItemActionsBottomSheetContent(
                 viewModel.onActionClick(ItemAction.DeleteQuantity(result.quantity))
               }
             }
+
             QuantitySelectorResult.Dismissed -> {
               // User cancelled
             }
@@ -297,16 +304,18 @@ private fun ItemActionsBottomSheetContent(
       horizontalArrangement = Arrangement.spacedBy(0.dp),
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      // Show pack badge if packSize > 1
-      if (item.packSize != null && item.packSize > 1) {
-        Text(
-          text = item.packSize.toString(),
-          modifier = Modifier
-            .background(CaducityTheme.colorScheme.outline)
-            .padding(8.dp),
-          style = MaterialTheme.typography.labelMedium,
-          color = MaterialTheme.colorScheme.surface,
-        )
+      Box(
+        modifier = Modifier
+          .background(CaducityTheme.colorScheme.outline)
+          .padding(8.dp),
+      ) {
+        if (item.packSize != null && item.packSize > 1) {
+          Text(
+            text = item.packSize.toString(),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.surface,
+          )
+        }
       }
 
       Text(
@@ -438,13 +447,17 @@ suspend fun handleItemActionSideEffect(
         is ItemAction.ConsumeQuantity,
         ItemAction.ConsumeWithWarning,
         is ItemAction.ConsumeWithWarningQuantity -> R.string.success_item_consumed
+
         ItemAction.Freeze,
         is ItemAction.FreezeQuantity -> R.string.success_item_frozen
+
         ItemAction.Unfreeze,
         is ItemAction.UnfreezeQuantity -> R.string.success_item_unfrozen
+
         ItemAction.Reschedule -> R.string.success_item_rescheduled
         ItemAction.Delete,
         is ItemAction.DeleteQuantity -> R.string.success_item_deleted
+
         ItemAction.Placeholder -> null
       }
       messageRes?.let {
@@ -461,13 +474,17 @@ suspend fun handleItemActionSideEffect(
         is ItemAction.ConsumeQuantity,
         ItemAction.ConsumeWithWarning,
         is ItemAction.ConsumeWithWarningQuantity -> R.string.error_consume_item_failed
+
         ItemAction.Freeze,
         is ItemAction.FreezeQuantity -> R.string.error_freeze_item_failed
+
         ItemAction.Unfreeze,
         is ItemAction.UnfreezeQuantity -> R.string.error_unfreeze_item_failed
+
         ItemAction.Reschedule -> R.string.error_reschedule_item_failed
         ItemAction.Delete,
         is ItemAction.DeleteQuantity -> R.string.error_delete_item_failed
+
         ItemAction.Placeholder -> null
       }
       messageRes?.let {
@@ -495,7 +512,7 @@ suspend fun handleItemActionSideEffect(
       // Request in-app review if activity and manager are available
       if (activity != null && inAppReviewManager != null) {
         val result = inAppReviewManager.requestReview(activity)
-        
+
         // Show debug snackbar (won't show in release builds on device, but useful for testing)
         if (result.isSuccess) {
           snackbarState.showSnackbar(
