@@ -34,7 +34,6 @@ import com.alorma.caducity.ui.theme.colors.dynamicColorScheme
 import com.alorma.caducity.ui.theme.colors.lightColorScheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
-import com.alorma.caducity.ui.theme.preview.ScreenshotPreviewTheme
 import com.alorma.compose.settings.ui.base.internal.LocalSettingsTileColors
 import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
 import org.koin.compose.koinInject
@@ -157,13 +156,6 @@ fun MaterialColorsPreview() {
 }
 
 @Composable
-fun MaterialColorsScreenshot() {
-  ScreenshotPreviewTheme {
-    MaterialColorsPreviewContent()
-  }
-}
-
-@Composable
 private fun MaterialColorsPreviewContent() {
   Surface {
     Column(
@@ -198,13 +190,6 @@ fun ExpirationColorsVibrantPreview() {
 }
 
 @Composable
-fun ExpirationColorsVibrantScreenshot() {
-  ScreenshotPreviewTheme {
-    ExpirationColorsVibrantPreviewContent()
-  }
-}
-
-@Composable
 private fun ExpirationColorsVibrantPreviewContent() {
   Surface {
     Column(
@@ -233,13 +218,6 @@ private fun ExpirationColorsVibrantPreviewContent() {
 @Composable
 fun ExpirationColorsSoftPreview() {
   PreviewTheme {
-    ExpirationColorsSoftPreviewContent()
-  }
-}
-
-@Composable
-fun ExpirationColorsSoftScreenshot() {
-  ScreenshotPreviewTheme {
     ExpirationColorsSoftPreviewContent()
   }
 }
