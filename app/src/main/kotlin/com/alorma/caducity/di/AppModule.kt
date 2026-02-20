@@ -16,6 +16,9 @@ import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteProductUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
+import com.alorma.caducity.domain.usecase.SplitAndConsumeItemUseCase
+import com.alorma.caducity.domain.usecase.SplitAndDeleteItemUseCase
+import com.alorma.caducity.domain.usecase.SplitAndFreezeItemUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
@@ -92,6 +95,9 @@ val appModule = module {
   singleOf(::FreezeItemUseCase)
   singleOf(::RescheduleItemUseCase)
   singleOf(::UnfreezeItemUseCase)
+  singleOf(::SplitAndConsumeItemUseCase)
+  singleOf(::SplitAndFreezeItemUseCase)
+  singleOf(::SplitAndDeleteItemUseCase)
   singleOf(::CategoryDetailMapper)
   viewModelOf(::CategoryDetailViewModel)
   viewModelOf(::CategoryDetailAddItemViewModel)

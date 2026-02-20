@@ -47,7 +47,7 @@ class RoomCategoryDataSource(
   ) {
     categoryDao.insertCategory(categoryMapper.toEntity(category))
     items.forEach { item ->
-      itemDao.insertItem(itemRoomMapper.toEntity(item, category.id))
+      itemDao.insertItem(itemRoomMapper.toEntity(item))
     }
   }
 

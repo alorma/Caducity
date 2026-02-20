@@ -9,6 +9,9 @@ import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
+import com.alorma.caducity.domain.usecase.SplitAndConsumeItemUseCase
+import com.alorma.caducity.domain.usecase.SplitAndDeleteItemUseCase
+import com.alorma.caducity.domain.usecase.SplitAndFreezeItemUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemConsumedAction
@@ -31,6 +34,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 
 class ItemActionsViewModel(
+  private val categoryId: String,
   private val item: ItemDetailUiModel,
   private val expirationThresholds: ExpirationThresholds,
   private val appClock: AppClock,
@@ -39,6 +43,9 @@ class ItemActionsViewModel(
   private val unfreezeItemUseCase: UnfreezeItemUseCase,
   private val rescheduleItemUseCase: RescheduleItemUseCase,
   private val deleteItemUseCase: DeleteItemUseCase,
+  private val splitAndConsumeItemUseCase: SplitAndConsumeItemUseCase,
+  private val splitAndFreezeItemUseCase: SplitAndFreezeItemUseCase,
+  private val splitAndDeleteItemUseCase: SplitAndDeleteItemUseCase,
   private val eventTracker: EventTracker,
   private val inAppReviewManager: InAppReviewManager,
   private val showAppReviewFlag: ShowAppReviewFlag,
@@ -127,29 +134,138 @@ class ItemActionsViewModel(
     viewModelScope.launch {
       when (action) {
         ItemAction.Consume -> {
-          val result = consumeItemUseCase.consumeItem(item.id)
+          // Check if item is a pack
+          if (item.packSize != null && item.packSize > 1) {
+            // Show quantity selector
+            emitSideEffect(ItemActionSideEffect.ShowConsumeQuantitySelector(item.packSize))
+          } else {
+            // Single item: consume directly
+            val result = consumeItemUseCase.consumeItem(item.id)
+            handleResult(result, action) {
+              eventTracker.trackAction(ItemConsumedAction(item.status.toTrackingString()))
+            }
+          }
+        }
+
+        is ItemAction.ConsumeQuantity -> {
+          val result = splitAndConsumeItemUseCase.splitAndConsume(
+            categoryId = categoryId,
+            itemId = item.id,
+            quantityToConsume = action.quantity,
+            forceConsume = false
+          )
           handleResult(result, action) {
-            eventTracker.trackAction(ItemConsumedAction(item.status.toTrackingString()))
+            eventTracker.trackAction(
+              ItemConsumedAction(
+                itemStatus = item.status.toTrackingString(),
+                parameters = mapOf(
+                  "action_type" to "partial",
+                  "quantity" to action.quantity.toString(),
+                  "pack_size" to (item.packSize?.toString() ?: "null")
+                )
+              )
+            )
           }
         }
 
         ItemAction.ConsumeWithWarning -> {
-          // Emit side effect to show warning dialog
-          emitSideEffect(ItemActionSideEffect.ShowConsumeExpiredWarning)
+          // Check if item is a pack
+          if (item.packSize != null && item.packSize > 1) {
+            // Show quantity selector for expired pack
+            emitSideEffect(ItemActionSideEffect.ShowConsumeExpiredQuantitySelector(item.packSize))
+          } else {
+            // Emit side effect to show warning dialog
+            emitSideEffect(ItemActionSideEffect.ShowConsumeExpiredWarning)
+          }
+        }
+
+        is ItemAction.ConsumeWithWarningQuantity -> {
+          val result = splitAndConsumeItemUseCase.splitAndConsume(
+            categoryId = categoryId,
+            itemId = item.id,
+            quantityToConsume = action.quantity,
+            forceConsume = true
+          )
+          handleResult(result, action) {
+            eventTracker.trackAction(
+              ItemConsumedAction(
+                itemStatus = item.status.toTrackingString(),
+                parameters = mapOf(
+                  "action_type" to "partial",
+                  "quantity" to action.quantity.toString(),
+                  "pack_size" to (item.packSize?.toString() ?: "null"),
+                  "forced" to "true"
+                )
+              )
+            )
+          }
         }
 
         ItemAction.Freeze -> {
-          val expirationInstant = item.expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault())
-          val result = freezeItemUseCase.freezeItem(item.id, expirationInstant)
+          // Check if item is a pack
+          if (item.packSize != null && item.packSize > 1) {
+            // Show quantity selector
+            emitSideEffect(ItemActionSideEffect.ShowFreezeQuantitySelector(item.packSize))
+          } else {
+            // Single item: freeze directly
+            val expirationInstant = item.expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault())
+            val result = freezeItemUseCase.freezeItem(item.id, expirationInstant)
+            handleResult(result, action) {
+              eventTracker.trackAction(ItemFrozenAction(item.status.toTrackingString()))
+            }
+          }
+        }
+
+        is ItemAction.FreezeQuantity -> {
+          val result = splitAndFreezeItemUseCase.splitAndFreeze(
+            categoryId = categoryId,
+            itemId = item.id,
+            quantityToFreeze = action.quantity
+          )
           handleResult(result, action) {
-            eventTracker.trackAction(ItemFrozenAction(item.status.toTrackingString()))
+            eventTracker.trackAction(
+              ItemFrozenAction(
+                itemStatus = item.status.toTrackingString(),
+                parameters = mapOf(
+                  "action_type" to "partial",
+                  "quantity" to action.quantity.toString(),
+                  "pack_size" to (item.packSize?.toString() ?: "null")
+                )
+              )
+            )
           }
         }
 
         ItemAction.Unfreeze -> {
-          val result = unfreezeItemUseCase.unfreezeItem(item.id)
+          // Check if item is a pack
+          if (item.packSize != null && item.packSize > 1) {
+            // Show quantity selector
+            emitSideEffect(ItemActionSideEffect.ShowUnfreezeQuantitySelector(item.packSize))
+          } else {
+            // Single item: unfreeze directly
+            val result = unfreezeItemUseCase.unfreezeItem(item.id)
+            handleResult(result, action) {
+              eventTracker.trackAction(ItemUnfrozenAction())
+            }
+          }
+        }
+
+        is ItemAction.UnfreezeQuantity -> {
+          val result = splitAndFreezeItemUseCase.splitAndUnfreeze(
+            categoryId = categoryId,
+            itemId = item.id,
+            quantityToUnfreeze = action.quantity
+          )
           handleResult(result, action) {
-            eventTracker.trackAction(ItemUnfrozenAction())
+            eventTracker.trackAction(
+              ItemUnfrozenAction(
+                parameters = mapOf(
+                  "action_type" to "partial",
+                  "quantity" to action.quantity.toString(),
+                  "pack_size" to (item.packSize?.toString() ?: "null")
+                )
+              )
+            )
           }
         }
 
@@ -161,9 +277,35 @@ class ItemActionsViewModel(
         }
 
         ItemAction.Delete -> {
-          val result = deleteItemUseCase.deleteItem(item.id)
+          // Check if item is a pack
+          if (item.packSize != null && item.packSize > 1) {
+            // Show quantity selector
+            emitSideEffect(ItemActionSideEffect.ShowDeleteQuantitySelector(item.packSize))
+          } else {
+            // Single item: delete directly
+            val result = deleteItemUseCase.deleteItem(item.id)
+            handleResult(result, action) {
+              eventTracker.trackAction(ItemDeletedAction(item.status.toTrackingString()))
+            }
+          }
+        }
+
+        is ItemAction.DeleteQuantity -> {
+          val result = splitAndDeleteItemUseCase.splitAndDelete(
+            itemId = item.id,
+            quantityToDelete = action.quantity
+          )
           handleResult(result, action) {
-            eventTracker.trackAction(ItemDeletedAction(item.status.toTrackingString()))
+            eventTracker.trackAction(
+              ItemDeletedAction(
+                itemStatus = item.status.toTrackingString(),
+                parameters = mapOf(
+                  "action_type" to "partial",
+                  "quantity" to action.quantity.toString(),
+                  "pack_size" to (item.packSize?.toString() ?: "null")
+                )
+              )
+            )
           }
         }
 
@@ -228,6 +370,11 @@ sealed interface ItemActionSideEffect {
   data class ActionCompleted(val action: ItemAction) : ItemActionSideEffect
   data class ActionFailed(val action: ItemAction, val message: String?) : ItemActionSideEffect
   data object ShowConsumeExpiredWarning : ItemActionSideEffect
+  data class ShowConsumeQuantitySelector(val maxQuantity: Int) : ItemActionSideEffect
+  data class ShowConsumeExpiredQuantitySelector(val maxQuantity: Int) : ItemActionSideEffect
+  data class ShowFreezeQuantitySelector(val maxQuantity: Int) : ItemActionSideEffect
+  data class ShowUnfreezeQuantitySelector(val maxQuantity: Int) : ItemActionSideEffect
+  data class ShowDeleteQuantitySelector(val maxQuantity: Int) : ItemActionSideEffect
   data class ShowRescheduleDatePicker(val currentExpirationMillis: Long) : ItemActionSideEffect
   data object RequestInAppReview : ItemActionSideEffect
 }

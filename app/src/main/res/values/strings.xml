@@ -339,5 +339,15 @@
 
   <string name="dashboard_add">Add</string>
 
+  <!-- Quantity Selector -->
+  <string name="quantity_selector_consume_title">How many to consume?</string>
+  <string name="quantity_selector_consume_expired_title">How many expired items to consume?</string>
+  <string name="quantity_selector_freeze_title">How many to freeze?</string>
+  <string name="quantity_selector_unfreeze_title">How many to unfreeze?</string>
+  <string name="quantity_selector_delete_title">How many to delete?</string>
+  <string name="quantity_selector_confirm">Confirm (%d)</string>
+  <string name="quantity_selector_cancel">Cancel</string>
+  <string name="quantity_selector_all">All</string>
+
   <string name="app_name">Caducity</string>
 </resources>

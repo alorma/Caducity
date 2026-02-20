@@ -50,11 +50,13 @@ import org.koin.core.parameter.parametersOf
  * Actions are conditional based on item status and expiration thresholds.
  * All action handling is done internally by ItemActionsViewModel.
  *
+ * @param categoryId The ID of the category containing the item
  * @param item The item to show actions for
  * @param onActionPerformed Callback for side effects (ActionCompleted, ActionFailed)
  */
 fun AppBottomSheetState.showItemActionsBottomSheet(
   coroutineScope: CoroutineScope,
+  categoryId: String,
   item: ItemDetailUiModel,
   onActionPerformed: (ItemActionSideEffect) -> Unit,
 ) {
@@ -62,11 +64,17 @@ fun AppBottomSheetState.showItemActionsBottomSheet(
     appFeedbackType = AppFeedbackType.Status(item.status),
   ) {
     ItemActionsBottomSheetContent(
+      categoryId = categoryId,
       item = item,
       onActionPerformed = { sideEffect ->
         onActionPerformed(sideEffect)
-        // Hide bottom sheet after action (except for warning dialog)
-        if (sideEffect !is ItemActionSideEffect.ShowConsumeExpiredWarning) {
+        // Hide bottom sheet after action (except for warning dialog and quantity selectors)
+        if (sideEffect !is ItemActionSideEffect.ShowConsumeExpiredWarning &&
+            sideEffect !is ItemActionSideEffect.ShowConsumeQuantitySelector &&
+            sideEffect !is ItemActionSideEffect.ShowConsumeExpiredQuantitySelector &&
+            sideEffect !is ItemActionSideEffect.ShowFreezeQuantitySelector &&
+            sideEffect !is ItemActionSideEffect.ShowUnfreezeQuantitySelector &&
+            sideEffect !is ItemActionSideEffect.ShowDeleteQuantitySelector) {
           coroutineScope.launch {
             this@showItemActionsBottomSheet.hide()
           }
@@ -78,11 +86,12 @@ fun AppBottomSheetState.showItemActionsBottomSheet(
 
 @Composable
 private fun ItemActionsBottomSheetContent(
+  categoryId: String,
   item: ItemDetailUiModel,
   onActionPerformed: (ItemActionSideEffect) -> Unit,
   viewModel: ItemActionsViewModel = koinViewModel(
     key = "item_actions_${item.id}_${item.status}_${item.expirationDate}",
-  ) { parametersOf(item) }
+  ) { parametersOf(categoryId, item) }
 ) {
   TrackScreen(screen = ItemActionsBottomSheetScreen())
 
@@ -120,6 +129,121 @@ private fun ItemActionsBottomSheetContent(
           )
           if (result == DialogResult.Positive) {
             viewModel.onConfirmConsumeExpired()
+          }
+        }
+
+        is ItemActionSideEffect.ShowConsumeQuantitySelector -> {
+          val result = dialogState.showQuantitySelectorDialog(
+            maxQuantity = effect.maxQuantity,
+            title = { Text(stringResource(R.string.quantity_selector_consume_title)) },
+            positiveButton = { quantity -> Text(stringResource(R.string.quantity_selector_confirm, quantity)) },
+            negativeButton = { Text(stringResource(R.string.quantity_selector_cancel)) },
+            type = AppFeedbackType.Status(item.status),
+          )
+          when (result) {
+            is QuantitySelectorResult.Selected -> {
+              // If user selected max quantity, consume entire pack
+              if (result.quantity >= effect.maxQuantity) {
+                viewModel.onActionClick(ItemAction.Consume)
+              } else {
+                viewModel.onActionClick(ItemAction.ConsumeQuantity(result.quantity))
+              }
+            }
+            QuantitySelectorResult.Dismissed -> {
+              // User cancelled
+            }
+          }
+        }
+
+        is ItemActionSideEffect.ShowConsumeExpiredQuantitySelector -> {
+          val result = dialogState.showQuantitySelectorDialog(
+            maxQuantity = effect.maxQuantity,
+            title = { Text(stringResource(R.string.quantity_selector_consume_expired_title)) },
+            positiveButton = { quantity -> Text(stringResource(R.string.quantity_selector_confirm, quantity)) },
+            negativeButton = { Text(stringResource(R.string.quantity_selector_cancel)) },
+            type = AppFeedbackType.Status(item.status),
+          )
+          when (result) {
+            is QuantitySelectorResult.Selected -> {
+              // If user selected max quantity, consume entire pack
+              if (result.quantity >= effect.maxQuantity) {
+                viewModel.onActionClick(ItemAction.ConsumeWithWarning)
+              } else {
+                viewModel.onActionClick(ItemAction.ConsumeWithWarningQuantity(result.quantity))
+              }
+            }
+            QuantitySelectorResult.Dismissed -> {
+              // User cancelled
+            }
+          }
+        }
+
+        is ItemActionSideEffect.ShowFreezeQuantitySelector -> {
+          val result = dialogState.showQuantitySelectorDialog(
+            maxQuantity = effect.maxQuantity,
+            title = { Text(stringResource(R.string.quantity_selector_freeze_title)) },
+            positiveButton = { quantity -> Text(stringResource(R.string.quantity_selector_confirm, quantity)) },
+            negativeButton = { Text(stringResource(R.string.quantity_selector_cancel)) },
+            type = AppFeedbackType.Status(item.status),
+          )
+          when (result) {
+            is QuantitySelectorResult.Selected -> {
+              // If user selected max quantity, freeze entire pack
+              if (result.quantity >= effect.maxQuantity) {
+                viewModel.onActionClick(ItemAction.Freeze)
+              } else {
+                viewModel.onActionClick(ItemAction.FreezeQuantity(result.quantity))
+              }
+            }
+            QuantitySelectorResult.Dismissed -> {
+              // User cancelled
+            }
+          }
+        }
+
+        is ItemActionSideEffect.ShowUnfreezeQuantitySelector -> {
+          val result = dialogState.showQuantitySelectorDialog(
+            maxQuantity = effect.maxQuantity,
+            title = { Text(stringResource(R.string.quantity_selector_unfreeze_title)) },
+            positiveButton = { quantity -> Text(stringResource(R.string.quantity_selector_confirm, quantity)) },
+            negativeButton = { Text(stringResource(R.string.quantity_selector_cancel)) },
+            type = AppFeedbackType.Status(item.status),
+          )
+          when (result) {
+            is QuantitySelectorResult.Selected -> {
+              // If user selected max quantity, unfreeze entire pack
+              if (result.quantity >= effect.maxQuantity) {
+                viewModel.onActionClick(ItemAction.Unfreeze)
+              } else {
+                viewModel.onActionClick(ItemAction.UnfreezeQuantity(result.quantity))
+              }
+            }
+            QuantitySelectorResult.Dismissed -> {
+              // User cancelled
+            }
+          }
+        }
+
+        is ItemActionSideEffect.ShowDeleteQuantitySelector -> {
+          val result = dialogState.showQuantitySelectorDialog(
+            maxQuantity = effect.maxQuantity,
+            title = { Text(stringResource(R.string.quantity_selector_delete_title)) },
+            positiveButton = { quantity -> Text(stringResource(R.string.quantity_selector_confirm, quantity)) },
+            negativeButton = { Text(stringResource(R.string.quantity_selector_cancel)) },
+            type = AppFeedbackType.Status(item.status),
+          )
+          when (result) {
+            is QuantitySelectorResult.Selected -> {
+              // If user selected max quantity, delete entire pack
+              if (result.quantity >= effect.maxQuantity) {
+                viewModel.onActionClick(ItemAction.Delete)
+              } else {
+                viewModel.onActionClick(ItemAction.DeleteQuantity(result.quantity))
+              }
+            }
+            QuantitySelectorResult.Dismissed -> {
+              // User cancelled
+            }
           }
         }
 
@@ -229,6 +353,17 @@ private fun ItemActionsBottomSheetContent(
             modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
           )
         }
+
+        // Quantity-based actions are never shown in the bottom sheet list
+        // They are only triggered via the quantity selector dialog
+        is ItemAction.ConsumeQuantity,
+        is ItemAction.ConsumeWithWarningQuantity,
+        is ItemAction.FreezeQuantity,
+        is ItemAction.UnfreezeQuantity,
+        is ItemAction.DeleteQuantity -> {
+          // These actions are not displayed in the bottom sheet
+          // They are handled internally after quantity selection
+        }
       }
     }
   }
@@ -273,11 +408,17 @@ suspend fun handleItemActionSideEffect(
   when (sideEffect) {
     is ItemActionSideEffect.ActionCompleted -> {
       val messageRes = when (sideEffect.action) {
-        ItemAction.Consume, ItemAction.ConsumeWithWarning -> R.string.success_item_consumed
-        ItemAction.Freeze -> R.string.success_item_frozen
-        ItemAction.Unfreeze -> R.string.success_item_unfrozen
+        ItemAction.Consume,
+        is ItemAction.ConsumeQuantity,
+        ItemAction.ConsumeWithWarning,
+        is ItemAction.ConsumeWithWarningQuantity -> R.string.success_item_consumed
+        ItemAction.Freeze,
+        is ItemAction.FreezeQuantity -> R.string.success_item_frozen
+        ItemAction.Unfreeze,
+        is ItemAction.UnfreezeQuantity -> R.string.success_item_unfrozen
         ItemAction.Reschedule -> R.string.success_item_rescheduled
-        ItemAction.Delete -> R.string.success_item_deleted
+        ItemAction.Delete,
+        is ItemAction.DeleteQuantity -> R.string.success_item_deleted
         ItemAction.Placeholder -> null
       }
       messageRes?.let {
@@ -290,11 +431,17 @@ suspend fun handleItemActionSideEffect(
 
     is ItemActionSideEffect.ActionFailed -> {
       val messageRes = when (sideEffect.action) {
-        ItemAction.Consume, ItemAction.ConsumeWithWarning -> R.string.error_consume_item_failed
-        ItemAction.Freeze -> R.string.error_freeze_item_failed
-        ItemAction.Unfreeze -> R.string.error_unfreeze_item_failed
+        ItemAction.Consume,
+        is ItemAction.ConsumeQuantity,
+        ItemAction.ConsumeWithWarning,
+        is ItemAction.ConsumeWithWarningQuantity -> R.string.error_consume_item_failed
+        ItemAction.Freeze,
+        is ItemAction.FreezeQuantity -> R.string.error_freeze_item_failed
+        ItemAction.Unfreeze,
+        is ItemAction.UnfreezeQuantity -> R.string.error_unfreeze_item_failed
         ItemAction.Reschedule -> R.string.error_reschedule_item_failed
-        ItemAction.Delete -> R.string.error_delete_item_failed
+        ItemAction.Delete,
+        is ItemAction.DeleteQuantity -> R.string.error_delete_item_failed
         ItemAction.Placeholder -> null
       }
       messageRes?.let {
@@ -309,8 +456,13 @@ suspend fun handleItemActionSideEffect(
       // Warning dialog is handled internally by the bottom sheet
     }
 
+    is ItemActionSideEffect.ShowConsumeQuantitySelector,
+    is ItemActionSideEffect.ShowConsumeExpiredQuantitySelector,
+    is ItemActionSideEffect.ShowFreezeQuantitySelector,
+    is ItemActionSideEffect.ShowUnfreezeQuantitySelector,
+    is ItemActionSideEffect.ShowDeleteQuantitySelector,
     is ItemActionSideEffect.ShowRescheduleDatePicker -> {
-      // Date picker dialog is handled internally by the bottom sheet
+      // Dialogs are handled internally by the bottom sheet
     }
 
     ItemActionSideEffect.RequestInAppReview -> {

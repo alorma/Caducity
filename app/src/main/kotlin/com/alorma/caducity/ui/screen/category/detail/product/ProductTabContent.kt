@@ -313,24 +313,27 @@ private fun ItemChip(
   SuggestionChip(
     modifier = modifier,
     onClick = { onItemClick(item) },
+    contentPadding = PaddingValues(start = 0.dp, end = 8.dp),
+    icon = if (item.packSize != null && item.packSize > 1) {
+      {
+        Text(
+          text = item.packSize.toString(),
+          modifier = Modifier
+            .clip(CaducityTheme.shapes.extraSmall)
+            .background(MaterialTheme.colorScheme.primaryContainer),
+          style = MaterialTheme.typography.labelSmall,
+          color = MaterialTheme.colorScheme.onPrimaryContainer,
+        )
+      }
+    } else {
+      null
+    },
     label = {
       Row(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
         Text(text = item.text)
-        // Show pack badge if packSize > 1
-        if (item.packSize != null && item.packSize > 1) {
-          Text(
-            text = "×${item.packSize}",
-            modifier = Modifier
-              .clip(CaducityTheme.shapes.extraSmall)
-              .background(MaterialTheme.colorScheme.primaryContainer)
-              .padding(horizontal = 4.dp, vertical = 2.dp),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
-          )
-        }
       }
     },
   )

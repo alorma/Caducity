@@ -63,6 +63,7 @@ internal fun ProductPageSideEffectHandler(
         is ProductPageSideEffect.ShowItemActionsBottomSheet -> {
           bottomSheetState.showItemActionsBottomSheet(
             coroutineScope = this,
+            categoryId = viewModel.categoryId,
             item = effect.item,
             onActionPerformed = { actionSideEffect ->
               launch {

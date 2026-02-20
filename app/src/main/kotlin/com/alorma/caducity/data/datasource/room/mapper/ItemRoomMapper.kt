@@ -29,6 +29,7 @@ class ItemRoomMapper(
   fun toModel(entity: ItemRoomEntity): Item {
     return Item(
       id = entity.id,
+      categoryId = entity.categoryId,
       identifier = entity.identifier,
       productId = entity.productId,
       expirationDate = Instant.fromEpochMilliseconds(entity.expirationDate),
@@ -40,14 +41,11 @@ class ItemRoomMapper(
 
   /**
    * Maps Item domain model to ItemRoomEntity
-   *
-   * @param model The Item domain model to convert
-   * @param categoryId The category ID this item belongs to
    */
-  fun toEntity(model: Item, categoryId: String): ItemRoomEntity {
+  fun toEntity(model: Item): ItemRoomEntity {
     return ItemRoomEntity(
       id = model.id,
-      categoryId = categoryId,
+      categoryId = model.categoryId,
       identifier = model.identifier,
       productId = model.productId,
       expirationDate = model.expirationDate.toEpochMilliseconds(),

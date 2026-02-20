@@ -52,6 +52,7 @@ fun SideEffectHandler(
 
           bottomSheetState.showItemActionsBottomSheet(
             coroutineScope = this,
+            categoryId = effect.item.categoryId,
             item = itemUiModel,
             onActionPerformed = { actionSideEffect ->
               launch {
