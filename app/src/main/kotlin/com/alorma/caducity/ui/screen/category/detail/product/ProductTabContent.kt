@@ -42,6 +42,8 @@ import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.kizitonwose.calendar.core.minusDays
+import com.kizitonwose.calendar.core.now
+import kotlin.random.Random
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.datetime.LocalDate
@@ -115,7 +117,7 @@ private fun ProductTabContentPage(
   onItemClick: (ItemDetailUiModel) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  when (val currentState = state) {
+  when (state) {
     is ProductPageState.Loading -> {
       Box(
         modifier = modifier.fillMaxSize(),
@@ -127,9 +129,9 @@ private fun ProductTabContentPage(
 
     is ProductPageState.Success -> {
       // Check if there are no items at all
-      if (currentState.datedItemsGroups.isEmpty() &&
-        currentState.frozenItems.isEmpty() &&
-        currentState.consumedItems.isEmpty()
+      if (state.datedItemsGroups.isEmpty() &&
+        state.frozenItems.isEmpty() &&
+        state.consumedItems.isEmpty()
       ) {
         // Show empty state
         Box(
@@ -154,7 +156,7 @@ private fun ProductTabContentPage(
           verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
           // Show dated items groups
-          currentState.datedItemsGroups.forEach { datedItems ->
+          state.datedItemsGroups.forEach { datedItems ->
             item {
               SectionHeader(
                 status = datedItems.status,
@@ -172,34 +174,34 @@ private fun ProductTabContentPage(
           }
 
           // Frozen items
-          if (currentState.frozenItems.isNotEmpty()) {
+          if (state.frozenItems.isNotEmpty()) {
             item {
               SectionHeader(
                 status = ItemStatus.Frozen,
                 title = stringResource(R.string.category_detail_section_frozen),
-                count = currentState.frozenItems.size,
+                count = state.frozenItems.size,
               )
             }
             item {
               StatusGroupCard(
-                items = currentState.frozenItems,
+                items = state.frozenItems,
                 onItemClick = onItemClick,
               )
             }
           }
 
           // Consumed items
-          if (currentState.consumedItems.isNotEmpty()) {
+          if (state.consumedItems.isNotEmpty()) {
             item {
               SectionHeader(
                 status = ItemStatus.Consumed,
                 title = stringResource(R.string.category_detail_section_consumed),
-                count = currentState.consumedItems.size,
+                count = state.consumedItems.size,
               )
             }
             item {
               StatusGroupCard(
-                items = currentState.consumedItems,
+                items = state.consumedItems,
                 onItemClick = onItemClick,
               )
             }
@@ -214,7 +216,7 @@ private fun ProductTabContentPage(
         contentAlignment = Alignment.Center,
       ) {
         Text(
-          text = currentState.message,
+          text = state.message,
           style = MaterialTheme.typography.bodyLarge,
           color = MaterialTheme.colorScheme.error,
         )
@@ -297,31 +299,41 @@ private fun StatusGroupCard(
     maxItemsInEachRow = gridColumns,
   ) {
     items.forEach { item ->
-      SuggestionChip(
-        onClick = { onItemClick(item) },
-        label = {
-          Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            Text(text = item.text)
-            // Show pack badge if packSize > 1
-            if (item.packSize != null && item.packSize > 1) {
-              Text(
-                text = "×${item.packSize}",
-                modifier = Modifier
-                  .clip(CaducityTheme.shapes.extraSmall)
-                  .background(MaterialTheme.colorScheme.primaryContainer)
-                  .padding(horizontal = 4.dp, vertical = 2.dp),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-              )
-            }
-          }
-        },
-      )
+      ItemChip(item = item, onItemClick = onItemClick)
     }
   }
+}
+
+@Composable
+private fun ItemChip(
+  item: ItemDetailUiModel,
+  onItemClick: (ItemDetailUiModel) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  SuggestionChip(
+    modifier = modifier,
+    onClick = { onItemClick(item) },
+    label = {
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(text = item.text)
+        // Show pack badge if packSize > 1
+        if (item.packSize != null && item.packSize > 1) {
+          Text(
+            text = "×${item.packSize}",
+            modifier = Modifier
+              .clip(CaducityTheme.shapes.extraSmall)
+              .background(MaterialTheme.colorScheme.primaryContainer)
+              .padding(horizontal = 4.dp, vertical = 2.dp),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+          )
+        }
+      }
+    },
+  )
 }
 
 // Preview Data
@@ -352,6 +364,7 @@ class ProductTabContentPreviewProvider :
                 expirationDate = yesterday,
                 status = ItemStatus.Expired,
                 text = "Expired package",
+                packSize = Random.nextInt(4),
               ),
             ),
           ),
@@ -365,12 +378,14 @@ class ProductTabContentPreviewProvider :
                 expirationDate = today,
                 status = ItemStatus.ExpiringSoon,
                 text = "Expiring package 1",
+                packSize = Random.nextInt(4),
               ),
               ItemDetailUiModel(
                 id = "3",
                 expirationDate = today,
                 status = ItemStatus.ExpiringSoon,
                 text = "Expiring package 2",
+                packSize = Random.nextInt(4),
               ),
             ),
           ),
@@ -384,18 +399,21 @@ class ProductTabContentPreviewProvider :
                 expirationDate = nextWeek,
                 status = ItemStatus.Fresh,
                 text = "Fresh package 1",
+                packSize = Random.nextInt(4),
               ),
               ItemDetailUiModel(
                 id = "5",
                 expirationDate = nextWeek,
                 status = ItemStatus.Fresh,
                 text = "Fresh package 2",
+                packSize = Random.nextInt(4),
               ),
               ItemDetailUiModel(
                 id = "6",
                 expirationDate = nextWeek,
                 status = ItemStatus.Fresh,
                 text = "Fresh package 3",
+                packSize = Random.nextInt(4),
               ),
             ),
           ),
@@ -406,12 +424,14 @@ class ProductTabContentPreviewProvider :
             expirationDate = today,
             status = ItemStatus.Frozen,
             text = "Frozen package 1",
+            packSize = Random.nextInt(4),
           ),
           ItemDetailUiModel(
             id = "8",
             expirationDate = today,
             status = ItemStatus.Frozen,
             text = "Frozen package 2",
+            packSize = Random.nextInt(4),
           ),
         ),
         consumedItems = persistentListOf(
@@ -420,12 +440,14 @@ class ProductTabContentPreviewProvider :
             expirationDate = today,
             status = ItemStatus.Consumed,
             text = "Consumed package 1",
+            packSize = Random.nextInt(4),
           ),
           ItemDetailUiModel(
             id = "10",
             expirationDate = today,
             status = ItemStatus.Consumed,
             text = "Consumed package 2",
+            packSize = Random.nextInt(4),
           ),
         ),
       ),
@@ -468,3 +490,22 @@ fun ProductTabContentPreview(
   }
 }
 
+@PreviewLightDark
+@Composable
+fun ItemChipPreview() {
+  PreviewTheme {
+    Surface {
+      ItemChip(
+        modifier = Modifier.padding(8.dp),
+        item = ItemDetailUiModel(
+          id = "ex",
+          expirationDate = LocalDate.now(),
+          status = ItemStatus.ExpiringSoon,
+          text = "Maduixa",
+          packSize = 4,
+        ),
+        onItemClick = {},
+      )
+    }
+  }
+}
