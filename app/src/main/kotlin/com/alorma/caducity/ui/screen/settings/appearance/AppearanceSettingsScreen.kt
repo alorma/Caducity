@@ -25,6 +25,7 @@ import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGro
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.theme.ThemeMode
+import com.alorma.caducity.ui.theme.ThemeTone
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.datetime.DayOfWeek
@@ -132,11 +133,11 @@ private fun AppearanceSettingsContent(
               title = stringResource(R.string.settings_tone_title),
               selectedItem = themeTone,
               position = ShapePosition.Single,
-              items = com.alorma.caducity.ui.theme.ThemeTone.entries,
+              items = ThemeTone.entries,
               itemTitleMap = { tone ->
                 when (tone) {
-                  com.alorma.caducity.ui.theme.ThemeTone.VIBRANT -> toneVibrant
-                  com.alorma.caducity.ui.theme.ThemeTone.SOFT -> toneSoft
+                  ThemeTone.VIBRANT -> toneVibrant
+                  ThemeTone.SOFT -> toneSoft
                 }
               },
               onItemSelected = { onThemeToneChange(it) },
@@ -180,7 +181,7 @@ fun AppearanceSettingsScreenPreview() {
       AppearanceSettingsContent(
         themeMode = themeMode,
         useDynamicTheme = true,
-        themeTone = com.alorma.caducity.ui.theme.ThemeTone.VIBRANT,
+        themeTone = ThemeTone.VIBRANT,
         localizedDateFormatter = LocalizedDateFormatter(),
         firstDayOfWeek = DayOfWeek.MONDAY,
         onThemeModeChange = {},
