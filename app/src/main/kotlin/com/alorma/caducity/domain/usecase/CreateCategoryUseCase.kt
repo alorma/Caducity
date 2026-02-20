@@ -34,6 +34,7 @@ class CreateCategoryUseCase(
       val categoryItems = items.map { (identifier, expirationDate) ->
         Item(
           id = Uuid.random().toString(),
+          categoryId = categoryId,
           identifier = identifier,
           expirationDate = expirationDate,
           status = ItemStatus.calculateStatus(

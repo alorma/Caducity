@@ -92,6 +92,13 @@ class RoomItemDataSource(
     }
   }
 
+  override suspend fun updatePackSize(itemId: String, newPackSize: Int) {
+    itemDao.getItem(itemId)?.let { item ->
+      val updatedItem = item.copy(packSize = newPackSize)
+      itemDao.updateItem(updatedItem)
+    }
+  }
+
   override fun getItemsByProduct(categoryId: String, productId: String?): Flow<List<Item>> {
     return if (productId != null) {
       itemDao.getProductItems(categoryId, productId)

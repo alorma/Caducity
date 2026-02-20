@@ -19,6 +19,8 @@ interface ItemDataSource {
 
   suspend fun rescheduleItem(itemId: String, newExpirationDateMillis: Long)
 
+  suspend fun updatePackSize(itemId: String, newPackSize: Int)
+
   fun getItemsByProduct(categoryId: String, productId: String?): Flow<List<Item>>
 
   suspend fun clearConsumedItems(categoryId: String, productId: String?)

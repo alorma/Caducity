@@ -30,6 +30,8 @@ class ProductPageViewModel(
   private val eventTracker: EventTracker,
 ) : BaseViewModel<ProductPageNavigation, ProductPageNavigationSideEffect, ProductPageSideEffect>() {
 
+  val categoryId: String = productTab.categoryId
+
   val state: StateFlow<ProductPageState> = getProductItemsUseCase
     .obtain(productTab.categoryId, productTab.id)
     .map<_, ProductPageState> { productItems ->
