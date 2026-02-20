@@ -9,8 +9,10 @@ import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.colors.ContainerColors
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.ThemePreferences
 import com.alorma.caducity.ui.theme.colors.ExpirationColorsPalette
 import com.materialkolor.ktx.isLight
+import org.koin.compose.koinInject
 
 object ExpirationDefaults {
 
@@ -43,6 +45,18 @@ object ExpirationDefaults {
       itemStatus = itemStatus,
       expirationColors = CaducityTheme.expirationColors.soft,
     )
+  }
+
+  @Composable
+  fun getColors(
+    itemStatus: ItemStatus,
+    themePreferences: ThemePreferences = koinInject(),
+  ): ContainerColors {
+    val tone = themePreferences.themeTone.value
+    return when (tone) {
+      com.alorma.caducity.ui.theme.ThemeTone.VIBRANT -> getVibrantColors(itemStatus)
+      com.alorma.caducity.ui.theme.ThemeTone.SOFT -> getSoftColors(itemStatus)
+    }
   }
 
   @Composable

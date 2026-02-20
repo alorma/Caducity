@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
@@ -204,7 +205,7 @@ private fun SummaryStatusCard(
   shape: Shape,
   modifier: Modifier = Modifier
 ) {
-  val colors = ExpirationDefaults.getVibrantColors(status)
+  val colors = ExpirationDefaults.getColors(status)
 
   val dim = if (count > 0) {
     CaducityTheme.dims.noDim
@@ -253,7 +254,7 @@ private fun SummaryStatusCard(
   }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 private fun DashboardSummaryCardPreviewTheme() {
   PreviewTheme {
