@@ -129,6 +129,7 @@ dependencies {
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.adaptive)
   implementation(libs.androidx.compose.ui.tooling.preview)
+  implementation(libs.androidx.ui.tooling.preview)
   debugImplementation(libs.androidx.compose.ui.tooling)
 
   implementation(libs.material.kolor)
@@ -163,6 +164,7 @@ dependencies {
 
   implementation(libs.androidx.room.runtime)
   implementation(libs.androidx.room.ktx)
+  debugImplementation(libs.androidx.ui.tooling)
   ksp(libs.androidx.room.compiler)
 
   implementation(libs.androidx.work.runtime.ktx)

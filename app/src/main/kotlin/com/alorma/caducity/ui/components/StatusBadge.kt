@@ -1,13 +1,17 @@
 package com.alorma.caducity.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,12 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 
 enum class StatusBadgeSize {
   Small,
@@ -69,7 +75,7 @@ fun StatusBadge(
   modifier: Modifier = Modifier,
   size: StatusBadgeSize = StatusBadgeSize.Small,
 ) {
-  val colors = ExpirationDefaults.getVibrantColors(status)
+  val colors = ExpirationDefaults.getColors(status)
 
   Row(
     modifier = modifier
@@ -103,5 +109,64 @@ fun StatusBadge(
       style = size.textStyle(),
       color = colors.onContainer,
     )
+  }
+}
+
+@Preview(name = "Status Badge - All Statuses")
+@Composable
+private fun StatusBadgePreview() {
+  PreviewTheme {
+    Surface {
+      Column(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+      ) {
+        val allStatuses = listOf(
+          ItemStatus.Fresh,
+          ItemStatus.ExpiringSoon,
+          ItemStatus.Expired,
+          ItemStatus.Frozen,
+          ItemStatus.Consumed
+        )
+
+        Text(
+          text = "Small Size",
+          style = MaterialTheme.typography.titleSmall,
+          modifier = Modifier.padding(bottom = 4.dp)
+        )
+        allStatuses.forEach { status ->
+          StatusBadge(
+            status = status,
+            size = StatusBadgeSize.Small
+          )
+        }
+
+        Text(
+          text = "Medium Size",
+          style = MaterialTheme.typography.titleSmall,
+          modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+        )
+        allStatuses.forEach { status ->
+          StatusBadge(
+            status = status,
+            size = StatusBadgeSize.Medium
+          )
+        }
+
+        Text(
+          text = "Large Size",
+          style = MaterialTheme.typography.titleSmall,
+          modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+        )
+        allStatuses.forEach { status ->
+          StatusBadge(
+            status = status,
+            size = StatusBadgeSize.Large
+          )
+        }
+      }
+    }
   }
 }

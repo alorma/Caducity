@@ -72,7 +72,7 @@ fun DebugSettingsScreen(
           coroutineScope.launch {
             snackbarState.showSnackbar(
               message = R.string.debug_error,
-              type = AppFeedbackType.Success,
+              type = AppFeedbackType.Error,
             )
           }
         }
