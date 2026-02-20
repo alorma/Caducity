@@ -87,6 +87,7 @@ fun AppThemeContent(
       InternalTheme(
         dims = dims,
         darkMode = darkTheme,
+        themeTone = themePreferences.themeTone.value,
         content = content,
       )
     },
@@ -107,6 +108,7 @@ fun AppThemeContent(
 fun InternalTheme(
   dims: CaducityDims,
   darkMode: Boolean,
+  themeTone: ThemeTone,
   content: @Composable () -> Unit,
 ) {
   val colorScheme = CaducityTheme.colorScheme
@@ -131,6 +133,7 @@ fun InternalTheme(
   CompositionLocalProvider(
     LocalCaducityDims provides dims,
     LocalDarkMode provides darkMode,
+    LocalThemeTone provides themeTone,
     LocalExpirationColors provides expirationColors,
   ) {
     val settingsColors = SettingsTileDefaults.colors(
