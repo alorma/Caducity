@@ -11,8 +11,6 @@ plugins {
 
   alias(libs.plugins.jetbrains.kotlin.parcelize)
 
-  alias(libs.plugins.compose.screenshot)
-
   alias(libs.plugins.google.services)
   alias(libs.plugins.firebase.crashlytics)
 
@@ -102,12 +100,6 @@ android {
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
-  }
-
-  experimentalProperties["android.experimental.enableScreenshotTest"] = true
-
-  screenshotTests {
-    imageDifferenceThreshold = 0.01f
   }
 }
 
@@ -208,13 +200,4 @@ dependencies {
   testImplementation(libs.androidx.room.ktx)
   testImplementation(libs.androidx.test.runner)
   testImplementation(libs.androidx.test.rules)
-
-  // Screenshot testing
-  screenshotTestImplementation(libs.screenshot.validation.api)
-
-  screenshotTestImplementation(platform(libs.androidx.compose.bom))
-  screenshotTestImplementation(libs.androidx.compose.ui.test.junit4)
-  screenshotTestImplementation(libs.androidx.compose.ui.test.manifest)
-  screenshotTestImplementation(libs.androidx.compose.ui.tooling)
-  screenshotTestImplementation(libs.androidx.compose.ui)
 }

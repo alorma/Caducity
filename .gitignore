@@ -17,9 +17,6 @@ contents.xcworkspacedata
 deployment/
 .claude/*.local.*
 
-# Screenshot test outputs
-**/screenshotTest/outputs/
-
 certs/release.keystore
 
 # Firebase configuration (contains API keys)

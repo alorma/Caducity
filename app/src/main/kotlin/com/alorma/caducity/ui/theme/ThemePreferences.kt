@@ -34,23 +34,3 @@ object ThemePreferencesNoOp : ThemePreferences {
   }
 }
 
-object ThemePreferencesScreenshotTestNoOp : ThemePreferences {
-  override val themeMode: MutableState<ThemeMode> = mutableStateOf(ThemeMode.SYSTEM)
-  override val useDynamicColors: MutableState<Boolean> = mutableStateOf(true)
-
-  override fun loadThemeMode(): ThemeMode {
-    return themeMode.value
-  }
-
-  override fun loadUseDynamicColors(): Boolean {
-    return useDynamicColors.value
-  }
-
-  override fun setThemeModeState(mode: ThemeMode) {
-
-  }
-
-  override fun setDynamicColorsEnabled(enabled: Boolean) {
-
-  }
-}

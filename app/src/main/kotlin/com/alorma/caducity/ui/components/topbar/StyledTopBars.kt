@@ -71,13 +71,6 @@ private fun StyledTopBarPreview() {
 }
 
 @Composable
-fun StyledTopBarScreenshot() {
-  PreviewTheme {
-    StyledTopAppBarPreviewContent()
-  }
-}
-
-@Composable
 fun StyledTopAppBarPreviewContent() {
   StyledTopAppBar(
     title = { Text(text = "Preview") },
