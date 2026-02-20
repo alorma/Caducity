@@ -1,6 +1,8 @@
 package com.alorma.caducity.ui.screen.category.detail.product
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -310,33 +311,68 @@ private fun ItemChip(
   onItemClick: (ItemDetailUiModel) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  SuggestionChip(
+  Surface(
     modifier = modifier,
-    onClick = { onItemClick(item) },
-    contentPadding = PaddingValues(start = 0.dp, end = 8.dp),
-    icon = if (item.packSize != null && item.packSize > 1) {
-      {
+    shape = CaducityTheme.shapes.small,
+    border = BorderStroke(
+      width = 1.dp,
+      color = CaducityTheme.colorScheme.outline,
+    ),
+  ) {
+    Row(
+      modifier = Modifier
+        .clip(CaducityTheme.shapes.small)
+        .clickable { onItemClick(item) }
+        .padding(end = 8.dp),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      if (item.packSize != null && item.packSize > 1) {
         Text(
-          text = item.packSize.toString(),
           modifier = Modifier
-            .clip(CaducityTheme.shapes.extraSmall)
-            .background(MaterialTheme.colorScheme.primaryContainer),
+            .background(CaducityTheme.colorScheme.outline)
+            .padding(8.dp),
+          text = item.packSize.toString(),
           style = MaterialTheme.typography.labelSmall,
-          color = MaterialTheme.colorScheme.onPrimaryContainer,
+          color = MaterialTheme.colorScheme.surface,
         )
       }
-    } else {
-      null
-    },
-    label = {
-      Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Text(text = item.text)
-      }
-    },
-  )
+      Text(
+        text = item.text,
+        style = MaterialTheme.typography.labelLarge,
+      )
+    }
+  }
+
+  /*
+    SuggestionChip(
+      modifier = modifier,
+      onClick = { onItemClick(item) },
+      contentPadding = PaddingValues(start = 0.dp, end = 8.dp),
+      icon = if (item.packSize != null && item.packSize > 1) {
+        {
+          Text(
+            text = item.packSize.toString(),
+            modifier = Modifier
+              .clip(CaducityTheme.shapes.extraSmall)
+              .background(MaterialTheme.colorScheme.primaryContainer),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
+          )
+        }
+      } else {
+        null
+      },
+      label = {
+        Row(
+          horizontalArrangement = Arrangement.spacedBy(4.dp),
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Text(text = item.text)
+        }
+      },
+    )
+   */
 }
 
 // Preview Data
@@ -498,17 +534,18 @@ fun ProductTabContentPreview(
 fun ItemChipPreview() {
   PreviewTheme {
     Surface {
-      ItemChip(
-        modifier = Modifier.padding(8.dp),
-        item = ItemDetailUiModel(
-          id = "ex",
-          expirationDate = LocalDate.now(),
-          status = ItemStatus.ExpiringSoon,
-          text = "Maduixa",
-          packSize = 4,
-        ),
-        onItemClick = {},
-      )
+      Box(Modifier.padding(8.dp)) {
+        ItemChip(
+          item = ItemDetailUiModel(
+            id = "ex",
+            expirationDate = LocalDate.now(),
+            status = ItemStatus.ExpiringSoon,
+            text = "Maduixa",
+            packSize = 4,
+          ),
+          onItemClick = {},
+        )
+      }
     }
   }
 }
