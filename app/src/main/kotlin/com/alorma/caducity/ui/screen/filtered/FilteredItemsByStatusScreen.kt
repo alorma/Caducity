@@ -73,6 +73,8 @@ fun FilteredItemsByStatusScreen(
     snackbarState = snackbarState,
   )
 
+  val statusColors = ExpirationDefaults.getVibrantColors(status)
+
   AppScaffold(
     modifier = modifier,
     topBar = {
@@ -90,6 +92,8 @@ fun FilteredItemsByStatusScreen(
     },
     snackbarState = snackbarState,
     bottomSheetState = bottomSheetState,
+    containerColor = statusColors.container,
+    contentColor = statusColors.onContainer,
   ) { paddingValues ->
     when (val currentState = state) {
       is FilteredItemsByStatusState.Loading -> {
