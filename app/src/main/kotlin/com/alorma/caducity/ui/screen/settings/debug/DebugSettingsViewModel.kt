@@ -30,7 +30,18 @@ class DebugSettingsViewModel(
   private val consentManager: ConsentManager,
 ) : BaseViewModel<Unit, DebugSettingsSideEffect, DebugSettingsSideEffect>() {
 
-  private val _uiState = MutableStateFlow(DebugSettingsUiState())
+  private val _uiState = MutableStateFlow(
+    DebugSettingsUiState(
+      onPopulateFakeData = ::onPopulateFakeData,
+      onPopulateFakePlayStoreData = ::onPopulateFakePlayStoreData,
+      onTriggerNotificationCheck = ::onTriggerNotificationCheck,
+      onRefreshRemoteConfig = ::onRefreshRemoteConfig,
+      onToggleAdStorage = ::onToggleAdStorage,
+      onToggleAdUserData = ::onToggleAdUserData,
+      onToggleAdPersonalization = ::onToggleAdPersonalization,
+      onToggleRemoteConfig = ::onToggleRemoteConfig,
+    ),
+  )
   val uiState: StateFlow<DebugSettingsUiState> = _uiState.asStateFlow()
 
   init {
@@ -46,7 +57,7 @@ class DebugSettingsViewModel(
 
   fun onPopulateFakeData() {
     viewModelScope.launch {
-      _uiState.value = _uiState.value.copy(isGenerating = true, error = null)
+      _uiState.value = _uiState.value.copy(isGenerating = true)
 
       val result = populateFakeDataUseCase.execute(fakeTestDataStrategy)
 
@@ -55,11 +66,8 @@ class DebugSettingsViewModel(
           emitSideEffect(DebugSettingsSideEffect.FakeDataPopulated)
           _uiState.value = _uiState.value.copy(isGenerating = false)
         },
-        onFailure = { error ->
-          _uiState.value = _uiState.value.copy(
-            isGenerating = false,
-            error = error.message ?: "Unknown error occurred"
-          )
+        onFailure = {
+          emitSideEffect(DebugSettingsSideEffect.Error)
         }
       )
     }
@@ -67,7 +75,7 @@ class DebugSettingsViewModel(
 
   fun onPopulateFakePlayStoreData() {
     viewModelScope.launch {
-      _uiState.value = _uiState.value.copy(isGeneratingPlayStore = true, error = null)
+      _uiState.value = _uiState.value.copy(isGeneratingPlayStore = true)
 
       val result = populateFakeDataUseCase.execute(fakePlayStoreDataStrategy)
 
@@ -76,11 +84,8 @@ class DebugSettingsViewModel(
           emitSideEffect(DebugSettingsSideEffect.FakePlayStoreDataPopulated)
           _uiState.value = _uiState.value.copy(isGeneratingPlayStore = false)
         },
-        onFailure = { error ->
-          _uiState.value = _uiState.value.copy(
-            isGeneratingPlayStore = false,
-            error = error.message ?: "Unknown error occurred"
-          )
+        onFailure = {
+          emitSideEffect(DebugSettingsSideEffect.Error)
         }
       )
     }
@@ -99,10 +104,7 @@ class DebugSettingsViewModel(
           _uiState.value = _uiState.value.copy(isRefreshingRemoteConfig = false)
         }
         .onFailure { error ->
-          _uiState.value = _uiState.value.copy(
-            isRefreshingRemoteConfig = false,
-            error = error.message ?: "Failed to refresh remote config"
-          )
+          emitSideEffect(DebugSettingsSideEffect.Error)
         }
     }
   }
@@ -172,10 +174,6 @@ class DebugSettingsViewModel(
     loadConsentPreferences()
   }
 
-  fun dismissError() {
-    _uiState.value = _uiState.value.copy(error = null)
-  }
-
   override fun navigate(navigation: Unit) {
     // Empty - this ViewModel doesn't navigate
   }
@@ -196,11 +194,18 @@ data class DebugSettingsUiState(
   val isGenerating: Boolean = false,
   val isGeneratingPlayStore: Boolean = false,
   val isRefreshingRemoteConfig: Boolean = false,
-  val error: String? = null,
   val remoteConfigValues: Map<String, RemoteConfigUiState> = emptyMap(),
   val adStorageEnabled: Boolean = false,
   val adUserDataEnabled: Boolean = false,
   val adPersonalizationEnabled: Boolean = false,
+  val onPopulateFakeData: () -> Unit,
+  val onPopulateFakePlayStoreData: () -> Unit,
+  val onTriggerNotificationCheck: () -> Unit,
+  val onRefreshRemoteConfig: () -> Unit,
+  val onToggleAdStorage: (Boolean) -> Unit,
+  val onToggleAdUserData: (Boolean) -> Unit,
+  val onToggleAdPersonalization: (Boolean) -> Unit,
+  val onToggleRemoteConfig: (String, Boolean) -> Unit,
 )
 
 /**
@@ -209,5 +214,6 @@ data class DebugSettingsUiState(
 sealed interface DebugSettingsSideEffect {
   data object FakeDataPopulated : DebugSettingsSideEffect
   data object FakePlayStoreDataPopulated : DebugSettingsSideEffect
+  data object Error : DebugSettingsSideEffect
   data class RemoteConfigRefreshed(val activated: Boolean) : DebugSettingsSideEffect
 }

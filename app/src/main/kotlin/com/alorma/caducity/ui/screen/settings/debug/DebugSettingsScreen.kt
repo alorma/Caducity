@@ -4,11 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,6 +21,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.feature.tracking.DebugSettingsScreen as DebugSettingsScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -43,17 +42,7 @@ fun DebugSettingsScreen(
   viewModel: DebugSettingsViewModel = koinViewModel()
 ) {
   TrackScreen(screen = DebugSettingsScreenEvent())
-  DebugSettingsContent(
-    modifier = modifier,
-    viewModel = viewModel,
-  )
-}
 
-@Composable
-private fun DebugSettingsContent(
-  modifier: Modifier = Modifier,
-  viewModel: DebugSettingsViewModel = koinViewModel()
-) {
   val uiState by viewModel.uiState.collectAsState()
   val snackbarState = rememberAppSnackbarState()
   val coroutineScope = rememberCoroutineScope()
@@ -79,6 +68,15 @@ private fun DebugSettingsContent(
           }
         }
 
+        DebugSettingsSideEffect.Error -> {
+          coroutineScope.launch {
+            snackbarState.showSnackbar(
+              message = R.string.debug_error,
+              type = AppFeedbackType.Success,
+            )
+          }
+        }
+
         is DebugSettingsSideEffect.RemoteConfigRefreshed -> {
           coroutineScope.launch {
             val message = if (effect.activated) {
@@ -95,6 +93,20 @@ private fun DebugSettingsContent(
       }
     }
   }
+
+  DebugSettingsContent(
+    modifier = modifier,
+    uiState = uiState,
+    snackbarState = snackbarState,
+  )
+}
+
+@Composable
+private fun DebugSettingsContent(
+  uiState: DebugSettingsUiState,
+  snackbarState: AppSnackbarState,
+  modifier: Modifier = Modifier,
+) {
   AppScaffold(
     modifier = Modifier.then(modifier),
     snackbarState = snackbarState,
@@ -127,7 +139,7 @@ private fun DebugSettingsContent(
                 "Clear all data and create test items with all statuses"
               },
               position = ShapePosition.Start,
-              onClick = { viewModel.onPopulateFakeData() },
+              onClick = { uiState.onPopulateFakeData() },
               enabled = !uiState.isGenerating,
             )
             StyledSettingsCard(
@@ -138,7 +150,7 @@ private fun DebugSettingsContent(
                 "Create 5 categories with consistent products for screenshots"
               },
               position = ShapePosition.End,
-              onClick = { viewModel.onPopulateFakePlayStoreData() },
+              onClick = { uiState.onPopulateFakePlayStoreData() },
               enabled = !uiState.isGeneratingPlayStore,
             )
           }
@@ -153,7 +165,7 @@ private fun DebugSettingsContent(
               title = "Test Notification",
               subtitle = "Trigger notification check immediately",
               position = ShapePosition.Single,
-              onClick = { viewModel.onTriggerNotificationCheck() },
+              onClick = { uiState.onTriggerNotificationCheck() },
             )
           }
         }
@@ -171,7 +183,7 @@ private fun DebugSettingsContent(
                 "Fetch and activate latest config values"
               },
               position = ShapePosition.Single,
-              onClick = { viewModel.onRefreshRemoteConfig() },
+              onClick = { uiState.onRefreshRemoteConfig() },
               enabled = !uiState.isRefreshingRemoteConfig,
             )
           }
@@ -191,7 +203,7 @@ private fun DebugSettingsContent(
               subtitle = stringResource(R.string.debug_consent_ad_storage_description),
               state = uiState.adStorageEnabled,
               position = ShapePosition.Start,
-              onCheckedChange = { viewModel.onToggleAdStorage(it) },
+              onCheckedChange = { uiState.onToggleAdStorage(it) },
             )
 
             StyledSettingsCheckboxCard(
@@ -199,7 +211,7 @@ private fun DebugSettingsContent(
               subtitle = stringResource(R.string.debug_consent_ad_user_data_description),
               state = uiState.adUserDataEnabled,
               position = ShapePosition.Middle,
-              onCheckedChange = { viewModel.onToggleAdUserData(it) },
+              onCheckedChange = { uiState.onToggleAdUserData(it) },
             )
 
             StyledSettingsCheckboxCard(
@@ -207,7 +219,7 @@ private fun DebugSettingsContent(
               subtitle = stringResource(R.string.debug_consent_ad_personalization_description),
               state = uiState.adPersonalizationEnabled,
               position = ShapePosition.End,
-              onCheckedChange = { viewModel.onToggleAdPersonalization(it) },
+              onCheckedChange = { uiState.onToggleAdPersonalization(it) },
             )
           }
         }
@@ -245,7 +257,7 @@ private fun DebugSettingsContent(
                     state = configState.value,
                     position = position,
                     onCheckedChange = { enabled ->
-                      viewModel.onToggleRemoteConfig(key, enabled)
+                      uiState.onToggleRemoteConfig(key, enabled)
                     },
                   )
                 }
@@ -256,20 +268,6 @@ private fun DebugSettingsContent(
       }
     }
   }
-
-  // Error dialog
-  uiState.error?.let { error ->
-    AlertDialog(
-      onDismissRequest = { viewModel.dismissError() },
-      title = { Text("Generation Failed") },
-      text = { Text(error) },
-      confirmButton = {
-        TextButton(onClick = { viewModel.dismissError() }) {
-          Text("OK")
-        }
-      }
-    )
-  }
 }
 
 @PreviewLightDark
@@ -278,7 +276,29 @@ private fun DebugSettingsContent(
 fun DebugSettingsScreenPreview() {
   PreviewTheme {
     Surface {
-      DebugSettingsContent()
+      DebugSettingsContent(
+        uiState = DebugSettingsUiState(
+          isGenerating = true,
+          isGeneratingPlayStore = true,
+          isRefreshingRemoteConfig = true,
+          remoteConfigValues = mapOf(
+            "Potato" to RemoteConfigUiState(value = true, hasDebugOverride = true),
+            "Carrot" to RemoteConfigUiState(value = true, hasDebugOverride = true),
+          ),
+          adStorageEnabled = true,
+          adUserDataEnabled = true,
+          adPersonalizationEnabled = true,
+          onPopulateFakeData = {},
+          onPopulateFakePlayStoreData = {},
+          onTriggerNotificationCheck = {},
+          onRefreshRemoteConfig = {},
+          onToggleAdStorage = {},
+          onToggleAdUserData = {},
+          onToggleAdPersonalization = {},
+          onToggleRemoteConfig = { _, _ -> },
+        ),
+        snackbarState = rememberAppSnackbarState(),
+      )
     }
   }
 }

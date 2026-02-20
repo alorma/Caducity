@@ -1,329 +1,332 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="expiration_status_badge_fresh">Fresco</string>
-    <string name="expiration_status_badge_expiring_soon">Próximo</string>
-    <string name="expiration_status_badge_expired">Caducado</string>
-    <string name="expiration_status_badge_frozen">Congelado</string>
-    <string name="expiration_status_badge_consumed">Consumido</string>
-    <string-array name="day_names">
-        <item>Lun</item>
-        <item>Mar</item>
-        <item>Mié</item>
-        <item>Jue</item>
-        <item>Vie</item>
-        <item>Sáb</item>
-        <item>Dom</item>
-    </string-array>
+  <string name="expiration_status_badge_fresh">Fresco</string>
+  <string name="expiration_status_badge_expiring_soon">Próximo</string>
+  <string name="expiration_status_badge_expired">Caducado</string>
+  <string name="expiration_status_badge_frozen">Congelado</string>
+  <string name="expiration_status_badge_consumed">Consumido</string>
+  <string-array name="day_names">
+    <item>Lun</item>
+    <item>Mar</item>
+    <item>Mié</item>
+    <item>Jue</item>
+    <item>Vie</item>
+    <item>Sáb</item>
+    <item>Dom</item>
+  </string-array>
 
-    <string  name="dashboard_screen_title">Panel</string>
-    <string name="products_screen_title">Categorías</string>
-    <string name="dashboard_action_collapse">Colapsar</string>
-    <string name="dashboard_action_expand">Expandir</string>
-    <string name="dashboard_search_placeholder">Buscar categorías…</string>
-    <string name="dashboard_filter_fresh">Fresco</string>
-    <string name="dashboard_filter_expiring_soon">Próximo</string>
-    <string name="dashboard_filter_expired">Caducado</string>
-    <string name="dashboard_clear_filters">Limpiar filtros</string>
+  <string name="dashboard_screen_title">Panel</string>
+  <string name="products_screen_title">Categorías</string>
+  <string name="dashboard_action_collapse">Colapsar</string>
+  <string name="dashboard_action_expand">Expandir</string>
+  <string name="dashboard_search_placeholder">Buscar categorías…</string>
+  <string name="dashboard_filter_fresh">Fresco</string>
+  <string name="dashboard_filter_expiring_soon">Próximo</string>
+  <string name="dashboard_filter_expired">Caducado</string>
+  <string name="dashboard_clear_filters">Limpiar filtros</string>
 
-    <string name="dashboard_section_expired">Caducado</string>
-    <string name="dashboard_section_expiring_soon">Próximo</string>
-    <string name="dashboard_section_fresh">Fresco</string>
-    <string name="dashboard_section_frozen">Congelado</string>
-    <string name="dashboard_section_consumed">Consumido</string>
-    <string name="dashboard_section_empty">Vacío</string>
+  <string name="dashboard_section_expired">Caducado</string>
+  <string name="dashboard_section_expiring_soon">Próximo</string>
+  <string name="dashboard_section_fresh">Fresco</string>
+  <string name="dashboard_section_frozen">Congelado</string>
+  <string name="dashboard_section_consumed">Consumido</string>
+  <string name="dashboard_section_empty">Vacío</string>
 
-    <string name="filtered_items_by_status_title">Artículos %1$s</string>
-    <string name="filtered_items_empty">No hay artículos que coincidan con este filtro</string>
-    <string name="filtered_items_count">%1$d artículos</string>
+  <string name="filtered_items_by_status_title">Artículos %1$s</string>
+  <string name="filtered_items_empty">No hay artículos que coincidan con este filtro</string>
+  <string name="filtered_items_count">%1$d artículos</string>
 
-    <string name="products_list_items_frozen">%1$d artículos congelados</string>
+  <string name="products_list_items_frozen">%1$d artículos congelados</string>
 
-    <string  name="settings_screen_title">Configuración</string>
-    <string name="settings_appearance_title">Apariencia</string>
-    <string name="settings_appearance_description">Tema, colores y visualización</string>
-    <string name="settings_notifications_title">Notificaciones</string>
-    <string name="settings_notifications_description">Gestionar preferencias de notificaciones</string>
-    <string name="settings_debug_title">Depuración</string>
-    <string name="settings_debug_description">Herramientas de desarrollo y depuración</string>
-    <string name="debug_fake_data_success">Datos de prueba creados exitosamente</string>
-    <string name="settings_about_title">Acerca de</string>
-    <string name="settings_about_description">Información y créditos de la aplicación</string>
-    <string name="settings_backup_title">Respaldo</string>
-    <string name="settings_backup_description">Exportar y restaurar tus datos</string>
-    <string name="settings_privacy_title">Privacidad</string>
-    <string name="settings_privacy_description">Gestionar consentimiento y preferencias de datos</string>
+  <string name="settings_screen_title">Configuración</string>
+  <string name="settings_appearance_title">Apariencia</string>
+  <string name="settings_appearance_description">Tema, colores y visualización</string>
+  <string name="settings_notifications_title">Notificaciones</string>
+  <string name="settings_notifications_description">Gestionar preferencias de notificaciones</string>
+  <string name="settings_debug_title">Depuración</string>
+  <string name="settings_debug_description">Herramientas de desarrollo y depuración</string>
+  <string name="debug_fake_data_success">Datos de prueba creados exitosamente</string>
+  <string name="debug_fake_playstore_data_success">PlayStore data generada correctamente</string>
+  <string name="debug_error">Error</string>
 
-    <string name="dashboard_fab_manual">Manual</string>
-    <string name="dashboard_fab_ai">IA</string>
-    <string name="dashboard_ai_title">Añadir Categorías con IA</string>
-    <string name="dashboard_ai_prompt_hint">Describe lo que compraste</string>
-    <string name="dashboard_ai_prompt_example">ej., "2 tiramisú (categoría postres) caduca mañana"</string>
-    <string name="dashboard_ai_generate_button">Generar</string>
-    <string name="dashboard_ai_char_counter">%1$d / 500</string>
-    <string name="dashboard_ai_success">Creadas %1$d categorías, %2$d productos, %3$d artículos</string>
-    <string name="dashboard_ai_generating">Generando categorías…</string>
-    <string name="dashboard_ai_error_generic">Error al generar categorías</string>
+  <string name="settings_about_title">Acerca de</string>
+  <string name="settings_about_description">Información y créditos de la aplicación</string>
+  <string name="settings_backup_title">Respaldo</string>
+  <string name="settings_backup_description">Exportar y restaurar tus datos</string>
+  <string name="settings_privacy_title">Privacidad</string>
+  <string name="settings_privacy_description">Gestionar consentimiento y preferencias de datos</string>
 
-    <string name="dashboard_ai_review_title">Revisar Categorías</string>
-    <string name="dashboard_ai_review_description">Se encontraron %1$d categorías coincidentes. Revisa antes de añadir:</string>
-    <string name="dashboard_ai_review_match_score">%1$d%% coincidencia</string>
-    <string name="dashboard_ai_review_will_add">Se añadirán %1$d productos, %2$d artículos</string>
-    <string name="dashboard_ai_review_new_products">Nuevas Categorías</string>
-    <string name="dashboard_ai_review_new_product">Se creará como nueva categoría</string>
-    <string name="dashboard_ai_review_cancel">Cancelar</string>
-    <string name="dashboard_ai_review_confirm">Confirmar</string>
+  <string name="dashboard_fab_manual">Manual</string>
+  <string name="dashboard_fab_ai">IA</string>
+  <string name="dashboard_ai_title">Añadir Categorías con IA</string>
+  <string name="dashboard_ai_prompt_hint">Describe lo que compraste</string>
+  <string name="dashboard_ai_prompt_example">ej., "2 tiramisú (categoría postres) caduca mañana"</string>
+  <string name="dashboard_ai_generate_button">Generar</string>
+  <string name="dashboard_ai_char_counter">%1$d / 500</string>
+  <string name="dashboard_ai_success">Creadas %1$d categorías, %2$d productos, %3$d artículos</string>
+  <string name="dashboard_ai_generating">Generando categorías…</string>
+  <string name="dashboard_ai_error_generic">Error al generar categorías</string>
 
-    <string name="settings_group_appearance">Apariencia</string>
-    <string name="settings_theme_title">Tema</string>
-    <string name="settings_theme_light">Claro</string>
-    <string name="settings_theme_dark">Oscuro</string>
-    <string name="settings_theme_system">Sistema</string>
-    <string name="settings_dynamic_colors">Colores dinámicos</string>
-    <string name="settings_calendar_options">Opciones de calendario</string>
-    <string name="settings_first_day_of_week_title">Primer día de la semana</string>
+  <string name="dashboard_ai_review_title">Revisar Categorías</string>
+  <string name="dashboard_ai_review_description">Se encontraron %1$d categorías coincidentes. Revisa antes de añadir:</string>
+  <string name="dashboard_ai_review_match_score">%1$d%% coincidencia</string>
+  <string name="dashboard_ai_review_will_add">Se añadirán %1$d productos, %2$d artículos</string>
+  <string name="dashboard_ai_review_new_products">Nuevas Categorías</string>
+  <string name="dashboard_ai_review_new_product">Se creará como nueva categoría</string>
+  <string name="dashboard_ai_review_cancel">Cancelar</string>
+  <string name="dashboard_ai_review_confirm">Confirmar</string>
 
-    <string name="settings_group_expiration_colors">Colores de caducidad</string>
-    <string name="settings_color_scheme_title">Esquema de color</string>
-    <string name="settings_color_scheme_vibrant">Vibrante</string>
-    <string name="settings_color_scheme_harmony">Armonico</string>
-    <string name="settings_expiration_legend_fresh">Fresco</string>
-    <string name="settings_expiration_legend_expiring_soon">Próximo</string>
-    <string name="settings_expiration_legend_expired">Caducado</string>
-    <string name="settings_expiration_legend_frozen">Congelado</string>
-    <string name="settings_expiration_legend_consumed">Consumido</string>
+  <string name="settings_group_appearance">Apariencia</string>
+  <string name="settings_theme_title">Tema</string>
+  <string name="settings_theme_light">Claro</string>
+  <string name="settings_theme_dark">Oscuro</string>
+  <string name="settings_theme_system">Sistema</string>
+  <string name="settings_dynamic_colors">Colores dinámicos</string>
+  <string name="settings_calendar_options">Opciones de calendario</string>
+  <string name="settings_first_day_of_week_title">Primer día de la semana</string>
 
-    <string name="settings_group_notifications">Notificaciones</string>
-    <string name="settings_enable_notifications">Activar notificaciones</string>
+  <string name="settings_group_expiration_colors">Colores de caducidad</string>
+  <string name="settings_color_scheme_title">Esquema de color</string>
+  <string name="settings_color_scheme_vibrant">Vibrante</string>
+  <string name="settings_color_scheme_harmony">Armonico</string>
+  <string name="settings_expiration_legend_fresh">Fresco</string>
+  <string name="settings_expiration_legend_expiring_soon">Próximo</string>
+  <string name="settings_expiration_legend_expired">Caducado</string>
+  <string name="settings_expiration_legend_frozen">Congelado</string>
+  <string name="settings_expiration_legend_consumed">Consumido</string>
 
-    <string name="settings_group_privacy">Privacidad y Datos</string>
-    <string name="settings_privacy_screen_title">Privacidad</string>
-    <string name="settings_privacy_analytics_title">Análisis</string>
-    <string name="settings_privacy_analytics_description">Compartir datos de uso anónimos para ayudar a mejorar la aplicación</string>
-    <string name="settings_privacy_info">Los cambios en esta configuración surten efecto inmediatamente. Respetamos tu privacidad y solo recopilamos datos de uso anónimos cuando otorgas permiso explícito.</string>
+  <string name="settings_group_notifications">Notificaciones</string>
+  <string name="settings_enable_notifications">Activar notificaciones</string>
 
-    <!-- Debug - Consent Settings -->
-    <string name="debug_consent_section_title">Configuración de Consentimiento (Debug)</string>
-    <string name="debug_consent_ad_storage_title">Almacenamiento de Anuncios</string>
-    <string name="debug_consent_ad_storage_description">Permitir almacenamiento de datos relacionados con anuncios</string>
-    <string name="debug_consent_ad_user_data_title">Datos de Usuario para Anuncios</string>
-    <string name="debug_consent_ad_user_data_description">Permitir compartir datos de usuario con Google para publicidad</string>
-    <string name="debug_consent_ad_personalization_title">Personalización de Anuncios</string>
-    <string name="debug_consent_ad_personalization_description">Habilitar publicidad personalizada</string>
+  <string name="settings_group_privacy">Privacidad y Datos</string>
+  <string name="settings_privacy_screen_title">Privacidad</string>
+  <string name="settings_privacy_analytics_title">Análisis</string>
+  <string name="settings_privacy_analytics_description">Compartir datos de uso anónimos para ayudar a mejorar la aplicación</string>
+  <string name="settings_privacy_info">Los cambios en esta configuración surten efecto inmediatamente. Respetamos tu privacidad y solo recopilamos datos de uso anónimos cuando otorgas permiso explícito.</string>
 
-    <!-- About section -->
-    <string name="about_version">Versión</string>
-    <string name="about_developer">Desarrollador</string>
-    <string name="about_github_link">Ver en GitHub</string>
+  <!-- Debug - Consent Settings -->
+  <string name="debug_consent_section_title">Configuración de Consentimiento (Debug)</string>
+  <string name="debug_consent_ad_storage_title">Almacenamiento de Anuncios</string>
+  <string name="debug_consent_ad_storage_description">Permitir almacenamiento de datos relacionados con anuncios</string>
+  <string name="debug_consent_ad_user_data_title">Datos de Usuario para Anuncios</string>
+  <string name="debug_consent_ad_user_data_description">Permitir compartir datos de usuario con Google para publicidad</string>
+  <string name="debug_consent_ad_personalization_title">Personalización de Anuncios</string>
+  <string name="debug_consent_ad_personalization_description">Habilitar publicidad personalizada</string>
 
-    <string name="create_category_screen_title">Crear Categoría</string>
-    <string name="create_category_name_label">Nombre de la Categoría</string>
-    <string name="create_category_name_placeholder">Introduce el nombre de la categoría</string>
-    <string name="create_category_description_label">Descripción</string>
-    <string name="create_category_description_placeholder">Introduce la descripción</string>
-    <string name="create_category_expiration_date_label">Fecha de Caducidad</string>
-    <string name="create_category_expiration_date_placeholder">DD/MM/AAAA</string>
-    <string name="create_category_button_cancel">Cancelar</string>
-    <string name="create_category_button_create">Crear</string>
-    <string name="create_category_content_description_back">Atrás</string>
-    <string name="create_category_items_title">Elementos de la Categoría</string>
-    <string name="create_category_item_identifier_label">Identificador</string>
-    <string name="create_category_item_identifier_placeholder">ej., Lote #1, Unidad A</string>
-    <string name="create_category_add_item">Añadir Elemento</string>
-    <string name="create_category_remove_item">Eliminar</string>
-    <string name="create_category_item_number">Elemento %1$d</string>
-    <string name="create_category_item_quantity_label">Cantidad</string>
-    <string name="create_category_item_quantity_placeholder">1</string>
-    <string name="create_category_item_split_preview">Se crearán %1$d elementos</string>
+  <!-- About section -->
+  <string name="about_version">Versión</string>
+  <string name="about_developer">Desarrollador</string>
+  <string name="about_github_link">Ver en GitHub</string>
 
-    <!-- Category Detail -->
-    <string name="category_detail_auto_identifier_item">Artículo</string>
-    <string name="category_detail_add_product_dialog_title">Añadir Producto</string>
-    <string name="category_detail_add_product_dialog_label">Nombre del Producto</string>
-    <string name="category_detail_add_product_dialog_placeholder">Introduce el nombre del producto</string>
-    <string name="category_detail_add_product_dialog_cancel">Cancelar</string>
-    <string name="category_detail_add_product_dialog_add">Añadir</string>
-    <string name="category_detail_product_empty_state">Aún no hay elementos. Toca el botón + para añadir uno.</string>
-    <string name="category_detail_empty_category_title">Aún no hay Productos ni Elementos</string>
-    <string name="category_detail_empty_category_message">Comienza creando un producto o añadiendo un elemento directamente</string>
-    <string name="category_detail_empty_category_create_product">Crear Producto</string>
-    <string name="category_detail_empty_category_add_item">Añadir Elemento</string>
-    <string name="category_detail_product_other">Otras</string>
-    <string name="category_detail_add_item_title">Añadir Elemento</string>
-    <string name="category_detail_add_item_button">Añadir elemento</string>
-    <string name="category_detail_product_actions_tooltip">Acciones de producto</string>
-    <string name="category_detail_add_item_back">Atrás</string>
-    <string name="category_detail_add_item_add_other">Añadir Otra</string>
-    <string name="category_detail_add_item_product_label">Producto</string>
-    <string name="category_detail_add_item_product_placeholder">Escribe para buscar o introduce nuevo producto</string>
-    <string name="category_detail_add_item_identifier_label">Identificador</string>
-    <string name="category_detail_add_item_identifier_placeholder">Opcional si se selecciona producto</string>
-    <string name="category_detail_add_item_expiration_date_label">Fecha de Caducidad</string>
-    <string name="category_detail_add_item_expiration_date_placeholder">Selecciona fecha de caducidad</string>
-    <string name="category_detail_add_item_save">Guardar</string>
-    <string name="category_detail_add_item_date_picker_ok">Aceptar</string>
-    <string name="category_detail_add_item_date_picker_cancel">Cancelar</string>
-    <string name="category_detail_add_item_quantity_label">Cantidad</string>
-    <string name="category_detail_add_item_quantity_more">Más</string>
-    <string name="category_detail_add_item_quantity_custom_label">Número de elementos</string>
-    <string name="category_detail_action_menu">Opciones de categoría</string>
-    <string name="category_detail_action_consume">Consumir</string>
-    <string name="category_detail_action_freeze">Congelar</string>
-    <string name="category_detail_action_unfreeze">Descongelar</string>
-    <string name="category_detail_action_reschedule">Reprogramar</string>
-    <string name="category_detail_action_delete">Eliminar</string>
-    <string name="category_detail_frozen_items">Congelados</string>
-    <string name="category_detail_consumed_items">Consumidos</string>
-    <string name="category_detail_section_frozen">Artículos congelados</string>
-    <string name="category_detail_section_consumed">Artículos consumidos</string>
-    <string name="category_detail_consumed_item_placeholder">No hay acciones disponibles para elementos consumidos</string>
+  <string name="create_category_screen_title">Crear Categoría</string>
+  <string name="create_category_name_label">Nombre de la Categoría</string>
+  <string name="create_category_name_placeholder">Introduce el nombre de la categoría</string>
+  <string name="create_category_description_label">Descripción</string>
+  <string name="create_category_description_placeholder">Introduce la descripción</string>
+  <string name="create_category_expiration_date_label">Fecha de Caducidad</string>
+  <string name="create_category_expiration_date_placeholder">DD/MM/AAAA</string>
+  <string name="create_category_button_cancel">Cancelar</string>
+  <string name="create_category_button_create">Crear</string>
+  <string name="create_category_content_description_back">Atrás</string>
+  <string name="create_category_items_title">Elementos de la Categoría</string>
+  <string name="create_category_item_identifier_label">Identificador</string>
+  <string name="create_category_item_identifier_placeholder">ej., Lote #1, Unidad A</string>
+  <string name="create_category_add_item">Añadir Elemento</string>
+  <string name="create_category_remove_item">Eliminar</string>
+  <string name="create_category_item_number">Elemento %1$d</string>
+  <string name="create_category_item_quantity_label">Cantidad</string>
+  <string name="create_category_item_quantity_placeholder">1</string>
+  <string name="create_category_item_split_preview">Se crearán %1$d elementos</string>
 
-    <!-- Category Detail AI -->
-    <string name="category_detail_ai_title">Añadir Productos con IA</string>
-    <string name="category_detail_ai_prompt_hint">Describe los productos o artículos</string>
-    <string name="category_detail_ai_prompt_example">ej., "3 botellas de 1L leche entera, caduca en 5 días"</string>
-    <string name="category_detail_ai_generate_button">Generar</string>
-    <string name="category_detail_ai_generating">Generando productos…</string>
-    <string name="category_detail_ai_success">Creados %1$d productos, %2$d artículos</string>
-    <string name="category_detail_ai_review_title">Revisar Productos</string>
-    <string name="category_detail_ai_review_description">Generados %1$d productos y %2$d artículos. Revisa antes de añadir:</string>
-    <string name="category_detail_ai_review_confirm">Añadir a Categoría</string>
-    <string name="category_detail_ai_review_cancel">Cancelar</string>
-    <string name="category_detail_ai_error_generic">Error al generar productos</string>
+  <!-- Category Detail -->
+  <string name="category_detail_auto_identifier_item">Artículo</string>
+  <string name="category_detail_add_product_dialog_title">Añadir Producto</string>
+  <string name="category_detail_add_product_dialog_label">Nombre del Producto</string>
+  <string name="category_detail_add_product_dialog_placeholder">Introduce el nombre del producto</string>
+  <string name="category_detail_add_product_dialog_cancel">Cancelar</string>
+  <string name="category_detail_add_product_dialog_add">Añadir</string>
+  <string name="category_detail_product_empty_state">Aún no hay elementos. Toca el botón + para añadir uno.</string>
+  <string name="category_detail_empty_category_title">Aún no hay Productos ni Elementos</string>
+  <string name="category_detail_empty_category_message">Comienza creando un producto o añadiendo un elemento directamente</string>
+  <string name="category_detail_empty_category_create_product">Crear Producto</string>
+  <string name="category_detail_empty_category_add_item">Añadir Elemento</string>
+  <string name="category_detail_product_other">Otras</string>
+  <string name="category_detail_add_item_title">Añadir Elemento</string>
+  <string name="category_detail_add_item_button">Añadir elemento</string>
+  <string name="category_detail_product_actions_tooltip">Acciones de producto</string>
+  <string name="category_detail_add_item_back">Atrás</string>
+  <string name="category_detail_add_item_add_other">Añadir Otra</string>
+  <string name="category_detail_add_item_product_label">Producto</string>
+  <string name="category_detail_add_item_product_placeholder">Escribe para buscar o introduce nuevo producto</string>
+  <string name="category_detail_add_item_identifier_label">Identificador</string>
+  <string name="category_detail_add_item_identifier_placeholder">Opcional si se selecciona producto</string>
+  <string name="category_detail_add_item_expiration_date_label">Fecha de Caducidad</string>
+  <string name="category_detail_add_item_expiration_date_placeholder">Selecciona fecha de caducidad</string>
+  <string name="category_detail_add_item_save">Guardar</string>
+  <string name="category_detail_add_item_date_picker_ok">Aceptar</string>
+  <string name="category_detail_add_item_date_picker_cancel">Cancelar</string>
+  <string name="category_detail_add_item_quantity_label">Cantidad</string>
+  <string name="category_detail_add_item_quantity_more">Más</string>
+  <string name="category_detail_add_item_quantity_custom_label">Número de elementos</string>
+  <string name="category_detail_action_menu">Opciones de categoría</string>
+  <string name="category_detail_action_consume">Consumir</string>
+  <string name="category_detail_action_freeze">Congelar</string>
+  <string name="category_detail_action_unfreeze">Descongelar</string>
+  <string name="category_detail_action_reschedule">Reprogramar</string>
+  <string name="category_detail_action_delete">Eliminar</string>
+  <string name="category_detail_frozen_items">Congelados</string>
+  <string name="category_detail_consumed_items">Consumidos</string>
+  <string name="category_detail_section_frozen">Artículos congelados</string>
+  <string name="category_detail_section_consumed">Artículos consumidos</string>
+  <string name="category_detail_consumed_item_placeholder">No hay acciones disponibles para elementos consumidos</string>
 
-    <!-- Relative time values -->
-    <string name="relative_time_today">Hoy</string>
-    <string name="relative_time_tomorrow">Mañana</string>
-    <string name="relative_time_yesterday">Ayer</string>
-    <string name="relative_time_in_days">En %1$d días</string>
-    <string name="relative_time_in_a_week">En una semana</string>
-    <string name="relative_time_in_weeks">En %1$d semanas</string>
-    <string name="relative_time_in_a_month">En un mes</string>
-    <string name="relative_time_in_months">En %1$d meses</string>
-    <string name="relative_time_days_ago">Hace %1$d días</string>
-    <string name="relative_time_a_week_ago">Hace una semana</string>
-    <string name="relative_time_weeks_ago">Hace %1$d semanas</string>
-    <string name="relative_time_a_month_ago">Hace un mes</string>
-    <string name="relative_time_months_ago">Hace %1$d meses</string>
+  <!-- Category Detail AI -->
+  <string name="category_detail_ai_title">Añadir Productos con IA</string>
+  <string name="category_detail_ai_prompt_hint">Describe los productos o artículos</string>
+  <string name="category_detail_ai_prompt_example">ej., "3 botellas de 1L leche entera, caduca en 5 días"</string>
+  <string name="category_detail_ai_generate_button">Generar</string>
+  <string name="category_detail_ai_generating">Generando productos…</string>
+  <string name="category_detail_ai_success">Creados %1$d productos, %2$d artículos</string>
+  <string name="category_detail_ai_review_title">Revisar Productos</string>
+  <string name="category_detail_ai_review_description">Generados %1$d productos y %2$d artículos. Revisa antes de añadir:</string>
+  <string name="category_detail_ai_review_confirm">Añadir a Categoría</string>
+  <string name="category_detail_ai_review_cancel">Cancelar</string>
+  <string name="category_detail_ai_error_generic">Error al generar productos</string>
 
-    <!-- Language values -->
-    <string name="language_english">English</string>
-    <string name="language_spanish">Español</string>
-    <string name="language_catalan">Català</string>
+  <!-- Relative time values -->
+  <string name="relative_time_today">Hoy</string>
+  <string name="relative_time_tomorrow">Mañana</string>
+  <string name="relative_time_yesterday">Ayer</string>
+  <string name="relative_time_in_days">En %1$d días</string>
+  <string name="relative_time_in_a_week">En una semana</string>
+  <string name="relative_time_in_weeks">En %1$d semanas</string>
+  <string name="relative_time_in_a_month">En un mes</string>
+  <string name="relative_time_in_months">En %1$d meses</string>
+  <string name="relative_time_days_ago">Hace %1$d días</string>
+  <string name="relative_time_a_week_ago">Hace una semana</string>
+  <string name="relative_time_weeks_ago">Hace %1$d semanas</string>
+  <string name="relative_time_a_month_ago">Hace un mes</string>
+  <string name="relative_time_months_ago">Hace %1$d meses</string>
 
-    <!-- Item action errors -->
-    <string name="error_item_not_found">Elemento no encontrado</string>
-    <string name="error_cannot_freeze_expired">No se pueden congelar artículos caducados</string>
-    <string name="error_cannot_consume_expired">No es seguro consumir productos caducados</string>
-    <string name="error_cannot_consume_expired_message">Este artículo ha caducado y no puede ser consumido. ¿Deseas eliminarlo en su lugar?</string>
-    <string name="error_cannot_consume_expired_positive">Eliminar</string>
-    <string name="warning_consume_expired_title">¿Consumir Artículo que Caduca Hoy?</string>
-    <string name="warning_consume_expired_message">Este artículo caduca hoy. Por favor, asegúrate de que el producto esté en buen estado antes de consumirlo. ¿Deseas marcarlo como consumido?</string>
-    <string name="warning_consume_expired_positive">Consumir</string>
-    <string name="warning_consume_expired_negative">Cancelar</string>
+  <!-- Language values -->
+  <string name="language_english">English</string>
+  <string name="language_spanish">Español</string>
+  <string name="language_catalan">Català</string>
 
-    <!-- Item action success messages -->
-    <string name="success_item_consumed">Elemento consumido</string>
-    <string name="success_item_frozen">Elemento congelado</string>
-    <string name="success_item_unfrozen">Elemento descongelado</string>
-    <string name="success_item_rescheduled">Elemento reprogramado</string>
-    <string name="success_item_deleted">Elemento eliminado</string>
+  <!-- Item action errors -->
+  <string name="error_item_not_found">Elemento no encontrado</string>
+  <string name="error_cannot_freeze_expired">No se pueden congelar artículos caducados</string>
+  <string name="error_cannot_consume_expired">No es seguro consumir productos caducados</string>
+  <string name="error_cannot_consume_expired_message">Este artículo ha caducado y no puede ser consumido. ¿Deseas eliminarlo en su lugar?</string>
+  <string name="error_cannot_consume_expired_positive">Eliminar</string>
+  <string name="warning_consume_expired_title">¿Consumir Artículo que Caduca Hoy?</string>
+  <string name="warning_consume_expired_message">Este artículo caduca hoy. Por favor, asegúrate de que el producto esté en buen estado antes de consumirlo. ¿Deseas marcarlo como consumido?</string>
+  <string name="warning_consume_expired_positive">Consumir</string>
+  <string name="warning_consume_expired_negative">Cancelar</string>
 
-    <!-- Item action error messages -->
-    <string name="error_consume_item_failed">Error al consumir elemento</string>
-    <string name="error_freeze_item_failed">Error al congelar elemento</string>
-    <string name="error_unfreeze_item_failed">Error al descongelar elemento</string>
-    <string name="error_reschedule_item_failed">Error al reprogramar elemento</string>
-    <string name="error_delete_item_failed">Error al eliminar elemento</string>
-    <string name="error_create_product_failed">Error al crear producto</string>
+  <!-- Item action success messages -->
+  <string name="success_item_consumed">Elemento consumido</string>
+  <string name="success_item_frozen">Elemento congelado</string>
+  <string name="success_item_unfrozen">Elemento descongelado</string>
+  <string name="success_item_rescheduled">Elemento reprogramado</string>
+  <string name="success_item_deleted">Elemento eliminado</string>
 
-    <!-- Category deletion -->
-    <string name="category_detail_delete_dialog_title">¿Eliminar Categoría?</string>
-    <string name="category_detail_delete_dialog_message">Esto eliminará permanentemente esta categoría y todos sus productos y elementos. Esta acción no se puede deshacer.</string>
-    <string name="category_detail_delete_dialog_delete">Eliminar</string>
-    <string name="category_detail_delete_dialog_cancel">Cancelar</string>
-    <string name="success_category_deleted">Categoría eliminada</string>
-    <string name="error_delete_category_failed">Error al eliminar categoría</string>
+  <!-- Item action error messages -->
+  <string name="error_consume_item_failed">Error al consumir elemento</string>
+  <string name="error_freeze_item_failed">Error al congelar elemento</string>
+  <string name="error_unfreeze_item_failed">Error al descongelar elemento</string>
+  <string name="error_reschedule_item_failed">Error al reprogramar elemento</string>
+  <string name="error_delete_item_failed">Error al eliminar elemento</string>
+  <string name="error_create_product_failed">Error al crear producto</string>
 
-    <!-- Product deletion -->
-    <string name="product_delete_menu">Opciones de producto</string>
-    <string name="product_clear_items_action">Limpiar Elementos</string>
-    <string name="product_clear_items_dialog_title">¿Limpiar Elementos?</string>
-    <string name="product_clear_items_dialog_message">¿Qué te gustaría limpiar de este producto?</string>
-    <string name="product_clear_consumed_only">Limpiar Elementos Consumidos</string>
-    <string name="product_clear_consumed_only_desc">Eliminar solo elementos consumidos</string>
-    <string name="product_clear_all_items">Limpiar Todos los Elementos</string>
-    <string name="product_clear_all_items_desc">Eliminar todos los elementos (consumidos, frescos, caducados)</string>
-    <string name="product_delete_action">Eliminar Producto</string>
-    <string name="product_delete_dialog_title">¿Eliminar Producto?</string>
-    <string name="product_delete_dialog_message">Esto eliminará permanentemente este producto. Los artículos se moverán a la pestaña \"Otros\". Esta acción no se puede deshacer.</string>
-    <string name="product_delete_dialog_delete">Eliminar</string>
-    <string name="product_delete_dialog_cancel">Cancelar</string>
-    <string name="success_product_deleted">Producto eliminado</string>
-    <string name="error_delete_product_failed">Error al eliminar producto</string>
+  <!-- Category deletion -->
+  <string name="category_detail_delete_dialog_title">¿Eliminar Categoría?</string>
+  <string name="category_detail_delete_dialog_message">Esto eliminará permanentemente esta categoría y todos sus productos y elementos. Esta acción no se puede deshacer.</string>
+  <string name="category_detail_delete_dialog_delete">Eliminar</string>
+  <string name="category_detail_delete_dialog_cancel">Cancelar</string>
+  <string name="success_category_deleted">Categoría eliminada</string>
+  <string name="error_delete_category_failed">Error al eliminar categoría</string>
 
-    <!-- Product deletion with items -->
-    <string name="product_delete_with_items_title">¿Eliminar Producto con %1$d Elementos?</string>
-    <string name="product_delete_with_items_message">Este producto tiene elementos activos. Elige qué hacer con ellos:</string>
-    <string name="product_delete_option_move_to_standalone">Mover a \"Otros\"</string>
-    <string name="product_delete_option_move_to_standalone_desc">Los elementos se convertirán en elementos independientes en la pestaña \"Otros\"</string>
-    <string name="product_delete_option_move_to_product">Mover a Otro Producto</string>
-    <string name="product_delete_option_move_to_product_desc">Seleccionar un producto para transferir todos los elementos</string>
-    <string name="product_delete_option_cascade_delete">Eliminar Elementos</string>
-    <string name="product_delete_option_cascade_delete_desc">Eliminar permanentemente todos los elementos con este producto</string>
-    <string name="product_delete_select_target_title">Seleccionar Producto de Destino</string>
-    <string name="product_delete_select_target_message">Todos los %1$d elementos se moverán al producto seleccionado:</string>
-    <string name="product_delete_select_target_back">Atrás</string>
+  <!-- Product deletion -->
+  <string name="product_delete_menu">Opciones de producto</string>
+  <string name="product_clear_items_action">Limpiar Elementos</string>
+  <string name="product_clear_items_dialog_title">¿Limpiar Elementos?</string>
+  <string name="product_clear_items_dialog_message">¿Qué te gustaría limpiar de este producto?</string>
+  <string name="product_clear_consumed_only">Limpiar Elementos Consumidos</string>
+  <string name="product_clear_consumed_only_desc">Eliminar solo elementos consumidos</string>
+  <string name="product_clear_all_items">Limpiar Todos los Elementos</string>
+  <string name="product_clear_all_items_desc">Eliminar todos los elementos (consumidos, frescos, caducados)</string>
+  <string name="product_delete_action">Eliminar Producto</string>
+  <string name="product_delete_dialog_title">¿Eliminar Producto?</string>
+  <string name="product_delete_dialog_message">Esto eliminará permanentemente este producto. Los artículos se moverán a la pestaña \"Otros\". Esta acción no se puede deshacer.</string>
+  <string name="product_delete_dialog_delete">Eliminar</string>
+  <string name="product_delete_dialog_cancel">Cancelar</string>
+  <string name="success_product_deleted">Producto eliminado</string>
+  <string name="error_delete_product_failed">Error al eliminar producto</string>
 
-    <!-- Clear items -->
-    <string name="success_items_cleared">Elementos limpiados</string>
-    <string name="error_clear_items_failed">Error al limpiar elementos</string>
+  <!-- Product deletion with items -->
+  <string name="product_delete_with_items_title">¿Eliminar Producto con %1$d Elementos?</string>
+  <string name="product_delete_with_items_message">Este producto tiene elementos activos. Elige qué hacer con ellos:</string>
+  <string name="product_delete_option_move_to_standalone">Mover a \"Otros\"</string>
+  <string name="product_delete_option_move_to_standalone_desc">Los elementos se convertirán en elementos independientes en la pestaña \"Otros\"</string>
+  <string name="product_delete_option_move_to_product">Mover a Otro Producto</string>
+  <string name="product_delete_option_move_to_product_desc">Seleccionar un producto para transferir todos los elementos</string>
+  <string name="product_delete_option_cascade_delete">Eliminar Elementos</string>
+  <string name="product_delete_option_cascade_delete_desc">Eliminar permanentemente todos los elementos con este producto</string>
+  <string name="product_delete_select_target_title">Seleccionar Producto de Destino</string>
+  <string name="product_delete_select_target_message">Todos los %1$d elementos se moverán al producto seleccionado:</string>
+  <string name="product_delete_select_target_back">Atrás</string>
 
-    <!-- Onboarding -->
-    <string name="onboarding_welcome_title">Bienvenido a Caducity</string>
-    <string name="onboarding_welcome_message">Rastrea tus alimentos y reduce el desperdicio</string>
-    <string name="onboarding_features_title">Características Clave</string>
-    <string name="onboarding_features_track">Rastrea las fechas de caducidad de todas tus categorías</string>
-    <string name="onboarding_features_notify">Recibe notificaciones antes de que caduquen las categorías</string>
-    <string name="onboarding_features_dashboard">Visualiza estadísticas e información en tu panel</string>
-    <string name="onboarding_permissions_title">Mantente Informado</string>
-    <string name="onboarding_permissions_message">Permite las notificaciones para recibir alertas oportunas sobre categorías que caducan</string>
-    <string name="onboarding_permissions_granted">Notificaciones activadas</string>
-    <string name="onboarding_permissions_automatic">Las notificaciones están activadas automáticamente</string>
-    <string name="onboarding_tutorial_title">Primeros Pasos</string>
-    <string name="onboarding_tutorial_message">Añade tu primera categoría para empezar a rastrear fechas de caducidad</string>
-    <string name="onboarding_disclaimer_title">Aviso Importante</string>
-    <string name="onboarding_disclaimer_message">Esta aplicación ayuda a rastrear las fechas de caducidad de productos pero no sustituye las prácticas adecuadas de seguridad alimentaria. Usa siempre tu criterio y sigue las pautas de seguridad alimentaria. Los desarrolladores no son responsables de ningún problema de salud derivado del consumo de productos caducados.</string>
+  <!-- Clear items -->
+  <string name="success_items_cleared">Elementos limpiados</string>
+  <string name="error_clear_items_failed">Error al limpiar elementos</string>
 
-    <!-- Consent Screen -->
-    <string name="onboarding_consent_title">Tu Privacidad es Importante</string>
-    <string name="onboarding_consent_description">Ayúdanos a mejorar la aplicación compartiendo datos de uso anónimos. Puedes cambiar esto más tarde en la configuración.</string>
-    <string name="onboarding_consent_analytics_title">Análisis</string>
-    <string name="onboarding_consent_analytics_description">Compartir datos de uso anónimos para ayudarnos a mejorar la aplicación</string>
-    <string name="onboarding_consent_privacy_note">Respetamos tu privacidad. No se recopila ni comparte ningún dato personal con terceros.</string>
-    <string name="onboarding_button_next">Siguiente</string>
-    <string name="onboarding_button_skip">Omitir</string>
-    <string name="onboarding_button_previous">Anterior</string>
-    <string name="onboarding_button_understand">Entiendo</string>
-    <string name="onboarding_button_allow_notifications">Permitir Notificaciones</string>
+  <!-- Onboarding -->
+  <string name="onboarding_welcome_title">Bienvenido a Caducity</string>
+  <string name="onboarding_welcome_message">Rastrea tus alimentos y reduce el desperdicio</string>
+  <string name="onboarding_features_title">Características Clave</string>
+  <string name="onboarding_features_track">Rastrea las fechas de caducidad de todas tus categorías</string>
+  <string name="onboarding_features_notify">Recibe notificaciones antes de que caduquen las categorías</string>
+  <string name="onboarding_features_dashboard">Visualiza estadísticas e información en tu panel</string>
+  <string name="onboarding_permissions_title">Mantente Informado</string>
+  <string name="onboarding_permissions_message">Permite las notificaciones para recibir alertas oportunas sobre categorías que caducan</string>
+  <string name="onboarding_permissions_granted">Notificaciones activadas</string>
+  <string name="onboarding_permissions_automatic">Las notificaciones están activadas automáticamente</string>
+  <string name="onboarding_tutorial_title">Primeros Pasos</string>
+  <string name="onboarding_tutorial_message">Añade tu primera categoría para empezar a rastrear fechas de caducidad</string>
+  <string name="onboarding_disclaimer_title">Aviso Importante</string>
+  <string name="onboarding_disclaimer_message">Esta aplicación ayuda a rastrear las fechas de caducidad de productos pero no sustituye las prácticas adecuadas de seguridad alimentaria. Usa siempre tu criterio y sigue las pautas de seguridad alimentaria. Los desarrolladores no son responsables de ningún problema de salud derivado del consumo de productos caducados.</string>
 
-    <!-- Backup & Restore -->
-    <string name="backup_screen_title">Respaldo y Restauración</string>
-    <string name="backup_export_title">Exportar Respaldo</string>
-    <string name="backup_export_description">Guardar tus datos en un archivo</string>
-    <string name="backup_restore_title">Restaurar Respaldo</string>
-    <string name="backup_restore_description">Cargar datos desde un archivo de respaldo</string>
-    <string name="backup_restore_warning_title">¿Reemplazar Todos los Datos?</string>
-    <string name="backup_restore_warning_message">Esto eliminará todos los datos actuales y restaurará desde el respaldo. Esta acción no se puede deshacer.</string>
-    <string name="backup_restore_confirm">Restaurar</string>
-    <string name="backup_cancel">Cancelar</string>
-    <string name="backup_export_success">Respaldo exportado exitosamente</string>
-    <string name="backup_restore_success">Respaldo restaurado exitosamente</string>
-    <string name="backup_error_invalid_file">Archivo de respaldo inválido</string>
-    <string name="backup_error_version_mismatch">Versión de respaldo incompatible</string>
-    <string name="backup_error_export_failed">Error al exportar respaldo</string>
-    <string name="backup_error_restore_failed">Error al restaurar respaldo</string>
+  <!-- Consent Screen -->
+  <string name="onboarding_consent_title">Tu Privacidad es Importante</string>
+  <string name="onboarding_consent_description">Ayúdanos a mejorar la aplicación compartiendo datos de uso anónimos. Puedes cambiar esto más tarde en la configuración.</string>
+  <string name="onboarding_consent_analytics_title">Análisis</string>
+  <string name="onboarding_consent_analytics_description">Compartir datos de uso anónimos para ayudarnos a mejorar la aplicación</string>
+  <string name="onboarding_consent_privacy_note">Respetamos tu privacidad. No se recopila ni comparte ningún dato personal con terceros.</string>
+  <string name="onboarding_button_next">Siguiente</string>
+  <string name="onboarding_button_skip">Omitir</string>
+  <string name="onboarding_button_previous">Anterior</string>
+  <string name="onboarding_button_understand">Entiendo</string>
+  <string name="onboarding_button_allow_notifications">Permitir Notificaciones</string>
 
-    <string name="dashboard_add">Añadir</string>
+  <!-- Backup & Restore -->
+  <string name="backup_screen_title">Respaldo y Restauración</string>
+  <string name="backup_export_title">Exportar Respaldo</string>
+  <string name="backup_export_description">Guardar tus datos en un archivo</string>
+  <string name="backup_restore_title">Restaurar Respaldo</string>
+  <string name="backup_restore_description">Cargar datos desde un archivo de respaldo</string>
+  <string name="backup_restore_warning_title">¿Reemplazar Todos los Datos?</string>
+  <string name="backup_restore_warning_message">Esto eliminará todos los datos actuales y restaurará desde el respaldo. Esta acción no se puede deshacer.</string>
+  <string name="backup_restore_confirm">Restaurar</string>
+  <string name="backup_cancel">Cancelar</string>
+  <string name="backup_export_success">Respaldo exportado exitosamente</string>
+  <string name="backup_restore_success">Respaldo restaurado exitosamente</string>
+  <string name="backup_error_invalid_file">Archivo de respaldo inválido</string>
+  <string name="backup_error_version_mismatch">Versión de respaldo incompatible</string>
+  <string name="backup_error_export_failed">Error al exportar respaldo</string>
+  <string name="backup_error_restore_failed">Error al restaurar respaldo</string>
 
-    <string name="app_name">Caducity</string>
+  <string name="dashboard_add">Añadir</string>
+
+  <string name="app_name">Caducity</string>
 </resources>

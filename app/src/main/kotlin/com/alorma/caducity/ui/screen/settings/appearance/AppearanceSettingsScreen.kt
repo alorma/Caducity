@@ -63,7 +63,7 @@ private fun AppearanceSettingsContent(
   firstDayOfWeek: DayOfWeek,
   onFirstDayOfWeekChange: (DayOfWeek) -> Unit,
   modifier: Modifier = Modifier,
-  localizedDateFormatter: LocalizedDateFormatter = koinInject(),
+  localizedDateFormatter: LocalizedDateFormatter,
 ) {
   AppScaffold(
     modifier = Modifier.then(modifier),
@@ -151,6 +151,7 @@ fun AppearanceSettingsScreenPreview() {
       AppearanceSettingsContent(
         themeMode = themeMode,
         useDynamicTheme = true,
+        localizedDateFormatter = LocalizedDateFormatter(),
         firstDayOfWeek = DayOfWeek.MONDAY,
         onThemeModeChange = {},
         onUseDynamicTheme = {},

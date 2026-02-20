@@ -1,330 +1,333 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="expiration_status_badge_fresh">Fresc</string>
-    <string name="expiration_status_badge_expiring_soon">Pròxim</string>
-    <string name="expiration_status_badge_expired">Caducat</string>
-    <string name="expiration_status_badge_frozen">Congelat</string>
-    <string name="expiration_status_badge_consumed">Consumit</string>
+  <string name="expiration_status_badge_fresh">Fresc</string>
+  <string name="expiration_status_badge_expiring_soon">Pròxim</string>
+  <string name="expiration_status_badge_expired">Caducat</string>
+  <string name="expiration_status_badge_frozen">Congelat</string>
+  <string name="expiration_status_badge_consumed">Consumit</string>
 
-    <string-array name="day_names">
-        <item>Dil</item>
-        <item>Dim</item>
-        <item>Dic</item>
-        <item>Dij</item>
-        <item>Div</item>
-        <item>Dis</item>
-        <item>Diu</item>
-    </string-array>
+  <string-array name="day_names">
+    <item>Dil</item>
+    <item>Dim</item>
+    <item>Dic</item>
+    <item>Dij</item>
+    <item>Div</item>
+    <item>Dis</item>
+    <item>Diu</item>
+  </string-array>
 
-    <string  name="dashboard_screen_title">Tauler</string>
-    <string name="products_screen_title">Categories</string>
-    <string name="dashboard_action_collapse">Col·lapsar</string>
-    <string name="dashboard_action_expand">Expandir</string>
-    <string name="dashboard_search_placeholder">Cercar categories…</string>
-    <string name="dashboard_filter_fresh">Fresc</string>
-    <string name="dashboard_filter_expiring_soon">Pròxim</string>
-    <string name="dashboard_filter_expired">Caducat</string>
-    <string name="dashboard_clear_filters">Netejar filtres</string>
+  <string name="dashboard_screen_title">Tauler</string>
+  <string name="products_screen_title">Categories</string>
+  <string name="dashboard_action_collapse">Col·lapsar</string>
+  <string name="dashboard_action_expand">Expandir</string>
+  <string name="dashboard_search_placeholder">Cercar categories…</string>
+  <string name="dashboard_filter_fresh">Fresc</string>
+  <string name="dashboard_filter_expiring_soon">Pròxim</string>
+  <string name="dashboard_filter_expired">Caducat</string>
+  <string name="dashboard_clear_filters">Netejar filtres</string>
 
-    <string name="dashboard_section_expired">Caducat</string>
-    <string name="dashboard_section_expiring_soon">Pròxim</string>
-    <string name="dashboard_section_fresh">Fresc</string>
-    <string name="dashboard_section_frozen">Congelat</string>
-    <string name="dashboard_section_consumed">Consumit</string>
-    <string name="dashboard_section_empty">Buit</string>
+  <string name="dashboard_section_expired">Caducat</string>
+  <string name="dashboard_section_expiring_soon">Pròxim</string>
+  <string name="dashboard_section_fresh">Fresc</string>
+  <string name="dashboard_section_frozen">Congelat</string>
+  <string name="dashboard_section_consumed">Consumit</string>
+  <string name="dashboard_section_empty">Buit</string>
 
-    <string name="filtered_items_by_status_title">Articles %1$s</string>
-    <string name="filtered_items_empty">No hi ha articles que coincideixin amb aquest filtre</string>
-    <string name="filtered_items_count">%1$d articles</string>
+  <string name="filtered_items_by_status_title">Articles %1$s</string>
+  <string name="filtered_items_empty">No hi ha articles que coincideixin amb aquest filtre</string>
+  <string name="filtered_items_count">%1$d articles</string>
 
-    <string name="products_list_items_frozen">%1$d articles congelats</string>
+  <string name="products_list_items_frozen">%1$d articles congelats</string>
 
-    <string  name="settings_screen_title">Configuració</string>
-    <string name="settings_appearance_title">Aparença</string>
-    <string name="settings_appearance_description">Tema, colors i visualització</string>
-    <string name="settings_notifications_title">Notificacions</string>
-    <string name="settings_notifications_description">Gestionar preferències de notificacions</string>
-    <string name="settings_debug_title">Depuració</string>
-    <string name="settings_debug_description">Eines de desenvolupament i depuració</string>
-    <string name="debug_fake_data_success">Dades de prova creades amb èxit</string>
-    <string name="settings_about_title">Quant a</string>
-    <string name="settings_about_description">Informació i crèdits de l\'aplicació</string>
-    <string name="settings_backup_title">Còpia de seguretat</string>
-    <string name="settings_backup_description">Exportar i restaurar les teves dades</string>
-    <string name="settings_privacy_title">Privacitat</string>
-    <string name="settings_privacy_description">Gestionar consentiment i preferències de dades</string>
+  <string name="settings_screen_title">Configuració</string>
+  <string name="settings_appearance_title">Aparença</string>
+  <string name="settings_appearance_description">Tema, colors i visualització</string>
+  <string name="settings_notifications_title">Notificacions</string>
+  <string name="settings_notifications_description">Gestionar preferències de notificacions</string>
+  <string name="settings_debug_title">Depuració</string>
+  <string name="settings_debug_description">Eines de desenvolupament i depuració</string>
+  <string name="debug_fake_data_success">Dades de prova creades amb èxit</string>
+  <string name="debug_fake_playstore_data_success">PlayStore data generada correctament</string>
+  <string name="debug_error">Error</string>
 
-    <string name="dashboard_fab_manual">Manual</string>
-    <string name="dashboard_fab_ai">IA</string>
-    <string name="dashboard_ai_title">Afegir Categories amb IA</string>
-    <string name="dashboard_ai_prompt_hint">Descriu el que vas comprar</string>
-    <string name="dashboard_ai_prompt_example">ex., "2 tiramisús (categoria postres) caduca demà"</string>
-    <string name="dashboard_ai_generate_button">Generar</string>
-    <string name="dashboard_ai_char_counter">%1$d / 500</string>
-    <string name="dashboard_ai_success">Creades %1$d categories, %2$d productes, %3$d articles</string>
-    <string name="dashboard_ai_generating">Generant categories…</string>
-    <string name="dashboard_ai_error_generic">Error en generar categories</string>
+  <string name="settings_about_title">Quant a</string>
+  <string name="settings_about_description">Informació i crèdits de l\'aplicació</string>
+  <string name="settings_backup_title">Còpia de seguretat</string>
+  <string name="settings_backup_description">Exportar i restaurar les teves dades</string>
+  <string name="settings_privacy_title">Privacitat</string>
+  <string name="settings_privacy_description">Gestionar consentiment i preferències de dades</string>
 
-    <string name="dashboard_ai_review_title">Revisar Categories</string>
-    <string name="dashboard_ai_review_description">S\'han trobat %1$d categories coincidents. Revisa abans d\'afegir:</string>
-    <string name="dashboard_ai_review_match_score">%1$d%% coincidència</string>
-    <string name="dashboard_ai_review_will_add">S\'afegiran %1$d productes, %2$d articles</string>
-    <string name="dashboard_ai_review_new_products">Noves Categories</string>
-    <string name="dashboard_ai_review_new_product">Es crearà com a nova categoria</string>
-    <string name="dashboard_ai_review_cancel">Cancel·lar</string>
-    <string name="dashboard_ai_review_confirm">Confirmar</string>
+  <string name="dashboard_fab_manual">Manual</string>
+  <string name="dashboard_fab_ai">IA</string>
+  <string name="dashboard_ai_title">Afegir Categories amb IA</string>
+  <string name="dashboard_ai_prompt_hint">Descriu el que vas comprar</string>
+  <string name="dashboard_ai_prompt_example">ex., "2 tiramisús (categoria postres) caduca demà"</string>
+  <string name="dashboard_ai_generate_button">Generar</string>
+  <string name="dashboard_ai_char_counter">%1$d / 500</string>
+  <string name="dashboard_ai_success">Creades %1$d categories, %2$d productes, %3$d articles</string>
+  <string name="dashboard_ai_generating">Generant categories…</string>
+  <string name="dashboard_ai_error_generic">Error en generar categories</string>
 
-    <string name="settings_group_appearance">Aparença</string>
-    <string name="settings_theme_title">Tema</string>
-    <string name="settings_theme_light">Clar</string>
-    <string name="settings_theme_dark">Fosc</string>
-    <string name="settings_theme_system">Sistema</string>
-    <string name="settings_dynamic_colors">Colors dinàmics</string>
-    <string name="settings_calendar_options">Opcions de calendari</string>
-    <string name="settings_first_day_of_week_title">Primer dia de la setmana</string>
+  <string name="dashboard_ai_review_title">Revisar Categories</string>
+  <string name="dashboard_ai_review_description">S\'han trobat %1$d categories coincidents. Revisa abans d\'afegir:</string>
+  <string name="dashboard_ai_review_match_score">%1$d%% coincidència</string>
+  <string name="dashboard_ai_review_will_add">S\'afegiran %1$d productes, %2$d articles</string>
+  <string name="dashboard_ai_review_new_products">Noves Categories</string>
+  <string name="dashboard_ai_review_new_product">Es crearà com a nova categoria</string>
+  <string name="dashboard_ai_review_cancel">Cancel·lar</string>
+  <string name="dashboard_ai_review_confirm">Confirmar</string>
 
-    <string name="settings_group_expiration_colors">Colors de caducitat</string>
-    <string name="settings_color_scheme_title">Esquema de color</string>
-    <string name="settings_color_scheme_vibrant">Vibrant</string>
-    <string name="settings_color_scheme_harmony">Harmonic</string>
-    <string name="settings_expiration_legend_fresh">Fresc</string>
-    <string name="settings_expiration_legend_expiring_soon">Pròxim</string>
-    <string name="settings_expiration_legend_expired">Caducat</string>
-    <string name="settings_expiration_legend_frozen">Congelat</string>
-    <string name="settings_expiration_legend_consumed">Consumit</string>
+  <string name="settings_group_appearance">Aparença</string>
+  <string name="settings_theme_title">Tema</string>
+  <string name="settings_theme_light">Clar</string>
+  <string name="settings_theme_dark">Fosc</string>
+  <string name="settings_theme_system">Sistema</string>
+  <string name="settings_dynamic_colors">Colors dinàmics</string>
+  <string name="settings_calendar_options">Opcions de calendari</string>
+  <string name="settings_first_day_of_week_title">Primer dia de la setmana</string>
 
-    <string name="settings_group_notifications">Notificacions</string>
-    <string name="settings_enable_notifications">Activar notificacions</string>
+  <string name="settings_group_expiration_colors">Colors de caducitat</string>
+  <string name="settings_color_scheme_title">Esquema de color</string>
+  <string name="settings_color_scheme_vibrant">Vibrant</string>
+  <string name="settings_color_scheme_harmony">Harmonic</string>
+  <string name="settings_expiration_legend_fresh">Fresc</string>
+  <string name="settings_expiration_legend_expiring_soon">Pròxim</string>
+  <string name="settings_expiration_legend_expired">Caducat</string>
+  <string name="settings_expiration_legend_frozen">Congelat</string>
+  <string name="settings_expiration_legend_consumed">Consumit</string>
 
-    <string name="settings_group_privacy">Privacitat i Dades</string>
-    <string name="settings_privacy_screen_title">Privacitat</string>
-    <string name="settings_privacy_analytics_title">Analítiques</string>
-    <string name="settings_privacy_analytics_description">Compartir dades d\'ús anònimes per ajudar a millorar l\'aplicació</string>
-    <string name="settings_privacy_info">Els canvis en aquesta configuració tenen efecte immediatament. Respectem la teva privacitat i només recopilem dades d\'ús anònimes quan atorgues permís explícit.</string>
+  <string name="settings_group_notifications">Notificacions</string>
+  <string name="settings_enable_notifications">Activar notificacions</string>
 
-    <!-- Debug - Consent Settings -->
-    <string name="debug_consent_section_title">Configuració de Consentiment (Debug)</string>
-    <string name="debug_consent_ad_storage_title">Emmagatzematge d\'Anuncis</string>
-    <string name="debug_consent_ad_storage_description">Permetre emmagatzematge de dades relacionades amb anuncis</string>
-    <string name="debug_consent_ad_user_data_title">Dades d\'Usuari per Anuncis</string>
-    <string name="debug_consent_ad_user_data_description">Permetre compartir dades d\'usuari amb Google per publicitat</string>
-    <string name="debug_consent_ad_personalization_title">Personalització d\'Anuncis</string>
-    <string name="debug_consent_ad_personalization_description">Habilitar publicitat personalitzada</string>
+  <string name="settings_group_privacy">Privacitat i Dades</string>
+  <string name="settings_privacy_screen_title">Privacitat</string>
+  <string name="settings_privacy_analytics_title">Analítiques</string>
+  <string name="settings_privacy_analytics_description">Compartir dades d\'ús anònimes per ajudar a millorar l\'aplicació</string>
+  <string name="settings_privacy_info">Els canvis en aquesta configuració tenen efecte immediatament. Respectem la teva privacitat i només recopilem dades d\'ús anònimes quan atorgues permís explícit.</string>
 
-    <!-- About section -->
-    <string name="about_version">Versió</string>
-    <string name="about_developer">Desenvolupador</string>
-    <string name="about_github_link">Veure a GitHub</string>
+  <!-- Debug - Consent Settings -->
+  <string name="debug_consent_section_title">Configuració de Consentiment (Debug)</string>
+  <string name="debug_consent_ad_storage_title">Emmagatzematge d\'Anuncis</string>
+  <string name="debug_consent_ad_storage_description">Permetre emmagatzematge de dades relacionades amb anuncis</string>
+  <string name="debug_consent_ad_user_data_title">Dades d\'Usuari per Anuncis</string>
+  <string name="debug_consent_ad_user_data_description">Permetre compartir dades d\'usuari amb Google per publicitat</string>
+  <string name="debug_consent_ad_personalization_title">Personalització d\'Anuncis</string>
+  <string name="debug_consent_ad_personalization_description">Habilitar publicitat personalitzada</string>
 
-    <string name="create_category_screen_title">Crear Categoria</string>
-    <string name="create_category_name_label">Nom de la Categoria</string>
-    <string name="create_category_name_placeholder">Introdueix el nom de la categoria</string>
-    <string name="create_category_description_label">Descripció</string>
-    <string name="create_category_description_placeholder">Introdueix la descripció</string>
-    <string name="create_category_expiration_date_label">Data de Caducitat</string>
-    <string name="create_category_expiration_date_placeholder">DD/MM/AAAA</string>
-    <string name="create_category_button_cancel">Cancel·lar</string>
-    <string name="create_category_button_create">Crear</string>
-    <string name="create_category_content_description_back">Enrere</string>
-    <string name="create_category_items_title">Elements de la Categoria</string>
-    <string name="create_category_item_identifier_label">Identificador</string>
-    <string name="create_category_item_identifier_placeholder">ex., Lot #1, Unitat A</string>
-    <string name="create_category_add_item">Afegir Element</string>
-    <string name="create_category_remove_item">Eliminar</string>
-    <string name="create_category_item_number">Element %1$d</string>
-    <string name="create_category_item_quantity_label">Quantitat</string>
-    <string name="create_category_item_quantity_placeholder">1</string>
-    <string name="create_category_item_split_preview">Es crearan %1$d elements</string>
+  <!-- About section -->
+  <string name="about_version">Versió</string>
+  <string name="about_developer">Desenvolupador</string>
+  <string name="about_github_link">Veure a GitHub</string>
 
-    <!-- Category Detail -->
-    <string name="category_detail_auto_identifier_item">Article</string>
-    <string name="category_detail_add_product_dialog_title">Afegir Producte</string>
-    <string name="category_detail_add_product_dialog_label">Nom del Producte</string>
-    <string name="category_detail_add_product_dialog_placeholder">Introdueix el nom del producte</string>
-    <string name="category_detail_add_product_dialog_cancel">Cancel·lar</string>
-    <string name="category_detail_add_product_dialog_add">Afegir</string>
-    <string name="category_detail_product_empty_state">Encara no hi ha elements. Toca el botó + per afegir-ne un.</string>
-    <string name="category_detail_empty_category_title">Encara no hi ha Productes ni Elements</string>
-    <string name="category_detail_empty_category_message">Comença creant un producte o afegint un element directament</string>
-    <string name="category_detail_empty_category_create_product">Crear Producte</string>
-    <string name="category_detail_empty_category_add_item">Afegir Element</string>
-    <string name="category_detail_product_other">Altres</string>
-    <string name="category_detail_add_item_title">Afegir Element</string>
-    <string name="category_detail_add_item_button">Afegir element</string>
-    <string name="category_detail_product_actions_tooltip">Accions de producte</string>
-    <string name="category_detail_add_item_back">Enrere</string>
-    <string name="category_detail_add_item_add_other">Afegir Altra</string>
-    <string name="category_detail_add_item_product_label">Producte</string>
-    <string name="category_detail_add_item_product_placeholder">Escriu per cercar o introdueix nou producte</string>
-    <string name="category_detail_add_item_identifier_label">Identificador</string>
-    <string name="category_detail_add_item_identifier_placeholder">Opcional si se selecciona producte</string>
-    <string name="category_detail_add_item_expiration_date_label">Data de Caducitat</string>
-    <string name="category_detail_add_item_expiration_date_placeholder">Selecciona data de caducitat</string>
-    <string name="category_detail_add_item_save">Desar</string>
-    <string name="category_detail_add_item_date_picker_ok">Acceptar</string>
-    <string name="category_detail_add_item_date_picker_cancel">Cancel·lar</string>
-    <string name="category_detail_add_item_quantity_label">Quantitat</string>
-    <string name="category_detail_add_item_quantity_more">Més</string>
-    <string name="category_detail_add_item_quantity_custom_label">Nombre d\'elements</string>
-    <string name="category_detail_action_menu">Opcions de categoria</string>
-    <string name="category_detail_action_consume">Consumir</string>
-    <string name="category_detail_action_freeze">Congelar</string>
-    <string name="category_detail_action_unfreeze">Descongelar</string>
-    <string name="category_detail_action_reschedule">Reprogramar</string>
-    <string name="category_detail_action_delete">Eliminar</string>
-    <string name="category_detail_frozen_items">Congelats</string>
-    <string name="category_detail_consumed_items">Consumits</string>
-    <string name="category_detail_section_frozen">Articles congelats</string>
-    <string name="category_detail_section_consumed">Articles consumits</string>
-    <string name="category_detail_consumed_item_placeholder">No hi ha accions disponibles per elements consumits</string>
+  <string name="create_category_screen_title">Crear Categoria</string>
+  <string name="create_category_name_label">Nom de la Categoria</string>
+  <string name="create_category_name_placeholder">Introdueix el nom de la categoria</string>
+  <string name="create_category_description_label">Descripció</string>
+  <string name="create_category_description_placeholder">Introdueix la descripció</string>
+  <string name="create_category_expiration_date_label">Data de Caducitat</string>
+  <string name="create_category_expiration_date_placeholder">DD/MM/AAAA</string>
+  <string name="create_category_button_cancel">Cancel·lar</string>
+  <string name="create_category_button_create">Crear</string>
+  <string name="create_category_content_description_back">Enrere</string>
+  <string name="create_category_items_title">Elements de la Categoria</string>
+  <string name="create_category_item_identifier_label">Identificador</string>
+  <string name="create_category_item_identifier_placeholder">ex., Lot #1, Unitat A</string>
+  <string name="create_category_add_item">Afegir Element</string>
+  <string name="create_category_remove_item">Eliminar</string>
+  <string name="create_category_item_number">Element %1$d</string>
+  <string name="create_category_item_quantity_label">Quantitat</string>
+  <string name="create_category_item_quantity_placeholder">1</string>
+  <string name="create_category_item_split_preview">Es crearan %1$d elements</string>
 
-    <!-- Category Detail AI -->
-    <string name="category_detail_ai_title">Afegir Productes amb IA</string>
-    <string name="category_detail_ai_prompt_hint">Descriu els productes o articles</string>
-    <string name="category_detail_ai_prompt_example">ex., "3 ampolles d\'1L llet sencera, caduca en 5 dies"</string>
-    <string name="category_detail_ai_generate_button">Generar</string>
-    <string name="category_detail_ai_generating">Generant productes…</string>
-    <string name="category_detail_ai_success">Creats %1$d productes, %2$d articles</string>
-    <string name="category_detail_ai_review_title">Revisar Productes</string>
-    <string name="category_detail_ai_review_description">Generats %1$d productes i %2$d articles. Revisa abans d\'afegir:</string>
-    <string name="category_detail_ai_review_confirm">Afegir a Categoria</string>
-    <string name="category_detail_ai_review_cancel">Cancel·lar</string>
-    <string name="category_detail_ai_error_generic">Error en generar productes</string>
+  <!-- Category Detail -->
+  <string name="category_detail_auto_identifier_item">Article</string>
+  <string name="category_detail_add_product_dialog_title">Afegir Producte</string>
+  <string name="category_detail_add_product_dialog_label">Nom del Producte</string>
+  <string name="category_detail_add_product_dialog_placeholder">Introdueix el nom del producte</string>
+  <string name="category_detail_add_product_dialog_cancel">Cancel·lar</string>
+  <string name="category_detail_add_product_dialog_add">Afegir</string>
+  <string name="category_detail_product_empty_state">Encara no hi ha elements. Toca el botó + per afegir-ne un.</string>
+  <string name="category_detail_empty_category_title">Encara no hi ha Productes ni Elements</string>
+  <string name="category_detail_empty_category_message">Comença creant un producte o afegint un element directament</string>
+  <string name="category_detail_empty_category_create_product">Crear Producte</string>
+  <string name="category_detail_empty_category_add_item">Afegir Element</string>
+  <string name="category_detail_product_other">Altres</string>
+  <string name="category_detail_add_item_title">Afegir Element</string>
+  <string name="category_detail_add_item_button">Afegir element</string>
+  <string name="category_detail_product_actions_tooltip">Accions de producte</string>
+  <string name="category_detail_add_item_back">Enrere</string>
+  <string name="category_detail_add_item_add_other">Afegir Altra</string>
+  <string name="category_detail_add_item_product_label">Producte</string>
+  <string name="category_detail_add_item_product_placeholder">Escriu per cercar o introdueix nou producte</string>
+  <string name="category_detail_add_item_identifier_label">Identificador</string>
+  <string name="category_detail_add_item_identifier_placeholder">Opcional si se selecciona producte</string>
+  <string name="category_detail_add_item_expiration_date_label">Data de Caducitat</string>
+  <string name="category_detail_add_item_expiration_date_placeholder">Selecciona data de caducitat</string>
+  <string name="category_detail_add_item_save">Desar</string>
+  <string name="category_detail_add_item_date_picker_ok">Acceptar</string>
+  <string name="category_detail_add_item_date_picker_cancel">Cancel·lar</string>
+  <string name="category_detail_add_item_quantity_label">Quantitat</string>
+  <string name="category_detail_add_item_quantity_more">Més</string>
+  <string name="category_detail_add_item_quantity_custom_label">Nombre d\'elements</string>
+  <string name="category_detail_action_menu">Opcions de categoria</string>
+  <string name="category_detail_action_consume">Consumir</string>
+  <string name="category_detail_action_freeze">Congelar</string>
+  <string name="category_detail_action_unfreeze">Descongelar</string>
+  <string name="category_detail_action_reschedule">Reprogramar</string>
+  <string name="category_detail_action_delete">Eliminar</string>
+  <string name="category_detail_frozen_items">Congelats</string>
+  <string name="category_detail_consumed_items">Consumits</string>
+  <string name="category_detail_section_frozen">Articles congelats</string>
+  <string name="category_detail_section_consumed">Articles consumits</string>
+  <string name="category_detail_consumed_item_placeholder">No hi ha accions disponibles per elements consumits</string>
 
-    <!-- Relative time values -->
-    <string name="relative_time_today">Avui</string>
-    <string name="relative_time_tomorrow">Demà</string>
-    <string name="relative_time_yesterday">Ahir</string>
-    <string name="relative_time_in_days">En %1$d dies</string>
-    <string name="relative_time_in_a_week">En una setmana</string>
-    <string name="relative_time_in_weeks">En %1$d setmanes</string>
-    <string name="relative_time_in_a_month">En un mes</string>
-    <string name="relative_time_in_months">En %1$d mesos</string>
-    <string name="relative_time_days_ago">Fa %1$d dies</string>
-    <string name="relative_time_a_week_ago">Fa una setmana</string>
-    <string name="relative_time_weeks_ago">Fa %1$d setmanes</string>
-    <string name="relative_time_a_month_ago">Fa un mes</string>
-    <string name="relative_time_months_ago">Fa %1$d mesos</string>
+  <!-- Category Detail AI -->
+  <string name="category_detail_ai_title">Afegir Productes amb IA</string>
+  <string name="category_detail_ai_prompt_hint">Descriu els productes o articles</string>
+  <string name="category_detail_ai_prompt_example">ex., "3 ampolles d\'1L llet sencera, caduca en 5 dies"</string>
+  <string name="category_detail_ai_generate_button">Generar</string>
+  <string name="category_detail_ai_generating">Generant productes…</string>
+  <string name="category_detail_ai_success">Creats %1$d productes, %2$d articles</string>
+  <string name="category_detail_ai_review_title">Revisar Productes</string>
+  <string name="category_detail_ai_review_description">Generats %1$d productes i %2$d articles. Revisa abans d\'afegir:</string>
+  <string name="category_detail_ai_review_confirm">Afegir a Categoria</string>
+  <string name="category_detail_ai_review_cancel">Cancel·lar</string>
+  <string name="category_detail_ai_error_generic">Error en generar productes</string>
 
-    <!-- Language values -->
-    <string name="language_english">English</string>
-    <string name="language_spanish">Español</string>
-    <string name="language_catalan">Català</string>
+  <!-- Relative time values -->
+  <string name="relative_time_today">Avui</string>
+  <string name="relative_time_tomorrow">Demà</string>
+  <string name="relative_time_yesterday">Ahir</string>
+  <string name="relative_time_in_days">En %1$d dies</string>
+  <string name="relative_time_in_a_week">En una setmana</string>
+  <string name="relative_time_in_weeks">En %1$d setmanes</string>
+  <string name="relative_time_in_a_month">En un mes</string>
+  <string name="relative_time_in_months">En %1$d mesos</string>
+  <string name="relative_time_days_ago">Fa %1$d dies</string>
+  <string name="relative_time_a_week_ago">Fa una setmana</string>
+  <string name="relative_time_weeks_ago">Fa %1$d setmanes</string>
+  <string name="relative_time_a_month_ago">Fa un mes</string>
+  <string name="relative_time_months_ago">Fa %1$d mesos</string>
 
-    <!-- Item action errors -->
-    <string name="error_item_not_found">Element no trobat</string>
-    <string name="error_cannot_freeze_expired">No es poden congelar articles caducats</string>
-    <string name="error_cannot_consume_expired">No és segur consumir productes caducats</string>
-    <string name="error_cannot_consume_expired_message">Aquest article ha caducat i no pot ser consumit. Vols eliminar-lo?</string>
-    <string name="error_cannot_consume_expired_positive">Eliminar</string>
-    <string name="warning_consume_expired_title">Consumir Article que Caduca Avui?</string>
-    <string name="warning_consume_expired_message">Aquest article caduca avui. Si us plau, assegura\'t que el producte estigui en bon estat abans de consumir-lo. Vols marcar-lo com a consumit?</string>
-    <string name="warning_consume_expired_positive">Consumir</string>
-    <string name="warning_consume_expired_negative">Cancel·lar</string>
+  <!-- Language values -->
+  <string name="language_english">English</string>
+  <string name="language_spanish">Español</string>
+  <string name="language_catalan">Català</string>
 
-    <!-- Item action success messages -->
-    <string name="success_item_consumed">Element consumit</string>
-    <string name="success_item_frozen">Element congelat</string>
-    <string name="success_item_unfrozen">Element descongelat</string>
-    <string name="success_item_rescheduled">Element reprogramat</string>
-    <string name="success_item_deleted">Element eliminat</string>
+  <!-- Item action errors -->
+  <string name="error_item_not_found">Element no trobat</string>
+  <string name="error_cannot_freeze_expired">No es poden congelar articles caducats</string>
+  <string name="error_cannot_consume_expired">No és segur consumir productes caducats</string>
+  <string name="error_cannot_consume_expired_message">Aquest article ha caducat i no pot ser consumit. Vols eliminar-lo?</string>
+  <string name="error_cannot_consume_expired_positive">Eliminar</string>
+  <string name="warning_consume_expired_title">Consumir Article que Caduca Avui?</string>
+  <string name="warning_consume_expired_message">Aquest article caduca avui. Si us plau, assegura\'t que el producte estigui en bon estat abans de consumir-lo. Vols marcar-lo com a consumit?</string>
+  <string name="warning_consume_expired_positive">Consumir</string>
+  <string name="warning_consume_expired_negative">Cancel·lar</string>
 
-    <!-- Item action error messages -->
-    <string name="error_consume_item_failed">Error en consumir element</string>
-    <string name="error_freeze_item_failed">Error en congelar element</string>
-    <string name="error_unfreeze_item_failed">Error en descongelar element</string>
-    <string name="error_reschedule_item_failed">Error en reprogramar element</string>
-    <string name="error_delete_item_failed">Error en eliminar element</string>
-    <string name="error_create_product_failed">Error en crear producte</string>
+  <!-- Item action success messages -->
+  <string name="success_item_consumed">Element consumit</string>
+  <string name="success_item_frozen">Element congelat</string>
+  <string name="success_item_unfrozen">Element descongelat</string>
+  <string name="success_item_rescheduled">Element reprogramat</string>
+  <string name="success_item_deleted">Element eliminat</string>
 
-    <!-- Category deletion -->
-    <string name="category_detail_delete_dialog_title">Eliminar Categoria?</string>
-    <string name="category_detail_delete_dialog_message">Això eliminarà permanentment aquesta categoria i tots els seus productes i elements. Aquesta acció no es pot desfer.</string>
-    <string name="category_detail_delete_dialog_delete">Eliminar</string>
-    <string name="category_detail_delete_dialog_cancel">Cancel·lar</string>
-    <string name="success_category_deleted">Categoria eliminada</string>
-    <string name="error_delete_category_failed">Error en eliminar categoria</string>
+  <!-- Item action error messages -->
+  <string name="error_consume_item_failed">Error en consumir element</string>
+  <string name="error_freeze_item_failed">Error en congelar element</string>
+  <string name="error_unfreeze_item_failed">Error en descongelar element</string>
+  <string name="error_reschedule_item_failed">Error en reprogramar element</string>
+  <string name="error_delete_item_failed">Error en eliminar element</string>
+  <string name="error_create_product_failed">Error en crear producte</string>
 
-    <!-- Product deletion -->
-    <string name="product_delete_menu">Opcions de producte</string>
-    <string name="product_clear_items_action">Netejar Elements</string>
-    <string name="product_clear_items_dialog_title">Netejar Elements?</string>
-    <string name="product_clear_items_dialog_message">Què voldries netejar d\'aquest producte?</string>
-    <string name="product_clear_consumed_only">Netejar Elements Consumits</string>
-    <string name="product_clear_consumed_only_desc">Eliminar només elements consumits</string>
-    <string name="product_clear_all_items">Netejar Tots els Elements</string>
-    <string name="product_clear_all_items_desc">Eliminar tots els elements (consumits, frescos, caducats)</string>
-    <string name="product_delete_action">Eliminar Producte</string>
-    <string name="product_delete_dialog_title">Eliminar Producte?</string>
-    <string name="product_delete_dialog_message">Això eliminarà permanentment aquest producte. Els elements es mouran a la pestanya \"Altres\". Aquesta acció no es pot desfer.</string>
-    <string name="product_delete_dialog_delete">Eliminar</string>
-    <string name="product_delete_dialog_cancel">Cancel·lar</string>
-    <string name="success_product_deleted">Producte eliminat</string>
-    <string name="error_delete_product_failed">Error en eliminar producte</string>
+  <!-- Category deletion -->
+  <string name="category_detail_delete_dialog_title">Eliminar Categoria?</string>
+  <string name="category_detail_delete_dialog_message">Això eliminarà permanentment aquesta categoria i tots els seus productes i elements. Aquesta acció no es pot desfer.</string>
+  <string name="category_detail_delete_dialog_delete">Eliminar</string>
+  <string name="category_detail_delete_dialog_cancel">Cancel·lar</string>
+  <string name="success_category_deleted">Categoria eliminada</string>
+  <string name="error_delete_category_failed">Error en eliminar categoria</string>
 
-    <!-- Product deletion with items -->
-    <string name="product_delete_with_items_title">Eliminar Producte amb %1$d Elements?</string>
-    <string name="product_delete_with_items_message">Aquest producte té elements actius. Tria què fer amb ells:</string>
-    <string name="product_delete_option_move_to_standalone">Moure a \"Altres\"</string>
-    <string name="product_delete_option_move_to_standalone_desc">Els elements es convertiran en elements independents a la pestanya \"Altres\"</string>
-    <string name="product_delete_option_move_to_product">Moure a Un Altre Producte</string>
-    <string name="product_delete_option_move_to_product_desc">Seleccionar un producte per transferir tots els elements</string>
-    <string name="product_delete_option_cascade_delete">Eliminar Elements</string>
-    <string name="product_delete_option_cascade_delete_desc">Eliminar permanentment tots els elements amb aquest producte</string>
-    <string name="product_delete_select_target_title">Seleccionar Producte de Destí</string>
-    <string name="product_delete_select_target_message">Tots els %1$d elements es mouran al producte seleccionat:</string>
-    <string name="product_delete_select_target_back">Enrere</string>
+  <!-- Product deletion -->
+  <string name="product_delete_menu">Opcions de producte</string>
+  <string name="product_clear_items_action">Netejar Elements</string>
+  <string name="product_clear_items_dialog_title">Netejar Elements?</string>
+  <string name="product_clear_items_dialog_message">Què voldries netejar d\'aquest producte?</string>
+  <string name="product_clear_consumed_only">Netejar Elements Consumits</string>
+  <string name="product_clear_consumed_only_desc">Eliminar només elements consumits</string>
+  <string name="product_clear_all_items">Netejar Tots els Elements</string>
+  <string name="product_clear_all_items_desc">Eliminar tots els elements (consumits, frescos, caducats)</string>
+  <string name="product_delete_action">Eliminar Producte</string>
+  <string name="product_delete_dialog_title">Eliminar Producte?</string>
+  <string name="product_delete_dialog_message">Això eliminarà permanentment aquest producte. Els elements es mouran a la pestanya \"Altres\". Aquesta acció no es pot desfer.</string>
+  <string name="product_delete_dialog_delete">Eliminar</string>
+  <string name="product_delete_dialog_cancel">Cancel·lar</string>
+  <string name="success_product_deleted">Producte eliminat</string>
+  <string name="error_delete_product_failed">Error en eliminar producte</string>
 
-    <!-- Clear items -->
-    <string name="success_items_cleared">Elements netejats</string>
-    <string name="error_clear_items_failed">Error en netejar elements</string>
+  <!-- Product deletion with items -->
+  <string name="product_delete_with_items_title">Eliminar Producte amb %1$d Elements?</string>
+  <string name="product_delete_with_items_message">Aquest producte té elements actius. Tria què fer amb ells:</string>
+  <string name="product_delete_option_move_to_standalone">Moure a \"Altres\"</string>
+  <string name="product_delete_option_move_to_standalone_desc">Els elements es convertiran en elements independents a la pestanya \"Altres\"</string>
+  <string name="product_delete_option_move_to_product">Moure a Un Altre Producte</string>
+  <string name="product_delete_option_move_to_product_desc">Seleccionar un producte per transferir tots els elements</string>
+  <string name="product_delete_option_cascade_delete">Eliminar Elements</string>
+  <string name="product_delete_option_cascade_delete_desc">Eliminar permanentment tots els elements amb aquest producte</string>
+  <string name="product_delete_select_target_title">Seleccionar Producte de Destí</string>
+  <string name="product_delete_select_target_message">Tots els %1$d elements es mouran al producte seleccionat:</string>
+  <string name="product_delete_select_target_back">Enrere</string>
 
-    <!-- Onboarding -->
-    <string name="onboarding_welcome_title">Benvingut a Caducity</string>
-    <string name="onboarding_welcome_message">Controla els teus aliments i redueix el malbaratament</string>
-    <string name="onboarding_features_title">Característiques Clau</string>
-    <string name="onboarding_features_track">Controla les dates de caducitat de totes les teves categories</string>
-    <string name="onboarding_features_notify">Rep notificacions abans que caduquin les categories</string>
-    <string name="onboarding_features_dashboard">Visualitza estadístiques i informació al teu tauler</string>
-    <string name="onboarding_permissions_title">Mantingues-te Informat</string>
-    <string name="onboarding_permissions_message">Permet les notificacions per rebre alertes oportunes sobre categories que caduquen</string>
-    <string name="onboarding_permissions_granted">Notificacions activades</string>
-    <string name="onboarding_permissions_automatic">Les notificacions estan activades automàticament</string>
-    <string name="onboarding_tutorial_title">Primers Passos</string>
-    <string name="onboarding_tutorial_message">Afegeix la teva primera categoria per començar a controlar dates de caducitat</string>
-    <string name="onboarding_disclaimer_title">Avís Important</string>
-    <string name="onboarding_disclaimer_message">Aquesta aplicació ajuda a controlar les dates de caducitat de productes però no substitueix les pràctiques adequades de seguretat alimentària. Utilitza sempre el teu criteri i segueix les pautes de seguretat alimentària. Els desenvolupadors no són responsables de cap problema de salut derivat del consum de productes caducats.</string>
+  <!-- Clear items -->
+  <string name="success_items_cleared">Elements netejats</string>
+  <string name="error_clear_items_failed">Error en netejar elements</string>
 
-    <!-- Consent Screen -->
-    <string name="onboarding_consent_title">La Teva Privacitat és Important</string>
-    <string name="onboarding_consent_description">Ajuda\'ns a millorar l\'aplicació compartint dades d\'ús anònimes. Pots canviar això més tard a la configuració.</string>
-    <string name="onboarding_consent_analytics_title">Analítiques</string>
-    <string name="onboarding_consent_analytics_description">Compartir dades d\'ús anònimes per ajudar-nos a millorar l\'aplicació</string>
-    <string name="onboarding_consent_privacy_note">Respectem la teva privacitat. No es recopila ni comparteix cap dada personal amb tercers.</string>
-    <string name="onboarding_button_next">Següent</string>
-    <string name="onboarding_button_skip">Ometre</string>
-    <string name="onboarding_button_previous">Anterior</string>
-    <string name="onboarding_button_understand">Entenc</string>
-    <string name="onboarding_button_allow_notifications">Permetre Notificacions</string>
+  <!-- Onboarding -->
+  <string name="onboarding_welcome_title">Benvingut a Caducity</string>
+  <string name="onboarding_welcome_message">Controla els teus aliments i redueix el malbaratament</string>
+  <string name="onboarding_features_title">Característiques Clau</string>
+  <string name="onboarding_features_track">Controla les dates de caducitat de totes les teves categories</string>
+  <string name="onboarding_features_notify">Rep notificacions abans que caduquin les categories</string>
+  <string name="onboarding_features_dashboard">Visualitza estadístiques i informació al teu tauler</string>
+  <string name="onboarding_permissions_title">Mantingues-te Informat</string>
+  <string name="onboarding_permissions_message">Permet les notificacions per rebre alertes oportunes sobre categories que caduquen</string>
+  <string name="onboarding_permissions_granted">Notificacions activades</string>
+  <string name="onboarding_permissions_automatic">Les notificacions estan activades automàticament</string>
+  <string name="onboarding_tutorial_title">Primers Passos</string>
+  <string name="onboarding_tutorial_message">Afegeix la teva primera categoria per començar a controlar dates de caducitat</string>
+  <string name="onboarding_disclaimer_title">Avís Important</string>
+  <string name="onboarding_disclaimer_message">Aquesta aplicació ajuda a controlar les dates de caducitat de productes però no substitueix les pràctiques adequades de seguretat alimentària. Utilitza sempre el teu criteri i segueix les pautes de seguretat alimentària. Els desenvolupadors no són responsables de cap problema de salut derivat del consum de productes caducats.</string>
 
-    <!-- Backup & Restore -->
-    <string name="backup_screen_title">Còpia de seguretat i Restauració</string>
-    <string name="backup_export_title">Exportar Còpia de seguretat</string>
-    <string name="backup_export_description">Desar les teves dades en un arxiu</string>
-    <string name="backup_restore_title">Restaurar Còpia de seguretat</string>
-    <string name="backup_restore_description">Carregar dades des d\'un arxiu de còpia de seguretat</string>
-    <string name="backup_restore_warning_title">Reemplaçar Totes les Dades?</string>
-    <string name="backup_restore_warning_message">Això eliminarà totes les dades actuals i restaurarà des de la còpia de seguretat. Aquesta acció no es pot desfer.</string>
-    <string name="backup_restore_confirm">Restaurar</string>
-    <string name="backup_cancel">Cancel·lar</string>
-    <string name="backup_export_success">Còpia de seguretat exportada amb èxit</string>
-    <string name="backup_restore_success">Còpia de seguretat restaurada amb èxit</string>
-    <string name="backup_error_invalid_file">Arxiu de còpia de seguretat invàlid</string>
-    <string name="backup_error_version_mismatch">Versió de còpia de seguretat incompatible</string>
-    <string name="backup_error_export_failed">Error en exportar còpia de seguretat</string>
-    <string name="backup_error_restore_failed">Error en restaurar còpia de seguretat</string>
+  <!-- Consent Screen -->
+  <string name="onboarding_consent_title">La Teva Privacitat és Important</string>
+  <string name="onboarding_consent_description">Ajuda\'ns a millorar l\'aplicació compartint dades d\'ús anònimes. Pots canviar això més tard a la configuració.</string>
+  <string name="onboarding_consent_analytics_title">Analítiques</string>
+  <string name="onboarding_consent_analytics_description">Compartir dades d\'ús anònimes per ajudar-nos a millorar l\'aplicació</string>
+  <string name="onboarding_consent_privacy_note">Respectem la teva privacitat. No es recopila ni comparteix cap dada personal amb tercers.</string>
+  <string name="onboarding_button_next">Següent</string>
+  <string name="onboarding_button_skip">Ometre</string>
+  <string name="onboarding_button_previous">Anterior</string>
+  <string name="onboarding_button_understand">Entenc</string>
+  <string name="onboarding_button_allow_notifications">Permetre Notificacions</string>
 
-    <string name="dashboard_add">Afegir</string>
+  <!-- Backup & Restore -->
+  <string name="backup_screen_title">Còpia de seguretat i Restauració</string>
+  <string name="backup_export_title">Exportar Còpia de seguretat</string>
+  <string name="backup_export_description">Desar les teves dades en un arxiu</string>
+  <string name="backup_restore_title">Restaurar Còpia de seguretat</string>
+  <string name="backup_restore_description">Carregar dades des d\'un arxiu de còpia de seguretat</string>
+  <string name="backup_restore_warning_title">Reemplaçar Totes les Dades?</string>
+  <string name="backup_restore_warning_message">Això eliminarà totes les dades actuals i restaurarà des de la còpia de seguretat. Aquesta acció no es pot desfer.</string>
+  <string name="backup_restore_confirm">Restaurar</string>
+  <string name="backup_cancel">Cancel·lar</string>
+  <string name="backup_export_success">Còpia de seguretat exportada amb èxit</string>
+  <string name="backup_restore_success">Còpia de seguretat restaurada amb èxit</string>
+  <string name="backup_error_invalid_file">Arxiu de còpia de seguretat invàlid</string>
+  <string name="backup_error_version_mismatch">Versió de còpia de seguretat incompatible</string>
+  <string name="backup_error_export_failed">Error en exportar còpia de seguretat</string>
+  <string name="backup_error_restore_failed">Error en restaurar còpia de seguretat</string>
 
-    <string name="app_name">Caducity</string>
+  <string name="dashboard_add">Afegir</string>
+
+  <string name="app_name">Caducity</string>
 </resources>
