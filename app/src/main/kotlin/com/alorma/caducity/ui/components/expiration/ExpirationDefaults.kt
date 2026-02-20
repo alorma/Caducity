@@ -57,6 +57,17 @@ object ExpirationDefaults {
   }
 
   @Composable
+  fun getInverseColors(
+    itemStatus: ItemStatus,
+  ): ContainerColors {
+    val tone = CaducityTheme.themeTone
+    return when (tone) {
+      com.alorma.caducity.ui.theme.ThemeTone.VIBRANT -> getSoftColors(itemStatus)
+      com.alorma.caducity.ui.theme.ThemeTone.SOFT -> getVibrantColors(itemStatus)
+    }
+  }
+
+  @Composable
   private fun expirationColorByStatus(
     itemStatus: ItemStatus,
     expirationColors: ExpirationColorsPalette,

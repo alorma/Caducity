@@ -42,7 +42,7 @@ fun DayContent(
 ) {
 
   val backgroundColor = if (status != null) {
-    val color = ExpirationDefaults.getVibrantColors(status).container
+    val color = ExpirationDefaults.getColors(status).container
 
     if (isOutDay) {
       color.copy(alpha = CaducityTheme.dims.dim2)
@@ -54,7 +54,7 @@ fun DayContent(
   }
 
   val textColor = if (status != null) {
-    ExpirationDefaults.getVibrantColors(status).onContainer
+    ExpirationDefaults.getColors(status).onContainer
   } else {
     CaducityTheme.colorScheme.onSurface
   }.let { color ->

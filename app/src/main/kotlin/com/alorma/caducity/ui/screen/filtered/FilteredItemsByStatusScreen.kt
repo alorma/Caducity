@@ -189,8 +189,8 @@ private fun CategoryItemsCard(
   onCategoryClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val colors = ExpirationDefaults.getSoftColors(status)
-  val vibrantColors = ExpirationDefaults.getVibrantColors(status)
+  val toneColors = ExpirationDefaults.getColors(status)
+  val inverseToneColors = ExpirationDefaults.getInverseColors(status)
 
   Column(
     modifier = modifier.fillMaxWidth(),
@@ -202,8 +202,8 @@ private fun CategoryItemsCard(
         .fillMaxWidth()
         .clickable { onCategoryClick(categoryWithItems.category.id) },
       shape = MaterialTheme.shapes.small,
-      color = colors.container,
-      contentColor = colors.onContainer,
+      color = toneColors.container,
+      contentColor = toneColors.onContainer,
     ) {
       Row(
         modifier = Modifier
@@ -216,7 +216,7 @@ private fun CategoryItemsCard(
           modifier = Modifier.weight(1f),
           text = categoryWithItems.category.name,
           style = MaterialTheme.typography.titleMedium,
-          color = colors.onContainer,
+          color = toneColors.onContainer,
         )
 
         // Filtered items count badge
@@ -224,10 +224,10 @@ private fun CategoryItemsCard(
         Text(
           modifier = Modifier
             .clip(MaterialTheme.shapes.extraSmall)
-            .background(vibrantColors.container)
+            .background(inverseToneColors.container)
             .padding(horizontal = 8.dp, vertical = 4.dp),
           text = filteredItemsCount.toString(),
-          color = vibrantColors.onContainer,
+          color = inverseToneColors.onContainer,
           style = MaterialTheme.typography.labelMedium,
         )
       }

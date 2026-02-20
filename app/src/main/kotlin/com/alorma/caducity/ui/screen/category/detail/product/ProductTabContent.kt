@@ -87,6 +87,7 @@ fun ProductTabContent(
             currentState.frozenItems.isNotEmpty() ||
             currentState.consumedItems.isNotEmpty()
         }
+
         else -> false
       }
 
@@ -230,16 +231,16 @@ private fun SectionHeader(
   modifier: Modifier = Modifier,
   date: String? = null,
 ) {
-  val colors = ExpirationDefaults.getSoftColors(status)
-  val vibrantColors = ExpirationDefaults.getVibrantColors(status)
+  val toneColors = ExpirationDefaults.getColors(status)
+  val inverseToneColors = ExpirationDefaults.getInverseColors(status)
 
   Surface(
     modifier = Modifier
       .fillMaxWidth()
       .then(modifier),
     shape = CaducityTheme.shapes.small,
-    color = colors.container,
-    contentColor = colors.onContainer,
+    color = toneColors.container,
+    contentColor = toneColors.onContainer,
   ) {
     Column(
       modifier = Modifier
@@ -256,16 +257,16 @@ private fun SectionHeader(
           modifier = Modifier.weight(1f),
           text = title,
           style = CaducityTheme.typography.titleMedium,
-          color = colors.onContainer,
+          color = toneColors.onContainer,
         )
 
         Text(
           modifier = Modifier
             .clip(CaducityTheme.shapes.extraSmall)
-            .background(vibrantColors.container)
+            .background(inverseToneColors.container)
             .padding(horizontal = 8.dp, vertical = 4.dp),
           text = count.toString(),
-          color = vibrantColors.onContainer,
+          color = inverseToneColors.onContainer,
           style = CaducityTheme.typography.labelMedium,
         )
       }
@@ -274,7 +275,7 @@ private fun SectionHeader(
         Text(
           text = date,
           style = CaducityTheme.typography.labelSmallEmphasized,
-          color = colors.onContainer,
+          color = toneColors.onContainer,
         )
       }
     }
@@ -445,6 +446,7 @@ class ProductTabContentPreviewProvider :
           "With items"
         }
       }
+
       is ProductPageState.Error -> "Error"
     }
   }

@@ -258,7 +258,7 @@ private fun SummaryStatusCard(
   }
 }
 
-class ThemeModePreviewParams : CollectionPreviewParameterProvider<ThemeTone>(
+private class ThemeModePreviewParams : CollectionPreviewParameterProvider<ThemeTone>(
   ThemeTone.entries
 ) {
   override fun getDisplayName(index: Int): String {
