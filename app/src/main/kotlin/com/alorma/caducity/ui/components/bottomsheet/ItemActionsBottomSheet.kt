@@ -291,27 +291,29 @@ private fun ItemActionsBottomSheetContent(
   ) {
     // Header with item info and pack badge
     Row(
-      modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp),
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      modifier = Modifier
+        .padding(horizontal = 24.dp, vertical = 16.dp)
+        .clip(CaducityTheme.shapes.small),
+      horizontalArrangement = Arrangement.spacedBy(0.dp),
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      Text(
-        text = item.text,
-        style = MaterialTheme.typography.titleMedium,
-      )
-
       // Show pack badge if packSize > 1
       if (item.packSize != null && item.packSize > 1) {
         Text(
-          text = "×${item.packSize}",
+          text = item.packSize.toString(),
           modifier = Modifier
-            .clip(CaducityTheme.shapes.extraSmall)
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(horizontal = 6.dp, vertical = 3.dp),
+            .background(CaducityTheme.colorScheme.outline)
+            .padding(8.dp),
           style = MaterialTheme.typography.labelMedium,
-          color = MaterialTheme.colorScheme.onPrimaryContainer,
+          color = MaterialTheme.colorScheme.surface,
         )
       }
+
+      Text(
+        text = item.text,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(start = if (item.packSize != null && item.packSize > 1) 8.dp else 0.dp),
+      )
     }
 
     HorizontalDivider()
