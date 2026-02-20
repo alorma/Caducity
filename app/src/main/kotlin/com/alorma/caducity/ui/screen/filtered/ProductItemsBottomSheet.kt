@@ -125,26 +125,28 @@ private fun ItemRow(
     ) {
       // Item identifier with pack badge
       Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
+          .clip(CaducityTheme.shapes.small),
+        horizontalArrangement = Arrangement.spacedBy(0.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        Text(
-          text = item.identifier,
-          style = MaterialTheme.typography.bodyMedium,
-        )
-
         // Show pack badge if packSize > 1
         if (item.packSize != null && item.packSize > 1) {
           Text(
-            text = "×${item.packSize}",
+            text = item.packSize.toString(),
             modifier = Modifier
-              .clip(CaducityTheme.shapes.extraSmall)
-              .background(MaterialTheme.colorScheme.primaryContainer)
-              .padding(horizontal = 4.dp, vertical = 2.dp),
+              .background(CaducityTheme.colorScheme.outline)
+              .padding(6.dp),
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = MaterialTheme.colorScheme.surface,
           )
         }
+
+        Text(
+          text = item.identifier,
+          style = MaterialTheme.typography.bodyMedium,
+          modifier = Modifier.padding(start = if (item.packSize != null && item.packSize > 1) 8.dp else 0.dp),
+        )
       }
 
       Text(
