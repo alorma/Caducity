@@ -39,6 +39,12 @@ class AndroidExpirationNotificationHelper(
       settings.getBoolean(NotificationsEnabledKey, false) && checkNotificationPermission(),
     )
 
+  private val expiredNotifications: MutableState<Boolean> =
+    mutableStateOf(settings.getBoolean(ExpiredNotificationsEnabledKey, true))
+
+  private val expiringSoonNotifications: MutableState<Boolean> =
+    mutableStateOf(settings.getBoolean(ExpiringSoonNotificationsEnabledKey, true))
+
   // Cache large icon bitmap to avoid repeated conversions
   private val largeIconBitmap by lazy {
     ContextCompat.getDrawable(context, R.drawable.ic_launcher_foreground)?.toBitmap()
@@ -166,8 +172,24 @@ class AndroidExpirationNotificationHelper(
     }
   }
 
+  override fun areExpiredNotificationsEnabled(): MutableState<Boolean> = expiredNotifications
+
+  override fun setExpiredNotificationsEnabled(enabled: Boolean) {
+    settings[ExpiredNotificationsEnabledKey] = enabled
+    expiredNotifications.value = enabled
+  }
+
+  override fun areExpiringSoonNotificationsEnabled(): MutableState<Boolean> = expiringSoonNotifications
+
+  override fun setExpiringSoonNotificationsEnabled(enabled: Boolean) {
+    settings[ExpiringSoonNotificationsEnabledKey] = enabled
+    expiringSoonNotifications.value = enabled
+  }
+
   companion object {
     private const val NOTIFICATION_ID = 1001
     private const val NotificationsEnabledKey = "notifications_enabled_key"
+    private const val ExpiredNotificationsEnabledKey = "notifications_expired_enabled_key"
+    private const val ExpiringSoonNotificationsEnabledKey = "notifications_expiring_soon_enabled_key"
   }
 }
