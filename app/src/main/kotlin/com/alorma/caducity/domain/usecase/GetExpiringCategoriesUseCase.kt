@@ -48,4 +48,38 @@ class GetExpiringCategoriesUseCase(
         allItems.minOfOrNull { it.expirationDate }
       }
   }
+
+  /**
+   * Returns a list of categories filtered by a specific item status.
+   * Only includes categories with items that match the given status.
+   */
+  suspend fun loadByStatus(status: ItemStatus): List<CategoryWithItems> {
+    val allCategories = categoryDataSource.getCategories().first()
+
+    return allCategories
+      .map { categoryWithItems ->
+        val filteredProducts = categoryWithItems.products.map { productWithItems ->
+          productWithItems.copy(
+            items = productWithItems.items.filter { item ->
+              item.status == status
+            }.toImmutableList()
+          )
+        }.filter { it.items.isNotEmpty() }.toImmutableList()
+
+        val filteredStandaloneItems = categoryWithItems.standaloneItems.filter { item ->
+          item.status == status
+        }.toImmutableList()
+
+        categoryWithItems.copy(
+          products = filteredProducts,
+          standaloneItems = filteredStandaloneItems
+        )
+      }
+      .filter { it.allItems.isNotEmpty() }
+      .sortedBy { categoryWithItems ->
+        val allItems = categoryWithItems.products.flatMap { it.items } +
+            categoryWithItems.standaloneItems
+        allItems.minOfOrNull { it.expirationDate }
+      }
+  }
 }

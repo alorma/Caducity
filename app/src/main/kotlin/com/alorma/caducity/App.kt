@@ -25,6 +25,7 @@ import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
 import com.alorma.caducity.ui.screen.settings.Settings
 import com.alorma.caducity.ui.screen.settings.SettingsContainer
 import com.alorma.caducity.ui.theme.AppTheme
+import com.alorma.caducity.domain.model.ItemStatus
 import org.koin.compose.koinInject
 
 @Suppress("DeferStateReads")
@@ -33,6 +34,7 @@ import org.koin.compose.koinInject
 fun App(
   modifier: Modifier = Modifier,
   onboardingFlag: OnboardingFlag = koinInject(),
+  initialStatus: ItemStatus? = null,
 ) {
   AppTheme(
     themePreferences = koinInject(),
@@ -44,7 +46,11 @@ fun App(
     }
 
     val appBackStack = retain {
-      mutableStateListOf<NavKey>(initialRoute)
+      mutableStateListOf<NavKey>(initialRoute).also { stack ->
+        if (initialStatus != null && !onboardingFlag.isEnabled()) {
+          stack.add(FilteredItemsRoute.ByStatus(initialStatus))
+        }
+      }
     }
 
     NavDisplay(

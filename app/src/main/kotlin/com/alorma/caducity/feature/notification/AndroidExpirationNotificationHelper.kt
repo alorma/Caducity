@@ -20,6 +20,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.CategoryWithItems
+import com.alorma.caducity.domain.model.ItemStatus
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -99,7 +100,7 @@ class AndroidExpirationNotificationHelper(
     return checkNotificationPermission()
   }
 
-  override fun showExpirationNotification(expiringProducts: List<CategoryWithItems>) {
+  override fun showExpirationNotification(expiringProducts: List<CategoryWithItems>, status: ItemStatus) {
     if (!areNotificationsEnabled().value) {
       return
     }
@@ -110,14 +111,17 @@ class AndroidExpirationNotificationHelper(
 
     val notificationManager = context.getSystemService<NotificationManager>()
 
-    // Create intent to open app with filtered view
+    // Create intent to open app navigating to the filtered view for the given status
     val intent = Intent(context, MainActivity::class.java).apply {
-      flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+      flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+      putExtra(EXTRA_NOTIFICATION_STATUS, statusToExtra(status))
     }
+
+    val notificationId = notificationIdFor(status)
 
     val pendingIntent = PendingIntent.getActivity(
       context,
-      0,
+      notificationId,
       intent,
       PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
     )
@@ -129,21 +133,29 @@ class AndroidExpirationNotificationHelper(
         .also { builder ->
           largeIconBitmap?.let { builder.setLargeIcon(it) }
         }
-        .setContentTitle(buildNotificationTitle(expiringProducts.size))
+        .setContentTitle(buildNotificationTitle(expiringProducts.size, status))
         .setContentText(buildNotificationText(expiringProducts))
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .setAutoCancel(true)
         .setContentIntent(pendingIntent)
         .build()
 
-    notificationManager?.notify(NOTIFICATION_ID, notification)
+    notificationManager?.notify(notificationId, notification)
   }
 
-  private fun buildNotificationTitle(count: Int): String {
-    return if (count == 1) {
-      "Category expiring soon"
-    } else {
-      "$count categories expiring soon"
+  private fun buildNotificationTitle(count: Int, status: ItemStatus): String {
+    return when (status) {
+      is ItemStatus.Expired -> if (count == 1) {
+        "1 category with expired items"
+      } else {
+        "$count categories with expired items"
+      }
+      is ItemStatus.ExpiringSoon -> if (count == 1) {
+        "Category expiring soon"
+      } else {
+        "$count categories expiring soon"
+      }
+      else -> throw IllegalArgumentException("Unsupported status for notification: $status")
     }
   }
 
@@ -187,9 +199,25 @@ class AndroidExpirationNotificationHelper(
   }
 
   companion object {
-    private const val NOTIFICATION_ID = 1001
+    private const val NOTIFICATION_ID_EXPIRED = 1001
+    private const val NOTIFICATION_ID_EXPIRING_SOON = 1002
     private const val NotificationsEnabledKey = "notifications_enabled_key"
     private const val ExpiredNotificationsEnabledKey = "notifications_expired_enabled_key"
     private const val ExpiringSoonNotificationsEnabledKey = "notifications_expiring_soon_enabled_key"
+    const val EXTRA_NOTIFICATION_STATUS = "notification_status"
+    const val STATUS_EXPIRED = "expired"
+    const val STATUS_EXPIRING_SOON = "expiring_soon"
+
+    fun statusToExtra(status: ItemStatus): String = when (status) {
+      is ItemStatus.Expired -> STATUS_EXPIRED
+      is ItemStatus.ExpiringSoon -> STATUS_EXPIRING_SOON
+      else -> throw IllegalArgumentException("Unsupported status for notification: $status")
+    }
+
+    fun notificationIdFor(status: ItemStatus): Int = when (status) {
+      is ItemStatus.Expired -> NOTIFICATION_ID_EXPIRED
+      is ItemStatus.ExpiringSoon -> NOTIFICATION_ID_EXPIRING_SOON
+      else -> throw IllegalArgumentException("Unsupported status for notification: $status")
+    }
   }
 }

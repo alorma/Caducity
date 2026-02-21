@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
 import org.koin.core.component.KoinComponent
@@ -32,17 +33,24 @@ class ExpirationCheckWorker(
     return try {
       Log.d(TAG, "Starting expiration check...")
 
-      // Get categories with items expiring soon
-      val expiringCategories = getExpiringCategoriesUseCase.load()
+      // Show expired notification if that type is enabled
+      if (notificationHelper.areExpiredNotificationsEnabled().value) {
+        val expiredCategories = getExpiringCategoriesUseCase.loadByStatus(ItemStatus.Expired)
+        Log.d(TAG, "Found ${expiredCategories.size} categories with expired items")
+        if (expiredCategories.isNotEmpty()) {
+          notificationHelper.showExpirationNotification(expiredCategories, ItemStatus.Expired)
+          Log.d(TAG, "Expired notification shown for ${expiredCategories.size} categories")
+        }
+      }
 
-      Log.d(TAG, "Found ${expiringCategories.size} expiring categories")
-
-      // Show notification if there are expiring categories
-      if (expiringCategories.isNotEmpty()) {
-        notificationHelper.showExpirationNotification(expiringCategories)
-        Log.d(TAG, "Notification shown for ${expiringCategories.size} categories")
-      } else {
-        Log.d(TAG, "No expiring categories, skipping notification")
+      // Show expiring soon notification if that type is enabled
+      if (notificationHelper.areExpiringSoonNotificationsEnabled().value) {
+        val expiringSoonCategories = getExpiringCategoriesUseCase.loadByStatus(ItemStatus.ExpiringSoon)
+        Log.d(TAG, "Found ${expiringSoonCategories.size} categories expiring soon")
+        if (expiringSoonCategories.isNotEmpty()) {
+          notificationHelper.showExpirationNotification(expiringSoonCategories, ItemStatus.ExpiringSoon)
+          Log.d(TAG, "Expiring soon notification shown for ${expiringSoonCategories.size} categories")
+        }
       }
 
       Result.success()
