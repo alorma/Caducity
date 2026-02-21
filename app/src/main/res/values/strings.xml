@@ -99,6 +99,9 @@
 
   <string name="settings_group_notifications">Notifications</string>
   <string name="settings_enable_notifications">Enable Notifications</string>
+  <string name="settings_notification_types_title">Notification Types</string>
+  <string name="settings_notification_type_expired">Expired</string>
+  <string name="settings_notification_type_expiring">Expiring</string>
 
   <string name="settings_group_privacy">Privacy &amp; Data</string>
   <string name="settings_privacy_screen_title">Privacy</string>

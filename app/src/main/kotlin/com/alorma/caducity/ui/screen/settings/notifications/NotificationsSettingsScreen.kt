@@ -40,6 +40,10 @@ fun NotificationsSettingsScreen(
     modifier = modifier,
     areNotificationsEnabled = notificationHelper.areNotificationsEnabled().value,
     onNotificationStateChange = { notificationHelper.changeState(it) },
+    areExpiredNotificationsEnabled = notificationHelper.areExpiredNotificationsEnabled().value,
+    onExpiredNotificationsStateChange = { notificationHelper.setExpiredNotificationsEnabled(it) },
+    areExpiringSoonNotificationsEnabled = notificationHelper.areExpiringSoonNotificationsEnabled().value,
+    onExpiringSoonNotificationsStateChange = { notificationHelper.setExpiringSoonNotificationsEnabled(it) },
     onClose = onClose,
   )
 }
@@ -48,6 +52,10 @@ fun NotificationsSettingsScreen(
 fun NotificationsSettingsContent(
   areNotificationsEnabled: Boolean,
   onNotificationStateChange: (Boolean) -> Unit,
+  areExpiredNotificationsEnabled: Boolean,
+  onExpiredNotificationsStateChange: (Boolean) -> Unit,
+  areExpiringSoonNotificationsEnabled: Boolean,
+  onExpiringSoonNotificationsStateChange: (Boolean) -> Unit,
   onClose: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -81,6 +89,26 @@ fun NotificationsSettingsContent(
         )
         }
       }
+      if (areNotificationsEnabled) {
+        item {
+          StyledSettingsGroup(
+            title = { Text(stringResource(R.string.settings_notification_types_title)) }
+          ) {
+            StyledSettingsSwitchCard(
+              title = stringResource(R.string.settings_notification_type_expired),
+              state = areExpiredNotificationsEnabled,
+              position = ShapePosition.Start,
+              onCheckedChange = onExpiredNotificationsStateChange,
+            )
+            StyledSettingsSwitchCard(
+              title = stringResource(R.string.settings_notification_type_expiring),
+              state = areExpiringSoonNotificationsEnabled,
+              position = ShapePosition.End,
+              onCheckedChange = onExpiringSoonNotificationsStateChange,
+            )
+          }
+        }
+      }
       }
     }
   }
@@ -95,6 +123,10 @@ fun NotificationsSettingsScreenPreview() {
       NotificationsSettingsContent(
         areNotificationsEnabled = true,
         onNotificationStateChange = {},
+        areExpiredNotificationsEnabled = true,
+        onExpiredNotificationsStateChange = {},
+        areExpiringSoonNotificationsEnabled = true,
+        onExpiringSoonNotificationsStateChange = {},
         onClose = {},
       )
     }
