@@ -101,6 +101,9 @@
 
   <string name="settings_group_notifications">Notificacions</string>
   <string name="settings_enable_notifications">Activar notificacions</string>
+  <string name="settings_notification_types_title">Tipus de notificació</string>
+  <string name="settings_notification_type_expired">Caducat</string>
+  <string name="settings_notification_type_expiring">Per caducar</string>
 
   <string name="settings_group_privacy">Privacitat i Dades</string>
   <string name="settings_privacy_screen_title">Privacitat</string>

@@ -129,6 +129,7 @@ class DashboardViewModelTest {
 
   private fun createTestItem(
     id: String = UUID.randomUUID().toString(),
+    categoryId: String = UUID.randomUUID().toString(),
     productId: String? = null,
     identifier: String = "Test Item",
     expirationDate: Instant = Instant.parse("2024-02-15T00:00:00Z"),
@@ -136,6 +137,7 @@ class DashboardViewModelTest {
   ): Item {
     return Item(
       id = id,
+      categoryId = categoryId,
       identifier = identifier,
       productId = productId,
       expirationDate = expirationDate,
