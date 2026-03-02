@@ -1,6 +1,6 @@
 [versions]
 # Compose
-compose-bom = "2026.02.00"
+compose-bom = "2026.02.01"
 
 # Kotlin
 kotlin = "2.3.10"
