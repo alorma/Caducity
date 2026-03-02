@@ -51,7 +51,7 @@ kotlinx-coroutines-test = "1.10.2"
 robolectric = "4.15"
 
 # Firebase
-firebase-bom = "34.9.0"
+firebase-bom = "34.10.0"
 adaptive = "1.2.0"
 
 # Google Play
