@@ -34,7 +34,7 @@ koin = "4.1.1"
 kalendar = "2.10.0"
 fireandforget = "1.3.0"
 
-materialKolor = "5.0.0-alpha06"
+materialKolor = "5.0.0-alpha07"
 
 googleServices = "4.4.4"
 firebaseCrashlytics = "3.0.6"
