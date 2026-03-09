@@ -1,7 +1,6 @@
 package com.alorma.caducity.feature.notification.worker
 
 import android.content.Context
-import android.util.Log
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -29,10 +28,11 @@ class ExpirationWorkSchedulerImpl(
 
   /**
    * Schedules periodic expiration checks at [time].
-   * Uses KEEP policy so the schedule is not reset on every app startup.
+   * Uses UPDATE policy to recalculate the initial delay on every app startup,
+   * ensuring the worker fires at the correct configured time.
    */
   override fun scheduleExpirationCheck(time: LocalTime) {
-    enqueueWork(time, ExistingPeriodicWorkPolicy.KEEP)
+    enqueueWork(time, ExistingPeriodicWorkPolicy.UPDATE)
   }
 
   /**
@@ -50,8 +50,6 @@ class ExpirationWorkSchedulerImpl(
     Timber.tag(TAG).d( "Initial delay: ${initialDelay.inWholeMinutes} minutes")
 
     val constraints = Constraints.Builder()
-      .setRequiresBatteryNotLow(true)
-      .setRequiresStorageNotLow(true)
       .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
       .build()
 

@@ -18,10 +18,9 @@ import timber.log.Timber
 class ExpirationCheckWorker(
   context: Context,
   params: WorkerParameters,
-) : CoroutineWorker(context, params), KoinComponent {
-
-  private val getExpiringCategoriesUseCase: GetExpiringCategoriesUseCase by inject()
-  private val notificationHelper: ExpirationNotificationHelper by inject()
+  private val getExpiringCategoriesUseCase: GetExpiringCategoriesUseCase,
+  private val notificationHelper: ExpirationNotificationHelper,
+) : CoroutineWorker(context, params) {
 
   companion object {
     private const val TAG = "ExpirationCheckWorker"
