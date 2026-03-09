@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,7 +26,6 @@ import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
@@ -138,7 +138,7 @@ private fun DebugSettingsContent(
               } else {
                 "Clear all data and create test items with all statuses"
               },
-              position = ShapePosition.Start,
+              shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
               onClick = { uiState.onPopulateFakeData() },
               enabled = !uiState.isGenerating,
             )
@@ -149,7 +149,7 @@ private fun DebugSettingsContent(
               } else {
                 "Create 5 categories with consistent products for screenshots"
               },
-              position = ShapePosition.End,
+              shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
               onClick = { uiState.onPopulateFakePlayStoreData() },
               enabled = !uiState.isGeneratingPlayStore,
             )
@@ -164,7 +164,7 @@ private fun DebugSettingsContent(
             StyledSettingsCard(
               title = "Test Notification",
               subtitle = "Trigger notification check immediately",
-              position = ShapePosition.Single,
+              shapes = ListItemDefaults.shapes(),
               onClick = { uiState.onTriggerNotificationCheck() },
             )
           }
@@ -182,7 +182,7 @@ private fun DebugSettingsContent(
               } else {
                 "Fetch and activate latest config values"
               },
-              position = ShapePosition.Single,
+              shapes = ListItemDefaults.shapes(),
               onClick = { uiState.onRefreshRemoteConfig() },
               enabled = !uiState.isRefreshingRemoteConfig,
             )
@@ -202,7 +202,7 @@ private fun DebugSettingsContent(
               title = stringResource(R.string.debug_consent_ad_storage_title),
               subtitle = stringResource(R.string.debug_consent_ad_storage_description),
               state = uiState.adStorageEnabled,
-              position = ShapePosition.Start,
+              shapes = ListItemDefaults.segmentedShapes(index = 0, count = 3),
               onCheckedChange = { uiState.onToggleAdStorage(it) },
             )
 
@@ -210,7 +210,7 @@ private fun DebugSettingsContent(
               title = stringResource(R.string.debug_consent_ad_user_data_title),
               subtitle = stringResource(R.string.debug_consent_ad_user_data_description),
               state = uiState.adUserDataEnabled,
-              position = ShapePosition.Middle,
+              shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
               onCheckedChange = { uiState.onToggleAdUserData(it) },
             )
 
@@ -218,7 +218,7 @@ private fun DebugSettingsContent(
               title = stringResource(R.string.debug_consent_ad_personalization_title),
               subtitle = stringResource(R.string.debug_consent_ad_personalization_description),
               state = uiState.adPersonalizationEnabled,
-              position = ShapePosition.End,
+              shapes = ListItemDefaults.segmentedShapes(index = 2, count = 3),
               onCheckedChange = { uiState.onToggleAdPersonalization(it) },
             )
           }
@@ -240,13 +240,6 @@ private fun DebugSettingsContent(
                 }
               ) {
                 uiState.remoteConfigValues.entries.forEachIndexed { index, (key, configState) ->
-                  val position = when {
-                    uiState.remoteConfigValues.size == 1 -> ShapePosition.Single
-                    index == 0 -> ShapePosition.Start
-                    index == uiState.remoteConfigValues.size - 1 -> ShapePosition.End
-                    else -> ShapePosition.Middle
-                  }
-
                   StyledSettingsSwitchCard(
                     title = key,
                     subtitle = if (configState.hasDebugOverride) {
@@ -255,7 +248,10 @@ private fun DebugSettingsContent(
                       "Using default value"
                     },
                     state = configState.value,
-                    position = position,
+                    shapes = ListItemDefaults.segmentedShapes(
+                      index = index,
+                      count = uiState.remoteConfigValues.entries.size,
+                    ),
                     onCheckedChange = { enabled ->
                       uiState.onToggleRemoteConfig(key, enabled)
                     },

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -99,7 +100,7 @@ private fun SettingsRootContent(
               title = stringResource(R.string.settings_appearance_title),
               subtitle = stringResource(R.string.settings_appearance_description),
               onClick = onNavigateToAppearance,
-              position = ShapePosition.Start,
+              shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
             )
 
             StyledSettingsCard(
@@ -112,7 +113,7 @@ private fun SettingsRootContent(
               title = stringResource(R.string.settings_notifications_title),
               subtitle = stringResource(R.string.settings_notifications_description),
               onClick = onNavigateToNotifications,
-              position = ShapePosition.End,
+              shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
             )
           }
         }
@@ -132,7 +133,7 @@ private fun SettingsRootContent(
               title = stringResource(R.string.settings_privacy_title),
               subtitle = stringResource(R.string.settings_privacy_description),
               onClick = onNavigateToPrivacy,
-              position = ShapePosition.Start,
+              shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
             )
 
             StyledSettingsCard(
@@ -145,7 +146,7 @@ private fun SettingsRootContent(
               title = stringResource(R.string.settings_backup_title),
               subtitle = stringResource(R.string.settings_backup_description),
               onClick = onNavigateToBackup,
-              position = ShapePosition.End,
+              shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
             )
           }
         }
@@ -166,7 +167,7 @@ private fun SettingsRootContent(
                 title = stringResource(R.string.settings_debug_title),
                 subtitle = stringResource(R.string.settings_debug_description),
                 onClick = onNavigateToDebug,
-                position = ShapePosition.Single,
+                shapes = ListItemDefaults.shapes(),
               )
             }
           }
@@ -187,7 +188,7 @@ private fun SettingsRootContent(
               title = stringResource(R.string.settings_about_title),
               subtitle = stringResource(R.string.settings_about_description),
               onClick = onNavigateToAbout,
-              position = ShapePosition.Single,
+              shapes = ListItemDefaults.shapes(),
             )
           }
         }

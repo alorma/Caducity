@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.Surface
@@ -32,10 +33,9 @@ import com.alorma.caducity.ui.theme.colors.VibrantExpirationColors
 import com.alorma.caducity.ui.theme.colors.darkColorScheme
 import com.alorma.caducity.ui.theme.colors.dynamicColorScheme
 import com.alorma.caducity.ui.theme.colors.lightColorScheme
-import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
-import com.alorma.compose.settings.ui.base.internal.LocalSettingsTileColors
-import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import com.alorma.compose.settings.ui.core.LocalSettingsTileColors
 import org.koin.compose.koinInject
 
 @Suppress("ModifierRequired")
@@ -136,12 +136,13 @@ fun InternalTheme(
     LocalThemeTone provides themeTone,
     LocalExpirationColors provides expirationColors,
   ) {
-    val settingsColors = SettingsTileDefaults.colors(
+    val settingsColors = ListItemDefaults.colors(
       containerColor = colorScheme.surfaceContainer,
-      titleColor = colorScheme.primary,
-      subtitleColor = colorScheme.onSurface,
-      iconColor = colorScheme.primary,
-      actionColor = colorScheme.primary,
+      contentColor = colorScheme.primary,
+      overlineContentColor = colorScheme.onSurface,
+      supportingContentColor = colorScheme.onSurface,
+      leadingContentColor = colorScheme.primary,
+      trailingContentColor = colorScheme.primary,
     )
     CompositionLocalProvider(LocalSettingsTileColors provides settingsColors) {
       content()

@@ -50,7 +50,6 @@ import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
@@ -265,7 +264,6 @@ fun CategoryDetailAddItemScreen(
                 title = stringResource(R.string.category_detail_add_item_type_label),
                 selectedItem = formState.value.itemType,
                 items = ItemType.entries,
-                position = ShapePosition.Single,
                 itemTitleMap = { itemType ->
                   when (itemType) {
                     ItemType.SINGLE -> singleLabel
@@ -306,7 +304,7 @@ fun CategoryDetailAddItemScreen(
               } else {
                 stringResource(R.string.category_detail_add_item_quantity_items_label)
               }
-              
+
               Text(
                 text = quantityLabel,
                 style = MaterialTheme.typography.bodyLarge,

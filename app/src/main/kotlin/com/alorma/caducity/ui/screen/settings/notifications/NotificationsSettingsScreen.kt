@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -103,7 +104,7 @@ fun NotificationsSettingsContent(
         StyledSettingsSwitchCard(
           title = stringResource(R.string.settings_enable_notifications),
           state = areNotificationsEnabled,
-          position = ShapePosition.Single,
+          shapes = ListItemDefaults.shapes(),
           onCheckedChange = onNotificationStateChange,
         )
         }
@@ -116,13 +117,13 @@ fun NotificationsSettingsContent(
             StyledSettingsSwitchCard(
               title = stringResource(R.string.settings_notification_type_expired),
               state = areExpiredNotificationsEnabled,
-              position = ShapePosition.Start,
+              shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
               onCheckedChange = onExpiredNotificationsStateChange,
             )
             StyledSettingsSwitchCard(
               title = stringResource(R.string.settings_notification_type_expiring),
               state = areExpiringSoonNotificationsEnabled,
-              position = ShapePosition.End,
+              shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
               onCheckedChange = onExpiringSoonNotificationsStateChange,
             )
           }
@@ -134,7 +135,7 @@ fun NotificationsSettingsContent(
             StyledSettingsCard(
               title = stringResource(R.string.settings_notification_time_title),
               subtitle = "%02d:%02d".format(notificationTime.hour, notificationTime.minute),
-              position = ShapePosition.Single,
+              shapes = ListItemDefaults.shapes(),
               onClick = { showTimePicker = true },
             )
           }
