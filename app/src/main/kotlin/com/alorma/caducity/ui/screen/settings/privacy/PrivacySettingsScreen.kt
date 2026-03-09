@@ -1,12 +1,9 @@
 package com.alorma.caducity.ui.screen.settings.privacy
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -19,17 +16,16 @@ import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.feature.tracking.PrivacySettingsScreen as PrivacySettingsScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import org.koin.compose.viewmodel.koinViewModel
-import com.alorma.caducity.feature.tracking.PrivacySettingsScreen as PrivacySettingsScreenEvent
-import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun PrivacySettingsScreen(
@@ -82,7 +78,7 @@ fun PrivacySettingsContent(
               title = stringResource(R.string.settings_privacy_analytics_title),
               subtitle = stringResource(R.string.settings_privacy_analytics_description),
               state = analyticsEnabled,
-              position = ShapePosition.Single,
+              shapes = ListItemDefaults.shapes(),
               onCheckedChange = onAnalyticsToggle,
             )
           }

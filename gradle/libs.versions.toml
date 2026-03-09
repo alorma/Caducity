@@ -93,6 +93,7 @@ multiplatform-settings-no-arg = { group = "com.russhwolf", name = "multiplatform
 fireandforget-core = { group = "com.github.alorma.fire-and-forget", name = "core", version.ref = "fireandforget" }
 fireandforget-multiplatform-settings = { group = "com.github.alorma.fire-and-forget", name = "multiplatform-settings", version.ref = "fireandforget" }
 
+alorma-settings-ui-core = { group = "com.github.alorma.compose-settings", name = "ui-core", version.ref = "uiTiles" }
 alorma-settings-ui-tiles-expressive = { group = "com.github.alorma.compose-settings", name = "ui-tiles-expressive", version.ref = "uiTiles" }
 
 koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin" }

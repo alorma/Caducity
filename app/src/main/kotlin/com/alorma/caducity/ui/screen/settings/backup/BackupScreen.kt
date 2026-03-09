@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,9 +22,8 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Backup
 import com.alorma.caducity.base.ui.icons.Restore
 import com.alorma.caducity.feature.backup.BackupFileHandler
-import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
-import com.alorma.caducity.ui.components.topbar.NavigationIcon
-import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.feature.tracking.BackupScreen as BackupScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
@@ -31,16 +31,17 @@ import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
+import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
+import com.alorma.caducity.ui.components.topbar.NavigationIcon
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import com.alorma.caducity.feature.tracking.BackupScreen as BackupScreenEvent
-import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun BackupScreen(
@@ -158,38 +159,38 @@ private fun BackupScreenContent(
         modifier = Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
       ) {
-      // Export & Restore Group
-      item {
-        StyledSettingsGroup(
-          title = { Text(stringResource(R.string.settings_backup_title)) }
-        ) {
-        StyledSettingsCard(
-          icon = {
-            Icon(
-              imageVector = AppIcons.Backup,
-              contentDescription = null,
+        // Export & Restore Group
+        item {
+          StyledSettingsGroup(
+            title = { Text(stringResource(R.string.settings_backup_title)) }
+          ) {
+            StyledSettingsCard(
+              icon = {
+                Icon(
+                  imageVector = AppIcons.Backup,
+                  contentDescription = null,
+                )
+              },
+              title = stringResource(R.string.backup_export_title),
+              subtitle = stringResource(R.string.backup_export_description),
+              onClick = onExport,
+              shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
             )
-          },
-          title = stringResource(R.string.backup_export_title),
-          subtitle = stringResource(R.string.backup_export_description),
-          onClick = onExport,
-          position = ShapePosition.Start,
-        )
 
-        StyledSettingsCard(
-          icon = {
-            Icon(
-              imageVector = AppIcons.Restore,
-              contentDescription = null,
+            StyledSettingsCard(
+              icon = {
+                Icon(
+                  imageVector = AppIcons.Restore,
+                  contentDescription = null,
+                )
+              },
+              title = stringResource(R.string.backup_restore_title),
+              subtitle = stringResource(R.string.backup_restore_description),
+              onClick = onRestore,
+              shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
             )
-          },
-          title = stringResource(R.string.backup_restore_title),
-          subtitle = stringResource(R.string.backup_restore_description),
-          onClick = onRestore,
-          position = ShapePosition.End,
-        )
+          }
         }
-      }
       }
     }
   }

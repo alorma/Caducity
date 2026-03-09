@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +29,6 @@ import com.alorma.caducity.ui.screen.category.detail.CategoryProductTabUiModel
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.theme.CaducityTheme
-import com.alorma.compose.settings.ui.base.internal.SettingsTileDefaults
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import com.alorma.caducity.feature.tracking.ProductDeleteBottomSheetScreen
@@ -112,7 +112,7 @@ private fun DeleteProductWithItemsBottomSheetContent(
                 title = stringResource(R.string.product_delete_option_move_to_standalone),
                 subtitle = stringResource(R.string.product_delete_option_move_to_standalone_desc),
                 onClick = onMoveToStandalone,
-                position = standalonePosition,
+                shapes = ListItemDefaults.segmentedShapes(index = 0, count = 3),
               )
 
               // Option 2: Move to another product (only if there are other products)
@@ -127,7 +127,7 @@ private fun DeleteProductWithItemsBottomSheetContent(
                   title = stringResource(R.string.product_delete_option_move_to_product),
                   subtitle = stringResource(R.string.product_delete_option_move_to_product_desc),
                   onClick = { onShowProductSelection(true) },
-                  position = productPosition,
+                  shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
                 )
               }
 
@@ -141,15 +141,16 @@ private fun DeleteProductWithItemsBottomSheetContent(
                 },
                 title = stringResource(R.string.product_delete_option_cascade_delete),
                 subtitle = stringResource(R.string.product_delete_option_cascade_delete_desc),
-                colors = SettingsTileDefaults.colors(
+                colors = ListItemDefaults.segmentedColors(
                   containerColor = CaducityTheme.colorScheme.errorContainer,
-                  titleColor = CaducityTheme.colorScheme.onErrorContainer,
-                  subtitleColor = CaducityTheme.colorScheme.onErrorContainer,
-                  iconColor = CaducityTheme.colorScheme.onErrorContainer,
-                  actionColor = CaducityTheme.colorScheme.onErrorContainer,
+                  contentColor = CaducityTheme.colorScheme.onErrorContainer,
+                  overlineContentColor = CaducityTheme.colorScheme.onErrorContainer,
+                  supportingContentColor = CaducityTheme.colorScheme.onErrorContainer,
+                  leadingContentColor = CaducityTheme.colorScheme.onErrorContainer,
+                  trailingContentColor = CaducityTheme.colorScheme.onErrorContainer,
                 ),
                 onClick = onCascadeDelete,
-                position = deletePosition,
+                shapes = ListItemDefaults.segmentedShapes(index = 2, count = 3),
               )
             }
           }
@@ -193,7 +194,10 @@ private fun DeleteProductWithItemsBottomSheetContent(
                   onClick = {
                     product.id?.let { onMoveToProduct(it) }
                   },
-                  position = position,
+                  shapes = ListItemDefaults.segmentedShapes(
+                    index = index,
+                    count = availableProducts.size,
+                    ),
                 )
               }
             }
@@ -252,7 +256,7 @@ private fun ClearItemsBottomSheetContent(
             title = stringResource(R.string.product_clear_consumed_only),
             subtitle = stringResource(R.string.product_clear_consumed_only_desc),
             onClick = onClearConsumed,
-            position = ShapePosition.Start,
+            shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
           )
 
           // Option 2: Clear all items
@@ -267,13 +271,14 @@ private fun ClearItemsBottomSheetContent(
             title = stringResource(R.string.product_clear_all_items),
             subtitle = stringResource(R.string.product_clear_all_items_desc),
             onClick = onClearAll,
-            position = ShapePosition.End,
-            colors = SettingsTileDefaults.colors(
+            shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
+            colors = ListItemDefaults.colors(
               containerColor = CaducityTheme.colorScheme.errorContainer,
-              titleColor = CaducityTheme.colorScheme.onErrorContainer,
-              subtitleColor = CaducityTheme.colorScheme.onErrorContainer,
-              iconColor = CaducityTheme.colorScheme.onErrorContainer,
-              actionColor = CaducityTheme.colorScheme.onErrorContainer,
+              contentColor = CaducityTheme.colorScheme.onErrorContainer,
+              overlineContentColor = CaducityTheme.colorScheme.onErrorContainer,
+              supportingContentColor = CaducityTheme.colorScheme.onErrorContainer,
+              leadingContentColor = CaducityTheme.colorScheme.onErrorContainer,
+              trailingContentColor = CaducityTheme.colorScheme.onErrorContainer,
             ),
           )
         }

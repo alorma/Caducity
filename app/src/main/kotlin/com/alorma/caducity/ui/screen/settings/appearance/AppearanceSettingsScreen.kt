@@ -4,6 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -100,7 +101,7 @@ private fun AppearanceSettingsContent(
             StyledSettingsButtonGroupCard(
               title = stringResource(R.string.settings_theme_title),
               selectedItem = themeMode,
-              position = ShapePosition.Start,
+              shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
               items = ThemeMode.entries,
               itemTitleMap = { themeMode ->
                 when (themeMode) {
@@ -115,7 +116,7 @@ private fun AppearanceSettingsContent(
               StyledSettingsSwitchCard(
                 title = stringResource(R.string.settings_dynamic_colors),
                 state = useDynamicTheme,
-                position = ShapePosition.End,
+                shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
                 onCheckedChange = { onUseDynamicTheme(it) },
               )
             }
@@ -132,7 +133,7 @@ private fun AppearanceSettingsContent(
             StyledSettingsButtonGroupCard(
               title = stringResource(R.string.settings_tone_title),
               selectedItem = themeTone,
-              position = ShapePosition.Single,
+              shapes = ListItemDefaults.shapes(),
               items = ThemeTone.entries,
               itemTitleMap = { tone ->
                 when (tone) {
@@ -153,7 +154,7 @@ private fun AppearanceSettingsContent(
             StyledSettingsButtonGroupCard(
               title = stringResource(R.string.settings_first_day_of_week_title),
               selectedItem = firstDayOfWeek,
-              position = ShapePosition.Single,
+              shapes = ListItemDefaults.shapes(),
               items = listOf(DayOfWeek.MONDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY),
               itemTitleMap = { day ->
                 localizedDateFormatter.getDayOfWeekFullName(day)
