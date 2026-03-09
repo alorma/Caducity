@@ -341,4 +341,11 @@
   <string name="dashboard_add">Afegir</string>
 
   <string name="app_name">Caducity</string>
+
+  <!-- Notifications -->
+  <string name="notification_expiring_soon_title_single">Categoria a punt de caducar</string>
+  <string name="notification_expiring_soon_title_plural">%1$d categories a punt de caducar</string>
+  <string name="notification_expired_title_single">Categoria amb productes caducats</string>
+  <string name="notification_expired_title_plural">%1$d categories amb productes caducats</string>
+  <string name="notification_text_more">%1$s i %2$d més</string>
 </resources>

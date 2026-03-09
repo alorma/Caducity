@@ -358,4 +358,11 @@
   <string name="quantity_selector_all">All</string>
 
   <string name="app_name">Caducity</string>
+
+  <!-- Notifications -->
+  <string name="notification_expiring_soon_title_single">Category expiring soon</string>
+  <string name="notification_expiring_soon_title_plural">%1$d categories expiring soon</string>
+  <string name="notification_expired_title_single">Category has expired items</string>
+  <string name="notification_expired_title_plural">%1$d categories have expired items</string>
+  <string name="notification_text_more">%1$s and %2$d more</string>
 </resources>

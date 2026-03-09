@@ -64,7 +64,10 @@ fun App(
       entryProvider = entryProvider {
         entry<OnboardingRoute> {
           OnboardingScreen(
-            onComplete = { appBackStack.add(DashboardRoute) },
+            onComplete = {
+              appBackStack.clear()
+              appBackStack.add(DashboardRoute)
+            },
           )
         }
         entry<DashboardRoute> {

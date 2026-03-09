@@ -18,6 +18,7 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.toBitmap
 import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
+import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.domain.NotificationConfigDataSource
 import com.alorma.caducity.domain.model.CategoryWithItems
 import com.russhwolf.settings.Settings
@@ -33,6 +34,7 @@ class AndroidExpirationNotificationHelper(
   private val context: Context,
   private val settings: Settings,
   private val workScheduler: ExpirationWorkScheduler,
+  private val stringProvider: StringProvider,
 ) : ExpirationNotificationHelper {
 
   private val notifications: MutableState<Boolean> =
@@ -115,10 +117,15 @@ class AndroidExpirationNotificationHelper(
   override fun showExpiringSoonNotification(categories: List<CategoryWithItems>) {
     if (!areNotificationsEnabled().value || !areExpiringSoonNotificationsEnabled().value) return
     if (categories.isEmpty()) return
+    val title = if (categories.size == 1) {
+      stringProvider.getString(R.string.notification_expiring_soon_title_single)
+    } else {
+      stringProvider.getString(R.string.notification_expiring_soon_title_plural, categories.size)
+    }
     showNotification(
       channelId = NotificationChannelManager.CHANNEL_ID_EXPIRING_SOON,
       notificationId = NOTIFICATION_ID_EXPIRING_SOON,
-      title = if (categories.size == 1) "Category expiring soon" else "${categories.size} categories expiring soon",
+      title = title,
       text = buildNotificationText(categories),
       priority = NotificationCompat.PRIORITY_DEFAULT,
       statusExtra = MainActivity.STATUS_EXPIRING_SOON,
@@ -128,10 +135,15 @@ class AndroidExpirationNotificationHelper(
   override fun showExpiredNotification(categories: List<CategoryWithItems>) {
     if (!areNotificationsEnabled().value || !areExpiredNotificationsEnabled().value) return
     if (categories.isEmpty()) return
+    val title = if (categories.size == 1) {
+      stringProvider.getString(R.string.notification_expired_title_single)
+    } else {
+      stringProvider.getString(R.string.notification_expired_title_plural, categories.size)
+    }
     showNotification(
       channelId = NotificationChannelManager.CHANNEL_ID_EXPIRED,
       notificationId = NOTIFICATION_ID_EXPIRED,
-      title = if (categories.size == 1) "Category has expired items" else "${categories.size} categories have expired items",
+      title = title,
       text = buildNotificationText(categories),
       priority = NotificationCompat.PRIORITY_HIGH,
       statusExtra = MainActivity.STATUS_EXPIRED,
@@ -176,7 +188,7 @@ class AndroidExpirationNotificationHelper(
     return if (categories.size == 1) {
       categories.first().category.name
     } else {
-      "${categories.first().category.name} and ${categories.size - 1} more"
+      stringProvider.getString(R.string.notification_text_more, categories.first().category.name, categories.size - 1)
     }
   }
 
