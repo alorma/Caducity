@@ -6,8 +6,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 
 sealed interface AppFeedbackResource {
-  data class AsAnnotatedString(val annotatedString: AnnotatedString) : AppFeedbackResource
-  data class AsString(val string: String) : AppFeedbackResource
+  data class AsAnnotatedString(
+    val annotatedString: AnnotatedString,
+  ) : AppFeedbackResource
+
+  data class AsString(
+    val string: String,
+  ) : AppFeedbackResource
+
   class AsResource(
     @get:StringRes val stringRes: Int,
     vararg val formatArgs: Any,
@@ -15,8 +21,8 @@ sealed interface AppFeedbackResource {
 }
 
 @Composable
-fun exposeResource(ijDialogResource: AppFeedbackResource): AnnotatedString {
-  return when (ijDialogResource) {
+fun exposeResource(ijDialogResource: AppFeedbackResource): AnnotatedString =
+  when (ijDialogResource) {
     is AppFeedbackResource.AsResource -> {
       if (ijDialogResource.formatArgs.isEmpty()) {
         AnnotatedString(stringResource(ijDialogResource.stringRes))
@@ -28,4 +34,3 @@ fun exposeResource(ijDialogResource: AppFeedbackResource): AnnotatedString {
     is AppFeedbackResource.AsString -> AnnotatedString(ijDialogResource.string)
     is AppFeedbackResource.AsAnnotatedString -> ijDialogResource.annotatedString
   }
-}

@@ -29,21 +29,18 @@ class ConsentManager(
   /**
    * Check if user has already provided consent choices.
    */
-  fun hasUserProvidedConsent(): Boolean {
-    return settings.getBoolean(KEY_CONSENT_GIVEN, false)
-  }
+  fun hasUserProvidedConsent(): Boolean = settings.getBoolean(KEY_CONSENT_GIVEN, false)
 
   /**
    * Get current consent preferences from storage.
    */
-  fun getConsentPreferences(): ConsentPreferences {
-    return ConsentPreferences(
+  fun getConsentPreferences(): ConsentPreferences =
+    ConsentPreferences(
       analyticsStorage = getConsentStatus(KEY_ANALYTICS_STORAGE),
       adStorage = getConsentStatus(KEY_AD_STORAGE),
       adUserData = getConsentStatus(KEY_AD_USER_DATA),
       adPersonalization = getConsentStatus(KEY_AD_PERSONALIZATION),
     )
-  }
 
   /**
    * Save consent preferences and apply them to Firebase Analytics.
@@ -86,14 +83,16 @@ class ConsentManager(
     return ConsentStatus.valueOf(value)
   }
 
-  private fun saveConsentStatus(key: String, status: ConsentStatus) {
+  private fun saveConsentStatus(
+    key: String,
+    status: ConsentStatus,
+  ) {
     settings.putString(key, status.name)
   }
 
-  private fun toFirebaseConsentStatus(status: ConsentStatus): FirebaseAnalytics.ConsentStatus {
-    return when (status) {
+  private fun toFirebaseConsentStatus(status: ConsentStatus): FirebaseAnalytics.ConsentStatus =
+    when (status) {
       ConsentStatus.GRANTED -> FirebaseAnalytics.ConsentStatus.GRANTED
       ConsentStatus.DENIED -> FirebaseAnalytics.ConsentStatus.DENIED
     }
-  }
 }

@@ -13,14 +13,14 @@ import com.alorma.caducity.domain.usecase.SplitAndConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.SplitAndDeleteItemUseCase
 import com.alorma.caducity.domain.usecase.SplitAndFreezeItemUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
+import com.alorma.caducity.feature.review.InAppReviewManager
+import com.alorma.caducity.feature.review.ShowAppReviewFlag
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemConsumedAction
 import com.alorma.caducity.feature.tracking.ItemDeletedAction
 import com.alorma.caducity.feature.tracking.ItemFrozenAction
 import com.alorma.caducity.feature.tracking.ItemRescheduledAction
 import com.alorma.caducity.feature.tracking.ItemUnfrozenAction
-import com.alorma.caducity.feature.review.ShowAppReviewFlag
-import com.alorma.caducity.feature.review.InAppReviewManager
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
@@ -50,82 +50,84 @@ class ItemActionsViewModel(
   private val inAppReviewManager: InAppReviewManager,
   private val showAppReviewFlag: ShowAppReviewFlag,
 ) : BaseViewModel<Unit, Unit, ItemActionSideEffect>() {
-
   private val _state = MutableStateFlow(calculateState())
   val state: StateFlow<ItemActionsState> = _state
 
-  private fun ItemStatus.toTrackingString(): String = when (this) {
-    ItemStatus.Fresh -> "fresh"
-    ItemStatus.ExpiringSoon -> "expiring_soon"
-    ItemStatus.Expired -> "expired"
-    ItemStatus.Frozen -> "frozen"
-    ItemStatus.Consumed -> "consumed"
-  }
+  private fun ItemStatus.toTrackingString(): String =
+    when (this) {
+      ItemStatus.Fresh -> "fresh"
+      ItemStatus.ExpiringSoon -> "expiring_soon"
+      ItemStatus.Expired -> "expired"
+      ItemStatus.Frozen -> "frozen"
+      ItemStatus.Consumed -> "consumed"
+    }
 
   fun calculateStatusForDate(dateMillis: Long?): AppFeedbackType {
     if (dateMillis == null) return AppFeedbackType.Status(item.status)
 
     val selectedDate = Instant.fromEpochMilliseconds(dateMillis)
-    return ItemStatus.calculateStatus(
-      expirationDate = selectedDate,
-      now = appClock.now(),
-      soonExpiringThreshold = expirationThresholds.soonExpiringThreshold
-    ).let {
-      AppFeedbackType.Status(it)
-    }
+    return ItemStatus
+      .calculateStatus(
+        expirationDate = selectedDate,
+        now = appClock.now(),
+        soonExpiringThreshold = expirationThresholds.soonExpiringThreshold,
+      ).let {
+        AppFeedbackType.Status(it)
+      }
   }
 
   private fun calculateState(): ItemActionsState {
-    val actions = when (item.status) {
-      ItemStatus.Fresh, ItemStatus.ExpiringSoon -> {
-        // Fresh and expiring soon items can be consumed, frozen, rescheduled, or deleted
-        persistentListOf(
-          ItemAction.Consume,
-          ItemAction.Freeze,
-          ItemAction.Reschedule,
-          ItemAction.Delete,
-        )
-      }
-
-      ItemStatus.Frozen -> {
-        // Frozen items can be consumed, unfrozen, rescheduled, or deleted
-        persistentListOf(
-          ItemAction.Consume,
-          ItemAction.Unfreeze,
-          ItemAction.Reschedule,
-          ItemAction.Delete,
-        )
-      }
-
-      ItemStatus.Expired -> {
-        // Check if item is within consume threshold
-        val today = appClock.now().date()
-        val expirationDate = item.expirationDate
-        val daysSinceExpiration = (today.toEpochDays() - expirationDate.toEpochDays()).toInt()
-
-        if (daysSinceExpiration <= expirationThresholds.consumeExpiredThreshold.inWholeDays) {
-          // Within threshold: Show consume with warning, reschedule, and delete
+    val actions =
+      when (item.status) {
+        ItemStatus.Fresh, ItemStatus.ExpiringSoon -> {
+          // Fresh and expiring soon items can be consumed, frozen, rescheduled, or deleted
           persistentListOf(
-            ItemAction.ConsumeWithWarning,
-            ItemAction.Reschedule,
-            ItemAction.Delete,
-          )
-        } else {
-          // Beyond threshold: Show reschedule and delete
-          persistentListOf(
+            ItemAction.Consume,
+            ItemAction.Freeze,
             ItemAction.Reschedule,
             ItemAction.Delete,
           )
         }
-      }
 
-      ItemStatus.Consumed -> {
-        // Consumed items show placeholder (for future features)
-        persistentListOf(
-          ItemAction.Placeholder,
-        )
+        ItemStatus.Frozen -> {
+          // Frozen items can be consumed, unfrozen, rescheduled, or deleted
+          persistentListOf(
+            ItemAction.Consume,
+            ItemAction.Unfreeze,
+            ItemAction.Reschedule,
+            ItemAction.Delete,
+          )
+        }
+
+        ItemStatus.Expired -> {
+          // Check if item is within consume threshold
+          val today = appClock.now().date()
+          val expirationDate = item.expirationDate
+          val daysSinceExpiration = (today.toEpochDays() - expirationDate.toEpochDays()).toInt()
+
+          if (daysSinceExpiration <= expirationThresholds.consumeExpiredThreshold.inWholeDays) {
+            // Within threshold: Show consume with warning, reschedule, and delete
+            persistentListOf(
+              ItemAction.ConsumeWithWarning,
+              ItemAction.Reschedule,
+              ItemAction.Delete,
+            )
+          } else {
+            // Beyond threshold: Show reschedule and delete
+            persistentListOf(
+              ItemAction.Reschedule,
+              ItemAction.Delete,
+            )
+          }
+        }
+
+        ItemStatus.Consumed -> {
+          // Consumed items show placeholder (for future features)
+          persistentListOf(
+            ItemAction.Placeholder,
+          )
+        }
       }
-    }
 
     return ItemActionsState(actions = actions)
   }
@@ -148,22 +150,24 @@ class ItemActionsViewModel(
         }
 
         is ItemAction.ConsumeQuantity -> {
-          val result = splitAndConsumeItemUseCase.splitAndConsume(
-            categoryId = categoryId,
-            itemId = item.id,
-            quantityToConsume = action.quantity,
-            forceConsume = false
-          )
+          val result =
+            splitAndConsumeItemUseCase.splitAndConsume(
+              categoryId = categoryId,
+              itemId = item.id,
+              quantityToConsume = action.quantity,
+              forceConsume = false,
+            )
           handleResult(result, action) {
             eventTracker.trackAction(
               ItemConsumedAction(
                 itemStatus = item.status.toTrackingString(),
-                parameters = mapOf(
-                  "action_type" to "partial",
-                  "quantity" to action.quantity.toString(),
-                  "pack_size" to (item.packSize?.toString() ?: "null")
-                )
-              )
+                parameters =
+                  mapOf(
+                    "action_type" to "partial",
+                    "quantity" to action.quantity.toString(),
+                    "pack_size" to (item.packSize?.toString() ?: "null"),
+                  ),
+              ),
             )
           }
         }
@@ -180,23 +184,25 @@ class ItemActionsViewModel(
         }
 
         is ItemAction.ConsumeWithWarningQuantity -> {
-          val result = splitAndConsumeItemUseCase.splitAndConsume(
-            categoryId = categoryId,
-            itemId = item.id,
-            quantityToConsume = action.quantity,
-            forceConsume = true
-          )
+          val result =
+            splitAndConsumeItemUseCase.splitAndConsume(
+              categoryId = categoryId,
+              itemId = item.id,
+              quantityToConsume = action.quantity,
+              forceConsume = true,
+            )
           handleResult(result, action) {
             eventTracker.trackAction(
               ItemConsumedAction(
                 itemStatus = item.status.toTrackingString(),
-                parameters = mapOf(
-                  "action_type" to "partial",
-                  "quantity" to action.quantity.toString(),
-                  "pack_size" to (item.packSize?.toString() ?: "null"),
-                  "forced" to "true"
-                )
-              )
+                parameters =
+                  mapOf(
+                    "action_type" to "partial",
+                    "quantity" to action.quantity.toString(),
+                    "pack_size" to (item.packSize?.toString() ?: "null"),
+                    "forced" to "true",
+                  ),
+              ),
             )
           }
         }
@@ -217,21 +223,23 @@ class ItemActionsViewModel(
         }
 
         is ItemAction.FreezeQuantity -> {
-          val result = splitAndFreezeItemUseCase.splitAndFreeze(
-            categoryId = categoryId,
-            itemId = item.id,
-            quantityToFreeze = action.quantity
-          )
+          val result =
+            splitAndFreezeItemUseCase.splitAndFreeze(
+              categoryId = categoryId,
+              itemId = item.id,
+              quantityToFreeze = action.quantity,
+            )
           handleResult(result, action) {
             eventTracker.trackAction(
               ItemFrozenAction(
                 itemStatus = item.status.toTrackingString(),
-                parameters = mapOf(
-                  "action_type" to "partial",
-                  "quantity" to action.quantity.toString(),
-                  "pack_size" to (item.packSize?.toString() ?: "null")
-                )
-              )
+                parameters =
+                  mapOf(
+                    "action_type" to "partial",
+                    "quantity" to action.quantity.toString(),
+                    "pack_size" to (item.packSize?.toString() ?: "null"),
+                  ),
+              ),
             )
           }
         }
@@ -251,20 +259,22 @@ class ItemActionsViewModel(
         }
 
         is ItemAction.UnfreezeQuantity -> {
-          val result = splitAndFreezeItemUseCase.splitAndUnfreeze(
-            categoryId = categoryId,
-            itemId = item.id,
-            quantityToUnfreeze = action.quantity
-          )
+          val result =
+            splitAndFreezeItemUseCase.splitAndUnfreeze(
+              categoryId = categoryId,
+              itemId = item.id,
+              quantityToUnfreeze = action.quantity,
+            )
           handleResult(result, action) {
             eventTracker.trackAction(
               ItemUnfrozenAction(
-                parameters = mapOf(
-                  "action_type" to "partial",
-                  "quantity" to action.quantity.toString(),
-                  "pack_size" to (item.packSize?.toString() ?: "null")
-                )
-              )
+                parameters =
+                  mapOf(
+                    "action_type" to "partial",
+                    "quantity" to action.quantity.toString(),
+                    "pack_size" to (item.packSize?.toString() ?: "null"),
+                  ),
+              ),
             )
           }
         }
@@ -291,20 +301,22 @@ class ItemActionsViewModel(
         }
 
         is ItemAction.DeleteQuantity -> {
-          val result = splitAndDeleteItemUseCase.splitAndDelete(
-            itemId = item.id,
-            quantityToDelete = action.quantity
-          )
+          val result =
+            splitAndDeleteItemUseCase.splitAndDelete(
+              itemId = item.id,
+              quantityToDelete = action.quantity,
+            )
           handleResult(result, action) {
             eventTracker.trackAction(
               ItemDeletedAction(
                 itemStatus = item.status.toTrackingString(),
-                parameters = mapOf(
-                  "action_type" to "partial",
-                  "quantity" to action.quantity.toString(),
-                  "pack_size" to (item.packSize?.toString() ?: "null")
-                )
-              )
+                parameters =
+                  mapOf(
+                    "action_type" to "partial",
+                    "quantity" to action.quantity.toString(),
+                    "pack_size" to (item.packSize?.toString() ?: "null"),
+                  ),
+              ),
             )
           }
         }
@@ -328,11 +340,12 @@ class ItemActionsViewModel(
   fun onConfirmReschedule(newDate: LocalDate) {
     viewModelScope.launch {
       if (newDate != item.expirationDate) {
-        val daysChanged = when {
-          newDate < item.expirationDate -> "earlier"
-          newDate > item.expirationDate -> "later"
-          else -> "no_change"
-        }
+        val daysChanged =
+          when {
+            newDate < item.expirationDate -> "earlier"
+            newDate > item.expirationDate -> "later"
+            else -> "no_change"
+          }
 
         val instant = newDate.atStartOfDayIn(TimeZone.currentSystemDefault())
         val result = rescheduleItemUseCase.rescheduleItem(item.id, instant)
@@ -340,25 +353,30 @@ class ItemActionsViewModel(
           eventTracker.trackAction(
             ItemRescheduledAction(
               itemStatus = item.status.toTrackingString(),
-              daysChanged = daysChanged
-            )
+              daysChanged = daysChanged,
+            ),
           )
         }
       }
     }
   }
 
-  private fun handleResult(result: Result<Unit>, action: ItemAction, onSuccess: () -> Unit = {}) {
-    result.onSuccess {
-      onSuccess()
-      emitSideEffect(ItemActionSideEffect.ActionCompleted(action))
-      // Request in-app review after successful action, but only after 3 actions (when counter reaches 0)
-      if (showAppReviewFlag.isEnabled()) {
-        emitSideEffect(ItemActionSideEffect.RequestInAppReview)
+  private fun handleResult(
+    result: Result<Unit>,
+    action: ItemAction,
+    onSuccess: () -> Unit = {},
+  ) {
+    result
+      .onSuccess {
+        onSuccess()
+        emitSideEffect(ItemActionSideEffect.ActionCompleted(action))
+        // Request in-app review after successful action, but only after 3 actions (when counter reaches 0)
+        if (showAppReviewFlag.isEnabled()) {
+          emitSideEffect(ItemActionSideEffect.RequestInAppReview)
+        }
+      }.onFailure { error ->
+        emitSideEffect(ItemActionSideEffect.ActionFailed(action, error.message))
       }
-    }.onFailure { error ->
-      emitSideEffect(ItemActionSideEffect.ActionFailed(action, error.message))
-    }
   }
 
   override fun navigate(navigation: Unit) {
@@ -367,14 +385,40 @@ class ItemActionsViewModel(
 }
 
 sealed interface ItemActionSideEffect {
-  data class ActionCompleted(val action: ItemAction) : ItemActionSideEffect
-  data class ActionFailed(val action: ItemAction, val message: String?) : ItemActionSideEffect
+  data class ActionCompleted(
+    val action: ItemAction,
+  ) : ItemActionSideEffect
+
+  data class ActionFailed(
+    val action: ItemAction,
+    val message: String?,
+  ) : ItemActionSideEffect
+
   data object ShowConsumeExpiredWarning : ItemActionSideEffect
-  data class ShowConsumeQuantitySelector(val maxQuantity: Int) : ItemActionSideEffect
-  data class ShowConsumeExpiredQuantitySelector(val maxQuantity: Int) : ItemActionSideEffect
-  data class ShowFreezeQuantitySelector(val maxQuantity: Int) : ItemActionSideEffect
-  data class ShowUnfreezeQuantitySelector(val maxQuantity: Int) : ItemActionSideEffect
-  data class ShowDeleteQuantitySelector(val maxQuantity: Int) : ItemActionSideEffect
-  data class ShowRescheduleDatePicker(val currentExpirationMillis: Long) : ItemActionSideEffect
+
+  data class ShowConsumeQuantitySelector(
+    val maxQuantity: Int,
+  ) : ItemActionSideEffect
+
+  data class ShowConsumeExpiredQuantitySelector(
+    val maxQuantity: Int,
+  ) : ItemActionSideEffect
+
+  data class ShowFreezeQuantitySelector(
+    val maxQuantity: Int,
+  ) : ItemActionSideEffect
+
+  data class ShowUnfreezeQuantitySelector(
+    val maxQuantity: Int,
+  ) : ItemActionSideEffect
+
+  data class ShowDeleteQuantitySelector(
+    val maxQuantity: Int,
+  ) : ItemActionSideEffect
+
+  data class ShowRescheduleDatePicker(
+    val currentExpirationMillis: Long,
+  ) : ItemActionSideEffect
+
   data object RequestInAppReview : ItemActionSideEffect
 }

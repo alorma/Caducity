@@ -58,9 +58,10 @@ fun ProductTabContent(
   productTab: CategoryProductTabUiModel,
   onNavigateToAddItem: (categoryId: String, productId: String?) -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: ProductPageViewModel = koinViewModel(key = productTab.asKey()) {
-    parametersOf(productTab)
-  }
+  viewModel: ProductPageViewModel =
+    koinViewModel(key = productTab.asKey()) {
+      parametersOf(productTab)
+    },
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -86,25 +87,29 @@ fun ProductTabContent(
     bottomSheetState = bottomSheetState,
     floatingActionButton = {
       // Calculate if there are any items in the product
-      val hasItems = when (val currentState = state) {
-        is ProductPageState.Success -> {
-          currentState.datedItemsGroups.isNotEmpty() ||
-            currentState.frozenItems.isNotEmpty() ||
-            currentState.consumedItems.isNotEmpty()
-        }
+      val hasItems =
+        when (val currentState = state) {
+          is ProductPageState.Success -> {
+            currentState.datedItemsGroups.isNotEmpty() ||
+              currentState.frozenItems.isNotEmpty() ||
+              currentState.consumedItems.isNotEmpty()
+          }
 
-        else -> false
-      }
+          else -> false
+        }
 
       ProductActionsSplitButton(
         onAddItem = viewModel::onAddItemClick,
         onClearItems = viewModel::onClearProductItemsClick,
-        onDeleteProduct = if (productTab.id != null) {
-          { viewModel.onDeleteProductClick() }
-        } else null,
+        onDeleteProduct =
+          if (productTab.id != null) {
+            { viewModel.onDeleteProductClick() }
+          } else {
+            null
+          },
         hasItems = hasItems,
       )
-    }
+    },
   ) { paddingValues ->
     ProductTabContentPage(
       modifier = Modifier.padding(paddingValues),
@@ -150,12 +155,13 @@ private fun ProductTabContentPage(
       } else {
         LazyColumn(
           modifier = modifier.fillMaxSize(),
-          contentPadding = PaddingValues(
-            top = 16.dp,
-            start = 16.dp,
-            end = 16.dp,
-            bottom = 80.dp,
-          ),
+          contentPadding =
+            PaddingValues(
+              top = 16.dp,
+              start = 16.dp,
+              end = 16.dp,
+              bottom = 80.dp,
+            ),
           verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
           // Show dated items groups
@@ -240,17 +246,19 @@ private fun SectionHeader(
   val inverseToneColors = ExpirationDefaults.getInverseColors(status)
 
   Surface(
-    modifier = Modifier
-      .fillMaxWidth()
-      .then(modifier),
+    modifier =
+      Modifier
+        .fillMaxWidth()
+        .then(modifier),
     shape = CaducityTheme.shapes.small,
     color = toneColors.container,
     contentColor = toneColors.onContainer,
   ) {
     Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(8.dp),
+      modifier =
+        Modifier
+          .fillMaxWidth()
+          .padding(8.dp),
       verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
       Row(
@@ -266,10 +274,11 @@ private fun SectionHeader(
         )
 
         Text(
-          modifier = Modifier
-            .clip(CaducityTheme.shapes.extraSmall)
-            .background(inverseToneColors.container)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+          modifier =
+            Modifier
+              .clip(CaducityTheme.shapes.extraSmall)
+              .background(inverseToneColors.container)
+              .padding(horizontal = 8.dp, vertical = 4.dp),
           text = count.toString(),
           color = inverseToneColors.onContainer,
           style = CaducityTheme.typography.labelMedium,
@@ -316,24 +325,27 @@ private fun ItemChip(
   Surface(
     modifier = modifier,
     shape = CaducityTheme.shapes.small,
-    border = BorderStroke(
-      width = 1.dp,
-      color = CaducityTheme.colorScheme.outline,
-    ),
+    border =
+      BorderStroke(
+        width = 1.dp,
+        color = CaducityTheme.colorScheme.outline,
+      ),
   ) {
     Row(
-      modifier = Modifier
-        .clip(CaducityTheme.shapes.small)
-        .clickable { onItemClick(item) }
-        .padding(end = 8.dp),
+      modifier =
+        Modifier
+          .clip(CaducityTheme.shapes.small)
+          .clickable { onItemClick(item) }
+          .padding(end = 8.dp),
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       verticalAlignment = Alignment.CenterVertically,
     ) {
       if (item.packSize != null && item.packSize > 1) {
         Box(
-          modifier = Modifier
-            .background(CaducityTheme.colorScheme.outline)
-            .padding(8.dp),
+          modifier =
+            Modifier
+              .background(CaducityTheme.colorScheme.outline)
+              .padding(8.dp),
         ) {
           Text(
             text = item.packSize.toString(),
@@ -369,110 +381,116 @@ class ProductTabContentPreviewProvider :
       ),
       // Product with all statuses
       ProductPageState.Success(
-        datedItemsGroups = persistentListOf(
-          DateItemsUiModel(
-            text = "Yesterday",
-            status = ItemStatus.Expired,
-            date = yesterday,
-            items = persistentListOf(
-              ItemDetailUiModel(
-                id = "1",
-                expirationDate = yesterday,
-                status = ItemStatus.Expired,
-                text = "Expired package",
-                packSize = Random.nextInt(4),
-              ),
+        datedItemsGroups =
+          persistentListOf(
+            DateItemsUiModel(
+              text = "Yesterday",
+              status = ItemStatus.Expired,
+              date = yesterday,
+              items =
+                persistentListOf(
+                  ItemDetailUiModel(
+                    id = "1",
+                    expirationDate = yesterday,
+                    status = ItemStatus.Expired,
+                    text = "Expired package",
+                    packSize = Random.nextInt(4),
+                  ),
+                ),
+            ),
+            DateItemsUiModel(
+              text = "Today",
+              status = ItemStatus.ExpiringSoon,
+              date = today,
+              items =
+                persistentListOf(
+                  ItemDetailUiModel(
+                    id = "2",
+                    expirationDate = today,
+                    status = ItemStatus.ExpiringSoon,
+                    text = "Expiring package 1",
+                    packSize = Random.nextInt(4),
+                  ),
+                  ItemDetailUiModel(
+                    id = "3",
+                    expirationDate = today,
+                    status = ItemStatus.ExpiringSoon,
+                    text = "Expiring package 2",
+                    packSize = Random.nextInt(4),
+                  ),
+                ),
+            ),
+            DateItemsUiModel(
+              text = "In 7 days",
+              status = ItemStatus.Fresh,
+              date = nextWeek,
+              items =
+                persistentListOf(
+                  ItemDetailUiModel(
+                    id = "4",
+                    expirationDate = nextWeek,
+                    status = ItemStatus.Fresh,
+                    text = "Fresh package 1",
+                    packSize = Random.nextInt(4),
+                  ),
+                  ItemDetailUiModel(
+                    id = "5",
+                    expirationDate = nextWeek,
+                    status = ItemStatus.Fresh,
+                    text = "Fresh package 2",
+                    packSize = Random.nextInt(4),
+                  ),
+                  ItemDetailUiModel(
+                    id = "6",
+                    expirationDate = nextWeek,
+                    status = ItemStatus.Fresh,
+                    text = "Fresh package 3",
+                    packSize = Random.nextInt(4),
+                  ),
+                ),
             ),
           ),
-          DateItemsUiModel(
-            text = "Today",
-            status = ItemStatus.ExpiringSoon,
-            date = today,
-            items = persistentListOf(
-              ItemDetailUiModel(
-                id = "2",
-                expirationDate = today,
-                status = ItemStatus.ExpiringSoon,
-                text = "Expiring package 1",
-                packSize = Random.nextInt(4),
-              ),
-              ItemDetailUiModel(
-                id = "3",
-                expirationDate = today,
-                status = ItemStatus.ExpiringSoon,
-                text = "Expiring package 2",
-                packSize = Random.nextInt(4),
-              ),
+        frozenItems =
+          persistentListOf(
+            ItemDetailUiModel(
+              id = "7",
+              expirationDate = today,
+              status = ItemStatus.Frozen,
+              text = "Frozen package 1",
+              packSize = Random.nextInt(4),
+            ),
+            ItemDetailUiModel(
+              id = "8",
+              expirationDate = today,
+              status = ItemStatus.Frozen,
+              text = "Frozen package 2",
+              packSize = Random.nextInt(4),
             ),
           ),
-          DateItemsUiModel(
-            text = "In 7 days",
-            status = ItemStatus.Fresh,
-            date = nextWeek,
-            items = persistentListOf(
-              ItemDetailUiModel(
-                id = "4",
-                expirationDate = nextWeek,
-                status = ItemStatus.Fresh,
-                text = "Fresh package 1",
-                packSize = Random.nextInt(4),
-              ),
-              ItemDetailUiModel(
-                id = "5",
-                expirationDate = nextWeek,
-                status = ItemStatus.Fresh,
-                text = "Fresh package 2",
-                packSize = Random.nextInt(4),
-              ),
-              ItemDetailUiModel(
-                id = "6",
-                expirationDate = nextWeek,
-                status = ItemStatus.Fresh,
-                text = "Fresh package 3",
-                packSize = Random.nextInt(4),
-              ),
+        consumedItems =
+          persistentListOf(
+            ItemDetailUiModel(
+              id = "9",
+              expirationDate = today,
+              status = ItemStatus.Consumed,
+              text = "Consumed package 1",
+              packSize = Random.nextInt(4),
+            ),
+            ItemDetailUiModel(
+              id = "10",
+              expirationDate = today,
+              status = ItemStatus.Consumed,
+              text = "Consumed package 2",
+              packSize = Random.nextInt(4),
             ),
           ),
-        ),
-        frozenItems = persistentListOf(
-          ItemDetailUiModel(
-            id = "7",
-            expirationDate = today,
-            status = ItemStatus.Frozen,
-            text = "Frozen package 1",
-            packSize = Random.nextInt(4),
-          ),
-          ItemDetailUiModel(
-            id = "8",
-            expirationDate = today,
-            status = ItemStatus.Frozen,
-            text = "Frozen package 2",
-            packSize = Random.nextInt(4),
-          ),
-        ),
-        consumedItems = persistentListOf(
-          ItemDetailUiModel(
-            id = "9",
-            expirationDate = today,
-            status = ItemStatus.Consumed,
-            text = "Consumed package 1",
-            packSize = Random.nextInt(4),
-          ),
-          ItemDetailUiModel(
-            id = "10",
-            expirationDate = today,
-            status = ItemStatus.Consumed,
-            text = "Consumed package 2",
-            packSize = Random.nextInt(4),
-          ),
-        ),
       ),
       // Error state
       ProductPageState.Error("Failed to load items"),
-    )
+    ),
   ) {
-  override fun getDisplayName(index: Int): String {
-    return when (val state = values.toList()[index]) {
+  override fun getDisplayName(index: Int): String =
+    when (val state = values.toList()[index]) {
       is ProductPageState.Loading -> "Loading"
       is ProductPageState.Success -> {
         if (state.datedItemsGroups.isEmpty() &&
@@ -487,7 +505,6 @@ class ProductTabContentPreviewProvider :
 
       is ProductPageState.Error -> "Error"
     }
-  }
 }
 
 @PreviewLightDark
@@ -516,22 +533,24 @@ fun ItemChipPreview() {
         verticalArrangement = Arrangement.spacedBy(12.dp),
       ) {
         ItemChip(
-          item = ItemDetailUiModel(
-            id = "ex",
-            expirationDate = LocalDate.now(),
-            status = ItemStatus.ExpiringSoon,
-            text = "Llimona",
-          ),
+          item =
+            ItemDetailUiModel(
+              id = "ex",
+              expirationDate = LocalDate.now(),
+              status = ItemStatus.ExpiringSoon,
+              text = "Llimona",
+            ),
           onItemClick = {},
         )
         ItemChip(
-          item = ItemDetailUiModel(
-            id = "ex",
-            expirationDate = LocalDate.now(),
-            status = ItemStatus.ExpiringSoon,
-            text = "Maduixa",
-            packSize = 4,
-          ),
+          item =
+            ItemDetailUiModel(
+              id = "ex",
+              expirationDate = LocalDate.now(),
+              status = ItemStatus.ExpiringSoon,
+              text = "Maduixa",
+              packSize = 4,
+            ),
           onItemClick = {},
         )
       }

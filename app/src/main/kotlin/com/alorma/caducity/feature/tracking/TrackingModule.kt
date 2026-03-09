@@ -14,20 +14,21 @@ import org.koin.dsl.module
  * - Individual tracker implementations (TimberTracker, FirebaseTracker)
  * - EventTracker that delegates to all registered Tracker implementations
  */
-val trackingModule = module {
-  // Firebase Analytics instance (uses Firebase BOM for version management)
-  single {
-    FirebaseAnalytics.getInstance(androidContext())
-  }
+val trackingModule =
+  module {
+    // Firebase Analytics instance (uses Firebase BOM for version management)
+    single {
+      FirebaseAnalytics.getInstance(androidContext())
+    }
 
-  // Individual tracker implementations bound to Tracker interface
-  singleOf(::TimberTracker) bind Tracker::class
-  singleOf(::FirebaseTracker) bind Tracker::class
+    // Individual tracker implementations bound to Tracker interface
+    singleOf(::TimberTracker) bind Tracker::class
+    singleOf(::FirebaseTracker) bind Tracker::class
 
-  // EventTracker that automatically delegates to all registered Tracker implementations
-  single {
-    EventTracker(
-      trackers = getAll()
-    )
+    // EventTracker that automatically delegates to all registered Tracker implementations
+    single {
+      EventTracker(
+        trackers = getAll(),
+      )
+    }
   }
-}

@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -35,7 +34,10 @@ import com.alorma.caducity.ui.components.feedback.vibrantColors
  */
 sealed interface QuantitySelectorResult {
   data object Dismissed : QuantitySelectorResult
-  data class Selected(val quantity: Int) : QuantitySelectorResult
+
+  data class Selected(
+    val quantity: Int,
+  ) : QuantitySelectorResult
 }
 
 /**
@@ -57,20 +59,21 @@ suspend fun AppDialogState.showQuantitySelectorDialog(
 ): QuantitySelectorResult {
   var selectedQuantity by mutableIntStateOf(1)
 
-  val result = showAlertDialog(
-    title = title,
-    content = {
-      QuantitySelectorContent(
-        selectedQuantity = selectedQuantity,
-        maxQuantity = maxQuantity,
-        onQuantityChanged = { selectedQuantity = it },
-        type = type,
-      )
-    },
-    positiveButton = { positiveButton(selectedQuantity) },
-    negativeButton = negativeButton,
-    type = type,
-  )
+  val result =
+    showAlertDialog(
+      title = title,
+      content = {
+        QuantitySelectorContent(
+          selectedQuantity = selectedQuantity,
+          maxQuantity = maxQuantity,
+          onQuantityChanged = { selectedQuantity = it },
+          type = type,
+        )
+      },
+      positiveButton = { positiveButton(selectedQuantity) },
+      negativeButton = negativeButton,
+      type = type,
+    )
 
   return when (result) {
     DialogResult.Positive -> QuantitySelectorResult.Selected(selectedQuantity)
@@ -103,10 +106,11 @@ private fun QuantitySelectorContent(
       FilledIconButton(
         onClick = { if (selectedQuantity > 1) onQuantityChanged(selectedQuantity - 1) },
         enabled = selectedQuantity > 1,
-        colors = IconButtonDefaults.filledIconButtonColors(
-          containerColor = vibrantColors.container,
-          contentColor = vibrantColors.onContainer,
-        ),
+        colors =
+          IconButtonDefaults.filledIconButtonColors(
+            containerColor = vibrantColors.container,
+            contentColor = vibrantColors.onContainer,
+          ),
       ) {
         Icon(AppIcons.Close, contentDescription = "Decrease")
       }
@@ -124,10 +128,11 @@ private fun QuantitySelectorContent(
       FilledIconButton(
         onClick = { if (selectedQuantity < maxQuantity) onQuantityChanged(selectedQuantity + 1) },
         enabled = selectedQuantity < maxQuantity,
-        colors = IconButtonDefaults.filledIconButtonColors(
-          containerColor = vibrantColors.container,
-          contentColor = vibrantColors.onContainer,
-        ),
+        colors =
+          IconButtonDefaults.filledIconButtonColors(
+            containerColor = vibrantColors.container,
+            contentColor = vibrantColors.onContainer,
+          ),
       ) {
         Icon(AppIcons.Add, contentDescription = "Increase")
       }
@@ -138,10 +143,11 @@ private fun QuantitySelectorContent(
     // "All" button to quickly select maximum
     Button(
       onClick = { onQuantityChanged(maxQuantity) },
-      colors = ButtonDefaults.buttonColors(
-        containerColor = vibrantColors.container,
-        contentColor = vibrantColors.onContainer,
-      ),
+      colors =
+        ButtonDefaults.buttonColors(
+          containerColor = vibrantColors.container,
+          contentColor = vibrantColors.onContainer,
+        ),
     ) {
       Text("All ($maxQuantity)")
     }

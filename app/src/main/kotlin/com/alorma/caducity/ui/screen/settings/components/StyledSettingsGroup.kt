@@ -18,7 +18,7 @@ import com.alorma.compose.settings.ui.expressive.SettingsGroup
 fun StyledSettingsGroup(
   modifier: Modifier = Modifier,
   title: @Composable (() -> Unit)? = null,
-  content: @Composable ColumnScope.() -> Unit
+  content: @Composable ColumnScope.() -> Unit,
 ) {
   SettingsGroup(
     modifier = modifier,

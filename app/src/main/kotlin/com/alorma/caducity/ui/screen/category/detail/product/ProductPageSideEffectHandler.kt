@@ -30,7 +30,7 @@ internal fun ProductPageSideEffectHandler(
   val context = LocalContext.current
   val activity = context.findActivity()
   val inAppReviewManager: InAppReviewManager = koinInject()
-  
+
   // Collect navigation side effects
   LaunchedEffect(viewModel.navigationSideEffects) {
     viewModel.navigationSideEffects.collect { effect ->
@@ -46,19 +46,21 @@ internal fun ProductPageSideEffectHandler(
   LaunchedEffect(viewModel.sideEffects) {
     viewModel.sideEffects.collect { effect ->
       when (effect) {
-        ProductPageSideEffect.ItemDeleted -> launch {
-          snackbarState.showSnackbar(
-            message = R.string.success_item_deleted,
-            type = AppFeedbackType.Success,
-          )
-        }
+        ProductPageSideEffect.ItemDeleted ->
+          launch {
+            snackbarState.showSnackbar(
+              message = R.string.success_item_deleted,
+              type = AppFeedbackType.Success,
+            )
+          }
 
-        ProductPageSideEffect.DeleteItemFailed -> launch {
-          snackbarState.showSnackbar(
-            message = R.string.error_delete_item_failed,
-            type = AppFeedbackType.Error,
-          )
-        }
+        ProductPageSideEffect.DeleteItemFailed ->
+          launch {
+            snackbarState.showSnackbar(
+              message = R.string.error_delete_item_failed,
+              type = AppFeedbackType.Error,
+            )
+          }
 
         is ProductPageSideEffect.ShowItemActionsBottomSheet -> {
           bottomSheetState.showItemActionsBottomSheet(
@@ -79,55 +81,61 @@ internal fun ProductPageSideEffectHandler(
         }
 
         // Product-level success events
-        ProductPageSideEffect.ProductDeleted -> launch {
-          bottomSheetState.hide()
-          snackbarState.showSnackbar(
-            message = R.string.success_product_deleted,
-            type = AppFeedbackType.Success,
-          )
-        }
-
-        ProductPageSideEffect.ItemsCleared -> launch {
-          bottomSheetState.hide()
-          snackbarState.showSnackbar(
-            message = R.string.success_items_cleared,
-            type = AppFeedbackType.Success,
-          )
-        }
-
-        // Product-level error events
-        ProductPageSideEffect.DeleteProductFailed -> launch {
-          bottomSheetState.hide()
-          snackbarState.showSnackbar(
-            message = R.string.error_delete_product_failed,
-            type = AppFeedbackType.Error,
-          )
-        }
-
-        ProductPageSideEffect.ClearItemsFailed -> launch {
-          bottomSheetState.hide()
-          snackbarState.showSnackbar(
-            message = R.string.error_clear_items_failed,
-            type = AppFeedbackType.Error,
-          )
-        }
-
-        // Product-level dialog events
-        is ProductPageSideEffect.ShowDeleteProductDialog -> launch {
-          val result = dialogState.showAlertDialog(
-            title = { Text(stringResource(R.string.product_delete_dialog_title)) },
-            content = { Text(stringResource(R.string.product_delete_dialog_message)) },
-            type = AppFeedbackType.Info,
-            positiveButton = { Text(stringResource(R.string.product_delete_dialog_delete)) },
-            negativeButton = { Text(stringResource(R.string.product_delete_dialog_cancel)) },
-          )
-          if (result == DialogResult.Positive) {
-            effect.onDeleteProduct(
-              effect.productId,
-              ProductDeletionStrategy.CascadeDelete,
+        ProductPageSideEffect.ProductDeleted ->
+          launch {
+            bottomSheetState.hide()
+            snackbarState.showSnackbar(
+              message = R.string.success_product_deleted,
+              type = AppFeedbackType.Success,
             )
           }
-        }
+
+        ProductPageSideEffect.ItemsCleared ->
+          launch {
+            bottomSheetState.hide()
+            snackbarState.showSnackbar(
+              message = R.string.success_items_cleared,
+              type = AppFeedbackType.Success,
+            )
+          }
+
+        // Product-level error events
+        ProductPageSideEffect.DeleteProductFailed ->
+          launch {
+            bottomSheetState.hide()
+            snackbarState.showSnackbar(
+              message = R.string.error_delete_product_failed,
+              type = AppFeedbackType.Error,
+            )
+          }
+
+        ProductPageSideEffect.ClearItemsFailed ->
+          launch {
+            bottomSheetState.hide()
+            snackbarState.showSnackbar(
+              message = R.string.error_clear_items_failed,
+              type = AppFeedbackType.Error,
+            )
+          }
+
+        // Product-level dialog events
+        is ProductPageSideEffect.ShowDeleteProductDialog ->
+          launch {
+            val result =
+              dialogState.showAlertDialog(
+                title = { Text(stringResource(R.string.product_delete_dialog_title)) },
+                content = { Text(stringResource(R.string.product_delete_dialog_message)) },
+                type = AppFeedbackType.Info,
+                positiveButton = { Text(stringResource(R.string.product_delete_dialog_delete)) },
+                negativeButton = { Text(stringResource(R.string.product_delete_dialog_cancel)) },
+              )
+            if (result == DialogResult.Positive) {
+              effect.onDeleteProduct(
+                effect.productId,
+                ProductDeletionStrategy.CascadeDelete,
+              )
+            }
+          }
 
         is ProductPageSideEffect.ShowDeleteProductWithItemsDialog -> {
           bottomSheetState.showDeleteProductWithItemsBottomSheet(

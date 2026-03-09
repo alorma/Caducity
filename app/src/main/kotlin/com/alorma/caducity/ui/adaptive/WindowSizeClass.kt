@@ -12,17 +12,12 @@ import androidx.window.core.layout.WindowSizeClass
  * - Medium: 600-840dp (small tablets, unfolded foldables)
  * - Expanded: >840dp (large tablets, desktops)
  */
-fun WindowSizeClass.isExpanded(): Boolean {
-  return isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
-}
+fun WindowSizeClass.isExpanded(): Boolean = isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
 
-fun WindowSizeClass.isExpandedOrMedium(): Boolean {
-  return isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
-}
+fun WindowSizeClass.isExpandedOrMedium(): Boolean =
+  isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
 
-fun WindowSizeClass.isCompact(): Boolean {
-  return !isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
-}
+fun WindowSizeClass.isCompact(): Boolean = !isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
 
 /**
  * Calculate responsive column count for item grids based on available width.
@@ -32,13 +27,12 @@ fun WindowSizeClass.isCompact(): Boolean {
  * - 600-840dp (Medium): 5 columns
  * - >840dp (Expanded): 7 columns
  */
-fun WindowSizeClass.calculateGridColumns(): Int {
-  return when {
+fun WindowSizeClass.calculateGridColumns(): Int =
+  when {
     isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) -> 7
     isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> 5
     else -> 3
   }
-}
 
 // Composable helpers for feature flag integration
 

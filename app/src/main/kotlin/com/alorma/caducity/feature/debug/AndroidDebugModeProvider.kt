@@ -8,9 +8,7 @@ import android.content.pm.ApplicationInfo
  * Checks if the application is debuggable via ApplicationInfo flags.
  */
 class AndroidDebugModeProvider(
-  private val context: Context
+  private val context: Context,
 ) : DebugModeProvider {
-  override fun isDebugMode(): Boolean {
-    return (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-  }
+  override fun isDebugMode(): Boolean = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
 }

@@ -6,16 +6,14 @@ import androidx.room.Relation
 data class CategoryWithItemsRoomEntity(
   @Embedded
   val category: CategoryRoomEntity,
-
   @Relation(
     parentColumn = "id",
-    entityColumn = "categoryId"
+    entityColumn = "categoryId",
   )
   val products: List<ProductRoomEntity> = emptyList(),
-
   @Relation(
     parentColumn = "id",
-    entityColumn = "categoryId"
+    entityColumn = "categoryId",
   )
   val items: List<ItemRoomEntity>,
 )

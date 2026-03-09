@@ -23,14 +23,13 @@ class ExpirationCheckWorker(
   private val getExpiringCategoriesUseCase: GetExpiringCategoriesUseCase,
   private val notificationHelper: ExpirationNotificationHelper,
 ) : CoroutineWorker(context, params) {
-
   companion object {
     private const val TAG = "ExpirationCheckWorker"
     const val WORK_NAME = "expiration_check_work"
   }
 
-  override suspend fun doWork(): Result {
-    return try {
+  override suspend fun doWork(): Result =
+    try {
       Timber.tag(TAG).d("Starting expiration check...")
 
       val allCategories = getExpiringCategoriesUseCase.load()
@@ -50,7 +49,6 @@ class ExpirationCheckWorker(
       Timber.tag(TAG).e(e)
       Result.retry()
     }
-  }
 
   private fun buildNotificationProducts(
     category: CategoryWithItems,
@@ -69,7 +67,7 @@ class ExpirationCheckWorker(
             items = matchingItems.map { NotificationItem(it.identifier.takeIf { id -> id.isNotBlank() }) },
             categoryId = category.category.id,
             productId = categoryProduct.product.id,
-          )
+          ),
         )
       }
     }
@@ -84,7 +82,7 @@ class ExpirationCheckWorker(
           items = standaloneItems.map { NotificationItem(it.identifier.takeIf { id -> id.isNotBlank() }) },
           categoryId = category.category.id,
           productId = null,
-        )
+        ),
       )
     }
 

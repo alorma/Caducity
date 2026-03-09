@@ -31,25 +31,28 @@ fun CalendarYearMonthHeader(
     verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
     Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 12.dp, horizontal = 24.dp),
+      modifier =
+        Modifier
+          .fillMaxWidth()
+          .padding(vertical = 12.dp, horizontal = 24.dp),
       horizontalArrangement = Arrangement.SpaceBetween,
     ) {
       Column(horizontalAlignment = Alignment.Start) {
         Text(
           text = startYearMonth.year.toString(),
           style = CaducityTheme.typography.labelLarge,
-          color = CaducityTheme.colorScheme.onSurface.copy(
-            alpha = CaducityTheme.dims.dim2,
-          ),
+          color =
+            CaducityTheme.colorScheme.onSurface.copy(
+              alpha = CaducityTheme.dims.dim2,
+            ),
         )
         Text(
           text = monthNameFromState(startYearMonth, monthNames),
           style = CaducityTheme.typography.titleMedium,
-          color = CaducityTheme.colorScheme.onSurface.copy(
-            alpha = CaducityTheme.dims.dim1,
-          ),
+          color =
+            CaducityTheme.colorScheme.onSurface.copy(
+              alpha = CaducityTheme.dims.dim1,
+            ),
         )
       }
       if (endYearMonth != startYearMonth) {
@@ -57,16 +60,18 @@ fun CalendarYearMonthHeader(
           Text(
             text = endYearMonth.year.toString(),
             style = CaducityTheme.typography.labelLarge,
-            color = CaducityTheme.colorScheme.onSurface.copy(
-              alpha = CaducityTheme.dims.dim2,
-            ),
+            color =
+              CaducityTheme.colorScheme.onSurface.copy(
+                alpha = CaducityTheme.dims.dim2,
+              ),
           )
           Text(
             text = monthNameFromState(endYearMonth, monthNames),
             style = CaducityTheme.typography.titleMedium,
-            color = CaducityTheme.colorScheme.onSurface.copy(
-              alpha = CaducityTheme.dims.dim1,
-            ),
+            color =
+              CaducityTheme.colorScheme.onSurface.copy(
+                alpha = CaducityTheme.dims.dim1,
+              ),
           )
         }
       }
@@ -78,11 +83,11 @@ fun CalendarYearMonthHeader(
 private fun monthNameFromState(
   yearMonth: YearMonth,
   monthNames: MonthNames,
-): String {
-  return LocalDate.Format {
-    monthName(monthNames)
-  }.format(yearMonth.firstDay)
-}
+): String =
+  LocalDate
+    .Format {
+      monthName(monthNames)
+    }.format(yearMonth.firstDay)
 
 @PreviewLightDark
 @Composable

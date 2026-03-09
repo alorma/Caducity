@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.update
 class PrivacySettingsViewModel(
   private val consentManager: ConsentManager,
 ) : ViewModel() {
-
   private val _state = MutableStateFlow(PrivacySettingsState())
   val state: StateFlow<PrivacySettingsState> = _state.asStateFlow()
 
@@ -28,11 +27,12 @@ class PrivacySettingsViewModel(
   }
 
   fun onAnalyticsToggle(enabled: Boolean) {
-    val preferences = if (enabled) {
-      ConsentPreferences.ANALYTICS_ONLY
-    } else {
-      ConsentPreferences.DEFAULT
-    }
+    val preferences =
+      if (enabled) {
+        ConsentPreferences.ANALYTICS_ONLY
+      } else {
+        ConsentPreferences.DEFAULT
+      }
 
     consentManager.setConsentPreferences(preferences)
 

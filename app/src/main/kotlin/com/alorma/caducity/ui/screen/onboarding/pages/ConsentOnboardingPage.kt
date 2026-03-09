@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.feature.consent.ConsentPreferences
-import com.alorma.caducity.feature.consent.ConsentStatus
 import com.alorma.caducity.ui.theme.CaducityTheme
 
 @Composable
@@ -37,10 +35,11 @@ fun ConsentOnboardingPage(
   var analyticsEnabled by remember { mutableStateOf(false) }
 
   Column(
-    modifier = modifier
-      .fillMaxSize()
-      .verticalScroll(rememberScrollState())
-      .padding(32.dp),
+    modifier =
+      modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())
+        .padding(32.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {
@@ -67,9 +66,10 @@ fun ConsentOnboardingPage(
       modifier = Modifier.fillMaxWidth(),
     ) {
       Row(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(16.dp),
+        modifier =
+          Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
       ) {
@@ -91,11 +91,12 @@ fun ConsentOnboardingPage(
           checked = analyticsEnabled,
           onCheckedChange = { enabled ->
             analyticsEnabled = enabled
-            val preferences = if (enabled) {
-              ConsentPreferences.ANALYTICS_ONLY
-            } else {
-              ConsentPreferences.DEFAULT
-            }
+            val preferences =
+              if (enabled) {
+                ConsentPreferences.ANALYTICS_ONLY
+              } else {
+                ConsentPreferences.DEFAULT
+              }
             onConsentChanged(preferences)
           },
         )

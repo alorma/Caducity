@@ -12,31 +12,34 @@ import timber.log.Timber
 class FirebaseRemoteConfigProvider(
   private val remoteConfig: FirebaseRemoteConfig,
 ) : RemoteConfigRunner() {
-
   init {
     // Configure Remote Config settings
-    val configSettings = remoteConfigSettings {
-      // In debug builds, fetch configs more frequently for testing
-      minimumFetchIntervalInSeconds = if (com.alorma.caducity.BuildConfig.DEBUG) {
-        60 // 1 minute for debug builds
-      } else {
-        3600 // 1 hour for release builds
+    val configSettings =
+      remoteConfigSettings {
+        // In debug builds, fetch configs more frequently for testing
+        minimumFetchIntervalInSeconds =
+          if (com.alorma.caducity.BuildConfig.DEBUG) {
+            60 // 1 minute for debug builds
+          } else {
+            3600 // 1 hour for release builds
+          }
       }
-    }
     remoteConfig.setConfigSettingsAsync(configSettings)
   }
 
-  override suspend fun fetchAndActivate(): Result<Boolean> = runCatching {
-    val activated = remoteConfig.fetchAndActivate().await()
-    Timber.d("Remote Config: Fetch and activate successful. Activated: $activated")
-    activated
-  }.onFailure { exception ->
-    Timber.e(exception, "Remote Config: Fetch and activate failed")
-  }
+  override suspend fun fetchAndActivate(): Result<Boolean> =
+    runCatching {
+      val activated = remoteConfig.fetchAndActivate().await()
+      Timber.d("Remote Config: Fetch and activate successful. Activated: $activated")
+      activated
+    }.onFailure { exception ->
+      Timber.e(exception, "Remote Config: Fetch and activate failed")
+    }
 
-  override fun getBoolean(key: String, defaultValue: Boolean): Boolean {
-    return remoteConfig.getBoolean(key)
-  }
+  override fun getBoolean(
+    key: String,
+    defaultValue: Boolean,
+  ): Boolean = remoteConfig.getBoolean(key)
 
   /**
    * Sets default config values for all configs.

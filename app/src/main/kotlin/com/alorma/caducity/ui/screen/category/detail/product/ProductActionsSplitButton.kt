@@ -66,9 +66,10 @@ fun ProductActionsSplitButton(
         )
 
         TooltipBox(
-          positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
-            TooltipAnchorPosition.Above,
-          ),
+          positionProvider =
+            TooltipDefaults.rememberTooltipPositionProvider(
+              TooltipAnchorPosition.Above,
+            ),
           tooltip = {
             PlainTooltip {
               Text(stringResource(R.string.category_detail_product_actions_tooltip))
@@ -85,9 +86,10 @@ fun ProductActionsSplitButton(
             onCheckedChange = { checked.value = it },
           ) {
             Icon(
-              modifier = Modifier
-                .size(SplitButtonDefaults.TrailingIconSize)
-                .graphicsLayer { this.rotationZ = rotation },
+              modifier =
+                Modifier
+                  .size(SplitButtonDefaults.TrailingIconSize)
+                  .graphicsLayer { this.rotationZ = rotation },
               imageVector = AppIcons.ArrowDown,
               contentDescription = stringResource(R.string.product_delete_menu),
             )
@@ -96,7 +98,7 @@ fun ProductActionsSplitButton(
 
         DropdownMenu(
           expanded = checked.value,
-          onDismissRequest = { checked.value = false }
+          onDismissRequest = { checked.value = false },
         ) {
           // Clear items option (only shown if there are items)
           if (hasItems) {
@@ -111,7 +113,7 @@ fun ProductActionsSplitButton(
                   imageVector = AppIcons.Outlined.Broom,
                   contentDescription = null,
                 )
-              }
+              },
             )
           }
 
@@ -127,9 +129,9 @@ fun ProductActionsSplitButton(
                 Icon(
                   imageVector = AppIcons.Delete,
                   contentDescription = null,
-                  tint = CaducityTheme.colorScheme.error
+                  tint = CaducityTheme.colorScheme.error,
                 )
-              }
+              },
             )
           }
         }

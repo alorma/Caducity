@@ -8,7 +8,5 @@ import kotlinx.coroutines.flow.Flow
 class GetCategoryProductsUseCase(
   private val productDataSource: ProductDataSource,
 ) {
-  fun obtain(categoryId: String): Flow<ImmutableList<Product>> {
-    return productDataSource.getProductsByCategory(categoryId)
-  }
+  fun obtain(categoryId: String): Flow<ImmutableList<Product>> = productDataSource.getProductsByCategory(categoryId)
 }

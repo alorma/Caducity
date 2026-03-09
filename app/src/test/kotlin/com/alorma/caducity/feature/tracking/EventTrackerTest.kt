@@ -5,7 +5,6 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 class EventTrackerTest {
-
   @Test
   fun `trackScreen delegates to all trackers`() {
     // Given
@@ -105,10 +104,12 @@ class EventTrackerTest {
   }
 
   // Test implementations
-  private class TestScreen(name: String) : Screen(name)
+  private class TestScreen(
+    name: String,
+  ) : Screen(name)
 
   private class TestAction(
     name: String,
-    parameters: Map<String, String> = emptyMap()
+    parameters: Map<String, String> = emptyMap(),
   ) : Action(name, parameters)
 }

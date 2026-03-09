@@ -38,18 +38,21 @@ fun App(
   AppTheme(
     themePreferences = koinInject(),
   ) {
-    val appBackStack = retain {
-      val stack = mutableStateListOf<NavKey>(
-        if (onboardingFlag.isEnabled()) OnboardingRoute else DashboardRoute
-      )
-      when (deepLinkAction) {
-        is DeepLinkAction.OpenProduct -> stack.add(
-          CategoryDetailRoute(deepLinkAction.categoryId, deepLinkAction.productId)
-        )
-        null -> Unit
+    val appBackStack =
+      retain {
+        val stack =
+          mutableStateListOf<NavKey>(
+            if (onboardingFlag.isEnabled()) OnboardingRoute else DashboardRoute,
+          )
+        when (deepLinkAction) {
+          is DeepLinkAction.OpenProduct ->
+            stack.add(
+              CategoryDetailRoute(deepLinkAction.categoryId, deepLinkAction.productId),
+            )
+          null -> Unit
+        }
+        stack
       }
-      stack
-    }
 
     NavDisplay(
       modifier = Modifier.fillMaxSize(),
@@ -57,63 +60,65 @@ fun App(
       onBack = {
         if (appBackStack.size > 1) appBackStack.removeLast()
       },
-      entryDecorators = listOf(
-        rememberSaveableStateHolderNavEntryDecorator(),
-        rememberViewModelStoreNavEntryDecorator(),
-      ),
-      entryProvider = entryProvider {
-        entry<OnboardingRoute> {
-          OnboardingScreen(
-            onComplete = {
-              appBackStack.clear()
-              appBackStack.add(DashboardRoute)
-            },
-          )
-        }
-        entry<DashboardRoute> {
-          DashboardScreen(
-            onNavigateToCreateProduct = {
-              appBackStack.add(CreateCategoryRoute)
-            },
-            onNavigateToCategory = { categoryId ->
-              appBackStack.add(
-                CategoryDetailRoute(categoryId)
-              )
-            },
-            onNavigateToStatus = { status ->
-              appBackStack.add(FilteredItemsRoute.ByStatus(status))
-            },
-            onNavigateToSettings = { appBackStack.add(Settings) },
-          )
-        }
-        entry<Settings> {
-          SettingsContainer()
-        }
-        entry<CreateCategoryRoute> {
-          CreateCategoryScreen(
-            onNavigateBack = { appBackStack.removeLast() },
-            onNavigateToCategory = { categoryId ->
-              appBackStack.removeLast()
-              appBackStack.add(CategoryDetailRoute(categoryId))
-            }
-          )
-        }
-        entry<CategoryDetailRoute> {
-          CategoryDetailContainer(
-            categoryId = it.categoryId,
-            initialProductId = it.initialProductId,
-            onBack = { appBackStack.removeLast() }
-          )
-        }
-        entry<FilteredItemsRoute.ByStatus> {
-          FilteredItemsByStatusScreen(
-            status = it.status,
-            onNavigateToCategory = { categoryId ->
-              appBackStack.add(CategoryDetailRoute(categoryId))
-            }
-          )
-        }
-      },
+      entryDecorators =
+        listOf(
+          rememberSaveableStateHolderNavEntryDecorator(),
+          rememberViewModelStoreNavEntryDecorator(),
+        ),
+      entryProvider =
+        entryProvider {
+          entry<OnboardingRoute> {
+            OnboardingScreen(
+              onComplete = {
+                appBackStack.clear()
+                appBackStack.add(DashboardRoute)
+              },
+            )
+          }
+          entry<DashboardRoute> {
+            DashboardScreen(
+              onNavigateToCreateProduct = {
+                appBackStack.add(CreateCategoryRoute)
+              },
+              onNavigateToCategory = { categoryId ->
+                appBackStack.add(
+                  CategoryDetailRoute(categoryId),
+                )
+              },
+              onNavigateToStatus = { status ->
+                appBackStack.add(FilteredItemsRoute.ByStatus(status))
+              },
+              onNavigateToSettings = { appBackStack.add(Settings) },
+            )
+          }
+          entry<Settings> {
+            SettingsContainer()
+          }
+          entry<CreateCategoryRoute> {
+            CreateCategoryScreen(
+              onNavigateBack = { appBackStack.removeLast() },
+              onNavigateToCategory = { categoryId ->
+                appBackStack.removeLast()
+                appBackStack.add(CategoryDetailRoute(categoryId))
+              },
+            )
+          }
+          entry<CategoryDetailRoute> {
+            CategoryDetailContainer(
+              categoryId = it.categoryId,
+              initialProductId = it.initialProductId,
+              onBack = { appBackStack.removeLast() },
+            )
+          }
+          entry<FilteredItemsRoute.ByStatus> {
+            FilteredItemsByStatusScreen(
+              status = it.status,
+              onNavigateToCategory = { categoryId ->
+                appBackStack.add(CategoryDetailRoute(categoryId))
+              },
+            )
+          }
+        },
     )
   }
 }

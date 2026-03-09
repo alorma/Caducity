@@ -26,25 +26,23 @@ class DashboardViewModel(
   private val dashboardMapper: DashboardMapper,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<DashboardNavigation, DashboardNavigationSideEffect, Unit>() {
-
   @OptIn(ExperimentalCoroutinesApi::class)
-  val state: StateFlow<DashboardState> = calendarPreferences.state
-    .flatMapLatest { calendarConfig ->
-      obtainPerCategoryDashboard(calendarConfig.firstDayOfWeek)
-    }
-    .stateIn(
-      scope = viewModelScope,
-      started = SharingStarted.WhileSubscribed(5.seconds),
-      initialValue = DashboardState.Loading,
-    )
+  val state: StateFlow<DashboardState> =
+    calendarPreferences.state
+      .flatMapLatest { calendarConfig ->
+        obtainPerCategoryDashboard(calendarConfig.firstDayOfWeek)
+      }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5.seconds),
+        initialValue = DashboardState.Loading,
+      )
 
-  private fun obtainPerCategoryDashboard(firstDayOfWeek: kotlinx.datetime.DayOfWeek): Flow<DashboardState.Success> {
-    return obtainDashboardUseCase
+  private fun obtainPerCategoryDashboard(firstDayOfWeek: kotlinx.datetime.DayOfWeek): Flow<DashboardState.Success> =
+    obtainDashboardUseCase
       .obtain()
       .map { dashboardData ->
         dashboardMapper.mapToPerCategoryState(dashboardData = dashboardData, firstDayOfWeek = firstDayOfWeek)
       }
-  }
 
   override fun navigate(navigation: DashboardNavigation) {
     when (navigation) {
@@ -59,13 +57,14 @@ class DashboardViewModel(
       }
 
       is DashboardNavigation.FilteredItems -> {
-        val statusParam = when (navigation.status) {
-          ItemStatus.Expired -> "expired"
-          ItemStatus.ExpiringSoon -> "expiring_soon"
-          ItemStatus.Fresh -> "fresh"
-          ItemStatus.Frozen -> "frozen"
-          ItemStatus.Consumed -> "consumed"
-        }
+        val statusParam =
+          when (navigation.status) {
+            ItemStatus.Expired -> "expired"
+            ItemStatus.ExpiringSoon -> "expiring_soon"
+            ItemStatus.Fresh -> "fresh"
+            ItemStatus.Frozen -> "frozen"
+            ItemStatus.Consumed -> "consumed"
+          }
         eventTracker.trackAction(NavigateToFilteredItemsAction(statusParam))
         emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToFilteredItems(navigation.status))
       }

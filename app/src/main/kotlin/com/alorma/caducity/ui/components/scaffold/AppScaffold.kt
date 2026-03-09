@@ -61,10 +61,11 @@ fun AppScaffold(
       contentWindowInsets = contentWindowInsets,
     ) { paddingValues ->
       Box(
-        modifier = Modifier
-          .fillMaxSize()
-          .consumeWindowInsets(paddingValues)
-          .imePadding(),
+        modifier =
+          Modifier
+            .fillMaxSize()
+            .consumeWindowInsets(paddingValues)
+            .imePadding(),
       ) {
         content(paddingValues)
         AppDialogHost(LocalAppDialogState.current)

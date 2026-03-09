@@ -22,12 +22,11 @@ class ItemRoomMapper(
   private val appClock: AppClock,
   private val expirationThresholds: ExpirationThresholds,
 ) {
-
   /**
    * Maps ItemRoomEntity to Item domain model with calculated status
    */
-  fun toModel(entity: ItemRoomEntity): Item {
-    return Item(
+  fun toModel(entity: ItemRoomEntity): Item =
+    Item(
       id = entity.id,
       categoryId = entity.categoryId,
       identifier = entity.identifier,
@@ -37,13 +36,12 @@ class ItemRoomMapper(
       pausedDate = entity.pausedDate?.let { Instant.fromEpochMilliseconds(it) },
       packSize = entity.packSize,
     )
-  }
 
   /**
    * Maps Item domain model to ItemRoomEntity
    */
-  fun toEntity(model: Item): ItemRoomEntity {
-    return ItemRoomEntity(
+  fun toEntity(model: Item): ItemRoomEntity =
+    ItemRoomEntity(
       id = model.id,
       categoryId = model.categoryId,
       identifier = model.identifier,
@@ -54,7 +52,6 @@ class ItemRoomMapper(
       consumedDate = null,
       packSize = model.packSize,
     )
-  }
 
   /**
    * Maps NewItem to ItemRoomEntity (for item creation)
@@ -63,8 +60,12 @@ class ItemRoomMapper(
    * @param id The generated ID for this new item
    * @param categoryId The category ID this item belongs to
    */
-  fun toEntity(model: NewItem, id: String, categoryId: String): ItemRoomEntity {
-    return ItemRoomEntity(
+  fun toEntity(
+    model: NewItem,
+    id: String,
+    categoryId: String,
+  ): ItemRoomEntity =
+    ItemRoomEntity(
       id = id,
       categoryId = categoryId,
       identifier = model.identifier,
@@ -75,22 +76,21 @@ class ItemRoomMapper(
       consumedDate = null,
       packSize = model.packSize,
     )
-  }
 
   /**
    * Calculates item status based on consumed, frozen, and expiration states
    *
    * Priority: Consumed > Frozen > Calculated (based on expiration)
    */
-  private fun calculateStatus(entity: ItemRoomEntity): ItemStatus {
-    return when {
+  private fun calculateStatus(entity: ItemRoomEntity): ItemStatus =
+    when {
       entity.consumedDate != null -> ItemStatus.Consumed
       entity.pausedDate != null -> ItemStatus.Frozen
-      else -> ItemStatus.calculateStatus(
-        expirationDate = Instant.fromEpochMilliseconds(entity.expirationDate),
-        now = appClock.now(),
-        soonExpiringThreshold = expirationThresholds.soonExpiringThreshold
-      )
+      else ->
+        ItemStatus.calculateStatus(
+          expirationDate = Instant.fromEpochMilliseconds(entity.expirationDate),
+          now = appClock.now(),
+          soonExpiringThreshold = expirationThresholds.soonExpiringThreshold,
+        )
     }
-  }
 }

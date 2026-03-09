@@ -33,23 +33,25 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import com.alorma.caducity.ui.components.feedback.AppFeedbackResource
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.vibrantColors
 import com.alorma.caducity.ui.components.feedback.exposeResource
+import com.alorma.caducity.ui.components.feedback.vibrantColors
+import kotlin.coroutines.resume
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlin.coroutines.resume
 
 @Composable
-fun rememberAppSnackbarState(): AppSnackbarState = remember {
-  AppSnackbarState()
-}
+fun rememberAppSnackbarState(): AppSnackbarState =
+  remember {
+    AppSnackbarState()
+  }
 
-val LocalAppSnackbarState = compositionLocalOf<AppSnackbarState> {
-  throw (IllegalStateException("Should be provided from a AppSnackbarHostState"))
-}
+val LocalAppSnackbarState =
+  compositionLocalOf<AppSnackbarState> {
+    throw (IllegalStateException("Should be provided from a AppSnackbarHostState"))
+  }
 
 /**
  * State of the [AppSnackbarHost], controls the queue and the current [AppSnackbar] being shown inside
@@ -60,7 +62,6 @@ val LocalAppSnackbarState = compositionLocalOf<AppSnackbarState> {
  */
 @Stable
 class AppSnackbarState {
-
   /**
    * Only one [AppSnackbar] can be shown at a time.
    * Since a suspending Mutex is a fair queue, this manages our message queue
@@ -101,22 +102,24 @@ class AppSnackbarState {
     duration: SnackbarDuration = SnackbarDuration.Short,
     type: AppFeedbackType = AppFeedbackType.Info,
     layout: AppSnackbarLayout = AppSnackbarLayout.ActionLengthBased,
-  ): AppSnackbarResult = mutex.withLock {
-    try {
-      return suspendCancellableCoroutine { continuation ->
-        currentAppSnackbarData = AppSnackbarDataImpl(
-          message = AppFeedbackResource.AsString(message),
-          actionLabel = actionLabel?.let { AppFeedbackResource.AsString(it) },
-          duration = duration,
-          type = type,
-          continuation = continuation,
-          layout = layout
-        )
+  ): AppSnackbarResult =
+    mutex.withLock {
+      try {
+        return suspendCancellableCoroutine { continuation ->
+          currentAppSnackbarData =
+            AppSnackbarDataImpl(
+              message = AppFeedbackResource.AsString(message),
+              actionLabel = actionLabel?.let { AppFeedbackResource.AsString(it) },
+              duration = duration,
+              type = type,
+              continuation = continuation,
+              layout = layout,
+            )
+        }
+      } finally {
+        currentAppSnackbarData = null
       }
-    } finally {
-      currentAppSnackbarData = null
     }
-  }
 
   suspend fun showSnackbar(
     @StringRes message: Int,
@@ -124,22 +127,24 @@ class AppSnackbarState {
     duration: SnackbarDuration = SnackbarDuration.Short,
     type: AppFeedbackType = AppFeedbackType.Info,
     layout: AppSnackbarLayout = AppSnackbarLayout.ActionLengthBased,
-  ): AppSnackbarResult = mutex.withLock {
-    try {
-      return suspendCancellableCoroutine { continuation ->
-        currentAppSnackbarData = AppSnackbarDataImpl(
-          message = AppFeedbackResource.AsResource(message),
-          actionLabel = actionLabel?.let { AppFeedbackResource.AsResource(it) },
-          duration = duration,
-          type = type,
-          continuation = continuation,
-          layout = layout
-        )
+  ): AppSnackbarResult =
+    mutex.withLock {
+      try {
+        return suspendCancellableCoroutine { continuation ->
+          currentAppSnackbarData =
+            AppSnackbarDataImpl(
+              message = AppFeedbackResource.AsResource(message),
+              actionLabel = actionLabel?.let { AppFeedbackResource.AsResource(it) },
+              duration = duration,
+              type = type,
+              continuation = continuation,
+              layout = layout,
+            )
+        }
+      } finally {
+        currentAppSnackbarData = null
       }
-    } finally {
-      currentAppSnackbarData = null
     }
-  }
 
   @Stable
   private class AppSnackbarDataImpl(
@@ -148,9 +153,8 @@ class AppSnackbarState {
     override val duration: SnackbarDuration,
     override val type: AppFeedbackType,
     private val continuation: CancellableContinuation<AppSnackbarResult>,
-    override val layout: AppSnackbarLayout = AppSnackbarLayout.ActionLengthBased
+    override val layout: AppSnackbarLayout = AppSnackbarLayout.ActionLengthBased,
   ) : AppSnackbarData {
-
     override fun performAction() {
       if (continuation.isActive) continuation.resume(AppSnackbarResult.ActionPerformed)
     }
@@ -188,10 +192,11 @@ fun AppSnackbarHost(
   val accessibilityManager = LocalAccessibilityManager.current
   LaunchedEffect(currentAppSnackbarData) {
     if (currentAppSnackbarData != null) {
-      val duration = currentAppSnackbarData.duration.toMillis(
-        currentAppSnackbarData.actionLabel != null,
-        accessibilityManager
-      )
+      val duration =
+        currentAppSnackbarData.duration.toMillis(
+          currentAppSnackbarData.actionLabel != null,
+          accessibilityManager,
+        )
       delay(duration)
       currentAppSnackbarData.dismiss()
     }
@@ -200,7 +205,7 @@ fun AppSnackbarHost(
   FadeInFadeOutWithScale(
     current = hostState.currentAppSnackbarData,
     modifier = modifier,
-    content = ijSnackbar
+    content = ijSnackbar,
   )
 }
 
@@ -215,32 +220,35 @@ fun AppSnackbar(
 
   val actionLength = actionLabelText?.length ?: 0
 
-  val actionOnNewLine = when (snackbarData.layout) {
-    AppSnackbarLayout.ActionLengthBased -> actionLength >= AppSnackbarDefaults.MaxSizeToDisplayActionOnNewLine
-    AppSnackbarLayout.SideAction -> false
-    AppSnackbarLayout.StackedAction -> true
-  }
+  val actionOnNewLine =
+    when (snackbarData.layout) {
+      AppSnackbarLayout.ActionLengthBased -> actionLength >= AppSnackbarDefaults.MaxSizeToDisplayActionOnNewLine
+      AppSnackbarLayout.SideAction -> false
+      AppSnackbarLayout.StackedAction -> true
+    }
 
   val colors = snackbarData.type.vibrantColors()
 
   Snackbar(
     modifier = modifier,
-    snackbarData = object : SnackbarData {
-      override fun dismiss() {
-        snackbarData.dismiss()
-      }
+    snackbarData =
+      object : SnackbarData {
+        override fun dismiss() {
+          snackbarData.dismiss()
+        }
 
-      override val visuals: SnackbarVisuals = object : SnackbarVisuals {
-        override val message: String = messageText
-        override val actionLabel: String? = actionLabelText
-        override val duration: SnackbarDuration = snackbarData.duration
-        override val withDismissAction: Boolean = false
-      }
+        override val visuals: SnackbarVisuals =
+          object : SnackbarVisuals {
+            override val message: String = messageText
+            override val actionLabel: String? = actionLabelText
+            override val duration: SnackbarDuration = snackbarData.duration
+            override val withDismissAction: Boolean = false
+          }
 
-      override fun performAction() {
-        snackbarData.performAction()
-      }
-    },
+        override fun performAction() {
+          snackbarData.performAction()
+        }
+      },
     actionOnNewLine = actionOnNewLine,
     containerColor = colors.container,
     contentColor = colors.onContainer,
@@ -273,7 +281,6 @@ interface AppSnackbarData {
    */
   fun dismiss()
 }
-
 
 /**
  * Possible results of the [AppSnackbarState.showSnackbar] call
@@ -316,47 +323,54 @@ private fun FadeInFadeOutWithScale(
         val isVisible = key == current
         val duration = if (isVisible) AppSnackbarFadeInMillis else AppSnackbarFadeOutMillis
         val delay = AppSnackbarFadeOutMillis + AppSnackbarInBetweenDelayMillis
-        val animationDelay = remember {
-          if (isVisible && keys.filterNotNull().size != 1) {
-            delay
-          } else {
-            0
-          }
-        }
-        val opacity = animatedOpacity(
-          animation = tween(
-            easing = LinearEasing,
-            delayMillis = animationDelay,
-            durationMillis = duration
-          ),
-          visible = isVisible,
-          onAnimationFinish = {
-            if (key != state.current) {
-              // leave only the current in the list
-              state.items.removeAll { it.key == key }
-              state.scope?.invalidate()
+        val animationDelay =
+          remember {
+            if (isVisible && keys.filterNotNull().size != 1) {
+              delay
+            } else {
+              0
             }
           }
-        )
-        val scale = animatedScale(
-          animation = tween(
-            easing = FastOutSlowInEasing,
-            delayMillis = animationDelay,
-            durationMillis = duration
-          ),
-          visible = isVisible
-        )
+        val opacity =
+          animatedOpacity(
+            animation =
+              tween(
+                easing = LinearEasing,
+                delayMillis = animationDelay,
+                durationMillis = duration,
+              ),
+            visible = isVisible,
+            onAnimationFinish = {
+              if (key != state.current) {
+                // leave only the current in the list
+                state.items.removeAll { it.key == key }
+                state.scope?.invalidate()
+              }
+            },
+          )
+        val scale =
+          animatedScale(
+            animation =
+              tween(
+                easing = FastOutSlowInEasing,
+                delayMillis = animationDelay,
+                durationMillis = duration,
+              ),
+            visible = isVisible,
+          )
         Box(
           Modifier
             .graphicsLayer(
               scaleX = scale.value,
               scaleY = scale.value,
-              alpha = opacity.value
-            )
-            .semantics {
+              alpha = opacity.value,
+            ).semantics {
               liveRegion = LiveRegionMode.Polite
-              dismiss { key.dismiss(); true }
-            }
+              dismiss {
+                key.dismiss()
+                true
+              }
+            },
         ) {
           children()
         }
@@ -399,7 +413,7 @@ private fun animatedOpacity(
   LaunchedEffect(visible, onAnimationFinish) {
     alpha.animateTo(
       if (visible) 1f else 0f,
-      animationSpec = animation
+      animationSpec = animation,
     )
     onAnimationFinish()
   }
@@ -407,12 +421,15 @@ private fun animatedOpacity(
 }
 
 @Composable
-private fun animatedScale(animation: AnimationSpec<Float>, visible: Boolean): State<Float> {
+private fun animatedScale(
+  animation: AnimationSpec<Float>,
+  visible: Boolean,
+): State<Float> {
   val scale = remember { Animatable(if (!visible) 1f else 0.8f) }
   LaunchedEffect(visible) {
     scale.animateTo(
       if (visible) 1f else 0.8f,
-      animationSpec = animation
+      animationSpec = animation,
     )
   }
   return scale.asState()
@@ -426,11 +443,12 @@ fun SnackbarDuration.toMillis(
   hasAction: Boolean,
   accessibilityManager: AccessibilityManager?,
 ): Long {
-  val original = when (this) {
-    SnackbarDuration.Indefinite -> Long.MAX_VALUE
-    SnackbarDuration.Long -> 10000L
-    SnackbarDuration.Short -> 4000L
-  }
+  val original =
+    when (this) {
+      SnackbarDuration.Indefinite -> Long.MAX_VALUE
+      SnackbarDuration.Long -> 10000L
+      SnackbarDuration.Short -> 4000L
+    }
   if (accessibilityManager == null) {
     return original
   }
@@ -438,6 +456,6 @@ fun SnackbarDuration.toMillis(
     original,
     containsIcons = true,
     containsText = true,
-    containsControls = hasAction
+    containsControls = hasAction,
   )
 }

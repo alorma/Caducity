@@ -23,5 +23,5 @@ enum class ConsentType {
   /**
    * Ad personalization - Controls whether personalized advertising is enabled
    */
-  AD_PERSONALIZATION
+  AD_PERSONALIZATION,
 }

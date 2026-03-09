@@ -5,11 +5,11 @@ import org.koin.core.qualifier.QualifierValue
 
 object ConfigQualifier {
   object DateFormat {
-    object HumanReadable: Qualifier {
+    object HumanReadable : Qualifier {
       override val value: QualifierValue = "HumanReadable"
     }
 
-    object BackupName: Qualifier {
+    object BackupName : Qualifier {
       override val value: QualifierValue = "BackupName"
     }
   }

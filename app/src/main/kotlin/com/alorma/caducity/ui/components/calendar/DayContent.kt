@@ -40,65 +40,69 @@ fun DayContent(
   modifier: Modifier = Modifier,
   todayColor: Color = CaducityTheme.colorScheme.surfaceContainerHighest,
 ) {
+  val backgroundColor =
+    if (status != null) {
+      val color = ExpirationDefaults.getColors(status).container
 
-  val backgroundColor = if (status != null) {
-    val color = ExpirationDefaults.getColors(status).container
-
-    if (isOutDay) {
-      color.copy(alpha = CaducityTheme.dims.dim2)
+      if (isOutDay) {
+        color.copy(alpha = CaducityTheme.dims.dim2)
+      } else {
+        color
+      }
     } else {
-      color
+      Color.Transparent
     }
-  } else {
-    Color.Transparent
-  }
 
-  val textColor = if (status != null) {
-    ExpirationDefaults.getColors(status).onContainer
-  } else {
-    CaducityTheme.colorScheme.onSurface
-  }.let { color ->
-    if (isOutDay) {
-      color.copy(alpha = CaducityTheme.dims.dim2)
+  val textColor =
+    if (status != null) {
+      ExpirationDefaults.getColors(status).onContainer
     } else {
-      color
+      CaducityTheme.colorScheme.onSurface
+    }.let { color ->
+      if (isOutDay) {
+        color.copy(alpha = CaducityTheme.dims.dim2)
+      } else {
+        color
+      }
     }
-  }
 
   Box(modifier = modifier.heightIn(max = 56.dp)) {
     val shape = shapePosition.toHorizontalShape()
 
     if (today == date) {
-      val borderColor = if (status == null) {
-        todayColor
-      } else {
-        backgroundColor
-      }
+      val borderColor =
+        if (status == null) {
+          todayColor
+        } else {
+          backgroundColor
+        }
       Box(
-        modifier = Modifier
-          .aspectRatio(1f)
-          .padding(2.dp)
-          .clip(shape)
-          .border(
-            width = 2.dp,
-            color = borderColor,
-            shape = shape,
-          )
-          .clickable { onClick(date) }
-          .padding(4.dp),
+        modifier =
+          Modifier
+            .aspectRatio(1f)
+            .padding(2.dp)
+            .clip(shape)
+            .border(
+              width = 2.dp,
+              color = borderColor,
+              shape = shape,
+            ).clickable { onClick(date) }
+            .padding(4.dp),
         contentAlignment = Alignment.Center,
       ) {
-        val internalShape = shapePosition.toHorizontalShape(
-          externalBaseShape = CaducityTheme.shapes.medium,
-          internalBaseShape = RoundedCornerShape(2.dp),
-        )
+        val internalShape =
+          shapePosition.toHorizontalShape(
+            externalBaseShape = CaducityTheme.shapes.medium,
+            internalBaseShape = RoundedCornerShape(2.dp),
+          )
         Box(
-          modifier = Modifier
-            .aspectRatio(1f)
-            .background(
-              color = backgroundColor,
-              shape = internalShape,
-            ),
+          modifier =
+            Modifier
+              .aspectRatio(1f)
+              .background(
+                color = backgroundColor,
+                shape = internalShape,
+              ),
           contentAlignment = Alignment.Center,
         ) {
           DayText(
@@ -109,12 +113,13 @@ fun DayContent(
       }
     } else {
       Box(
-        modifier = Modifier
-          .aspectRatio(1f)
-          .padding(2.dp)
-          .clip(shape)
-          .background(backgroundColor)
-          .clickable { onClick(date) },
+        modifier =
+          Modifier
+            .aspectRatio(1f)
+            .padding(2.dp)
+            .clip(shape)
+            .background(backgroundColor)
+            .clickable { onClick(date) },
         contentAlignment = Alignment.Center,
       ) {
         DayText(

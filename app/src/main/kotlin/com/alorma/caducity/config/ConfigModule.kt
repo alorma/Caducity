@@ -18,58 +18,60 @@ import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val configModule = module {
-  single<AppClock> { KotlinAppClock() }
+val configModule =
+  module {
+    single<AppClock> { KotlinAppClock() }
 
-  singleOf(::AndroidAppVersionProvider) {
-    bind<AppVersionProvider>()
-  }
+    singleOf(::AndroidAppVersionProvider) {
+      bind<AppVersionProvider>()
+    }
 
-  singleOf(::LocalizedDateFormatter)
+    singleOf(::LocalizedDateFormatter)
 
-  single<DateTimeFormat<LocalDate>>(qualifier = ConfigQualifier.DateFormat.HumanReadable) {
-    LocalDate.Format {
-      day()
-      chars("/")
-      monthNumber()
-      chars("/")
-      year()
+    single<DateTimeFormat<LocalDate>>(qualifier = ConfigQualifier.DateFormat.HumanReadable) {
+      LocalDate.Format {
+        day()
+        chars("/")
+        monthNumber()
+        chars("/")
+        year()
+      }
+    }
+    single<DateTimeFormat<LocalDateTime>>(qualifier = ConfigQualifier.DateFormat.BackupName) {
+      LocalDateTime.Format {
+        day()
+        chars("_")
+        monthNumber()
+        chars("_")
+        year()
+        hour()
+        chars("_")
+        minute()
+        chars("_")
+      }
+    }
+
+    singleOf(::StringProvider)
+
+    single {
+      FirebaseRemoteConfig.getInstance()
+    }
+
+    // Firebase Remote Config Runner
+    single<RemoteConfigRunner> {
+      val firebaseRunner =
+        FirebaseRemoteConfigProvider(
+          remoteConfig = get(),
+        )
+
+      // In debug builds, wrap with DebugRemoteConfigRunner for override capability
+      if (BuildConfig.DEBUG) {
+        DebugRemoteConfigRunner(
+          settings = get(),
+          defaultRunner = firebaseRunner,
+        )
+      } else {
+        firebaseRunner
+      }
     }
   }
-  single<DateTimeFormat<LocalDateTime>>(qualifier = ConfigQualifier.DateFormat.BackupName) {
-    LocalDateTime.Format {
-      day()
-      chars("_")
-      monthNumber()
-      chars("_")
-      year()
-      hour()
-      chars("_")
-      minute()
-      chars("_")
-    }
-  }
-
-  singleOf(::StringProvider)
-
-  single {
-    FirebaseRemoteConfig.getInstance()
-  }
-
-  // Firebase Remote Config Runner
-  single<RemoteConfigRunner> {
-    val firebaseRunner = FirebaseRemoteConfigProvider(
-      remoteConfig = get(),
-    )
-
-    // In debug builds, wrap with DebugRemoteConfigRunner for override capability
-    if (BuildConfig.DEBUG) {
-      DebugRemoteConfigRunner(
-        settings = get(),
-        defaultRunner = firebaseRunner
-      )
-    } else {
-      firebaseRunner
-    }
-  }
-}

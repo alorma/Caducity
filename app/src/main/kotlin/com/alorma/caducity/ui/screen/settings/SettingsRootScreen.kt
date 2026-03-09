@@ -25,7 +25,6 @@ import com.alorma.caducity.feature.tracking.SettingsScreen
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
@@ -88,7 +87,7 @@ private fun SettingsRootContent(
         // Group 1: Appearance, Language & Notifications
         item {
           StyledSettingsGroup(
-            title = { Text(stringResource(R.string.settings_appearance_title)) }
+            title = { Text(stringResource(R.string.settings_appearance_title)) },
           ) {
             StyledSettingsCard(
               icon = {
@@ -121,7 +120,7 @@ private fun SettingsRootContent(
         // Group 2: Privacy & Backup
         item {
           StyledSettingsGroup(
-            title = { Text(stringResource(R.string.settings_privacy_title)) }
+            title = { Text(stringResource(R.string.settings_privacy_title)) },
           ) {
             StyledSettingsCard(
               icon = {
@@ -155,7 +154,7 @@ private fun SettingsRootContent(
         if (isDebug) {
           item {
             StyledSettingsGroup(
-              title = { Text(stringResource(R.string.settings_debug_title)) }
+              title = { Text(stringResource(R.string.settings_debug_title)) },
             ) {
               StyledSettingsCard(
                 icon = {
@@ -176,7 +175,7 @@ private fun SettingsRootContent(
         // Group 4: About
         item {
           StyledSettingsGroup(
-            title = { Text(stringResource(R.string.settings_about_title)) }
+            title = { Text(stringResource(R.string.settings_about_title)) },
           ) {
             StyledSettingsCard(
               icon = {

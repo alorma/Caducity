@@ -67,16 +67,17 @@ fun CategoryDetailAddItemScreen(
   productId: String?,
   onNavigateBack: () -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: CategoryDetailAddItemViewModel = koinViewModel { parametersOf(categoryId, productId) }
+  viewModel: CategoryDetailAddItemViewModel = koinViewModel { parametersOf(categoryId, productId) },
 ) {
   TrackScreen(screen = AddItemScreen())
   val state = viewModel.state.collectAsStateWithLifecycle()
   val formState = viewModel.formState.collectAsStateWithLifecycle()
   val dialogState = rememberAppDialogState()
 
-  val datePickerState = rememberDatePickerState(
-    initialSelectedDateMillis = formState.value.expirationDateMillis
-  )
+  val datePickerState =
+    rememberDatePickerState(
+      initialSelectedDateMillis = formState.value.expirationDateMillis,
+    )
 
   // Handle navigation side effects
   LaunchedEffect(viewModel) {
@@ -92,19 +93,20 @@ fun CategoryDetailAddItemScreen(
     viewModel.sideEffects.collect { effect ->
       when (effect) {
         is AddItemSideEffect.ShowDatePicker -> {
-          val result = dialogState.showDatePickerDialog(
-            datePickerState = datePickerState,
-            positiveButton = {
-              Text(stringResource(R.string.category_detail_add_item_date_picker_ok))
-            },
-            negativeButton = {
-              Text(stringResource(R.string.category_detail_add_item_date_picker_cancel))
-            },
-            type = AppFeedbackType.Info,
-            onDateSelected = { selectedDateMillis ->
-              viewModel.calculateStatusForDate(selectedDateMillis)
-            }
-          )
+          val result =
+            dialogState.showDatePickerDialog(
+              datePickerState = datePickerState,
+              positiveButton = {
+                Text(stringResource(R.string.category_detail_add_item_date_picker_ok))
+              },
+              negativeButton = {
+                Text(stringResource(R.string.category_detail_add_item_date_picker_cancel))
+              },
+              type = AppFeedbackType.Info,
+              onDateSelected = { selectedDateMillis ->
+                viewModel.calculateStatusForDate(selectedDateMillis)
+              },
+            )
 
           if (result == DialogResult.Positive) {
             val newDateMillis = datePickerState.selectedDateMillis
@@ -134,7 +136,7 @@ fun CategoryDetailAddItemScreen(
         },
         actions = {
           IconButton(
-            onClick = viewModel::save
+            onClick = viewModel::save,
           ) {
             Icon(
               imageVector = AppIcons.Check,
@@ -148,9 +150,10 @@ fun CategoryDetailAddItemScreen(
     when (val currentState = state.value) {
       is CategoryDetailAddItemState.Loading -> {
         Box(
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
+          modifier =
+            Modifier
+              .fillMaxSize()
+              .padding(paddingValues),
           contentAlignment = Alignment.Center,
         ) {
           WavyLoadingIndicator()
@@ -165,10 +168,11 @@ fun CategoryDetailAddItemScreen(
           modifier = Modifier.padding(paddingValues),
         ) {
           Column(
-            modifier = Modifier
-              .fillMaxSize()
-              .padding(horizontal = 24.dp)
-              .verticalScroll(rememberScrollState()),
+            modifier =
+              Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
           ) {
             // Product and Item Details Section
@@ -185,9 +189,10 @@ fun CategoryDetailAddItemScreen(
                 trailingIcon = {
                   ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 },
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true),
+                modifier =
+                  Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true),
                 singleLine = true,
               )
 
@@ -217,39 +222,44 @@ fun CategoryDetailAddItemScreen(
               label = { Text(stringResource(R.string.category_detail_add_item_identifier_label)) },
               placeholder = { Text(stringResource(R.string.category_detail_add_item_identifier_placeholder)) },
               isError = formState.value.identifierError != null,
-              supportingText = formState.value.identifierError?.let { error ->
-                { Text(text = error) }
-              },
+              supportingText =
+                formState.value.identifierError?.let { error ->
+                  { Text(text = error) }
+                },
               modifier = Modifier.fillMaxWidth(),
               singleLine = true,
             )
 
             // Expiration date field
             TextField(
-              modifier = Modifier
-                .fillMaxWidth()
-                .clickable { viewModel.onShowDatePicker() },
-              value = formState.value.expirationDateMillis?.let {
-                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                dateFormat.format(Date(it))
-              } ?: "",
+              modifier =
+                Modifier
+                  .fillMaxWidth()
+                  .clickable { viewModel.onShowDatePicker() },
+              value =
+                formState.value.expirationDateMillis?.let {
+                  val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                  dateFormat.format(Date(it))
+                } ?: "",
               onValueChange = { },
               readOnly = true,
               enabled = false,
               label = { Text(stringResource(R.string.category_detail_add_item_expiration_date_label)) },
               placeholder = { Text(stringResource(R.string.category_detail_add_item_expiration_date_placeholder)) },
               isError = formState.value.expirationDateError != null,
-              supportingText = formState.value.expirationDateError?.let { error ->
-                { Text(text = error) }
-              },
+              supportingText =
+                formState.value.expirationDateError?.let { error ->
+                  { Text(text = error) }
+                },
               singleLine = true,
-              colors = TextFieldDefaults.colors(
-                disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
-              ),
+              colors =
+                TextFieldDefaults.colors(
+                  disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                  disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                  disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                  disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                  disabledIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -285,9 +295,10 @@ fun CategoryDetailAddItemScreen(
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 isError = formState.value.packSizeError != null,
-                supportingText = formState.value.packSizeError?.let { error ->
-                  { Text(text = error) }
-                },
+                supportingText =
+                  formState.value.packSizeError?.let { error ->
+                    { Text(text = error) }
+                  },
               )
             }
 
@@ -299,11 +310,12 @@ fun CategoryDetailAddItemScreen(
               verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
               // Use context-aware label based on item type
-              val quantityLabel = if (formState.value.itemType == ItemType.PACK) {
-                stringResource(R.string.category_detail_add_item_quantity_packs_label)
-              } else {
-                stringResource(R.string.category_detail_add_item_quantity_items_label)
-              }
+              val quantityLabel =
+                if (formState.value.itemType == ItemType.PACK) {
+                  stringResource(R.string.category_detail_add_item_quantity_packs_label)
+                } else {
+                  stringResource(R.string.category_detail_add_item_quantity_items_label)
+                }
 
               Text(
                 text = quantityLabel,
@@ -356,9 +368,10 @@ fun CategoryDetailAddItemScreen(
 
       is CategoryDetailAddItemState.Error -> {
         Box(
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
+          modifier =
+            Modifier
+              .fillMaxSize()
+              .padding(paddingValues),
           contentAlignment = Alignment.Center,
         ) {
           Text(

@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.category.create
 
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,13 +30,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
-import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
-import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.topbar.NavigationIcon
-import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
-import org.koin.compose.viewmodel.koinViewModel
 import com.alorma.caducity.feature.tracking.CreateCategoryScreen as CreateCategoryScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
+import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CreateCategoryScreen(
@@ -104,9 +102,10 @@ private fun CreateCategoryPage(
       BottomAppBar {
         ResponsiveCenteredContainer(maxWidth = 600.dp) {
           Row(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 24.dp, vertical = 16.dp),
+            modifier =
+              Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
           ) {
@@ -131,17 +130,18 @@ private fun CreateCategoryPage(
           }
         }
       }
-    }
+    },
   ) { paddingValues ->
     ResponsiveCenteredContainer(
       maxWidth = 600.dp,
       modifier = Modifier.padding(paddingValues),
     ) {
       Column(
-        modifier = Modifier
-          .fillMaxSize()
-          .padding(horizontal = 24.dp)
-          .verticalScroll(rememberScrollState()),
+        modifier =
+          Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
         Spacer(modifier = Modifier.height(8.dp))

@@ -5,22 +5,21 @@ import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.ItemDataSource
 import com.alorma.caducity.domain.model.InstanceActionError
 import com.alorma.caducity.domain.model.NewItem
-import kotlin.time.Instant
 
 class SplitAndFreezeItemUseCase(
   private val itemDataSource: ItemDataSource,
   private val freezeItemUseCase: FreezeItemUseCase,
   private val appClock: AppClock,
 ) {
-
   suspend fun splitAndFreeze(
     categoryId: String,
     itemId: String,
     quantityToFreeze: Int,
   ): Result<Unit> {
     // Get the item to check its pack size
-    val item = itemDataSource.getItem(itemId)
-      ?: return Result.failure(InstanceActionError.InstanceNotFound)
+    val item =
+      itemDataSource.getItem(itemId)
+        ?: return Result.failure(InstanceActionError.InstanceNotFound)
 
     // Validate quantity
     if (quantityToFreeze <= 0) {
@@ -44,12 +43,13 @@ class SplitAndFreezeItemUseCase(
     }
 
     // Split pack: create new item with frozen quantity
-    val frozenItem = NewItem(
-      identifier = item.identifier,
-      productId = item.productId,
-      expirationDate = item.expirationDate,
-      packSize = quantityToFreeze,
-    )
+    val frozenItem =
+      NewItem(
+        identifier = item.identifier,
+        productId = item.productId,
+        expirationDate = item.expirationDate,
+        packSize = quantityToFreeze,
+      )
 
     val newItemId = itemDataSource.addItem(categoryId, frozenItem)
 
@@ -68,8 +68,9 @@ class SplitAndFreezeItemUseCase(
     quantityToUnfreeze: Int,
   ): Result<Unit> {
     // Get the item to check its pack size
-    val item = itemDataSource.getItem(itemId)
-      ?: return Result.failure(InstanceActionError.InstanceNotFound)
+    val item =
+      itemDataSource.getItem(itemId)
+        ?: return Result.failure(InstanceActionError.InstanceNotFound)
 
     // Validate quantity
     if (quantityToUnfreeze <= 0) {
@@ -84,12 +85,13 @@ class SplitAndFreezeItemUseCase(
     }
 
     // Split pack: create new item with unfrozen quantity
-    val unfrozenItem = NewItem(
-      identifier = item.identifier,
-      productId = item.productId,
-      expirationDate = item.expirationDate,
-      packSize = quantityToUnfreeze,
-    )
+    val unfrozenItem =
+      NewItem(
+        identifier = item.identifier,
+        productId = item.productId,
+        expirationDate = item.expirationDate,
+        packSize = quantityToUnfreeze,
+      )
 
     val newItemId = itemDataSource.addItem(categoryId, unfrozenItem)
 

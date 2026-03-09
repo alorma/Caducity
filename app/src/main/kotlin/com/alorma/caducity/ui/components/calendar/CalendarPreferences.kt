@@ -14,23 +14,24 @@ data class CalendarConfigState(
 class CalendarPreferences(
   private val settings: Settings,
 ) {
-
-  val state: MutableStateFlow<CalendarConfigState> = MutableStateFlow(
-    obtainCurrent()
-  )
+  val state: MutableStateFlow<CalendarConfigState> =
+    MutableStateFlow(
+      obtainCurrent(),
+    )
 
   private fun obtainCurrent(): CalendarConfigState {
     val savedValue = settings.getStringOrNull(KEY_FIRST_DAY_OF_WEEK)
-    val firstDayOfWeek = savedValue?.let {
-      try {
-        DayOfWeek.valueOf(it)
-      } catch (_: IllegalArgumentException) {
-        DayOfWeek.MONDAY
-      }
-    } ?: DayOfWeek.MONDAY
+    val firstDayOfWeek =
+      savedValue?.let {
+        try {
+          DayOfWeek.valueOf(it)
+        } catch (_: IllegalArgumentException) {
+          DayOfWeek.MONDAY
+        }
+      } ?: DayOfWeek.MONDAY
 
     return CalendarConfigState(
-      firstDayOfWeek = firstDayOfWeek
+      firstDayOfWeek = firstDayOfWeek,
     )
   }
 
@@ -48,9 +49,10 @@ class CalendarPreferences(
 }
 
 object CalendarPreferencesNoOp {
-  val state: StateFlow<CalendarConfigState> = MutableStateFlow(
-    CalendarConfigState(firstDayOfWeek = DayOfWeek.MONDAY)
-  )
+  val state: StateFlow<CalendarConfigState> =
+    MutableStateFlow(
+      CalendarConfigState(firstDayOfWeek = DayOfWeek.MONDAY),
+    )
 
   fun setFirstDayOfWeek(dayOfWeek: DayOfWeek) {
     // No-op

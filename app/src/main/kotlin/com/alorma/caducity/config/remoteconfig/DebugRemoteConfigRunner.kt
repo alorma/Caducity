@@ -4,32 +4,34 @@ import com.russhwolf.settings.Settings
 
 /**
  * Debug implementation of RemoteConfigRunner.
- * 
+ *
  * This runner allows overriding remote config values for debugging purposes.
  * It checks for saved override values in settings first, and falls back to
  * the default RemoteConfigRunner (Firebase) if no override exists.
- * 
+ *
  * Similar to ThemePreferencesImpl, it uses Settings for persistence.
  */
 class DebugRemoteConfigRunner(
   private val settings: Settings,
-  private val defaultRunner: RemoteConfigRunner
+  private val defaultRunner: RemoteConfigRunner,
 ) : RemoteConfigRunner() {
-  
   companion object {
     private const val KEY_PREFIX = "debug_remote_config_"
     private const val KEY_OVERRIDE_PREFIX = "debug_remote_config_override_"
   }
-  
+
   override suspend fun fetchAndActivate(): Result<Boolean> {
     // Delegate to the default runner for fetching
     return defaultRunner.fetchAndActivate()
   }
-  
-  override fun getBoolean(key: String, defaultValue: Boolean): Boolean {
+
+  override fun getBoolean(
+    key: String,
+    defaultValue: Boolean,
+  ): Boolean {
     val overrideKey = KEY_OVERRIDE_PREFIX + key
     val hasOverride = settings.getBoolean(overrideKey, false)
-    
+
     return if (hasOverride) {
       // Use the debug override value
       val valueKey = KEY_PREFIX + key
@@ -41,20 +43,23 @@ class DebugRemoteConfigRunner(
       defaultRunner.isEnabled(object : RemoteConfig(defaultRunner, key, defaultValue) {})
     }
   }
-  
+
   /**
    * Sets a debug override value for a specific config key.
    * @param key The config key to override.
    * @param value The override value.
    */
-  fun setDebugValue(key: String, value: Boolean) {
+  fun setDebugValue(
+    key: String,
+    value: Boolean,
+  ) {
     val valueKey = KEY_PREFIX + key
     val overrideKey = KEY_OVERRIDE_PREFIX + key
-    
+
     settings.putBoolean(valueKey, value)
     settings.putBoolean(overrideKey, true)
   }
-  
+
   /**
    * Clears the debug override for a specific config key.
    * After this, the config will use the default runner value.
@@ -64,7 +69,7 @@ class DebugRemoteConfigRunner(
     val overrideKey = KEY_OVERRIDE_PREFIX + key
     settings.remove(overrideKey)
   }
-  
+
   /**
    * Checks if a config key has a debug override.
    * @param key The config key to check.
@@ -74,7 +79,7 @@ class DebugRemoteConfigRunner(
     val overrideKey = KEY_OVERRIDE_PREFIX + key
     return settings.getBoolean(overrideKey, false)
   }
-  
+
   /**
    * Clears all debug overrides.
    */

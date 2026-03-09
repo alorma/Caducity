@@ -11,5 +11,5 @@ data class OnboardingState(
   val totalPages: Int = 6 // Pages: 0=Welcome, 1=Features, 2=Permissions, 3=Tutorial, 4=Consent, 5=Disclaimer
   val isFirstPage: Boolean get() = currentPage == 0
   val isLastPage: Boolean get() = currentPage == totalPages - 1
-  val canSkip: Boolean get() = currentPage < 4 // Can skip Welcome, Features, Permissions, Tutorial but not Consent or Disclaimer
+  val canSkip: Boolean get() = currentPage < 4
 }

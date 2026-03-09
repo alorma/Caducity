@@ -14,5 +14,7 @@ trim_trailing_whitespace = true
 ktlint_standard_filename = disabled
 ktlint_standard_function-naming = disabled
 ktlint_standard_no-wildcard-imports = disabled
+ktlint_standard_backing-property-naming = disabled
+ktlint_standard_property-naming = disabled
 max_line_length = 120
 ij_kotlin_imports_layout = *

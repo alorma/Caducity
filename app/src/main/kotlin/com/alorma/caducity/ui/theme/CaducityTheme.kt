@@ -19,24 +19,27 @@ data class CaducityDims(
   val dim5: Float,
 )
 
-internal val LocalDarkMode = staticCompositionLocalOf<Boolean> {
-  error("No dark mode defined")
-}
+internal val LocalDarkMode =
+  staticCompositionLocalOf<Boolean> {
+    error("No dark mode defined")
+  }
 
-internal val LocalExpirationColors = staticCompositionLocalOf<ExpirationColors> {
-  error("No ExpirationColors defined")
-}
+internal val LocalExpirationColors =
+  staticCompositionLocalOf<ExpirationColors> {
+    error("No ExpirationColors defined")
+  }
 
-internal val LocalCaducityDims = staticCompositionLocalOf<CaducityDims> {
-  error("No CaducityDims defined")
-}
+internal val LocalCaducityDims =
+  staticCompositionLocalOf<CaducityDims> {
+    error("No CaducityDims defined")
+  }
 
-internal val LocalThemeTone = staticCompositionLocalOf<ThemeTone> {
-  error("No ThemeTone defined")
-}
+internal val LocalThemeTone =
+  staticCompositionLocalOf<ThemeTone> {
+    error("No ThemeTone defined")
+  }
 
 object CaducityTheme {
-
   val isDark: Boolean
     @Composable
     @ReadOnlyComposable
@@ -48,9 +51,9 @@ object CaducityTheme {
     get() = MaterialTheme.colorScheme
 
   val expirationColors: ExpirationColors
-      @Composable
-      @ReadOnlyComposable
-      get() = LocalExpirationColors.current
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalExpirationColors.current
 
   val shapes: Shapes
     @Composable
@@ -76,5 +79,4 @@ object CaducityTheme {
     @Composable
     @ReadOnlyComposable
     get() = LocalThemeTone.current
-
 }

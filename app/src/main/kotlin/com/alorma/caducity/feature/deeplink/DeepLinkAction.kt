@@ -4,7 +4,6 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 sealed interface DeepLinkAction : Parcelable {
-
   @Parcelize
   data class OpenProduct(
     val categoryId: String,

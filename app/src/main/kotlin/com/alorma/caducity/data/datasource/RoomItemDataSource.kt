@@ -16,10 +16,9 @@ class RoomItemDataSource(
   private val appClock: AppClock,
   private val itemMapper: ItemRoomMapper,
 ) : ItemDataSource {
-
   override suspend fun addItem(
     categoryId: String,
-    item: NewItem
+    item: NewItem,
   ): String {
     val id = UUID.randomUUID().toString()
 
@@ -33,29 +32,33 @@ class RoomItemDataSource(
     itemDao.deleteItem(itemId)
   }
 
-  override suspend fun getItem(itemId: String): Item? {
-    return itemDao.getItem(itemId)?.let { itemEntity ->
+  override suspend fun getItem(itemId: String): Item? =
+    itemDao.getItem(itemId)?.let { itemEntity ->
       itemMapper.toModel(itemEntity)
     }
-  }
 
   override suspend fun markItemAsConsumed(itemId: String) {
     itemDao.getItem(itemId)?.let { item ->
-      val updatedItem = item.copy(
-        consumedDate = appClock.now().toEpochMilliseconds(),
-        pausedDate = null, // Clear frozen state if it was frozen
-        remainingDays = null
-      )
+      val updatedItem =
+        item.copy(
+          consumedDate = appClock.now().toEpochMilliseconds(),
+          pausedDate = null, // Clear frozen state if it was frozen
+          remainingDays = null,
+        )
       itemDao.updateItem(updatedItem)
     }
   }
 
-  override suspend fun freezeItem(itemId: String, remainingDays: Int) {
+  override suspend fun freezeItem(
+    itemId: String,
+    remainingDays: Int,
+  ) {
     itemDao.getItem(itemId)?.let { item ->
-      val updatedItem = item.copy(
-        pausedDate = appClock.now().toEpochMilliseconds(),
-        remainingDays = remainingDays
-      )
+      val updatedItem =
+        item.copy(
+          pausedDate = appClock.now().toEpochMilliseconds(),
+          remainingDays = remainingDays,
+        )
       itemDao.updateItem(updatedItem)
     }
   }
@@ -70,52 +73,64 @@ class RoomItemDataSource(
         val now = appClock.now()
         val newExpirationDate = now.toEpochMilliseconds() + (remainingDays.days.inWholeMilliseconds)
 
-        val updatedItem = item.copy(
-          expirationDate = newExpirationDate,
-          pausedDate = null,
-          remainingDays = null
-        )
+        val updatedItem =
+          item.copy(
+            expirationDate = newExpirationDate,
+            pausedDate = null,
+            remainingDays = null,
+          )
         itemDao.updateItem(updatedItem)
       }
     }
   }
 
-  override suspend fun rescheduleItem(itemId: String, newExpirationDateMillis: Long) {
+  override suspend fun rescheduleItem(
+    itemId: String,
+    newExpirationDateMillis: Long,
+  ) {
     itemDao.getItem(itemId)?.let { item ->
-      val updatedItem = item.copy(
-        expirationDate = newExpirationDateMillis,
-        // Clear frozen state when rescheduling
-        pausedDate = null,
-        remainingDays = null
-      )
+      val updatedItem =
+        item.copy(
+          expirationDate = newExpirationDateMillis,
+          // Clear frozen state when rescheduling
+          pausedDate = null,
+          remainingDays = null,
+        )
       itemDao.updateItem(updatedItem)
     }
   }
 
-  override suspend fun updatePackSize(itemId: String, newPackSize: Int) {
+  override suspend fun updatePackSize(
+    itemId: String,
+    newPackSize: Int,
+  ) {
     itemDao.getItem(itemId)?.let { item ->
       val updatedItem = item.copy(packSize = newPackSize)
       itemDao.updateItem(updatedItem)
     }
   }
 
-  override fun getItemsByProduct(categoryId: String, productId: String?): Flow<List<Item>> {
-    return if (productId != null) {
+  override fun getItemsByProduct(
+    categoryId: String,
+    productId: String?,
+  ): Flow<List<Item>> =
+    if (productId != null) {
       itemDao.getProductItems(categoryId, productId)
     } else {
       itemDao.getStandaloneItems(categoryId)
     }.map { entities ->
       entities.map { entity -> itemMapper.toModel(entity) }
     }
-  }
 
-  override fun getAllItems(): Flow<List<Item>> {
-    return itemDao.getAllItems().map { entities ->
+  override fun getAllItems(): Flow<List<Item>> =
+    itemDao.getAllItems().map { entities ->
       entities.map { entity -> itemMapper.toModel(entity) }
     }
-  }
 
-  override suspend fun clearConsumedItems(categoryId: String, productId: String?) {
+  override suspend fun clearConsumedItems(
+    categoryId: String,
+    productId: String?,
+  ) {
     if (productId != null) {
       itemDao.deleteConsumedItemsByProduct(categoryId, productId)
     } else {
@@ -123,7 +138,10 @@ class RoomItemDataSource(
     }
   }
 
-  override suspend fun clearAllItems(categoryId: String, productId: String?) {
+  override suspend fun clearAllItems(
+    categoryId: String,
+    productId: String?,
+  ) {
     if (productId != null) {
       itemDao.deleteAllItemsByProduct(categoryId, productId)
     } else {

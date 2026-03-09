@@ -32,37 +32,37 @@ class CategoryDetailViewModel(
   private val getProductItemsUseCase: GetProductItemsUseCase,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<CategoryDetailNavigation, CategoryDetailNavigationSideEffect, CategoryDetailSideEffect>() {
-
   // Track the currently selected product ID (null means "Other" tab with standalone items)
   private val _selectedProductId = MutableStateFlow<String?>(null)
 
   // Get the category detail first to determine initial product
   private val categoryDetailFlow = obtainCategoryDetailUseCase.obtain(categoryId)
 
-  private val customState: StateFlow<CategoryDetailState> = combine(
-    categoryDetailFlow,
-    calendarPreferences.state,
-    _selectedProductId.flatMapLatest { productId ->
-      getProductItemsUseCase.obtain(categoryId, productId)
-    }
-  ) { result, calendarConfig, productItems ->
-    result.fold(
-      onSuccess = { category ->
-        categoryDetailMapper.mapToCategoryDetail(
-          categoryDetail = category,
-          firstDayOfWeek = calendarConfig.firstDayOfWeek,
-          productItems = productItems
-        )
+  private val customState: StateFlow<CategoryDetailState> =
+    combine(
+      categoryDetailFlow,
+      calendarPreferences.state,
+      _selectedProductId.flatMapLatest { productId ->
+        getProductItemsUseCase.obtain(categoryId, productId)
       },
-      onFailure = { _ ->
-        CategoryDetailState.Error("Not found")
-      },
+    ) { result, calendarConfig, productItems ->
+      result.fold(
+        onSuccess = { category ->
+          categoryDetailMapper.mapToCategoryDetail(
+            categoryDetail = category,
+            firstDayOfWeek = calendarConfig.firstDayOfWeek,
+            productItems = productItems,
+          )
+        },
+        onFailure = { _ ->
+          CategoryDetailState.Error("Not found")
+        },
+      )
+    }.stateIn(
+      viewModelScope,
+      started = SharingStarted.WhileSubscribed(5000),
+      initialValue = CategoryDetailState.Loading,
     )
-  }.stateIn(
-    viewModelScope,
-    started = SharingStarted.WhileSubscribed(5000),
-    initialValue = CategoryDetailState.Loading
-  )
 
   val state: MutableStateFlow<CategoryDetailState> = MutableStateFlow(CategoryDetailState.Loading)
 
@@ -80,9 +80,11 @@ class CategoryDetailViewModel(
       }
     }
 
-    job = customState.onEach { detailState ->
-      state.emit(detailState)
-    }.launchIn(viewModelScope)
+    job =
+      customState
+        .onEach { detailState ->
+          state.emit(detailState)
+        }.launchIn(viewModelScope)
   }
 
   fun onProductTabChanged(productId: String?) {
@@ -132,8 +134,8 @@ class CategoryDetailViewModel(
         eventTracker.trackAction(
           NavigateToAddItemFromCategoryAction(
             source = navigation.source,
-            hasProduct = navigation.productId != null
-          )
+            hasProduct = navigation.productId != null,
+          ),
         )
         emitNavigationSideEffect(CategoryDetailNavigationSideEffect.NavigateToAddItem(navigation.productId))
       }

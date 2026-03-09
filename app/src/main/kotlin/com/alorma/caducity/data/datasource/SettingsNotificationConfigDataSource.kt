@@ -14,12 +14,12 @@ import kotlinx.datetime.LocalTime
 class SettingsNotificationConfigDataSource(
   private val settings: Settings,
 ) : NotificationConfigDataSource {
-
   override suspend fun getNotificationTime(): LocalTime {
-    val secondsFromMidnight = settings.getInt(
-      key = NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS,
-      defaultValue = NotificationConfigDataSource.DEFAULT_TIME.toSecondOfDay(),
-    )
+    val secondsFromMidnight =
+      settings.getInt(
+        key = NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS,
+        defaultValue = NotificationConfigDataSource.DEFAULT_TIME.toSecondOfDay(),
+      )
     return LocalTime.fromSecondOfDay(secondsFromMidnight)
   }
 
@@ -27,9 +27,7 @@ class SettingsNotificationConfigDataSource(
     settings[NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS] = time.toSecondOfDay()
   }
 
-  override suspend fun isNotificationsEnabled(): Boolean {
-    return settings.getBoolean(NotificationsEnabledKey, false)
-  }
+  override suspend fun isNotificationsEnabled(): Boolean = settings.getBoolean(NotificationsEnabledKey, false)
 
   companion object {
     private const val NotificationsEnabledKey = "notifications_enabled_key"

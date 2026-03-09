@@ -18,43 +18,44 @@ import kotlin.time.Instant
 class FakeTestDataStrategy(
   private val expirationThresholds: ExpirationThresholds,
 ) : FakeDataStrategy {
-
-  override fun getCategoryConfigs(now: Instant): List<CategoryConfig> {
-    return listOf(
+  override fun getCategoryConfigs(now: Instant): List<CategoryConfig> =
+    listOf(
       createDairyCategory(now),
-      createProduceCategory(now)
+      createProduceCategory(now),
     )
-  }
 
-  private fun createDairyCategory(now: Instant): CategoryConfig {
-    return CategoryConfig(
+  private fun createDairyCategory(now: Instant): CategoryConfig =
+    CategoryConfig(
       name = "Dairy",
       description = "Milk, cheese, yogurt and other dairy products",
-      products = listOf(
-        createProductWithAllStatuses("Whole Milk", now),
-        createProductWithAllStatuses("Cheddar Cheese", now)
-      ),
-      standaloneItems = createStandaloneItemsWithAllStatuses("Standalone", now)
+      products =
+        listOf(
+          createProductWithAllStatuses("Whole Milk", now),
+          createProductWithAllStatuses("Cheddar Cheese", now),
+        ),
+      standaloneItems = createStandaloneItemsWithAllStatuses("Standalone", now),
     )
-  }
 
-  private fun createProduceCategory(now: Instant): CategoryConfig {
-    return CategoryConfig(
+  private fun createProduceCategory(now: Instant): CategoryConfig =
+    CategoryConfig(
       name = "Produce",
       description = "Fresh fruits and vegetables",
-      products = listOf(
-        createProductWithAllStatuses("Apples", now),
-        createProductWithAllStatuses("Carrots", now)
-      ),
-      standaloneItems = createStandaloneItemsWithAllStatuses("Standalone", now)
+      products =
+        listOf(
+          createProductWithAllStatuses("Apples", now),
+          createProductWithAllStatuses("Carrots", now),
+        ),
+      standaloneItems = createStandaloneItemsWithAllStatuses("Standalone", now),
     )
-  }
 
   /**
    * Creates a product with 6 items for each status: Fresh, ExpiringSoon, Expired, Frozen, Consumed
    * Total: 30 items (6 per status)
    */
-  private fun createProductWithAllStatuses(productName: String, now: Instant): ProductConfig {
+  private fun createProductWithAllStatuses(
+    productName: String,
+    now: Instant,
+  ): ProductConfig {
     val items = mutableListOf<ItemConfig>()
 
     // Fresh items (beyond the soonExpiringThreshold)
@@ -64,7 +65,7 @@ class FakeTestDataStrategy(
         ItemConfig(
           identifier = "$productName Fresh #${index + 1}",
           expirationDate = now.plus(daysAhead.days),
-        )
+        ),
       )
     }
 
@@ -75,7 +76,7 @@ class FakeTestDataStrategy(
         ItemConfig(
           identifier = "$productName Expiring #${index + 1}",
           expirationDate = now.plus(daysAhead.days),
-        )
+        ),
       )
     }
 
@@ -88,7 +89,7 @@ class FakeTestDataStrategy(
         ItemConfig(
           identifier = "$productName Expired Near #${index + 1}",
           expirationDate = now.minus((index + 1).days), // 1-3 days ago
-        )
+        ),
       )
     }
 
@@ -98,7 +99,7 @@ class FakeTestDataStrategy(
         ItemConfig(
           identifier = "$productName Expired Far #${index + 1}",
           expirationDate = now.minus((consumeThresholdDays + index + 1).days),
-        )
+        ),
       )
     }
 
@@ -109,8 +110,8 @@ class FakeTestDataStrategy(
           identifier = "$productName Frozen #${index + 1}",
           expirationDate = now.plus((5 + index).days),
           shouldFreeze = true,
-          remainingDaysWhenFrozen = 5
-        )
+          remainingDaysWhenFrozen = 5,
+        ),
       )
     }
 
@@ -121,8 +122,8 @@ class FakeTestDataStrategy(
         ItemConfig(
           identifier = "$productName Consumed Near #${index + 1}",
           expirationDate = now.minus((index + 1).days), // 1-3 days ago
-          shouldConsume = true
-        )
+          shouldConsume = true,
+        ),
       )
     }
 
@@ -132,8 +133,8 @@ class FakeTestDataStrategy(
         ItemConfig(
           identifier = "$productName Consumed Far #${index + 1}",
           expirationDate = now.minus((consumeThresholdDays + index + 1).days),
-          shouldConsume = true
-        )
+          shouldConsume = true,
+        ),
       )
     }
 
@@ -143,7 +144,10 @@ class FakeTestDataStrategy(
   /**
    * Creates standalone items (no product) with all statuses
    */
-  private fun createStandaloneItemsWithAllStatuses(prefix: String, now: Instant): List<StandaloneItemConfig> {
+  private fun createStandaloneItemsWithAllStatuses(
+    prefix: String,
+    now: Instant,
+  ): List<StandaloneItemConfig> {
     val items = mutableListOf<StandaloneItemConfig>()
     val consumeThresholdDays = expirationThresholds.consumeExpiredThreshold.inWholeDays
 
@@ -154,7 +158,7 @@ class FakeTestDataStrategy(
         StandaloneItemConfig(
           identifier = "$prefix Fresh #${index + 1}",
           expirationDate = now.plus(daysAhead.days),
-        )
+        ),
       )
     }
 
@@ -164,7 +168,7 @@ class FakeTestDataStrategy(
         StandaloneItemConfig(
           identifier = "$prefix Expiring #${index + 1}",
           expirationDate = now.plus((1 + index).days),
-        )
+        ),
       )
     }
 
@@ -174,7 +178,7 @@ class FakeTestDataStrategy(
         StandaloneItemConfig(
           identifier = "$prefix Expired Near #${index + 1}",
           expirationDate = now.minus((index + 1).days),
-        )
+        ),
       )
     }
 
@@ -184,7 +188,7 @@ class FakeTestDataStrategy(
         StandaloneItemConfig(
           identifier = "$prefix Expired Far #${index + 1}",
           expirationDate = now.minus((consumeThresholdDays + index + 1).days),
-        )
+        ),
       )
     }
 
@@ -195,8 +199,8 @@ class FakeTestDataStrategy(
           identifier = "$prefix Frozen #${index + 1}",
           expirationDate = now.plus((5 + index).days),
           shouldFreeze = true,
-          remainingDaysWhenFrozen = 5
-        )
+          remainingDaysWhenFrozen = 5,
+        ),
       )
     }
 
@@ -206,8 +210,8 @@ class FakeTestDataStrategy(
         StandaloneItemConfig(
           identifier = "$prefix Consumed Near #${index + 1}",
           expirationDate = now.minus((index + 1).days),
-          shouldConsume = true
-        )
+          shouldConsume = true,
+        ),
       )
     }
 
@@ -217,8 +221,8 @@ class FakeTestDataStrategy(
         StandaloneItemConfig(
           identifier = "$prefix Consumed Far #${index + 1}",
           expirationDate = now.minus((consumeThresholdDays + index + 1).days),
-          shouldConsume = true
-        )
+          shouldConsume = true,
+        ),
       )
     }
 

@@ -10,9 +10,9 @@ class DeleteProductUseCase(
 ) {
   suspend fun delete(
     productId: String,
-    strategy: ProductDeletionStrategy = ProductDeletionStrategy.CascadeDelete
-  ): Result<Unit> {
-    return try {
+    strategy: ProductDeletionStrategy = ProductDeletionStrategy.CascadeDelete,
+  ): Result<Unit> =
+    try {
       when (strategy) {
         is ProductDeletionStrategy.CascadeDelete -> {
           // Delete all active items first, then delete the product
@@ -34,9 +34,6 @@ class DeleteProductUseCase(
     } catch (e: Exception) {
       Result.failure(e)
     }
-  }
 
-  suspend fun getActiveItemCount(productId: String): Int {
-    return productDataSource.getActiveItemCount(productId)
-  }
+  suspend fun getActiveItemCount(productId: String): Int = productDataSource.getActiveItemCount(productId)
 }

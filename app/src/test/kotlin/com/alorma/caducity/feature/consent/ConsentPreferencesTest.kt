@@ -4,7 +4,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class ConsentPreferencesTest {
-
   @Test
   fun `default preferences should have all consents denied`() {
     val preferences = ConsentPreferences.DEFAULT

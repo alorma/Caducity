@@ -25,7 +25,7 @@ fun SideEffectHandler(
   val context = LocalContext.current
   val activity = context.findActivity()
   val inAppReviewManager: InAppReviewManager = koinInject()
-  
+
   LaunchedEffect(viewModel) {
     viewModel.sideEffects.collect { effect ->
       when (effect) {
@@ -42,13 +42,14 @@ fun SideEffectHandler(
 
         is FilteredItemsByStatusSideEffect.ShowItemActionsBottomSheet -> {
           // Convert Item domain model to ItemDetailUiModel
-          val itemUiModel = ItemDetailUiModel(
-            id = effect.item.id,
-            expirationDate = effect.item.expirationDate.date(),
-            status = effect.item.status,
-            text = effect.item.identifier,
-            packSize = effect.item.packSize,
-          )
+          val itemUiModel =
+            ItemDetailUiModel(
+              id = effect.item.id,
+              expirationDate = effect.item.expirationDate.date(),
+              status = effect.item.status,
+              text = effect.item.identifier,
+              packSize = effect.item.packSize,
+            )
 
           bottomSheetState.showItemActionsBottomSheet(
             coroutineScope = this,

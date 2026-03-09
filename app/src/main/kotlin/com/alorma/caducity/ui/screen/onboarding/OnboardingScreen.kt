@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -17,6 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alorma.caducity.feature.tracking.OnboardingScreen as OnboardingScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingButtons
@@ -29,8 +30,6 @@ import com.alorma.caducity.ui.screen.onboarding.pages.TutorialOnboardingPage
 import com.alorma.caducity.ui.screen.onboarding.pages.WelcomeOnboardingPage
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
-import com.alorma.caducity.feature.tracking.OnboardingScreen as OnboardingScreenEvent
-import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun OnboardingScreen(
@@ -86,9 +85,10 @@ fun OnboardingScreen(
           },
           onSkip = { viewModel.skipOnboarding() },
           onComplete = { viewModel.acceptDisclaimer() },
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
+          modifier =
+            Modifier
+              .fillMaxWidth()
+              .padding(horizontal = 24.dp, vertical = 16.dp),
         )
       }
     },
@@ -105,20 +105,22 @@ fun OnboardingScreen(
           // Pager
           HorizontalPager(
             state = pagerState,
-            modifier = Modifier
-              .fillMaxWidth()
-              .weight(1f),
+            modifier =
+              Modifier
+                .fillMaxWidth()
+                .weight(1f),
           ) { page ->
             when (page) {
               0 -> WelcomeOnboardingPage()
               1 -> FeaturesOnboardingPage()
               2 -> PermissionsOnboardingPage()
               3 -> TutorialOnboardingPage()
-              4 -> ConsentOnboardingPage(
-                onConsentChanged = { preferences ->
-                  viewModel.setConsentPreferences(preferences)
-                }
-              )
+              4 ->
+                ConsentOnboardingPage(
+                  onConsentChanged = { preferences ->
+                    viewModel.setConsentPreferences(preferences)
+                  },
+                )
               5 -> DisclaimerOnboardingPage()
             }
           }
@@ -127,9 +129,10 @@ fun OnboardingScreen(
           OnboardingPagerIndicator(
             pageCount = state.totalPages,
             currentPage = state.currentPage,
-            modifier = Modifier
-              .align(Alignment.CenterHorizontally)
-              .padding(16.dp),
+            modifier =
+              Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(16.dp),
           )
         }
       }

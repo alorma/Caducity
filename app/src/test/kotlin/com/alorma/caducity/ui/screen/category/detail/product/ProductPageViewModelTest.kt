@@ -40,18 +40,19 @@ import strikt.assertions.isEqualTo
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProductPageViewModelTest {
-
   private val testDispatcher = StandardTestDispatcher()
 
   // Mocks - interfaces only
-  private val appClock: AppClock = mock {
-    on { now() } doReturn now
-  }
+  private val appClock: AppClock =
+    mock {
+      on { now() } doReturn now
+    }
   private val eventTracker: EventTracker = mock()
-  private val expirationThresholds: ExpirationThresholds = mock {
-    on { soonExpiringThreshold } doReturn 3.days
-    on { consumeExpiredThreshold } doReturn 2.days
-  }
+  private val expirationThresholds: ExpirationThresholds =
+    mock {
+      on { soonExpiringThreshold } doReturn 3.days
+      on { consumeExpiredThreshold } doReturn 2.days
+    }
 
   // In-memory storage for fake DAOs
   private val itemsInMemory = MutableStateFlow<List<ItemRoomEntity>>(emptyList())
@@ -62,46 +63,53 @@ class ProductPageViewModelTest {
   private val productDao = FakeProductDao(productsInMemory, itemsInMemory)
 
   // Real mappers
-  private val itemMapper = ItemRoomMapper(
-    appClock = appClock,
-    expirationThresholds = expirationThresholds,
-  )
+  private val itemMapper =
+    ItemRoomMapper(
+      appClock = appClock,
+      expirationThresholds = expirationThresholds,
+    )
 
   private val productMapper = ProductRoomMapper()
 
   // Real data sources
-  private val itemDataSource = RoomItemDataSource(
-    itemDao = itemDao,
-    appClock = appClock,
-    itemMapper = itemMapper,
-  )
+  private val itemDataSource =
+    RoomItemDataSource(
+      itemDao = itemDao,
+      appClock = appClock,
+      itemMapper = itemMapper,
+    )
 
-  private val productDataSource = RoomProductDataSource(
-    productDao = productDao,
-    itemDao = itemDao,
-    appClock = appClock,
-    productMapper = productMapper,
-  )
+  private val productDataSource =
+    RoomProductDataSource(
+      productDao = productDao,
+      itemDao = itemDao,
+      appClock = appClock,
+      productMapper = productMapper,
+    )
 
   // Real use cases
-  private val getProductItemsUseCase = GetProductItemsUseCase(
-    itemDataSource = itemDataSource,
-    appClock = appClock,
-    expirationThresholds = expirationThresholds,
-  )
+  private val getProductItemsUseCase =
+    GetProductItemsUseCase(
+      itemDataSource = itemDataSource,
+      appClock = appClock,
+      expirationThresholds = expirationThresholds,
+    )
 
-  private val getCategoryProductsUseCase = GetCategoryProductsUseCase(
-    productDataSource = productDataSource,
-  )
+  private val getCategoryProductsUseCase =
+    GetCategoryProductsUseCase(
+      productDataSource = productDataSource,
+    )
 
-  private val deleteProductUseCase = DeleteProductUseCase(
-    productDataSource = productDataSource,
-    itemDao = itemDao,
-  )
+  private val deleteProductUseCase =
+    DeleteProductUseCase(
+      productDataSource = productDataSource,
+      itemDao = itemDao,
+    )
 
-  private val clearProductItemsUseCase = ClearProductItemsUseCase(
-    itemDataSource = itemDataSource,
-  )
+  private val clearProductItemsUseCase =
+    ClearProductItemsUseCase(
+      itemDataSource = itemDataSource,
+    )
 
   private val productPageMapper = ProductPageMapper(appClock = appClock)
 
@@ -119,13 +127,14 @@ class ProductPageViewModelTest {
   }
 
   private fun createViewModel(
-    productTab: CategoryProductTabUiModel = CategoryProductTabUiModel(
-      id = testProductId,
-      categoryId = testCategoryId,
-      name = "Test Product",
-    ),
-  ): ProductPageViewModel {
-    return ProductPageViewModel(
+    productTab: CategoryProductTabUiModel =
+      CategoryProductTabUiModel(
+        id = testProductId,
+        categoryId = testCategoryId,
+        name = "Test Product",
+      ),
+  ): ProductPageViewModel =
+    ProductPageViewModel(
       productTab = productTab,
       getCategoryProductsUseCase = getCategoryProductsUseCase,
       getProductItemsUseCase = getProductItemsUseCase,
@@ -134,15 +143,15 @@ class ProductPageViewModelTest {
       clearProductItemsUseCase = clearProductItemsUseCase,
       eventTracker = eventTracker,
     )
-  }
 
   private fun insertTestProduct(): String {
-    val product = ProductRoomEntity(
-      id = UUID.randomUUID().toString(),
-      categoryId = testCategoryId,
-      name = "Test Product",
-      createdAt = now.toEpochMilliseconds(),
-    )
+    val product =
+      ProductRoomEntity(
+        id = UUID.randomUUID().toString(),
+        categoryId = testCategoryId,
+        name = "Test Product",
+        createdAt = now.toEpochMilliseconds(),
+      )
     productsInMemory.value += product
     return product.id
   }
@@ -154,322 +163,345 @@ class ProductPageViewModelTest {
     packSize: Int? = null,
   ): String {
     val id = UUID.randomUUID().toString()
-    val item = ItemRoomEntity(
-      id = id,
-      categoryId = testCategoryId,
-      identifier = identifier,
-      productId = productId,
-      expirationDate = expirationDate.toEpochMilliseconds(),
-      consumedDate = null,
-      pausedDate = null,
-      remainingDays = null,
-      packSize = packSize,
-    )
+    val item =
+      ItemRoomEntity(
+        id = id,
+        categoryId = testCategoryId,
+        identifier = identifier,
+        productId = productId,
+        expirationDate = expirationDate.toEpochMilliseconds(),
+        consumedDate = null,
+        pausedDate = null,
+        remainingDays = null,
+        packSize = packSize,
+      )
     itemsInMemory.value += item
     return id
   }
 
   @Test
-  fun `initial state is Loading`() = runTest {
-    // Given
-    insertTestProduct()
+  fun `initial state is Loading`() =
+    runTest {
+      // Given
+      insertTestProduct()
 
-    // When
-    val viewModel = createViewModel()
+      // When
+      val viewModel = createViewModel()
 
-    // Then
-    expectThat(viewModel.state.value)
-      .isA<ProductPageState.Loading>()
-  }
+      // Then
+      expectThat(viewModel.state.value)
+        .isA<ProductPageState.Loading>()
+    }
 
   @Test
-  fun `state updates to Success with empty items`() = runTest {
-    // Given
-    insertTestProduct()
+  fun `state updates to Success with empty items`() =
+    runTest {
+      // Given
+      insertTestProduct()
 
-    // When
-    val viewModel = createViewModel()
+      // When
+      val viewModel = createViewModel()
 
-    // Then
-    viewModel.state.test {
-      // Skip the initial Loading state
-      expectThat(awaitItem()).isA<ProductPageState.Loading>()
+      // Then
+      viewModel.state.test {
+        // Skip the initial Loading state
+        expectThat(awaitItem()).isA<ProductPageState.Loading>()
 
-      // Advance the dispatcher to process the load
+        // Advance the dispatcher to process the load
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Now check the Success state
+        val state = awaitItem()
+        expectThat(state).isA<ProductPageState.Success>()
+        val successState = state as ProductPageState.Success
+        expectThat(successState.datedItemsGroups.size).isEqualTo(0)
+        expectThat(successState.frozenItems.size).isEqualTo(0)
+        expectThat(successState.consumedItems.size).isEqualTo(0)
+      }
+    }
+
+  @Test
+  fun `state updates to Success with items`() =
+    runTest {
+      // Given
+      val productId = insertTestProduct()
+      insertTestItem(productId = productId, identifier = "Item 1")
+      insertTestItem(productId = productId, identifier = "Item 2")
+
+      // When
+      val viewModel =
+        createViewModel(
+          CategoryProductTabUiModel(
+            id = productId,
+            categoryId = testCategoryId,
+            name = "Test Product",
+          ),
+        )
+
+      // Then
+      viewModel.state.test {
+        // Skip the initial Loading state
+        expectThat(awaitItem()).isA<ProductPageState.Loading>()
+
+        // Advance the dispatcher to process the load
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Now check the Success state with items
+        val state = awaitItem()
+        expectThat(state).isA<ProductPageState.Success>()
+        val successState = state as ProductPageState.Success
+        expectThat(successState.datedItemsGroups.size).isEqualTo(1)
+        expectThat(successState.datedItemsGroups[0].items.size).isEqualTo(2)
+      }
+    }
+
+  @Test
+  fun `onAddItemClick emits navigation side effect`() =
+    runTest {
+      // Given
+      val productId = insertTestProduct()
+
+      val viewModel =
+        createViewModel(
+          CategoryProductTabUiModel(
+            id = productId,
+            categoryId = testCategoryId,
+            name = "Test Product",
+          ),
+        )
       testDispatcher.scheduler.advanceUntilIdle()
 
-      // Now check the Success state
-      val state = awaitItem()
-      expectThat(state).isA<ProductPageState.Success>()
-      val successState = state as ProductPageState.Success
-      expectThat(successState.datedItemsGroups.size).isEqualTo(0)
-      expectThat(successState.frozenItems.size).isEqualTo(0)
-      expectThat(successState.consumedItems.size).isEqualTo(0)
+      // When
+      viewModel.navigationSideEffects.test {
+        viewModel.onAddItemClick()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        val sideEffect = awaitItem()
+        expectThat(sideEffect).isA<ProductPageNavigationSideEffect.NavigateToAddItem>()
+        val navEffect = sideEffect as ProductPageNavigationSideEffect.NavigateToAddItem
+        expectThat(navEffect.categoryId).isEqualTo(testCategoryId)
+        expectThat(navEffect.productId).isEqualTo(productId)
+      }
     }
-  }
 
   @Test
-  fun `state updates to Success with items`() = runTest {
-    // Given
-    val productId = insertTestProduct()
-    insertTestItem(productId = productId, identifier = "Item 1")
-    insertTestItem(productId = productId, identifier = "Item 2")
+  fun `onAddItemClick tracks action`() =
+    runTest {
+      // Given
+      val productId = insertTestProduct()
 
-    // When
-    val viewModel = createViewModel(
-      CategoryProductTabUiModel(
-        id = productId,
-        categoryId = testCategoryId,
-        name = "Test Product",
-      )
-    )
-
-    // Then
-    viewModel.state.test {
-      // Skip the initial Loading state
-      expectThat(awaitItem()).isA<ProductPageState.Loading>()
-
-      // Advance the dispatcher to process the load
+      val viewModel =
+        createViewModel(
+          CategoryProductTabUiModel(
+            id = productId,
+            categoryId = testCategoryId,
+            name = "Test Product",
+          ),
+        )
       testDispatcher.scheduler.advanceUntilIdle()
 
-      // Now check the Success state with items
-      val state = awaitItem()
-      expectThat(state).isA<ProductPageState.Success>()
-      val successState = state as ProductPageState.Success
-      expectThat(successState.datedItemsGroups.size).isEqualTo(1)
-      expectThat(successState.datedItemsGroups[0].items.size).isEqualTo(2)
-    }
-  }
-
-  @Test
-  fun `onAddItemClick emits navigation side effect`() = runTest {
-    // Given
-    val productId = insertTestProduct()
-
-    val viewModel = createViewModel(
-      CategoryProductTabUiModel(
-        id = productId,
-        categoryId = testCategoryId,
-        name = "Test Product",
-      )
-    )
-    testDispatcher.scheduler.advanceUntilIdle()
-
-    // When
-    viewModel.navigationSideEffects.test {
+      // When
       viewModel.onAddItemClick()
       testDispatcher.scheduler.advanceUntilIdle()
 
       // Then
-      val sideEffect = awaitItem()
-      expectThat(sideEffect).isA<ProductPageNavigationSideEffect.NavigateToAddItem>()
-      val navEffect = sideEffect as ProductPageNavigationSideEffect.NavigateToAddItem
-      expectThat(navEffect.categoryId).isEqualTo(testCategoryId)
-      expectThat(navEffect.productId).isEqualTo(productId)
+      verify(eventTracker).trackAction(any())
     }
-  }
 
   @Test
-  fun `onAddItemClick tracks action`() = runTest {
-    // Given
-    val productId = insertTestProduct()
+  fun `onDeleteProductClick with no items shows simple delete dialog`() =
+    runTest {
+      // Given
+      val productId = insertTestProduct()
 
-    val viewModel = createViewModel(
-      CategoryProductTabUiModel(
-        id = productId,
-        categoryId = testCategoryId,
-        name = "Test Product",
-      )
-    )
-    testDispatcher.scheduler.advanceUntilIdle()
-
-    // When
-    viewModel.onAddItemClick()
-    testDispatcher.scheduler.advanceUntilIdle()
-
-    // Then
-    verify(eventTracker).trackAction(any())
-  }
-
-  @Test
-  fun `onDeleteProductClick with no items shows simple delete dialog`() = runTest {
-    // Given
-    val productId = insertTestProduct()
-
-    val viewModel = createViewModel(
-      CategoryProductTabUiModel(
-        id = productId,
-        categoryId = testCategoryId,
-        name = "Test Product",
-      )
-    )
-    testDispatcher.scheduler.advanceUntilIdle()
-
-    // When
-    viewModel.sideEffects.test {
-      viewModel.onDeleteProductClick()
+      val viewModel =
+        createViewModel(
+          CategoryProductTabUiModel(
+            id = productId,
+            categoryId = testCategoryId,
+            name = "Test Product",
+          ),
+        )
       testDispatcher.scheduler.advanceUntilIdle()
 
-      // Then
-      val sideEffect = awaitItem()
-      expectThat(sideEffect).isA<ProductPageSideEffect.ShowDeleteProductDialog>()
+      // When
+      viewModel.sideEffects.test {
+        viewModel.onDeleteProductClick()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        val sideEffect = awaitItem()
+        expectThat(sideEffect).isA<ProductPageSideEffect.ShowDeleteProductDialog>()
+      }
     }
-  }
 
   @Test
-  fun `onDeleteProductClick with items shows dialog with options`() = runTest {
-    // Given
-    val productId = insertTestProduct()
-    insertTestItem(productId = productId)
-    insertTestItem(productId = productId)
+  fun `onDeleteProductClick with items shows dialog with options`() =
+    runTest {
+      // Given
+      val productId = insertTestProduct()
+      insertTestItem(productId = productId)
+      insertTestItem(productId = productId)
 
-    // Create another product
-    val otherProduct = ProductRoomEntity(
-      id = UUID.randomUUID().toString(),
-      categoryId = testCategoryId,
-      name = "Other Product",
-      createdAt = now.toEpochMilliseconds(),
-    )
-    productsInMemory.value += otherProduct
+      // Create another product
+      val otherProduct =
+        ProductRoomEntity(
+          id = UUID.randomUUID().toString(),
+          categoryId = testCategoryId,
+          name = "Other Product",
+          createdAt = now.toEpochMilliseconds(),
+        )
+      productsInMemory.value += otherProduct
 
-    val viewModel = createViewModel(
-      CategoryProductTabUiModel(
-        id = productId,
-        categoryId = testCategoryId,
-        name = "Test Product",
-      )
-    )
-    testDispatcher.scheduler.advanceUntilIdle()
-
-    // When
-    viewModel.sideEffects.test {
-      viewModel.onDeleteProductClick()
+      val viewModel =
+        createViewModel(
+          CategoryProductTabUiModel(
+            id = productId,
+            categoryId = testCategoryId,
+            name = "Test Product",
+          ),
+        )
       testDispatcher.scheduler.advanceUntilIdle()
 
-      // Then
-      val sideEffect = awaitItem()
-      expectThat(sideEffect).isA<ProductPageSideEffect.ShowDeleteProductWithItemsDialog>()
-      val dialog = sideEffect as ProductPageSideEffect.ShowDeleteProductWithItemsDialog
-      expectThat(dialog.activeItemCount).isEqualTo(2)
-      expectThat(dialog.availableProducts.size).isEqualTo(1)
+      // When
+      viewModel.sideEffects.test {
+        viewModel.onDeleteProductClick()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        val sideEffect = awaitItem()
+        expectThat(sideEffect).isA<ProductPageSideEffect.ShowDeleteProductWithItemsDialog>()
+        val dialog = sideEffect as ProductPageSideEffect.ShowDeleteProductWithItemsDialog
+        expectThat(dialog.activeItemCount).isEqualTo(2)
+        expectThat(dialog.availableProducts.size).isEqualTo(1)
+      }
     }
-  }
 
   @Test
-  fun `onDeleteProduct success emits success side effect`() = runTest {
-    // Given
-    val productId = insertTestProduct()
+  fun `onDeleteProduct success emits success side effect`() =
+    runTest {
+      // Given
+      val productId = insertTestProduct()
 
-    val viewModel = createViewModel(
-      CategoryProductTabUiModel(
-        id = productId,
-        categoryId = testCategoryId,
-        name = "Test Product",
-      )
-    )
-    testDispatcher.scheduler.advanceUntilIdle()
-
-    // When
-    viewModel.sideEffects.test {
-      viewModel.onDeleteProduct(productId, ProductDeletionStrategy.CascadeDelete)
+      val viewModel =
+        createViewModel(
+          CategoryProductTabUiModel(
+            id = productId,
+            categoryId = testCategoryId,
+            name = "Test Product",
+          ),
+        )
       testDispatcher.scheduler.advanceUntilIdle()
 
-      // Then
-      val sideEffect = awaitItem()
-      expectThat(sideEffect).isA<ProductPageSideEffect.ProductDeleted>()
+      // When
+      viewModel.sideEffects.test {
+        viewModel.onDeleteProduct(productId, ProductDeletionStrategy.CascadeDelete)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        val sideEffect = awaitItem()
+        expectThat(sideEffect).isA<ProductPageSideEffect.ProductDeleted>()
+      }
     }
-  }
 
   @Test
-  fun `onClearProductItemsClick emits dialog side effect`() = runTest {
-    // Given
-    val productId = insertTestProduct()
+  fun `onClearProductItemsClick emits dialog side effect`() =
+    runTest {
+      // Given
+      val productId = insertTestProduct()
 
-    val viewModel = createViewModel(
-      CategoryProductTabUiModel(
-        id = productId,
-        categoryId = testCategoryId,
-        name = "Test Product",
-      )
-    )
-    testDispatcher.scheduler.advanceUntilIdle()
-
-    // When
-    viewModel.sideEffects.test {
-      viewModel.onClearProductItemsClick()
-
-      // Then
-      val sideEffect = awaitItem()
-      expectThat(sideEffect).isA<ProductPageSideEffect.ShowClearProductItemsDialog>()
-    }
-  }
-
-  @Test
-  fun `onClearProductItems with clearAll true clears all items`() = runTest {
-    // Given
-    val productId = insertTestProduct()
-    insertTestItem(productId = productId)
-    insertTestItem(productId = productId)
-
-    val viewModel = createViewModel(
-      CategoryProductTabUiModel(
-        id = productId,
-        categoryId = testCategoryId,
-        name = "Test Product",
-      )
-    )
-    testDispatcher.scheduler.advanceUntilIdle()
-
-    // When
-    viewModel.sideEffects.test {
-      viewModel.onClearProductItems(productId, clearAll = true)
+      val viewModel =
+        createViewModel(
+          CategoryProductTabUiModel(
+            id = productId,
+            categoryId = testCategoryId,
+            name = "Test Product",
+          ),
+        )
       testDispatcher.scheduler.advanceUntilIdle()
 
-      // Then
-      val sideEffect = awaitItem()
-      expectThat(sideEffect).isA<ProductPageSideEffect.ItemsCleared>()
-    }
+      // When
+      viewModel.sideEffects.test {
+        viewModel.onClearProductItemsClick()
 
-    // Verify items were cleared
-    val items = itemDataSource.getItemsByProduct(testCategoryId, productId).first()
-    expectThat(items.size).isEqualTo(0)
-  }
+        // Then
+        val sideEffect = awaitItem()
+        expectThat(sideEffect).isA<ProductPageSideEffect.ShowClearProductItemsDialog>()
+      }
+    }
 
   @Test
-  fun `onClearProductItems with clearAll false clears only consumed items`() = runTest {
-    // Given
-    val productId = insertTestProduct()
-    val item1Id = insertTestItem(productId = productId)
-    insertTestItem(productId = productId)
+  fun `onClearProductItems with clearAll true clears all items`() =
+    runTest {
+      // Given
+      val productId = insertTestProduct()
+      insertTestItem(productId = productId)
+      insertTestItem(productId = productId)
 
-    // Mark one item as consumed
-    itemsInMemory.value = itemsInMemory.value.map {
-      if (it.id == item1Id) it.copy(consumedDate = now.toEpochMilliseconds()) else it
-    }
-
-    val viewModel = createViewModel(
-      CategoryProductTabUiModel(
-        id = productId,
-        categoryId = testCategoryId,
-        name = "Test Product",
-      )
-    )
-    testDispatcher.scheduler.advanceUntilIdle()
-
-    // When
-    viewModel.sideEffects.test {
-      viewModel.onClearProductItems(productId, clearAll = false)
+      val viewModel =
+        createViewModel(
+          CategoryProductTabUiModel(
+            id = productId,
+            categoryId = testCategoryId,
+            name = "Test Product",
+          ),
+        )
       testDispatcher.scheduler.advanceUntilIdle()
 
-      // Then
-      val sideEffect = awaitItem()
-      expectThat(sideEffect).isA<ProductPageSideEffect.ItemsCleared>()
+      // When
+      viewModel.sideEffects.test {
+        viewModel.onClearProductItems(productId, clearAll = true)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        val sideEffect = awaitItem()
+        expectThat(sideEffect).isA<ProductPageSideEffect.ItemsCleared>()
+      }
+
+      // Verify items were cleared
+      val items = itemDataSource.getItemsByProduct(testCategoryId, productId).first()
+      expectThat(items.size).isEqualTo(0)
     }
 
-    // Verify only consumed items were cleared (1 active item should remain)
-    val items = itemDataSource.getItemsByProduct(testCategoryId, productId).first()
-    expectThat(items.size).isEqualTo(1)
-  }
+  @Test
+  fun `onClearProductItems with clearAll false clears only consumed items`() =
+    runTest {
+      // Given
+      val productId = insertTestProduct()
+      val item1Id = insertTestItem(productId = productId)
+      insertTestItem(productId = productId)
+
+      // Mark one item as consumed
+      itemsInMemory.value =
+        itemsInMemory.value.map {
+          if (it.id == item1Id) it.copy(consumedDate = now.toEpochMilliseconds()) else it
+        }
+
+      val viewModel =
+        createViewModel(
+          CategoryProductTabUiModel(
+            id = productId,
+            categoryId = testCategoryId,
+            name = "Test Product",
+          ),
+        )
+      testDispatcher.scheduler.advanceUntilIdle()
+
+      // When
+      viewModel.sideEffects.test {
+        viewModel.onClearProductItems(productId, clearAll = false)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Then
+        val sideEffect = awaitItem()
+        expectThat(sideEffect).isA<ProductPageSideEffect.ItemsCleared>()
+      }
+
+      // Verify only consumed items were cleared (1 active item should remain)
+      val items = itemDataSource.getItemsByProduct(testCategoryId, productId).first()
+      expectThat(items.size).isEqualTo(1)
+    }
 
   companion object {
     // Test data

@@ -20,59 +20,61 @@ class ObtainDashboardUseCase(
   private val categoryDataSource: CategoryDataSource,
   private val expirationThresholds: ExpirationThresholds,
 ) {
-
-  fun obtain(): Flow<DashboardData> {
-    return categoryDataSource.getCategories().map { categories ->
+  fun obtain(): Flow<DashboardData> =
+    categoryDataSource.getCategories().map { categories ->
       // Collect all non-consumed items from all categories for summary (including frozen)
-      val allActiveItems = categories.flatMap { categoryWithItems ->
-        categoryWithItems.products.flatMap { product -> product.items } + categoryWithItems.standaloneItems
-      }.filter { it.status != ItemStatus.Consumed }
+      val allActiveItems =
+        categories
+          .flatMap { categoryWithItems ->
+            categoryWithItems.products.flatMap { product -> product.items } + categoryWithItems.standaloneItems
+          }.filter { it.status != ItemStatus.Consumed }
 
       // Calculate summary counts by status
-      val statusCounts = allActiveItems
-        .groupBy { it.status }
-        .mapValues { (_, items) -> items.size }
+      val statusCounts =
+        allActiveItems
+          .groupBy { it.status }
+          .mapValues { (_, items) -> items.size }
 
       val summary = DashboardSummary(statusCounts = statusCounts)
 
       // Build dashboard categories with calendar data (no item details)
-      val dashboardCategories = categories.map { categoryWithItems ->
-        // Get all active items for this category
-        val categoryActiveItems = buildList {
-          addAll(categoryWithItems.products.flatMap { it.items })
-          addAll(categoryWithItems.standaloneItems)
-        }.filter { it.status != ItemStatus.Frozen && it.status != ItemStatus.Consumed }
+      val dashboardCategories =
+        categories.map { categoryWithItems ->
+          // Get all active items for this category
+          val categoryActiveItems =
+            buildList {
+              addAll(categoryWithItems.products.flatMap { it.items })
+              addAll(categoryWithItems.standaloneItems)
+            }.filter { it.status != ItemStatus.Frozen && it.status != ItemStatus.Consumed }
 
-        // Group items by date for calendar - only dates, statuses, and counts
-        val dateStatuses = categoryActiveItems
-          .groupBy<_, LocalDate> { it.expirationDate.date() }
-          .map { (date, items) ->
-            DateStatus(
-              date = date,
-              status = calculateStatus(date),
-              itemCount = items.size,
-            )
-          }
-          .sortedBy { it.date }
+          // Group items by date for calendar - only dates, statuses, and counts
+          val dateStatuses =
+            categoryActiveItems
+              .groupBy<_, LocalDate> { it.expirationDate.date() }
+              .map { (date, items) ->
+                DateStatus(
+                  date = date,
+                  status = calculateStatus(date),
+                  itemCount = items.size,
+                )
+              }.sortedBy { it.date }
 
-        DashboardCategory(
-          category = categoryWithItems.category,
-          calendarData = CalendarData(dateStatuses = dateStatuses),
-        )
-      }
+          DashboardCategory(
+            category = categoryWithItems.category,
+            calendarData = CalendarData(dateStatuses = dateStatuses),
+          )
+        }
 
       DashboardData(
         summary = summary,
         categories = dashboardCategories,
       )
     }
-  }
 
-  private fun calculateStatus(expirationDate: LocalDate): ItemStatus {
-    return ItemStatus.calculateStatus(
+  private fun calculateStatus(expirationDate: LocalDate): ItemStatus =
+    ItemStatus.calculateStatus(
       expirationDate = expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault()),
       now = appClock.now(),
       soonExpiringThreshold = expirationThresholds.soonExpiringThreshold,
     )
-  }
 }

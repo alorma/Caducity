@@ -9,7 +9,6 @@ class SplitAndConsumeItemUseCase(
   private val itemDataSource: ItemDataSource,
   private val consumeItemUseCase: ConsumeItemUseCase,
 ) {
-
   suspend fun splitAndConsume(
     categoryId: String,
     itemId: String,
@@ -17,8 +16,9 @@ class SplitAndConsumeItemUseCase(
     forceConsume: Boolean = false,
   ): Result<Unit> {
     // Get the item to check its status and pack size
-    val item = itemDataSource.getItem(itemId)
-      ?: return Result.failure(InstanceActionError.InstanceNotFound)
+    val item =
+      itemDataSource.getItem(itemId)
+        ?: return Result.failure(InstanceActionError.InstanceNotFound)
 
     // Validate quantity
     if (quantityToConsume <= 0) {
@@ -41,12 +41,13 @@ class SplitAndConsumeItemUseCase(
     }
 
     // Split pack: create new item with consumed quantity
-    val consumedItem = NewItem(
-      identifier = item.identifier,
-      productId = item.productId,
-      expirationDate = item.expirationDate,
-      packSize = quantityToConsume,
-    )
+    val consumedItem =
+      NewItem(
+        identifier = item.identifier,
+        productId = item.productId,
+        expirationDate = item.expirationDate,
+        packSize = quantityToConsume,
+      )
 
     val newItemId = itemDataSource.addItem(categoryId, consumedItem)
 

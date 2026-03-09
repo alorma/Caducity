@@ -7,14 +7,14 @@ class SplitAndDeleteItemUseCase(
   private val itemDataSource: ItemDataSource,
   private val deleteItemUseCase: DeleteItemUseCase,
 ) {
-
   suspend fun splitAndDelete(
     itemId: String,
     quantityToDelete: Int,
   ): Result<Unit> {
     // Get the item to check its pack size
-    val item = itemDataSource.getItem(itemId)
-      ?: return Result.failure(InstanceActionError.InstanceNotFound)
+    val item =
+      itemDataSource.getItem(itemId)
+        ?: return Result.failure(InstanceActionError.InstanceNotFound)
 
     // Validate quantity
     if (quantityToDelete <= 0) {

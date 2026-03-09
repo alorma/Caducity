@@ -7,51 +7,63 @@ import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.theme.CaducityTheme
 
 sealed class AppFeedbackType {
-  data class Status(val status: ItemStatus) : AppFeedbackType()
+  data class Status(
+    val status: ItemStatus,
+  ) : AppFeedbackType()
+
   data object Success : AppFeedbackType()
+
   data object Info : AppFeedbackType()
+
   data object Error : AppFeedbackType()
 }
 
+@Suppress("ContentEmission")
+@Composable
+fun AppFeedbackType.vibrantColors(): ContainerColors =
+  when (this) {
+    is AppFeedbackType.Status -> ExpirationDefaults.getVibrantColors(status)
+
+    AppFeedbackType.Success ->
+      ContainerColors(
+        container = CaducityTheme.colorScheme.primary,
+        onContainer = CaducityTheme.colorScheme.onPrimary,
+      )
+
+    AppFeedbackType.Info ->
+      ContainerColors(
+        container = CaducityTheme.colorScheme.inverseSurface,
+        onContainer = CaducityTheme.colorScheme.inverseOnSurface,
+      )
+
+    AppFeedbackType.Error ->
+      ContainerColors(
+        container = CaducityTheme.colorScheme.error,
+        onContainer = CaducityTheme.colorScheme.onError,
+      )
+  }
 
 @Suppress("ContentEmission")
 @Composable
-fun AppFeedbackType.vibrantColors(): ContainerColors = when (this) {
-  is AppFeedbackType.Status -> ExpirationDefaults.getVibrantColors(status)
+fun AppFeedbackType.softColors(): ContainerColors =
+  when (this) {
+    is AppFeedbackType.Status -> ExpirationDefaults.getSoftColors(status)
 
-  AppFeedbackType.Success -> ContainerColors(
-    container = CaducityTheme.colorScheme.primary,
-    onContainer = CaducityTheme.colorScheme.onPrimary,
-  )
+    AppFeedbackType.Success ->
+      ContainerColors(
+        container = CaducityTheme.colorScheme.primaryContainer,
+        onContainer = CaducityTheme.colorScheme.onPrimaryContainer,
+      )
 
-  AppFeedbackType.Info -> ContainerColors(
-    container = CaducityTheme.colorScheme.inverseSurface,
-    onContainer = CaducityTheme.colorScheme.inverseOnSurface,
-  )
+    AppFeedbackType.Info ->
+      ContainerColors(
+        container = CaducityTheme.colorScheme.surface,
+        onContainer = CaducityTheme.colorScheme.onSurface,
+      )
 
-  AppFeedbackType.Error -> ContainerColors(
-    container = CaducityTheme.colorScheme.error,
-    onContainer = CaducityTheme.colorScheme.onError,
-  )
-}
-
-@Suppress("ContentEmission")
-@Composable
-fun AppFeedbackType.softColors(): ContainerColors = when (this) {
-  is AppFeedbackType.Status -> ExpirationDefaults.getSoftColors(status)
-
-  AppFeedbackType.Success -> ContainerColors(
-    container = CaducityTheme.colorScheme.primaryContainer,
-    onContainer = CaducityTheme.colorScheme.onPrimaryContainer,
-  )
-
-  AppFeedbackType.Info -> ContainerColors(
-    container = CaducityTheme.colorScheme.surface,
-    onContainer = CaducityTheme.colorScheme.onSurface,
-  )
-
-  AppFeedbackType.Error -> ContainerColors(
-    container = CaducityTheme.colorScheme.errorContainer,
-    onContainer = CaducityTheme.colorScheme.onErrorContainer,
-  )
-}
+    AppFeedbackType.Error ->
+      ContainerColors(
+        container = CaducityTheme.colorScheme.errorContainer,
+        onContainer = CaducityTheme.colorScheme.onErrorContainer,
+      )
+  }

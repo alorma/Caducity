@@ -72,7 +72,7 @@ fun PrivacySettingsContent(
       ) {
         item {
           StyledSettingsGroup(
-            title = { Text(stringResource(R.string.settings_privacy_title)) }
+            title = { Text(stringResource(R.string.settings_privacy_title)) },
           ) {
             StyledSettingsSwitchCard(
               title = stringResource(R.string.settings_privacy_analytics_title),

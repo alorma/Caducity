@@ -6,5 +6,7 @@ import kotlinx.serialization.Serializable
 
 sealed interface FilteredItemsRoute : NavKey {
   @Serializable
-  data class ByStatus(val status: ItemStatus) : FilteredItemsRoute
+  data class ByStatus(
+    val status: ItemStatus,
+  ) : FilteredItemsRoute
 }

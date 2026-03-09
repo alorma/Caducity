@@ -13,29 +13,29 @@ import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val MIGRATION_1_2 = object : Migration(1, 2) {
-  override fun migrate(db: SupportSQLiteDatabase) {
-    // Add packSize column to items table
-    db.execSQL("ALTER TABLE items ADD COLUMN packSize INTEGER")
-  }
-}
-
-val platformModule: Module = module {
-  includes(notificationsModule)
-
-  single {
-    Room.databaseBuilder(
-      androidContext(),
-      AppDatabase::class.java,
-      "caducity_database.db"
-    )
-      .addMigrations(MIGRATION_1_2)
-      .build()
+val MIGRATION_1_2 =
+  object : Migration(1, 2) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+      // Add packSize column to items table
+      db.execSQL("ALTER TABLE items ADD COLUMN packSize INTEGER")
+    }
   }
 
+val platformModule: Module =
+  module {
+    includes(notificationsModule)
 
-  singleOf(::AndroidDebugModeProvider) {
-    bind<DebugModeProvider>()
+    single {
+      Room
+        .databaseBuilder(
+          androidContext(),
+          AppDatabase::class.java,
+          "caducity_database.db",
+        ).addMigrations(MIGRATION_1_2)
+        .build()
+    }
+
+    singleOf(::AndroidDebugModeProvider) {
+      bind<DebugModeProvider>()
+    }
   }
-
-}

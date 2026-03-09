@@ -9,9 +9,10 @@ import androidx.compose.ui.Modifier
 @Composable
 fun FullscreenLoading(modifier: Modifier = Modifier) {
   Box(
-    modifier = Modifier
-      .fillMaxSize()
-      .then(modifier),
+    modifier =
+      Modifier
+        .fillMaxSize()
+        .then(modifier),
     contentAlignment = Alignment.Center,
   ) {
     WavyLoadingIndicator()

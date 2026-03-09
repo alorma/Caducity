@@ -25,16 +25,17 @@ fun OnboardingPagerIndicator(
     repeat(pageCount) { page ->
       val isSelected = page == currentPage
       Box(
-        modifier = Modifier
-          .size(if (isSelected) 10.dp else 8.dp)
-          .clip(CircleShape)
-          .background(
-            if (isSelected) {
-              MaterialTheme.colorScheme.primary
-            } else {
-              MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-            }
-          )
+        modifier =
+          Modifier
+            .size(if (isSelected) 10.dp else 8.dp)
+            .clip(CircleShape)
+            .background(
+              if (isSelected) {
+                MaterialTheme.colorScheme.primary
+              } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
+              },
+            ),
       )
     }
   }

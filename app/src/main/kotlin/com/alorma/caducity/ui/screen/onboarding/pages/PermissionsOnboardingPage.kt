@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,9 +35,10 @@ fun PermissionsOnboardingPage(
   val hasPermission by notificationHelper.areNotificationsEnabled()
 
   Column(
-    modifier = modifier
-      .fillMaxSize()
-      .padding(32.dp),
+    modifier =
+      modifier
+        .fillMaxSize()
+        .padding(32.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {

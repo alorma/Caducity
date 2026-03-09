@@ -6,8 +6,6 @@ import com.alorma.caducity.ui.theme.ThemePreferencesNoOp
 
 @Suppress("ModifierRequired")
 @Composable
-fun PreviewTheme(
-  block: @Composable () -> Unit,
-) {
+fun PreviewTheme(block: @Composable () -> Unit) {
   AppThemeContent(themePreferences = ThemePreferencesNoOp) { block() }
 }

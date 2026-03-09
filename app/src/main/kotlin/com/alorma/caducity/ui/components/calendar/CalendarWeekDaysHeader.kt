@@ -24,10 +24,11 @@ fun CalendarWeekDaysHeader(
   modifier: Modifier = Modifier,
 ) {
   Row(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(12.dp)
-      .then(modifier),
+    modifier =
+      Modifier
+        .fillMaxWidth()
+        .padding(12.dp)
+        .then(modifier),
     horizontalArrangement = Arrangement.SpaceBetween,
   ) {
     weekDays.forEach { weekDay ->
@@ -43,11 +44,11 @@ fun CalendarWeekDaysHeader(
 private fun dayNameFromState(
   date: LocalDate,
   dayOfWeekNames: DayOfWeekNames,
-): String {
-  return LocalDate.Format {
-    dayOfWeek(dayOfWeekNames)
-  }.format(date)
-}
+): String =
+  LocalDate
+    .Format {
+      dayOfWeek(dayOfWeekNames)
+    }.format(date)
 
 @PreviewLightDark
 @Composable
@@ -55,15 +56,16 @@ private fun CalendarWeekDaysHeaderPreview() {
   PreviewTheme {
     Surface {
       CalendarWeekDaysHeader(
-        weekDays = persistentListOf(
-          LocalDate(2026, 1, 5),  // Monday
-          LocalDate(2026, 1, 6),  // Tuesday
-          LocalDate(2026, 1, 7),  // Wednesday
-          LocalDate(2026, 1, 8),  // Thursday
-          LocalDate(2026, 1, 9),  // Friday
-          LocalDate(2026, 1, 10), // Saturday
-          LocalDate(2026, 1, 11), // Sunday
-        ),
+        weekDays =
+          persistentListOf(
+            LocalDate(2026, 1, 5), // Monday
+            LocalDate(2026, 1, 6), // Tuesday
+            LocalDate(2026, 1, 7), // Wednesday
+            LocalDate(2026, 1, 8), // Thursday
+            LocalDate(2026, 1, 9), // Friday
+            LocalDate(2026, 1, 10), // Saturday
+            LocalDate(2026, 1, 11), // Sunday
+          ),
         dayOfWeekNames = DayOfWeekNames.ENGLISH_ABBREVIATED,
       )
     }

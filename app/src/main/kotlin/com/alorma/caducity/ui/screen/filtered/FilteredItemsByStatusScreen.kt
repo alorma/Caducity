@@ -47,9 +47,10 @@ import org.koin.core.parameter.parametersOf
 fun FilteredItemsByStatusScreen(
   status: ItemStatus,
   modifier: Modifier = Modifier,
-  viewModel: FilteredItemsByStatusViewModel = koinViewModel {
-    parametersOf(status)
-  },
+  viewModel: FilteredItemsByStatusViewModel =
+    koinViewModel {
+      parametersOf(status)
+    },
   onNavigateToCategory: (String) -> Unit = {},
 ) {
   TrackScreen(screen = FilteredItemsByStatusScreenEvent())
@@ -82,20 +83,22 @@ fun FilteredItemsByStatusScreen(
       StyledTopAppBar(
         title = {
           Text(
-            text = stringResource(
-              R.string.filtered_items_by_status_title,
-              ExpirationDefaults.getTitle(status)
-            )
+            text =
+              stringResource(
+                R.string.filtered_items_by_status_title,
+                ExpirationDefaults.getTitle(status),
+              ),
           )
         },
-        colors = TopAppBarDefaults.topAppBarColors(
-          containerColor = statusColors.container,
-          scrolledContainerColor = statusColors.container,
-          navigationIconContentColor = statusColors.onContainer,
-          titleContentColor = statusColors.onContainer,
-          actionIconContentColor = statusColors.onContainer,
-          subtitleContentColor = statusColors.onContainer,
-        ),
+        colors =
+          TopAppBarDefaults.topAppBarColors(
+            containerColor = statusColors.container,
+            scrolledContainerColor = statusColors.container,
+            navigationIconContentColor = statusColors.onContainer,
+            titleContentColor = statusColors.onContainer,
+            actionIconContentColor = statusColors.onContainer,
+            subtitleContentColor = statusColors.onContainer,
+          ),
         navigationIcon = { NavigationIcon() },
       )
     },
@@ -105,9 +108,10 @@ fun FilteredItemsByStatusScreen(
     when (val currentState = state) {
       is FilteredItemsByStatusState.Loading -> {
         Box(
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
+          modifier =
+            Modifier
+              .fillMaxSize()
+              .padding(paddingValues),
           contentAlignment = Alignment.Center,
         ) {
           FullscreenLoading()
@@ -128,9 +132,10 @@ fun FilteredItemsByStatusScreen(
 
       is FilteredItemsByStatusState.Empty -> {
         Box(
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
+          modifier =
+            Modifier
+              .fillMaxSize()
+              .padding(paddingValues),
           contentAlignment = Alignment.Center,
         ) {
           Text(
@@ -142,9 +147,10 @@ fun FilteredItemsByStatusScreen(
 
       is FilteredItemsByStatusState.Error -> {
         Box(
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
+          modifier =
+            Modifier
+              .fillMaxSize()
+              .padding(paddingValues),
           contentAlignment = Alignment.Center,
         ) {
           Text(
@@ -208,17 +214,19 @@ private fun CategoryItemsCard(
   ) {
     // Category header
     Surface(
-      modifier = Modifier
-        .fillMaxWidth()
-        .clickable { onCategoryClick(categoryWithItems.category.id) },
+      modifier =
+        Modifier
+          .fillMaxWidth()
+          .clickable { onCategoryClick(categoryWithItems.category.id) },
       shape = MaterialTheme.shapes.small,
       color = toneColors.container,
       contentColor = toneColors.onContainer,
     ) {
       Row(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(12.dp),
+        modifier =
+          Modifier
+            .fillMaxWidth()
+            .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
       ) {
@@ -232,10 +240,11 @@ private fun CategoryItemsCard(
         // Filtered items count badge
         val filteredItemsCount = categoryWithItems.allItems.size
         Text(
-          modifier = Modifier
-            .clip(MaterialTheme.shapes.extraSmall)
-            .background(inverseToneColors.container)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+          modifier =
+            Modifier
+              .clip(MaterialTheme.shapes.extraSmall)
+              .background(inverseToneColors.container)
+              .padding(horizontal = 8.dp, vertical = 4.dp),
           text = filteredItemsCount.toString(),
           color = inverseToneColors.onContainer,
           style = MaterialTheme.typography.labelMedium,
@@ -250,7 +259,7 @@ private fun CategoryItemsCard(
         itemCount = categoryProduct.items.size,
         onClick = {
           onProductClick(categoryProduct.product.name, categoryProduct.items)
-        }
+        },
       )
     }
 
@@ -262,7 +271,7 @@ private fun CategoryItemsCard(
         itemCount = categoryWithItems.standaloneItems.size,
         onClick = {
           onProductClick(otherLabel, categoryWithItems.standaloneItems)
-        }
+        },
       )
     }
   }
@@ -276,11 +285,12 @@ private fun ProductItemsGroup(
   modifier: Modifier = Modifier,
 ) {
   Row(
-    modifier = modifier
-      .fillMaxWidth()
-      .clip(CaducityTheme.shapes.small)
-      .clickable { onClick() }
-      .padding(horizontal = 8.dp, vertical = 8.dp),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .clip(CaducityTheme.shapes.small)
+        .clickable { onClick() }
+        .padding(horizontal = 8.dp, vertical = 8.dp),
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {

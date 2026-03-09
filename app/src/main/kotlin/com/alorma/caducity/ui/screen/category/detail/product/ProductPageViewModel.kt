@@ -29,22 +29,20 @@ class ProductPageViewModel(
   private val clearProductItemsUseCase: ClearProductItemsUseCase,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<ProductPageNavigation, ProductPageNavigationSideEffect, ProductPageSideEffect>() {
-
   val categoryId: String = productTab.categoryId
 
-  val state: StateFlow<ProductPageState> = getProductItemsUseCase
-    .obtain(productTab.categoryId, productTab.id)
-    .map<_, ProductPageState> { productItems ->
-      productPageMapper.mapToUiModel(productItems)
-    }
-    .catch { error ->
-      emit(ProductPageState.Error(error.message ?: "Unknown error"))
-    }
-    .stateIn(
-      viewModelScope,
-      started = SharingStarted.WhileSubscribed(5000),
-      initialValue = ProductPageState.Loading
-    )
+  val state: StateFlow<ProductPageState> =
+    getProductItemsUseCase
+      .obtain(productTab.categoryId, productTab.id)
+      .map<_, ProductPageState> { productItems ->
+        productPageMapper.mapToUiModel(productItems)
+      }.catch { error ->
+        emit(ProductPageState.Error(error.message ?: "Unknown error"))
+      }.stateIn(
+        viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ProductPageState.Loading,
+      )
 
   fun onItemClick(item: ItemDetailUiModel) {
     emitSideEffect(ProductPageSideEffect.ShowItemActionsBottomSheet(item))
@@ -60,39 +58,44 @@ class ProductPageViewModel(
       val activeItemCount = deleteProductUseCase.getActiveItemCount(productId)
       if (activeItemCount > 0) {
         // Get available products from use case
-        val products = getCategoryProductsUseCase
-          .obtain(productTab.categoryId)
-          .first()
+        val products =
+          getCategoryProductsUseCase
+            .obtain(productTab.categoryId)
+            .first()
 
-        val availableProducts = products
-          .filter { it.id != productId }
-          .map { product ->
-            CategoryProductTabUiModel(
-              id = product.id,
-              categoryId = productTab.categoryId,
-              name = product.name,
-            )
-          }
+        val availableProducts =
+          products
+            .filter { it.id != productId }
+            .map { product ->
+              CategoryProductTabUiModel(
+                id = product.id,
+                categoryId = productTab.categoryId,
+                name = product.name,
+              )
+            }
         emitSideEffect(
           ProductPageSideEffect.ShowDeleteProductWithItemsDialog(
             productId = productId,
             activeItemCount = activeItemCount,
             availableProducts = availableProducts,
             onDeleteProduct = ::onDeleteProduct,
-          )
+          ),
         )
       } else {
         emitSideEffect(
           ProductPageSideEffect.ShowDeleteProductDialog(
             productId = productId,
             onDeleteProduct = ::onDeleteProduct,
-          )
+          ),
         )
       }
     }
   }
 
-  fun onDeleteProduct(productId: String, strategy: ProductDeletionStrategy) {
+  fun onDeleteProduct(
+    productId: String,
+    strategy: ProductDeletionStrategy,
+  ) {
     viewModelScope.launch {
       val result = deleteProductUseCase.delete(productId, strategy)
       if (result.isSuccess) {
@@ -109,17 +112,21 @@ class ProductPageViewModel(
       ProductPageSideEffect.ShowClearProductItemsDialog(
         productId = productTab.id,
         onClearProductItems = ::onClearProductItems,
-      )
+      ),
     )
   }
 
-  fun onClearProductItems(productId: String?, clearAll: Boolean) {
+  fun onClearProductItems(
+    productId: String?,
+    clearAll: Boolean,
+  ) {
     viewModelScope.launch {
-      val result = if (clearAll) {
-        clearProductItemsUseCase.clearAllItems(productTab.categoryId, productId)
-      } else {
-        clearProductItemsUseCase.clearConsumedItems(productTab.categoryId, productId)
-      }
+      val result =
+        if (clearAll) {
+          clearProductItemsUseCase.clearAllItems(productTab.categoryId, productId)
+        } else {
+          clearProductItemsUseCase.clearConsumedItems(productTab.categoryId, productId)
+        }
 
       if (result.isSuccess) {
         emitSideEffect(ProductPageSideEffect.ItemsCleared)
@@ -136,8 +143,8 @@ class ProductPageViewModel(
         emitNavigationSideEffect(
           ProductPageNavigationSideEffect.NavigateToAddItem(
             categoryId = productTab.categoryId,
-            productId = productTab.id
-          )
+            productId = productTab.id,
+          ),
         )
       }
       ProductPageNavigation.ProductDeleted -> {

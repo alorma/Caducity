@@ -24,20 +24,21 @@ internal class BottomSheetScene<T : Any>(
   private val modalBottomSheetProperties: ModalBottomSheetProperties,
   private val onBack: () -> Unit,
 ) : OverlayScene<T> {
-
   override val entries: List<NavEntry<T>> = listOf(entry)
 
   override val content: @Composable (() -> Unit) = {
     ModalBottomSheet(
       onDismissRequest = onBack,
-      sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = when(sheetValue) {
-          SheetValue.Hidden -> false
-          SheetValue.Expanded -> true
-          SheetValue.PartiallyExpanded -> false
-          null -> false
-        },
-      ),
+      sheetState =
+        rememberModalBottomSheetState(
+          skipPartiallyExpanded =
+            when (sheetValue) {
+              SheetValue.Hidden -> false
+              SheetValue.Expanded -> true
+              SheetValue.PartiallyExpanded -> false
+              null -> false
+            },
+        ),
       properties = modalBottomSheetProperties,
     ) {
       entry.Content()
@@ -53,14 +54,17 @@ internal class BottomSheetScene<T : Any>(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 class BottomSheetSceneStrategy<T : Any> : SceneStrategy<T> {
-
   override fun SceneStrategyScope<T>.calculateScene(entries: List<NavEntry<T>>): Scene<T>? {
     val lastEntry = entries.lastOrNull()
-    val bottomSheetProperties = lastEntry?.metadata
-      ?.get(BOTTOM_SHEET_KEY) as? ModalBottomSheetProperties
+    val bottomSheetProperties =
+      lastEntry
+        ?.metadata
+        ?.get(BOTTOM_SHEET_KEY) as? ModalBottomSheetProperties
 
-    val sheetValue = lastEntry?.metadata
-      ?.get(BOTTOM_SHEET_VALUE_KEY) as? SheetValue
+    val sheetValue =
+      lastEntry
+        ?.metadata
+        ?.get(BOTTOM_SHEET_VALUE_KEY) as? SheetValue
 
     return bottomSheetProperties?.let { properties ->
       @Suppress("UNCHECKED_CAST")
@@ -71,7 +75,7 @@ class BottomSheetSceneStrategy<T : Any> : SceneStrategy<T> {
         entry = lastEntry,
         sheetValue = sheetValue,
         modalBottomSheetProperties = properties,
-        onBack = onBack
+        onBack = onBack,
       )
     }
   }
@@ -87,11 +91,12 @@ class BottomSheetSceneStrategy<T : Any> : SceneStrategy<T> {
     @OptIn(ExperimentalMaterial3Api::class)
     fun bottomSheet(
       sheetValue: SheetValue? = SheetValue.Expanded,
-      modalBottomSheetProperties: ModalBottomSheetProperties = ModalBottomSheetProperties()
-    ): Map<String, Any> = mapOf(
-      BOTTOM_SHEET_KEY to modalBottomSheetProperties,
-      BOTTOM_SHEET_VALUE_KEY to (sheetValue ?: SheetValue.PartiallyExpanded),
-    )
+      modalBottomSheetProperties: ModalBottomSheetProperties = ModalBottomSheetProperties(),
+    ): Map<String, Any> =
+      mapOf(
+        BOTTOM_SHEET_KEY to modalBottomSheetProperties,
+        BOTTOM_SHEET_VALUE_KEY to (sheetValue ?: SheetValue.PartiallyExpanded),
+      )
 
     internal const val BOTTOM_SHEET_KEY = "bottomsheet"
     internal const val BOTTOM_SHEET_VALUE_KEY = "bottomsheetvalue"

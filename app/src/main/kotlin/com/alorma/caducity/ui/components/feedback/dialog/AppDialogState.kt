@@ -6,7 +6,6 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
-import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -31,12 +30,13 @@ import kotlinx.coroutines.sync.withLock
 @Composable
 fun rememberAppDialogState(): AppDialogState = remember { AppDialogState() }
 
-val LocalAppDialogState = compositionLocalOf<AppDialogState> {
-  throw (IllegalStateException("Should be provided from a AppDialogState"))
-}
+val LocalAppDialogState =
+  compositionLocalOf<AppDialogState> {
+    throw (IllegalStateException("Should be provided from a AppDialogState"))
+  }
 
 @Stable
-class AppDialogState() {
+class AppDialogState {
   /**
    * Only one [Dialog] can be shown at a time.
    * Since a suspending Mutex is a fair queue, this manages our message queue
@@ -52,157 +52,169 @@ class AppDialogState() {
     positiveButton: @Composable () -> Unit,
     negativeButton: (@Composable () -> Unit)? = null,
     type: AppFeedbackType,
-    properties: DialogProperties = DialogProperties(
-      usePlatformDefaultWidth = true,
-    ),
-  ): DialogResult = mutex.withLock {
-    try {
-      suspendCancellableCoroutine { cancellation ->
-        dialogInfo = object : DialogInfo.AlertDialog {
-          override val title: @Composable () -> Unit = title
-          override val content: @Composable () -> Unit = content
-          override val positiveButton: @Composable (() -> Unit) = {
-            val colors = type.softColors()
+    properties: DialogProperties =
+      DialogProperties(
+        usePlatformDefaultWidth = true,
+      ),
+  ): DialogResult =
+    mutex.withLock {
+      try {
+        suspendCancellableCoroutine { cancellation ->
+          dialogInfo =
+            object : DialogInfo.AlertDialog {
+              override val title: @Composable () -> Unit = title
+              override val content: @Composable () -> Unit = content
+              override val positiveButton: @Composable (() -> Unit) = {
+                val colors = type.softColors()
 
-            TextButton(
-              colors = ButtonDefaults.textButtonColors(
-                containerColor = colors.container,
-                contentColor = colors.onContainer,
-              ),
-              onClick = { dismiss(DialogResult.Positive) },
-              content = { positiveButton() },
-            )
-          }
-          override val negativeButton: @Composable (() -> Unit)? = if (negativeButton != null) {
-            {
-              val colors = type.softColors()
+                TextButton(
+                  colors =
+                    ButtonDefaults.textButtonColors(
+                      containerColor = colors.container,
+                      contentColor = colors.onContainer,
+                    ),
+                  onClick = { dismiss(DialogResult.Positive) },
+                  content = { positiveButton() },
+                )
+              }
+              override val negativeButton: @Composable (() -> Unit)? =
+                if (negativeButton != null) {
+                  {
+                    val colors = type.softColors()
 
-              TextButton(
-                colors = ButtonDefaults.textButtonColors(
-                  containerColor = colors.container,
-                  contentColor = colors.onContainer,
-                ),
-                onClick = { dismiss(DialogResult.Negative) },
-                content = { negativeButton() },
-              )
+                    TextButton(
+                      colors =
+                        ButtonDefaults.textButtonColors(
+                          containerColor = colors.container,
+                          contentColor = colors.onContainer,
+                        ),
+                      onClick = { dismiss(DialogResult.Negative) },
+                      content = { negativeButton() },
+                    )
+                  }
+                } else {
+                  null
+                }
+
+              override val properties: DialogProperties = properties
+              override val type: AppFeedbackType = type
+              override val dismiss: (DialogResult) -> Unit = { result ->
+                if (!cancellation.isCompleted) {
+                  cancellation.resume(result)
+                }
+                dialogInfo = null
+              }
             }
-          } else {
-            null
-          }
-
-          override val properties: DialogProperties = properties
-          override val type: AppFeedbackType = type
-          override val dismiss: (DialogResult) -> Unit = { result ->
-            if (!cancellation.isCompleted) {
-              cancellation.resume(result)
-            }
-            dialogInfo = null
-          }
         }
+      } finally {
+        dialogInfo = null
       }
-    } finally {
-      dialogInfo = null
     }
-  }
 
   suspend fun showDatePickerDialog(
     datePickerState: DatePickerState,
     positiveButton: @Composable () -> Unit,
     negativeButton: (@Composable () -> Unit)? = null,
     type: AppFeedbackType,
-    properties: DialogProperties = DialogProperties(
-      usePlatformDefaultWidth = true,
-    ),
+    properties: DialogProperties =
+      DialogProperties(
+        usePlatformDefaultWidth = true,
+      ),
     onDateSelected: ((Long?) -> AppFeedbackType)? = null,
-  ): DialogResult = mutex.withLock {
-    try {
-      suspendCancellableCoroutine { cancellation ->
-        dialogInfo = object : DialogInfo.CustomAlertDialog {
-          override val content: @Composable (() -> Unit) = {
-            val confirmEnabled by remember {
-              derivedStateOf { datePickerState.selectedDateMillis != null }
-            }
-
-            // Calculate dynamic type based on selected date
-            val dynamicType by remember {
-              derivedStateOf {
-                if (onDateSelected != null && datePickerState.selectedDateMillis != null) {
-                  onDateSelected(datePickerState.selectedDateMillis)
-                } else {
-                  type
+  ): DialogResult =
+    mutex.withLock {
+      try {
+        suspendCancellableCoroutine { cancellation ->
+          dialogInfo =
+            object : DialogInfo.CustomAlertDialog {
+              override val content: @Composable (() -> Unit) = {
+                val confirmEnabled by remember {
+                  derivedStateOf { datePickerState.selectedDateMillis != null }
                 }
-              }
-            }
 
-            val softColors = dynamicType.softColors()
-            val vibrantColors = dynamicType.vibrantColors()
-
-            val pickerColors = DatePickerDefaults.colors(
-              containerColor = softColors.container,
-              titleContentColor = softColors.onContainer,
-              selectedDayContainerColor = vibrantColors.container,
-              selectedDayContentColor = vibrantColors.onContainer,
-              todayDateBorderColor = vibrantColors.container,
-              todayContentColor = softColors.onContainer,
-              navigationContentColor = softColors.onContainer,
-              disabledDayContentColor = softColors.onContainer,
-            )
-            DatePickerDialog(
-              colors = pickerColors,
-              onDismissRequest = {
-                if (!cancellation.isCompleted) {
-                  cancellation.resume(DialogResult.Dismissed)
+                // Calculate dynamic type based on selected date
+                val dynamicType by remember {
+                  derivedStateOf {
+                    if (onDateSelected != null && datePickerState.selectedDateMillis != null) {
+                      onDateSelected(datePickerState.selectedDateMillis)
+                    } else {
+                      type
+                    }
+                  }
                 }
-                dialogInfo = null
-              },
-              confirmButton = {
-                TextButton(
-                  enabled = confirmEnabled,
-                  colors = ButtonDefaults.textButtonColors(
+
+                val softColors = dynamicType.softColors()
+                val vibrantColors = dynamicType.vibrantColors()
+
+                val pickerColors =
+                  DatePickerDefaults.colors(
                     containerColor = softColors.container,
-                    contentColor = softColors.onContainer,
-                  ),
-                  onClick = { dismiss(DialogResult.Positive) },
-                  content = { positiveButton() },
-                )
-              },
-              dismissButton = if (negativeButton != null) {
-                {
-                  TextButton(
-                    colors = ButtonDefaults.textButtonColors(
-                      containerColor = softColors.container,
-                      contentColor = softColors.onContainer,
-                    ),
-                    onClick = { dismiss(DialogResult.Negative) },
-                    content = { negativeButton() },
+                    titleContentColor = softColors.onContainer,
+                    selectedDayContainerColor = vibrantColors.container,
+                    selectedDayContentColor = vibrantColors.onContainer,
+                    todayDateBorderColor = vibrantColors.container,
+                    todayContentColor = softColors.onContainer,
+                    navigationContentColor = softColors.onContainer,
+                    disabledDayContentColor = softColors.onContainer,
+                  )
+                DatePickerDialog(
+                  colors = pickerColors,
+                  onDismissRequest = {
+                    if (!cancellation.isCompleted) {
+                      cancellation.resume(DialogResult.Dismissed)
+                    }
+                    dialogInfo = null
+                  },
+                  confirmButton = {
+                    TextButton(
+                      enabled = confirmEnabled,
+                      colors =
+                        ButtonDefaults.textButtonColors(
+                          containerColor = softColors.container,
+                          contentColor = softColors.onContainer,
+                        ),
+                      onClick = { dismiss(DialogResult.Positive) },
+                      content = { positiveButton() },
+                    )
+                  },
+                  dismissButton =
+                    if (negativeButton != null) {
+                      {
+                        TextButton(
+                          colors =
+                            ButtonDefaults.textButtonColors(
+                              containerColor = softColors.container,
+                              contentColor = softColors.onContainer,
+                            ),
+                          onClick = { dismiss(DialogResult.Negative) },
+                          content = { negativeButton() },
+                        )
+                      }
+                    } else {
+                      null
+                    },
+                ) {
+                  DatePicker(
+                    showModeToggle = false,
+                    state = datePickerState,
+                    colors = pickerColors,
                   )
                 }
-              } else {
-                null
-              },
-            ) {
-              DatePicker(
-                showModeToggle = false,
-                state = datePickerState,
-                colors = pickerColors,
-              )
+              }
+              override val properties: DialogProperties = properties
+              override val dismiss: (DialogResult) -> Unit = { result ->
+                if (!cancellation.isCompleted) {
+                  cancellation.resume(result)
+                }
+                dialogInfo = null
+              }
             }
-          }
-          override val properties: DialogProperties = properties
-          override val dismiss: (DialogResult) -> Unit = { result ->
-            if (!cancellation.isCompleted) {
-              cancellation.resume(result)
-            }
-            dialogInfo = null
-          }
         }
+      } finally {
+        dialogInfo = null
       }
-    } finally {
-      dialogInfo = null
     }
-  }
 }
-
 
 sealed interface DialogInfo {
   val properties: DialogProperties
@@ -256,6 +268,8 @@ fun AppDialogHost(hostState: AppDialogState) {
 
 sealed interface DialogResult {
   data object Dismissed : DialogResult
+
   data object Positive : DialogResult
+
   data object Negative : DialogResult
 }

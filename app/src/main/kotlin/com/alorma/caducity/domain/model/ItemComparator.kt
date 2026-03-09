@@ -13,18 +13,19 @@ interface ItemComparator : Comparator<Item>
  * 2. Expiration date (earliest first)
  */
 class StatusItemComparator : ItemComparator {
+  private val comparator =
+    compareBy<Item> {
+      when (it.status) {
+        ItemStatus.Expired -> 0
+        ItemStatus.ExpiringSoon -> 1
+        ItemStatus.Fresh -> 2
+        ItemStatus.Frozen -> 3
+        ItemStatus.Consumed -> 4
+      }
+    }.thenBy { it.expirationDate }
 
-  private val comparator = compareBy<Item> {
-    when (it.status) {
-      ItemStatus.Expired -> 0
-      ItemStatus.ExpiringSoon -> 1
-      ItemStatus.Fresh -> 2
-      ItemStatus.Frozen -> 3
-      ItemStatus.Consumed -> 4
-    }
-  }.thenBy { it.expirationDate }
-
-  override fun compare(o1: Item, o2: Item): Int {
-    return comparator.compare(o1, o2)
-  }
+  override fun compare(
+    o1: Item,
+    o2: Item,
+  ): Int = comparator.compare(o1, o2)
 }

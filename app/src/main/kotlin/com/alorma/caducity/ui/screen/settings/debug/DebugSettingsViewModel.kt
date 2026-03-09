@@ -29,19 +29,19 @@ class DebugSettingsViewModel(
   private val remoteConfigs: List<RemoteConfig>,
   private val consentManager: ConsentManager,
 ) : BaseViewModel<Unit, DebugSettingsSideEffect, DebugSettingsSideEffect>() {
-
-  private val _uiState = MutableStateFlow(
-    DebugSettingsUiState(
-      onPopulateFakeData = ::onPopulateFakeData,
-      onPopulateFakePlayStoreData = ::onPopulateFakePlayStoreData,
-      onTriggerNotificationCheck = ::onTriggerNotificationCheck,
-      onRefreshRemoteConfig = ::onRefreshRemoteConfig,
-      onToggleAdStorage = ::onToggleAdStorage,
-      onToggleAdUserData = ::onToggleAdUserData,
-      onToggleAdPersonalization = ::onToggleAdPersonalization,
-      onToggleRemoteConfig = ::onToggleRemoteConfig,
-    ),
-  )
+  private val _uiState =
+    MutableStateFlow(
+      DebugSettingsUiState(
+        onPopulateFakeData = ::onPopulateFakeData,
+        onPopulateFakePlayStoreData = ::onPopulateFakePlayStoreData,
+        onTriggerNotificationCheck = ::onTriggerNotificationCheck,
+        onRefreshRemoteConfig = ::onRefreshRemoteConfig,
+        onToggleAdStorage = ::onToggleAdStorage,
+        onToggleAdUserData = ::onToggleAdUserData,
+        onToggleAdPersonalization = ::onToggleAdPersonalization,
+        onToggleRemoteConfig = ::onToggleRemoteConfig,
+      ),
+    )
   val uiState: StateFlow<DebugSettingsUiState> = _uiState.asStateFlow()
 
   init {
@@ -68,7 +68,7 @@ class DebugSettingsViewModel(
         },
         onFailure = {
           emitSideEffect(DebugSettingsSideEffect.Error)
-        }
+        },
       )
     }
   }
@@ -86,7 +86,7 @@ class DebugSettingsViewModel(
         },
         onFailure = {
           emitSideEffect(DebugSettingsSideEffect.Error)
-        }
+        },
       )
     }
   }
@@ -95,15 +95,15 @@ class DebugSettingsViewModel(
     viewModelScope.launch {
       _uiState.value = _uiState.value.copy(isRefreshingRemoteConfig = true)
 
-      remoteConfigRunner.fetchAndActivate()
+      remoteConfigRunner
+        .fetchAndActivate()
         .onSuccess { activated ->
           emitSideEffect(
-            DebugSettingsSideEffect.RemoteConfigRefreshed(activated)
+            DebugSettingsSideEffect.RemoteConfigRefreshed(activated),
           )
           loadRemoteConfigValues()
           _uiState.value = _uiState.value.copy(isRefreshingRemoteConfig = false)
-        }
-        .onFailure { error ->
+        }.onFailure { error ->
           emitSideEffect(DebugSettingsSideEffect.Error)
         }
     }
@@ -112,17 +112,23 @@ class DebugSettingsViewModel(
   private fun loadRemoteConfigValues() {
     val debugRunner = remoteConfigRunner as? DebugRemoteConfigRunner
 
-    _uiState.value = _uiState.value.copy(
-      remoteConfigValues = remoteConfigs.associate { config ->
-        config.key to RemoteConfigUiState(
-          value = config.isEnabled(),
-          hasDebugOverride = debugRunner?.hasDebugOverride(config.key) ?: false
-        )
-      }
-    )
+    _uiState.value =
+      _uiState.value.copy(
+        remoteConfigValues =
+          remoteConfigs.associate { config ->
+            config.key to
+              RemoteConfigUiState(
+                value = config.isEnabled(),
+                hasDebugOverride = debugRunner?.hasDebugOverride(config.key) ?: false,
+              )
+          },
+      )
   }
 
-  fun onToggleRemoteConfig(key: String, enabled: Boolean) {
+  fun onToggleRemoteConfig(
+    key: String,
+    enabled: Boolean,
+  ) {
     val debugRunner = remoteConfigRunner as? DebugRemoteConfigRunner
     if (debugRunner != null) {
       debugRunner.setDebugValue(key, enabled)
@@ -140,36 +146,40 @@ class DebugSettingsViewModel(
 
   private fun loadConsentPreferences() {
     val preferences = consentManager.getConsentPreferences()
-    _uiState.value = _uiState.value.copy(
-      adStorageEnabled = preferences.adStorage == ConsentStatus.GRANTED,
-      adUserDataEnabled = preferences.adUserData == ConsentStatus.GRANTED,
-      adPersonalizationEnabled = preferences.adPersonalization == ConsentStatus.GRANTED,
-    )
+    _uiState.value =
+      _uiState.value.copy(
+        adStorageEnabled = preferences.adStorage == ConsentStatus.GRANTED,
+        adUserDataEnabled = preferences.adUserData == ConsentStatus.GRANTED,
+        adPersonalizationEnabled = preferences.adPersonalization == ConsentStatus.GRANTED,
+      )
   }
 
   fun onToggleAdStorage(enabled: Boolean) {
     val current = consentManager.getConsentPreferences()
-    val updated = current.copy(
-      adStorage = if (enabled) ConsentStatus.GRANTED else ConsentStatus.DENIED
-    )
+    val updated =
+      current.copy(
+        adStorage = if (enabled) ConsentStatus.GRANTED else ConsentStatus.DENIED,
+      )
     consentManager.setConsentPreferences(updated)
     loadConsentPreferences()
   }
 
   fun onToggleAdUserData(enabled: Boolean) {
     val current = consentManager.getConsentPreferences()
-    val updated = current.copy(
-      adUserData = if (enabled) ConsentStatus.GRANTED else ConsentStatus.DENIED
-    )
+    val updated =
+      current.copy(
+        adUserData = if (enabled) ConsentStatus.GRANTED else ConsentStatus.DENIED,
+      )
     consentManager.setConsentPreferences(updated)
     loadConsentPreferences()
   }
 
   fun onToggleAdPersonalization(enabled: Boolean) {
     val current = consentManager.getConsentPreferences()
-    val updated = current.copy(
-      adPersonalization = if (enabled) ConsentStatus.GRANTED else ConsentStatus.DENIED
-    )
+    val updated =
+      current.copy(
+        adPersonalization = if (enabled) ConsentStatus.GRANTED else ConsentStatus.DENIED,
+      )
     consentManager.setConsentPreferences(updated)
     loadConsentPreferences()
   }
@@ -213,7 +223,12 @@ data class DebugSettingsUiState(
  */
 sealed interface DebugSettingsSideEffect {
   data object FakeDataPopulated : DebugSettingsSideEffect
+
   data object FakePlayStoreDataPopulated : DebugSettingsSideEffect
+
   data object Error : DebugSettingsSideEffect
-  data class RemoteConfigRefreshed(val activated: Boolean) : DebugSettingsSideEffect
+
+  data class RemoteConfigRefreshed(
+    val activated: Boolean,
+  ) : DebugSettingsSideEffect
 }

@@ -1,16 +1,15 @@
 package com.alorma.caducity.domain.usecase
 
-import com.alorma.caducity.domain.ItemDataSource
-import com.alorma.caducity.domain.model.InstanceActionError
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.time.date
+import com.alorma.caducity.domain.ItemDataSource
+import com.alorma.caducity.domain.model.InstanceActionError
 import kotlin.time.Instant
 
 class FreezeItemUseCase(
   private val itemDataSource: ItemDataSource,
   private val appClock: AppClock,
 ) {
-
   suspend fun freezeItem(
     itemId: String,
     expirationDate: Instant,

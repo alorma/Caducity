@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ItemDao {
-
   @Query("SELECT * FROM items")
   fun getAllItems(): Flow<List<ItemRoomEntity>>
 
@@ -18,7 +17,10 @@ interface ItemDao {
   fun getCategoryItems(categoryId: String): Flow<List<ItemRoomEntity>>
 
   @Query("SELECT * FROM items WHERE categoryId = :categoryId AND productId = :productId")
-  fun getProductItems(categoryId: String, productId: String): Flow<List<ItemRoomEntity>>
+  fun getProductItems(
+    categoryId: String,
+    productId: String,
+  ): Flow<List<ItemRoomEntity>>
 
   @Query("SELECT * FROM items WHERE categoryId = :categoryId AND productId IS NULL")
   fun getStandaloneItems(categoryId: String): Flow<List<ItemRoomEntity>>
@@ -36,16 +38,25 @@ interface ItemDao {
   suspend fun deleteItem(itemId: String)
 
   @Query("UPDATE items SET productId = :toProductId WHERE productId = :fromProductId")
-  suspend fun moveItemsToProduct(fromProductId: String, toProductId: String?)
+  suspend fun moveItemsToProduct(
+    fromProductId: String,
+    toProductId: String?,
+  )
 
   @Query("DELETE FROM items WHERE productId = :productId AND consumedDate IS NULL")
   suspend fun deleteActiveItemsByProduct(productId: String)
 
   @Query("DELETE FROM items WHERE categoryId = :categoryId AND productId = :productId AND consumedDate IS NOT NULL")
-  suspend fun deleteConsumedItemsByProduct(categoryId: String, productId: String)
+  suspend fun deleteConsumedItemsByProduct(
+    categoryId: String,
+    productId: String,
+  )
 
   @Query("DELETE FROM items WHERE categoryId = :categoryId AND productId = :productId")
-  suspend fun deleteAllItemsByProduct(categoryId: String, productId: String)
+  suspend fun deleteAllItemsByProduct(
+    categoryId: String,
+    productId: String,
+  )
 
   @Query("DELETE FROM items WHERE categoryId = :categoryId AND productId IS NULL AND consumedDate IS NOT NULL")
   suspend fun deleteConsumedStandaloneItems(categoryId: String)

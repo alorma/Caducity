@@ -19,7 +19,6 @@ import com.alorma.caducity.feature.tracking.AppearanceSettingsScreen as Appearan
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
@@ -149,7 +148,7 @@ private fun AppearanceSettingsContent(
         // Calendar settings group
         item {
           StyledSettingsGroup(
-            title = { Text(stringResource(R.string.settings_calendar_options)) }
+            title = { Text(stringResource(R.string.settings_calendar_options)) },
           ) {
             StyledSettingsButtonGroupCard(
               title = stringResource(R.string.settings_first_day_of_week_title),
@@ -174,11 +173,12 @@ private fun AppearanceSettingsContent(
 fun AppearanceSettingsScreenPreview() {
   PreviewTheme {
     Surface {
-      val themeMode = if (isSystemInDarkTheme()) {
-        ThemeMode.DARK
-      } else {
-        ThemeMode.LIGHT
-      }
+      val themeMode =
+        if (isSystemInDarkTheme()) {
+          ThemeMode.DARK
+        } else {
+          ThemeMode.LIGHT
+        }
       AppearanceSettingsContent(
         themeMode = themeMode,
         useDynamicTheme = true,

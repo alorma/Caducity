@@ -24,12 +24,13 @@ fun CaducityWeekCalendar(
   todayColor: Color,
   onDateClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
-  weekCalendarState: WeekCalendarState = rememberWeekCalendarState(
-    firstVisibleWeekDate = appCalendarConfig.today,
-    startDate = appCalendarConfig.startDate,
-    endDate = appCalendarConfig.endDate,
-    firstDayOfWeek = appCalendarConfig.firstDayOfWeek,
-  ),
+  weekCalendarState: WeekCalendarState =
+    rememberWeekCalendarState(
+      firstVisibleWeekDate = appCalendarConfig.today,
+      startDate = appCalendarConfig.startDate,
+      endDate = appCalendarConfig.endDate,
+      firstDayOfWeek = appCalendarConfig.firstDayOfWeek,
+    ),
   contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
   WeekCalendar(
@@ -37,9 +38,11 @@ fun CaducityWeekCalendar(
     state = weekCalendarState,
     contentPadding = contentPadding,
     weekHeader = { week ->
-      val weekDays = week.days.map { weekDay ->
-        weekDay.date
-      }.toImmutableList()
+      val weekDays =
+        week.days
+          .map { weekDay ->
+            weekDay.date
+          }.toImmutableList()
       CalendarWeekDaysHeader(
         weekDays = weekDays,
         dayOfWeekNames = appCalendarConfig.daysOfWeekNames,

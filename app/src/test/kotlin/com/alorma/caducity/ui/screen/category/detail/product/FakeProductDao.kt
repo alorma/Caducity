@@ -12,34 +12,30 @@ import kotlinx.coroutines.flow.map
  */
 class FakeProductDao(
   private val productsInMemory: MutableStateFlow<List<ProductRoomEntity>>,
-  private val itemsInMemory: MutableStateFlow<List<com.alorma.caducity.data.datasource.room.model.ItemRoomEntity>>
+  private val itemsInMemory: MutableStateFlow<List<com.alorma.caducity.data.datasource.room.model.ItemRoomEntity>>,
 ) : ProductDao {
-
-  override fun getProductsByCategory(categoryId: String): Flow<List<ProductRoomEntity>> {
-    return productsInMemory.map { products ->
+  override fun getProductsByCategory(categoryId: String): Flow<List<ProductRoomEntity>> =
+    productsInMemory.map { products ->
       products.filter { it.categoryId == categoryId }
     }
-  }
 
-  override suspend fun getProduct(productId: String): ProductRoomEntity? {
-    return productsInMemory.value.firstOrNull { it.id == productId }
-  }
+  override suspend fun getProduct(productId: String): ProductRoomEntity? =
+    productsInMemory.value.firstOrNull {
+      it.id == productId
+    }
 
   override suspend fun insertProduct(product: ProductRoomEntity) {
     productsInMemory.value += product
   }
 
-  override suspend fun getAllProductsSync(): List<ProductRoomEntity> {
-    return productsInMemory.value
-  }
+  override suspend fun getAllProductsSync(): List<ProductRoomEntity> = productsInMemory.value
 
   override suspend fun deleteProduct(product: ProductRoomEntity) {
     productsInMemory.value = productsInMemory.value.filterNot { it.id == product.id }
   }
 
-  override suspend fun getActiveItemCount(productId: String): Int {
-    return itemsInMemory.value.count {
+  override suspend fun getActiveItemCount(productId: String): Int =
+    itemsInMemory.value.count {
       it.productId == productId && it.consumedDate == null
     }
-  }
 }

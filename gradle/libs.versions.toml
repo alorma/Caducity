@@ -40,7 +40,7 @@ firebaseCrashlytics = "3.0.6"
 
 strikt = "0.35.1"
 timber = "5.0.1"
-ktlint = "14.0.1"
+ktlint = "14.1.0"
 
 # Testing
 turbine = "1.2.1"

@@ -32,11 +32,12 @@ fun TrackScreen(
   val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
   DisposableEffect(lifecycleOwner, screen) {
-    val observer = LifecycleEventObserver { _, event ->
-      if (event == Lifecycle.Event.ON_START) {
-        eventTracker.trackScreen(screen)
+    val observer =
+      LifecycleEventObserver { _, event ->
+        if (event == Lifecycle.Event.ON_START) {
+          eventTracker.trackScreen(screen)
+        }
       }
-    }
 
     lifecycleOwner.lifecycle.addObserver(observer)
 

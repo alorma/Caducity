@@ -16,11 +16,11 @@ import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemSavedAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlin.time.Instant
 
 class CategoryDetailAddItemViewModel(
   private val categoryId: String,
@@ -33,10 +33,10 @@ class CategoryDetailAddItemViewModel(
   private val appClock: AppClock,
   private val expirationThresholds: ExpirationThresholds,
 ) : BaseViewModel<AddItemNavigation, AddItemNavigationSideEffect, AddItemSideEffect>() {
-
-  private val _state = MutableStateFlow<CategoryDetailAddItemState>(
-    CategoryDetailAddItemState.Loading
-  )
+  private val _state =
+    MutableStateFlow<CategoryDetailAddItemState>(
+      CategoryDetailAddItemState.Loading,
+    )
   val state: StateFlow<CategoryDetailAddItemState> = _state.asStateFlow()
 
   private val _formState = MutableStateFlow(FormState())
@@ -51,17 +51,20 @@ class CategoryDetailAddItemViewModel(
   private fun loadProducts() {
     viewModelScope.launch {
       _state.value = CategoryDetailAddItemState.Loading
-      getCategoryProductsUseCase.obtain(categoryId)
+      getCategoryProductsUseCase
+        .obtain(categoryId)
         .collect { products ->
-          allProducts = products.map { product ->
-            ProductUiModel(
-              id = product.id,
-              name = product.name,
+          allProducts =
+            products.map { product ->
+              ProductUiModel(
+                id = product.id,
+                name = product.name,
+              )
+            }
+          _state.value =
+            CategoryDetailAddItemState.Success(
+              products = allProducts,
             )
-          }
-          _state.value = CategoryDetailAddItemState.Success(
-            products = allProducts
-          )
 
           // Pre-select product if provided
           if (preSelectedProductId != null) {
@@ -75,33 +78,42 @@ class CategoryDetailAddItemViewModel(
   }
 
   fun onProductTextChanged(text: TextFieldValue) {
-    _formState.value = _formState.value.copy(
-      productText = text,
-      selectedcategoryId = null // Clear selection when user types
-    )
+    _formState.value =
+      _formState.value.copy(
+        productText = text,
+        selectedcategoryId = null, // Clear selection when user types
+      )
   }
 
-  fun onProductSelected(categoryId: String, productName: String) {
-    _formState.value = _formState.value.copy(
-      productText = TextFieldValue(
-        text = productName,
-        selection = TextRange(productName.length),
-      ),
-      selectedcategoryId = categoryId
-    )
+  fun onProductSelected(
+    categoryId: String,
+    productName: String,
+  ) {
+    _formState.value =
+      _formState.value.copy(
+        productText =
+          TextFieldValue(
+            text = productName,
+            selection = TextRange(productName.length),
+          ),
+        selectedcategoryId = categoryId,
+      )
   }
 
   fun getFilteredProducts(): List<ProductUiModel> {
-    val query = _formState.value.productText.text.lowercase()
+    val query =
+      _formState.value.productText.text
+        .lowercase()
     if (query.isEmpty()) return allProducts
     return allProducts.filter { it.name.lowercase().contains(query) }
   }
 
   fun onIdentifierTextChanged(text: TextFieldValue) {
-    _formState.value = _formState.value.copy(
-      identifierText = text,
-      identifierError = null // Clear error when user types
-    )
+    _formState.value =
+      _formState.value.copy(
+        identifierText = text,
+        identifierError = null, // Clear error when user types
+      )
   }
 
   fun onShowDatePicker() {
@@ -112,20 +124,22 @@ class CategoryDetailAddItemViewModel(
     if (dateMillis == null) return AppFeedbackType.Info
 
     val selectedDate = Instant.fromEpochMilliseconds(dateMillis)
-    return ItemStatus.calculateStatus(
-      expirationDate = selectedDate,
-      now = appClock.now(),
-      soonExpiringThreshold = expirationThresholds.soonExpiringThreshold
-    ).let {
-      AppFeedbackType.Status(it)
-    }
+    return ItemStatus
+      .calculateStatus(
+        expirationDate = selectedDate,
+        now = appClock.now(),
+        soonExpiringThreshold = expirationThresholds.soonExpiringThreshold,
+      ).let {
+        AppFeedbackType.Status(it)
+      }
   }
 
   fun onExpirationDateChanged(dateMillis: Long?) {
-    _formState.value = _formState.value.copy(
-      expirationDateMillis = dateMillis,
-      expirationDateError = null // Clear error when user selects date
-    )
+    _formState.value =
+      _formState.value.copy(
+        expirationDateMillis = dateMillis,
+        expirationDateError = null, // Clear error when user selects date
+      )
   }
 
   fun onQuantityChanged(quantity: Int) {
@@ -133,10 +147,11 @@ class CategoryDetailAddItemViewModel(
   }
 
   fun onShowCustomQuantityInputChanged(show: Boolean) {
-    _formState.value = _formState.value.copy(
-      showCustomQuantityInput = show,
-      customQuantity = if (!show) TextFieldValue() else _formState.value.customQuantity
-    )
+    _formState.value =
+      _formState.value.copy(
+        showCustomQuantityInput = show,
+        customQuantity = if (!show) TextFieldValue() else _formState.value.customQuantity,
+      )
   }
 
   fun onCustomQuantityChanged(text: TextFieldValue) {
@@ -144,18 +159,20 @@ class CategoryDetailAddItemViewModel(
   }
 
   fun onItemTypeChanged(itemType: ItemType) {
-    _formState.value = _formState.value.copy(
-      itemType = itemType,
-      packSize = if (itemType == ItemType.SINGLE) TextFieldValue() else _formState.value.packSize,
-      packSizeError = null // Clear error when switching
-    )
+    _formState.value =
+      _formState.value.copy(
+        itemType = itemType,
+        packSize = if (itemType == ItemType.SINGLE) TextFieldValue() else _formState.value.packSize,
+        packSizeError = null, // Clear error when switching
+      )
   }
 
   fun onPackSizeChanged(text: TextFieldValue) {
-    _formState.value = _formState.value.copy(
-      packSize = text,
-      packSizeError = null // Clear error when user types
-    )
+    _formState.value =
+      _formState.value.copy(
+        packSize = text,
+        packSizeError = null, // Clear error when user types
+      )
   }
 
   fun save() {
@@ -166,33 +183,37 @@ class CategoryDetailAddItemViewModel(
 
       // Validation: Either product or identifier must be provided
       if (productText.isEmpty() && identifierText.isEmpty()) {
-        _formState.value = currentFormState.copy(
-          identifierError = "Either product or identifier must be provided"
-        )
+        _formState.value =
+          currentFormState.copy(
+            identifierError = "Either product or identifier must be provided",
+          )
         return@launch
       }
 
       // Validation: Expiration date must be provided
       if (currentFormState.expirationDateMillis == null) {
-        _formState.value = currentFormState.copy(
-          expirationDateError = "Expiration date is required"
-        )
+        _formState.value =
+          currentFormState.copy(
+            expirationDateError = "Expiration date is required",
+          )
         return@launch
       }
 
       // Validation: Pack size must be valid if pack is selected
       if (currentFormState.itemType == ItemType.PACK) {
         if (currentFormState.packSize.text.isBlank()) {
-          _formState.value = currentFormState.copy(
-            packSizeError = "Pack size is required"
-          )
+          _formState.value =
+            currentFormState.copy(
+              packSizeError = "Pack size is required",
+            )
           return@launch
         }
         val packSizeValue = currentFormState.packSize.text.toIntOrNull()
         if (packSizeValue == null || packSizeValue < 2) {
-          _formState.value = currentFormState.copy(
-            packSizeError = "Pack size must be at least 2"
-          )
+          _formState.value =
+            currentFormState.copy(
+              packSizeError = "Pack size must be at least 2",
+            )
           return@launch
         }
       }
@@ -200,30 +221,34 @@ class CategoryDetailAddItemViewModel(
       // Determine quantity
       val quantity =
         if (currentFormState.showCustomQuantityInput && currentFormState.customQuantity.text.isNotBlank()) {
-          currentFormState.customQuantity.text.toIntOrNull()?.coerceAtLeast(1) ?: 1
+          currentFormState.customQuantity.text
+            .toIntOrNull()
+            ?.coerceAtLeast(1) ?: 1
         } else {
           currentFormState.quantity
         }
 
       // Determine pack size
-      val packSize = if (currentFormState.itemType == ItemType.PACK && currentFormState.packSize.text.isNotBlank()) {
-        // At this point, we know packSize is valid (≥ 2) due to validation above
-        currentFormState.packSize.text.toIntOrNull()
-      } else {
-        null
-      }
+      val packSize =
+        if (currentFormState.itemType == ItemType.PACK && currentFormState.packSize.text.isNotBlank()) {
+          // At this point, we know packSize is valid (≥ 2) due to validation above
+          currentFormState.packSize.text.toIntOrNull()
+        } else {
+          null
+        }
 
       try {
         // Determine product ID (use existing or create new)
-        val productId = if (productText.isEmpty()) {
-          null
-        } else if (currentFormState.selectedcategoryId != null) {
-          currentFormState.selectedcategoryId
-        } else {
-          // Create new product
-          val result = createProductUseCase.create(categoryId, productText)
-          result.getOrThrow().id
-        }
+        val productId =
+          if (productText.isEmpty()) {
+            null
+          } else if (currentFormState.selectedcategoryId != null) {
+            currentFormState.selectedcategoryId
+          } else {
+            // Create new product
+            val result = createProductUseCase.create(categoryId, productText)
+            result.getOrThrow().id
+          }
 
         // Convert selected date from milliseconds to Instant
         val expirationDate = Instant.fromEpochMilliseconds(currentFormState.expirationDateMillis)
@@ -231,18 +256,19 @@ class CategoryDetailAddItemViewModel(
         // Create multiple items
         repeat(quantity) { index ->
           // Determine identifier for each item
-          val identifier = if (identifierText.isEmpty()) {
-            // Empty identifier: auto-generate localized "Item #X"
-            val itemNumber = index + 1
-            val itemLabel = stringProvider.getString(R.string.category_detail_auto_identifier_item)
-            "$itemLabel #$itemNumber"
-          } else if (quantity > 1) {
-            // Multiple items with provided identifier: append " - N"
-            "$identifierText - ${index + 1}"
-          } else {
-            // Single item with provided identifier: use as-is
-            identifierText
-          }
+          val identifier =
+            if (identifierText.isEmpty()) {
+              // Empty identifier: auto-generate localized "Item #X"
+              val itemNumber = index + 1
+              val itemLabel = stringProvider.getString(R.string.category_detail_auto_identifier_item)
+              "$itemLabel #$itemNumber"
+            } else if (quantity > 1) {
+              // Multiple items with provided identifier: append " - N"
+              "$identifierText - ${index + 1}"
+            } else {
+              // Single item with provided identifier: use as-is
+              identifierText
+            }
 
           addItemToCategoryUseCase.addItem(
             categoryId = this@CategoryDetailAddItemViewModel.categoryId,
@@ -293,11 +319,17 @@ data class FormState(
 
 enum class ItemType {
   SINGLE,
-  PACK
+  PACK,
 }
 
 sealed interface CategoryDetailAddItemState {
   data object Loading : CategoryDetailAddItemState
-  data class Success(val products: List<ProductUiModel>) : CategoryDetailAddItemState
-  data class Error(val message: String) : CategoryDetailAddItemState
+
+  data class Success(
+    val products: List<ProductUiModel>,
+  ) : CategoryDetailAddItemState
+
+  data class Error(
+    val message: String,
+  ) : CategoryDetailAddItemState
 }

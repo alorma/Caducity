@@ -6,12 +6,13 @@ import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val workersModule = module {
-  workerOf(::ExpirationCheckWorker)
+val workersModule =
+  module {
+    workerOf(::ExpirationCheckWorker)
 
-  singleOf(::NotificationDelayCalculator)
+    singleOf(::NotificationDelayCalculator)
 
-  singleOf(::ExpirationWorkSchedulerImpl) {
-    bind<ExpirationWorkScheduler>()
+    singleOf(::ExpirationWorkSchedulerImpl) {
+      bind<ExpirationWorkScheduler>()
+    }
   }
-}

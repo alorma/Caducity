@@ -11,7 +11,6 @@ import kotlinx.datetime.atStartOfDayIn
 class FutureDateSelectableDates(
   private val appClock: AppClock,
 ) : SelectableDates {
-
   private val todayMillis: Long by lazy {
     val now = appClock.now()
     val today = now.date()
@@ -19,9 +18,7 @@ class FutureDateSelectableDates(
     todayStart.toEpochMilliseconds()
   }
 
-  override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-    return utcTimeMillis >= todayMillis
-  }
+  override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis >= todayMillis
 
   override fun isSelectableYear(year: Int): Boolean {
     val currentYear = appClock.nowDate().year

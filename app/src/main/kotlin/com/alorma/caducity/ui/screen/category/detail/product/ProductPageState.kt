@@ -15,5 +15,7 @@ sealed interface ProductPageState {
     val consumedItems: ImmutableList<ItemDetailUiModel>,
   ) : ProductPageState
 
-  data class Error(val message: String) : ProductPageState
+  data class Error(
+    val message: String,
+  ) : ProductPageState
 }

@@ -26,7 +26,7 @@ fun NavigationIcon() {
   IconButton(
     onClick = {
       localBackPress?.onBackPressedDispatcher?.onBackPressed()
-    }
+    },
   ) {
     Icon(
       imageVector = AppIcons.Back,

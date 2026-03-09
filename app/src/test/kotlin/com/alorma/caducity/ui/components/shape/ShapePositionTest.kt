@@ -5,7 +5,6 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 class ShapePositionTest {
-
   @Test
   fun `calculateShapeWithGaps returns None for out of bounds index`() {
     val list = listOf("A", "B", "C")
@@ -108,15 +107,19 @@ class ShapePositionTest {
 
   @Test
   fun `calculateShapeWithGaps with custom data class`() {
-    data class Item(val id: Int, val visible: Boolean)
-
-    val list = listOf(
-      Item(1, true),
-      Item(2, false),
-      Item(3, true),
-      Item(4, true),
-      Item(5, false),
+    data class Item(
+      val id: Int,
+      val visible: Boolean,
     )
+
+    val list =
+      listOf(
+        Item(1, true),
+        Item(2, false),
+        Item(3, true),
+        Item(4, true),
+        Item(5, false),
+      )
     val hasContent: (Item) -> Boolean = { it.visible }
 
     // Item 1 is isolated

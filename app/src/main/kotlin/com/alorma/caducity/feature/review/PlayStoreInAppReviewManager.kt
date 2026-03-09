@@ -10,19 +10,18 @@ import kotlinx.coroutines.tasks.await
  * Uses the Play Core library to request in-app reviews.
  */
 class PlayStoreInAppReviewManager : InAppReviewManager {
-  override suspend fun requestReview(activity: Activity): Result<Unit> {
-    return try {
+  override suspend fun requestReview(activity: Activity): Result<Unit> =
+    try {
       val reviewManager = ReviewManagerFactory.create(activity)
-      
+
       // Request a ReviewInfo object
       val reviewInfo: ReviewInfo = reviewManager.requestReviewFlow().await()
-      
+
       // Launch the in-app review flow
       reviewManager.launchReviewFlow(activity, reviewInfo).await()
-      
+
       Result.success(Unit)
     } catch (e: Exception) {
       Result.failure(e)
     }
-  }
 }
