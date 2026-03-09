@@ -148,8 +148,6 @@ dependencies {
   implementation(libs.multiplatform.settings.no.arg)
   implementation(libs.fireandforget.core)
   implementation(libs.fireandforget.multiplatform.settings)
-  implementation(libs.alorma.settings.ui.tiles)
-  implementation(libs.alorma.settings.ui.tiles.extended)
   implementation(libs.alorma.settings.ui.tiles.expressive)
 
   // Koin
