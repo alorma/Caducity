@@ -1,13 +1,15 @@
 package com.alorma.caducity.feature.notification.worker
 
 import android.content.Context
-import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.alorma.caducity.domain.model.CategoryWithItems
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import com.alorma.caducity.feature.notification.NotificationItem
+import com.alorma.caducity.feature.notification.NotificationProduct
+import timber.log.Timber
 
 /**
  * WorkManager worker that checks for expiring categories and shows notifications.
@@ -18,10 +20,9 @@ import org.koin.core.component.inject
 class ExpirationCheckWorker(
   context: Context,
   params: WorkerParameters,
-) : CoroutineWorker(context, params), KoinComponent {
-
-  private val getExpiringCategoriesUseCase: GetExpiringCategoriesUseCase by inject()
-  private val notificationHelper: ExpirationNotificationHelper by inject()
+  private val getExpiringCategoriesUseCase: GetExpiringCategoriesUseCase,
+  private val notificationHelper: ExpirationNotificationHelper,
+) : CoroutineWorker(context, params) {
 
   companion object {
     private const val TAG = "ExpirationCheckWorker"
@@ -30,25 +31,63 @@ class ExpirationCheckWorker(
 
   override suspend fun doWork(): Result {
     return try {
-      Log.d(TAG, "Starting expiration check...")
+      Timber.tag(TAG).d("Starting expiration check...")
 
-      // Get categories with items expiring soon
-      val expiringCategories = getExpiringCategoriesUseCase.load()
+      val allCategories = getExpiringCategoriesUseCase.load()
+      Timber.tag(TAG).d("Found ${allCategories.size} categories with expiring/expired items")
 
-      Log.d(TAG, "Found ${expiringCategories.size} expiring categories")
-
-      // Show notification if there are expiring categories
-      if (expiringCategories.isNotEmpty()) {
-        notificationHelper.showExpirationNotification(expiringCategories)
-        Log.d(TAG, "Notification shown for ${expiringCategories.size} categories")
-      } else {
-        Log.d(TAG, "No expiring categories, skipping notification")
+      allCategories.forEach { category ->
+        buildNotificationProducts(category, ItemStatus.ExpiringSoon).forEach {
+          notificationHelper.showExpiringSoonNotification(it)
+        }
+        buildNotificationProducts(category, ItemStatus.Expired).forEach {
+          notificationHelper.showExpiredNotification(it)
+        }
       }
 
       Result.success()
     } catch (e: Exception) {
-      Log.e(TAG, "Error checking expiring categories", e)
+      Timber.tag(TAG).e(e)
       Result.retry()
     }
+  }
+
+  private fun buildNotificationProducts(
+    category: CategoryWithItems,
+    status: ItemStatus,
+  ): List<NotificationProduct> {
+    val results = mutableListOf<NotificationProduct>()
+
+    // One notification per product
+    category.products.forEach { categoryProduct ->
+      val matchingItems = categoryProduct.items.filter { it.status == status }
+      if (matchingItems.isNotEmpty()) {
+        results.add(
+          NotificationProduct(
+            notificationId = (category.category.id + categoryProduct.product.id + status).hashCode(),
+            title = categoryProduct.product.name,
+            items = matchingItems.map { NotificationItem(it.identifier.takeIf { id -> id.isNotBlank() }) },
+            categoryId = category.category.id,
+            productId = categoryProduct.product.id,
+          )
+        )
+      }
+    }
+
+    // Standalone items grouped under the category name
+    val standaloneItems = category.standaloneItems.filter { it.status == status }
+    if (standaloneItems.isNotEmpty()) {
+      results.add(
+        NotificationProduct(
+          notificationId = (category.category.id + "standalone" + status).hashCode(),
+          title = category.category.name,
+          items = standaloneItems.map { NotificationItem(it.identifier.takeIf { id -> id.isNotBlank() }) },
+          categoryId = category.category.id,
+          productId = null,
+        )
+      )
+    }
+
+    return results
   }
 }

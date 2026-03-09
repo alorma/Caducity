@@ -9,6 +9,8 @@ import org.koin.dsl.module
 val workersModule = module {
   workerOf(::ExpirationCheckWorker)
 
+  singleOf(::NotificationDelayCalculator)
+
   singleOf(::ExpirationWorkSchedulerImpl) {
     bind<ExpirationWorkScheduler>()
   }

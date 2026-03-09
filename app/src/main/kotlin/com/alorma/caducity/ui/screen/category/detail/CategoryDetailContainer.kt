@@ -26,6 +26,7 @@ import org.koin.core.parameter.parametersOf
 fun CategoryDetailContainer(
   categoryId: String,
   onBack: () -> Unit,
+  initialProductId: String? = null,
   modifier: Modifier = Modifier,
 ) {
   val productDetailBackStack = retain {
@@ -80,6 +81,7 @@ fun CategoryDetailContainer(
 
         CategoryDetailScreen(
           categoryId = it.categoryId,
+          initialProductId = initialProductId,
           viewModel = viewModel,
         )
       }

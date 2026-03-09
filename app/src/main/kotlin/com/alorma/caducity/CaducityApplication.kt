@@ -3,6 +3,7 @@ package com.alorma.caducity
 import android.app.Application
 import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.di.appModule
+import com.alorma.caducity.domain.NotificationConfigDataSource
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.notification.NotificationChannelManager
 import com.google.firebase.Firebase
@@ -31,6 +32,7 @@ import timber.log.Timber
 class CaducityApplication : Application() {
 
   private val workScheduler: ExpirationWorkScheduler by inject()
+  private val notificationConfigDataSource: NotificationConfigDataSource by inject()
   private val remoteConfigRunner: RemoteConfigRunner by inject()
   
   // Application-scoped coroutine scope for background operations
@@ -57,8 +59,11 @@ class CaducityApplication : Application() {
     // Create notification channels
     NotificationChannelManager.createNotificationChannels(this)
 
-    // Schedule expiration check work
-    workScheduler.scheduleExpirationCheck()
+    // Schedule expiration check work at the user-configured time
+    applicationScope.launch {
+      val notificationTime = notificationConfigDataSource.getNotificationTime()
+      workScheduler.scheduleExpirationCheck(notificationTime)
+    }
 
     // Initialize Remote Config (fetch and activate in background)
     initializeRemoteConfig()

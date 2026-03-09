@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,10 +18,13 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.toBitmap
 import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
-import com.alorma.caducity.domain.model.CategoryWithItems
+import com.alorma.caducity.config.resources.StringProvider
+import com.alorma.caducity.domain.NotificationConfigDataSource
+import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.datetime.LocalTime
 
 /**
  * Android implementation of ExpirationNotificationHelper.
@@ -31,6 +33,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 class AndroidExpirationNotificationHelper(
   private val context: Context,
   private val settings: Settings,
+  private val workScheduler: ExpirationWorkScheduler,
+  private val stringProvider: StringProvider,
 ) : ExpirationNotificationHelper {
 
   private val notifications: MutableState<Boolean> =
@@ -45,6 +49,9 @@ class AndroidExpirationNotificationHelper(
   private val expiringSoonNotifications: MutableState<Boolean> =
     mutableStateOf(settings.getBoolean(ExpiringSoonNotificationsEnabledKey, true))
 
+  private val notificationTime: MutableState<LocalTime> =
+    mutableStateOf(readNotificationTime())
+
   // Cache large icon bitmap to avoid repeated conversions
   private val largeIconBitmap by lazy {
     ContextCompat.getDrawable(context, R.drawable.ic_launcher_foreground)?.toBitmap()
@@ -53,6 +60,14 @@ class AndroidExpirationNotificationHelper(
   private fun checkNotificationPermission(): Boolean {
     return context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
         PackageManager.PERMISSION_GRANTED
+  }
+
+  private fun readNotificationTime(): LocalTime {
+    val secondsFromMidnight = settings.getInt(
+      key = NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS,
+      defaultValue = NotificationConfigDataSource.DEFAULT_TIME.toSecondOfDay(),
+    )
+    return LocalTime.fromSecondOfDay(secondsFromMidnight)
   }
 
   override val result: MutableSharedFlow<Any> = MutableSharedFlow()
@@ -99,59 +114,70 @@ class AndroidExpirationNotificationHelper(
     return checkNotificationPermission()
   }
 
-  override fun showExpirationNotification(expiringProducts: List<CategoryWithItems>) {
-    if (!areNotificationsEnabled().value) {
-      return
-    }
+  override fun showExpiringSoonNotification(product: NotificationProduct) {
+    if (!areNotificationsEnabled().value || !areExpiringSoonNotificationsEnabled().value) return
+    showProductNotification(
+      product = product,
+      channelId = NotificationChannelManager.CHANNEL_ID_EXPIRING_SOON,
+      priority = NotificationCompat.PRIORITY_DEFAULT,
+    )
+  }
 
-    if (expiringProducts.isEmpty()) {
-      return
-    }
+  override fun showExpiredNotification(product: NotificationProduct) {
+    if (!areNotificationsEnabled().value || !areExpiredNotificationsEnabled().value) return
+    showProductNotification(
+      product = product,
+      channelId = NotificationChannelManager.CHANNEL_ID_EXPIRED,
+      priority = NotificationCompat.PRIORITY_HIGH,
+    )
+  }
 
+  private fun showProductNotification(
+    product: NotificationProduct,
+    channelId: String,
+    priority: Int,
+  ) {
     val notificationManager = context.getSystemService<NotificationManager>()
 
-    // Create intent to open app with filtered view
     val intent = Intent(context, MainActivity::class.java).apply {
       flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+      putExtra(
+        MainActivity.EXTRA_DEEP_LINK_ACTION,
+        DeepLinkAction.OpenProduct(categoryId = product.categoryId, productId = product.productId),
+      )
     }
-
     val pendingIntent = PendingIntent.getActivity(
       context,
-      0,
+      product.notificationId,
       intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
 
-    // Build notification
-    val notification =
-      NotificationCompat.Builder(context, NotificationChannelManager.CHANNEL_ID_EXPIRATION)
-        .setSmallIcon(R.drawable.ic_notification)
-        .also { builder ->
-          largeIconBitmap?.let { builder.setLargeIcon(it) }
-        }
-        .setContentTitle(buildNotificationTitle(expiringProducts.size))
-        .setContentText(buildNotificationText(expiringProducts))
-        .setPriority(NotificationCompat.PRIORITY_HIGH)
-        .setAutoCancel(true)
-        .setContentIntent(pendingIntent)
-        .build()
+    val itemLines = buildItemLines(product.items)
+    val builder = NotificationCompat.Builder(context, channelId)
+      .setSmallIcon(R.drawable.ic_notification)
+      .also { b -> largeIconBitmap?.let { b.setLargeIcon(it) } }
+      .setContentTitle(product.title)
+      .setContentText(itemLines.firstOrNull() ?: "")
+      .setPriority(priority)
+      .setAutoCancel(true)
+      .setContentIntent(pendingIntent)
 
-    notificationManager?.notify(NOTIFICATION_ID, notification)
-  }
-
-  private fun buildNotificationTitle(count: Int): String {
-    return if (count == 1) {
-      "Category expiring soon"
-    } else {
-      "$count categories expiring soon"
+    if (itemLines.size > 1) {
+      val style = NotificationCompat.InboxStyle().setBigContentTitle(product.title)
+      itemLines.forEach { style.addLine(it) }
+      builder.setStyle(style)
     }
+
+    notificationManager?.notify(product.notificationId, builder.build())
   }
 
-  private fun buildNotificationText(categories: List<CategoryWithItems>): String {
-    return if (categories.size == 1) {
-      categories.first().category.name
+  private fun buildItemLines(items: List<NotificationItem>): List<String> {
+    val named = items.mapNotNull { it.identifier?.takeIf { id -> id.isNotBlank() } }
+    return if (named.isNotEmpty()) {
+      named
     } else {
-      "${categories.first().category.name} and ${categories.size - 1} more"
+      listOf(stringProvider.getString(R.string.notification_items_count, items.size))
     }
   }
 
@@ -186,8 +212,15 @@ class AndroidExpirationNotificationHelper(
     expiringSoonNotifications.value = enabled
   }
 
+  override fun getNotificationTime(): MutableState<LocalTime> = notificationTime
+
+  override fun setNotificationTime(time: LocalTime) {
+    settings[NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS] = time.toSecondOfDay()
+    notificationTime.value = time
+    workScheduler.rescheduleExpirationCheck(time)
+  }
+
   companion object {
-    private const val NOTIFICATION_ID = 1001
     private const val NotificationsEnabledKey = "notifications_enabled_key"
     private const val ExpiredNotificationsEnabledKey = "notifications_expired_enabled_key"
     private const val ExpiringSoonNotificationsEnabledKey = "notifications_expiring_soon_enabled_key"
