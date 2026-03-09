@@ -7,11 +7,11 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-val dashboardModule = module {
-  singleOf(::CalendarPreferences)
-  singleOf(::AppCalendarConfigMapper)
-  singleOf(::ObtainDashboardUseCase)
-  singleOf(::DashboardMapper)
-  viewModelOf(::DashboardViewModel)
-
-}
+val dashboardModule =
+  module {
+    singleOf(::CalendarPreferences)
+    singleOf(::AppCalendarConfigMapper)
+    singleOf(::ObtainDashboardUseCase)
+    singleOf(::DashboardMapper)
+    viewModelOf(::DashboardViewModel)
+  }

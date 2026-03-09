@@ -39,28 +39,31 @@ fun ResponsiveCenteredContainer(
 
   if (isExpanded) {
     Box(
-      modifier = if (fillHeight) {
-        modifier.fillMaxSize()
-      } else {
-        modifier.fillMaxWidth()
-      },
+      modifier =
+        if (fillHeight) {
+          modifier.fillMaxSize()
+        } else {
+          modifier.fillMaxWidth()
+        },
       contentAlignment = Alignment.TopCenter,
     ) {
       Box(
-        modifier = Modifier
-          .widthIn(max = maxWidth)
-          .fillMaxWidth()
+        modifier =
+          Modifier
+            .widthIn(max = maxWidth)
+            .fillMaxWidth(),
       ) {
         content()
       }
     }
   } else {
     Box(
-      modifier = if (fillHeight) {
-        modifier.fillMaxSize()
-      } else {
-        modifier.fillMaxWidth()
-      }
+      modifier =
+        if (fillHeight) {
+          modifier.fillMaxSize()
+        } else {
+          modifier.fillMaxWidth()
+        },
     ) {
       content()
     }

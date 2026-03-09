@@ -33,7 +33,6 @@ import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarSt
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
@@ -47,7 +46,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun BackupScreen(
   modifier: Modifier = Modifier,
   viewModel: BackupViewModel = koinViewModel(),
-  backupFileHandler: BackupFileHandler = koinInject()
+  backupFileHandler: BackupFileHandler = koinInject(),
 ) {
   TrackScreen(screen = BackupScreenEvent())
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -87,12 +86,13 @@ fun BackupScreen(
 
         is BackupSideEffect.Error -> {
           launch {
-            val errorMessage = when (sideEffect.error) {
-              is BackupError.ExportFailed -> R.string.backup_error_export_failed
-              is BackupError.RestoreFailed -> R.string.backup_error_restore_failed
-              is BackupError.InvalidFile -> R.string.backup_error_invalid_file
-              is BackupError.VersionMismatch -> R.string.backup_error_version_mismatch
-            }
+            val errorMessage =
+              when (sideEffect.error) {
+                is BackupError.ExportFailed -> R.string.backup_error_export_failed
+                is BackupError.RestoreFailed -> R.string.backup_error_restore_failed
+                is BackupError.InvalidFile -> R.string.backup_error_invalid_file
+                is BackupError.VersionMismatch -> R.string.backup_error_version_mismatch
+              }
             snackbarHostState.showSnackbar(
               message = errorMessage,
               type = AppFeedbackType.Error,
@@ -101,13 +101,14 @@ fun BackupScreen(
         }
 
         is BackupSideEffect.ConfirmRestore -> {
-          val result = dialogState.showAlertDialog(
-            type = AppFeedbackType.Success,
-            title = { Text(stringResource(R.string.backup_restore_warning_title)) },
-            content = { Text(stringResource(R.string.backup_restore_warning_message)) },
-            positiveButton = { Text(stringResource(R.string.backup_restore_confirm)) },
-            negativeButton = { Text(stringResource(R.string.backup_cancel)) },
-          )
+          val result =
+            dialogState.showAlertDialog(
+              type = AppFeedbackType.Success,
+              title = { Text(stringResource(R.string.backup_restore_warning_title)) },
+              content = { Text(stringResource(R.string.backup_restore_warning_message)) },
+              positiveButton = { Text(stringResource(R.string.backup_restore_confirm)) },
+              negativeButton = { Text(stringResource(R.string.backup_cancel)) },
+            )
 
           if (result is DialogResult.Positive) {
             viewModel.onRestoreConfirmed(sideEffect.uri)
@@ -117,16 +118,16 @@ fun BackupScreen(
     }
   }
 
-
   Box(modifier) {
     when (uiState) {
       BackupUiState.Loading -> FullscreenLoading()
-      BackupUiState.Idle -> BackupScreenContent(
-        dialogState = dialogState,
-        snackbarHostState = snackbarHostState,
-        onExport = { backupFileHandler.createBackup() },
-        onRestore = { backupFileHandler.selectBackup() },
-      )
+      BackupUiState.Idle ->
+        BackupScreenContent(
+          dialogState = dialogState,
+          snackbarHostState = snackbarHostState,
+          onExport = { backupFileHandler.createBackup() },
+          onRestore = { backupFileHandler.selectBackup() },
+        )
     }
   }
 }
@@ -162,7 +163,7 @@ private fun BackupScreenContent(
         // Export & Restore Group
         item {
           StyledSettingsGroup(
-            title = { Text(stringResource(R.string.settings_backup_title)) }
+            title = { Text(stringResource(R.string.settings_backup_title)) },
           ) {
             StyledSettingsCard(
               icon = {

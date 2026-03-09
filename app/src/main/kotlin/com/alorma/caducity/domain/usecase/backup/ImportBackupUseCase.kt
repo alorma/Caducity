@@ -4,7 +4,7 @@ import com.alorma.caducity.data.backup.BackupData
 import com.alorma.caducity.domain.backup.BackupDataSource
 
 class ImportBackupUseCase(
-  private val backupDataSource: BackupDataSource
+  private val backupDataSource: BackupDataSource,
 ) {
   suspend fun import(backup: BackupData): Result<Unit> {
     return try {

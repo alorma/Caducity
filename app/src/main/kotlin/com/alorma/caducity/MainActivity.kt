@@ -13,7 +13,6 @@ import com.alorma.caducity.ui.theme.LocalSystemBarsAppearance
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
-
   private val consentManager: ConsentManager by inject()
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,15 +23,16 @@ class MainActivity : AppCompatActivity() {
 
     enableEdgeToEdge()
 
-    val deepLinkAction = BundleCompat.getParcelable(
-      intent.extras ?: Bundle.EMPTY,
-      EXTRA_DEEP_LINK_ACTION,
-      DeepLinkAction::class.java,
-    )
+    val deepLinkAction =
+      BundleCompat.getParcelable(
+        intent.extras ?: Bundle.EMPTY,
+        EXTRA_DEEP_LINK_ACTION,
+        DeepLinkAction::class.java,
+      )
 
     setContent {
       CompositionLocalProvider(
-        LocalSystemBarsAppearance provides AndroidSystemBarsAppearance(this)
+        LocalSystemBarsAppearance provides AndroidSystemBarsAppearance(this),
       ) {
         App(deepLinkAction = deepLinkAction)
       }

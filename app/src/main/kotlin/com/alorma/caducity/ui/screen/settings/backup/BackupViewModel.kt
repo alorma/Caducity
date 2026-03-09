@@ -14,9 +14,8 @@ import kotlinx.coroutines.launch
 class BackupViewModel(
   private val exportBackupUseCase: ExportBackupUseCase,
   private val importBackupUseCase: ImportBackupUseCase,
-  private val backupFileHandler: BackupFileHandler
+  private val backupFileHandler: BackupFileHandler,
 ) : BaseViewModel<Unit, BackupSideEffect, BackupSideEffect>() {
-
   private val _uiState = MutableStateFlow<BackupUiState>(BackupUiState.Idle)
   val uiState: StateFlow<BackupUiState> = _uiState.asStateFlow()
 
@@ -34,13 +33,13 @@ class BackupViewModel(
               onFailure = { error ->
                 _uiState.value = BackupUiState.Idle
                 emitSideEffect(BackupSideEffect.Error(BackupError.ExportFailed(error.message)))
-              }
+              },
             )
           },
           onFailure = { error ->
             _uiState.value = BackupUiState.Idle
             emitSideEffect(BackupSideEffect.Error(BackupError.ExportFailed(error.message)))
-          }
+          },
         )
       } catch (e: Exception) {
         _uiState.value = BackupUiState.Idle
@@ -50,7 +49,6 @@ class BackupViewModel(
   }
 
   fun onRestoreConfirmed(uri: Uri) {
-
     viewModelScope.launch {
       _uiState.value = BackupUiState.Loading
       try {
@@ -63,21 +61,22 @@ class BackupViewModel(
               },
               onFailure = { error ->
                 _uiState.value = BackupUiState.Idle
-                val backupError = when {
-                  error.message?.contains("version", ignoreCase = true) == true ->
-                    BackupError.VersionMismatch
+                val backupError =
+                  when {
+                    error.message?.contains("version", ignoreCase = true) == true ->
+                      BackupError.VersionMismatch
 
-                  else ->
-                    BackupError.RestoreFailed(error.message)
-                }
+                    else ->
+                      BackupError.RestoreFailed(error.message)
+                  }
                 emitSideEffect(BackupSideEffect.Error(backupError))
-              }
+              },
             )
           },
           onFailure = { error ->
             _uiState.value = BackupUiState.Idle
             emitSideEffect(BackupSideEffect.Error(BackupError.InvalidFile(error.message)))
-          }
+          },
         )
       } catch (e: Exception) {
         _uiState.value = BackupUiState.Idle
@@ -107,19 +106,36 @@ class BackupViewModel(
 
 sealed interface BackupUiState {
   data object Idle : BackupUiState
+
   data object Loading : BackupUiState
 }
 
 sealed interface BackupSideEffect {
   data object ExportSuccess : BackupSideEffect
+
   data object RestoreSuccess : BackupSideEffect
-  data class Error(val error: BackupError) : BackupSideEffect
-  data class ConfirmRestore(val uri: Uri) : BackupSideEffect
+
+  data class Error(
+    val error: BackupError,
+  ) : BackupSideEffect
+
+  data class ConfirmRestore(
+    val uri: Uri,
+  ) : BackupSideEffect
 }
 
 sealed interface BackupError {
-  data class ExportFailed(val message: String?) : BackupError
-  data class RestoreFailed(val message: String?) : BackupError
-  data class InvalidFile(val message: String?) : BackupError
+  data class ExportFailed(
+    val message: String?,
+  ) : BackupError
+
+  data class RestoreFailed(
+    val message: String?,
+  ) : BackupError
+
+  data class InvalidFile(
+    val message: String?,
+  ) : BackupError
+
   data object VersionMismatch : BackupError
 }

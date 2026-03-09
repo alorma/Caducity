@@ -16,10 +16,12 @@ import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
     ProductRoomEntity::class,
   ],
   version = 2,
-  exportSchema = true
+  exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
   abstract fun categoryDao(): CategoryDao
+
   abstract fun itemDao(): ItemDao
+
   abstract fun productDao(): ProductDao
 }

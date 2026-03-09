@@ -11,7 +11,10 @@ interface CategoryDataSource {
 
   fun getCategory(categoryId: String): Flow<Result<CategoryWithItems>>
 
-  suspend fun createCategory(category: Category, items: ImmutableList<Item>)
+  suspend fun createCategory(
+    category: Category,
+    items: ImmutableList<Item>,
+  )
 
   suspend fun deleteCategory(categoryId: String)
 }

@@ -34,12 +34,13 @@ fun StyledSettingsCard(
         fontWeight = FontWeight.SemiBold,
       )
     },
-    subtitle = if (subtitle != null
-    ) {
-      { Text(text = subtitle) }
-    } else {
-      null
-    },
+    subtitle =
+      if (subtitle != null
+      ) {
+        { Text(text = subtitle) }
+      } else {
+        null
+      },
     action = action,
     onClick = onClick,
     enabled = enabled,

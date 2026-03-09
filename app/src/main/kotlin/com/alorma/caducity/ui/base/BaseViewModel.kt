@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 abstract class BaseViewModel<NavigationIntent, NavigationSideEffect, SideEffect> : ViewModel() {
-
   private val navigationSideEffectChannel = Channel<NavigationSideEffect>(Channel.BUFFERED)
   val navigationSideEffects: Flow<NavigationSideEffect> = navigationSideEffectChannel.receiveAsFlow()
 

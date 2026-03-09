@@ -10,7 +10,8 @@ import org.koin.dsl.module
  * - ConsentManager for managing user consent preferences
  * - ConsentFlag for tracking whether user has been shown consent screen
  */
-val consentModule = module {
-  singleOf(::ConsentManager)
-  singleOf(::ConsentFlag)
-}
+val consentModule =
+  module {
+    singleOf(::ConsentManager)
+    singleOf(::ConsentFlag)
+  }

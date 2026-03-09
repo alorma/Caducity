@@ -8,8 +8,8 @@ import com.alorma.caducity.domain.backup.BackupDataSource
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.NewItem
 import com.alorma.caducity.domain.usecase.fakedata.FakeDataStrategy
-import kotlinx.collections.immutable.persistentListOf
 import java.util.UUID
+import kotlinx.collections.immutable.persistentListOf
 
 /**
  * Use case to populate the database with fake data using a strategy pattern
@@ -26,9 +26,8 @@ class PopulateFakeDataUseCase(
   private val productDataSource: ProductDataSource,
   private val appClock: AppClock,
 ) {
-
-  suspend fun execute(strategy: FakeDataStrategy): Result<Unit> {
-    return try {
+  suspend fun execute(strategy: FakeDataStrategy): Result<Unit> =
+    try {
       // Clear all existing data first
       backupDataSource.clearAllData()
 
@@ -39,11 +38,12 @@ class PopulateFakeDataUseCase(
 
       // Create each category with its products and items
       categoryConfigs.forEach { categoryConfig ->
-        val category = Category(
-          id = UUID.randomUUID().toString(),
-          name = categoryConfig.name,
-          description = categoryConfig.description
-        )
+        val category =
+          Category(
+            id = UUID.randomUUID().toString(),
+            name = categoryConfig.name,
+            description = categoryConfig.description,
+          )
 
         // Create category first (empty)
         categoryDataSource.createCategory(category, persistentListOf())
@@ -54,11 +54,12 @@ class PopulateFakeDataUseCase(
 
           // Add items to the product
           productConfig.items.forEach { itemConfig ->
-            val newItem = NewItem(
-              identifier = itemConfig.identifier,
-              productId = product.id,
-              expirationDate = itemConfig.expirationDate,
-            )
+            val newItem =
+              NewItem(
+                identifier = itemConfig.identifier,
+                productId = product.id,
+                expirationDate = itemConfig.expirationDate,
+              )
 
             val itemId = itemDataSource.addItem(category.id, newItem)
 
@@ -76,11 +77,12 @@ class PopulateFakeDataUseCase(
 
         // Create standalone items (no product)
         categoryConfig.standaloneItems.forEach { standaloneConfig ->
-          val newItem = NewItem(
-            identifier = standaloneConfig.identifier,
-            productId = null,
-            expirationDate = standaloneConfig.expirationDate,
-          )
+          val newItem =
+            NewItem(
+              identifier = standaloneConfig.identifier,
+              productId = null,
+              expirationDate = standaloneConfig.expirationDate,
+            )
 
           val itemId = itemDataSource.addItem(category.id, newItem)
 
@@ -100,5 +102,4 @@ class PopulateFakeDataUseCase(
     } catch (e: Exception) {
       Result.failure(e)
     }
-  }
 }

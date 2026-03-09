@@ -50,34 +50,37 @@ fun AppTheme(
 @Composable
 fun AppThemeContent(
   themePreferences: ThemePreferences,
-  content: @Composable (() -> Unit)
+  content: @Composable (() -> Unit),
 ) {
   val systemInDarkTheme = isSystemInDarkTheme()
 
-  val dims = CaducityDims(
-    noDim = 1f,
-    dim1 = 0.72f,
-    dim2 = 0.68f,
-    dim3 = 0.40f,
-    dim4 = 0.16f,
-    dim5 = 0.08f,
-  )
+  val dims =
+    CaducityDims(
+      noDim = 1f,
+      dim1 = 0.72f,
+      dim2 = 0.68f,
+      dim3 = 0.40f,
+      dim4 = 0.16f,
+      dim5 = 0.08f,
+    )
 
-  val darkTheme = when (themePreferences.themeMode.value) {
-    ThemeMode.LIGHT -> false
-    ThemeMode.DARK -> true
-    ThemeMode.SYSTEM -> systemInDarkTheme
-  }
-
-  val colorScheme = if (themePreferences.useDynamicColors.value) {
-    dynamicColorScheme(darkTheme)
-  } else {
-    if (darkTheme) {
-      darkColorScheme
-    } else {
-      lightColorScheme
+  val darkTheme =
+    when (themePreferences.themeMode.value) {
+      ThemeMode.LIGHT -> false
+      ThemeMode.DARK -> true
+      ThemeMode.SYSTEM -> systemInDarkTheme
     }
-  }
+
+  val colorScheme =
+    if (themePreferences.useDynamicColors.value) {
+      dynamicColorScheme(darkTheme)
+    } else {
+      if (darkTheme) {
+        darkColorScheme
+      } else {
+        lightColorScheme
+      }
+    }
 
   MaterialExpressiveTheme(
     colorScheme = colorScheme,
@@ -113,22 +116,26 @@ fun InternalTheme(
 ) {
   val colorScheme = CaducityTheme.colorScheme
 
-  val baseExpirationColors = BaseExpirationColors(
-    error = colorScheme.error,
-  )
+  val baseExpirationColors =
+    BaseExpirationColors(
+      error = colorScheme.error,
+    )
 
   val baseColor = colorScheme.surfaceContainer
 
-  val expirationColors = ExpirationColors(
-    vibrant = VibrantExpirationColors(
-      default = baseExpirationColors,
-      baseColor = baseColor,
-    ),
-    soft = SoftExpirationColors(
-      default = baseExpirationColors,
-      baseColor = baseColor,
-    ),
-  )
+  val expirationColors =
+    ExpirationColors(
+      vibrant =
+        VibrantExpirationColors(
+          default = baseExpirationColors,
+          baseColor = baseColor,
+        ),
+      soft =
+        SoftExpirationColors(
+          default = baseExpirationColors,
+          baseColor = baseColor,
+        ),
+    )
 
   CompositionLocalProvider(
     LocalCaducityDims provides dims,
@@ -136,14 +143,15 @@ fun InternalTheme(
     LocalThemeTone provides themeTone,
     LocalExpirationColors provides expirationColors,
   ) {
-    val settingsColors = ListItemDefaults.colors(
-      containerColor = colorScheme.surfaceContainer,
-      contentColor = colorScheme.primary,
-      overlineContentColor = colorScheme.onSurface,
-      supportingContentColor = colorScheme.onSurface,
-      leadingContentColor = colorScheme.primary,
-      trailingContentColor = colorScheme.primary,
-    )
+    val settingsColors =
+      ListItemDefaults.colors(
+        containerColor = colorScheme.surfaceContainer,
+        contentColor = colorScheme.primary,
+        overlineContentColor = colorScheme.onSurface,
+        supportingContentColor = colorScheme.onSurface,
+        leadingContentColor = colorScheme.primary,
+        trailingContentColor = colorScheme.primary,
+      )
     CompositionLocalProvider(LocalSettingsTileColors provides settingsColors) {
       content()
     }
@@ -163,15 +171,16 @@ fun MaterialColorsPreview() {
 private fun MaterialColorsPreviewContent() {
   Surface {
     Column(
-      modifier = Modifier
-        .padding(16.dp)
-        .verticalScroll(rememberScrollState()),
-      verticalArrangement = Arrangement.spacedBy(8.dp)
+      modifier =
+        Modifier
+          .padding(16.dp)
+          .verticalScroll(rememberScrollState()),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
       Text(
         text = "Color Scheme",
         style = CaducityTheme.typography.titleLarge,
-        color = CaducityTheme.colorScheme.onSurface
+        color = CaducityTheme.colorScheme.onSurface,
       )
 
       ColorRow("Primary", CaducityTheme.colorScheme.primary)
@@ -197,15 +206,16 @@ fun ExpirationColorsVibrantPreview() {
 private fun ExpirationColorsVibrantPreviewContent() {
   Surface {
     Column(
-      modifier = Modifier
-        .padding(16.dp)
-        .verticalScroll(rememberScrollState()),
-      verticalArrangement = Arrangement.spacedBy(8.dp)
+      modifier =
+        Modifier
+          .padding(16.dp)
+          .verticalScroll(rememberScrollState()),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
       Text(
         text = "Expiration Colors - Vibrant",
         style = CaducityTheme.typography.titleLarge,
-        color = CaducityTheme.colorScheme.onSurface
+        color = CaducityTheme.colorScheme.onSurface,
       )
 
       ColorRow("Fresh", CaducityTheme.expirationColors.vibrant.fresh)
@@ -230,15 +240,16 @@ fun ExpirationColorsSoftPreview() {
 private fun ExpirationColorsSoftPreviewContent() {
   Surface {
     Column(
-      modifier = Modifier
-        .padding(16.dp)
-        .verticalScroll(rememberScrollState()),
-      verticalArrangement = Arrangement.spacedBy(8.dp)
+      modifier =
+        Modifier
+          .padding(16.dp)
+          .verticalScroll(rememberScrollState()),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
       Text(
         text = "Expiration Colors - Soft",
         style = CaducityTheme.typography.titleLarge,
-        color = CaducityTheme.colorScheme.onSurface
+        color = CaducityTheme.colorScheme.onSurface,
       )
 
       ColorRow("Fresh", CaducityTheme.expirationColors.soft.fresh)
@@ -251,28 +262,33 @@ private fun ExpirationColorsSoftPreviewContent() {
 }
 
 @Composable
-private fun ColorRow(name: String, color: Color) {
+private fun ColorRow(
+  name: String,
+  color: Color,
+) {
   Row(
-    modifier = Modifier
-      .fillMaxWidth()
-      .height(48.dp),
+    modifier =
+      Modifier
+        .fillMaxWidth()
+        .height(48.dp),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
-    verticalAlignment = Alignment.CenterVertically
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     Box(
-      modifier = Modifier
-        .size(48.dp)
-        .background(color, RoundedCornerShape(8.dp))
-        .border(
-          width = 1.dp,
-          color = CaducityTheme.colorScheme.outline,
-          shape = RoundedCornerShape(8.dp)
-        )
+      modifier =
+        Modifier
+          .size(48.dp)
+          .background(color, RoundedCornerShape(8.dp))
+          .border(
+            width = 1.dp,
+            color = CaducityTheme.colorScheme.outline,
+            shape = RoundedCornerShape(8.dp),
+          ),
     )
     Text(
       text = name,
       style = CaducityTheme.typography.bodyMedium,
-      color = CaducityTheme.colorScheme.onSurface
+      color = CaducityTheme.colorScheme.onSurface,
     )
   }
 }

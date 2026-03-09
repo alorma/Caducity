@@ -20,7 +20,7 @@ data class CategoryConfig(
   val name: String,
   val description: String,
   val products: List<ProductConfig>,
-  val standaloneItems: List<StandaloneItemConfig> = emptyList()
+  val standaloneItems: List<StandaloneItemConfig> = emptyList(),
 )
 
 /**
@@ -28,7 +28,7 @@ data class CategoryConfig(
  */
 data class ProductConfig(
   val name: String,
-  val items: List<ItemConfig>
+  val items: List<ItemConfig>,
 )
 
 /**
@@ -39,7 +39,7 @@ data class ItemConfig(
   val expirationDate: Instant,
   val shouldFreeze: Boolean = false,
   val remainingDaysWhenFrozen: Int = 5,
-  val shouldConsume: Boolean = false
+  val shouldConsume: Boolean = false,
 )
 
 /**
@@ -50,5 +50,5 @@ data class StandaloneItemConfig(
   val expirationDate: Instant,
   val shouldFreeze: Boolean = false,
   val remainingDaysWhenFrozen: Int = 5,
-  val shouldConsume: Boolean = false
+  val shouldConsume: Boolean = false,
 )

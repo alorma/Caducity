@@ -23,11 +23,11 @@ class AndroidBackupFileHandler(
   private val appClock: AppClock,
   private val dateFilenameFormat: DateTimeFormat<LocalDateTime>,
 ) : BackupFileHandler {
-
-  private val json = Json {
-    prettyPrint = true
-    ignoreUnknownKeys = true
-  }
+  private val json =
+    Json {
+      prettyPrint = true
+      ignoreUnknownKeys = true
+    }
 
   override val result: MutableSharedFlow<BackupFileHandler.BackupResult> = MutableSharedFlow()
 
@@ -38,28 +38,33 @@ class AndroidBackupFileHandler(
   override fun registerContracts() {
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    exportBackupLauncher = rememberLauncherForActivityResult(
-      contract = ActivityResultContracts.CreateDocument("application/json")
-    ) { uri ->
-      uri?.let {
-        lifecycleOwner.lifecycleScope.launch {
-          result.emit(BackupFileHandler.BackupResult.ExportUriObtained(it))
+    exportBackupLauncher =
+      rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json"),
+      ) { uri ->
+        uri?.let {
+          lifecycleOwner.lifecycleScope.launch {
+            result.emit(BackupFileHandler.BackupResult.ExportUriObtained(it))
+          }
         }
       }
-    }
 
-    restoreBackupLauncher = rememberLauncherForActivityResult(
-      contract = ActivityResultContracts.OpenDocument()
-    ) { uri ->
-      uri?.let {
-        lifecycleOwner.lifecycleScope.launch {
-          result.emit(BackupFileHandler.BackupResult.RestoreUriObtained(it))
+    restoreBackupLauncher =
+      rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+      ) { uri ->
+        uri?.let {
+          lifecycleOwner.lifecycleScope.launch {
+            result.emit(BackupFileHandler.BackupResult.RestoreUriObtained(it))
+          }
         }
       }
-    }
   }
 
-  override suspend fun writeBackupToUri(uri: Uri, data: BackupData): Result<Unit> {
+  override suspend fun writeBackupToUri(
+    uri: Uri,
+    data: BackupData,
+  ): Result<Unit> {
     return try {
       val jsonString = json.encodeToString(data)
       context.contentResolver.openOutputStream(uri)?.use { outputStream ->
@@ -74,9 +79,10 @@ class AndroidBackupFileHandler(
 
   override suspend fun readBackupFromUri(uri: Uri): Result<BackupData> {
     return try {
-      val jsonString = context.contentResolver.openInputStream(uri)?.use { inputStream ->
-        inputStream.bufferedReader().readText()
-      } ?: return Result.failure(IllegalStateException("Failed to open input stream"))
+      val jsonString =
+        context.contentResolver.openInputStream(uri)?.use { inputStream ->
+          inputStream.bufferedReader().readText()
+        } ?: return Result.failure(IllegalStateException("Failed to open input stream"))
 
       val backup = json.decodeFromString<BackupData>(jsonString)
       Result.success(backup)
@@ -91,7 +97,7 @@ class AndroidBackupFileHandler(
 
     val dateFormatted = dateFilenameFormat.format(localDateTime)
 
-    return "caducity_backup_${dateFormatted}.json"
+    return "caducity_backup_$dateFormatted.json"
   }
 
   override fun createBackup() {

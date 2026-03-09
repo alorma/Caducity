@@ -15,44 +15,52 @@ class ProductPageMapper(
   private val appClock: AppClock,
 ) {
   fun mapToUiModel(productItems: ProductItems): ProductPageState.Success {
-    val datedItemsGroups = productItems.datedItemsGroups.map { datedItems ->
-      val dateText = formatDate(datedItems.date)
+    val datedItemsGroups =
+      productItems.datedItemsGroups
+        .map { datedItems ->
+          val dateText = formatDate(datedItems.date)
 
-      DateItemsUiModel(
-        text = dateText,
-        status = datedItems.status,
-        date = datedItems.date,
-        items = datedItems.items.map { item ->
+          DateItemsUiModel(
+            text = dateText,
+            status = datedItems.status,
+            date = datedItems.date,
+            items =
+              datedItems.items
+                .map { item ->
+                  ItemDetailUiModel(
+                    id = item.id,
+                    expirationDate = datedItems.date,
+                    status = datedItems.status,
+                    text = item.name.ifEmpty { "Item" },
+                    packSize = item.packSize,
+                  )
+                }.toImmutableList(),
+          )
+        }.toImmutableList()
+
+    val frozenItems =
+      productItems.frozenItems
+        .map { item ->
           ItemDetailUiModel(
             id = item.id,
-            expirationDate = datedItems.date,
-            status = datedItems.status,
+            expirationDate = appClock.now().date(),
+            status = ItemStatus.Frozen,
             text = item.name.ifEmpty { "Item" },
             packSize = item.packSize,
           )
-        }.toImmutableList(),
-      )
-    }.toImmutableList()
+        }.toImmutableList()
 
-    val frozenItems = productItems.frozenItems.map { item ->
-      ItemDetailUiModel(
-        id = item.id,
-        expirationDate = appClock.now().date(),
-        status = ItemStatus.Frozen,
-        text = item.name.ifEmpty { "Item" },
-        packSize = item.packSize,
-      )
-    }.toImmutableList()
-
-    val consumedItems = productItems.consumedItems.map { item ->
-      ItemDetailUiModel(
-        id = item.id,
-        expirationDate = appClock.now().date(),
-        status = ItemStatus.Consumed,
-        text = item.name.ifEmpty { "Item" },
-        packSize = item.packSize,
-      )
-    }.toImmutableList()
+    val consumedItems =
+      productItems.consumedItems
+        .map { item ->
+          ItemDetailUiModel(
+            id = item.id,
+            expirationDate = appClock.now().date(),
+            status = ItemStatus.Consumed,
+            text = item.name.ifEmpty { "Item" },
+            packSize = item.packSize,
+          )
+        }.toImmutableList()
 
     return ProductPageState.Success(
       datedItemsGroups = datedItemsGroups,

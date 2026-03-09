@@ -6,15 +6,16 @@ import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val notificationsModule: Module = module {
-  includes(workersModule)
+val notificationsModule: Module =
+  module {
+    includes(workersModule)
 
-  singleOf(::AndroidExpirationNotificationHelper) {
-    bind<ExpirationNotificationHelper>()
-  }
+    singleOf(::AndroidExpirationNotificationHelper) {
+      bind<ExpirationNotificationHelper>()
+    }
 
-  // Debug helper
-  singleOf(::AndroidNotificationDebugHelper) {
-    bind<NotificationDebugHelper>()
+    // Debug helper
+    singleOf(::AndroidNotificationDebugHelper) {
+      bind<NotificationDebugHelper>()
+    }
   }
-}

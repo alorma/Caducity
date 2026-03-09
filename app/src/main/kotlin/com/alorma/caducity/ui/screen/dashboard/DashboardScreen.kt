@@ -28,6 +28,8 @@ import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.domain.model.ItemStatus
+import com.alorma.caducity.feature.tracking.DashboardScreen as DashboardScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
@@ -36,8 +38,6 @@ import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardSuccessContentList
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import org.koin.compose.viewmodel.koinViewModel
-import com.alorma.caducity.feature.tracking.DashboardScreen as DashboardScreenEvent
-import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun DashboardScreen(
@@ -112,11 +112,12 @@ private fun DashboardContent(
       )
     },
     floatingActionButton = {
-      val expanded = remember {
-        derivedStateOf {
-          lazyListState.firstVisibleItemScrollOffset > 0
+      val expanded =
+        remember {
+          derivedStateOf {
+            lazyListState.firstVisibleItemScrollOffset > 0
+          }
         }
-      }
       ExtendedFloatingActionButton(
         expanded = !expanded.value,
         onClick = onNavigateToCreateProduct,
@@ -126,20 +127,21 @@ private fun DashboardContent(
             imageVector = AppIcons.Add,
             contentDescription = null,
           )
-        }
+        },
       )
     },
     snackbarState = snackbarHostState,
   ) { paddingValues ->
     when (state) {
       is DashboardState.Loading -> DashboardLoadingContent()
-      is DashboardState.Success -> DashboardSuccessContent(
-        modifier = Modifier.padding(paddingValues),
-        state = state,
-        lazyListState = lazyListState,
-        onNavigateToCategory = onNavigateToCategory,
-        onNavigateToStatus = onNavigateToStatus,
-      )
+      is DashboardState.Success ->
+        DashboardSuccessContent(
+          modifier = Modifier.padding(paddingValues),
+          state = state,
+          lazyListState = lazyListState,
+          onNavigateToCategory = onNavigateToCategory,
+          onNavigateToStatus = onNavigateToStatus,
+        )
     }
   }
 }
@@ -159,9 +161,10 @@ fun DashboardSuccessContent(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = Modifier
-      .fillMaxSize()
-      .then(modifier),
+    modifier =
+      Modifier
+        .fillMaxSize()
+        .then(modifier),
   ) {
     DashboardSuccessContentList(
       state = state,

@@ -7,11 +7,11 @@ import com.alorma.caducity.domain.model.ItemStatus
 class ConsumeItemUseCase(
   private val itemDataSource: ItemDataSource,
 ) {
-
   suspend fun consumeItem(itemId: String): Result<Unit> {
     // Get the item to check its status
-    val item = itemDataSource.getItem(itemId)
-      ?: return Result.failure(InstanceActionError.InstanceNotFound)
+    val item =
+      itemDataSource.getItem(itemId)
+        ?: return Result.failure(InstanceActionError.InstanceNotFound)
 
     // Prevent consuming expired items
     if (item.status == ItemStatus.Expired) {
@@ -24,8 +24,9 @@ class ConsumeItemUseCase(
 
   suspend fun forceConsumeItem(itemId: String): Result<Unit> {
     // Get the item to verify it exists
-    val item = itemDataSource.getItem(itemId)
-      ?: return Result.failure(InstanceActionError.InstanceNotFound)
+    val item =
+      itemDataSource.getItem(itemId)
+        ?: return Result.failure(InstanceActionError.InstanceNotFound)
 
     // Force consume regardless of status
     itemDataSource.markItemAsConsumed(itemId)

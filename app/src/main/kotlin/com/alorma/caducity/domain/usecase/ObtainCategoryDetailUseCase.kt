@@ -18,28 +18,29 @@ class ObtainCategoryDetailUseCase(
   private val categoryDataSource: CategoryDataSource,
   private val expirationThresholds: ExpirationThresholds,
 ) {
-
-  fun obtain(categoryId: String): Flow<Result<CategoryDetail>> {
-    return categoryDataSource.getCategory(categoryId).map { result ->
+  fun obtain(categoryId: String): Flow<Result<CategoryDetail>> =
+    categoryDataSource.getCategory(categoryId).map { result ->
       result.map { categoryWithItems ->
         // Build calendar data from all active items across all products
-        val allActiveItems = categoryWithItems.products.flatMap { product ->
-          product.items.filter { it.status != ItemStatus.Frozen && it.status != ItemStatus.Consumed }
-        } + categoryWithItems.standaloneItems.filter {
-          it.status != ItemStatus.Frozen && it.status != ItemStatus.Consumed
-        }
+        val allActiveItems =
+          categoryWithItems.products.flatMap { product ->
+            product.items.filter { it.status != ItemStatus.Frozen && it.status != ItemStatus.Consumed }
+          } +
+            categoryWithItems.standaloneItems.filter {
+              it.status != ItemStatus.Frozen && it.status != ItemStatus.Consumed
+            }
 
         // Group items by date for calendar - only dates, statuses, and counts
-        val dateStatuses = allActiveItems
-          .groupBy { it.expirationDate.date() }
-          .map { (date, items) ->
-            DateStatus(
-              date = date,
-              status = calculateStatus(date),
-              itemCount = items.size,
-            )
-          }
-          .sortedBy { it.date }
+        val dateStatuses =
+          allActiveItems
+            .groupBy { it.expirationDate.date() }
+            .map { (date, items) ->
+              DateStatus(
+                date = date,
+                status = calculateStatus(date),
+                itemCount = items.size,
+              )
+            }.sortedBy { it.date }
 
         CategoryDetail(
           category = categoryWithItems.category,
@@ -49,13 +50,11 @@ class ObtainCategoryDetailUseCase(
         )
       }
     }
-  }
 
-  private fun calculateStatus(expirationDate: LocalDate): ItemStatus {
-    return ItemStatus.calculateStatus(
+  private fun calculateStatus(expirationDate: LocalDate): ItemStatus =
+    ItemStatus.calculateStatus(
       expirationDate = expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault()),
       now = appClock.now(),
       soonExpiringThreshold = expirationThresholds.soonExpiringThreshold,
     )
-  }
 }

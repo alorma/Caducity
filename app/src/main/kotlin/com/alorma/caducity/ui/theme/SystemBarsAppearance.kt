@@ -4,19 +4,19 @@ import androidx.compose.runtime.staticCompositionLocalOf
 
 interface SystemBarsAppearance {
   fun setLightStatusBars(isLight: Boolean)
+
   fun setLightNavigationBars(isLight: Boolean)
 }
 
-object SystemBarsAppearanceNoOp: SystemBarsAppearance {
+object SystemBarsAppearanceNoOp : SystemBarsAppearance {
   override fun setLightStatusBars(isLight: Boolean) {
-
   }
 
   override fun setLightNavigationBars(isLight: Boolean) {
   }
-
 }
 
-val LocalSystemBarsAppearance = staticCompositionLocalOf<SystemBarsAppearance?> {
-  null
-}
+val LocalSystemBarsAppearance =
+  staticCompositionLocalOf<SystemBarsAppearance?> {
+    null
+  }

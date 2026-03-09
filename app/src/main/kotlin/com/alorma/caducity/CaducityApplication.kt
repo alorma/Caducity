@@ -30,11 +30,10 @@ import timber.log.Timber
  * Responsible for initializing Koin, WorkManager, notification channels, and scheduling background work.
  */
 class CaducityApplication : Application() {
-
   private val workScheduler: ExpirationWorkScheduler by inject()
   private val notificationConfigDataSource: NotificationConfigDataSource by inject()
   private val remoteConfigRunner: RemoteConfigRunner by inject()
-  
+
   // Application-scoped coroutine scope for background operations
   private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -74,30 +73,32 @@ class CaducityApplication : Application() {
     Firebase.initialize(this)
 
     // Initialize Firebase App Check
-    val appCheckProvider = if (BuildConfig.DEBUG) {
-      val storageHelper = StorageHelper(
-        FirebaseApp.getInstance().applicationContext,
-        FirebaseApp.getInstance().persistenceKey,
-      )
-      storageHelper.saveDebugSecret(BuildConfig.DEBUG_APP_CHECK_TOKEN)
+    val appCheckProvider =
+      if (BuildConfig.DEBUG) {
+        val storageHelper =
+          StorageHelper(
+            FirebaseApp.getInstance().applicationContext,
+            FirebaseApp.getInstance().persistenceKey,
+          )
+        storageHelper.saveDebugSecret(BuildConfig.DEBUG_APP_CHECK_TOKEN)
 
-      DebugAppCheckProviderFactory.getInstance()
-    } else {
-      PlayIntegrityAppCheckProviderFactory.getInstance()
-    }
+        DebugAppCheckProviderFactory.getInstance()
+      } else {
+        PlayIntegrityAppCheckProviderFactory.getInstance()
+      }
 
     Firebase.appCheck.installAppCheckProviderFactory(
-      appCheckProvider
+      appCheckProvider,
     )
   }
 
   private fun initializeRemoteConfig() {
     applicationScope.launch {
-      remoteConfigRunner.fetchAndActivate()
+      remoteConfigRunner
+        .fetchAndActivate()
         .onSuccess { activated ->
           Timber.d("Remote Config initialized successfully. New values activated: $activated")
-        }
-        .onFailure { exception ->
+        }.onFailure { exception ->
           Timber.w(exception, "Remote Config initialization failed. Using default values.")
         }
     }

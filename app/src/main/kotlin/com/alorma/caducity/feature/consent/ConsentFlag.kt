@@ -8,8 +8,10 @@ import com.alorma.fireandforget.FireAndForgetRunner
  * This ensures the consent screen is shown only once.
  * The flag is disabled when the user provides their consent choice.
  */
-class ConsentFlag(runner: FireAndForgetRunner) : FireAndForget(
-  fireAndForgetRunner = runner,
-  name = "analytics_consent",
-  autoDisable = true,
-)
+class ConsentFlag(
+  runner: FireAndForgetRunner,
+) : FireAndForget(
+    fireAndForgetRunner = runner,
+    name = "analytics_consent",
+    autoDisable = true,
+  )

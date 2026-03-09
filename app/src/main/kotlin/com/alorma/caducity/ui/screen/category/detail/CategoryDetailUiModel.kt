@@ -34,6 +34,5 @@ data class CategoryProductTabUiModel(
   val categoryId: String,
   val name: String,
 ) {
-  fun asKey() = "${categoryId}-${id}"
+  fun asKey() = "$categoryId-$id"
 }
-

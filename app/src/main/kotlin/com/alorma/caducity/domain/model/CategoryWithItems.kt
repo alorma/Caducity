@@ -8,10 +8,11 @@ data class CategoryWithItems(
   val products: ImmutableList<CategoryProduct>,
   val standaloneItems: ImmutableList<Item>,
 ) {
-  val allItems: ImmutableList<Item> = buildList {
-    addAll(products.flatMap { it.items })
-    addAll(standaloneItems)
-  }.toImmutableList()
+  val allItems: ImmutableList<Item> =
+    buildList {
+      addAll(products.flatMap { it.items })
+      addAll(standaloneItems)
+    }.toImmutableList()
 }
 
 data class CategoryProduct(

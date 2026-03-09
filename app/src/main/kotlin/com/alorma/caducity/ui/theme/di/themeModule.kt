@@ -7,10 +7,11 @@ import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
-val themeModule = module {
-  singleOf(::ThemePreferencesImpl) {
-    bind<ThemePreferences>()
-  }
+val themeModule =
+  module {
+    singleOf(::ThemePreferencesImpl) {
+      bind<ThemePreferences>()
+    }
 
-  singleOf(::ExpirationColors)
-}
+    singleOf(::ExpirationColors)
+  }

@@ -7,12 +7,15 @@ import kotlin.time.Instant
 class RescheduleItemUseCase(
   private val itemDataSource: ItemDataSource,
 ) {
-
-  suspend fun rescheduleItem(itemId: String, newExpirationDate: Instant): Result<Unit> {
+  suspend fun rescheduleItem(
+    itemId: String,
+    newExpirationDate: Instant,
+  ): Result<Unit> {
     return try {
       // Verify item exists before rescheduling
-      val item = itemDataSource.getItem(itemId)
-        ?: return Result.failure(InstanceActionError.InstanceNotFound)
+      val item =
+        itemDataSource.getItem(itemId)
+          ?: return Result.failure(InstanceActionError.InstanceNotFound)
 
       itemDataSource.rescheduleItem(itemId, newExpirationDate.toEpochMilliseconds())
       Result.success(Unit)

@@ -3,21 +3,21 @@ package com.alorma.caducity.config.time
 import android.content.Context
 import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
-import com.kizitonwose.calendar.core.minusDays
-import com.kizitonwose.calendar.core.plusDays
+import kotlin.math.abs
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.until
-import kotlin.math.abs
 
 class RelativeTimeFormatter(
   private val context: Context,
   private val appClock: AppClock,
   private val dateFormat: DateTimeFormat<LocalDate>,
 ) {
-
-  fun format(today: LocalDate, expirationDate: LocalDate): String {
+  fun format(
+    today: LocalDate,
+    expirationDate: LocalDate,
+  ): String {
     val daysDiff = today.until(expirationDate, DateTimeUnit.Companion.DAY).toInt()
 
     return when {

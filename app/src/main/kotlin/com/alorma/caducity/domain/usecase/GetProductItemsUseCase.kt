@@ -18,54 +18,63 @@ class GetProductItemsUseCase(
   private val appClock: AppClock,
   private val expirationThresholds: ExpirationThresholds,
 ) {
-  fun obtain(categoryId: String, productId: String?): Flow<ProductItems> {
-    return itemDataSource.getItemsByProduct(categoryId, productId).map { items ->
+  fun obtain(
+    categoryId: String,
+    productId: String?,
+  ): Flow<ProductItems> =
+    itemDataSource.getItemsByProduct(categoryId, productId).map { items ->
       // Separate items by status
-      val activeItems = items.filter {
-        it.status != ItemStatus.Frozen && it.status != ItemStatus.Consumed
-      }
+      val activeItems =
+        items.filter {
+          it.status != ItemStatus.Frozen && it.status != ItemStatus.Consumed
+        }
       val frozenItems = items.filter { it.status == ItemStatus.Frozen }
       val consumedItems = items.filter { it.status == ItemStatus.Consumed }
 
       // Group active items by date
-      val dates: List<LocalDate> = activeItems
-        .map { it.expirationDate.date() }
-        .distinct()
-        .sorted()
+      val dates: List<LocalDate> =
+        activeItems
+          .map { it.expirationDate.date() }
+          .distinct()
+          .sorted()
 
-      val datedItemsGroups: List<ProductDatedItems> = dates.map { date ->
-        val itemsForDate = activeItems
-          .filter { it.expirationDate.date() == date }
-          .map { item ->
-            ProductItem(
-              id = item.id,
-              name = item.identifier.takeIf { it.isNotEmpty() } ?: "",
-              packSize = item.packSize,
-            )
-          }
+      val datedItemsGroups: List<ProductDatedItems> =
+        dates.map { date ->
+          val itemsForDate =
+            activeItems
+              .filter { it.expirationDate.date() == date }
+              .map { item ->
+                ProductItem(
+                  id = item.id,
+                  name = item.identifier.takeIf { it.isNotEmpty() } ?: "",
+                  packSize = item.packSize,
+                )
+              }
 
-        ProductDatedItems(
-          date = date,
-          status = calculateStatus(date),
-          items = itemsForDate,
-        )
-      }
+          ProductDatedItems(
+            date = date,
+            status = calculateStatus(date),
+            items = itemsForDate,
+          )
+        }
 
-      val frozenProductItems = frozenItems.map { item ->
-        ProductItem(
-          id = item.id,
-          name = item.identifier.takeIf { it.isNotEmpty() } ?: "",
-          packSize = item.packSize,
-        )
-      }
+      val frozenProductItems =
+        frozenItems.map { item ->
+          ProductItem(
+            id = item.id,
+            name = item.identifier.takeIf { it.isNotEmpty() } ?: "",
+            packSize = item.packSize,
+          )
+        }
 
-      val consumedProductItems = consumedItems.map { item ->
-        ProductItem(
-          id = item.id,
-          name = item.identifier.takeIf { it.isNotEmpty() } ?: "",
-          packSize = item.packSize,
-        )
-      }
+      val consumedProductItems =
+        consumedItems.map { item ->
+          ProductItem(
+            id = item.id,
+            name = item.identifier.takeIf { it.isNotEmpty() } ?: "",
+            packSize = item.packSize,
+          )
+        }
 
       ProductItems(
         datedItemsGroups = datedItemsGroups,
@@ -73,13 +82,11 @@ class GetProductItemsUseCase(
         consumedItems = consumedProductItems,
       )
     }
-  }
 
-  private fun calculateStatus(expirationDate: LocalDate): ItemStatus {
-    return ItemStatus.calculateStatus(
+  private fun calculateStatus(expirationDate: LocalDate): ItemStatus =
+    ItemStatus.calculateStatus(
       expirationDate = expirationDate.atStartOfDayIn(TimeZone.currentSystemDefault()),
       now = appClock.now(),
       soonExpiringThreshold = expirationThresholds.soonExpiringThreshold,
     )
-  }
 }

@@ -14,9 +14,7 @@ import androidx.compose.runtime.setValue
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 
 @Composable
-fun rememberAppBottomSheetState(
-  skipHalfExpanded: Boolean = false,
-): AppBottomSheetState {
+fun rememberAppBottomSheetState(skipHalfExpanded: Boolean = false): AppBottomSheetState {
   val materialModalBottomSheetState =
     rememberModalBottomSheetState(skipPartiallyExpanded = skipHalfExpanded)
   return remember {
@@ -26,9 +24,10 @@ fun rememberAppBottomSheetState(
   }
 }
 
-val LocalAppBottomSheetState = compositionLocalOf<AppBottomSheetState> {
-  throw (kotlin.IllegalStateException("Should be provided from a AppBottomSheetState"))
-}
+val LocalAppBottomSheetState =
+  compositionLocalOf<AppBottomSheetState> {
+    throw (kotlin.IllegalStateException("Should be provided from a AppBottomSheetState"))
+  }
 
 class AppBottomSheetState(
   val sheetState: SheetState,
@@ -41,7 +40,7 @@ class AppBottomSheetState(
     onDismissRequest: () -> Unit = {},
     appFeedbackType: AppFeedbackType = AppFeedbackType.Info,
     content: @Composable () -> Unit,
-    ) {
+  ) {
     this.onDismissRequest = {
       preDismiss()
       onDismissRequest()

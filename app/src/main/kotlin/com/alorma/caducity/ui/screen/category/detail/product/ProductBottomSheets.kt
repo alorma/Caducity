@@ -22,6 +22,9 @@ import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.filled.Broom
 import com.alorma.caducity.base.ui.icons.outlined.MoveGroup
+import com.alorma.caducity.feature.tracking.ProductClearItemsBottomSheetScreen
+import com.alorma.caducity.feature.tracking.ProductDeleteBottomSheetScreen
+import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
@@ -31,9 +34,6 @@ import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import com.alorma.caducity.feature.tracking.ProductDeleteBottomSheetScreen
-import com.alorma.caducity.feature.tracking.ProductClearItemsBottomSheetScreen
-import com.alorma.caducity.feature.tracking.TrackScreen
 
 internal fun AppBottomSheetState.showDeleteProductWithItemsBottomSheet(
   coroutineScope: CoroutineScope,
@@ -72,138 +72,143 @@ private fun DeleteProductWithItemsBottomSheetContent(
 ) {
   TrackScreen(screen = ProductDeleteBottomSheetScreen())
   Column(
-        modifier = Modifier.fillMaxWidth()
+    modifier = Modifier.fillMaxWidth(),
+  ) {
+    if (!showProductSelection) {
+      // Main options screen
+      Column(
+        modifier =
+          Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
-        if (!showProductSelection) {
-          // Main options screen
-          Column(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-          ) {
-            Text(
-              text = stringResource(R.string.product_delete_with_items_title, itemCount),
-              style = MaterialTheme.typography.titleLarge,
-            )
+        Text(
+          text = stringResource(R.string.product_delete_with_items_title, itemCount),
+          style = MaterialTheme.typography.titleLarge,
+        )
 
-            Text(
-              text = stringResource(R.string.product_delete_with_items_message),
-              style = MaterialTheme.typography.bodyMedium,
-            )
+        Text(
+          text = stringResource(R.string.product_delete_with_items_message),
+          style = MaterialTheme.typography.bodyMedium,
+        )
 
-            // Options group
-            StyledSettingsGroup {
-              // Determine shape positions based on available products
-              val hasProductOption = availableProducts.isNotEmpty()
-              val standalonePosition =
-                if (hasProductOption) ShapePosition.Start else ShapePosition.Start
-              val productPosition = ShapePosition.Middle
-              val deletePosition = if (hasProductOption) ShapePosition.End else ShapePosition.End
+        // Options group
+        StyledSettingsGroup {
+          // Determine shape positions based on available products
+          val hasProductOption = availableProducts.isNotEmpty()
+          val standalonePosition =
+            if (hasProductOption) ShapePosition.Start else ShapePosition.Start
+          val productPosition = ShapePosition.Middle
+          val deletePosition = if (hasProductOption) ShapePosition.End else ShapePosition.End
 
-              // Option 1: Move to standalone items
-              StyledSettingsCard(
-                icon = {
-                  Icon(
-                    imageVector = AppIcons.Outlined.MoveGroup,
-                    contentDescription = null,
-                  )
-                },
-                title = stringResource(R.string.product_delete_option_move_to_standalone),
-                subtitle = stringResource(R.string.product_delete_option_move_to_standalone_desc),
-                onClick = onMoveToStandalone,
-                shapes = ListItemDefaults.segmentedShapes(index = 0, count = 3),
+          // Option 1: Move to standalone items
+          StyledSettingsCard(
+            icon = {
+              Icon(
+                imageVector = AppIcons.Outlined.MoveGroup,
+                contentDescription = null,
               )
-
-              // Option 2: Move to another product (only if there are other products)
-              if (hasProductOption) {
-                StyledSettingsCard(
-                  icon = {
-                    Icon(
-                      imageVector = AppIcons.Outlined.MoveGroup,
-                      contentDescription = null,
-                    )
-                  },
-                  title = stringResource(R.string.product_delete_option_move_to_product),
-                  subtitle = stringResource(R.string.product_delete_option_move_to_product_desc),
-                  onClick = { onShowProductSelection(true) },
-                  shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
-                )
-              }
-
-              // Option 3: Delete all items (cascade delete)
-              StyledSettingsCard(
-                icon = {
-                  Icon(
-                    imageVector = AppIcons.Delete,
-                    contentDescription = null,
-                  )
-                },
-                title = stringResource(R.string.product_delete_option_cascade_delete),
-                subtitle = stringResource(R.string.product_delete_option_cascade_delete_desc),
-                colors = ListItemDefaults.segmentedColors(
-                  containerColor = CaducityTheme.colorScheme.errorContainer,
-                  contentColor = CaducityTheme.colorScheme.onErrorContainer,
-                  overlineContentColor = CaducityTheme.colorScheme.onErrorContainer,
-                  supportingContentColor = CaducityTheme.colorScheme.onErrorContainer,
-                  leadingContentColor = CaducityTheme.colorScheme.onErrorContainer,
-                  trailingContentColor = CaducityTheme.colorScheme.onErrorContainer,
-                ),
-                onClick = onCascadeDelete,
-                shapes = ListItemDefaults.segmentedShapes(index = 2, count = 3),
-              )
-            }
-          }
-        } else {
-          // Product selection screen with top bar
-          StyledTopAppBar(
-            title = { Text(stringResource(R.string.product_delete_select_target_title)) },
-            navigationIcon = {
-              IconButton(onClick = { onShowProductSelection(false) }) {
-                Icon(
-                  imageVector = AppIcons.Back,
-                  contentDescription = stringResource(R.string.product_delete_select_target_back),
-                )
-              }
-            }
+            },
+            title = stringResource(R.string.product_delete_option_move_to_standalone),
+            subtitle = stringResource(R.string.product_delete_option_move_to_standalone_desc),
+            onClick = onMoveToStandalone,
+            shapes = ListItemDefaults.segmentedShapes(index = 0, count = 3),
           )
 
-          Column(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-          ) {
-            Text(
-              text = stringResource(R.string.product_delete_select_target_message, itemCount),
-              style = MaterialTheme.typography.bodyMedium,
-            )
-
-            // List all available products with StyledSettingsGroup
-            StyledSettingsGroup {
-              availableProducts.forEachIndexed { index, product ->
-                val position = when {
-                  availableProducts.size == 1 -> ShapePosition.Single
-                  index == 0 -> ShapePosition.Start
-                  index == availableProducts.size - 1 -> ShapePosition.End
-                  else -> ShapePosition.Middle
-                }
-
-                StyledSettingsCard(
-                  title = product.name,
-                  onClick = {
-                    product.id?.let { onMoveToProduct(it) }
-                  },
-                  shapes = ListItemDefaults.segmentedShapes(
-                    index = index,
-                    count = availableProducts.size,
-                    ),
+          // Option 2: Move to another product (only if there are other products)
+          if (hasProductOption) {
+            StyledSettingsCard(
+              icon = {
+                Icon(
+                  imageVector = AppIcons.Outlined.MoveGroup,
+                  contentDescription = null,
                 )
+              },
+              title = stringResource(R.string.product_delete_option_move_to_product),
+              subtitle = stringResource(R.string.product_delete_option_move_to_product_desc),
+              onClick = { onShowProductSelection(true) },
+              shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
+            )
+          }
+
+          // Option 3: Delete all items (cascade delete)
+          StyledSettingsCard(
+            icon = {
+              Icon(
+                imageVector = AppIcons.Delete,
+                contentDescription = null,
+              )
+            },
+            title = stringResource(R.string.product_delete_option_cascade_delete),
+            subtitle = stringResource(R.string.product_delete_option_cascade_delete_desc),
+            colors =
+              ListItemDefaults.segmentedColors(
+                containerColor = CaducityTheme.colorScheme.errorContainer,
+                contentColor = CaducityTheme.colorScheme.onErrorContainer,
+                overlineContentColor = CaducityTheme.colorScheme.onErrorContainer,
+                supportingContentColor = CaducityTheme.colorScheme.onErrorContainer,
+                leadingContentColor = CaducityTheme.colorScheme.onErrorContainer,
+                trailingContentColor = CaducityTheme.colorScheme.onErrorContainer,
+              ),
+            onClick = onCascadeDelete,
+            shapes = ListItemDefaults.segmentedShapes(index = 2, count = 3),
+          )
+        }
+      }
+    } else {
+      // Product selection screen with top bar
+      StyledTopAppBar(
+        title = { Text(stringResource(R.string.product_delete_select_target_title)) },
+        navigationIcon = {
+          IconButton(onClick = { onShowProductSelection(false) }) {
+            Icon(
+              imageVector = AppIcons.Back,
+              contentDescription = stringResource(R.string.product_delete_select_target_back),
+            )
+          }
+        },
+      )
+
+      Column(
+        modifier =
+          Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+      ) {
+        Text(
+          text = stringResource(R.string.product_delete_select_target_message, itemCount),
+          style = MaterialTheme.typography.bodyMedium,
+        )
+
+        // List all available products with StyledSettingsGroup
+        StyledSettingsGroup {
+          availableProducts.forEachIndexed { index, product ->
+            val position =
+              when {
+                availableProducts.size == 1 -> ShapePosition.Single
+                index == 0 -> ShapePosition.Start
+                index == availableProducts.size - 1 -> ShapePosition.End
+                else -> ShapePosition.Middle
               }
-            }
+
+            StyledSettingsCard(
+              title = product.name,
+              onClick = {
+                product.id?.let { onMoveToProduct(it) }
+              },
+              shapes =
+                ListItemDefaults.segmentedShapes(
+                  index = index,
+                  count = availableProducts.size,
+                ),
+            )
           }
         }
       }
+    }
+  }
 }
 
 internal fun AppBottomSheetState.showClearItemsBottomSheet(
@@ -228,59 +233,61 @@ private fun ClearItemsBottomSheetContent(
 ) {
   TrackScreen(screen = ProductClearItemsBottomSheetScreen())
   Column(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-      ) {
-        Text(
-          text = stringResource(R.string.product_clear_items_dialog_title),
-          style = MaterialTheme.typography.titleLarge,
-        )
+    modifier =
+      Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    Text(
+      text = stringResource(R.string.product_clear_items_dialog_title),
+      style = MaterialTheme.typography.titleLarge,
+    )
 
-        Text(
-          text = stringResource(R.string.product_clear_items_dialog_message),
-          style = MaterialTheme.typography.bodyMedium,
-        )
+    Text(
+      text = stringResource(R.string.product_clear_items_dialog_message),
+      style = MaterialTheme.typography.bodyMedium,
+    )
 
-        // Options group
-        StyledSettingsGroup {
-          // Option 1: Clear consumed items only
-          StyledSettingsCard(
-            icon = {
-              Icon(
-                imageVector = AppIcons.Outlined.Broom,
-                contentDescription = null,
-              )
-            },
-            title = stringResource(R.string.product_clear_consumed_only),
-            subtitle = stringResource(R.string.product_clear_consumed_only_desc),
-            onClick = onClearConsumed,
-            shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
+    // Options group
+    StyledSettingsGroup {
+      // Option 1: Clear consumed items only
+      StyledSettingsCard(
+        icon = {
+          Icon(
+            imageVector = AppIcons.Outlined.Broom,
+            contentDescription = null,
           )
+        },
+        title = stringResource(R.string.product_clear_consumed_only),
+        subtitle = stringResource(R.string.product_clear_consumed_only_desc),
+        onClick = onClearConsumed,
+        shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
+      )
 
-          // Option 2: Clear all items
-          StyledSettingsCard(
-            icon = {
-              Icon(
-                imageVector = AppIcons.Delete,
-                contentDescription = null,
-                tint = CaducityTheme.colorScheme.error,
-              )
-            },
-            title = stringResource(R.string.product_clear_all_items),
-            subtitle = stringResource(R.string.product_clear_all_items_desc),
-            onClick = onClearAll,
-            shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
-            colors = ListItemDefaults.colors(
-              containerColor = CaducityTheme.colorScheme.errorContainer,
-              contentColor = CaducityTheme.colorScheme.onErrorContainer,
-              overlineContentColor = CaducityTheme.colorScheme.onErrorContainer,
-              supportingContentColor = CaducityTheme.colorScheme.onErrorContainer,
-              leadingContentColor = CaducityTheme.colorScheme.onErrorContainer,
-              trailingContentColor = CaducityTheme.colorScheme.onErrorContainer,
-            ),
+      // Option 2: Clear all items
+      StyledSettingsCard(
+        icon = {
+          Icon(
+            imageVector = AppIcons.Delete,
+            contentDescription = null,
+            tint = CaducityTheme.colorScheme.error,
           )
-        }
-      }
+        },
+        title = stringResource(R.string.product_clear_all_items),
+        subtitle = stringResource(R.string.product_clear_all_items_desc),
+        onClick = onClearAll,
+        shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
+        colors =
+          ListItemDefaults.colors(
+            containerColor = CaducityTheme.colorScheme.errorContainer,
+            contentColor = CaducityTheme.colorScheme.onErrorContainer,
+            overlineContentColor = CaducityTheme.colorScheme.onErrorContainer,
+            supportingContentColor = CaducityTheme.colorScheme.onErrorContainer,
+            leadingContentColor = CaducityTheme.colorScheme.onErrorContainer,
+            trailingContentColor = CaducityTheme.colorScheme.onErrorContainer,
+          ),
+      )
+    }
+  }
 }

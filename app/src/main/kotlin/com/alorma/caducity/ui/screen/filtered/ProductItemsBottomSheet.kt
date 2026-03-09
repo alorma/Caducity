@@ -16,19 +16,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.Item
+import com.alorma.caducity.feature.tracking.ProductItemsBottomSheetScreen
+import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.StatusBadge
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
+import com.alorma.caducity.ui.theme.CaducityTheme
+import kotlin.time.Instant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import com.alorma.caducity.feature.tracking.ProductItemsBottomSheetScreen
-import com.alorma.caducity.feature.tracking.TrackScreen
-import kotlin.time.Instant
 
 fun AppBottomSheetState.showProductItemsBottomSheet(
   coroutineScope: CoroutineScope,
@@ -60,15 +60,17 @@ private fun ProductItemsBottomSheetContent(
 ) {
   TrackScreen(screen = ProductItemsBottomSheetScreen())
   Column(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(bottom = 24.dp)
+    modifier =
+      Modifier
+        .fillMaxWidth()
+        .padding(bottom = 24.dp),
   ) {
     // Header with product name and count
     Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 24.dp, vertical = 16.dp),
+      modifier =
+        Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 24.dp, vertical = 16.dp),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -89,9 +91,10 @@ private fun ProductItemsBottomSheetContent(
 
     // Items list
     Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 8.dp),
+      modifier =
+        Modifier
+          .fillMaxWidth()
+          .padding(vertical = 8.dp),
       verticalArrangement = Arrangement.spacedBy(0.dp),
     ) {
       items.forEach { item ->
@@ -111,11 +114,12 @@ private fun ItemRow(
   modifier: Modifier = Modifier,
 ) {
   Row(
-    modifier = modifier
-      .fillMaxWidth()
-      .clip(CaducityTheme.shapes.small)
-      .clickable { onClick() }
-      .padding(horizontal = 24.dp, vertical = 12.dp),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .clip(CaducityTheme.shapes.small)
+        .clickable { onClick() }
+        .padding(horizontal = 24.dp, vertical = 12.dp),
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(12.dp),
   ) {
@@ -125,8 +129,9 @@ private fun ItemRow(
     ) {
       // Item identifier with pack badge
       Row(
-        modifier = Modifier
-          .clip(CaducityTheme.shapes.small),
+        modifier =
+          Modifier
+            .clip(CaducityTheme.shapes.small),
         horizontalArrangement = Arrangement.spacedBy(0.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
@@ -134,9 +139,10 @@ private fun ItemRow(
         if (item.packSize != null && item.packSize > 1) {
           Text(
             text = item.packSize.toString(),
-            modifier = Modifier
-              .background(CaducityTheme.colorScheme.outline)
-              .padding(6.dp),
+            modifier =
+              Modifier
+                .background(CaducityTheme.colorScheme.outline)
+                .padding(6.dp),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.surface,
           )

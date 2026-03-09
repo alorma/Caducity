@@ -22,8 +22,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.R
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
@@ -31,42 +31,48 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 enum class StatusBadgeSize {
   Small,
   Medium,
-  Large;
+  Large,
+  ;
 
   val dotSize: Dp
-    get() = when (this) {
-      Small -> 6.dp
-      Medium -> 8.dp
-      Large -> 10.dp
-    }
+    get() =
+      when (this) {
+        Small -> 6.dp
+        Medium -> 8.dp
+        Large -> 10.dp
+      }
 
   val horizontalPadding: Dp
-    get() = when (this) {
-      Small -> 8.dp
-      Medium -> 12.dp
-      Large -> 16.dp
-    }
+    get() =
+      when (this) {
+        Small -> 8.dp
+        Medium -> 12.dp
+        Large -> 16.dp
+      }
 
   val verticalPadding: Dp
-    get() = when (this) {
-      Small -> 4.dp
-      Medium -> 6.dp
-      Large -> 8.dp
-    }
+    get() =
+      when (this) {
+        Small -> 4.dp
+        Medium -> 6.dp
+        Large -> 8.dp
+      }
 
   val spacing: Dp
-    get() = when (this) {
-      Small -> 4.dp
-      Medium -> 6.dp
-      Large -> 8.dp
-    }
+    get() =
+      when (this) {
+        Small -> 4.dp
+        Medium -> 6.dp
+        Large -> 8.dp
+      }
 
   @Composable
-  fun textStyle(): TextStyle = when (this) {
-    Small -> MaterialTheme.typography.labelSmall
-    Medium -> MaterialTheme.typography.labelMedium
-    Large -> MaterialTheme.typography.labelLarge
-  }
+  fun textStyle(): TextStyle =
+    when (this) {
+      Small -> MaterialTheme.typography.labelSmall
+      Medium -> MaterialTheme.typography.labelMedium
+      Large -> MaterialTheme.typography.labelLarge
+    }
 }
 
 @Composable
@@ -78,31 +84,34 @@ fun StatusBadge(
   val colors = ExpirationDefaults.getColors(status)
 
   Row(
-    modifier = modifier
-      .clip(CaducityTheme.shapes.small)
-      .background(colors.container)
-      .padding(
-        horizontal = size.horizontalPadding,
-        vertical = size.verticalPadding,
-      ),
+    modifier =
+      modifier
+        .clip(CaducityTheme.shapes.small)
+        .background(colors.container)
+        .padding(
+          horizontal = size.horizontalPadding,
+          vertical = size.verticalPadding,
+        ),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Spacer(
-      modifier = Modifier
-        .size(size.dotSize)
-        .clip(CircleShape)
-        .background(colors.onContainer)
+      modifier =
+        Modifier
+          .size(size.dotSize)
+          .clip(CircleShape)
+          .background(colors.onContainer),
     )
 
     Spacer(modifier = Modifier.width(size.spacing))
 
-    val text = when (status) {
-      ItemStatus.Expired -> stringResource(R.string.expiration_status_badge_expired)
-      ItemStatus.ExpiringSoon -> stringResource(R.string.expiration_status_badge_expiring_soon)
-      ItemStatus.Fresh -> stringResource(R.string.expiration_status_badge_fresh)
-      ItemStatus.Frozen -> stringResource(R.string.expiration_status_badge_frozen)
-      ItemStatus.Consumed -> stringResource(R.string.expiration_status_badge_consumed)
-    }
+    val text =
+      when (status) {
+        ItemStatus.Expired -> stringResource(R.string.expiration_status_badge_expired)
+        ItemStatus.ExpiringSoon -> stringResource(R.string.expiration_status_badge_expiring_soon)
+        ItemStatus.Fresh -> stringResource(R.string.expiration_status_badge_fresh)
+        ItemStatus.Frozen -> stringResource(R.string.expiration_status_badge_frozen)
+        ItemStatus.Consumed -> stringResource(R.string.expiration_status_badge_consumed)
+      }
 
     Text(
       text = text,
@@ -118,52 +127,54 @@ private fun StatusBadgePreview() {
   PreviewTheme {
     Surface {
       Column(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier =
+          Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
       ) {
-        val allStatuses = listOf(
-          ItemStatus.Fresh,
-          ItemStatus.ExpiringSoon,
-          ItemStatus.Expired,
-          ItemStatus.Frozen,
-          ItemStatus.Consumed
-        )
+        val allStatuses =
+          listOf(
+            ItemStatus.Fresh,
+            ItemStatus.ExpiringSoon,
+            ItemStatus.Expired,
+            ItemStatus.Frozen,
+            ItemStatus.Consumed,
+          )
 
         Text(
           text = "Small Size",
           style = MaterialTheme.typography.titleSmall,
-          modifier = Modifier.padding(bottom = 4.dp)
+          modifier = Modifier.padding(bottom = 4.dp),
         )
         allStatuses.forEach { status ->
           StatusBadge(
             status = status,
-            size = StatusBadgeSize.Small
+            size = StatusBadgeSize.Small,
           )
         }
 
         Text(
           text = "Medium Size",
           style = MaterialTheme.typography.titleSmall,
-          modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+          modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
         )
         allStatuses.forEach { status ->
           StatusBadge(
             status = status,
-            size = StatusBadgeSize.Medium
+            size = StatusBadgeSize.Medium,
           )
         }
 
         Text(
           text = "Large Size",
           style = MaterialTheme.typography.titleSmall,
-          modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+          modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
         )
         allStatuses.forEach { status ->
           StatusBadge(
             status = status,
-            size = StatusBadgeSize.Large
+            size = StatusBadgeSize.Large,
           )
         }
       }

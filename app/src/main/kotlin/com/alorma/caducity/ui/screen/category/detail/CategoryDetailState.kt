@@ -24,5 +24,7 @@ sealed interface CategoryDetailState {
   ) : CategoryDetailState
 
   @Stable
-  data class Error(val message: String) : CategoryDetailState
+  data class Error(
+    val message: String,
+  ) : CategoryDetailState
 }

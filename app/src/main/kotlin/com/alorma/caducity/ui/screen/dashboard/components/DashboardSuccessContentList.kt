@@ -66,15 +66,16 @@ private fun DashboardCompactLayout(
   LazyColumn(
     state = lazyListState,
     verticalArrangement = Arrangement.spacedBy(16.dp),
-    contentPadding = PaddingValues(
-      start = 16.dp,
-      end = 16.dp,
-      bottom = 80.dp,
-    ),
+    contentPadding =
+      PaddingValues(
+        start = 16.dp,
+        end = 16.dp,
+        bottom = 80.dp,
+      ),
   ) {
     item(
       key = "summary",
-      contentType = "summary"
+      contentType = "summary",
     ) {
       DashboardSummaryCard(
         modifier = Modifier.animateItem(),
@@ -94,13 +95,13 @@ private fun DashboardCompactLayout(
             modifier = Modifier.animateItem(),
           ) {
             Row(
-              modifier = Modifier
-                .fillMaxWidth()
-                .clip(CaducityTheme.shapes.small)
-                .clickable {
-                  onNavigateToCategory(categoryCalendarState.id, "category_title")
-                }
-                .padding(horizontal = 4.dp, vertical = 8.dp),
+              modifier =
+                Modifier
+                  .fillMaxWidth()
+                  .clip(CaducityTheme.shapes.small)
+                  .clickable {
+                    onNavigateToCategory(categoryCalendarState.id, "category_title")
+                  }.padding(horizontal = 4.dp, vertical = 8.dp),
               verticalAlignment = Alignment.CenterVertically,
             ) {
               Text(
@@ -149,11 +150,12 @@ private fun DashboardExpandedLayout(
         LazyRow(
           modifier = Modifier.fillMaxHeight(),
           horizontalArrangement = Arrangement.spacedBy(64.dp),
-          contentPadding = PaddingValues(
-            start = 16.dp,
-            end = 16.dp,
-            bottom = 16.dp,
-          ),
+          contentPadding =
+            PaddingValues(
+              start = 16.dp,
+              end = 16.dp,
+              bottom = 16.dp,
+            ),
         ) {
           items(
             items = state.categories,
@@ -161,20 +163,21 @@ private fun DashboardExpandedLayout(
             contentType = { "category" },
           ) { categoryCalendarState ->
             Column(
-              modifier = Modifier
-                .width(340.dp)
-                .fillMaxHeight()
-                .animateItem(),
+              modifier =
+                Modifier
+                  .width(340.dp)
+                  .fillMaxHeight()
+                  .animateItem(),
               verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
               Row(
-                modifier = Modifier
-                  .fillMaxWidth()
-                  .clip(CaducityTheme.shapes.small)
-                  .clickable {
-                    onNavigateToCategory(categoryCalendarState.id, "category_title")
-                  }
-                  .padding(horizontal = 4.dp, vertical = 8.dp),
+                modifier =
+                  Modifier
+                    .fillMaxWidth()
+                    .clip(CaducityTheme.shapes.small)
+                    .clickable {
+                      onNavigateToCategory(categoryCalendarState.id, "category_title")
+                    }.padding(horizontal = 4.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
               ) {
                 Text(

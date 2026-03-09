@@ -20,59 +20,63 @@ class RoomBackupDataSource(
   private val categoryDao: CategoryDao,
   private val itemDao: ItemDao,
   private val productDao: ProductDao,
-  private val appClock: AppClock
+  private val appClock: AppClock,
 ) : BackupDataSource {
-
   override suspend fun exportBackup(): BackupData {
     val categories = categoryDao.getAllCategoriesSync()
     val products = productDao.getAllProductsSync()
     val items = itemDao.getAllItemsSync()
 
-    val backupCategories = categories.map { category ->
+    val backupCategories =
+      categories.map { category ->
 
-      val productsByCategory = products
-        .filter { product -> product.categoryId == category.id }
-        .map { product ->
-          BackupProduct(
-            id = product.id,
-            categoryId = product.categoryId,
-            name = product.name,
-            createdAt = product.createdAt,
-            items = items
+        val productsByCategory =
+          products
+            .filter { product -> product.categoryId == category.id }
+            .map { product ->
+              BackupProduct(
+                id = product.id,
+                categoryId = product.categoryId,
+                name = product.name,
+                createdAt = product.createdAt,
+                items =
+                  items
+                    .filter { item -> item.categoryId == category.id }
+                    .filter { item -> item.productId == product.id }
+                    .map(::mapEntityToBackup),
+              )
+            }
+
+        BackupCategory(
+          id = category.id,
+          name = category.name,
+          description = category.description,
+          products = productsByCategory,
+          standaloneItems =
+            items
               .filter { item -> item.categoryId == category.id }
-              .filter { item -> item.productId == product.id }
+              .filter { item -> item.productId == null }
               .map(::mapEntityToBackup),
-          )
-        }
-
-      BackupCategory(
-        id = category.id,
-        name = category.name,
-        description = category.description,
-        products = productsByCategory,
-        standaloneItems = items.filter { item -> item.categoryId == category.id }
-          .filter { item -> item.productId == null }
-          .map(::mapEntityToBackup)
-      )
-    }
+        )
+      }
 
     return BackupData(
       version = BackupData.CURRENT_VERSION,
       exportDate = appClock.now().toEpochMilliseconds(),
-      categories = backupCategories
+      categories = backupCategories,
     )
   }
 
-  private fun mapEntityToBackup(item: ItemRoomEntity): BackupProductItem = BackupProductItem(
-    id = item.id,
-    identifier = item.identifier,
-    expirationDate = item.expirationDate,
-    pausedDate = item.pausedDate,
-    remainingDays = item.remainingDays,
-    consumedDate = item.consumedDate,
-    packSize = item.packSize,
-  )
-
+  private fun mapEntityToBackup(item: ItemRoomEntity): BackupProductItem =
+    BackupProductItem(
+      id = item.id,
+      identifier = item.identifier,
+      expirationDate = item.expirationDate,
+      pausedDate = item.pausedDate,
+      remainingDays = item.remainingDays,
+      consumedDate = item.consumedDate,
+      packSize = item.packSize,
+    )
 
   override suspend fun importBackup(backup: BackupData) {
     database.withTransaction {
@@ -81,51 +85,55 @@ class RoomBackupDataSource(
 
       // Insert categories and items (mapping from old backup format)
       backup.categories.forEach { category: BackupCategory ->
-        val categoryEntity = CategoryRoomEntity(
-          id = category.id,
-          name = category.name,
-          description = category.description
-        )
+        val categoryEntity =
+          CategoryRoomEntity(
+            id = category.id,
+            name = category.name,
+            description = category.description,
+          )
         categoryDao.insertCategory(categoryEntity)
 
         category.products.forEach { product ->
-          val productEntity = ProductRoomEntity(
-            id = product.id,
-            categoryId = product.categoryId,
-            name = product.name,
-            createdAt = product.createdAt,
-          )
+          val productEntity =
+            ProductRoomEntity(
+              id = product.id,
+              categoryId = product.categoryId,
+              name = product.name,
+              createdAt = product.createdAt,
+            )
           productDao.insertProduct(productEntity)
         }
 
         category.standaloneItems.forEach { item ->
-          val itemEntity = ItemRoomEntity(
-            id = item.id,
-            categoryId = categoryEntity.id,
-            identifier = item.identifier,
-            productId = null,
-            expirationDate = item.expirationDate,
-            pausedDate = item.pausedDate,
-            remainingDays = item.remainingDays,
-            consumedDate = item.consumedDate,
-            packSize = item.packSize,
-          )
-          itemDao.insertItem(itemEntity)
-        }
-
-        category.products.forEach { product ->
-          product.items.forEach { item ->
-            val itemEntity = ItemRoomEntity(
+          val itemEntity =
+            ItemRoomEntity(
               id = item.id,
               categoryId = categoryEntity.id,
               identifier = item.identifier,
-              productId = product.id,
+              productId = null,
               expirationDate = item.expirationDate,
               pausedDate = item.pausedDate,
               remainingDays = item.remainingDays,
               consumedDate = item.consumedDate,
               packSize = item.packSize,
             )
+          itemDao.insertItem(itemEntity)
+        }
+
+        category.products.forEach { product ->
+          product.items.forEach { item ->
+            val itemEntity =
+              ItemRoomEntity(
+                id = item.id,
+                categoryId = categoryEntity.id,
+                identifier = item.identifier,
+                productId = product.id,
+                expirationDate = item.expirationDate,
+                pausedDate = item.pausedDate,
+                remainingDays = item.remainingDays,
+                consumedDate = item.consumedDate,
+                packSize = item.packSize,
+              )
             itemDao.insertItem(itemEntity)
           }
         }
@@ -144,7 +152,9 @@ class RoomBackupDataSource(
       // Check version compatibility
       if (backup.version > BackupData.CURRENT_VERSION) {
         return Result.failure(
-          IllegalArgumentException("Backup version ${backup.version} is not supported. Current version: ${BackupData.CURRENT_VERSION}")
+          IllegalArgumentException(
+            "Backup version ${backup.version} is not supported. Current version: ${BackupData.CURRENT_VERSION}",
+          ),
         )
       }
 

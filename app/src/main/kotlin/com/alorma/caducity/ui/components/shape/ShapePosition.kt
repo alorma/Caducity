@@ -12,7 +12,7 @@ enum class ShapePosition {
   Single,
   Start,
   Middle,
-  End;
+  End,
 }
 
 /**
@@ -25,7 +25,7 @@ enum class ShapePosition {
  */
 fun <T> List<T>.calculateShapeWithGaps(
   index: Int,
-  hasContent: (T) -> Boolean = { true }
+  hasContent: (T) -> Boolean = { true },
 ): ShapePosition {
   val current = getOrNull(index) ?: return ShapePosition.None
   val currentHasContent = hasContent(current)
@@ -52,20 +52,22 @@ fun ShapePosition.toVerticalShape(): Shape {
   return when (this) {
     ShapePosition.None -> RectangleShape
     ShapePosition.Single -> largeShape
-    ShapePosition.Start -> RoundedCornerShape(
-      topStart = largeShape.topStart,
-      topEnd = largeShape.topEnd,
-      bottomStart = smallShape.bottomStart,
-      bottomEnd = smallShape.bottomEnd,
-    )
+    ShapePosition.Start ->
+      RoundedCornerShape(
+        topStart = largeShape.topStart,
+        topEnd = largeShape.topEnd,
+        bottomStart = smallShape.bottomStart,
+        bottomEnd = smallShape.bottomEnd,
+      )
 
     ShapePosition.Middle -> smallShape
-    ShapePosition.End -> RoundedCornerShape(
-      topStart = smallShape.topStart,
-      topEnd = smallShape.topEnd,
-      bottomStart = largeShape.bottomStart,
-      bottomEnd = largeShape.bottomEnd,
-    )
+    ShapePosition.End ->
+      RoundedCornerShape(
+        topStart = smallShape.topStart,
+        topEnd = smallShape.topEnd,
+        bottomStart = largeShape.bottomStart,
+        bottomEnd = largeShape.bottomEnd,
+      )
   }
 }
 
@@ -74,24 +76,24 @@ fun ShapePosition.toVerticalShape(): Shape {
 fun ShapePosition.toHorizontalShape(
   externalBaseShape: CornerBasedShape = CaducityTheme.shapes.large,
   internalBaseShape: CornerBasedShape = CaducityTheme.shapes.extraSmall,
-): CornerBasedShape {
-
-  return when (this) {
+): CornerBasedShape =
+  when (this) {
     ShapePosition.None -> externalBaseShape
     ShapePosition.Single -> externalBaseShape
-    ShapePosition.Start -> RoundedCornerShape(
-      topStart = externalBaseShape.topStart,
-      topEnd = internalBaseShape.topEnd,
-      bottomStart = externalBaseShape.bottomStart,
-      bottomEnd = internalBaseShape.bottomEnd,
-    )
+    ShapePosition.Start ->
+      RoundedCornerShape(
+        topStart = externalBaseShape.topStart,
+        topEnd = internalBaseShape.topEnd,
+        bottomStart = externalBaseShape.bottomStart,
+        bottomEnd = internalBaseShape.bottomEnd,
+      )
 
     ShapePosition.Middle -> internalBaseShape
-    ShapePosition.End -> RoundedCornerShape(
-      topStart = internalBaseShape.topStart,
-      topEnd = externalBaseShape.topEnd,
-      bottomStart = internalBaseShape.bottomStart,
-      bottomEnd = externalBaseShape.bottomEnd,
-    )
+    ShapePosition.End ->
+      RoundedCornerShape(
+        topStart = internalBaseShape.topStart,
+        topEnd = externalBaseShape.topEnd,
+        bottomStart = internalBaseShape.bottomStart,
+        bottomEnd = externalBaseShape.bottomEnd,
+      )
   }
-}

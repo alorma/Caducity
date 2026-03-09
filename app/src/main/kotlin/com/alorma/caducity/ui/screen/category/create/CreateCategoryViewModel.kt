@@ -16,7 +16,6 @@ class CreateCategoryViewModel(
   private val createCategoryUseCase: CreateCategoryUseCase,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<CreateCategoryNavigation, CreateCategoryNavigationSideEffect, Unit>() {
-
   private val _state = MutableStateFlow(CreateCategoryState())
   val state: StateFlow<CreateCategoryState> = _state.asStateFlow()
 
@@ -38,11 +37,12 @@ class CreateCategoryViewModel(
     _state.update { it.copy(isLoading = true, error = null) }
 
     viewModelScope.launch {
-      val result = createCategoryUseCase.createCategory(
-        name = currentState.name,
-        description = currentState.description,
-        items = emptyList(), // No items on creation
-      )
+      val result =
+        createCategoryUseCase.createCategory(
+          name = currentState.name,
+          description = currentState.description,
+          items = emptyList(), // No items on creation
+        )
 
       result.fold(
         onSuccess = { categoryId ->
@@ -53,10 +53,10 @@ class CreateCategoryViewModel(
           _state.update {
             it.copy(
               isLoading = false,
-              error = error.message ?: "Failed to create category"
+              error = error.message ?: "Failed to create category",
             )
           }
-        }
+        },
       )
     }
   }
@@ -83,11 +83,9 @@ class CreateCategoryViewModel(
       is CreateCategoryNavigation.CategoryCreated -> {
         eventTracker.trackAction(CategoryCreatedAction("form_submit"))
         emitNavigationSideEffect(
-          CreateCategoryNavigationSideEffect.NavigateToCategoryDetail(navigation.categoryId)
+          CreateCategoryNavigationSideEffect.NavigateToCategoryDetail(navigation.categoryId),
         )
       }
     }
   }
 }
-
-

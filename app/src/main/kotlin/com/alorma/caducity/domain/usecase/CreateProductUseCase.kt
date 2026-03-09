@@ -6,7 +6,10 @@ import com.alorma.caducity.domain.model.Product
 class CreateProductUseCase(
   private val productDataSource: ProductDataSource,
 ) {
-  suspend fun create(categoryId: String, name: String): Result<Product> {
+  suspend fun create(
+    categoryId: String,
+    name: String,
+  ): Result<Product> {
     if (name.isBlank()) {
       return Result.failure(IllegalArgumentException("Product name cannot be blank"))
     }

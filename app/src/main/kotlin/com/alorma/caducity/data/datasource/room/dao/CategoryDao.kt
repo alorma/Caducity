@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CategoryDao {
-
   @Transaction
   @Query("SELECT * FROM categories")
   fun getAllCategoriesWithItems(): Flow<List<CategoryWithItemsRoomEntity>>

@@ -7,7 +7,7 @@ import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 sealed interface ProductPageNavigationSideEffect {
   data class NavigateToAddItem(
     val categoryId: String,
-    val productId: String?
+    val productId: String?,
   ) : ProductPageNavigationSideEffect
 }
 
@@ -17,6 +17,7 @@ sealed interface ProductPageSideEffect {
 
   // Product-level success events
   data object ProductDeleted : ProductPageSideEffect
+
   data object ItemsCleared : ProductPageSideEffect
 
   // Item-level error events
@@ -24,6 +25,7 @@ sealed interface ProductPageSideEffect {
 
   // Product-level error events
   data object DeleteProductFailed : ProductPageSideEffect
+
   data object ClearItemsFailed : ProductPageSideEffect
 
   // Item-level bottom sheet events

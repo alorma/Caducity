@@ -30,6 +30,6 @@ abstract class NavigationAction(
   origin: String,
   parameters: Map<String, String> = emptyMap(),
 ) : Action(
-  name = "nav_$actionName",
-  parameters = parameters + ("origin" to origin),
-)
+    name = "nav_$actionName",
+    parameters = parameters + ("origin" to origin),
+  )

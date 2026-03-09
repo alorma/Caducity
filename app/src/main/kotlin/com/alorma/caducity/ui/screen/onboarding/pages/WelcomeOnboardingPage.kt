@@ -24,9 +24,10 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 @Composable
 fun WelcomeOnboardingPage(modifier: Modifier = Modifier) {
   Column(
-    modifier = modifier
-      .fillMaxSize()
-      .padding(32.dp),
+    modifier =
+      modifier
+        .fillMaxSize()
+        .padding(32.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {

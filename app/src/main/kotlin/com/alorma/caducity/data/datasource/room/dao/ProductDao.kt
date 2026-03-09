@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProductDao {
-
   @Query("SELECT * FROM products WHERE categoryId = :categoryId ORDER BY name ASC")
   fun getProductsByCategory(categoryId: String): Flow<List<ProductRoomEntity>>
 

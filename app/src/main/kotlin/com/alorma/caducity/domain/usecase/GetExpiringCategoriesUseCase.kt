@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.first
 class GetExpiringCategoriesUseCase(
   private val categoryDataSource: CategoryDataSource,
 ) {
-
   /**
    * Returns a list of categories that are expiring soon or already expired.
    * Only includes categories with items that have ExpiringSoon or Expired status.
@@ -24,26 +23,33 @@ class GetExpiringCategoriesUseCase(
     return filteredCategories
       .map { categoryWithItems ->
         // For each category, only include items that are expiring or expired
-        val filteredProducts = categoryWithItems.products.map { productWithItems ->
-          productWithItems.copy(
-            items = productWithItems.items.filter { item ->
+        val filteredProducts =
+          categoryWithItems.products
+            .map { productWithItems ->
+              productWithItems.copy(
+                items =
+                  productWithItems.items
+                    .filter { item ->
+                      item.status == ItemStatus.ExpiringSoon || item.status == ItemStatus.Expired
+                    }.toImmutableList(),
+              )
+            }.filter { it.items.isNotEmpty() }
+            .toImmutableList()
+
+        val filteredStandaloneItems =
+          categoryWithItems.standaloneItems
+            .filter { item ->
               item.status == ItemStatus.ExpiringSoon || item.status == ItemStatus.Expired
             }.toImmutableList()
-          )
-        }.filter { it.items.isNotEmpty() }.toImmutableList()
-
-        val filteredStandaloneItems = categoryWithItems.standaloneItems.filter { item ->
-          item.status == ItemStatus.ExpiringSoon || item.status == ItemStatus.Expired
-        }.toImmutableList()
 
         categoryWithItems.copy(
           products = filteredProducts,
-          standaloneItems = filteredStandaloneItems
+          standaloneItems = filteredStandaloneItems,
         )
-      }
-      .sortedBy { categoryWithItems ->
+      }.sortedBy { categoryWithItems ->
         // Sort by earliest expiration date across all items
-        val allItems = categoryWithItems.products.flatMap { it.items } +
+        val allItems =
+          categoryWithItems.products.flatMap { it.items } +
             categoryWithItems.standaloneItems
         allItems.minOfOrNull { it.expirationDate }
       }

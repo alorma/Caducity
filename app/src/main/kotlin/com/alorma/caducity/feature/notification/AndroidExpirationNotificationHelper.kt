@@ -36,7 +36,6 @@ class AndroidExpirationNotificationHelper(
   private val workScheduler: ExpirationWorkScheduler,
   private val stringProvider: StringProvider,
 ) : ExpirationNotificationHelper {
-
   private val notifications: MutableState<Boolean> =
     mutableStateOf(
       // Initialize based on both permission status and saved preference
@@ -57,16 +56,16 @@ class AndroidExpirationNotificationHelper(
     ContextCompat.getDrawable(context, R.drawable.ic_launcher_foreground)?.toBitmap()
   }
 
-  private fun checkNotificationPermission(): Boolean {
-    return context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
-        PackageManager.PERMISSION_GRANTED
-  }
+  private fun checkNotificationPermission(): Boolean =
+    context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+      PackageManager.PERMISSION_GRANTED
 
   private fun readNotificationTime(): LocalTime {
-    val secondsFromMidnight = settings.getInt(
-      key = NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS,
-      defaultValue = NotificationConfigDataSource.DEFAULT_TIME.toSecondOfDay(),
-    )
+    val secondsFromMidnight =
+      settings.getInt(
+        key = NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS,
+        defaultValue = NotificationConfigDataSource.DEFAULT_TIME.toSecondOfDay(),
+      )
     return LocalTime.fromSecondOfDay(secondsFromMidnight)
   }
 
@@ -76,15 +75,15 @@ class AndroidExpirationNotificationHelper(
   @Suppress("ModifierRequired")
   @Composable
   override fun registerContracts() {
-    permissionsLauncher = rememberLauncherForActivityResult(
-      ActivityResultContracts.RequestPermission()
-    ) { granted ->
-      if (granted) {
-        setNotificationsEnabled(true)
+    permissionsLauncher =
+      rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+      ) { granted ->
+        if (granted) {
+          setNotificationsEnabled(true)
+        }
       }
-    }
   }
-
 
   override fun areNotificationsEnabled(): MutableState<Boolean> {
     // Sync state with permission status
@@ -110,9 +109,7 @@ class AndroidExpirationNotificationHelper(
     }
   }
 
-  override fun hasNotificationPermission(): Boolean {
-    return checkNotificationPermission()
-  }
+  override fun hasNotificationPermission(): Boolean = checkNotificationPermission()
 
   override fun showExpiringSoonNotification(product: NotificationProduct) {
     if (!areNotificationsEnabled().value || !areExpiringSoonNotificationsEnabled().value) return
@@ -139,29 +136,33 @@ class AndroidExpirationNotificationHelper(
   ) {
     val notificationManager = context.getSystemService<NotificationManager>()
 
-    val intent = Intent(context, MainActivity::class.java).apply {
-      flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-      putExtra(
-        MainActivity.EXTRA_DEEP_LINK_ACTION,
-        DeepLinkAction.OpenProduct(categoryId = product.categoryId, productId = product.productId),
+    val intent =
+      Intent(context, MainActivity::class.java).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        putExtra(
+          MainActivity.EXTRA_DEEP_LINK_ACTION,
+          DeepLinkAction.OpenProduct(categoryId = product.categoryId, productId = product.productId),
+        )
+      }
+    val pendingIntent =
+      PendingIntent.getActivity(
+        context,
+        product.notificationId,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
       )
-    }
-    val pendingIntent = PendingIntent.getActivity(
-      context,
-      product.notificationId,
-      intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-    )
 
     val itemLines = buildItemLines(product.items)
-    val builder = NotificationCompat.Builder(context, channelId)
-      .setSmallIcon(R.drawable.ic_notification)
-      .also { b -> largeIconBitmap?.let { b.setLargeIcon(it) } }
-      .setContentTitle(product.title)
-      .setContentText(itemLines.firstOrNull() ?: "")
-      .setPriority(priority)
-      .setAutoCancel(true)
-      .setContentIntent(pendingIntent)
+    val builder =
+      NotificationCompat
+        .Builder(context, channelId)
+        .setSmallIcon(R.drawable.ic_notification)
+        .also { b -> largeIconBitmap?.let { b.setLargeIcon(it) } }
+        .setContentTitle(product.title)
+        .setContentText(itemLines.firstOrNull() ?: "")
+        .setPriority(priority)
+        .setAutoCancel(true)
+        .setContentIntent(pendingIntent)
 
     if (itemLines.size > 1) {
       val style = NotificationCompat.InboxStyle().setBigContentTitle(product.title)

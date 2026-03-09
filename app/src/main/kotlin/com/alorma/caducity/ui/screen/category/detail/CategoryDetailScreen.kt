@@ -44,6 +44,8 @@ import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Delete
 import com.alorma.caducity.base.ui.icons.MoreVert
+import com.alorma.caducity.feature.tracking.CategoryDetailScreen as CategoryDetailScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.adaptive.rememberIsExpanded
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfig
 import com.alorma.caducity.ui.components.calendar.CaducityMonthCalendar
@@ -65,8 +67,6 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import com.alorma.caducity.feature.tracking.CategoryDetailScreen as CategoryDetailScreenEvent
-import com.alorma.caducity.feature.tracking.TrackScreen
 
 @Composable
 fun CategoryDetailScreen(
@@ -146,9 +146,10 @@ private fun CategoryDetailEmptyContent(
     snackbarState = snackbarState,
     topBar = {
       StyledTopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-          containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
-        ),
+        colors =
+          TopAppBarDefaults.topAppBarColors(
+            containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
+          ),
         title = { Text(text = state.category.name) },
         navigationIcon = { NavigationIcon() },
         actions = {
@@ -197,9 +198,10 @@ private fun CategoryDetailEmptyCompactLayout(
 
     // Empty state content
     Box(
-      modifier = Modifier
-        .weight(1f)
-        .fillMaxWidth(),
+      modifier =
+        Modifier
+          .weight(1f)
+          .fillMaxWidth(),
       contentAlignment = Alignment.Center,
     ) {
       Column(
@@ -220,9 +222,10 @@ private fun CategoryDetailEmptyCompactLayout(
         )
 
         Row(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
+          modifier =
+            Modifier
+              .fillMaxWidth()
+              .padding(top = 16.dp),
           horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
         ) {
           OutlinedButton(
@@ -246,9 +249,7 @@ private fun CategoryDetailEmptyCompactLayout(
  * Currently contains delete action, can be extended with more actions in the future.
  */
 @Composable
-private fun CategoryDetailOverflowMenu(
-  onDeleteCategoryClick: () -> Unit,
-) {
+private fun CategoryDetailOverflowMenu(onDeleteCategoryClick: () -> Unit) {
   var expanded by remember { mutableStateOf(false) }
 
   IconButton(onClick = { expanded = true }) {
@@ -288,9 +289,10 @@ private fun CategoryDetailCalendarPane(
   modifier: Modifier = Modifier,
 ) {
   Surface(
-    modifier = Modifier
-      .fillMaxHeight()
-      .then(modifier),
+    modifier =
+      Modifier
+        .fillMaxHeight()
+        .then(modifier),
     color = CaducityTheme.colorScheme.surfaceContainerHigh,
     shadowElevation = 2.dp,
   ) {
@@ -314,9 +316,10 @@ private fun CategoryDetailEmptyExpandedLayout(
   modifier: Modifier = Modifier,
 ) {
   Row(
-    modifier = modifier
-      .fillMaxSize()
-      .padding(top = paddingValues.calculateTopPadding())
+    modifier =
+      modifier
+        .fillMaxSize()
+        .padding(top = paddingValues.calculateTopPadding()),
   ) {
     // Left pane: Month calendar (1/3)
     CategoryDetailCalendarPane(
@@ -326,9 +329,10 @@ private fun CategoryDetailEmptyExpandedLayout(
 
     // Right pane: Empty message (2/3)
     Box(
-      modifier = Modifier
-        .weight(0.67f)
-        .fillMaxHeight(),
+      modifier =
+        Modifier
+          .weight(0.67f)
+          .fillMaxHeight(),
       contentAlignment = Alignment.Center,
     ) {
       Column(
@@ -349,9 +353,10 @@ private fun CategoryDetailEmptyExpandedLayout(
         )
 
         Row(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
+          modifier =
+            Modifier
+              .fillMaxWidth()
+              .padding(top = 16.dp),
           horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
         ) {
           OutlinedButton(
@@ -386,10 +391,11 @@ private fun CategoryDetailSuccessContent(
   val isExpanded = rememberIsExpanded()
 
   // Hoist PagerState to preserve across layout changes
-  val pagerState = rememberPagerState(
-    initialPage = 0,
-    pageCount = { state.productTabs.size.coerceAtLeast(1) }
-  )
+  val pagerState =
+    rememberPagerState(
+      initialPage = 0,
+      pageCount = { state.productTabs.size.coerceAtLeast(1) },
+    )
 
   // Scroll to the product tab matching initialProductId when tabs first load
   LaunchedEffect(initialProductId, state.productTabs) {
@@ -423,9 +429,10 @@ private fun CategoryDetailSuccessContent(
     snackbarState = snackbarState,
     topBar = {
       StyledTopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-          containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
-        ),
+        colors =
+          TopAppBarDefaults.topAppBarColors(
+            containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
+          ),
         title = { Text(text = state.category.name) },
         navigationIcon = { NavigationIcon() },
         actions = {
@@ -480,10 +487,11 @@ private fun CategoryDetailCompactLayout(
 
         if (state.productTabs.isNotEmpty()) {
           Row(
-            modifier = Modifier.padding(
-              top = 8.dp,
-              end = 16.dp,
-            ),
+            modifier =
+              Modifier.padding(
+                top = 8.dp,
+                end = 16.dp,
+              ),
             verticalAlignment = Alignment.CenterVertically,
           ) {
             val safeSelectedIndex = pagerState.currentPage.coerceIn(0, state.productTabs.size - 1)
@@ -526,9 +534,10 @@ private fun CategoryDetailCompactLayout(
     if (state.productTabs.isNotEmpty()) {
       HorizontalPager(
         state = pagerState,
-        modifier = Modifier
-          .weight(1f)
-          .fillMaxWidth(),
+        modifier =
+          Modifier
+            .weight(1f)
+            .fillMaxWidth(),
       ) { page ->
         if (page in state.productTabs.indices) {
           val productTab = state.productTabs[page]
@@ -554,9 +563,10 @@ private fun CategoryDetailExpandedLayout(
   val coroutineScope = rememberCoroutineScope()
 
   Row(
-    modifier = modifier
-      .fillMaxSize()
-      .padding(top = paddingValues.calculateTopPadding())
+    modifier =
+      modifier
+        .fillMaxSize()
+        .padding(top = paddingValues.calculateTopPadding()),
   ) {
     // Left pane: Month calendar (1/3)
     CategoryDetailCalendarPane(
@@ -566,19 +576,21 @@ private fun CategoryDetailExpandedLayout(
 
     // Right pane: Tabs + content (2/3)
     Column(
-      modifier = Modifier
-        .weight(0.67f)
-        .fillMaxHeight()
+      modifier =
+        Modifier
+          .weight(0.67f)
+          .fillMaxHeight(),
     ) {
       if (state.productTabs.isNotEmpty()) {
         Surface(
           color = CaducityTheme.colorScheme.surfaceContainerHigh,
         ) {
           Row(
-            modifier = Modifier.padding(
-              top = 8.dp,
-              end = 16.dp,
-            ),
+            modifier =
+              Modifier.padding(
+                top = 8.dp,
+                end = 16.dp,
+              ),
             verticalAlignment = Alignment.CenterVertically,
           ) {
             val safeSelectedIndex = pagerState.currentPage.coerceIn(0, state.productTabs.size - 1)
@@ -618,9 +630,10 @@ private fun CategoryDetailExpandedLayout(
         // Horizontal Pager for product content
         HorizontalPager(
           state = pagerState,
-          modifier = Modifier
-            .weight(1f)
-            .fillMaxWidth(),
+          modifier =
+            Modifier
+              .weight(1f)
+              .fillMaxWidth(),
         ) { page ->
           if (page in state.productTabs.indices) {
             val productTab = state.productTabs[page]
@@ -660,63 +673,70 @@ private fun SideEffectHandler(
   LaunchedEffect(viewModel.sideEffects) {
     viewModel.sideEffects.collect { effect ->
       when (effect) {
-        CategoryDetailSideEffect.ShowAddProductDialog -> launch {
-          var productName by mutableStateOf("")
-          val result = dialogState.showAlertDialog(
-            title = { Text(stringResource(R.string.category_detail_add_product_dialog_title)) },
-            content = {
-              OutlinedTextField(
-                value = productName,
-                onValueChange = { productName = it },
-                label = { Text(stringResource(R.string.category_detail_add_product_dialog_label)) },
-                placeholder = { Text(stringResource(R.string.category_detail_add_product_dialog_placeholder)) },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+        CategoryDetailSideEffect.ShowAddProductDialog ->
+          launch {
+            var productName by mutableStateOf("")
+            val result =
+              dialogState.showAlertDialog(
+                title = { Text(stringResource(R.string.category_detail_add_product_dialog_title)) },
+                content = {
+                  OutlinedTextField(
+                    value = productName,
+                    onValueChange = { productName = it },
+                    label = { Text(stringResource(R.string.category_detail_add_product_dialog_label)) },
+                    placeholder = { Text(stringResource(R.string.category_detail_add_product_dialog_placeholder)) },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                  )
+                },
+                positiveButton = { Text(stringResource(R.string.category_detail_add_product_dialog_add)) },
+                negativeButton = { Text(stringResource(R.string.category_detail_add_product_dialog_cancel)) },
+                type = AppFeedbackType.Info,
               )
-            },
-            positiveButton = { Text(stringResource(R.string.category_detail_add_product_dialog_add)) },
-            negativeButton = { Text(stringResource(R.string.category_detail_add_product_dialog_cancel)) },
-            type = AppFeedbackType.Info,
-          )
-          if (result == DialogResult.Positive && productName.isNotBlank()) {
-            onCreateProduct(productName)
+            if (result == DialogResult.Positive && productName.isNotBlank()) {
+              onCreateProduct(productName)
+            }
           }
-        }
 
-        CategoryDetailSideEffect.ProductCreated -> launch {
-          // Product created successfully - no feedback needed, it will appear in the list
-        }
-
-        CategoryDetailSideEffect.CreateProductFailed -> launch {
-          snackbarState.showSnackbar(
-            message = R.string.error_create_product_failed,
-            type = AppFeedbackType.Error,
-          )
-        }
-
-        CategoryDetailSideEffect.ShowDeleteCategoryDialog -> launch {
-          val result = dialogState.showAlertDialog(
-            title = { Text(stringResource(R.string.category_detail_delete_dialog_title)) },
-            content = { Text(stringResource(R.string.category_detail_delete_dialog_message)) },
-            type = AppFeedbackType.Info,
-            positiveButton = { Text(stringResource(R.string.category_detail_delete_dialog_delete)) },
-            negativeButton = { Text(stringResource(R.string.category_detail_delete_dialog_cancel)) },
-          )
-          if (result == DialogResult.Positive) {
-            onDeleteCategory()
+        CategoryDetailSideEffect.ProductCreated ->
+          launch {
+            // Product created successfully - no feedback needed, it will appear in the list
           }
-        }
+
+        CategoryDetailSideEffect.CreateProductFailed ->
+          launch {
+            snackbarState.showSnackbar(
+              message = R.string.error_create_product_failed,
+              type = AppFeedbackType.Error,
+            )
+          }
+
+        CategoryDetailSideEffect.ShowDeleteCategoryDialog ->
+          launch {
+            val result =
+              dialogState.showAlertDialog(
+                title = { Text(stringResource(R.string.category_detail_delete_dialog_title)) },
+                content = { Text(stringResource(R.string.category_detail_delete_dialog_message)) },
+                type = AppFeedbackType.Info,
+                positiveButton = { Text(stringResource(R.string.category_detail_delete_dialog_delete)) },
+                negativeButton = { Text(stringResource(R.string.category_detail_delete_dialog_cancel)) },
+              )
+            if (result == DialogResult.Positive) {
+              onDeleteCategory()
+            }
+          }
 
         CategoryDetailSideEffect.CategoryDeleted -> {
           // Snackbar or success feedback - navigation handled by NavigateBack side effect
         }
 
-        CategoryDetailSideEffect.DeleteCategoryFailed -> launch {
-          snackbarState.showSnackbar(
-            message = R.string.error_delete_category_failed,
-            type = AppFeedbackType.Error,
-          )
-        }
+        CategoryDetailSideEffect.DeleteCategoryFailed ->
+          launch {
+            snackbarState.showSnackbar(
+              message = R.string.error_delete_category_failed,
+              type = AppFeedbackType.Error,
+            )
+          }
       }
     }
   }

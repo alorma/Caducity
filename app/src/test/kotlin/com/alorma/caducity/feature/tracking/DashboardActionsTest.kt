@@ -5,7 +5,6 @@ import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
 class DashboardActionsTest {
-
   @Test
   fun `NavigateToCreateCategoryAction has correct name and parameters`() {
     // When
@@ -16,8 +15,8 @@ class DashboardActionsTest {
     expectThat(action.parameters).isEqualTo(
       mapOf(
         "origin" to "dashboard",
-        "source" to "fab"
-      )
+        "source" to "fab",
+      ),
     )
   }
 
@@ -31,8 +30,8 @@ class DashboardActionsTest {
     expectThat(action.parameters).isEqualTo(
       mapOf(
         "origin" to "dashboard",
-        "source" to "category_title"
-      )
+        "source" to "category_title",
+      ),
     )
   }
 
@@ -46,8 +45,8 @@ class DashboardActionsTest {
     expectThat(action.parameters).isEqualTo(
       mapOf(
         "origin" to "dashboard",
-        "source" to "calendar_date"
-      )
+        "source" to "calendar_date",
+      ),
     )
   }
 
@@ -62,8 +61,8 @@ class DashboardActionsTest {
       mapOf(
         "origin" to "dashboard",
         "status" to "expired",
-        "source" to "summary"
-      )
+        "source" to "summary",
+      ),
     )
   }
 
@@ -78,8 +77,8 @@ class DashboardActionsTest {
       mapOf(
         "origin" to "dashboard",
         "status" to "expiring_soon",
-        "source" to "summary"
-      )
+        "source" to "summary",
+      ),
     )
   }
 
@@ -94,8 +93,8 @@ class DashboardActionsTest {
       mapOf(
         "origin" to "dashboard",
         "status" to "fresh",
-        "source" to "summary"
-      )
+        "source" to "summary",
+      ),
     )
   }
 
@@ -110,8 +109,8 @@ class DashboardActionsTest {
       mapOf(
         "origin" to "dashboard",
         "status" to "frozen",
-        "source" to "summary"
-      )
+        "source" to "summary",
+      ),
     )
   }
 
@@ -125,8 +124,8 @@ class DashboardActionsTest {
     expectThat(action.parameters).isEqualTo(
       mapOf(
         "origin" to "dashboard",
-        "source" to "topbar"
-      )
+        "source" to "topbar",
+      ),
     )
   }
 }

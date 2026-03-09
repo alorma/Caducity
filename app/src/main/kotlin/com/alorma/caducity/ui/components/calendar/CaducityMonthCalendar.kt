@@ -24,12 +24,13 @@ fun CaducityMonthCalendar(
   appCalendarConfig: AppCalendarConfig,
   onDateClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
-  monthCalendarState: CalendarState = rememberCalendarState(
-    startMonth = appCalendarConfig.today.yearMonth.minusMonth(),
-    endMonth = appCalendarConfig.today.yearMonth.plusMonths(3),
-    firstVisibleMonth = appCalendarConfig.today.yearMonth,
-    firstDayOfWeek = appCalendarConfig.firstDayOfWeek,
-  ),
+  monthCalendarState: CalendarState =
+    rememberCalendarState(
+      startMonth = appCalendarConfig.today.yearMonth.minusMonth(),
+      endMonth = appCalendarConfig.today.yearMonth.plusMonths(3),
+      firstVisibleMonth = appCalendarConfig.today.yearMonth,
+      firstDayOfWeek = appCalendarConfig.firstDayOfWeek,
+    ),
 ) {
   HorizontalCalendar(
     modifier = modifier.fillMaxWidth(),
@@ -38,15 +39,20 @@ fun CaducityMonthCalendar(
       Column {
         CalendarYearMonthHeader(
           startYearMonth = calendarMonth.yearMonth,
-          endYearMonth = calendarMonth.weekDays.last().last().date.yearMonth,
+          endYearMonth =
+            calendarMonth.weekDays
+              .last()
+              .last()
+              .date.yearMonth,
           monthNames = appCalendarConfig.monthNames,
         )
 
         CalendarWeekDaysHeader(
-          weekDays = calendarMonth.weekDays
-            .first()
-            .map { calendarDay -> calendarDay.date }
-            .toImmutableList(),
+          weekDays =
+            calendarMonth.weekDays
+              .first()
+              .map { calendarDay -> calendarDay.date }
+              .toImmutableList(),
           dayOfWeekNames = appCalendarConfig.daysOfWeekNames,
         )
       }

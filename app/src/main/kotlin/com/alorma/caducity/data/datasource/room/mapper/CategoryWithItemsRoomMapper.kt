@@ -1,10 +1,5 @@
 package com.alorma.caducity.data.datasource.room.mapper
 
-import com.alorma.caducity.data.datasource.room.model.CategoryWithItemsRoomEntity
-import com.alorma.caducity.domain.model.CategoryProduct
-import com.alorma.caducity.domain.model.CategoryWithItems
-import kotlinx.collections.immutable.toImmutableList
-
 /**
  * Composite mapper for CategoryWithItems entity -> domain model conversions.
  *
@@ -20,6 +15,4 @@ import kotlinx.collections.immutable.toImmutableList
  */
 class CategoryWithItemsRoomMapper(
   private val categoryMapper: CategoryRoomMapper,
-) {
-
-}
+)

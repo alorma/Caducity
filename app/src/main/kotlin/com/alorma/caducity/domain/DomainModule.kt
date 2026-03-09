@@ -11,17 +11,18 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val domainModule = module {
-  factoryOf(::AppExpirationThresholdsImpl) bind ExpirationThresholds::class
+val domainModule =
+  module {
+    factoryOf(::AppExpirationThresholdsImpl) bind ExpirationThresholds::class
 
-  // Product use cases (was Variant)
-  factoryOf(::CreateProductUseCase)
-  factoryOf(::GetCategoryProductsUseCase)
+    // Product use cases (was Variant)
+    factoryOf(::CreateProductUseCase)
+    factoryOf(::GetCategoryProductsUseCase)
 
-  // Debug use cases
-  factoryOf(::PopulateFakeDataUseCase)
-  
-  // Fake data strategies
-  factoryOf(::FakeTestDataStrategy)
-  factoryOf(::FakePlayStoreDataStrategy)
-}
+    // Debug use cases
+    factoryOf(::PopulateFakeDataUseCase)
+
+    // Fake data strategies
+    factoryOf(::FakeTestDataStrategy)
+    factoryOf(::FakePlayStoreDataStrategy)
+  }

@@ -17,7 +17,6 @@ class OnboardingViewModel(
   private val consentManager: ConsentManager,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<OnboardingNavigation, OnboardingNavigationSideEffect, Unit>() {
-
   private val _state = MutableStateFlow(OnboardingState())
   val state: StateFlow<OnboardingState> = _state.asStateFlow()
 

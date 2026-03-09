@@ -13,28 +13,25 @@ import kotlin.time.Instant
  * - Handle timestamp conversions for createdAt field
  */
 class ProductRoomMapper {
-
   /**
    * Maps ProductRoomEntity to Product domain model
    */
-  fun toModel(entity: ProductRoomEntity): Product {
-    return Product(
+  fun toModel(entity: ProductRoomEntity): Product =
+    Product(
       id = entity.id,
       categoryId = entity.categoryId,
       name = entity.name,
       createdAt = Instant.fromEpochMilliseconds(entity.createdAt),
     )
-  }
 
   /**
    * Maps Product domain model to ProductRoomEntity
    */
-  fun toEntity(model: Product): ProductRoomEntity {
-    return ProductRoomEntity(
+  fun toEntity(model: Product): ProductRoomEntity =
+    ProductRoomEntity(
       id = model.id,
       categoryId = model.categoryId,
       name = model.name,
       createdAt = model.createdAt.toEpochMilliseconds(),
     )
-  }
 }

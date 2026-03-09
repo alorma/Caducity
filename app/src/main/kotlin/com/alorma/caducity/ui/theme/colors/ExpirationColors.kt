@@ -30,60 +30,68 @@ class VibrantExpirationColors(
   default: ExpirationColorsPalette,
   baseColor: Color,
 ) : ExpirationColorsPalette {
+  override val fresh: Color =
+    default.fresh.harmonize(
+      other = baseColor,
+      matchSaturation = false,
+    )
 
-  override val fresh: Color = default.fresh.harmonize(
-    other = baseColor,
-    matchSaturation = false,
-  )
+  override val expiringSoon: Color =
+    default.expiringSoon.harmonize(
+      other = baseColor,
+      matchSaturation = false,
+    )
 
-  override val expiringSoon: Color = default.expiringSoon.harmonize(
-    other = baseColor,
-    matchSaturation = false,
-  )
+  override val expired: Color =
+    default.expired.harmonize(
+      other = baseColor,
+      matchSaturation = false,
+    )
 
-  override val expired: Color = default.expired.harmonize(
-    other = baseColor,
-    matchSaturation = false,
-  )
+  override val frozen: Color =
+    default.frozen.harmonize(
+      other = baseColor,
+      matchSaturation = false,
+    )
 
-  override val frozen: Color = default.frozen.harmonize(
-    other = baseColor,
-    matchSaturation = false,
-  )
-
-  override val consumed: Color = default.consumed.harmonize(
-    other = baseColor,
-    matchSaturation = false,
-  )
+  override val consumed: Color =
+    default.consumed.harmonize(
+      other = baseColor,
+      matchSaturation = false,
+    )
 }
 
 class SoftExpirationColors(
   default: ExpirationColorsPalette,
   baseColor: Color,
 ) : ExpirationColorsPalette {
+  override val fresh: Color =
+    default.fresh.harmonize(
+      other = baseColor,
+      matchSaturation = true,
+    )
 
-  override val fresh: Color = default.fresh.harmonize(
-    other = baseColor,
-    matchSaturation = true,
-  )
+  override val expiringSoon: Color =
+    default.expiringSoon.harmonize(
+      other = baseColor,
+      matchSaturation = true,
+    )
 
-  override val expiringSoon: Color = default.expiringSoon.harmonize(
-    other = baseColor,
-    matchSaturation = true,
-  )
+  override val expired: Color =
+    default.expired.harmonize(
+      other = baseColor,
+      matchSaturation = true,
+    )
 
-  override val expired: Color = default.expired.harmonize(
-    other = baseColor,
-    matchSaturation = true,
-  )
+  override val frozen: Color =
+    default.frozen.harmonize(
+      other = baseColor,
+      matchSaturation = true,
+    )
 
-  override val frozen: Color = default.frozen.harmonize(
-    other = baseColor,
-    matchSaturation = true,
-  )
-
-  override val consumed: Color = default.consumed.harmonize(
-    other = baseColor,
-    matchSaturation = true,
-  )
+  override val consumed: Color =
+    default.consumed.harmonize(
+      other = baseColor,
+      matchSaturation = true,
+    )
 }

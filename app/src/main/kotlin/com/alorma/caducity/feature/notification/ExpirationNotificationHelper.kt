@@ -6,17 +6,29 @@ import kotlinx.datetime.LocalTime
 
 interface ExpirationNotificationHelper : ComposeNavigator<Any> {
   fun areNotificationsEnabled(): MutableState<Boolean>
+
   fun setNotificationsEnabled(enabled: Boolean)
+
   fun hasNotificationPermission(): Boolean
+
   fun launch()
+
   fun changeState(enabled: Boolean)
+
   fun showExpiringSoonNotification(product: NotificationProduct)
+
   fun showExpiredNotification(product: NotificationProduct)
+
   fun areExpiredNotificationsEnabled(): MutableState<Boolean>
+
   fun setExpiredNotificationsEnabled(enabled: Boolean)
+
   fun areExpiringSoonNotificationsEnabled(): MutableState<Boolean>
+
   fun setExpiringSoonNotificationsEnabled(enabled: Boolean)
+
   fun getNotificationTime(): MutableState<LocalTime>
+
   fun setNotificationTime(time: LocalTime)
 }
 

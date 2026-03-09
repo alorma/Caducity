@@ -12,16 +12,16 @@ import androidx.room.PrimaryKey
       entity = CategoryRoomEntity::class,
       parentColumns = ["id"],
       childColumns = ["categoryId"],
-      onDelete = ForeignKey.CASCADE
+      onDelete = ForeignKey.CASCADE,
     ),
     ForeignKey(
       entity = ProductRoomEntity::class,
       parentColumns = ["id"],
       childColumns = ["productId"],
-      onDelete = ForeignKey.SET_NULL
-    )
+      onDelete = ForeignKey.SET_NULL,
+    ),
   ],
-  indices = [Index("categoryId"), Index("productId")]
+  indices = [Index("categoryId"), Index("productId")],
 )
 data class ItemRoomEntity(
   @PrimaryKey

@@ -4,9 +4,8 @@ import android.app.Activity
 import androidx.core.view.WindowInsetsControllerCompat
 
 class AndroidSystemBarsAppearance(
-  private val activity: Activity
+  private val activity: Activity,
 ) : SystemBarsAppearance {
-
   private val windowInsetsController by lazy {
     WindowInsetsControllerCompat(activity.window, activity.window.decorView)
   }

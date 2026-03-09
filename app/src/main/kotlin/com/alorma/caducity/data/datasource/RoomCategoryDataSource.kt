@@ -19,7 +19,6 @@ class RoomCategoryDataSource(
   private val categoryMapper: CategoryRoomMapper,
   private val itemRoomMapper: ItemRoomMapper,
 ) : CategoryDataSource {
-
   override fun getCategories(): Flow<ImmutableList<CategoryWithItems>> {
     val daoFlow = categoryDao.getAllCategoriesWithItems()
 
@@ -27,19 +26,18 @@ class RoomCategoryDataSource(
       roomEntities
         .map { categoryWithItemsRoomEntity ->
           categoryMapper.toModel(categoryWithItemsRoomEntity)
-        }
-        .toImmutableList()
+        }.toImmutableList()
     }
   }
 
-  override fun getCategory(categoryId: String): Flow<Result<CategoryWithItems>> {
-    return categoryDao.getCategoryWithItems(categoryId)
+  override fun getCategory(categoryId: String): Flow<Result<CategoryWithItems>> =
+    categoryDao
+      .getCategoryWithItems(categoryId)
       .map { roomEntity ->
         roomEntity?.let { categoryWithItemsRoomEntity ->
           Result.success(categoryMapper.toModel(categoryWithItemsRoomEntity))
         } ?: Result.failure(NoSuchElementException("Category with id $categoryId not found"))
       }
-  }
 
   override suspend fun createCategory(
     category: Category,

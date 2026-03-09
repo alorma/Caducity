@@ -3,8 +3,10 @@ package com.alorma.caducity.ui.screen.onboarding
 import com.alorma.fireandforget.FireAndForget
 import com.alorma.fireandforget.FireAndForgetRunner
 
-class OnboardingFlag(runner: FireAndForgetRunner) : FireAndForget(
-  fireAndForgetRunner = runner,
-  name = "user_onboarding",
-  autoDisable = false, // Change once onboarding is perfect
-)
+class OnboardingFlag(
+  runner: FireAndForgetRunner,
+) : FireAndForget(
+    fireAndForgetRunner = runner,
+    name = "user_onboarding",
+    autoDisable = false, // Change once onboarding is perfect
+  )

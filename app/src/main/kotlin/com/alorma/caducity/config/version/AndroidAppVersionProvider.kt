@@ -7,25 +7,24 @@ import android.content.Context
  * Retrieves version information from PackageManager.
  */
 class AndroidAppVersionProvider(
-  private val context: Context
+  private val context: Context,
 ) : AppVersionProvider {
-  override fun getVersionName(): String {
-    return try {
+  override fun getVersionName(): String =
+    try {
       context.packageManager
         .getPackageInfo(context.packageName, 0)
         .versionName ?: "Unknown"
     } catch (e: Exception) {
       "Unknown"
     }
-  }
 
-  override fun getVersionCode(): Int {
-    return try {
+  override fun getVersionCode(): Int =
+    try {
       context.packageManager
         .getPackageInfo(context.packageName, 0)
-        .longVersionCode.toInt()
+        .longVersionCode
+        .toInt()
     } catch (e: Exception) {
       0
     }
-  }
 }

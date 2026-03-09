@@ -12,5 +12,5 @@ enum class ConsentStatus {
   /**
    * User has denied consent
    */
-  DENIED
+  DENIED,
 }
