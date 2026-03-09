@@ -1,13 +1,13 @@
 package com.alorma.caducity.feature.notification.worker
 
 import android.content.Context
-import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import timber.log.Timber
 
 /**
  * WorkManager worker that checks for expiring categories and shows notifications.
@@ -30,24 +30,24 @@ class ExpirationCheckWorker(
 
   override suspend fun doWork(): Result {
     return try {
-      Log.d(TAG, "Starting expiration check...")
+      Timber.tag(TAG).d("Starting expiration check...")
 
       // Get categories with items expiring soon
       val expiringCategories = getExpiringCategoriesUseCase.load()
 
-      Log.d(TAG, "Found ${expiringCategories.size} expiring categories")
+      Timber.tag(TAG).d("Found ${expiringCategories.size} expiring categories")
 
       // Show notification if there are expiring categories
       if (expiringCategories.isNotEmpty()) {
         notificationHelper.showExpirationNotification(expiringCategories)
-        Log.d(TAG, "Notification shown for ${expiringCategories.size} categories")
+        Timber.tag(TAG).d("Notification shown for ${expiringCategories.size} categories")
       } else {
-        Log.d(TAG, "No expiring categories, skipping notification")
+        Timber.tag(TAG).d("No expiring categories, skipping notification")
       }
 
       Result.success()
     } catch (e: Exception) {
-      Log.e(TAG, "Error checking expiring categories", e)
+      Timber.tag(TAG).e(e)
       Result.retry()
     }
   }

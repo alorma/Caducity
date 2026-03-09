@@ -11,6 +11,7 @@ import androidx.work.WorkManager
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import kotlinx.datetime.LocalTime
 import java.util.concurrent.TimeUnit
+import timber.log.Timber
 
 /**
  * Schedules periodic background work to check for expiring categories.
@@ -43,10 +44,10 @@ class ExpirationWorkSchedulerImpl(
   }
 
   private fun enqueueWork(time: LocalTime, policy: ExistingPeriodicWorkPolicy) {
-    Log.d(TAG, "Scheduling expiration check work at ${time.hour}:${time.minute.toString().padStart(2, '0')}...")
+    Timber.tag(TAG).d( "Scheduling expiration check work at ${time.hour}:${time.minute.toString().padStart(2, '0')}...")
 
     val initialDelay = delayCalculator.calculate(time)
-    Log.d(TAG, "Initial delay: ${initialDelay.inWholeMinutes} minutes")
+    Timber.tag(TAG).d( "Initial delay: ${initialDelay.inWholeMinutes} minutes")
 
     val constraints = Constraints.Builder()
       .setRequiresBatteryNotLow(true)
@@ -70,28 +71,28 @@ class ExpirationWorkSchedulerImpl(
       workRequest,
     )
 
-    Log.d(TAG, "Expiration check work scheduled successfully")
+    Timber.tag(TAG).d( "Expiration check work scheduled successfully")
   }
 
   /**
    * Cancels all scheduled expiration check work.
    */
   override fun cancelExpirationCheck() {
-    Log.d(TAG, "Cancelling expiration check work...")
+    Timber.tag(TAG).d( "Cancelling expiration check work...")
     WorkManager.getInstance(context).cancelUniqueWork(ExpirationCheckWorker.WORK_NAME)
-    Log.d(TAG, "Expiration check work cancelled")
+    Timber.tag(TAG).d( "Expiration check work cancelled")
   }
 
   /**
    * Triggers an immediate expiration check for testing purposes.
    */
   override fun triggerImmediateCheck() {
-    Log.d(TAG, "Triggering immediate expiration check...")
+    Timber.tag(TAG).d( "Triggering immediate expiration check...")
 
     val workRequest = OneTimeWorkRequestBuilder<ExpirationCheckWorker>()
       .build()
 
     WorkManager.getInstance(context).enqueue(workRequest)
-    Log.d(TAG, "Immediate expiration check enqueued")
+    Timber.tag(TAG).d( "Immediate expiration check enqueued")
   }
 }
