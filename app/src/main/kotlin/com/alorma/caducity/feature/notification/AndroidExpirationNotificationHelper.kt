@@ -20,7 +20,6 @@ import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
 import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.domain.NotificationConfigDataSource
-import com.alorma.caducity.domain.model.CategoryWithItems
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -114,81 +113,67 @@ class AndroidExpirationNotificationHelper(
     return checkNotificationPermission()
   }
 
-  override fun showExpiringSoonNotification(categories: List<CategoryWithItems>) {
+  override fun showExpiringSoonNotification(product: NotificationProduct) {
     if (!areNotificationsEnabled().value || !areExpiringSoonNotificationsEnabled().value) return
-    if (categories.isEmpty()) return
-    val title = if (categories.size == 1) {
-      stringProvider.getString(R.string.notification_expiring_soon_title_single)
-    } else {
-      stringProvider.getString(R.string.notification_expiring_soon_title_plural, categories.size)
-    }
-    showNotification(
+    showProductNotification(
+      product = product,
       channelId = NotificationChannelManager.CHANNEL_ID_EXPIRING_SOON,
-      notificationId = NOTIFICATION_ID_EXPIRING_SOON,
-      title = title,
-      text = buildNotificationText(categories),
       priority = NotificationCompat.PRIORITY_DEFAULT,
-      statusExtra = MainActivity.STATUS_EXPIRING_SOON,
     )
   }
 
-  override fun showExpiredNotification(categories: List<CategoryWithItems>) {
+  override fun showExpiredNotification(product: NotificationProduct) {
     if (!areNotificationsEnabled().value || !areExpiredNotificationsEnabled().value) return
-    if (categories.isEmpty()) return
-    val title = if (categories.size == 1) {
-      stringProvider.getString(R.string.notification_expired_title_single)
-    } else {
-      stringProvider.getString(R.string.notification_expired_title_plural, categories.size)
-    }
-    showNotification(
+    showProductNotification(
+      product = product,
       channelId = NotificationChannelManager.CHANNEL_ID_EXPIRED,
-      notificationId = NOTIFICATION_ID_EXPIRED,
-      title = title,
-      text = buildNotificationText(categories),
       priority = NotificationCompat.PRIORITY_HIGH,
-      statusExtra = MainActivity.STATUS_EXPIRED,
     )
   }
 
-  private fun showNotification(
+  private fun showProductNotification(
+    product: NotificationProduct,
     channelId: String,
-    notificationId: Int,
-    title: String,
-    text: String,
     priority: Int,
-    statusExtra: String,
   ) {
     val notificationManager = context.getSystemService<NotificationManager>()
 
     val intent = Intent(context, MainActivity::class.java).apply {
       flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-      putExtra(MainActivity.EXTRA_FILTER_STATUS, statusExtra)
+      putExtra(MainActivity.EXTRA_CATEGORY_ID, product.categoryId)
     }
     val pendingIntent = PendingIntent.getActivity(
       context,
-      notificationId,
+      product.notificationId,
       intent,
       PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
     )
 
-    val notification = NotificationCompat.Builder(context, channelId)
+    val itemLines = buildItemLines(product.items)
+    val builder = NotificationCompat.Builder(context, channelId)
       .setSmallIcon(R.drawable.ic_notification)
-      .also { builder -> largeIconBitmap?.let { builder.setLargeIcon(it) } }
-      .setContentTitle(title)
-      .setContentText(text)
+      .also { b -> largeIconBitmap?.let { b.setLargeIcon(it) } }
+      .setContentTitle(product.title)
+      .setContentText(itemLines.firstOrNull() ?: "")
       .setPriority(priority)
       .setAutoCancel(true)
       .setContentIntent(pendingIntent)
-      .build()
 
-    notificationManager?.notify(notificationId, notification)
+    if (itemLines.size > 1) {
+      val style = NotificationCompat.InboxStyle().setBigContentTitle(product.title)
+      itemLines.forEach { style.addLine(it) }
+      builder.setStyle(style)
+    }
+
+    notificationManager?.notify(product.notificationId, builder.build())
   }
 
-  private fun buildNotificationText(categories: List<CategoryWithItems>): String {
-    return if (categories.size == 1) {
-      categories.first().category.name
+  private fun buildItemLines(items: List<NotificationItem>): List<String> {
+    val named = items.mapNotNull { it.identifier?.takeIf { id -> id.isNotBlank() } }
+    return if (named.isNotEmpty()) {
+      named
     } else {
-      stringProvider.getString(R.string.notification_text_more, categories.first().category.name, categories.size - 1)
+      listOf(stringProvider.getString(R.string.notification_items_count, items.size))
     }
   }
 
@@ -232,8 +217,6 @@ class AndroidExpirationNotificationHelper(
   }
 
   companion object {
-    private const val NOTIFICATION_ID_EXPIRING_SOON = 1001
-    private const val NOTIFICATION_ID_EXPIRED = 1002
     private const val NotificationsEnabledKey = "notifications_enabled_key"
     private const val ExpiredNotificationsEnabledKey = "notifications_expired_enabled_key"
     private const val ExpiringSoonNotificationsEnabledKey = "notifications_expiring_soon_enabled_key"

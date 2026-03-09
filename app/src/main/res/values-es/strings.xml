@@ -347,4 +347,5 @@
   <string name="notification_expired_title_single">Categoría con productos caducados</string>
   <string name="notification_expired_title_plural">%1$d categorías con productos caducados</string>
   <string name="notification_text_more">%1$s y %2$d más</string>
+  <string name="notification_items_count">%1$d elementos</string>
 </resources>

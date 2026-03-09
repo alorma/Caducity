@@ -348,4 +348,5 @@
   <string name="notification_expired_title_single">Categoria amb productes caducats</string>
   <string name="notification_expired_title_plural">%1$d categories amb productes caducats</string>
   <string name="notification_text_more">%1$s i %2$d més</string>
+  <string name="notification_items_count">%1$d elements</string>
 </resources>

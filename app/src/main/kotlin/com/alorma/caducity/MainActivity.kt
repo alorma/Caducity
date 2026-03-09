@@ -5,7 +5,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
-import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.feature.consent.ConsentManager
 import com.alorma.caducity.ui.theme.AndroidSystemBarsAppearance
 import com.alorma.caducity.ui.theme.LocalSystemBarsAppearance
@@ -23,24 +22,18 @@ class MainActivity : AppCompatActivity() {
 
     enableEdgeToEdge()
 
-    val filterStatus: ItemStatus? = when (intent.getStringExtra(EXTRA_FILTER_STATUS)) {
-      STATUS_EXPIRING_SOON -> ItemStatus.ExpiringSoon
-      STATUS_EXPIRED -> ItemStatus.Expired
-      else -> null
-    }
+    val categoryId: String? = intent.getStringExtra(EXTRA_CATEGORY_ID)
 
     setContent {
       CompositionLocalProvider(
         LocalSystemBarsAppearance provides AndroidSystemBarsAppearance(this)
       ) {
-        App(initialFilterStatus = filterStatus)
+        App(initialCategoryId = categoryId)
       }
     }
   }
 
   companion object {
-    const val EXTRA_FILTER_STATUS = "extra_filter_status"
-    const val STATUS_EXPIRING_SOON = "expiring_soon"
-    const val STATUS_EXPIRED = "expired"
+    const val EXTRA_CATEGORY_ID = "extra_category_id"
   }
 }
