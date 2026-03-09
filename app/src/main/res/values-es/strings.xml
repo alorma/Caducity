@@ -103,6 +103,11 @@
   <string name="settings_notification_types_title">Tipos de notificación</string>
   <string name="settings_notification_type_expired">Caducado</string>
   <string name="settings_notification_type_expiring">Por caducar</string>
+  <string name="settings_notification_schedule_title">Programación de notificaciones</string>
+  <string name="settings_notification_time_title">Hora de notificación</string>
+  <string name="settings_notification_time_dialog_title">Establecer hora de notificación</string>
+  <string name="settings_notification_time_confirm">Confirmar</string>
+  <string name="settings_notification_time_dismiss">Cancelar</string>
 
   <string name="settings_group_privacy">Privacidad y Datos</string>
   <string name="settings_privacy_screen_title">Privacidad</string>

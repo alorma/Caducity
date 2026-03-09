@@ -8,8 +8,8 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
-import kotlin.time.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit
  */
 class ExpirationWorkSchedulerImpl(
   private val context: Context,
+  private val appClock: AppClock,
 ) : ExpirationWorkScheduler {
 
   companion object {
@@ -86,7 +87,7 @@ class ExpirationWorkSchedulerImpl(
    */
   private fun calculateInitialDelay(targetTime: LocalTime): Duration {
     val timezone = TimeZone.currentSystemDefault()
-    val now = Clock.System.now()
+    val now = appClock.now()
     val nowLocal = now.toLocalDateTime(timezone)
 
     val targetToday = LocalDateTime(nowLocal.date, targetTime)
