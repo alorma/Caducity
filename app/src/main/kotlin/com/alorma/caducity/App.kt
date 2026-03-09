@@ -38,19 +38,25 @@ fun App(
   AppTheme(
     themePreferences = koinInject(),
   ) {
-    val initialRoute = when {
-      onboardingFlag.isEnabled() -> OnboardingRoute
-      initialFilterStatus != null -> FilteredItemsRoute.ByStatus(initialFilterStatus)
-      else -> DashboardRoute
-    }
-
     val appBackStack = retain {
+      val initialRoute = when {
+        onboardingFlag.isEnabled() -> OnboardingRoute
+        initialFilterStatus != null -> FilteredItemsRoute.ByStatus(initialFilterStatus)
+        else -> DashboardRoute
+      }
       mutableStateListOf<NavKey>(initialRoute)
     }
 
     NavDisplay(
       modifier = Modifier.fillMaxSize(),
       backStack = appBackStack,
+      onBack = {
+        if (appBackStack.size > 1) {
+          appBackStack.removeLast()
+        } else if (appBackStack.last() is FilteredItemsRoute.ByStatus) {
+          appBackStack[0] = DashboardRoute
+        }
+      },
       entryDecorators = listOf(
         rememberSaveableStateHolderNavEntryDecorator(),
         rememberViewModelStoreNavEntryDecorator(),
