@@ -511,15 +511,7 @@ suspend fun handleItemActionSideEffect(
     ItemActionSideEffect.RequestInAppReview -> {
       // Request in-app review if activity and manager are available
       if (activity != null && inAppReviewManager != null) {
-        val result = inAppReviewManager.requestReview(activity)
-
-        // Show debug snackbar (won't show in release builds on device, but useful for testing)
-        if (result.isSuccess) {
-          snackbarState.showSnackbar(
-            message = R.string.debug_inapp_review_requested,
-            type = AppFeedbackType.Info,
-          )
-        }
+        inAppReviewManager.requestReview(activity)
       }
     }
   }

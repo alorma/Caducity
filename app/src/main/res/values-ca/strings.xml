@@ -104,6 +104,11 @@
   <string name="settings_notification_types_title">Tipus de notificació</string>
   <string name="settings_notification_type_expired">Caducat</string>
   <string name="settings_notification_type_expiring">Per caducar</string>
+  <string name="settings_notification_schedule_title">Programació de notificacions</string>
+  <string name="settings_notification_time_title">Hora de notificació</string>
+  <string name="settings_notification_time_dialog_title">Establir hora de notificació</string>
+  <string name="settings_notification_time_confirm">Confirmar</string>
+  <string name="settings_notification_time_dismiss">Cancel·lar</string>
 
   <string name="settings_group_privacy">Privacitat i Dades</string>
   <string name="settings_privacy_screen_title">Privacitat</string>
@@ -336,4 +341,12 @@
   <string name="dashboard_add">Afegir</string>
 
   <string name="app_name">Caducity</string>
+
+  <!-- Notifications -->
+  <string name="notification_expiring_soon_title_single">Categoria a punt de caducar</string>
+  <string name="notification_expiring_soon_title_plural">%1$d categories a punt de caducar</string>
+  <string name="notification_expired_title_single">Categoria amb productes caducats</string>
+  <string name="notification_expired_title_plural">%1$d categories amb productes caducats</string>
+  <string name="notification_text_more">%1$s i %2$d més</string>
+  <string name="notification_items_count">%1$d elements</string>
 </resources>

@@ -1,7 +1,6 @@
 package com.alorma.caducity.feature.notification.worker
 
 import android.content.Context
-import android.util.Log
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -9,78 +8,89 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
+import kotlinx.datetime.LocalTime
 import java.util.concurrent.TimeUnit
+import timber.log.Timber
 
 /**
  * Schedules periodic background work to check for expiring categories.
  * Uses WorkManager to ensure the work runs even when the app is closed.
+ * The work is scheduled to run daily at the user-configured time (default: noon).
  */
 class ExpirationWorkSchedulerImpl(
-  private val context: Context
-): ExpirationWorkScheduler {
+  private val context: Context,
+  private val delayCalculator: NotificationDelayCalculator,
+) : ExpirationWorkScheduler {
 
   companion object {
     private const val TAG = "ExpirationWorkScheduler"
   }
 
   /**
-   * Schedules periodic expiration checks.
-   * Work will run once every 24 hours with a 15-minute flex period.
-   * Uses KEEP policy to avoid rescheduling if work is already scheduled.
+   * Schedules periodic expiration checks at [time].
+   * Uses UPDATE policy to recalculate the initial delay on every app startup,
+   * ensuring the worker fires at the correct configured time.
    */
-  override fun scheduleExpirationCheck() {
-    Log.d(TAG, "Scheduling expiration check work...")
+  override fun scheduleExpirationCheck(time: LocalTime) {
+    enqueueWork(time, ExistingPeriodicWorkPolicy.UPDATE)
+  }
 
-    // Define constraints for the work
+  /**
+   * Cancels existing work and reschedules at [time].
+   * Called when the user changes their notification time preference.
+   */
+  override fun rescheduleExpirationCheck(time: LocalTime) {
+    enqueueWork(time, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE)
+  }
+
+  private fun enqueueWork(time: LocalTime, policy: ExistingPeriodicWorkPolicy) {
+    Timber.tag(TAG).d( "Scheduling expiration check work at ${time.hour}:${time.minute.toString().padStart(2, '0')}...")
+
+    val initialDelay = delayCalculator.calculate(time)
+    Timber.tag(TAG).d( "Initial delay: ${initialDelay.inWholeMinutes} minutes")
+
     val constraints = Constraints.Builder()
-      .setRequiresBatteryNotLow(true) // Don't run if battery is low
-      .setRequiresStorageNotLow(true) // Don't run if storage is low
-      .setRequiredNetworkType(NetworkType.NOT_REQUIRED) // No network needed
+      .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
       .build()
 
-    // Create periodic work request
-    // Runs once per day with a 15-minute flex period for battery optimization
     val workRequest = PeriodicWorkRequestBuilder<ExpirationCheckWorker>(
-      repeatInterval = 24, // Every 24 hours
+      repeatInterval = 24,
       repeatIntervalTimeUnit = TimeUnit.HOURS,
-      flexTimeInterval = 15, // Flex period of 15 minutes
-      flexTimeIntervalUnit = TimeUnit.MINUTES
+      flexTimeInterval = 15,
+      flexTimeIntervalUnit = TimeUnit.MINUTES,
     )
+      .setInitialDelay(initialDelay.inWholeMilliseconds, TimeUnit.MILLISECONDS)
       .setConstraints(constraints)
       .build()
 
-    // Schedule the work
-    // KEEP policy ensures we don't duplicate work if it's already scheduled
     WorkManager.getInstance(context).enqueueUniquePeriodicWork(
       ExpirationCheckWorker.WORK_NAME,
-      ExistingPeriodicWorkPolicy.KEEP,
-      workRequest
+      policy,
+      workRequest,
     )
 
-    Log.d(TAG, "Expiration check work scheduled successfully")
+    Timber.tag(TAG).d( "Expiration check work scheduled successfully")
   }
 
   /**
    * Cancels all scheduled expiration check work.
-   * Useful for testing or when user disables notifications.
    */
   override fun cancelExpirationCheck() {
-    Log.d(TAG, "Cancelling expiration check work...")
+    Timber.tag(TAG).d( "Cancelling expiration check work...")
     WorkManager.getInstance(context).cancelUniqueWork(ExpirationCheckWorker.WORK_NAME)
-    Log.d(TAG, "Expiration check work cancelled")
+    Timber.tag(TAG).d( "Expiration check work cancelled")
   }
 
   /**
    * Triggers an immediate expiration check for testing purposes.
-   * This will run the worker immediately without waiting for the scheduled time.
    */
   override fun triggerImmediateCheck() {
-    Log.d(TAG, "Triggering immediate expiration check...")
+    Timber.tag(TAG).d( "Triggering immediate expiration check...")
 
     val workRequest = OneTimeWorkRequestBuilder<ExpirationCheckWorker>()
       .build()
 
     WorkManager.getInstance(context).enqueue(workRequest)
-    Log.d(TAG, "Immediate expiration check enqueued")
+    Timber.tag(TAG).d( "Immediate expiration check enqueued")
   }
 }

@@ -11,6 +11,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryRoute
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
@@ -31,25 +32,31 @@ import org.koin.compose.koinInject
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun App(
-  modifier: Modifier = Modifier,
+  deepLinkAction: DeepLinkAction? = null,
   onboardingFlag: OnboardingFlag = koinInject(),
 ) {
   AppTheme(
     themePreferences = koinInject(),
   ) {
-    val initialRoute = if (onboardingFlag.isEnabled()) {
-      OnboardingRoute
-    } else {
-      DashboardRoute
-    }
-
     val appBackStack = retain {
-      mutableStateListOf<NavKey>(initialRoute)
+      val stack = mutableStateListOf<NavKey>(
+        if (onboardingFlag.isEnabled()) OnboardingRoute else DashboardRoute
+      )
+      when (deepLinkAction) {
+        is DeepLinkAction.OpenProduct -> stack.add(
+          CategoryDetailRoute(deepLinkAction.categoryId, deepLinkAction.productId)
+        )
+        null -> Unit
+      }
+      stack
     }
 
     NavDisplay(
       modifier = Modifier.fillMaxSize(),
       backStack = appBackStack,
+      onBack = {
+        if (appBackStack.size > 1) appBackStack.removeLast()
+      },
       entryDecorators = listOf(
         rememberSaveableStateHolderNavEntryDecorator(),
         rememberViewModelStoreNavEntryDecorator(),
@@ -57,7 +64,10 @@ fun App(
       entryProvider = entryProvider {
         entry<OnboardingRoute> {
           OnboardingScreen(
-            onComplete = { appBackStack.add(DashboardRoute) },
+            onComplete = {
+              appBackStack.clear()
+              appBackStack.add(DashboardRoute)
+            },
           )
         }
         entry<DashboardRoute> {
@@ -84,13 +94,14 @@ fun App(
             onNavigateBack = { appBackStack.removeLast() },
             onNavigateToCategory = { categoryId ->
               appBackStack.removeLast()
-              appBackStack.add(CategoryDetailRoute(categoryId)) // Navigate to detail
+              appBackStack.add(CategoryDetailRoute(categoryId))
             }
           )
         }
         entry<CategoryDetailRoute> {
           CategoryDetailContainer(
             categoryId = it.categoryId,
+            initialProductId = it.initialProductId,
             onBack = { appBackStack.removeLast() }
           )
         }
@@ -106,4 +117,3 @@ fun App(
     )
   }
 }
-

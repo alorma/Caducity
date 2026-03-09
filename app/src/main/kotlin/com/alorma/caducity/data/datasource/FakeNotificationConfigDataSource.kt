@@ -5,19 +5,14 @@ import kotlinx.datetime.LocalTime
 
 /**
  * Fake implementation of NotificationConfigDataSource with hardcoded values.
- * This will be replaced with a proper Room-based implementation when adding
- * user-configurable notification settings.
+ * Only used for testing. Production code uses SettingsNotificationConfigDataSource.
  */
 class FakeNotificationConfigDataSource : NotificationConfigDataSource {
-  /**
-   * Hardcoded to 9:00 AM.
-   * In future, this will be configurable by the user via settings.
-   */
-  override suspend fun getNotificationTime(): LocalTime = LocalTime(9, 0)
+  override suspend fun getNotificationTime(): LocalTime = NotificationConfigDataSource.DEFAULT_TIME
 
-  /**
-   * Hardcoded to enabled.
-   * In future, this will be configurable by the user via settings.
-   */
+  override suspend fun setNotificationTime(time: LocalTime) {
+    // no-op in fake implementation
+  }
+
   override suspend fun isNotificationsEnabled(): Boolean = true
 }

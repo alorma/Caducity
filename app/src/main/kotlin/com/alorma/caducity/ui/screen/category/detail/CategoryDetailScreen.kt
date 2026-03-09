@@ -71,6 +71,7 @@ import com.alorma.caducity.feature.tracking.TrackScreen
 @Composable
 fun CategoryDetailScreen(
   categoryId: String,
+  initialProductId: String? = null,
   modifier: Modifier = Modifier,
   viewModel: CategoryDetailViewModel = koinViewModel { parametersOf(categoryId) },
 ) {
@@ -113,6 +114,7 @@ fun CategoryDetailScreen(
         dialogState = dialogState,
         snackbarState = snackbarState,
         state = currentState,
+        initialProductId = initialProductId,
         onNavigateToAddInstance = { productId ->
           viewModel.navigate(CategoryDetailNavigation.AddItem(productId, "fab"))
         },
@@ -375,6 +377,7 @@ private fun CategoryDetailSuccessContent(
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
   state: CategoryDetailState.Success,
+  initialProductId: String? = null,
   onNavigateToAddInstance: (productId: String?) -> Unit,
   onShowAddProductDialog: () -> Unit,
   onDeleteCategoryClick: () -> Unit,
@@ -387,6 +390,14 @@ private fun CategoryDetailSuccessContent(
     initialPage = 0,
     pageCount = { state.productTabs.size.coerceAtLeast(1) }
   )
+
+  // Scroll to the product tab matching initialProductId when tabs first load
+  LaunchedEffect(initialProductId, state.productTabs) {
+    if (initialProductId != null && state.productTabs.isNotEmpty()) {
+      val index = state.productTabs.indexOfFirst { it.id == initialProductId }
+      if (index >= 0) pagerState.scrollToPage(index)
+    }
+  }
 
   // Notify ViewModel when page changes
   LaunchedEffect(pagerState.currentPage) {

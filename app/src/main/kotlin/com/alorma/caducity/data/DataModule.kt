@@ -1,6 +1,6 @@
 package com.alorma.caducity.data
 
-import com.alorma.caducity.data.datasource.FakeNotificationConfigDataSource
+import com.alorma.caducity.data.datasource.SettingsNotificationConfigDataSource
 import com.alorma.caducity.data.datasource.RoomCategoryDataSource
 import com.alorma.caducity.data.datasource.RoomItemDataSource
 import com.alorma.caducity.data.datasource.RoomProductDataSource
@@ -38,5 +38,5 @@ val dataModule = module {
   singleOf(::RoomCategoryDataSource) bind CategoryDataSource::class
   singleOf(::RoomItemDataSource) bind ItemDataSource::class
   singleOf(::RoomProductDataSource) bind ProductDataSource::class
-  singleOf(::FakeNotificationConfigDataSource) bind NotificationConfigDataSource::class
+  singleOf(::SettingsNotificationConfigDataSource) bind NotificationConfigDataSource::class
 }
