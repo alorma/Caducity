@@ -9,8 +9,14 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
+import kotlin.time.Clock
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import java.util.Calendar
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 import java.util.concurrent.TimeUnit
 
 /**
@@ -46,7 +52,7 @@ class ExpirationWorkSchedulerImpl(
     Log.d(TAG, "Scheduling expiration check work at ${time.hour}:${time.minute.toString().padStart(2, '0')}...")
 
     val initialDelay = calculateInitialDelay(time)
-    Log.d(TAG, "Initial delay: ${initialDelay / 1000 / 60} minutes")
+    Log.d(TAG, "Initial delay: ${initialDelay.inWholeMinutes} minutes")
 
     val constraints = Constraints.Builder()
       .setRequiresBatteryNotLow(true)
@@ -60,7 +66,7 @@ class ExpirationWorkSchedulerImpl(
       flexTimeInterval = 15,
       flexTimeIntervalUnit = TimeUnit.MINUTES,
     )
-      .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+      .setInitialDelay(initialDelay.inWholeMilliseconds, TimeUnit.MILLISECONDS)
       .setConstraints(constraints)
       .build()
 
@@ -74,24 +80,23 @@ class ExpirationWorkSchedulerImpl(
   }
 
   /**
-   * Calculates the delay in milliseconds until the next occurrence of [targetTime].
-   * If [targetTime] is still in the future today, returns the delay until then.
-   * Otherwise, returns the delay until [targetTime] tomorrow.
+   * Calculates the delay until the next occurrence of [targetTime] in the system timezone.
+   * If [targetTime] is still in the future today, returns the duration until then.
+   * Otherwise, returns the duration until [targetTime] tomorrow.
    */
-  private fun calculateInitialDelay(targetTime: LocalTime): Long {
-    val now = Calendar.getInstance()
-    val target = Calendar.getInstance().apply {
-      set(Calendar.HOUR_OF_DAY, targetTime.hour)
-      set(Calendar.MINUTE, targetTime.minute)
-      set(Calendar.SECOND, 0)
-      set(Calendar.MILLISECOND, 0)
-    }
+  private fun calculateInitialDelay(targetTime: LocalTime): Duration {
+    val timezone = TimeZone.currentSystemDefault()
+    val now = Clock.System.now()
+    val nowLocal = now.toLocalDateTime(timezone)
 
-    if (!target.after(now)) {
-      target.add(Calendar.DAY_OF_MONTH, 1)
-    }
+    val targetToday = LocalDateTime(nowLocal.date, targetTime)
+    val targetTodayInstant = targetToday.toInstant(timezone)
 
-    return target.timeInMillis - now.timeInMillis
+    return if (targetTodayInstant > now) {
+      targetTodayInstant - now
+    } else {
+      targetTodayInstant + 1.days - now
+    }
   }
 
   /**

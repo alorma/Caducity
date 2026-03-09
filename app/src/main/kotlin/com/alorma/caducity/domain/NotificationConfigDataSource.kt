@@ -9,7 +9,7 @@ import kotlinx.datetime.LocalTime
 interface NotificationConfigDataSource {
   /**
    * Returns the time of day when notifications should be scheduled.
-   * Defaults to [Defaults.HOUR]:[Defaults.MINUTE] (noon) when not configured.
+   * Defaults to [DEFAULT_TIME] (noon) when not configured.
    */
   suspend fun getNotificationTime(): LocalTime
 
@@ -24,14 +24,10 @@ interface NotificationConfigDataSource {
   suspend fun isNotificationsEnabled(): Boolean
 
   companion object {
-    /** SharedPreferences key for the stored notification hour. */
-    const val PREF_NOTIFICATION_TIME_HOUR = "notification_time_hour"
-    /** SharedPreferences key for the stored notification minute. */
-    const val PREF_NOTIFICATION_TIME_MINUTE = "notification_time_minute"
+    /** SharedPreferences key for the stored notification time (seconds from midnight). */
+    const val PREF_NOTIFICATION_TIME_SECONDS = "notification_time_seconds"
 
-    /** Default notification hour (noon). */
-    const val DEFAULT_HOUR = 12
-    /** Default notification minute (noon). */
-    const val DEFAULT_MINUTE = 0
+    /** Default notification time: noon. */
+    val DEFAULT_TIME = LocalTime(12, 0)
   }
 }

@@ -61,9 +61,11 @@ class AndroidExpirationNotificationHelper(
   }
 
   private fun readNotificationTime(): LocalTime {
-    val hour = settings.getInt(NotificationConfigDataSource.PREF_NOTIFICATION_TIME_HOUR, NotificationConfigDataSource.DEFAULT_HOUR)
-    val minute = settings.getInt(NotificationConfigDataSource.PREF_NOTIFICATION_TIME_MINUTE, NotificationConfigDataSource.DEFAULT_MINUTE)
-    return LocalTime(hour, minute)
+    val secondsFromMidnight = settings.getInt(
+      key = NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS,
+      defaultValue = NotificationConfigDataSource.DEFAULT_TIME.toSecondOfDay(),
+    )
+    return LocalTime.fromSecondOfDay(secondsFromMidnight)
   }
 
   override val result: MutableSharedFlow<Any> = MutableSharedFlow()
@@ -200,8 +202,7 @@ class AndroidExpirationNotificationHelper(
   override fun getNotificationTime(): MutableState<LocalTime> = notificationTime
 
   override fun setNotificationTime(time: LocalTime) {
-    settings[NotificationConfigDataSource.PREF_NOTIFICATION_TIME_HOUR] = time.hour
-    settings[NotificationConfigDataSource.PREF_NOTIFICATION_TIME_MINUTE] = time.minute
+    settings[NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS] = time.toSecondOfDay()
     notificationTime.value = time
     workScheduler.rescheduleExpirationCheck(time)
   }
