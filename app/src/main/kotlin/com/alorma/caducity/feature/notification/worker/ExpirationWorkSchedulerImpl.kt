@@ -9,60 +9,93 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
+import kotlinx.datetime.LocalTime
+import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 /**
  * Schedules periodic background work to check for expiring categories.
  * Uses WorkManager to ensure the work runs even when the app is closed.
+ * The work is scheduled to run daily at the user-configured time (default: noon).
  */
 class ExpirationWorkSchedulerImpl(
-  private val context: Context
-): ExpirationWorkScheduler {
+  private val context: Context,
+) : ExpirationWorkScheduler {
 
   companion object {
     private const val TAG = "ExpirationWorkScheduler"
   }
 
   /**
-   * Schedules periodic expiration checks.
-   * Work will run once every 24 hours with a 15-minute flex period.
-   * Uses KEEP policy to avoid rescheduling if work is already scheduled.
+   * Schedules periodic expiration checks at [time].
+   * Uses KEEP policy so the schedule is not reset on every app startup.
    */
-  override fun scheduleExpirationCheck() {
-    Log.d(TAG, "Scheduling expiration check work...")
+  override fun scheduleExpirationCheck(time: LocalTime) {
+    enqueueWork(time, ExistingPeriodicWorkPolicy.KEEP)
+  }
 
-    // Define constraints for the work
+  /**
+   * Cancels existing work and reschedules at [time].
+   * Called when the user changes their notification time preference.
+   */
+  override fun rescheduleExpirationCheck(time: LocalTime) {
+    enqueueWork(time, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE)
+  }
+
+  private fun enqueueWork(time: LocalTime, policy: ExistingPeriodicWorkPolicy) {
+    Log.d(TAG, "Scheduling expiration check work at ${time.hour}:${time.minute.toString().padStart(2, '0')}...")
+
+    val initialDelay = calculateInitialDelay(time)
+    Log.d(TAG, "Initial delay: ${initialDelay / 1000 / 60} minutes")
+
     val constraints = Constraints.Builder()
-      .setRequiresBatteryNotLow(true) // Don't run if battery is low
-      .setRequiresStorageNotLow(true) // Don't run if storage is low
-      .setRequiredNetworkType(NetworkType.NOT_REQUIRED) // No network needed
+      .setRequiresBatteryNotLow(true)
+      .setRequiresStorageNotLow(true)
+      .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
       .build()
 
-    // Create periodic work request
-    // Runs once per day with a 15-minute flex period for battery optimization
     val workRequest = PeriodicWorkRequestBuilder<ExpirationCheckWorker>(
-      repeatInterval = 24, // Every 24 hours
+      repeatInterval = 24,
       repeatIntervalTimeUnit = TimeUnit.HOURS,
-      flexTimeInterval = 15, // Flex period of 15 minutes
-      flexTimeIntervalUnit = TimeUnit.MINUTES
+      flexTimeInterval = 15,
+      flexTimeIntervalUnit = TimeUnit.MINUTES,
     )
+      .setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
       .setConstraints(constraints)
       .build()
 
-    // Schedule the work
-    // KEEP policy ensures we don't duplicate work if it's already scheduled
     WorkManager.getInstance(context).enqueueUniquePeriodicWork(
       ExpirationCheckWorker.WORK_NAME,
-      ExistingPeriodicWorkPolicy.KEEP,
-      workRequest
+      policy,
+      workRequest,
     )
 
     Log.d(TAG, "Expiration check work scheduled successfully")
   }
 
   /**
+   * Calculates the delay in milliseconds until the next occurrence of [targetTime].
+   * If [targetTime] is still in the future today, returns the delay until then.
+   * Otherwise, returns the delay until [targetTime] tomorrow.
+   */
+  private fun calculateInitialDelay(targetTime: LocalTime): Long {
+    val now = Calendar.getInstance()
+    val target = Calendar.getInstance().apply {
+      set(Calendar.HOUR_OF_DAY, targetTime.hour)
+      set(Calendar.MINUTE, targetTime.minute)
+      set(Calendar.SECOND, 0)
+      set(Calendar.MILLISECOND, 0)
+    }
+
+    if (!target.after(now)) {
+      target.add(Calendar.DAY_OF_MONTH, 1)
+    }
+
+    return target.timeInMillis - now.timeInMillis
+  }
+
+  /**
    * Cancels all scheduled expiration check work.
-   * Useful for testing or when user disables notifications.
    */
   override fun cancelExpirationCheck() {
     Log.d(TAG, "Cancelling expiration check work...")
@@ -72,7 +105,6 @@ class ExpirationWorkSchedulerImpl(
 
   /**
    * Triggers an immediate expiration check for testing purposes.
-   * This will run the worker immediately without waiting for the scheduled time.
    */
   override fun triggerImmediateCheck() {
     Log.d(TAG, "Triggering immediate expiration check...")

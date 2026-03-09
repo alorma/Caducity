@@ -3,6 +3,7 @@ package com.alorma.caducity.feature.notification
 import androidx.compose.runtime.MutableState
 import com.alorma.caducity.config.navigation.ComposeNavigator
 import com.alorma.caducity.domain.model.CategoryWithItems
+import kotlinx.datetime.LocalTime
 
 interface ExpirationNotificationHelper : ComposeNavigator<Any> {
   fun areNotificationsEnabled(): MutableState<Boolean>
@@ -15,4 +16,6 @@ interface ExpirationNotificationHelper : ComposeNavigator<Any> {
   fun setExpiredNotificationsEnabled(enabled: Boolean)
   fun areExpiringSoonNotificationsEnabled(): MutableState<Boolean>
   fun setExpiringSoonNotificationsEnabled(enabled: Boolean)
+  fun getNotificationTime(): MutableState<LocalTime>
+  fun setNotificationTime(time: LocalTime)
 }

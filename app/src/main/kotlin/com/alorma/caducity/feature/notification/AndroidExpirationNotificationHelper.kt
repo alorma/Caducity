@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -19,10 +18,12 @@ import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.toBitmap
 import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
+import com.alorma.caducity.domain.NotificationConfigDataSource
 import com.alorma.caducity.domain.model.CategoryWithItems
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.datetime.LocalTime
 
 /**
  * Android implementation of ExpirationNotificationHelper.
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 class AndroidExpirationNotificationHelper(
   private val context: Context,
   private val settings: Settings,
+  private val workScheduler: ExpirationWorkScheduler,
 ) : ExpirationNotificationHelper {
 
   private val notifications: MutableState<Boolean> =
@@ -45,6 +47,9 @@ class AndroidExpirationNotificationHelper(
   private val expiringSoonNotifications: MutableState<Boolean> =
     mutableStateOf(settings.getBoolean(ExpiringSoonNotificationsEnabledKey, true))
 
+  private val notificationTime: MutableState<LocalTime> =
+    mutableStateOf(readNotificationTime())
+
   // Cache large icon bitmap to avoid repeated conversions
   private val largeIconBitmap by lazy {
     ContextCompat.getDrawable(context, R.drawable.ic_launcher_foreground)?.toBitmap()
@@ -53,6 +58,12 @@ class AndroidExpirationNotificationHelper(
   private fun checkNotificationPermission(): Boolean {
     return context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
         PackageManager.PERMISSION_GRANTED
+  }
+
+  private fun readNotificationTime(): LocalTime {
+    val hour = settings.getInt(NotificationConfigDataSource.PREF_NOTIFICATION_TIME_HOUR, NotificationConfigDataSource.DEFAULT_HOUR)
+    val minute = settings.getInt(NotificationConfigDataSource.PREF_NOTIFICATION_TIME_MINUTE, NotificationConfigDataSource.DEFAULT_MINUTE)
+    return LocalTime(hour, minute)
   }
 
   override val result: MutableSharedFlow<Any> = MutableSharedFlow()
@@ -184,6 +195,15 @@ class AndroidExpirationNotificationHelper(
   override fun setExpiringSoonNotificationsEnabled(enabled: Boolean) {
     settings[ExpiringSoonNotificationsEnabledKey] = enabled
     expiringSoonNotifications.value = enabled
+  }
+
+  override fun getNotificationTime(): MutableState<LocalTime> = notificationTime
+
+  override fun setNotificationTime(time: LocalTime) {
+    settings[NotificationConfigDataSource.PREF_NOTIFICATION_TIME_HOUR] = time.hour
+    settings[NotificationConfigDataSource.PREF_NOTIFICATION_TIME_MINUTE] = time.minute
+    notificationTime.value = time
+    workScheduler.rescheduleExpirationCheck(time)
   }
 
   companion object {

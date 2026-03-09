@@ -102,6 +102,11 @@
   <string name="settings_notification_types_title">Notification Types</string>
   <string name="settings_notification_type_expired">Expired</string>
   <string name="settings_notification_type_expiring">Expiring</string>
+  <string name="settings_notification_schedule_title">Notification Schedule</string>
+  <string name="settings_notification_time_title">Notification Time</string>
+  <string name="settings_notification_time_dialog_title">Set Notification Time</string>
+  <string name="settings_notification_time_confirm">Confirm</string>
+  <string name="settings_notification_time_dismiss">Cancel</string>
 
   <string name="settings_group_privacy">Privacy &amp; Data</string>
   <string name="settings_privacy_screen_title">Privacy</string>
