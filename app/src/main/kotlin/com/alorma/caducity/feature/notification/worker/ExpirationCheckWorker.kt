@@ -3,10 +3,9 @@ package com.alorma.caducity.feature.notification.worker
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import timber.log.Timber
 
 /**
@@ -31,18 +30,18 @@ class ExpirationCheckWorker(
     return try {
       Timber.tag(TAG).d("Starting expiration check...")
 
-      // Get categories with items expiring soon
-      val expiringCategories = getExpiringCategoriesUseCase.load()
+      val allCategories = getExpiringCategoriesUseCase.load()
+      Timber.tag(TAG).d("Found ${allCategories.size} categories with expiring/expired items")
 
-      Timber.tag(TAG).d("Found ${expiringCategories.size} expiring categories")
-
-      // Show notification if there are expiring categories
-      if (expiringCategories.isNotEmpty()) {
-        notificationHelper.showExpirationNotification(expiringCategories)
-        Timber.tag(TAG).d("Notification shown for ${expiringCategories.size} categories")
-      } else {
-        Timber.tag(TAG).d("No expiring categories, skipping notification")
+      val expiringSoon = allCategories.filter { category ->
+        category.allItems.any { it.status == ItemStatus.ExpiringSoon }
       }
+      val expired = allCategories.filter { category ->
+        category.allItems.any { it.status == ItemStatus.Expired }
+      }
+
+      notificationHelper.showExpiringSoonNotification(expiringSoon)
+      notificationHelper.showExpiredNotification(expired)
 
       Result.success()
     } catch (e: Exception) {

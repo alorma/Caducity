@@ -11,7 +11,8 @@ interface ExpirationNotificationHelper : ComposeNavigator<Any> {
   fun hasNotificationPermission(): Boolean
   fun launch()
   fun changeState(enabled: Boolean)
-  fun showExpirationNotification(expiringProducts: List<CategoryWithItems>)
+  fun showExpiringSoonNotification(categories: List<CategoryWithItems>)
+  fun showExpiredNotification(categories: List<CategoryWithItems>)
   fun areExpiredNotificationsEnabled(): MutableState<Boolean>
   fun setExpiredNotificationsEnabled(enabled: Boolean)
   fun areExpiringSoonNotificationsEnabled(): MutableState<Boolean>

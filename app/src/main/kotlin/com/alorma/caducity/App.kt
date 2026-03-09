@@ -11,6 +11,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryRoute
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
@@ -31,16 +32,16 @@ import org.koin.compose.koinInject
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun App(
-  modifier: Modifier = Modifier,
+  initialFilterStatus: ItemStatus? = null,
   onboardingFlag: OnboardingFlag = koinInject(),
 ) {
   AppTheme(
     themePreferences = koinInject(),
   ) {
-    val initialRoute = if (onboardingFlag.isEnabled()) {
-      OnboardingRoute
-    } else {
-      DashboardRoute
+    val initialRoute = when {
+      onboardingFlag.isEnabled() -> OnboardingRoute
+      initialFilterStatus != null -> FilteredItemsRoute.ByStatus(initialFilterStatus)
+      else -> DashboardRoute
     }
 
     val appBackStack = retain {

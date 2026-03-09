@@ -112,52 +112,64 @@ class AndroidExpirationNotificationHelper(
     return checkNotificationPermission()
   }
 
-  override fun showExpirationNotification(expiringProducts: List<CategoryWithItems>) {
-    if (!areNotificationsEnabled().value) {
-      return
-    }
-
-    if (expiringProducts.isEmpty()) {
-      return
-    }
-
-    val notificationManager = context.getSystemService<NotificationManager>()
-
-    // Create intent to open app with filtered view
-    val intent = Intent(context, MainActivity::class.java).apply {
-      flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-    }
-
-    val pendingIntent = PendingIntent.getActivity(
-      context,
-      0,
-      intent,
-      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+  override fun showExpiringSoonNotification(categories: List<CategoryWithItems>) {
+    if (!areNotificationsEnabled().value || !areExpiringSoonNotificationsEnabled().value) return
+    if (categories.isEmpty()) return
+    showNotification(
+      channelId = NotificationChannelManager.CHANNEL_ID_EXPIRING_SOON,
+      notificationId = NOTIFICATION_ID_EXPIRING_SOON,
+      title = if (categories.size == 1) "Category expiring soon" else "${categories.size} categories expiring soon",
+      text = buildNotificationText(categories),
+      priority = NotificationCompat.PRIORITY_DEFAULT,
+      statusExtra = MainActivity.STATUS_EXPIRING_SOON,
     )
-
-    // Build notification
-    val notification =
-      NotificationCompat.Builder(context, NotificationChannelManager.CHANNEL_ID_EXPIRATION)
-        .setSmallIcon(R.drawable.ic_notification)
-        .also { builder ->
-          largeIconBitmap?.let { builder.setLargeIcon(it) }
-        }
-        .setContentTitle(buildNotificationTitle(expiringProducts.size))
-        .setContentText(buildNotificationText(expiringProducts))
-        .setPriority(NotificationCompat.PRIORITY_HIGH)
-        .setAutoCancel(true)
-        .setContentIntent(pendingIntent)
-        .build()
-
-    notificationManager?.notify(NOTIFICATION_ID, notification)
   }
 
-  private fun buildNotificationTitle(count: Int): String {
-    return if (count == 1) {
-      "Category expiring soon"
-    } else {
-      "$count categories expiring soon"
+  override fun showExpiredNotification(categories: List<CategoryWithItems>) {
+    if (!areNotificationsEnabled().value || !areExpiredNotificationsEnabled().value) return
+    if (categories.isEmpty()) return
+    showNotification(
+      channelId = NotificationChannelManager.CHANNEL_ID_EXPIRED,
+      notificationId = NOTIFICATION_ID_EXPIRED,
+      title = if (categories.size == 1) "Category has expired items" else "${categories.size} categories have expired items",
+      text = buildNotificationText(categories),
+      priority = NotificationCompat.PRIORITY_HIGH,
+      statusExtra = MainActivity.STATUS_EXPIRED,
+    )
+  }
+
+  private fun showNotification(
+    channelId: String,
+    notificationId: Int,
+    title: String,
+    text: String,
+    priority: Int,
+    statusExtra: String,
+  ) {
+    val notificationManager = context.getSystemService<NotificationManager>()
+
+    val intent = Intent(context, MainActivity::class.java).apply {
+      flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+      putExtra(MainActivity.EXTRA_FILTER_STATUS, statusExtra)
     }
+    val pendingIntent = PendingIntent.getActivity(
+      context,
+      notificationId,
+      intent,
+      PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+    )
+
+    val notification = NotificationCompat.Builder(context, channelId)
+      .setSmallIcon(R.drawable.ic_notification)
+      .also { builder -> largeIconBitmap?.let { builder.setLargeIcon(it) } }
+      .setContentTitle(title)
+      .setContentText(text)
+      .setPriority(priority)
+      .setAutoCancel(true)
+      .setContentIntent(pendingIntent)
+      .build()
+
+    notificationManager?.notify(notificationId, notification)
   }
 
   private fun buildNotificationText(categories: List<CategoryWithItems>): String {
@@ -208,7 +220,8 @@ class AndroidExpirationNotificationHelper(
   }
 
   companion object {
-    private const val NOTIFICATION_ID = 1001
+    private const val NOTIFICATION_ID_EXPIRING_SOON = 1001
+    private const val NOTIFICATION_ID_EXPIRED = 1002
     private const val NotificationsEnabledKey = "notifications_enabled_key"
     private const val ExpiredNotificationsEnabledKey = "notifications_expired_enabled_key"
     private const val ExpiringSoonNotificationsEnabledKey = "notifications_expiring_soon_enabled_key"
