@@ -33,6 +33,7 @@ data class NotificationProduct(
   val title: String,
   val items: List<NotificationItem>,
   val categoryId: String,
+  val productId: String?,
 )
 
 data class NotificationItem(

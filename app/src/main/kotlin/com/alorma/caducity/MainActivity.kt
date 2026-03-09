@@ -5,7 +5,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.core.os.BundleCompat
 import com.alorma.caducity.feature.consent.ConsentManager
+import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.alorma.caducity.ui.theme.AndroidSystemBarsAppearance
 import com.alorma.caducity.ui.theme.LocalSystemBarsAppearance
 import org.koin.android.ext.android.inject
@@ -22,18 +24,22 @@ class MainActivity : AppCompatActivity() {
 
     enableEdgeToEdge()
 
-    val categoryId: String? = intent.getStringExtra(EXTRA_CATEGORY_ID)
+    val deepLinkAction = BundleCompat.getParcelable(
+      intent.extras ?: Bundle.EMPTY,
+      EXTRA_DEEP_LINK_ACTION,
+      DeepLinkAction::class.java,
+    )
 
     setContent {
       CompositionLocalProvider(
         LocalSystemBarsAppearance provides AndroidSystemBarsAppearance(this)
       ) {
-        App(initialCategoryId = categoryId)
+        App(deepLinkAction = deepLinkAction)
       }
     }
   }
 
   companion object {
-    const val EXTRA_CATEGORY_ID = "extra_category_id"
+    const val EXTRA_DEEP_LINK_ACTION = "extra_deep_link_action"
   }
 }

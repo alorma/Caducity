@@ -11,6 +11,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryRoute
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
@@ -31,7 +32,7 @@ import org.koin.compose.koinInject
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun App(
-  initialCategoryId: String? = null,
+  deepLinkAction: DeepLinkAction? = null,
   onboardingFlag: OnboardingFlag = koinInject(),
 ) {
   AppTheme(
@@ -41,7 +42,12 @@ fun App(
       val stack = mutableStateListOf<NavKey>(
         if (onboardingFlag.isEnabled()) OnboardingRoute else DashboardRoute
       )
-      if (initialCategoryId != null) stack.add(CategoryDetailRoute(initialCategoryId))
+      when (deepLinkAction) {
+        is DeepLinkAction.OpenProduct -> stack.add(
+          CategoryDetailRoute(deepLinkAction.categoryId, deepLinkAction.productId)
+        )
+        null -> Unit
+      }
       stack
     }
 
@@ -95,6 +101,7 @@ fun App(
         entry<CategoryDetailRoute> {
           CategoryDetailContainer(
             categoryId = it.categoryId,
+            initialProductId = it.initialProductId,
             onBack = { appBackStack.removeLast() }
           )
         }

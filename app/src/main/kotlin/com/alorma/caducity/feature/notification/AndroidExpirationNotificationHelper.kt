@@ -20,6 +20,7 @@ import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
 import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.domain.NotificationConfigDataSource
+import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -140,7 +141,10 @@ class AndroidExpirationNotificationHelper(
 
     val intent = Intent(context, MainActivity::class.java).apply {
       flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-      putExtra(MainActivity.EXTRA_CATEGORY_ID, product.categoryId)
+      putExtra(
+        MainActivity.EXTRA_DEEP_LINK_ACTION,
+        DeepLinkAction.OpenProduct(categoryId = product.categoryId, productId = product.productId),
+      )
     }
     val pendingIntent = PendingIntent.getActivity(
       context,

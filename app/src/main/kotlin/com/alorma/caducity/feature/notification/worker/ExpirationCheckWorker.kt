@@ -68,6 +68,7 @@ class ExpirationCheckWorker(
             title = categoryProduct.product.name,
             items = matchingItems.map { NotificationItem(it.identifier.takeIf { id -> id.isNotBlank() }) },
             categoryId = category.category.id,
+            productId = categoryProduct.product.id,
           )
         )
       }
@@ -82,6 +83,7 @@ class ExpirationCheckWorker(
           title = category.category.name,
           items = standaloneItems.map { NotificationItem(it.identifier.takeIf { id -> id.isNotBlank() }) },
           categoryId = category.category.id,
+          productId = null,
         )
       )
     }
