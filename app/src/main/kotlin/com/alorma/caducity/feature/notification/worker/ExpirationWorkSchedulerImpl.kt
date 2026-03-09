@@ -8,15 +8,8 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.days
 import java.util.concurrent.TimeUnit
 
 /**
@@ -26,7 +19,7 @@ import java.util.concurrent.TimeUnit
  */
 class ExpirationWorkSchedulerImpl(
   private val context: Context,
-  private val appClock: AppClock,
+  private val delayCalculator: NotificationDelayCalculator,
 ) : ExpirationWorkScheduler {
 
   companion object {
@@ -52,7 +45,7 @@ class ExpirationWorkSchedulerImpl(
   private fun enqueueWork(time: LocalTime, policy: ExistingPeriodicWorkPolicy) {
     Log.d(TAG, "Scheduling expiration check work at ${time.hour}:${time.minute.toString().padStart(2, '0')}...")
 
-    val initialDelay = calculateInitialDelay(time)
+    val initialDelay = delayCalculator.calculate(time)
     Log.d(TAG, "Initial delay: ${initialDelay.inWholeMinutes} minutes")
 
     val constraints = Constraints.Builder()
@@ -78,26 +71,6 @@ class ExpirationWorkSchedulerImpl(
     )
 
     Log.d(TAG, "Expiration check work scheduled successfully")
-  }
-
-  /**
-   * Calculates the delay until the next occurrence of [targetTime] in the system timezone.
-   * If [targetTime] is still in the future today, returns the duration until then.
-   * Otherwise, returns the duration until [targetTime] tomorrow.
-   */
-  private fun calculateInitialDelay(targetTime: LocalTime): Duration {
-    val timezone = TimeZone.currentSystemDefault()
-    val now = appClock.now()
-    val nowLocal = now.toLocalDateTime(timezone)
-
-    val targetToday = LocalDateTime(nowLocal.date, targetTime)
-    val targetTodayInstant = targetToday.toInstant(timezone)
-
-    return if (targetTodayInstant > now) {
-      targetTodayInstant - now
-    } else {
-      targetTodayInstant + 1.days - now
-    }
   }
 
   /**
