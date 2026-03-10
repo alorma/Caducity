@@ -12,6 +12,7 @@ class LlamatikGroceryParser(
   private val modelManager: ModelManager,
 ) : AiGroceryParser {
   private val json = Json { ignoreUnknownKeys = true }
+  private var modelInitialized = false
 
   override suspend fun parse(
     input: String,
@@ -20,24 +21,36 @@ class LlamatikGroceryParser(
     withContext(Dispatchers.Default) {
       if (!modelManager.isModelReady()) return@withContext emptyList()
 
-      LlamaBridge.initGenerateModel(modelManager.modelFilePath())
+      if (!modelInitialized) {
+        LlamaBridge.initGenerateModel(modelManager.modelFilePath())
+        modelInitialized = true
+      }
 
-      val rawJson =
-        LlamaBridge.generateJsonWithContext(
-          systemPrompt = SYSTEM_PROMPT,
-          contextBlock = "Today's date is $todayIso.",
-          userPrompt = input,
-          jsonSchema = JSON_SCHEMA,
-        )
+      // All generateJson* variants in Llamatik use a plain-text prompt builder that
+      // ignores the system prompt and skips Gemma3 turn markers, causing the grammar
+      // sampler to crash when the instruction-tuned model generates unexpected tokens.
+      // Workaround: use generate() (no grammar constraint) with an explicit Gemma3
+      // prompt that includes a JSON example in the system instructions, then extract
+      // the JSON from the free-text output.
+      val prompt = buildGemma3Prompt(
+        system = SYSTEM_PROMPT,
+        context = "Today's date is $todayIso.",
+        userInput = input,
+      )
 
-      parseResponse(rawJson)
+      val raw = LlamaBridge.generate(prompt)
+      parseResponse(raw)
     }
 
-  private fun parseResponse(rawJson: String): List<GroceryProposal> =
+  private fun parseResponse(raw: String): List<GroceryProposal> =
     try {
-      val root = json.parseToJsonElement(rawJson).jsonObject
-      val items = root["items"]?.jsonArray ?: return emptyList()
-      items.map { element ->
+      // Extract the first JSON array from the model's free-text output.
+      val start = raw.indexOf('[')
+      val end = raw.lastIndexOf(']')
+      if (start == -1 || end == -1 || end <= start) return emptyList()
+      val arrayJson = raw.substring(start, end + 1)
+      val array = json.parseToJsonElement(arrayJson).jsonArray
+      array.map { element ->
         val obj = element.jsonObject
         GroceryProposal(
           productName = obj["product_name"]?.jsonPrimitive?.content.orEmpty(),
@@ -54,32 +67,28 @@ class LlamatikGroceryParser(
       """
       You are a grocery expiration tracker assistant.
       The user will describe groceries they bought, including quantity and expiration date.
-      Extract each distinct product and return ONLY valid JSON matching the provided schema.
+      Extract each distinct product and return ONLY a JSON array. No markdown, no prose.
       Use ISO-8601 format (YYYY-MM-DD) for dates.
       If the user says a relative date like "next Friday" or "in 3 days", resolve it using today's date from the context.
-      Never include explanations or extra text — only the JSON object.
+      Output format — return ONLY this, nothing else:
+      [{"product_name":"Milk","quantity":2,"expiration_date":"2026-03-15"}]
       """.trimIndent()
 
-    private val JSON_SCHEMA =
-      """
-      {
-        "type": "object",
-        "properties": {
-          "items": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "product_name": { "type": "string" },
-                "quantity":     { "type": "integer" },
-                "expiration_date": { "type": "string" }
-              },
-              "required": ["product_name", "quantity", "expiration_date"]
-            }
-          }
-        },
-        "required": ["items"]
+    fun buildGemma3Prompt(
+      system: String,
+      context: String,
+      userInput: String,
+    ): String =
+      buildString {
+        append("<start_of_turn>system\n")
+        append(system.trim())
+        append("\n<end_of_turn>\n")
+        append("<start_of_turn>user\n")
+        append(context.trim())
+        append("\n\n")
+        append(userInput.trim())
+        append("\n<end_of_turn>\n")
+        append("<start_of_turn>model\n")
       }
-      """.trimIndent()
   }
 }
