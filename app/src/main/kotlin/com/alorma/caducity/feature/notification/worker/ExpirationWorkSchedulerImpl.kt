@@ -27,11 +27,11 @@ class ExpirationWorkSchedulerImpl(
 
   /**
    * Schedules periodic expiration checks at [time].
-   * Uses UPDATE policy to recalculate the initial delay on every app startup,
+   * Uses CANCEL_AND_REENQUEUE policy to recalculate the initial delay on every app startup,
    * ensuring the worker fires at the correct configured time.
    */
   override fun scheduleExpirationCheck(time: LocalTime) {
-    enqueueWork(time, ExistingPeriodicWorkPolicy.UPDATE)
+    enqueueWork(time, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE)
   }
 
   /**
@@ -39,7 +39,7 @@ class ExpirationWorkSchedulerImpl(
    * Called when the user changes their notification time preference.
    */
   override fun rescheduleExpirationCheck(time: LocalTime) {
-    enqueueWork(time, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE)
+    scheduleExpirationCheck(time)
   }
 
   private fun enqueueWork(
@@ -61,8 +61,6 @@ class ExpirationWorkSchedulerImpl(
       PeriodicWorkRequestBuilder<ExpirationCheckWorker>(
         repeatInterval = 24,
         repeatIntervalTimeUnit = TimeUnit.HOURS,
-        flexTimeInterval = 15,
-        flexTimeIntervalUnit = TimeUnit.MINUTES,
       ).setInitialDelay(initialDelay.inWholeMilliseconds, TimeUnit.MILLISECONDS)
         .setConstraints(constraints)
         .build()
