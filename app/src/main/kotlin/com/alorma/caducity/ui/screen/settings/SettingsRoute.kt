@@ -24,4 +24,7 @@ sealed interface SettingsRoute : NavKey {
 
   @Serializable
   data object Privacy : SettingsRoute
+
+  @Serializable
+  data object DebugRemoteConfigs : SettingsRoute
 }

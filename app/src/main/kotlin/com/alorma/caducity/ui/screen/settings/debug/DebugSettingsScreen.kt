@@ -1,11 +1,9 @@
 package com.alorma.caducity.ui.screen.settings.debug
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,13 +29,13 @@ import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCheckboxCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
-import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DebugSettingsScreen(
+  onNavigateToRemoteConfigs: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: DebugSettingsViewModel = koinViewModel(),
 ) {
@@ -76,21 +74,6 @@ fun DebugSettingsScreen(
             )
           }
         }
-
-        is DebugSettingsSideEffect.RemoteConfigRefreshed -> {
-          coroutineScope.launch {
-            val message =
-              if (effect.activated) {
-                "Remote Config refreshed with new values"
-              } else {
-                "Remote Config refreshed (no new values)"
-              }
-            snackbarState.showSnackbar(
-              message = message,
-              type = AppFeedbackType.Success,
-            )
-          }
-        }
       }
     }
   }
@@ -99,6 +82,7 @@ fun DebugSettingsScreen(
     modifier = modifier,
     uiState = uiState,
     snackbarState = snackbarState,
+    onNavigateToRemoteConfigs = onNavigateToRemoteConfigs,
   )
 }
 
@@ -106,6 +90,7 @@ fun DebugSettingsScreen(
 private fun DebugSettingsContent(
   uiState: DebugSettingsUiState,
   snackbarState: AppSnackbarState,
+  onNavigateToRemoteConfigs: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   AppScaffold(
@@ -179,16 +164,10 @@ private fun DebugSettingsContent(
             title = { Text("Remote Config") },
           ) {
             StyledSettingsCard(
-              title = "Refresh Remote Config",
-              subtitle =
-                if (uiState.isRefreshingRemoteConfig) {
-                  "Fetching latest config..."
-                } else {
-                  "Fetch and activate latest config values"
-                },
+              title = "Remote Configs",
+              subtitle = "View and toggle remote config values",
               shapes = ListItemDefaults.shapes(),
-              onClick = { uiState.onRefreshRemoteConfig() },
-              enabled = !uiState.isRefreshingRemoteConfig,
+              onClick = onNavigateToRemoteConfigs,
             )
           }
         }
@@ -227,46 +206,6 @@ private fun DebugSettingsContent(
             )
           }
         }
-
-        // Remote Configs Override Group
-        if (uiState.remoteConfigValues.isNotEmpty()) {
-          item {
-            Column(
-              verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-              StyledSettingsGroup(
-                title = {
-                  Text(
-                    text = "Remote Configs",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                  )
-                },
-              ) {
-                uiState.remoteConfigValues.entries.forEachIndexed { index, (key, configState) ->
-                  StyledSettingsSwitchCard(
-                    title = key,
-                    subtitle =
-                      if (configState.hasDebugOverride) {
-                        "Debug override active"
-                      } else {
-                        "Using default value"
-                      },
-                    state = configState.value,
-                    shapes =
-                      ListItemDefaults.segmentedShapes(
-                        index = index,
-                        count = uiState.remoteConfigValues.entries.size,
-                      ),
-                    onCheckedChange = { enabled ->
-                      uiState.onToggleRemoteConfig(key, enabled)
-                    },
-                  )
-                }
-              }
-            }
-          }
-        }
       }
     }
   }
@@ -283,25 +222,18 @@ fun DebugSettingsScreenPreview() {
           DebugSettingsUiState(
             isGenerating = true,
             isGeneratingPlayStore = true,
-            isRefreshingRemoteConfig = true,
-            remoteConfigValues =
-              mapOf(
-                "Potato" to RemoteConfigUiState(value = true, hasDebugOverride = true),
-                "Carrot" to RemoteConfigUiState(value = true, hasDebugOverride = true),
-              ),
             adStorageEnabled = true,
             adUserDataEnabled = true,
             adPersonalizationEnabled = true,
             onPopulateFakeData = {},
             onPopulateFakePlayStoreData = {},
             onTriggerNotificationCheck = {},
-            onRefreshRemoteConfig = {},
             onToggleAdStorage = {},
             onToggleAdUserData = {},
             onToggleAdPersonalization = {},
-            onToggleRemoteConfig = { _, _ -> },
           ),
         snackbarState = rememberAppSnackbarState(),
+        onNavigateToRemoteConfigs = {},
       )
     }
   }

@@ -19,6 +19,7 @@ import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import com.alorma.caducity.ui.screen.settings.about.AboutScreen
 import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScreen
 import com.alorma.caducity.ui.screen.settings.backup.BackupScreen
+import com.alorma.caducity.ui.screen.settings.debug.DebugRemoteConfigsScreen
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsScreen
 import com.alorma.caducity.ui.screen.settings.notifications.NotificationsSettingsScreen
 import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsScreen
@@ -89,7 +90,12 @@ fun SettingsContainer(
         }
         if (debugModeProvider.isDebugMode()) {
           entry<SettingsRoute.Debug> {
-            DebugSettingsScreen()
+            DebugSettingsScreen(
+              onNavigateToRemoteConfigs = { settingsBackStack.add(SettingsRoute.DebugRemoteConfigs) },
+            )
+          }
+          entry<SettingsRoute.DebugRemoteConfigs> {
+            DebugRemoteConfigsScreen()
           }
         }
         entry<SettingsRoute.About> {
