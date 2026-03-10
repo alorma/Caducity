@@ -164,6 +164,7 @@ class AndroidExpirationNotificationHelper(
         .setPriority(priority)
         .setAutoCancel(true)
         .setContentIntent(pendingIntent)
+        .setGroup(product.groupKey)
 
     if (itemLines.size > 1) {
       val style = NotificationCompat.InboxStyle().setBigContentTitle(product.title)
@@ -172,6 +173,64 @@ class AndroidExpirationNotificationHelper(
     }
 
     notificationManager?.notify(product.notificationId, builder.build())
+  }
+
+  override fun showExpiringSoonGroupSummary(summary: NotificationGroupSummary) {
+    if (!areNotificationsEnabled().value || !areExpiringSoonNotificationsEnabled().value) return
+    showGroupSummaryNotification(
+      summary = summary,
+      channelId = NotificationChannelManager.CHANNEL_ID_EXPIRING_SOON,
+      priority = NotificationCompat.PRIORITY_DEFAULT,
+    )
+  }
+
+  override fun showExpiredGroupSummary(summary: NotificationGroupSummary) {
+    if (!areNotificationsEnabled().value || !areExpiredNotificationsEnabled().value) return
+    showGroupSummaryNotification(
+      summary = summary,
+      channelId = NotificationChannelManager.CHANNEL_ID_EXPIRED,
+      priority = NotificationCompat.PRIORITY_HIGH,
+    )
+  }
+
+  private fun showGroupSummaryNotification(
+    summary: NotificationGroupSummary,
+    channelId: String,
+    priority: Int,
+  ) {
+    NotificationChannelManager.createNotificationChannels(context)
+    val notificationManager = context.getSystemService<NotificationManager>()
+
+    val intent =
+      Intent(context, MainActivity::class.java).apply {
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        putExtra(
+          MainActivity.EXTRA_DEEP_LINK_ACTION,
+          DeepLinkAction.OpenCategory(categoryId = summary.categoryId),
+        )
+      }
+    val pendingIntent =
+      PendingIntent.getActivity(
+        context,
+        summary.notificationId,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+      )
+
+    val builder =
+      NotificationCompat
+        .Builder(context, channelId)
+        .setSmallIcon(R.drawable.ic_notification)
+        .also { b -> largeIconBitmap?.let { b.setLargeIcon(it) } }
+        .setContentTitle(summary.categoryName)
+        .setContentText(stringProvider.getString(R.string.notification_items_count, summary.count))
+        .setPriority(priority)
+        .setAutoCancel(true)
+        .setContentIntent(pendingIntent)
+        .setGroup(summary.groupKey)
+        .setGroupSummary(true)
+
+    notificationManager?.notify(summary.notificationId, builder.build())
   }
 
   private fun buildItemLines(items: List<NotificationItem>): List<String> {

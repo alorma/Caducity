@@ -7,6 +7,7 @@ import com.alorma.caducity.domain.model.CategoryWithItems
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
+import com.alorma.caducity.feature.notification.NotificationGroupSummary
 import com.alorma.caducity.feature.notification.NotificationItem
 import com.alorma.caducity.feature.notification.NotificationProduct
 import timber.log.Timber
@@ -36,11 +37,32 @@ class ExpirationCheckWorker(
       Timber.tag(TAG).d("Found ${allCategories.size} categories with expiring/expired items")
 
       allCategories.forEach { category ->
-        buildNotificationProducts(category, ItemStatus.ExpiringSoon).forEach {
-          notificationHelper.showExpiringSoonNotification(it)
+        val expiringSoonProducts = buildNotificationProducts(category, ItemStatus.ExpiringSoon)
+        expiringSoonProducts.forEach { notificationHelper.showExpiringSoonNotification(it) }
+        if (expiringSoonProducts.isNotEmpty()) {
+          notificationHelper.showExpiringSoonGroupSummary(
+            NotificationGroupSummary(
+              notificationId = "${category.category.id}_expiring_soon_summary".hashCode(),
+              groupKey = expiringSoonProducts.first().groupKey,
+              categoryId = category.category.id,
+              categoryName = category.category.name,
+              count = expiringSoonProducts.sumOf { it.items.size },
+            ),
+          )
         }
-        buildNotificationProducts(category, ItemStatus.Expired).forEach {
-          notificationHelper.showExpiredNotification(it)
+
+        val expiredProducts = buildNotificationProducts(category, ItemStatus.Expired)
+        expiredProducts.forEach { notificationHelper.showExpiredNotification(it) }
+        if (expiredProducts.isNotEmpty()) {
+          notificationHelper.showExpiredGroupSummary(
+            NotificationGroupSummary(
+              notificationId = "${category.category.id}_expired_summary".hashCode(),
+              groupKey = expiredProducts.first().groupKey,
+              categoryId = category.category.id,
+              categoryName = category.category.name,
+              count = expiredProducts.sumOf { it.items.size },
+            ),
+          )
         }
       }
 
@@ -54,6 +76,7 @@ class ExpirationCheckWorker(
     category: CategoryWithItems,
     status: ItemStatus,
   ): List<NotificationProduct> {
+    val groupKey = buildGroupKey(category.category.id, status)
     val results = mutableListOf<NotificationProduct>()
 
     // One notification per product
@@ -67,6 +90,7 @@ class ExpirationCheckWorker(
             items = matchingItems.map { NotificationItem(it.identifier.takeIf { id -> id.isNotBlank() }) },
             categoryId = category.category.id,
             productId = categoryProduct.product.id,
+            groupKey = groupKey,
           ),
         )
       }
@@ -82,10 +106,24 @@ class ExpirationCheckWorker(
           items = standaloneItems.map { NotificationItem(it.identifier.takeIf { id -> id.isNotBlank() }) },
           categoryId = category.category.id,
           productId = null,
+          groupKey = groupKey,
         ),
       )
     }
 
     return results
+  }
+
+  private fun buildGroupKey(
+    categoryId: String,
+    status: ItemStatus,
+  ): String {
+    val statusSuffix =
+      when (status) {
+        ItemStatus.Expired -> "expired"
+        ItemStatus.ExpiringSoon -> "expiring_soon"
+        else -> "other"
+      }
+    return "${categoryId}_$statusSuffix"
   }
 }

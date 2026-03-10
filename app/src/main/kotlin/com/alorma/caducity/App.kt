@@ -49,6 +49,10 @@ fun App(
             stack.add(
               CategoryDetailRoute(deepLinkAction.categoryId, deepLinkAction.productId),
             )
+          is DeepLinkAction.OpenCategory ->
+            stack.add(
+              CategoryDetailRoute(deepLinkAction.categoryId, null),
+            )
           null -> Unit
         }
         stack

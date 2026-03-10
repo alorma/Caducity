@@ -9,4 +9,9 @@ sealed interface DeepLinkAction : Parcelable {
     val categoryId: String,
     val productId: String? = null,
   ) : DeepLinkAction
+
+  @Parcelize
+  data class OpenCategory(
+    val categoryId: String,
+  ) : DeepLinkAction
 }
