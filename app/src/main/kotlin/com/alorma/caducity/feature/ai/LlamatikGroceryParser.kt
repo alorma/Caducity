@@ -56,6 +56,7 @@ class LlamatikGroceryParser(
           productName = obj["product_name"]?.jsonPrimitive?.content.orEmpty(),
           quantity = obj["quantity"]?.jsonPrimitive?.content?.toIntOrNull() ?: 1,
           expirationDate = obj["expiration_date"]?.jsonPrimitive?.content.orEmpty(),
+          category = obj["category"]?.jsonPrimitive?.content.orEmpty(),
         )
       }.filter { it.productName.isNotBlank() && it.expirationDate.isNotBlank() }
     } catch (_: Exception) {
@@ -70,8 +71,9 @@ class LlamatikGroceryParser(
       Extract each distinct product and return ONLY a JSON array. No markdown, no prose.
       Use ISO-8601 format (YYYY-MM-DD) for dates.
       If the user says a relative date like "next Friday" or "in 3 days", resolve it using today's date from the context.
+      For each product, infer an appropriate grocery category (e.g. Dairy, Meat, Vegetables, Fruits, Bakery, Beverages, Snacks, Frozen, Condiments, Canned).
       Output format — return ONLY this, nothing else:
-      [{"product_name":"Milk","quantity":2,"expiration_date":"2026-03-15"}]
+      [{"product_name":"Milk","category":"Dairy","quantity":2,"expiration_date":"2026-03-15"}]
       """.trimIndent()
 
     fun buildGemma3Prompt(

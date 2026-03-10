@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +31,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -40,7 +42,7 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.outlined.Send
 import com.alorma.caducity.base.ui.icons.outlined.Sparkle
-import com.alorma.caducity.feature.ai.GroceryProposal
+import com.alorma.caducity.feature.ai.MatchResult
 import com.alorma.caducity.feature.ai.ModelDownloadState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
@@ -119,7 +121,11 @@ fun AiAssistantScreen(
             items(messages) { message ->
               when (message) {
                 is ChatMessage.Outgoing -> OutgoingBubble(message.text)
-                is ChatMessage.Proposals -> IncomingProposalsBubble(message.proposals)
+                is ChatMessage.Proposals -> IncomingProposalsBubble(
+                  proposals = message.proposals,
+                  onAdd = { viewModel.onAddToProduct(it) },
+                  onCreate = { viewModel.onCreateNew(it) },
+                )
                 ChatMessage.Thinking -> ThinkingBubble()
                 ChatMessage.Error -> IncomingErrorBubble()
               }
@@ -164,13 +170,12 @@ fun AiAssistantScreen(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
       ) {
         OutlinedTextField(
+          modifier = Modifier.weight(1f),
           value = inputText,
           onValueChange = { inputText = it },
           placeholder = { Text(text = stringResource(R.string.ai_assistant_input_placeholder)) },
-          modifier = Modifier.weight(1f),
           keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-          keyboardActions =
-            KeyboardActions(
+          keyboardActions = KeyboardActions(
               onSend = {
                 if (isReady && !hasThinking && inputText.isNotBlank()) {
                   viewModel.send(inputText)
@@ -178,7 +183,7 @@ fun AiAssistantScreen(
                 }
               },
             ),
-          singleLine = true,
+          singleLine = false,
           enabled = isReady && !hasThinking,
           shape = MaterialTheme.shapes.extraLarge,
         )
@@ -226,7 +231,11 @@ private fun OutgoingBubble(text: String) {
 }
 
 @Composable
-private fun IncomingProposalsBubble(proposals: List<GroceryProposal>) {
+private fun IncomingProposalsBubble(
+  proposals: List<ProposalUiModel>,
+  onAdd: (ProposalUiModel) -> Unit,
+  onCreate: (ProposalUiModel) -> Unit,
+) {
   Row(
     modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.Start,
@@ -240,18 +249,35 @@ private fun IncomingProposalsBubble(proposals: List<GroceryProposal>) {
           .padding(horizontal = 16.dp, vertical = 10.dp),
       verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-      proposals.forEach { proposal ->
-        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+      proposals.forEach { proposalUiModel ->
+        Column(
+          modifier = Modifier.alpha(if (proposalUiModel.done) 0.38f else 1f),
+          verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
           Text(
-            text = "${proposal.quantity}× ${proposal.productName}",
+            text = "${proposalUiModel.proposal.quantity}× ${proposalUiModel.proposal.productName}",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
           )
           Text(
-            text = stringResource(R.string.ai_proposal_expires, proposal.expirationDate),
+            text = stringResource(R.string.ai_proposal_expires, proposalUiModel.proposal.expirationDate),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
+          when (proposalUiModel.matchResult) {
+            is MatchResult.Match -> FilledTonalButton(
+              onClick = { onAdd(proposalUiModel) },
+              enabled = !proposalUiModel.done,
+            ) {
+              Text(text = stringResource(R.string.ai_proposal_add))
+            }
+            MatchResult.NoMatch -> FilledTonalButton(
+              onClick = { onCreate(proposalUiModel) },
+              enabled = !proposalUiModel.done,
+            ) {
+              Text(text = stringResource(R.string.ai_proposal_create))
+            }
+          }
         }
       }
     }

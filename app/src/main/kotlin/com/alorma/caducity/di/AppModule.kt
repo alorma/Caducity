@@ -31,6 +31,8 @@ import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.feature.ai.AiFeatureConfig
 import com.alorma.caducity.feature.ai.AiGroceryParser
+import com.alorma.caducity.feature.ai.AiJaroWinklerMatcher
+import com.alorma.caducity.feature.ai.AiProductMatcher
 import com.alorma.caducity.feature.ai.LlamatikGroceryParser
 import com.alorma.caducity.feature.ai.ModelManager
 import com.alorma.caducity.feature.ai.WorkManagerModelManager
@@ -83,6 +85,7 @@ val appModule =
     singleOf(::AiFeatureConfig)
     single<ModelManager> { WorkManagerModelManager(androidContext()) }
     single<AiGroceryParser> { LlamatikGroceryParser(get()) }
+    singleOf(::AiJaroWinklerMatcher) bind AiProductMatcher::class
     viewModelOf(::AiAssistantViewModel)
 
     // Onboarding
