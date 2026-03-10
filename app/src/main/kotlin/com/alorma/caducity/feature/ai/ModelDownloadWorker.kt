@@ -70,7 +70,12 @@ class ModelDownloadWorker(
       // Server ignored our Range request — restart clean
       if (already > 0 && code == HttpURLConnection.HTTP_OK) {
         partFile.delete()
-        return@withContext downloadResumable(url, modelId, partFile, onProgress)
+        return@withContext downloadResumable(
+          url = url,
+          modelId = modelId,
+          partFile = partFile,
+          onProgress = onProgress,
+        )
       }
 
       val contentLength = connection.contentLengthLong

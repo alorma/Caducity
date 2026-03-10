@@ -35,6 +35,7 @@ import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.outlined.Send
 import com.alorma.caducity.base.ui.icons.outlined.Sparkle
 import com.alorma.caducity.feature.ai.ModelDownloadState
+import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import org.koin.compose.viewmodel.koinViewModel
@@ -106,31 +107,7 @@ fun AiAssistantScreen(
         }
 
         is ModelDownloadState.Downloading -> {
-          Column(
-            modifier =
-              Modifier
-                .align(Alignment.Center)
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-          ) {
-            Text(
-              text = stringResource(R.string.ai_model_downloading, state.progress),
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            LinearProgressIndicator(
-              progress = { state.progress / 100f },
-              modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-              text = stringResource(R.string.ai_model_size_hint),
-              style = MaterialTheme.typography.bodySmall,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-          }
+          FullscreenLoading(progress = state.progress / 100f)
         }
 
         ModelDownloadState.Failed -> {
