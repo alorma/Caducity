@@ -29,7 +29,9 @@ import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
+import com.alorma.caducity.feature.ai.AiFeatureConfig
 import com.alorma.caducity.feature.consent.consentModule
+import com.alorma.caducity.ui.screen.ai.AiAssistantViewModel
 import com.alorma.caducity.feature.review.reviewModule
 import com.alorma.caducity.feature.tracking.trackingModule
 import com.alorma.caducity.ui.components.bottomsheet.ItemActionsViewModel
@@ -72,6 +74,10 @@ val appModule =
     includes(dashboardModule)
 
     single { Settings() }
+
+    // AI Assistant
+    singleOf(::AiFeatureConfig)
+    viewModelOf(::AiAssistantViewModel)
 
     // Onboarding
     singleOf(::OnboardingFlag)

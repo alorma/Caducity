@@ -27,6 +27,9 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.outlined.Settings
+import com.alorma.caducity.base.ui.icons.outlined.Sparkle
+import com.alorma.caducity.config.remoteconfig.rememberRemoteConfig
+import com.alorma.caducity.feature.ai.AiFeatureConfig
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.feature.tracking.DashboardScreen as DashboardScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
@@ -45,6 +48,7 @@ fun DashboardScreen(
   onNavigateToCategory: (String) -> Unit,
   onNavigateToStatus: (ItemStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
+  onNavigateToAiAssistant: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: DashboardViewModel = koinViewModel(),
 ) {
@@ -60,6 +64,7 @@ fun DashboardScreen(
         is DashboardNavigationSideEffect.NavigateToCategory -> onNavigateToCategory(navigationEffect.categoryId)
         is DashboardNavigationSideEffect.NavigateToFilteredItems -> onNavigateToStatus(navigationEffect.status)
         DashboardNavigationSideEffect.NavigateToSettings -> onNavigateToSettings()
+        DashboardNavigationSideEffect.NavigateToAiAssistant -> onNavigateToAiAssistant()
       }
     }
   }
@@ -79,6 +84,9 @@ fun DashboardScreen(
       onNavigateToSettings = {
         viewModel.navigate(DashboardNavigation.Settings)
       },
+      onNavigateToAiAssistant = {
+        viewModel.navigate(DashboardNavigation.AiAssistant)
+      },
       snackbarHostState = snackbarHostState,
     )
   }
@@ -91,15 +99,25 @@ private fun DashboardContent(
   onNavigateToCategory: (String, String) -> Unit,
   onNavigateToStatus: (ItemStatus) -> Unit,
   onNavigateToSettings: () -> Unit,
+  onNavigateToAiAssistant: () -> Unit,
   snackbarHostState: AppSnackbarState,
 ) {
   val lazyListState = rememberLazyListState()
+  val aiFeatureConfig = rememberRemoteConfig<AiFeatureConfig>()
 
   AppScaffold(
     topBar = {
       StyledTopAppBar(
         title = { Text(text = stringResource(R.string.dashboard_screen_title)) },
         actions = {
+          if (aiFeatureConfig.isEnabled()) {
+            IconButton(onClick = onNavigateToAiAssistant) {
+              Icon(
+                imageVector = AppIcons.Outlined.Sparkle,
+                contentDescription = null,
+              )
+            }
+          }
           IconButton(
             onClick = onNavigateToSettings,
           ) {
@@ -189,6 +207,7 @@ fun DashboardSuccessContentPreview(
         onNavigateToCategory = { _, _ -> },
         onNavigateToStatus = {},
         onNavigateToSettings = {},
+        onNavigateToAiAssistant = {},
         snackbarHostState = rememberAppSnackbarState(),
       )
     }

@@ -16,6 +16,8 @@ import com.alorma.caducity.ui.screen.category.create.CreateCategoryRoute
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailRoute
+import com.alorma.caducity.ui.screen.ai.AiAssistantRoute
+import com.alorma.caducity.ui.screen.ai.AiAssistantScreen
 import com.alorma.caducity.ui.screen.dashboard.DashboardRoute
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
 import com.alorma.caducity.ui.screen.dashboard.FilteredItemsRoute
@@ -93,6 +95,12 @@ fun App(
                 appBackStack.add(FilteredItemsRoute.ByStatus(status))
               },
               onNavigateToSettings = { appBackStack.add(Settings) },
+              onNavigateToAiAssistant = { appBackStack.add(AiAssistantRoute) },
+            )
+          }
+          entry<AiAssistantRoute> {
+            AiAssistantScreen(
+              onNavigateBack = { appBackStack.removeLast() },
             )
           }
           entry<Settings> {
