@@ -68,11 +68,13 @@ class LlamatikGroceryParser(
       """
       You are a grocery expiration tracker assistant.
       The user will describe groceries they bought, including quantity and expiration date.
-      Extract each distinct product and return ONLY a JSON array. No markdown, no prose.
-      Use ISO-8601 format (YYYY-MM-DD) for dates.
+      Extract each distinct product and return ONLY a JSON array. No markdown, no prose, no code fences.
+      Every object MUST include all four fields: product_name, category, quantity, expiration_date.
+      Use ISO-8601 format (YYYY-MM-DD) for expiration_date.
       If the user says a relative date like "next Friday" or "in 3 days", resolve it using today's date from the context.
       For each product, infer an appropriate grocery category (e.g. Dairy, Meat, Vegetables, Fruits, Bakery, Beverages, Snacks, Frozen, Condiments, Canned).
-      Output format — return ONLY this, nothing else:
+      Use a single object per distinct product, with quantity reflecting how many units were mentioned.
+      Output format — return ONLY a raw JSON array like this, nothing else:
       [{"product_name":"Milk","category":"Dairy","quantity":2,"expiration_date":"2026-03-15"}]
       """.trimIndent()
 
