@@ -19,6 +19,10 @@ interface ExpirationNotificationHelper : ComposeNavigator<Any> {
 
   fun showExpiredNotification(product: NotificationProduct)
 
+  fun showExpiringSoonGroupSummary(summary: NotificationGroupSummary)
+
+  fun showExpiredGroupSummary(summary: NotificationGroupSummary)
+
   fun areExpiredNotificationsEnabled(): MutableState<Boolean>
 
   fun setExpiredNotificationsEnabled(enabled: Boolean)
@@ -39,6 +43,7 @@ interface ExpirationNotificationHelper : ComposeNavigator<Any> {
  * @param title Product name, or category name for standalone items.
  * @param items Items to describe in the notification body.
  * @param categoryId Used to navigate to the category detail on tap.
+ * @param groupKey Notification group key derived from the category and status type.
  */
 data class NotificationProduct(
   val notificationId: Int,
@@ -46,6 +51,24 @@ data class NotificationProduct(
   val items: List<NotificationItem>,
   val categoryId: String,
   val productId: String?,
+  val groupKey: String,
+)
+
+/**
+ * Represents the summary notification for a group of per-category notifications.
+ *
+ * @param notificationId Stable unique ID for the summary notification.
+ * @param groupKey The group key shared by all notifications in this group.
+ * @param categoryId Used to navigate to the category on tap.
+ * @param categoryName Name of the category shown as the notification title.
+ * @param count Total number of items across all notifications in the group.
+ */
+data class NotificationGroupSummary(
+  val notificationId: Int,
+  val groupKey: String,
+  val categoryId: String,
+  val categoryName: String,
+  val count: Int,
 )
 
 data class NotificationItem(
