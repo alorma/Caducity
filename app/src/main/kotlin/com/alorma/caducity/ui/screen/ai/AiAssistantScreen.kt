@@ -124,6 +124,7 @@ fun AiAssistantScreen(
                 is ChatMessage.Proposals -> IncomingProposalsBubble(
                   proposals = message.proposals,
                   onAdd = { viewModel.onAddToProduct(it) },
+                  onAddToCategory = { viewModel.onAddToCategory(it) },
                   onCreate = { viewModel.onCreateNew(it) },
                 )
                 ChatMessage.Thinking -> ThinkingBubble()
@@ -234,6 +235,7 @@ private fun OutgoingBubble(text: String) {
 private fun IncomingProposalsBubble(
   proposals: List<ProposalUiModel>,
   onAdd: (ProposalUiModel) -> Unit,
+  onAddToCategory: (ProposalUiModel) -> Unit,
   onCreate: (ProposalUiModel) -> Unit,
 ) {
   Row(
@@ -264,18 +266,45 @@ private fun IncomingProposalsBubble(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
-          when (proposalUiModel.matchResult) {
-            is MatchResult.Match -> FilledTonalButton(
-              onClick = { onAdd(proposalUiModel) },
-              enabled = !proposalUiModel.done,
-            ) {
-              Text(text = stringResource(R.string.ai_proposal_add))
+          when (val match = proposalUiModel.matchResult) {
+            is MatchResult.Match -> {
+              Text(
+                text = stringResource(R.string.ai_proposal_match, match.category.name, match.product.name),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+              )
+              FilledTonalButton(
+                onClick = { onAdd(proposalUiModel) },
+                enabled = !proposalUiModel.done,
+              ) {
+                Text(text = stringResource(R.string.ai_proposal_add, match.product.name))
+              }
             }
-            MatchResult.NoMatch -> FilledTonalButton(
-              onClick = { onCreate(proposalUiModel) },
-              enabled = !proposalUiModel.done,
-            ) {
-              Text(text = stringResource(R.string.ai_proposal_create))
+            is MatchResult.CategoryMatch -> {
+              Text(
+                text = stringResource(R.string.ai_proposal_category_match, match.category.name),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.secondary,
+              )
+              FilledTonalButton(
+                onClick = { onAddToCategory(proposalUiModel) },
+                enabled = !proposalUiModel.done,
+              ) {
+                Text(text = stringResource(R.string.ai_proposal_add_to_category, match.category.name))
+              }
+            }
+            MatchResult.NoMatch -> {
+              Text(
+                text = stringResource(R.string.ai_proposal_no_match, proposalUiModel.proposal.category),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+              FilledTonalButton(
+                onClick = { onCreate(proposalUiModel) },
+                enabled = !proposalUiModel.done,
+              ) {
+                Text(text = stringResource(R.string.ai_proposal_create, proposalUiModel.proposal.category))
+              }
             }
           }
         }
