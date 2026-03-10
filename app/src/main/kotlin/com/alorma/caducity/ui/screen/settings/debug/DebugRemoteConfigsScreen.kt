@@ -32,7 +32,6 @@ fun DebugRemoteConfigsScreen(
   TrackScreen(screen = DebugRemoteConfigsScreenEvent())
 
   val uiState by viewModel.uiState.collectAsState()
-  val snackbarState = rememberAppSnackbarState()
 
   DebugRemoteConfigsContent(
     modifier = modifier,
