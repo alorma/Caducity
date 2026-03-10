@@ -7,3 +7,7 @@ sealed interface AiAssistantNavigation {
 sealed interface AiAssistantNavigationSideEffect {
   data object NavigateBack : AiAssistantNavigationSideEffect
 }
+
+sealed interface AiAssistantSideEffect {
+  data class ShowDatePicker(val proposalUiModel: ProposalUiModel) : AiAssistantSideEffect
+}

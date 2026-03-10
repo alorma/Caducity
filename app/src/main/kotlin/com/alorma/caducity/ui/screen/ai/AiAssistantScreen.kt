@@ -23,6 +23,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,7 +45,11 @@ import com.alorma.caducity.base.ui.icons.outlined.Send
 import com.alorma.caducity.base.ui.icons.outlined.Sparkle
 import com.alorma.caducity.feature.ai.MatchResult
 import com.alorma.caducity.feature.ai.ModelDownloadState
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
+import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
+import kotlin.time.Instant
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
@@ -60,11 +65,37 @@ fun AiAssistantScreen(
   val modelState by viewModel.modelState.collectAsStateWithLifecycle()
   val messages by viewModel.messages.collectAsStateWithLifecycle()
   val listState = rememberLazyListState()
+  val dialogState = rememberAppDialogState()
+  val datePickerState = rememberDatePickerState()
 
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
         AiAssistantNavigationSideEffect.NavigateBack -> onNavigateBack()
+      }
+    }
+  }
+
+  LaunchedEffect(viewModel) {
+    viewModel.sideEffects.collect { effect ->
+      when (effect) {
+        is AiAssistantSideEffect.ShowDatePicker -> {
+          val result = dialogState.showDatePickerDialog(
+            datePickerState = datePickerState,
+            positiveButton = { Text(stringResource(R.string.category_detail_add_item_date_picker_ok)) },
+            negativeButton = { Text(stringResource(R.string.category_detail_add_item_date_picker_cancel)) },
+            type = AppFeedbackType.Info,
+          )
+          if (result == DialogResult.Positive) {
+            val millis = datePickerState.selectedDateMillis
+            if (millis != null) {
+              viewModel.onDateConfirmed(
+                proposalUiModel = effect.proposalUiModel,
+                expirationDate = Instant.fromEpochMilliseconds(millis),
+              )
+            }
+          }
+        }
       }
     }
   }
@@ -78,6 +109,7 @@ fun AiAssistantScreen(
 
   AppScaffold(
     modifier = modifier,
+    dialogState = dialogState,
     topBar = {
       StyledTopAppBar(
         title = { Text(text = stringResource(R.string.ai_assistant_title)) },
@@ -260,11 +292,6 @@ private fun IncomingProposalsBubble(
             text = "${proposalUiModel.proposal.quantity}× ${proposalUiModel.proposal.productName}",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
-          )
-          Text(
-            text = stringResource(R.string.ai_proposal_expires, proposalUiModel.proposal.expirationDate),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
           )
           when (val match = proposalUiModel.matchResult) {
             is MatchResult.Match -> {

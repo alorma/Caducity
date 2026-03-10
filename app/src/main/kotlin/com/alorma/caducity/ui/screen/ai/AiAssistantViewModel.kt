@@ -1,7 +1,6 @@
 package com.alorma.caducity.ui.screen.ai
 
 import androidx.lifecycle.viewModelScope
-import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.CategoryDataSource
 import com.alorma.caducity.domain.usecase.AddItemToCategoryUseCase
 import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
@@ -24,11 +23,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.format.FormatStringsInDatetimeFormats
-import kotlinx.datetime.format.byUnicodePattern
 
 class AiAssistantViewModel(
   private val modelManager: ModelManager,
@@ -38,8 +32,7 @@ class AiAssistantViewModel(
   private val addItemToCategoryUseCase: AddItemToCategoryUseCase,
   private val createCategoryUseCase: CreateCategoryUseCase,
   private val createProductUseCase: CreateProductUseCase,
-  private val appClock: AppClock,
-) : BaseViewModel<AiAssistantNavigation, AiAssistantNavigationSideEffect, Unit>() {
+) : BaseViewModel<AiAssistantNavigation, AiAssistantNavigationSideEffect, AiAssistantSideEffect>() {
   val modelState: StateFlow<ModelDownloadState> =
     modelManager
       .downloadState()
@@ -62,10 +55,9 @@ class AiAssistantViewModel(
     _messages.update { it + ChatMessage.Outgoing(input) + ChatMessage.Thinking }
 
     viewModelScope.launch {
-      val todayIso = todayIsoString()
       val categoryNames = categoryDataSource.getCategories().first()
         .map { it.category.name }
-      val proposals = groceryParser.parse(input, todayIso, categoryNames)
+      val proposals = groceryParser.parse(input, categoryNames)
 
       val proposalUiModels = proposals
         .map { proposal ->
@@ -90,96 +82,91 @@ class AiAssistantViewModel(
   }
 
   fun onAddToProduct(proposalUiModel: ProposalUiModel) {
-    val match = proposalUiModel.matchResult as? MatchResult.Match ?: return
-    viewModelScope.launch {
-      val expirationDate = parseExpirationDate(proposalUiModel.proposal.expirationDate)
-      if (expirationDate == null) {
-        Timber.tag("AiViewModel").e("onAddToProduct: failed to parse date '%s'", proposalUiModel.proposal.expirationDate)
-        return@launch
-      }
-      repeat(proposalUiModel.proposal.quantity) {
-        addItemToCategoryUseCase.addItem(
-          categoryId = match.category.id,
-          identifier = proposalUiModel.proposal.productName,
-          productId = match.product.id,
-          expirationDate = expirationDate,
-        )
-      }
-      markProposalDone(proposalUiModel)
-    }
+    emitSideEffect(AiAssistantSideEffect.ShowDatePicker(proposalUiModel))
   }
 
   fun onAddToCategory(proposalUiModel: ProposalUiModel) {
-    val match = proposalUiModel.matchResult as? MatchResult.CategoryMatch ?: return
-    viewModelScope.launch {
-      val expirationDate = parseExpirationDate(proposalUiModel.proposal.expirationDate)
-      if (expirationDate == null) {
-        Timber.tag("AiViewModel").e("onAddToCategory: failed to parse date '%s'", proposalUiModel.proposal.expirationDate)
-        return@launch
-      }
-      val productResult = createProductUseCase.create(
-        categoryId = match.category.id,
-        name = proposalUiModel.proposal.productName,
-      )
-      val productId = productResult.getOrNull()?.id
-      if (productId == null) {
-        Timber.tag("AiViewModel").e("onAddToCategory: failed to create product '%s': %s", proposalUiModel.proposal.productName, productResult.exceptionOrNull())
-        return@launch
-      }
-      repeat(proposalUiModel.proposal.quantity) {
-        addItemToCategoryUseCase.addItem(
-          categoryId = match.category.id,
-          identifier = proposalUiModel.proposal.productName,
-          productId = productId,
-          expirationDate = expirationDate,
-        )
-      }
-      markProposalDone(proposalUiModel)
-    }
+    emitSideEffect(AiAssistantSideEffect.ShowDatePicker(proposalUiModel))
   }
 
   fun onCreateNew(proposalUiModel: ProposalUiModel) {
+    emitSideEffect(AiAssistantSideEffect.ShowDatePicker(proposalUiModel))
+  }
+
+  fun onDateConfirmed(proposalUiModel: ProposalUiModel, expirationDate: Instant) {
     viewModelScope.launch {
-      val expirationDate = parseExpirationDate(proposalUiModel.proposal.expirationDate)
-      if (expirationDate == null) {
-        Timber.tag("AiViewModel").e("onCreateNew: failed to parse date '%s'", proposalUiModel.proposal.expirationDate)
-        return@launch
-      }
-      val existingCategories = categoryDataSource.getCategories().first()
-      val existingCategory = existingCategories.firstOrNull { it.category.name.equals(proposalUiModel.proposal.category, ignoreCase = true) }
-      val categoryId = if (existingCategory != null) {
-        existingCategory.category.id
-      } else {
-        val categoryResult = createCategoryUseCase.createCategory(
-          name = proposalUiModel.proposal.category,
-          description = "",
-          items = emptyList(),
-        )
-        val id = categoryResult.getOrNull()
-        if (id == null) {
-          Timber.tag("AiViewModel").e("onCreateNew: failed to create category '%s': %s", proposalUiModel.proposal.category, categoryResult.exceptionOrNull())
-          return@launch
+      when (val match = proposalUiModel.matchResult) {
+        is MatchResult.Match -> {
+          repeat(proposalUiModel.proposal.quantity) {
+            addItemToCategoryUseCase.addItem(
+              categoryId = match.category.id,
+              identifier = proposalUiModel.proposal.productName,
+              productId = match.product.id,
+              expirationDate = expirationDate,
+            )
+          }
+          markProposalDone(proposalUiModel)
         }
-        id
+        is MatchResult.CategoryMatch -> {
+          val productResult = createProductUseCase.create(
+            categoryId = match.category.id,
+            name = proposalUiModel.proposal.productName,
+          )
+          val productId = productResult.getOrNull()?.id
+          if (productId == null) {
+            Timber.tag("AiViewModel").e("onDateConfirmed: failed to create product '%s': %s", proposalUiModel.proposal.productName, productResult.exceptionOrNull())
+            return@launch
+          }
+          repeat(proposalUiModel.proposal.quantity) {
+            addItemToCategoryUseCase.addItem(
+              categoryId = match.category.id,
+              identifier = proposalUiModel.proposal.productName,
+              productId = productId,
+              expirationDate = expirationDate,
+            )
+          }
+          markProposalDone(proposalUiModel)
+        }
+        MatchResult.NoMatch -> {
+          val existingCategories = categoryDataSource.getCategories().first()
+          val existingCategory = existingCategories.firstOrNull {
+            it.category.name.equals(proposalUiModel.proposal.category, ignoreCase = true)
+          }
+          val categoryId = if (existingCategory != null) {
+            existingCategory.category.id
+          } else {
+            val categoryResult = createCategoryUseCase.createCategory(
+              name = proposalUiModel.proposal.category,
+              description = "",
+              items = emptyList(),
+            )
+            val id = categoryResult.getOrNull()
+            if (id == null) {
+              Timber.tag("AiViewModel").e("onDateConfirmed: failed to create category '%s': %s", proposalUiModel.proposal.category, categoryResult.exceptionOrNull())
+              return@launch
+            }
+            id
+          }
+          val productResult = createProductUseCase.create(
+            categoryId = categoryId,
+            name = proposalUiModel.proposal.productName,
+          )
+          val productId = productResult.getOrNull()?.id
+          if (productId == null) {
+            Timber.tag("AiViewModel").e("onDateConfirmed: failed to create product '%s': %s", proposalUiModel.proposal.productName, productResult.exceptionOrNull())
+            return@launch
+          }
+          repeat(proposalUiModel.proposal.quantity) {
+            addItemToCategoryUseCase.addItem(
+              categoryId = categoryId,
+              identifier = proposalUiModel.proposal.productName,
+              productId = productId,
+              expirationDate = expirationDate,
+            )
+          }
+          markProposalDone(proposalUiModel)
+        }
       }
-      val productResult = createProductUseCase.create(
-        categoryId = categoryId,
-        name = proposalUiModel.proposal.productName,
-      )
-      val productId = productResult.getOrNull()?.id
-      if (productId == null) {
-        Timber.tag("AiViewModel").e("onCreateNew: failed to create product '%s': %s", proposalUiModel.proposal.productName, productResult.exceptionOrNull())
-        return@launch
-      }
-      repeat(proposalUiModel.proposal.quantity) {
-        addItemToCategoryUseCase.addItem(
-          categoryId = categoryId,
-          identifier = proposalUiModel.proposal.productName,
-          productId = productId,
-          expirationDate = expirationDate,
-        )
-      }
-      markProposalDone(proposalUiModel)
     }
   }
 
@@ -196,21 +183,6 @@ class AiAssistantViewModel(
         }
       }
     }
-  }
-
-  @OptIn(FormatStringsInDatetimeFormats::class)
-  private fun parseExpirationDate(isoDate: String): Instant? =
-    try {
-      val localDate = LocalDate.Format { byUnicodePattern("yyyy-MM-dd") }.parse(isoDate)
-      localDate.atStartOfDayIn(TimeZone.currentSystemDefault())
-    } catch (_: Exception) {
-      null
-    }
-
-  @OptIn(FormatStringsInDatetimeFormats::class)
-  private fun todayIsoString(): String {
-    val today = appClock.nowDate()
-    return LocalDate.Format { byUnicodePattern("yyyy-MM-dd") }.format(today)
   }
 
   override fun navigate(navigation: AiAssistantNavigation) {

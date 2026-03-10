@@ -16,7 +16,6 @@ class LlamatikGroceryParser(
 
   override suspend fun parse(
     input: String,
-    todayIso: String,
     existingCategories: List<String>,
   ): List<GroceryProposal> =
     withContext(Dispatchers.Default) {
@@ -37,11 +36,7 @@ class LlamatikGroceryParser(
       )
 
       val systemPrompt = buildSystemPrompt(existingCategories)
-      val prompt = buildGemma3Prompt(
-        system = systemPrompt,
-        context = "Today's date is $todayIso.",
-        userInput = input,
-      )
+      val prompt = buildGemma3Prompt(system = systemPrompt, userInput = input)
       Timber.tag("LlamatikParser").d("PROMPT:\n%s", prompt)
       val raw = LlamaBridge.generate(prompt)
       Timber.tag("LlamatikParser").d("RAW RESPONSE:\n%s", raw)
@@ -50,7 +45,6 @@ class LlamatikGroceryParser(
 
   private fun parseResponse(raw: String): List<GroceryProposal> =
     try {
-      // Extract the first JSON array from the model's free-text output.
       val start = raw.indexOf('[')
       val end = raw.lastIndexOf(']')
       if (start == -1 || end == -1 || end <= start) return emptyList()
@@ -61,23 +55,20 @@ class LlamatikGroceryParser(
         GroceryProposal(
           productName = obj["product_name"]?.jsonPrimitive?.content.orEmpty(),
           quantity = obj["quantity"]?.jsonPrimitive?.content?.toIntOrNull() ?: 1,
-          expirationDate = obj["expiration_date"]?.jsonPrimitive?.content.orEmpty(),
           category = obj["category"]?.jsonPrimitive?.content.orEmpty(),
         )
-      }.filter { it.productName.isNotBlank() && it.expirationDate.isNotBlank() }
+      }.filter { it.productName.isNotBlank() }
     } catch (_: Exception) {
       emptyList()
     }
 
   companion object {
-    fun buildGemma3Prompt(system: String, context: String, userInput: String): String =
+    fun buildGemma3Prompt(system: String, userInput: String): String =
       buildString {
         append("<start_of_turn>system\n")
         append(system.trim())
         append("\n<end_of_turn>\n")
         append("<start_of_turn>user\n")
-        append(context.trim())
-        append("\n\n")
         append(userInput.trim())
         append("\n<end_of_turn>\n")
         append("<start_of_turn>model\n")
@@ -92,13 +83,12 @@ class LlamatikGroceryParser(
       }
       return """
       You are a grocery expiration tracker assistant.
-      The user will describe groceries they bought, including quantity and expiration date.
+      The user will describe groceries they bought, including quantity.
       Extract each distinct product and return ONLY a JSON array. No markdown, no prose, no code fences.
       Rules:
       - If the input contains no grocery products, return exactly: []
       - Output EXACTLY ONE object per distinct product.
-      - Every object MUST have all four fields: product_name, category, quantity, expiration_date.
-      - expiration_date MUST be a real calendar date in ISO-8601 format (YYYY-MM-DD). If the user gives a literal date, convert it directly. Only compute from today's date for relative expressions.
+      - Every object MUST have all three fields: product_name, category, quantity.
       - quantity is the total number of individual units mentioned.
       - Choose ONE category per product.
       $categoryInstruction
