@@ -9,6 +9,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.alorma.caducity.R
 import java.io.File
 import java.io.RandomAccessFile
 import java.net.HttpURLConnection
@@ -42,7 +43,7 @@ class ModelDownloadWorker(
       partFile.renameTo(finalFile)
 
       Result.success(workDataOf(KEY_PATH to finalFile.absolutePath))
-    } catch (t: Throwable) {
+    } catch (_: Throwable) {
       Result.retry()
     }
   }
@@ -52,7 +53,7 @@ class ModelDownloadWorker(
     modelId: String,
     partFile: File,
     onProgress: suspend (Int) -> Unit,
-  ) = withContext(Dispatchers.IO) {
+  ): Unit = withContext(Dispatchers.IO) {
     val already = if (partFile.exists()) partFile.length() else 0L
 
     val connection =
