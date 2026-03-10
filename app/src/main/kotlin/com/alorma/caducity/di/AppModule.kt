@@ -45,6 +45,7 @@ import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusViewModel
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
+import com.alorma.caducity.ui.screen.settings.debug.DebugRemoteConfigsViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
 import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
@@ -140,9 +141,15 @@ val appModule =
         populateFakeDataUseCase = get(),
         fakeTestDataStrategy = get(),
         fakePlayStoreDataStrategy = get(),
+        consentManager = get(),
+      )
+    }
+
+    // Debug Remote Configs
+    factory {
+      DebugRemoteConfigsViewModel(
         remoteConfigRunner = get(),
         remoteConfigs = getAll(),
-        consentManager = get(),
       )
     }
 

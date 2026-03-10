@@ -32,6 +32,8 @@ class PrivacySettingsScreen : Screen("PrivacySettingsScreen")
 
 class DebugSettingsScreen : Screen("DebugSettingsScreen")
 
+class DebugRemoteConfigsScreen : Screen("DebugRemoteConfigsScreen")
+
 class AboutScreen : Screen("AboutScreen")
 
 // Bottom sheets (tracked as screens)
