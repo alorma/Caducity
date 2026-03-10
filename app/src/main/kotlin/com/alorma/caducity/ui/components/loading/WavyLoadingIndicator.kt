@@ -11,9 +11,8 @@ fun WavyLoadingIndicator(
 ) {
   if (progress != null) {
     CircularWavyProgressIndicator(
-      progress = { progress },
-      amplitude = { progress },
       modifier = modifier,
+      progress = { progress },
     )
   } else {
     CircularWavyProgressIndicator(modifier = modifier)

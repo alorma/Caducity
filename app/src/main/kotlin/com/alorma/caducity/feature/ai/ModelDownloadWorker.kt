@@ -43,7 +43,11 @@ class ModelDownloadWorker(
       partFile.renameTo(finalFile)
 
       Result.success(workDataOf(KEY_PATH to finalFile.absolutePath))
+    } catch (_: kotlinx.coroutines.CancellationException) {
+      // Worker was cancelled — keep the part file for resumption next time
+      Result.failure()
     } catch (_: Throwable) {
+      // Any other error — retry (WorkManager will back off automatically)
       Result.retry()
     }
   }

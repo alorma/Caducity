@@ -42,6 +42,12 @@
       </intent-filter>
     </activity>
 
+    <!-- WorkManager foreground service — must declare dataSync type to match ForegroundInfo -->
+    <service
+      android:name="androidx.work.impl.foreground.SystemForegroundService"
+      android:foregroundServiceType="dataSync"
+      tools:node="merge" />
+
     <!-- Disable default WorkManager initialization when using Koin integration -->
     <provider
       android:name="androidx.startup.InitializationProvider"
