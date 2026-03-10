@@ -26,6 +26,8 @@
   <string name="ai_model_downloading">Downloading AI model (%1$d%%)</string>
   <string name="ai_model_size_hint">~292 MB — Wi-Fi recommended</string>
   <string name="ai_model_download_failed">Failed to download AI model. Please try again.</string>
+  <string name="ai_proposal_expires">Expires: %1$s</string>
+  <string name="ai_parse_error">Sorry, I couldn\'t understand that. Try describing the product and expiration date more clearly.</string>
   <string name="products_screen_title">Categories</string>
   <string name="dashboard_action_collapse">Collapse</string>
   <string name="dashboard_action_expand">Expand</string>
