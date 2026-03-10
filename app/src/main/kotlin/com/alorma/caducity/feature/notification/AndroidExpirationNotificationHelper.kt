@@ -134,6 +134,7 @@ class AndroidExpirationNotificationHelper(
     channelId: String,
     priority: Int,
   ) {
+    NotificationChannelManager.createNotificationChannels(context)
     val notificationManager = context.getSystemService<NotificationManager>()
 
     val intent =
