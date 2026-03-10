@@ -1,7 +1,9 @@
 package com.alorma.caducity.ui.screen.settings.debug
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -55,33 +57,31 @@ private fun DebugRemoteConfigsContent(
     },
   ) { paddingValues ->
     ResponsiveSettingsContainer(modifier = Modifier.padding(paddingValues)) {
-      LazyColumn(
+      StyledSettingsGroup(
         modifier = Modifier.padding(horizontal = 16.dp),
+        title = { Text("Remote Configs") },
       ) {
-        item {
-          StyledSettingsGroup(
-            title = { Text("Remote Configs") },
-          ) {
-            uiState.remoteConfigValues.entries.forEachIndexed { index, (key, configState) ->
-              StyledSettingsSwitchCard(
-                title = key,
-                subtitle =
-                  if (configState.hasDebugOverride) {
-                    "Debug override active"
-                  } else {
-                    "Using default value"
-                  },
-                state = configState.value,
-                shapes =
-                  ListItemDefaults.segmentedShapes(
-                    index = index,
-                    count = uiState.remoteConfigValues.entries.size,
-                  ),
-                onCheckedChange = { enabled ->
-                  uiState.onToggleRemoteConfig(key, enabled)
+        val entries = uiState.remoteConfigValues.entries.toList()
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+          itemsIndexed(entries) { index, (key, configState) ->
+            StyledSettingsSwitchCard(
+              title = key,
+              subtitle =
+                if (configState.hasDebugOverride) {
+                  "Debug override active"
+                } else {
+                  "Using default value"
                 },
-              )
-            }
+              state = configState.value,
+              shapes =
+                ListItemDefaults.segmentedShapes(
+                  index = index,
+                  count = entries.size,
+                ),
+              onCheckedChange = { enabled ->
+                uiState.onToggleRemoteConfig(key, enabled)
+              },
+            )
           }
         }
       }
