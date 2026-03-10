@@ -2,14 +2,18 @@ package com.alorma.caducity.ui.screen.ai
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -24,11 +28,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.outlined.Send
 import com.alorma.caducity.base.ui.icons.outlined.Sparkle
+import com.alorma.caducity.feature.ai.ModelDownloadState
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import org.koin.compose.viewmodel.koinViewModel
@@ -40,6 +46,7 @@ fun AiAssistantScreen(
   viewModel: AiAssistantViewModel = koinViewModel(),
 ) {
   var inputText by rememberSaveable { mutableStateOf("") }
+  val modelState by viewModel.modelState.collectAsStateWithLifecycle()
 
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
@@ -81,6 +88,62 @@ fun AiAssistantScreen(
           .padding(paddingValues),
       contentAlignment = Alignment.BottomCenter,
     ) {
+      when (val state = modelState) {
+        ModelDownloadState.Ready -> Unit
+
+        ModelDownloadState.Idle -> {
+          Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+          ) {
+            Text(
+              text = stringResource(R.string.ai_model_preparing),
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          }
+        }
+
+        is ModelDownloadState.Downloading -> {
+          Column(
+            modifier =
+              Modifier
+                .align(Alignment.Center)
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+          ) {
+            Text(
+              text = stringResource(R.string.ai_model_downloading, state.progress),
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            LinearProgressIndicator(
+              progress = { state.progress / 100f },
+              modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+              text = stringResource(R.string.ai_model_size_hint),
+              style = MaterialTheme.typography.bodySmall,
+              color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+          }
+        }
+
+        ModelDownloadState.Failed -> {
+          Text(
+            text = stringResource(R.string.ai_model_download_failed),
+            modifier = Modifier.align(Alignment.Center),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.error,
+          )
+        }
+      }
+
+      val isReady = modelState == ModelDownloadState.Ready
       Row(
         modifier =
           Modifier
@@ -97,16 +160,17 @@ fun AiAssistantScreen(
           modifier = Modifier.weight(1f),
           keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
           singleLine = true,
+          enabled = isReady,
           shape = MaterialTheme.shapes.extraLarge,
         )
         IconButton(
           onClick = { /* TODO: send */ },
-          enabled = inputText.isNotBlank(),
+          enabled = isReady && inputText.isNotBlank(),
         ) {
           Icon(
             imageVector = AppIcons.Outlined.Send,
             contentDescription = stringResource(R.string.ai_assistant_send),
-            tint = if (inputText.isNotBlank()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+            tint = if (isReady && inputText.isNotBlank()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
           )
         }
       }

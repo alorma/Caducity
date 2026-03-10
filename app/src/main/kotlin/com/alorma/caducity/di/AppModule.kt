@@ -30,6 +30,8 @@ import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.feature.ai.AiFeatureConfig
+import com.alorma.caducity.feature.ai.ModelManager
+import com.alorma.caducity.feature.ai.WorkManagerModelManager
 import com.alorma.caducity.feature.consent.consentModule
 import com.alorma.caducity.ui.screen.ai.AiAssistantViewModel
 import com.alorma.caducity.feature.review.reviewModule
@@ -77,6 +79,7 @@ val appModule =
 
     // AI Assistant
     singleOf(::AiFeatureConfig)
+    single<ModelManager> { WorkManagerModelManager(androidContext()) }
     viewModelOf(::AiAssistantViewModel)
 
     // Onboarding
