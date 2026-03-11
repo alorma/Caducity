@@ -20,10 +20,11 @@ class AiJaroWinklerMatcher(
 
     for (categoryWithItems in categories) {
       val category = categoryWithItems.category
-      val categoryScore = jaroWinkler(
-        proposal.category.lowercase(),
-        category.name.lowercase(),
-      )
+      val categoryScore =
+        jaroWinkler(
+          proposal.category.lowercase(),
+          category.name.lowercase(),
+        )
       if (categoryScore > bestCategoryScore) {
         bestCategoryScore = categoryScore
         bestCategoryOnly = category
@@ -37,16 +38,22 @@ class AiJaroWinklerMatcher(
         val firstWordScore = jaroWinkler(proposalWords.first(), productWords.first())
         if (firstWordScore < 0.80) continue
 
-        val productScore = jaroWinkler(
-          proposal.productName.lowercase(),
-          product.name.lowercase(),
-        )
+        val productScore =
+          jaroWinkler(
+            proposal.productName.lowercase(),
+            product.name.lowercase(),
+          )
         val score = (categoryScore + productScore) / 2.0
         Timber.tag("AiMatcher").d(
           "proposal='%s/%s' vs '%s/%s' → cat=%.2f prod=%.2f first=%.2f avg=%.2f",
-          proposal.category, proposal.productName,
-          category.name, product.name,
-          categoryScore, productScore, firstWordScore, score,
+          proposal.category,
+          proposal.productName,
+          category.name,
+          product.name,
+          categoryScore,
+          productScore,
+          firstWordScore,
+          score,
         )
         if (score > bestScore) {
           bestScore = score
@@ -57,13 +64,14 @@ class AiJaroWinklerMatcher(
       }
     }
 
-    val result = if (bestScore >= 0.75 && bestProduct != null && bestCategory != null && bestProductScore >= 0.75) {
-      MatchResult.Match(product = bestProduct, category = bestCategory, score = bestScore)
-    } else if (bestCategoryScore >= 0.75 && bestCategoryOnly != null) {
-      MatchResult.CategoryMatch(category = bestCategoryOnly)
-    } else {
-      MatchResult.NoMatch
-    }
+    val result =
+      if (bestScore >= 0.75 && bestProduct != null && bestCategory != null && bestProductScore >= 0.75) {
+        MatchResult.Match(product = bestProduct, category = bestCategory, score = bestScore)
+      } else if (bestCategoryScore >= 0.75 && bestCategoryOnly != null) {
+        MatchResult.CategoryMatch(category = bestCategoryOnly)
+      } else {
+        MatchResult.NoMatch
+      }
     Timber.tag("AiMatcher").d("Best match for '%s': %s (score=%.2f)", proposal.productName, result, bestScore)
     return result
   }

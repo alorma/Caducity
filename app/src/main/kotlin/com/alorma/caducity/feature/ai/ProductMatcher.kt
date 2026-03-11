@@ -3,7 +3,10 @@ package com.alorma.caducity.feature.ai
 import kotlin.math.max
 import kotlin.math.min
 
-fun jaroWinkler(a: String, b: String): Double {
+fun jaroWinkler(
+  a: String,
+  b: String,
+): Double {
   if (a.isEmpty() || b.isEmpty()) return 0.0
   if (a == b) return 1.0
 
@@ -36,13 +39,17 @@ fun jaroWinkler(a: String, b: String): Double {
     k++
   }
 
-  val jaro = (matches.toDouble() / a.length +
-    matches.toDouble() / b.length +
-    (matches - transpositions / 2.0) / matches) / 3.0
+  val jaro =
+    (
+      matches.toDouble() / a.length +
+        matches.toDouble() / b.length +
+        (matches - transpositions / 2.0) / matches
+    ) / 3.0
 
-  val prefixLength = (0 until min(4, min(a.length, b.length)))
-    .takeWhile { a[it] == b[it] }
-    .count()
+  val prefixLength =
+    (0 until min(4, min(a.length, b.length)))
+      .takeWhile { a[it] == b[it] }
+      .count()
 
   return jaro + prefixLength * 0.1 * (1.0 - jaro)
 }

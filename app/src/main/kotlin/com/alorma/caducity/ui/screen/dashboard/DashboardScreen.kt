@@ -29,8 +29,8 @@ import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.base.ui.icons.outlined.Sparkle
 import com.alorma.caducity.config.remoteconfig.rememberRemoteConfig
-import com.alorma.caducity.feature.ai.AiFeatureConfig
 import com.alorma.caducity.domain.model.ItemStatus
+import com.alorma.caducity.feature.ai.AiFeatureConfig
 import com.alorma.caducity.feature.tracking.DashboardScreen as DashboardScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState

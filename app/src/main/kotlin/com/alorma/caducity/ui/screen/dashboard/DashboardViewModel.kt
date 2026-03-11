@@ -4,10 +4,10 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.usecase.ObtainDashboardUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.feature.tracking.NavigateToAiAssistantAction
 import com.alorma.caducity.feature.tracking.NavigateToCategoryAction
 import com.alorma.caducity.feature.tracking.NavigateToCreateCategoryAction
 import com.alorma.caducity.feature.tracking.NavigateToFilteredItemsAction
-import com.alorma.caducity.feature.tracking.NavigateToAiAssistantAction
 import com.alorma.caducity.feature.tracking.NavigateToSettingsAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences

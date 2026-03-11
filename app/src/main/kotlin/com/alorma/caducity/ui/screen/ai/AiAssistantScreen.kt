@@ -49,10 +49,10 @@ import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
-import kotlin.time.Instant
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import kotlin.time.Instant
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -80,12 +80,13 @@ fun AiAssistantScreen(
     viewModel.sideEffects.collect { effect ->
       when (effect) {
         is AiAssistantSideEffect.ShowDatePicker -> {
-          val result = dialogState.showDatePickerDialog(
-            datePickerState = datePickerState,
-            positiveButton = { Text(stringResource(R.string.category_detail_add_item_date_picker_ok)) },
-            negativeButton = { Text(stringResource(R.string.category_detail_add_item_date_picker_cancel)) },
-            type = AppFeedbackType.Info,
-          )
+          val result =
+            dialogState.showDatePickerDialog(
+              datePickerState = datePickerState,
+              positiveButton = { Text(stringResource(R.string.category_detail_add_item_date_picker_ok)) },
+              negativeButton = { Text(stringResource(R.string.category_detail_add_item_date_picker_cancel)) },
+              type = AppFeedbackType.Info,
+            )
           if (result == DialogResult.Positive) {
             val millis = datePickerState.selectedDateMillis
             if (millis != null) {
@@ -153,12 +154,13 @@ fun AiAssistantScreen(
             items(messages) { message ->
               when (message) {
                 is ChatMessage.Outgoing -> OutgoingBubble(message.text)
-                is ChatMessage.Proposals -> IncomingProposalsBubble(
-                  proposals = message.proposals,
-                  onAdd = { viewModel.onAddToProduct(it) },
-                  onAddToCategory = { viewModel.onAddToCategory(it) },
-                  onCreate = { viewModel.onCreateNew(it) },
-                )
+                is ChatMessage.Proposals ->
+                  IncomingProposalsBubble(
+                    proposals = message.proposals,
+                    onAdd = { viewModel.onAddToProduct(it) },
+                    onAddToCategory = { viewModel.onAddToCategory(it) },
+                    onCreate = { viewModel.onCreateNew(it) },
+                  )
                 ChatMessage.Thinking -> ThinkingBubble()
                 ChatMessage.Error -> IncomingErrorBubble()
               }
@@ -208,7 +210,8 @@ fun AiAssistantScreen(
           onValueChange = { inputText = it },
           placeholder = { Text(text = stringResource(R.string.ai_assistant_input_placeholder)) },
           keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-          keyboardActions = KeyboardActions(
+          keyboardActions =
+            KeyboardActions(
               onSend = {
                 if (isReady && !hasThinking && inputText.isNotBlank()) {
                   viewModel.send(inputText)

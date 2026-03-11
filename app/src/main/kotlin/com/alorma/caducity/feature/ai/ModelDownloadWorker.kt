@@ -57,65 +57,66 @@ class ModelDownloadWorker(
     modelId: String,
     partFile: File,
     onProgress: suspend (Int) -> Unit,
-  ): Unit = withContext(Dispatchers.IO) {
-    val already = if (partFile.exists()) partFile.length() else 0L
+  ): Unit =
+    withContext(Dispatchers.IO) {
+      val already = if (partFile.exists()) partFile.length() else 0L
 
-    val connection =
-      (URL(url).openConnection() as HttpURLConnection).apply {
-        setRequestProperty("Accept-Encoding", "identity")
-        connectTimeout = 30_000
-        readTimeout = 60_000
-        if (already > 0) setRequestProperty("Range", "bytes=$already-")
-      }
+      val connection =
+        (URL(url).openConnection() as HttpURLConnection).apply {
+          setRequestProperty("Accept-Encoding", "identity")
+          connectTimeout = 30_000
+          readTimeout = 60_000
+          if (already > 0) setRequestProperty("Range", "bytes=$already-")
+        }
 
-    try {
-      connection.connect()
-      val code = connection.responseCode
+      try {
+        connection.connect()
+        val code = connection.responseCode
 
-      // Server ignored our Range request — restart clean
-      if (already > 0 && code == HttpURLConnection.HTTP_OK) {
-        partFile.delete()
-        return@withContext downloadResumable(
-          url = url,
-          modelId = modelId,
-          partFile = partFile,
-          onProgress = onProgress,
-        )
-      }
+        // Server ignored our Range request — restart clean
+        if (already > 0 && code == HttpURLConnection.HTTP_OK) {
+          partFile.delete()
+          return@withContext downloadResumable(
+            url = url,
+            modelId = modelId,
+            partFile = partFile,
+            onProgress = onProgress,
+          )
+        }
 
-      val contentLength = connection.contentLengthLong
-      val total = if (contentLength > 0) already + contentLength else -1L
+        val contentLength = connection.contentLengthLong
+        val total = if (contentLength > 0) already + contentLength else -1L
 
-      RandomAccessFile(partFile, "rw").use { raf ->
-        raf.seek(already)
+        RandomAccessFile(partFile, "rw").use { raf ->
+          raf.seek(already)
 
-        val buffer = ByteArray(256 * 1024)
-        var written = already
-        var lastPct = -1
+          val buffer = ByteArray(256 * 1024)
+          var written = already
+          var lastPct = -1
 
-        connection.inputStream.use { input ->
-          while (true) {
-            ensureActive()
-            val read = input.read(buffer)
-            if (read <= 0) break
+          connection.inputStream.use { input ->
+            while (true) {
+              ensureActive()
+              val read = input.read(buffer)
+              if (read <= 0) break
 
-            raf.write(buffer, 0, read)
-            written += read
+              raf.write(buffer, 0, read)
+              written += read
 
-            if (total > 0) {
-              val pct = ((written * 100) / total).toInt().coerceIn(0, 100)
-              if (pct != lastPct) {
-                lastPct = pct
-                onProgress(pct)
+              if (total > 0) {
+                val pct = ((written * 100) / total).toInt().coerceIn(0, 100)
+                if (pct != lastPct) {
+                  lastPct = pct
+                  onProgress(pct)
+                }
               }
             }
           }
         }
+      } finally {
+        connection.disconnect()
       }
-    } finally {
-      connection.disconnect()
     }
-  }
 
   private fun foreground(
     modelId: String,

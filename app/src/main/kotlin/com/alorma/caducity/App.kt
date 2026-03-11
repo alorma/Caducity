@@ -12,12 +12,12 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
+import com.alorma.caducity.ui.screen.ai.AiAssistantRoute
+import com.alorma.caducity.ui.screen.ai.AiAssistantScreen
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryRoute
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailRoute
-import com.alorma.caducity.ui.screen.ai.AiAssistantRoute
-import com.alorma.caducity.ui.screen.ai.AiAssistantScreen
 import com.alorma.caducity.ui.screen.dashboard.DashboardRoute
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
 import com.alorma.caducity.ui.screen.dashboard.FilteredItemsRoute

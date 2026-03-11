@@ -12,7 +12,6 @@ import com.alorma.caducity.feature.ai.ModelDownloadState
 import com.alorma.caducity.feature.ai.ModelManager
 import com.alorma.caducity.feature.ai.priority
 import com.alorma.caducity.ui.base.BaseViewModel
-import timber.log.Timber
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +22,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class AiAssistantViewModel(
   private val modelManager: ModelManager,
@@ -55,20 +55,23 @@ class AiAssistantViewModel(
     _messages.update { it + ChatMessage.Outgoing(input) + ChatMessage.Thinking }
 
     viewModelScope.launch {
-      val categoryNames = categoryDataSource.getCategories().first()
-        .map { it.category.name }
+      val categoryNames =
+        categoryDataSource
+          .getCategories()
+          .first()
+          .map { it.category.name }
       val proposals = groceryParser.parse(input, categoryNames)
 
-      val proposalUiModels = proposals
-        .map { proposal ->
-          val matchResult = productMatcher.match(proposal)
-          ProposalUiModel(proposal = proposal, matchResult = matchResult)
-        }
-        .groupBy { it.proposal.productName.lowercase() }
-        .map { (_, duplicates) ->
-          // Keep the best match per product name: Match > CategoryMatch > NoMatch
-          duplicates.minByOrNull { it.matchResult.priority } ?: duplicates.first()
-        }
+      val proposalUiModels =
+        proposals
+          .map { proposal ->
+            val matchResult = productMatcher.match(proposal)
+            ProposalUiModel(proposal = proposal, matchResult = matchResult)
+          }.groupBy { it.proposal.productName.lowercase() }
+          .map { (_, duplicates) ->
+            // Keep the best match per product name: Match > CategoryMatch > NoMatch
+            duplicates.minByOrNull { it.matchResult.priority } ?: duplicates.first()
+          }
 
       _messages.update { messages ->
         val withoutThinking = messages.filterNot { it is ChatMessage.Thinking }
@@ -93,7 +96,10 @@ class AiAssistantViewModel(
     emitSideEffect(AiAssistantSideEffect.ShowDatePicker(proposalUiModel))
   }
 
-  fun onDateConfirmed(proposalUiModel: ProposalUiModel, expirationDate: Instant) {
+  fun onDateConfirmed(
+    proposalUiModel: ProposalUiModel,
+    expirationDate: Instant,
+  ) {
     viewModelScope.launch {
       when (val match = proposalUiModel.matchResult) {
         is MatchResult.Match -> {
@@ -108,13 +114,21 @@ class AiAssistantViewModel(
           markProposalDone(proposalUiModel)
         }
         is MatchResult.CategoryMatch -> {
-          val productResult = createProductUseCase.create(
-            categoryId = match.category.id,
-            name = proposalUiModel.proposal.productName,
-          )
+          val productResult =
+            createProductUseCase.create(
+              categoryId = match.category.id,
+              name = proposalUiModel.proposal.productName,
+            )
           val productId = productResult.getOrNull()?.id
           if (productId == null) {
-            Timber.tag("AiViewModel").e("onDateConfirmed: failed to create product '%s': %s", proposalUiModel.proposal.productName, productResult.exceptionOrNull())
+            Timber
+              .tag(
+                "AiViewModel",
+              ).e(
+                "onDateConfirmed: failed to create product '%s': %s",
+                proposalUiModel.proposal.productName,
+                productResult.exceptionOrNull(),
+              )
             return@launch
           }
           repeat(proposalUiModel.proposal.quantity) {
@@ -129,31 +143,49 @@ class AiAssistantViewModel(
         }
         MatchResult.NoMatch -> {
           val existingCategories = categoryDataSource.getCategories().first()
-          val existingCategory = existingCategories.firstOrNull {
-            it.category.name.equals(proposalUiModel.proposal.category, ignoreCase = true)
-          }
-          val categoryId = if (existingCategory != null) {
-            existingCategory.category.id
-          } else {
-            val categoryResult = createCategoryUseCase.createCategory(
-              name = proposalUiModel.proposal.category,
-              description = "",
-              items = emptyList(),
-            )
-            val id = categoryResult.getOrNull()
-            if (id == null) {
-              Timber.tag("AiViewModel").e("onDateConfirmed: failed to create category '%s': %s", proposalUiModel.proposal.category, categoryResult.exceptionOrNull())
-              return@launch
+          val existingCategory =
+            existingCategories.firstOrNull {
+              it.category.name.equals(proposalUiModel.proposal.category, ignoreCase = true)
             }
-            id
-          }
-          val productResult = createProductUseCase.create(
-            categoryId = categoryId,
-            name = proposalUiModel.proposal.productName,
-          )
+          val categoryId =
+            if (existingCategory != null) {
+              existingCategory.category.id
+            } else {
+              val categoryResult =
+                createCategoryUseCase.createCategory(
+                  name = proposalUiModel.proposal.category,
+                  description = "",
+                  items = emptyList(),
+                )
+              val id = categoryResult.getOrNull()
+              if (id == null) {
+                Timber
+                  .tag(
+                    "AiViewModel",
+                  ).e(
+                    "onDateConfirmed: failed to create category '%s': %s",
+                    proposalUiModel.proposal.category,
+                    categoryResult.exceptionOrNull(),
+                  )
+                return@launch
+              }
+              id
+            }
+          val productResult =
+            createProductUseCase.create(
+              categoryId = categoryId,
+              name = proposalUiModel.proposal.productName,
+            )
           val productId = productResult.getOrNull()?.id
           if (productId == null) {
-            Timber.tag("AiViewModel").e("onDateConfirmed: failed to create product '%s': %s", proposalUiModel.proposal.productName, productResult.exceptionOrNull())
+            Timber
+              .tag(
+                "AiViewModel",
+              ).e(
+                "onDateConfirmed: failed to create product '%s': %s",
+                proposalUiModel.proposal.productName,
+                productResult.exceptionOrNull(),
+              )
             return@launch
           }
           repeat(proposalUiModel.proposal.quantity) {
@@ -174,9 +206,10 @@ class AiAssistantViewModel(
     _messages.update { messages ->
       messages.map { message ->
         if (message is ChatMessage.Proposals) {
-          val updatedProposals = message.proposals.map { item ->
-            if (item === proposalUiModel) item.copy(done = true) else item
-          }
+          val updatedProposals =
+            message.proposals.map { item ->
+              if (item === proposalUiModel) item.copy(done = true) else item
+            }
           message.copy(proposals = updatedProposals)
         } else {
           message
