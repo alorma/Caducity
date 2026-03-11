@@ -116,7 +116,6 @@ class AiJaroWinklerMatcherTest {
         GroceryProposal(
           productName = "Milk",
           quantity = 1,
-          expirationDate = "2026-04-01",
           category = "Dairy",
         )
 
@@ -140,7 +139,6 @@ class AiJaroWinklerMatcherTest {
         GroceryProposal(
           productName = "milk",
           quantity = 2,
-          expirationDate = "2026-04-01",
           category = "dairy",
         )
 
@@ -162,7 +160,6 @@ class AiJaroWinklerMatcherTest {
         GroceryProposal(
           productName = "Miilk", // one extra 'i'
           quantity = 1,
-          expirationDate = "2026-04-01",
           category = "Dairy",
         )
 
@@ -179,7 +176,6 @@ class AiJaroWinklerMatcherTest {
         GroceryProposal(
           productName = "Milk",
           quantity = 1,
-          expirationDate = "2026-04-01",
           category = "Dairy",
         )
 
@@ -199,7 +195,6 @@ class AiJaroWinklerMatcherTest {
         GroceryProposal(
           productName = "Wrench",
           quantity = 1,
-          expirationDate = "2026-04-01",
           category = "Hardware",
         )
 
@@ -220,7 +215,6 @@ class AiJaroWinklerMatcherTest {
         GroceryProposal(
           productName = "Cheese",
           quantity = 1,
-          expirationDate = "2026-04-01",
           category = "Dairy",
         )
 
@@ -252,7 +246,6 @@ class AiJaroWinklerMatcherTest {
         GroceryProposal(
           productName = "Milk",
           quantity = 1,
-          expirationDate = "2026-04-01",
           category = "Dairy",
         )
 
