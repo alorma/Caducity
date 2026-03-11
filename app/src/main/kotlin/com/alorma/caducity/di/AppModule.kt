@@ -2,6 +2,7 @@ package com.alorma.caducity.di
 
 import com.alorma.caducity.config.ConfigQualifier
 import com.alorma.caducity.config.configModule
+import com.alorma.caducity.config.remoteconfig.RemoteConfig
 import com.alorma.caducity.config.time.RelativeTimeFormatter
 import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.data.datasource.RoomBackupDataSource
@@ -82,7 +83,7 @@ val appModule =
     single { Settings() }
 
     // AI Assistant
-    singleOf(::AiFeatureConfig)
+    singleOf(::AiFeatureConfig) bind RemoteConfig::class
     single<ModelManager> { WorkManagerModelManager(androidContext()) }
     single<AiGroceryParser> { LlamatikGroceryParser(get()) }
     singleOf(::AiJaroWinklerMatcher) bind AiProductMatcher::class
