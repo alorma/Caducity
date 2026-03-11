@@ -7,7 +7,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun FullscreenLoading(modifier: Modifier = Modifier) {
+fun FullscreenLoading(
+  modifier: Modifier = Modifier,
+  progress: Float? = null,
+) {
   Box(
     modifier =
       Modifier
@@ -15,6 +18,6 @@ fun FullscreenLoading(modifier: Modifier = Modifier) {
         .then(modifier),
     contentAlignment = Alignment.Center,
   ) {
-    WavyLoadingIndicator()
+    WavyLoadingIndicator(progress = progress)
   }
 }

@@ -170,6 +170,9 @@ dependencies {
   implementation(libs.androidx.work.runtime.ktx)
   implementation(libs.koin.androidx.workmanager)
 
+  // Llamatik (on-device AI)
+  implementation(libs.llamatik)
+
   // Timber (logging)
   implementation(libs.timber)
 

@@ -15,6 +15,8 @@ sealed interface DashboardNavigation {
   ) : DashboardNavigation
 
   data object Settings : DashboardNavigation
+
+  data object AiAssistant : DashboardNavigation
 }
 
 sealed interface DashboardNavigationSideEffect {
@@ -29,4 +31,6 @@ sealed interface DashboardNavigationSideEffect {
   ) : DashboardNavigationSideEffect
 
   data object NavigateToSettings : DashboardNavigationSideEffect
+
+  data object NavigateToAiAssistant : DashboardNavigationSideEffect
 }

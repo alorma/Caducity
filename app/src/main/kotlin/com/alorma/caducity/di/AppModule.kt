@@ -2,6 +2,7 @@ package com.alorma.caducity.di
 
 import com.alorma.caducity.config.ConfigQualifier
 import com.alorma.caducity.config.configModule
+import com.alorma.caducity.config.remoteconfig.RemoteConfig
 import com.alorma.caducity.config.time.RelativeTimeFormatter
 import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.data.datasource.RoomBackupDataSource
@@ -27,12 +28,20 @@ import com.alorma.caducity.domain.usecase.SplitAndFreezeItemUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
+import com.alorma.caducity.feature.ai.AiFeatureConfig
+import com.alorma.caducity.feature.ai.AiGroceryParser
+import com.alorma.caducity.feature.ai.AiJaroWinklerMatcher
+import com.alorma.caducity.feature.ai.AiProductMatcher
+import com.alorma.caducity.feature.ai.LlamatikGroceryParser
+import com.alorma.caducity.feature.ai.ModelManager
+import com.alorma.caducity.feature.ai.WorkManagerModelManager
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.feature.consent.consentModule
 import com.alorma.caducity.feature.review.reviewModule
 import com.alorma.caducity.feature.tracking.trackingModule
 import com.alorma.caducity.ui.components.bottomsheet.ItemActionsViewModel
+import com.alorma.caducity.ui.screen.ai.AiAssistantViewModel
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryViewModel
 import com.alorma.caducity.ui.screen.category.create.FutureDateSelectableDates
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailAddItemViewModel
@@ -72,6 +81,13 @@ val appModule =
     includes(dashboardModule)
 
     single { Settings() }
+
+    // AI Assistant
+    singleOf(::AiFeatureConfig) bind RemoteConfig::class
+    single<ModelManager> { WorkManagerModelManager(androidContext()) }
+    single<AiGroceryParser> { LlamatikGroceryParser(get()) }
+    singleOf(::AiJaroWinklerMatcher) bind AiProductMatcher::class
+    viewModelOf(::AiAssistantViewModel)
 
     // Onboarding
     singleOf(::OnboardingFlag)

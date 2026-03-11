@@ -5,6 +5,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun WavyLoadingIndicator(modifier: Modifier = Modifier) {
-  CircularWavyProgressIndicator(modifier = modifier)
+fun WavyLoadingIndicator(
+  modifier: Modifier = Modifier,
+  progress: Float? = null,
+) {
+  if (progress != null) {
+    CircularWavyProgressIndicator(
+      modifier = modifier,
+      progress = { progress },
+    )
+  } else {
+    CircularWavyProgressIndicator(modifier = modifier)
+  }
 }

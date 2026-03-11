@@ -56,6 +56,20 @@
   <string name="settings_privacy_title">Privacidad</string>
   <string name="settings_privacy_description">Gestionar consentimiento y preferencias de datos</string>
 
+  <string name="ai_assistant_title">Asistente IA</string>
+  <string name="ai_assistant_input_placeholder">Dime lo que compraste…</string>
+  <string name="ai_assistant_send">Enviar</string>
+  <string name="ai_model_preparing">Preparando el modelo IA…</string>
+  <string name="ai_model_download_failed">Error al descargar el modelo IA. Inténtalo de nuevo.</string>
+  <string name="ai_proposal_expires">Caduca: %1$s</string>
+  <string name="ai_proposal_match">Coincide: %1$s › %2$s</string>
+  <string name="ai_proposal_category_match">Categoría: %1$s</string>
+  <string name="ai_proposal_no_match">Nuevo: %1$s</string>
+  <string name="ai_proposal_add">Añadir a %1$s</string>
+  <string name="ai_proposal_add_to_category">Añadir a %1$s</string>
+  <string name="ai_proposal_create">Crear en %1$s</string>
+  <string name="ai_parse_error">No he entendido eso. Intenta describir el producto y la fecha de caducidad con más detalle.</string>
+
   <string name="dashboard_fab_manual">Manual</string>
   <string name="dashboard_fab_ai">IA</string>
   <string name="dashboard_ai_title">Añadir Categorías con IA</string>
