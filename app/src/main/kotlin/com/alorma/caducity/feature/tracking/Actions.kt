@@ -35,6 +35,13 @@ class NavigateToSettingsAction :
     parameters = mapOf("source" to "topbar"),
   )
 
+class NavigateToAiAssistantAction :
+  NavigationAction(
+    actionName = "ai_assistant",
+    origin = "dashboard",
+    parameters = mapOf("source" to "topbar"),
+  )
+
 // Onboarding Actions
 class CompleteOnboardingAction :
   NavigationAction(

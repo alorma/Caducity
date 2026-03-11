@@ -57,6 +57,20 @@
   <string name="settings_privacy_title">Privacitat</string>
   <string name="settings_privacy_description">Gestionar consentiment i preferències de dades</string>
 
+  <string name="ai_assistant_title">Assistent IA</string>
+  <string name="ai_assistant_input_placeholder">Digues-me què has comprat…</string>
+  <string name="ai_assistant_send">Enviar</string>
+  <string name="ai_model_preparing">Preparant el model IA…</string>
+  <string name="ai_model_download_failed">Error en descarregar el model IA. Torna-ho a intentar.</string>
+  <string name="ai_proposal_expires">Caduca: %1$s</string>
+  <string name="ai_proposal_match">Coincidència: %1$s › %2$s</string>
+  <string name="ai_proposal_category_match">Categoria: %1$s</string>
+  <string name="ai_proposal_no_match">Nou: %1$s</string>
+  <string name="ai_proposal_add">Afegir a %1$s</string>
+  <string name="ai_proposal_add_to_category">Afegir a %1$s</string>
+  <string name="ai_proposal_create">Crear a %1$s</string>
+  <string name="ai_parse_error">No he entès això. Intenta descriure el producte i la data de caducitat amb més detall.</string>
+
   <string name="dashboard_fab_manual">Manual</string>
   <string name="dashboard_fab_ai">IA</string>
   <string name="dashboard_ai_title">Afegir Categories amb IA</string>
