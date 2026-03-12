@@ -57,7 +57,7 @@ adaptive = "1.2.0"
 # Google Play
 play-review = "2.0.2"
 uiToolingPreview = "1.10.4"
-uiTooling = "1.10.4"
+uiTooling = "1.10.5"
 
 [libraries]
 # Compose BOM
