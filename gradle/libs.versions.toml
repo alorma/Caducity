@@ -1,4 +1,6 @@
 [versions]
+versionPlugin = "1.0.0"
+
 # Compose
 compose-bom = "2026.03.00"
 
@@ -156,3 +158,5 @@ google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+
+versionPlugin = { id = "io.github.alorma.version", version.ref = "versionPlugin" }

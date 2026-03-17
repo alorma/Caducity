@@ -14,7 +14,7 @@ plugins {
   alias(libs.plugins.google.services)
   alias(libs.plugins.firebase.crashlytics)
 
-  id("caducity.version")
+  alias(libs.plugins.versionPlugin)
 }
 
 android {
