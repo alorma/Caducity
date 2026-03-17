@@ -3,7 +3,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "caducity"
 
 pluginManagement {
-  includeBuild("build-logic")
   repositories {
     google()
     mavenCentral()
