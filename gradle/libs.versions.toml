@@ -47,7 +47,7 @@ ktlint = "14.2.0"
 
 # Testing
 turbine = "1.2.1"
-mockito-kotlin = "6.2.3"
+mockito-kotlin = "6.3.0"
 mockito-core = "5.23.0"
 kotlinx-coroutines-test = "1.10.2"
 robolectric = "4.15"
