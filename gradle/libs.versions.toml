@@ -39,7 +39,7 @@ llamatik = "0.19.0"
 materialKolor = "5.0.0-alpha07"
 
 googleServices = "4.4.4"
-firebaseCrashlytics = "3.0.6"
+firebaseCrashlytics = "3.0.7"
 
 strikt = "0.35.1"
 timber = "5.0.1"
