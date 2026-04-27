@@ -6,7 +6,7 @@ compose-bom = "2026.04.01"
 
 # Kotlin
 kotlin = "2.3.20"
-ksp = "2.3.6"
+ksp = "2.3.7"
 
 # Android
 agp = "9.2.0"
