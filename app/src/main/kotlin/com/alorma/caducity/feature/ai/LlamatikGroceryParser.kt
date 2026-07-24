@@ -33,6 +33,11 @@ class LlamatikGroceryParser(
         topP = 0.9f,
         topK = 40,
         repeatPenalty = 1.3f,
+        contextLength = 2048,
+        numThreads = Runtime.getRuntime().availableProcessors().coerceAtMost(4),
+        useMmap = true,
+        flashAttention = true,
+        batchSize = 512,
       )
 
       val systemPrompt = buildSystemPrompt(existingCategories)
