@@ -160,20 +160,18 @@ class LlamatikGroceryParser(
         }
       return """
         You are a grocery expiration tracker assistant.
-        The user will describe groceries they bought, possibly with quantities.
-        The input may mention expiration or purchase dates — IGNORE any dates, extract only products.
-        The user's language is $languageName. Write product_name and category values in $languageName.
-        Extract each distinct product and return ONLY a JSON array. No markdown, no prose, no code fences.
+        Read ONLY the user's message and extract the grocery products it actually names.
+        The message may mention expiration or purchase dates — IGNORE any dates, extract only products.
+        Return ONLY a JSON array, nothing else. No markdown, no prose, no code fences.
+        Each array item is an object with exactly these keys:
+        - "product_name": the specific food the user bought (the actual item, never its category), written in $languageName.
+        - "category": the food group that product belongs to, written in $languageName.
+        - "quantity": the total number of units as an integer (default to 1 if unspecified).
         Rules:
-        - If the input contains no grocery products, return exactly: []
-        - Output EXACTLY ONE object per distinct product.
-        - Every object MUST have all three fields: product_name, category, quantity.
-        - quantity is the total number of individual units mentioned (default to 1 if unspecified).
-        - Choose ONE category per product.
+        - If the message names no grocery products, return exactly: []
+        - Output EXACTLY ONE object per distinct product the user mentions.
+        - Never invent products that are not in the user's message.
         $categoryInstruction
-
-        Example input: "2 strawberry yogurts and a liter of milk"
-        Example output: [{"product_name":"Strawberry yogurt","category":"Dairy","quantity":2},{"product_name":"Milk","category":"Dairy","quantity":1}]
         """.trimIndent()
     }
   }

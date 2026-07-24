@@ -112,12 +112,20 @@ class LlamatikGroceryParserTest {
   }
 
   @Test
-  fun `buildSystemPrompt instructs the model to ignore dates and includes an example`() {
+  fun `buildSystemPrompt instructs the model to ignore dates and not invent products`() {
     val prompt = LlamatikGroceryParser.buildSystemPrompt(existingCategories = emptyList())
 
     expectThat(prompt)
       .contains("IGNORE any dates")
-      .contains("Example output:")
+      .contains("Never invent products")
+  }
+
+  @Test
+  fun `buildSystemPrompt contains no concrete product example the model could copy`() {
+    val prompt = LlamatikGroceryParser.buildSystemPrompt(existingCategories = emptyList())
+
+    // A concrete few-shot example gets echoed verbatim by small models.
+    expectThat(prompt).not().contains("Example output")
   }
 
   @Test
