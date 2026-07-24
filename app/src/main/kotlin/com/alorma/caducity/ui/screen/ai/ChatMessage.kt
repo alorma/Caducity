@@ -13,6 +13,7 @@ sealed interface ChatMessage {
 
   data class Error(
     val reason: Reason,
+    val debugDetail: String? = null,
   ) : ChatMessage {
     enum class Reason {
       /** The model ran but found no grocery products in the message. */

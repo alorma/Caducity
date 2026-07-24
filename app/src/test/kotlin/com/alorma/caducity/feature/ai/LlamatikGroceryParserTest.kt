@@ -67,6 +67,17 @@ class LlamatikGroceryParserTest {
   }
 
   @Test
+  fun `parseProposals accepts a single bare object without array brackets`() {
+    val raw = """{"product_name":"Milk","category":"Dairy","quantity":"2"}"""
+
+    val result = LlamatikGroceryParser.parseProposals(raw)
+
+    expectThat(result).isNotNull().hasSize(1)
+    expectThat(result?.first()?.productName).isEqualTo("Milk")
+    expectThat(result?.first()?.quantity).isEqualTo(2)
+  }
+
+  @Test
   fun `parseProposals returns empty list for an explicit empty array`() {
     expectThat(LlamatikGroceryParser.parseProposals("[]")).isNotNull().isEmpty()
   }
@@ -101,6 +112,15 @@ class LlamatikGroceryParserTest {
   }
 
   @Test
+  fun `buildSystemPrompt instructs the model to ignore dates and includes an example`() {
+    val prompt = LlamatikGroceryParser.buildSystemPrompt(existingCategories = emptyList())
+
+    expectThat(prompt)
+      .contains("IGNORE any dates")
+      .contains("Example output:")
+  }
+
+  @Test
   fun `buildSystemPrompt steers output to the current language`() {
     val prompt =
       LlamatikGroceryParser.buildSystemPrompt(
@@ -114,14 +134,15 @@ class LlamatikGroceryParserTest {
   // ── buildGemma3Prompt ──────────────────────────────────────────────────
 
   @Test
-  fun `buildGemma3Prompt wraps system and user turns with Gemma tags`() {
+  fun `buildGemma3Prompt folds the system prompt into the user turn`() {
     val prompt = LlamatikGroceryParser.buildGemma3Prompt(system = "SYS", userInput = "2 milks")
 
     expectThat(prompt)
-      .contains("<start_of_turn>system")
-      .contains("SYS")
       .contains("<start_of_turn>user")
+      .contains("SYS")
       .contains("2 milks")
       .contains("<start_of_turn>model")
+    // Gemma has no system role — the instructions live inside the user turn.
+    expectThat(prompt).not().contains("<start_of_turn>system")
   }
 }
