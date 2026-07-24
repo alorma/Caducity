@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -170,7 +171,7 @@ fun AiAssistantScreen(
                     onAction = { viewModel.onProposalAction(it) },
                   )
                 ChatMessage.Thinking -> ThinkingBubble()
-                is ChatMessage.Error -> IncomingErrorBubble(message.reason)
+                is ChatMessage.Error -> IncomingErrorBubble(message.reason, message.debugDetail)
               }
             }
           }
@@ -369,7 +370,10 @@ private fun ThinkingBubble() {
 }
 
 @Composable
-private fun IncomingErrorBubble(reason: ChatMessage.Error.Reason) {
+private fun IncomingErrorBubble(
+  reason: ChatMessage.Error.Reason,
+  debugDetail: String?,
+) {
   val messageRes =
     when (reason) {
       ChatMessage.Error.Reason.NoGroceries -> R.string.ai_error_no_groceries
@@ -380,16 +384,29 @@ private fun IncomingErrorBubble(reason: ChatMessage.Error.Reason) {
     modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.Start,
   ) {
-    Text(
-      text = stringResource(messageRes),
+    Column(
       modifier =
         Modifier
           .widthIn(max = 280.dp)
           .clip(MaterialTheme.shapes.large)
           .background(MaterialTheme.colorScheme.errorContainer)
           .padding(horizontal = 16.dp, vertical = 10.dp),
-      color = MaterialTheme.colorScheme.onErrorContainer,
-      style = MaterialTheme.typography.bodyMedium,
-    )
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      Text(
+        text = stringResource(messageRes),
+        color = MaterialTheme.colorScheme.onErrorContainer,
+        style = MaterialTheme.typography.bodyMedium,
+      )
+      // Debug-only: the raw model output, surfaced by the ViewModel only on debug builds.
+      if (debugDetail != null) {
+        Text(
+          text = stringResource(R.string.ai_error_debug_detail, debugDetail),
+          color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.7f),
+          style = MaterialTheme.typography.labelSmall,
+          fontFamily = FontFamily.Monospace,
+        )
+      }
+    }
   }
 }

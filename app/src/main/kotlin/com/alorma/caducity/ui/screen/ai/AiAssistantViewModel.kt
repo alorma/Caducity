@@ -9,6 +9,7 @@ import com.alorma.caducity.feature.ai.GroceryParseResult
 import com.alorma.caducity.feature.ai.ModelDownloadState
 import com.alorma.caducity.feature.ai.ModelManager
 import com.alorma.caducity.feature.ai.priority
+import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.ui.base.BaseViewModel
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
@@ -30,6 +31,7 @@ class AiAssistantViewModel(
   private val productMatcher: AiProductMatcher,
   private val categoryDataSource: CategoryDataSource,
   private val commitProposalUseCase: CommitProposalUseCase,
+  private val debugModeProvider: DebugModeProvider,
 ) : BaseViewModel<AiAssistantNavigation, AiAssistantNavigationSideEffect, AiAssistantSideEffect>() {
   val modelState: StateFlow<ModelDownloadState> =
     modelManager
@@ -80,7 +82,11 @@ class AiAssistantViewModel(
           }
           GroceryParseResult.NoGroceriesFound -> ChatMessage.Error(ChatMessage.Error.Reason.NoGroceries)
           GroceryParseResult.ModelNotReady -> ChatMessage.Error(ChatMessage.Error.Reason.ModelNotReady)
-          GroceryParseResult.Failed -> ChatMessage.Error(ChatMessage.Error.Reason.Failed)
+          is GroceryParseResult.Failed ->
+            ChatMessage.Error(
+              reason = ChatMessage.Error.Reason.Failed,
+              debugDetail = result.debugDetail?.takeIf { debugModeProvider.isDebugMode() },
+            )
         }
 
       _messages.update { messages ->
