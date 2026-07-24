@@ -141,7 +141,7 @@ class LlamatikGroceryParser(
      * failure), and an empty list when the model reported no groceries (`[]`).
      * Accepts either a JSON array or a single bare object.
      */
-    fun parseProducts(raw: String): List<ProductDraft>? =
+    internal fun parseProducts(raw: String): List<ProductDraft>? =
       try {
         val elements =
           extractBracketed(raw, '[', ']')?.let { json.parseToJsonElement(it).jsonArray }
