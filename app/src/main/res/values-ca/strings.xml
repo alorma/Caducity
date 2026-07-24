@@ -70,6 +70,9 @@
   <string name="ai_proposal_add_to_category">Afegir a %1$s</string>
   <string name="ai_proposal_create">Crear a %1$s</string>
   <string name="ai_parse_error">No he entès això. Intenta descriure el producte i la data de caducitat amb més detall.</string>
+  <string name="ai_error_no_groceries">No he trobat cap aliment en això. Prova d\'indicar els productes i les quantitats que has comprat.</string>
+  <string name="ai_error_model_not_ready">El model d\'IA encara no està a punt. Espera que acabi la descàrrega i torna-ho a intentar.</string>
+  <string name="ai_commit_error">No s\'ha pogut afegir aquest producte. Torna-ho a intentar.</string>
 
   <string name="dashboard_fab_manual">Manual</string>
   <string name="dashboard_fab_ai">IA</string>
