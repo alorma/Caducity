@@ -27,8 +27,6 @@ class WorkManagerModelManager(
   override fun modelFilePath(): String = File(modelsDir, "${selectedModel.modelId}.gguf").absolutePath
 
   override fun switchModel(model: AiModelOption) {
-    // Cancel any in-progress download for the old model
-    WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
     aiModelPreferences.setSelectedModel(model)
   }
 
@@ -45,7 +43,11 @@ class WorkManagerModelManager(
         ).addTag(workTag(model))
         .build()
 
-    WorkManager.getInstance(context).enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.REPLACE, request)
+    WorkManager.getInstance(context).enqueueUniqueWork(
+      workName(model),
+      ExistingWorkPolicy.KEEP,
+      request,
+    )
   }
 
   override fun downloadState(): Flow<ModelDownloadState> {
@@ -70,7 +72,5 @@ class WorkManagerModelManager(
 
   private fun workTag(model: AiModelOption): String = "model_download_${model.modelId}"
 
-  companion object {
-    private const val WORK_NAME = "model_download"
-  }
+  private fun workName(model: AiModelOption): String = "model_download_${model.modelId}"
 }
