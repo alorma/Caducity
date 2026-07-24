@@ -1,7 +1,10 @@
 package com.alorma.caducity.feature.ai
 
 import com.llamatik.library.platform.LlamaBridge
-import kotlinx.coroutines.Dispatchers
+import java.util.concurrent.Executors
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
@@ -11,64 +14,114 @@ import timber.log.Timber
 
 class LlamatikGroceryParser(
   private val modelManager: ModelManager,
+  private val languageProvider: LanguageProvider,
 ) : AiGroceryParser {
-  private val json = Json { ignoreUnknownKeys = true }
+  // Native llama.cpp state is a process-wide singleton, so serialize every
+  // access to it and keep inference off the shared Default/IO pools by pinning
+  // it to a single dedicated thread.
+  private val inferenceDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+  private val mutex = Mutex()
+
+  // Path of the model currently loaded into LlamaBridge, or null if none.
+  private var loadedModelPath: String? = null
 
   override suspend fun parse(
     input: String,
     existingCategories: List<String>,
-  ): List<GroceryProposal> =
-    withContext(Dispatchers.Default) {
-      if (!modelManager.isModelReady()) return@withContext emptyList()
+  ): GroceryParseResult {
+    if (!modelManager.isModelReady()) return GroceryParseResult.ModelNotReady
 
-      // Shutdown + reinitialize before every generation to free native resources
-      // and clear the model's KV cache / context state from any previous run.
-      LlamaBridge.shutdown()
-      LlamaBridge.initGenerateModel(modelManager.modelFilePath())
+    return mutex.withLock {
+      withContext(inferenceDispatcher) {
+        try {
+          ensureModelLoaded(modelManager.modelFilePath())
 
-      // Low temperature = deterministic, factual output. No creativity needed here.
-      LlamaBridge.updateGenerateParams(
-        temperature = 0.1f,
-        maxTokens = 512,
-        topP = 0.9f,
-        topK = 40,
-        repeatPenalty = 1.3f,
-        contextLength = 2048,
-        numThreads = Runtime.getRuntime().availableProcessors().coerceAtMost(4),
-        useMmap = true,
-        flashAttention = true,
-        batchSize = 512,
-      )
+          val systemPrompt =
+            buildSystemPrompt(
+              existingCategories = existingCategories,
+              languageName = languageProvider.currentLanguageName(),
+            )
+          val prompt = buildGemma3Prompt(system = systemPrompt, userInput = input)
+          Timber.tag(TAG).d("PROMPT:\n%s", prompt)
+          val raw = LlamaBridge.generate(prompt)
+          Timber.tag(TAG).d("RAW RESPONSE:\n%s", raw)
 
-      val systemPrompt = buildSystemPrompt(existingCategories)
-      val prompt = buildGemma3Prompt(system = systemPrompt, userInput = input)
-      Timber.tag("LlamatikParser").d("PROMPT:\n%s", prompt)
-      val raw = LlamaBridge.generate(prompt)
-      Timber.tag("LlamatikParser").d("RAW RESPONSE:\n%s", raw)
-      parseResponse(raw)
+          when (val parsed = parseProposals(raw)) {
+            null -> GroceryParseResult.Failed
+            else -> if (parsed.isEmpty()) GroceryParseResult.NoGroceriesFound else GroceryParseResult.Success(parsed)
+          }
+        } catch (e: Exception) {
+          Timber.tag(TAG).e(e, "Grocery parsing failed")
+          GroceryParseResult.Failed
+        }
+      }
+    }
+  }
+
+  /**
+   * Loads the model once and reuses it. Between generations the KV cache is
+   * cleared with [LlamaBridge.sessionReset] instead of reloading the whole
+   * model, which avoids re-reading hundreds of MB from disk on every message.
+   */
+  private fun ensureModelLoaded(modelPath: String) {
+    if (loadedModelPath == modelPath) {
+      LlamaBridge.sessionReset()
+      return
     }
 
-  private fun parseResponse(raw: String): List<GroceryProposal> =
-    try {
-      val start = raw.indexOf('[')
-      val end = raw.lastIndexOf(']')
-      if (start == -1 || end == -1 || end <= start) return emptyList()
-      val arrayJson = raw.substring(start, end + 1)
-      val array = json.parseToJsonElement(arrayJson).jsonArray
-      array
-        .map { element ->
-          val obj = element.jsonObject
-          GroceryProposal(
-            productName = obj["product_name"]?.jsonPrimitive?.content.orEmpty(),
-            quantity = obj["quantity"]?.jsonPrimitive?.content?.toIntOrNull() ?: 1,
-            category = obj["category"]?.jsonPrimitive?.content.orEmpty(),
-          )
-        }.filter { it.productName.isNotBlank() }
-    } catch (_: Exception) {
-      emptyList()
-    }
+    LlamaBridge.shutdown()
+    // Low temperature = deterministic, factual output. No creativity needed here.
+    LlamaBridge.updateGenerateParams(
+      temperature = 0.1f,
+      maxTokens = 512,
+      topP = 0.9f,
+      topK = 40,
+      repeatPenalty = 1.3f,
+      contextLength = 2048,
+      numThreads = Runtime.getRuntime().availableProcessors().coerceAtMost(4),
+      useMmap = true,
+      flashAttention = true,
+      batchSize = 512,
+    )
+    LlamaBridge.initGenerateModel(modelPath)
+    loadedModelPath = modelPath
+  }
 
   companion object {
+    private const val TAG = "LlamatikParser"
+    private val json = Json { ignoreUnknownKeys = true }
+
+    /**
+     * Extracts grocery proposals from the model's raw output.
+     *
+     * Returns `null` when the response could not be parsed as a JSON array (a
+     * genuine failure), and an empty list when the model correctly reported no
+     * groceries (`[]`).
+     */
+    fun parseProposals(raw: String): List<GroceryProposal>? =
+      try {
+        val start = raw.indexOf('[')
+        val end = raw.lastIndexOf(']')
+        if (start == -1 || end == -1 || end <= start) {
+          null
+        } else {
+          val arrayJson = raw.substring(start, end + 1)
+          json
+            .parseToJsonElement(arrayJson)
+            .jsonArray
+            .map { element ->
+              val obj = element.jsonObject
+              GroceryProposal(
+                productName = obj["product_name"]?.jsonPrimitive?.content.orEmpty(),
+                quantity = obj["quantity"]?.jsonPrimitive?.content?.toIntOrNull() ?: 1,
+                category = obj["category"]?.jsonPrimitive?.content.orEmpty(),
+              )
+            }.filter { it.productName.isNotBlank() }
+        }
+      } catch (_: Exception) {
+        null
+      }
+
     fun buildGemma3Prompt(
       system: String,
       userInput: String,
@@ -83,7 +136,10 @@ class LlamatikGroceryParser(
         append("<start_of_turn>model\n")
       }
 
-    fun buildSystemPrompt(existingCategories: List<String>): String {
+    fun buildSystemPrompt(
+      existingCategories: List<String>,
+      languageName: String = "English",
+    ): String {
       val categoryInstruction =
         if (existingCategories.isEmpty()) {
           "- For category, infer an appropriate grocery category (e.g. Dairy, Meat, Vegetables, Fruits, Bakery, Beverages, Snacks, Frozen, Condiments, Canned)."
@@ -94,6 +150,7 @@ class LlamatikGroceryParser(
       return """
         You are a grocery expiration tracker assistant.
         The user will describe groceries they bought, including quantity.
+        The user's language is $languageName. Write product_name and category values in $languageName.
         Extract each distinct product and return ONLY a JSON array. No markdown, no prose, no code fences.
         Rules:
         - If the input contains no grocery products, return exactly: []

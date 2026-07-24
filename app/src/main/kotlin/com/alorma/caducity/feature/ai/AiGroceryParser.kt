@@ -4,5 +4,5 @@ interface AiGroceryParser {
   suspend fun parse(
     input: String,
     existingCategories: List<String>,
-  ): List<GroceryProposal>
+  ): GroceryParseResult
 }

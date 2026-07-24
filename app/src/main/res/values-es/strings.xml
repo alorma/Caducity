@@ -69,6 +69,9 @@
   <string name="ai_proposal_add_to_category">Añadir a %1$s</string>
   <string name="ai_proposal_create">Crear en %1$s</string>
   <string name="ai_parse_error">No he entendido eso. Intenta describir el producto y la fecha de caducidad con más detalle.</string>
+  <string name="ai_error_no_groceries">No he encontrado ningún alimento en eso. Prueba a indicar los productos y las cantidades que compraste.</string>
+  <string name="ai_error_model_not_ready">El modelo de IA aún no está listo. Espera a que termine la descarga e inténtalo de nuevo.</string>
+  <string name="ai_commit_error">No se pudo añadir ese producto. Inténtalo de nuevo.</string>
 
   <string name="dashboard_fab_manual">Manual</string>
   <string name="dashboard_fab_ai">IA</string>

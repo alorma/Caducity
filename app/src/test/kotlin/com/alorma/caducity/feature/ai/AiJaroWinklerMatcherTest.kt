@@ -227,6 +227,55 @@ class AiJaroWinklerMatcherTest {
     }
 
   @Test
+  fun `productSimilarity matches subset names like whole milk vs milk`() {
+    expectThat(AiJaroWinklerMatcher.productSimilarity("whole milk", "milk")).isGreaterThanOrEqualTo(0.80)
+    expectThat(AiJaroWinklerMatcher.productSimilarity("milk", "whole milk")).isGreaterThanOrEqualTo(0.80)
+  }
+
+  @Test
+  fun `productSimilarity rejects names with a different distinctive token`() {
+    // Shared "juice" suffix must not make these match.
+    expectThat(AiJaroWinklerMatcher.productSimilarity("apple juice", "orange juice")).isEqualTo(0.0)
+  }
+
+  @Test
+  fun `productSimilarity rejects a bare word against a compound with a different head`() {
+    // "milk" (the drink) must not match "milk chocolate" (a snack).
+    expectThat(AiJaroWinklerMatcher.productSimilarity("milk", "milk chocolate")).isEqualTo(0.0)
+  }
+
+  @Test
+  fun `productSimilarity ignores diacritics`() {
+    expectThat(AiJaroWinklerMatcher.productSimilarity("café", "cafe")).isEqualTo(1.0)
+  }
+
+  @Test
+  fun `normalize lowercases trims and strips accents`() {
+    expectThat(AiJaroWinklerMatcher.normalize("  Café  ")).isEqualTo("cafe")
+  }
+
+  @Test
+  fun `whole milk proposal matches existing milk product`() =
+    runTest {
+      val matcher =
+        matcher(
+          categoryWithItems(dairyCategory, milkProduct),
+        )
+      val proposal =
+        GroceryProposal(
+          productName = "Whole Milk",
+          quantity = 1,
+          category = "Dairy",
+        )
+
+      val result = matcher.match(proposal)
+
+      expectThat(result).isA<MatchResult.Match>().and {
+        get { product }.isEqualTo(milkProduct)
+      }
+    }
+
+  @Test
   fun `category name contributes to score — wrong category lowers match`() =
     runTest {
       // Same product name exists in both categories; proposal category points to Dairy
