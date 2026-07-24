@@ -26,10 +26,3 @@ enum class AiModelOption(
     fun fromModelId(id: String): AiModelOption = entries.firstOrNull { it.modelId == id } ?: DEFAULT
   }
 }
-
-object ModelConfig {
-  const val MODEL_ID = "gemma-3-1b-it-Q4_K_M"
-  const val MODEL_URL =
-    "https://huggingface.co/ggml-org/gemma-3-1b-it-GGUF/resolve/main/gemma-3-1b-it-Q4_K_M.gguf?download=true"
-  const val MODEL_SIZE_MB = 750
-}

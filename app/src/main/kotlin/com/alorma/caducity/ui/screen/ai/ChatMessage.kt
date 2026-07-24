@@ -11,5 +11,18 @@ sealed interface ChatMessage {
 
   data object Thinking : ChatMessage
 
-  data object Error : ChatMessage
+  data class Error(
+    val reason: Reason,
+  ) : ChatMessage {
+    enum class Reason {
+      /** The model ran but found no grocery products in the message. */
+      NoGroceries,
+
+      /** The on-device model has not finished downloading. */
+      ModelNotReady,
+
+      /** Generation or response parsing failed. */
+      Failed,
+    }
+  }
 }

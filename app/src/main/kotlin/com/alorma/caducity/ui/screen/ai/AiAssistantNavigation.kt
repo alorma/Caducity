@@ -12,4 +12,6 @@ sealed interface AiAssistantSideEffect {
   data class ShowDatePicker(
     val proposalUiModel: ProposalUiModel,
   ) : AiAssistantSideEffect
+
+  data object ShowCommitError : AiAssistantSideEffect
 }

@@ -48,6 +48,7 @@ import com.alorma.caducity.feature.ai.ModelDownloadState
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.loading.WavyLoadingIndicator
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -66,6 +67,7 @@ fun AiAssistantScreen(
   val messages by viewModel.messages.collectAsStateWithLifecycle()
   val listState = rememberLazyListState()
   val dialogState = rememberAppDialogState()
+  val snackbarState = rememberAppSnackbarState()
   val datePickerState = rememberDatePickerState()
 
   LaunchedEffect(viewModel) {
@@ -97,6 +99,13 @@ fun AiAssistantScreen(
             }
           }
         }
+
+        AiAssistantSideEffect.ShowCommitError -> {
+          snackbarState.showSnackbar(
+            message = R.string.ai_commit_error,
+            type = AppFeedbackType.Error,
+          )
+        }
       }
     }
   }
@@ -111,6 +120,7 @@ fun AiAssistantScreen(
   AppScaffold(
     modifier = modifier,
     dialogState = dialogState,
+    snackbarState = snackbarState,
     topBar = {
       StyledTopAppBar(
         title = { Text(text = stringResource(R.string.ai_assistant_title)) },
@@ -157,12 +167,10 @@ fun AiAssistantScreen(
                 is ChatMessage.Proposals ->
                   IncomingProposalsBubble(
                     proposals = message.proposals,
-                    onAdd = { viewModel.onAddToProduct(it) },
-                    onAddToCategory = { viewModel.onAddToCategory(it) },
-                    onCreate = { viewModel.onCreateNew(it) },
+                    onAction = { viewModel.onProposalAction(it) },
                   )
                 ChatMessage.Thinking -> ThinkingBubble()
-                ChatMessage.Error -> IncomingErrorBubble()
+                is ChatMessage.Error -> IncomingErrorBubble(message.reason)
               }
             }
           }
@@ -269,9 +277,7 @@ private fun OutgoingBubble(text: String) {
 @Composable
 private fun IncomingProposalsBubble(
   proposals: List<ProposalUiModel>,
-  onAdd: (ProposalUiModel) -> Unit,
-  onAddToCategory: (ProposalUiModel) -> Unit,
-  onCreate: (ProposalUiModel) -> Unit,
+  onAction: (ProposalUiModel) -> Unit,
 ) {
   Row(
     modifier = Modifier.fillMaxWidth(),
@@ -304,7 +310,7 @@ private fun IncomingProposalsBubble(
                 color = MaterialTheme.colorScheme.primary,
               )
               FilledTonalButton(
-                onClick = { onAdd(proposalUiModel) },
+                onClick = { onAction(proposalUiModel) },
                 enabled = !proposalUiModel.done,
               ) {
                 Text(text = stringResource(R.string.ai_proposal_add, match.product.name))
@@ -317,7 +323,7 @@ private fun IncomingProposalsBubble(
                 color = MaterialTheme.colorScheme.secondary,
               )
               FilledTonalButton(
-                onClick = { onAddToCategory(proposalUiModel) },
+                onClick = { onAction(proposalUiModel) },
                 enabled = !proposalUiModel.done,
               ) {
                 Text(text = stringResource(R.string.ai_proposal_add_to_category, match.category.name))
@@ -330,7 +336,7 @@ private fun IncomingProposalsBubble(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
               )
               FilledTonalButton(
-                onClick = { onCreate(proposalUiModel) },
+                onClick = { onAction(proposalUiModel) },
                 enabled = !proposalUiModel.done,
               ) {
                 Text(text = stringResource(R.string.ai_proposal_create, proposalUiModel.proposal.category))
@@ -363,13 +369,19 @@ private fun ThinkingBubble() {
 }
 
 @Composable
-private fun IncomingErrorBubble() {
+private fun IncomingErrorBubble(reason: ChatMessage.Error.Reason) {
+  val messageRes =
+    when (reason) {
+      ChatMessage.Error.Reason.NoGroceries -> R.string.ai_error_no_groceries
+      ChatMessage.Error.Reason.ModelNotReady -> R.string.ai_error_model_not_ready
+      ChatMessage.Error.Reason.Failed -> R.string.ai_parse_error
+    }
   Row(
     modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.Start,
   ) {
     Text(
-      text = stringResource(R.string.ai_parse_error),
+      text = stringResource(messageRes),
       modifier =
         Modifier
           .widthIn(max = 280.dp)
