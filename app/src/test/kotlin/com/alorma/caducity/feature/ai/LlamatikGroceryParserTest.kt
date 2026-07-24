@@ -134,14 +134,15 @@ class LlamatikGroceryParserTest {
   // ── buildGemma3Prompt ──────────────────────────────────────────────────
 
   @Test
-  fun `buildGemma3Prompt wraps system and user turns with Gemma tags`() {
+  fun `buildGemma3Prompt folds the system prompt into the user turn`() {
     val prompt = LlamatikGroceryParser.buildGemma3Prompt(system = "SYS", userInput = "2 milks")
 
     expectThat(prompt)
-      .contains("<start_of_turn>system")
-      .contains("SYS")
       .contains("<start_of_turn>user")
+      .contains("SYS")
       .contains("2 milks")
       .contains("<start_of_turn>model")
+    // Gemma has no system role — the instructions live inside the user turn.
+    expectThat(prompt).not().contains("<start_of_turn>system")
   }
 }

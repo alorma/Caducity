@@ -134,11 +134,14 @@ class LlamatikGroceryParser(
       system: String,
       userInput: String,
     ): String =
+      // Gemma has no dedicated system role — only user/model turns. The
+      // instructions must be folded into the first user turn; emitting a
+      // <start_of_turn>system block the model was never trained on makes it
+      // ignore the instructions and reply conversationally instead.
       buildString {
-        append("<start_of_turn>system\n")
-        append(system.trim())
-        append("\n<end_of_turn>\n")
         append("<start_of_turn>user\n")
+        append(system.trim())
+        append("\n\n")
         append(userInput.trim())
         append("\n<end_of_turn>\n")
         append("<start_of_turn>model\n")
