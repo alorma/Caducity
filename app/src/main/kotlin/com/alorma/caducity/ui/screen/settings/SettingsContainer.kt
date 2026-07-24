@@ -17,6 +17,7 @@ import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.feature.notification.NotificationDebugHelper
 import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import com.alorma.caducity.ui.screen.settings.about.AboutScreen
+import com.alorma.caducity.ui.screen.settings.ai.AiModelSettingsScreen
 import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScreen
 import com.alorma.caducity.ui.screen.settings.backup.BackupScreen
 import com.alorma.caducity.ui.screen.settings.debug.DebugRemoteConfigsScreen
@@ -57,6 +58,7 @@ fun SettingsContainer(
             onNavigateToNotifications = { settingsBackStack.add(SettingsRoute.Notifications) },
             onNavigateToPrivacy = { settingsBackStack.add(SettingsRoute.Privacy) },
             onNavigateToBackup = { settingsBackStack.add(SettingsRoute.Backup) },
+            onNavigateToAiModel = { settingsBackStack.add(SettingsRoute.AiModel) },
             onNavigateToDebug = { settingsBackStack.add(SettingsRoute.Debug) },
             onNavigateToAbout = { settingsBackStack.add(SettingsRoute.About) },
           )
@@ -87,6 +89,9 @@ fun SettingsContainer(
         }
         entry<SettingsRoute.Backup> {
           BackupScreen()
+        }
+        entry<SettingsRoute.AiModel> {
+          AiModelSettingsScreen()
         }
         if (debugModeProvider.isDebugMode()) {
           entry<SettingsRoute.Debug> {

@@ -14,32 +14,45 @@ import kotlinx.coroutines.flow.map
 
 class WorkManagerModelManager(
   private val context: Context,
+  private val aiModelPreferences: AiModelPreferences,
 ) : ModelManager {
   private val modelsDir get() = File(context.filesDir, "models")
 
-  override fun isModelReady(): Boolean = File(modelsDir, "${ModelConfig.MODEL_ID}.gguf").exists()
+  private val selectedModel: AiModelOption get() = aiModelPreferences.getSelectedModel()
 
-  override fun modelFilePath(): String = File(modelsDir, "${ModelConfig.MODEL_ID}.gguf").absolutePath
+  override fun currentModelOption(): AiModelOption = selectedModel
+
+  override fun isModelReady(): Boolean = File(modelsDir, "${selectedModel.modelId}.gguf").exists()
+
+  override fun modelFilePath(): String = File(modelsDir, "${selectedModel.modelId}.gguf").absolutePath
+
+  override fun switchModel(model: AiModelOption) {
+    // Cancel any in-progress download for the old model
+    WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
+    aiModelPreferences.setSelectedModel(model)
+  }
 
   override fun startDownload() {
+    val model = selectedModel
     val request =
       OneTimeWorkRequestBuilder<ModelDownloadWorker>()
         .setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
         .setInputData(
           workDataOf(
-            ModelDownloadWorker.KEY_MODEL_ID to ModelConfig.MODEL_ID,
-            ModelDownloadWorker.KEY_URL to ModelConfig.MODEL_URL,
+            ModelDownloadWorker.KEY_MODEL_ID to model.modelId,
+            ModelDownloadWorker.KEY_URL to model.url,
           ),
-        ).addTag(WORK_TAG)
+        ).addTag(workTag(model))
         .build()
 
-    WorkManager.getInstance(context).enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.KEEP, request)
+    WorkManager.getInstance(context).enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.REPLACE, request)
   }
 
-  override fun downloadState(): Flow<ModelDownloadState> =
-    WorkManager
+  override fun downloadState(): Flow<ModelDownloadState> {
+    val model = selectedModel
+    return WorkManager
       .getInstance(context)
-      .getWorkInfosByTagFlow(WORK_TAG)
+      .getWorkInfosByTagFlow(workTag(model))
       .map { infos ->
         val info = infos.firstOrNull()
         when {
@@ -53,9 +66,11 @@ class WorkManagerModelManager(
           else -> if (isModelReady()) ModelDownloadState.Ready else ModelDownloadState.Idle
         }
       }
+  }
+
+  private fun workTag(model: AiModelOption): String = "model_download_${model.modelId}"
 
   companion object {
     private const val WORK_NAME = "model_download"
-    private const val WORK_TAG = "model_download"
   }
 }
