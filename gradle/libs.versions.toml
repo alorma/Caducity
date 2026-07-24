@@ -49,7 +49,7 @@ ktlint = "14.2.0"
 turbine = "1.2.1"
 mockito-kotlin = "6.3.0"
 mockito-core = "5.23.0"
-kotlinx-coroutines-test = "1.10.2"
+kotlinx-coroutines-test = "1.11.0"
 robolectric = "4.15"
 
 # Firebase
