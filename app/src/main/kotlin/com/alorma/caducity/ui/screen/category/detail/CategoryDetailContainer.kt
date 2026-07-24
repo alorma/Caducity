@@ -48,7 +48,7 @@ fun CategoryDetailContainer(
   NavDisplay(
     modifier = modifier,
     backStack = productDetailBackStack,
-    sceneStrategy = bottomSheetStrategy,
+    sceneStrategies = listOf(bottomSheetStrategy),
     entryDecorators =
       listOf(
         rememberSaveableStateHolderNavEntryDecorator(),
