@@ -18,6 +18,13 @@ sealed interface GroceryParseResult {
   /** The on-device model has not finished downloading yet. */
   data object ModelNotReady : GroceryParseResult
 
-  /** Generation or response parsing failed unexpectedly. */
-  data object Failed : GroceryParseResult
+  /**
+   * Generation or response parsing failed unexpectedly.
+   *
+   * [debugDetail] carries the raw model output (or error message) for
+   * diagnostics; it is only surfaced in the UI on debug builds.
+   */
+  data class Failed(
+    val debugDetail: String? = null,
+  ) : GroceryParseResult
 }

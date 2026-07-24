@@ -67,6 +67,17 @@ class LlamatikGroceryParserTest {
   }
 
   @Test
+  fun `parseProposals accepts a single bare object without array brackets`() {
+    val raw = """{"product_name":"Milk","category":"Dairy","quantity":"2"}"""
+
+    val result = LlamatikGroceryParser.parseProposals(raw)
+
+    expectThat(result).isNotNull().hasSize(1)
+    expectThat(result?.first()?.productName).isEqualTo("Milk")
+    expectThat(result?.first()?.quantity).isEqualTo(2)
+  }
+
+  @Test
   fun `parseProposals returns empty list for an explicit empty array`() {
     expectThat(LlamatikGroceryParser.parseProposals("[]")).isNotNull().isEmpty()
   }
@@ -98,6 +109,15 @@ class LlamatikGroceryParserTest {
     val prompt = LlamatikGroceryParser.buildSystemPrompt(existingCategories = emptyList())
 
     expectThat(prompt).contains("infer an appropriate grocery category")
+  }
+
+  @Test
+  fun `buildSystemPrompt instructs the model to ignore dates and includes an example`() {
+    val prompt = LlamatikGroceryParser.buildSystemPrompt(existingCategories = emptyList())
+
+    expectThat(prompt)
+      .contains("IGNORE any dates")
+      .contains("Example output:")
   }
 
   @Test
