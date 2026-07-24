@@ -1,6 +1,7 @@
 package com.alorma.caducity.feature.ai
 
 import com.llamatik.library.platform.LlamaBridge
+import java.text.Normalizer
 import java.util.concurrent.Executors
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
@@ -12,6 +13,22 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import timber.log.Timber
 
+/** Intermediate result of the product-extraction phase, before a category is inferred. */
+internal data class ProductDraft(
+  val name: String,
+  val quantity: Int,
+)
+
+/**
+ * Parses grocery input with the on-device model in two focused passes:
+ *
+ * 1. Extract the products (name + quantity) from the user's message.
+ * 2. For each product, infer a single category — reusing an existing category
+ *    when one fits.
+ *
+ * Splitting the work keeps each prompt simple, which a small model handles far
+ * more reliably than asking it to extract and categorise in one shot.
+ */
 class LlamatikGroceryParser(
   private val modelManager: ModelManager,
   private val languageProvider: LanguageProvider,
@@ -35,20 +52,26 @@ class LlamatikGroceryParser(
       withContext(inferenceDispatcher) {
         try {
           ensureModelLoaded(modelManager.modelFilePath())
+          val language = languageProvider.currentLanguageName()
 
-          val systemPrompt =
-            buildSystemPrompt(
-              existingCategories = existingCategories,
-              languageName = languageProvider.currentLanguageName(),
-            )
-          val prompt = buildGemma3Prompt(system = systemPrompt, userInput = input)
-          Timber.tag(TAG).d("PROMPT:\n%s", prompt)
-          val raw = LlamaBridge.generate(prompt)
-          Timber.tag(TAG).d("RAW RESPONSE:\n%s", raw)
+          val rawProducts = generateFresh(buildGemma3Prompt(buildProductSystemPrompt(language), input))
+          Timber.tag(TAG).d("PRODUCTS RAW:\n%s", rawProducts)
 
-          when (val parsed = parseProposals(raw)) {
-            null -> GroceryParseResult.Failed(debugDetail = raw)
-            else -> if (parsed.isEmpty()) GroceryParseResult.NoGroceriesFound else GroceryParseResult.Success(parsed)
+          val drafts = parseProducts(rawProducts)
+          when {
+            drafts == null -> GroceryParseResult.Failed(debugDetail = rawProducts)
+            drafts.isEmpty() -> GroceryParseResult.NoGroceriesFound
+            else -> {
+              val proposals =
+                drafts.map { draft ->
+                  GroceryProposal(
+                    productName = draft.name,
+                    quantity = draft.quantity,
+                    category = inferCategory(draft.name, existingCategories, language),
+                  )
+                }
+              GroceryParseResult.Success(proposals)
+            }
           }
         } catch (e: Exception) {
           Timber.tag(TAG).e(e, "Grocery parsing failed")
@@ -58,26 +81,44 @@ class LlamatikGroceryParser(
     }
   }
 
+  /** Second pass: ask the model for a single category, falling back on any failure. */
+  private fun inferCategory(
+    productName: String,
+    existingCategories: List<String>,
+    language: String,
+  ): String =
+    try {
+      val raw = generateFresh(buildGemma3Prompt(buildCategorySystemPrompt(existingCategories, language), productName))
+      Timber.tag(TAG).d("CATEGORY RAW for '%s':\n%s", productName, raw)
+      resolveCategory(raw, existingCategories, language)
+    } catch (e: Exception) {
+      Timber.tag(TAG).e(e, "Category inference failed for '%s'", productName)
+      defaultCategory(language)
+    }
+
+  /** Clears the KV cache so every generation is independent, then generates. */
+  private fun generateFresh(prompt: String): String {
+    LlamaBridge.sessionReset()
+    return LlamaBridge.generate(prompt)
+  }
+
   /**
-   * Loads the model once and reuses it. Between generations the KV cache is
-   * cleared with [LlamaBridge.sessionReset] instead of reloading the whole
-   * model, which avoids re-reading hundreds of MB from disk on every message.
+   * Loads the model once and reuses it across generations. The KV cache is
+   * cleared per generation in [generateFresh] rather than reloading the whole
+   * model, avoiding re-reading hundreds of MB from disk on every message.
    */
   private fun ensureModelLoaded(modelPath: String) {
-    if (loadedModelPath == modelPath) {
-      LlamaBridge.sessionReset()
-      return
-    }
+    if (loadedModelPath == modelPath) return
 
     LlamaBridge.shutdown()
     // Low temperature = deterministic, factual output. No creativity needed here.
+    // JSON repeats structural tokens heavily, so keep the repeat penalty low — a
+    // high value pushes small models to emit malformed JSON.
     LlamaBridge.updateGenerateParams(
       temperature = 0.1f,
       maxTokens = 512,
       topP = 0.9f,
       topK = 40,
-      // JSON repeats structural tokens ({ } " , field names) heavily, so keep the
-      // repeat penalty low — a high value pushes small models to emit malformed JSON.
       repeatPenalty = 1.1f,
       contextLength = 2048,
       numThreads = Runtime.getRuntime().availableProcessors().coerceAtMost(4),
@@ -94,14 +135,13 @@ class LlamatikGroceryParser(
     private val json = Json { ignoreUnknownKeys = true }
 
     /**
-     * Extracts grocery proposals from the model's raw output.
+     * Extracts product drafts (name + quantity) from the model's raw output.
      *
      * Returns `null` when the response contained no parseable JSON (a genuine
-     * failure), and an empty list when the model correctly reported no
-     * groceries (`[]`). Accepts either a JSON array or a single bare object, so
-     * a model that forgets the array brackets still yields a proposal.
+     * failure), and an empty list when the model reported no groceries (`[]`).
+     * Accepts either a JSON array or a single bare object.
      */
-    fun parseProposals(raw: String): List<GroceryProposal>? =
+    fun parseProducts(raw: String): List<ProductDraft>? =
       try {
         val elements =
           extractBracketed(raw, '[', ']')?.let { json.parseToJsonElement(it).jsonArray }
@@ -109,15 +149,57 @@ class LlamatikGroceryParser(
         elements
           ?.map { element ->
             val obj = element.jsonObject
-            GroceryProposal(
-              productName = obj["product_name"]?.jsonPrimitive?.content.orEmpty(),
+            ProductDraft(
+              name = obj["product_name"]?.jsonPrimitive?.content.orEmpty(),
               quantity = obj["quantity"]?.jsonPrimitive?.content?.toIntOrNull() ?: 1,
-              category = obj["category"]?.jsonPrimitive?.content.orEmpty(),
             )
-          }?.filter { it.productName.isNotBlank() }
+          }?.filter { it.name.isNotBlank() }
       } catch (_: Exception) {
         null
       }
+
+    /**
+     * Cleans the plain-text category output: takes the first non-blank line,
+     * drops any "Category:"-style label and surrounding markdown/quotes.
+     * Returns `null` if nothing usable remains.
+     */
+    fun parseCategory(raw: String): String? {
+      val firstLine =
+        raw
+          .lineSequence()
+          .map { it.trim() }
+          .firstOrNull { it.isNotBlank() } ?: return null
+      val cleaned =
+        firstLine
+          .substringAfterLast(':', firstLine)
+          .trim()
+          .trim('"', '\'', '`', '*', '.', '-', ' ')
+      return cleaned.ifBlank { null }
+    }
+
+    /** Prefers an existing category matching the model's answer, else the cleaned answer, else a default. */
+    internal fun resolveCategory(
+      raw: String,
+      existingCategories: List<String>,
+      languageName: String,
+    ): String {
+      val parsed = parseCategory(raw) ?: return defaultCategory(languageName)
+      val normalized = normalizeCategory(parsed)
+      val existing = existingCategories.firstOrNull { normalizeCategory(it) == normalized }
+      return existing ?: parsed
+    }
+
+    internal fun defaultCategory(languageName: String): String =
+      when (languageName.lowercase()) {
+        "spanish" -> "Otros"
+        "catalan" -> "Altres"
+        else -> "Other"
+      }
+
+    private fun normalizeCategory(value: String): String =
+      Normalizer
+        .normalize(value.lowercase().trim(), Normalizer.Form.NFD)
+        .replace(Regex("\\p{Mn}+"), "")
 
     /** Returns the substring from the first [open] to the last [close], or null if absent. */
     private fun extractBracketed(
@@ -147,31 +229,38 @@ class LlamatikGroceryParser(
         append("<start_of_turn>model\n")
       }
 
-    fun buildSystemPrompt(
+    /** Phase 1 prompt: extract products and quantities only. */
+    fun buildProductSystemPrompt(languageName: String = "English"): String =
+      """
+      You are a grocery list parser.
+      Read ONLY the user's message and list the grocery products it names.
+      The message may mention expiration or purchase dates — IGNORE any dates.
+      Return ONLY a JSON array, nothing else. No markdown, no prose, no code fences.
+      Each array item is an object with exactly these keys:
+      - "product_name": the specific food the user bought, written in $languageName.
+      - "quantity": the total number of units as an integer (default to 1 if unspecified).
+      Rules:
+      - If the message names no grocery products, return exactly: []
+      - Output EXACTLY ONE object per distinct product the user mentions.
+      - Never invent products that are not in the user's message.
+      """.trimIndent()
+
+    /** Phase 2 prompt: infer one category for a single product. */
+    fun buildCategorySystemPrompt(
       existingCategories: List<String>,
       languageName: String = "English",
     ): String {
-      val categoryInstruction =
+      val guidance =
         if (existingCategories.isEmpty()) {
-          "- For category, infer an appropriate grocery category (e.g. Dairy, Meat, Vegetables, Fruits, Bakery, Beverages, Snacks, Frozen, Condiments, Canned)."
+          "Answer with a short, common grocery category (its food group)."
         } else {
           val list = existingCategories.joinToString(", ") { "\"$it\"" }
-          "- For category, you MUST pick the most appropriate one from this list: $list. Only infer a new category name if none of the existing ones fits."
+          "Choose the best match from this list if one fits: $list. Only if none fits, answer with a short new category name."
         }
       return """
-        You are a grocery expiration tracker assistant.
-        Read ONLY the user's message and extract the grocery products it actually names.
-        The message may mention expiration or purchase dates — IGNORE any dates, extract only products.
-        Return ONLY a JSON array, nothing else. No markdown, no prose, no code fences.
-        Each array item is an object with exactly these keys:
-        - "product_name": the specific food the user bought (the actual item, never its category), written in $languageName.
-        - "category": the food group that product belongs to, written in $languageName.
-        - "quantity": the total number of units as an integer (default to 1 if unspecified).
-        Rules:
-        - If the message names no grocery products, return exactly: []
-        - Output EXACTLY ONE object per distinct product the user mentions.
-        - Never invent products that are not in the user's message.
-        $categoryInstruction
+        You assign a single grocery product to a food category.
+        Reply with ONLY the category name in $languageName — no explanation, no punctuation, no quotes.
+        $guidance
         """.trimIndent()
     }
   }
