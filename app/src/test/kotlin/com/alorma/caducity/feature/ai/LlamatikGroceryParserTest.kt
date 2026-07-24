@@ -76,6 +76,26 @@ class LlamatikGroceryParserTest {
   }
 
   @Test
+  fun `parseProducts ignores trailing rambling after a valid empty array`() {
+    // Observed on-device: the model answers "[]" then keeps talking and
+    // restates it inside a markdown fence. Matching to the LAST bracket in the
+    // whole response would swallow that trailing text and fail to parse.
+    val raw = "[]\n\nJSON array:\n```json\n[]\n```"
+
+    expectThat(LlamatikGroceryParser.parseProducts(raw)).isNotNull().isEmpty()
+  }
+
+  @Test
+  fun `parseProducts ignores trailing rambling after a valid non-empty array`() {
+    val raw = "[{\"product_name\":\"Milk\",\"quantity\":\"1\"}]\n\nLet me know if you need anything else!"
+
+    val result = LlamatikGroceryParser.parseProducts(raw)
+
+    expectThat(result).isNotNull().hasSize(1)
+    expectThat(result?.first()?.name).isEqualTo("Milk")
+  }
+
+  @Test
   fun `parseProducts returns null when no JSON is present`() {
     expectThat(LlamatikGroceryParser.parseProducts("I don't understand")).isNull()
   }
@@ -151,6 +171,15 @@ class LlamatikGroceryParserTest {
   @Test
   fun `buildProductSystemPrompt steers product names to the current language`() {
     expectThat(LlamatikGroceryParser.buildProductSystemPrompt("Spanish")).contains("Spanish")
+  }
+
+  @Test
+  fun `buildProductSystemPrompt broadens groceries beyond common examples to reduce false negatives`() {
+    val prompt = LlamatikGroceryParser.buildProductSystemPrompt()
+
+    expectThat(prompt)
+      .contains("ANY food or drink")
+      .contains("you MUST include all of them")
   }
 
   @Test

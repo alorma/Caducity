@@ -201,15 +201,34 @@ class LlamatikGroceryParser(
         .normalize(value.lowercase().trim(), Normalizer.Form.NFD)
         .replace(Regex("\\p{Mn}+"), "")
 
-    /** Returns the substring from the first [open] to the last [close], or null if absent. */
+    /**
+     * Returns the first balanced [open]/[close] span starting at the first
+     * [open] found, or null if none closes.
+     *
+     * Small models often keep talking after a valid JSON value (repeating
+     * themselves, adding a markdown-fenced restatement, ...). Matching to the
+     * *last* closing bracket in the whole response would swallow that trailing
+     * text and break parsing, so this stops at the bracket that actually
+     * balances the first one instead.
+     */
     private fun extractBracketed(
       raw: String,
       open: Char,
       close: Char,
     ): String? {
       val start = raw.indexOf(open)
-      val end = raw.lastIndexOf(close)
-      return if (start == -1 || end == -1 || end <= start) null else raw.substring(start, end + 1)
+      if (start == -1) return null
+      var depth = 0
+      for (i in start until raw.length) {
+        when (raw[i]) {
+          open -> depth++
+          close -> {
+            depth--
+            if (depth == 0) return raw.substring(start, i + 1)
+          }
+        }
+      }
+      return null
     }
 
     fun buildGemma3Prompt(
@@ -234,14 +253,17 @@ class LlamatikGroceryParser(
       """
       You are a grocery list parser.
       Read ONLY the user's message and list the grocery products it names.
+      Groceries include ANY food or drink — meat, fish, dairy, produce, bakery,
+      beverages, snacks, pantry items — not just the most common examples.
       The message may mention expiration or purchase dates — IGNORE any dates.
       Return ONLY a JSON array, nothing else. No markdown, no prose, no code fences.
       Each array item is an object with exactly these keys:
       - "product_name": the specific food the user bought, written in $languageName.
       - "quantity": the total number of units as an integer (default to 1 if unspecified).
       Rules:
-      - If the message names no grocery products, return exactly: []
       - Output EXACTLY ONE object per distinct product the user mentions.
+      - If the message names one or more grocery products, you MUST include all of them.
+      - Only return exactly [] if the message truly names no food or grocery product at all.
       - Never invent products that are not in the user's message.
       """.trimIndent()
 
