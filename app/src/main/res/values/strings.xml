@@ -26,6 +26,23 @@
   <string name="ai_model_downloading">Downloading AI model (%1$d%%)</string>
   <string name="ai_model_size_hint">~292 MB — Wi-Fi recommended</string>
   <string name="ai_model_download_failed">Failed to download AI model. Please try again.</string>
+
+  <!-- AI Model Settings -->
+  <string name="settings_ai_model_title">AI Model</string>
+  <string name="settings_ai_model_description">Choose AI model quality</string>
+  <string name="settings_ai_model_select_title">Select model</string>
+  <string name="settings_ai_model_light">Light (Gemma 270M)</string>
+  <string name="settings_ai_model_standard">Standard (Gemma 1B)</string>
+  <string name="settings_ai_model_size">~%1$d MB</string>
+  <string name="settings_ai_model_status_ready">Ready</string>
+  <string name="settings_ai_model_status_not_downloaded">Not downloaded</string>
+  <string name="settings_ai_model_status_downloading">Downloading…</string>
+  <string name="settings_ai_model_status_failed">Download failed</string>
+  <string name="settings_ai_model_status_tap_to_select">Tap to select</string>
+  <string name="settings_ai_model_downloading">Downloading… %1$d%%</string>
+  <string name="settings_ai_model_info_title">About AI models</string>
+  <string name="settings_ai_model_info_description">Models run entirely on your device. The Standard model provides better accuracy for grocery recognition but requires more storage. Wi-Fi is recommended for download.</string>
+
   <string name="ai_proposal_expires">Expires: %1$s</string>
   <string name="ai_proposal_match">Matches: %1$s › %2$s</string>
   <string name="ai_proposal_category_match">Category: %1$s</string>

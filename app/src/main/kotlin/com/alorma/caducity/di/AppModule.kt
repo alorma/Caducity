@@ -31,6 +31,7 @@ import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
 import com.alorma.caducity.feature.ai.AiFeatureConfig
 import com.alorma.caducity.feature.ai.AiGroceryParser
 import com.alorma.caducity.feature.ai.AiJaroWinklerMatcher
+import com.alorma.caducity.feature.ai.AiModelPreferences
 import com.alorma.caducity.feature.ai.AiProductMatcher
 import com.alorma.caducity.feature.ai.LlamatikGroceryParser
 import com.alorma.caducity.feature.ai.ModelManager
@@ -84,7 +85,8 @@ val appModule =
 
     // AI Assistant
     singleOf(::AiFeatureConfig) bind RemoteConfig::class
-    single<ModelManager> { WorkManagerModelManager(androidContext()) }
+    singleOf(::AiModelPreferences)
+    single<ModelManager> { WorkManagerModelManager(androidContext(), get()) }
     single<AiGroceryParser> { LlamatikGroceryParser(get()) }
     singleOf(::AiJaroWinklerMatcher) bind AiProductMatcher::class
     viewModelOf(::AiAssistantViewModel)

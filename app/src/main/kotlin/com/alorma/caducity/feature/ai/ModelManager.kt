@@ -10,4 +10,8 @@ interface ModelManager {
   fun downloadState(): Flow<ModelDownloadState>
 
   fun modelFilePath(): String
+
+  fun currentModelOption(): AiModelOption
+
+  fun switchModel(model: AiModelOption)
 }

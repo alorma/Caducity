@@ -21,6 +21,7 @@ import com.alorma.caducity.base.ui.icons.Notifications
 import com.alorma.caducity.base.ui.icons.Palette
 import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.base.ui.icons.outlined.Shield
+import com.alorma.caducity.base.ui.icons.outlined.Sparkle
 import com.alorma.caducity.feature.tracking.SettingsScreen
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
@@ -38,6 +39,7 @@ fun SettingsRootScreen(
   onNavigateToNotifications: () -> Unit,
   onNavigateToPrivacy: () -> Unit,
   onNavigateToBackup: () -> Unit,
+  onNavigateToAiModel: () -> Unit,
   onNavigateToDebug: () -> Unit,
   onNavigateToAbout: () -> Unit,
   modifier: Modifier = Modifier,
@@ -49,6 +51,7 @@ fun SettingsRootScreen(
     onNavigateToNotifications = onNavigateToNotifications,
     onNavigateToPrivacy = onNavigateToPrivacy,
     onNavigateToBackup = onNavigateToBackup,
+    onNavigateToAiModel = onNavigateToAiModel,
     onNavigateToDebug = onNavigateToDebug,
     onNavigateToAbout = onNavigateToAbout,
     modifier = modifier,
@@ -62,6 +65,7 @@ private fun SettingsRootContent(
   onNavigateToNotifications: () -> Unit,
   onNavigateToPrivacy: () -> Unit,
   onNavigateToBackup: () -> Unit,
+  onNavigateToAiModel: () -> Unit,
   onNavigateToDebug: () -> Unit,
   onNavigateToAbout: () -> Unit,
   modifier: Modifier = Modifier,
@@ -172,6 +176,26 @@ private fun SettingsRootContent(
           }
         }
 
+        // Group: AI Model
+        item {
+          StyledSettingsGroup(
+            title = { Text(stringResource(R.string.settings_ai_model_title)) },
+          ) {
+            StyledSettingsCard(
+              icon = {
+                Icon(
+                  imageVector = AppIcons.Outlined.Sparkle,
+                  contentDescription = null,
+                )
+              },
+              title = stringResource(R.string.settings_ai_model_title),
+              subtitle = stringResource(R.string.settings_ai_model_description),
+              onClick = onNavigateToAiModel,
+              shapes = ListItemDefaults.shapes(),
+            )
+          }
+        }
+
         // Group 4: About
         item {
           StyledSettingsGroup(
@@ -208,6 +232,7 @@ fun SettingsScreenPreview() {
         onNavigateToNotifications = {},
         onNavigateToPrivacy = {},
         onNavigateToBackup = {},
+        onNavigateToAiModel = {},
         onNavigateToDebug = {},
         onNavigateToAbout = {},
       )
