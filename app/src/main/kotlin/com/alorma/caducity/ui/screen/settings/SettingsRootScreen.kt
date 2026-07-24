@@ -22,6 +22,8 @@ import com.alorma.caducity.base.ui.icons.Palette
 import com.alorma.caducity.base.ui.icons.outlined.Settings
 import com.alorma.caducity.base.ui.icons.outlined.Shield
 import com.alorma.caducity.base.ui.icons.outlined.Sparkle
+import com.alorma.caducity.config.remoteconfig.rememberRemoteConfig
+import com.alorma.caducity.feature.ai.AiFeatureConfig
 import com.alorma.caducity.feature.tracking.SettingsScreen
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
@@ -45,8 +47,10 @@ fun SettingsRootScreen(
   modifier: Modifier = Modifier,
 ) {
   TrackScreen(screen = SettingsScreen())
+  val aiModelEnabled = rememberRemoteConfig<AiFeatureConfig>().isEnabled()
   SettingsRootContent(
     isDebug = isDebug,
+    aiModelEnabled = aiModelEnabled,
     onNavigateToAppearance = onNavigateToAppearance,
     onNavigateToNotifications = onNavigateToNotifications,
     onNavigateToPrivacy = onNavigateToPrivacy,
@@ -61,6 +65,7 @@ fun SettingsRootScreen(
 @Composable
 private fun SettingsRootContent(
   isDebug: Boolean,
+  aiModelEnabled: Boolean,
   onNavigateToAppearance: () -> Unit,
   onNavigateToNotifications: () -> Unit,
   onNavigateToPrivacy: () -> Unit,
@@ -176,23 +181,25 @@ private fun SettingsRootContent(
           }
         }
 
-        // Group: AI Model
-        item {
-          StyledSettingsGroup(
-            title = { Text(stringResource(R.string.settings_ai_model_title)) },
-          ) {
-            StyledSettingsCard(
-              icon = {
-                Icon(
-                  imageVector = AppIcons.Outlined.Sparkle,
-                  contentDescription = null,
-                )
-              },
-              title = stringResource(R.string.settings_ai_model_title),
-              subtitle = stringResource(R.string.settings_ai_model_description),
-              onClick = onNavigateToAiModel,
-              shapes = ListItemDefaults.shapes(),
-            )
+        // Group: AI Model (only shown when the AI feature is enabled via remote config)
+        if (aiModelEnabled) {
+          item {
+            StyledSettingsGroup(
+              title = { Text(stringResource(R.string.settings_ai_model_title)) },
+            ) {
+              StyledSettingsCard(
+                icon = {
+                  Icon(
+                    imageVector = AppIcons.Outlined.Sparkle,
+                    contentDescription = null,
+                  )
+                },
+                title = stringResource(R.string.settings_ai_model_title),
+                subtitle = stringResource(R.string.settings_ai_model_description),
+                onClick = onNavigateToAiModel,
+                shapes = ListItemDefaults.shapes(),
+              )
+            }
           }
         }
 
@@ -228,6 +235,7 @@ fun SettingsScreenPreview() {
     Surface {
       SettingsRootContent(
         isDebug = true,
+        aiModelEnabled = true,
         onNavigateToAppearance = {},
         onNavigateToNotifications = {},
         onNavigateToPrivacy = {},
