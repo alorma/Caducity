@@ -2,7 +2,7 @@
 versionPlugin = "1.0.3"
 
 # Compose
-compose-bom = "2026.05.00"
+compose-bom = "2026.06.01"
 
 # Kotlin
 kotlin = "2.3.21"
