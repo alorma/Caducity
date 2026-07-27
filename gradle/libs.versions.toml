@@ -58,7 +58,7 @@ adaptive = "1.2.0"
 
 # Google Play
 play-review = "2.0.2"
-uiToolingPreview = "1.11.1"
+uiToolingPreview = "1.11.4"
 uiTooling = "1.11.1"
 
 [libraries]
