@@ -20,8 +20,8 @@ androidx-test-runner = "1.7.0"
 androidx-test-rules = "1.7.0"
 
 androidx-navigation3 = "1.1.4"
-androidx-navigation3-lifecycle = "2.10.0"
-lifecycle = "2.10.0"
+androidx-navigation3-lifecycle = "2.11.0"
+lifecycle = "2.11.0"
 
 material3 = "1.5.0-alpha24"
 
