@@ -54,7 +54,7 @@ robolectric = "4.15"
 
 # Firebase
 firebase-bom = "34.17.0"
-adaptive = "1.2.0"
+adaptive = "1.3.0"
 
 # Google Play
 play-review = "2.0.2"
