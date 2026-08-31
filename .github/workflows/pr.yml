@@ -25,7 +25,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v6.0.0
         with:
-          distribution: adopt
+          distribution: temurin
           java-version: 21
 
       - name: Setup Gradle
@@ -53,7 +53,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v6.0.0
         with:
-          distribution: adopt
+          distribution: temurin
           java-version: 21
 
       - name: Setup Gradle
