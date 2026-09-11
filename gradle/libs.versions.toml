@@ -5,7 +5,7 @@ versionPlugin = "1.0.3"
 compose-bom = "2026.08.00"
 
 # Kotlin
-kotlin = "2.4.10"
+kotlin = "2.4.20"
 ksp = "2.3.11"
 
 # Android
