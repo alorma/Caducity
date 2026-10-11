@@ -81,7 +81,7 @@ class FakeTestDataStrategy(
     }
 
     // Expired items (past expiration date)
-    val consumeThresholdDays = expirationThresholds.consumeExpiredThreshold.inWholeDays
+    val consumeThresholdDays = CONSUME_THRESHOLD_DAYS
 
     // Near expired (within consume threshold - can be consumed)
     repeat(3) { index ->
@@ -149,7 +149,7 @@ class FakeTestDataStrategy(
     now: Instant,
   ): List<StandaloneItemConfig> {
     val items = mutableListOf<StandaloneItemConfig>()
-    val consumeThresholdDays = expirationThresholds.consumeExpiredThreshold.inWholeDays
+    val consumeThresholdDays = CONSUME_THRESHOLD_DAYS
 
     // Fresh items
     repeat(6) { index ->
@@ -227,5 +227,10 @@ class FakeTestDataStrategy(
     }
 
     return items
+  }
+
+  private companion object {
+    /** Days before today that still count as «recently expired» in the fake data. */
+    const val CONSUME_THRESHOLD_DAYS = 2L
   }
 }

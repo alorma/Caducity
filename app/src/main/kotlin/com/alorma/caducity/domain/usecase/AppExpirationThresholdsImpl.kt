@@ -10,5 +10,4 @@ class AppExpirationThresholdsImpl(
 ) : ExpirationThresholds {
   override val soonThresholdDays: Flow<Int> = soonThresholdPreferences.thresholdDays
   override val soonExpiringThreshold: Duration = 4.days
-  override val consumeExpiredThreshold: Duration = 2.days
 }

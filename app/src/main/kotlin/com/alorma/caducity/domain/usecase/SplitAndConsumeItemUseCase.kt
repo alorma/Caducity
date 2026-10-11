@@ -2,7 +2,6 @@ package com.alorma.caducity.domain.usecase
 
 import com.alorma.caducity.domain.ItemDataSource
 import com.alorma.caducity.domain.model.InstanceActionError
-import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.NewItem
 
 class SplitAndConsumeItemUseCase(
@@ -13,7 +12,6 @@ class SplitAndConsumeItemUseCase(
     categoryId: String,
     itemId: String,
     quantityToConsume: Int,
-    forceConsume: Boolean = false,
   ): Result<Unit> {
     // Get the item to check its status and pack size
     val item =
@@ -25,19 +23,10 @@ class SplitAndConsumeItemUseCase(
       return Result.failure(IllegalArgumentException("Quantity must be positive"))
     }
 
-    // Prevent consuming expired items (unless forced)
-    if (!forceConsume && item.status == ItemStatus.Expired) {
-      return Result.failure(InstanceActionError.CannotConsumeExpiredInstance(itemId))
-    }
-
     // Single item or consume all from pack: use existing logic
     val packSize = item.packSize
     if (packSize == null || quantityToConsume >= packSize) {
-      return if (forceConsume) {
-        consumeItemUseCase.forceConsumeItem(itemId)
-      } else {
-        consumeItemUseCase.consumeItem(itemId)
-      }
+      return consumeItemUseCase.consume(itemId)
     }
 
     // Split pack: create new item with consumed quantity
@@ -52,11 +41,7 @@ class SplitAndConsumeItemUseCase(
     val newItemId = itemDataSource.addItem(categoryId, consumedItem)
 
     // Mark the new split item as consumed
-    if (forceConsume) {
-      consumeItemUseCase.forceConsumeItem(newItemId)
-    } else {
-      consumeItemUseCase.consumeItem(newItemId)
-    }
+    consumeItemUseCase.consume(newItemId)
 
     // Update original pack size
     itemDataSource.updatePackSize(itemId, packSize - quantityToConsume)

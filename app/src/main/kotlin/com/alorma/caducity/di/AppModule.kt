@@ -14,11 +14,8 @@ import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
-import com.alorma.caducity.domain.usecase.GetItemsByStatusUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.SplitAndConsumeItemUseCase
-import com.alorma.caducity.domain.usecase.SplitAndDeleteItemUseCase
-import com.alorma.caducity.domain.usecase.SplitAndFreezeItemUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
@@ -28,7 +25,6 @@ import com.alorma.caducity.feature.consent.consentModule
 import com.alorma.caducity.feature.review.reviewModule
 import com.alorma.caducity.feature.tracking.trackingModule
 import com.alorma.caducity.ui.components.actions.ItemActionsSheetViewModel
-import com.alorma.caducity.ui.components.bottomsheet.ItemActionsViewModel
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.screen.add.AddViewModel
@@ -38,7 +34,6 @@ import com.alorma.caducity.ui.screen.category.create.CreateCategoryViewModel
 import com.alorma.caducity.ui.screen.category.create.FutureDateSelectableDates
 import com.alorma.caducity.ui.screen.category.quick.CategoryCreatedEvents
 import com.alorma.caducity.ui.screen.category.quick.QuickCategoryViewModel
-import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusViewModel
 import com.alorma.caducity.ui.screen.home.HomeViewModel
 import com.alorma.caducity.ui.screen.home.WidgetTipFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
@@ -102,8 +97,6 @@ val appModule =
     singleOf(::OnboardingFlag)
     viewModelOf(::OnboardingViewModel)
     singleOf(::GetExpiringCategoriesUseCase)
-    singleOf(::GetItemsByStatusUseCase)
-    viewModelOf(::FilteredItemsByStatusViewModel)
 
     factory {
       RelativeTimeFormatter(
@@ -147,8 +140,6 @@ val appModule =
     singleOf(::RescheduleItemUseCase)
     singleOf(::UnfreezeItemUseCase)
     singleOf(::SplitAndConsumeItemUseCase)
-    singleOf(::SplitAndFreezeItemUseCase)
-    singleOf(::SplitAndDeleteItemUseCase)
 
     // Quick category sheet
     singleOf(::CategoryCreatedEvents)
@@ -215,8 +206,6 @@ val appModule =
       )
     }
 
-    // Item Actions Bottom Sheet
-    viewModelOf(::ItemActionsViewModel)
     singleOf(::GlobalSnackbarEvents)
     viewModel { params ->
       ItemActionsSheetViewModel(
