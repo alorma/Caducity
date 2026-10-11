@@ -146,13 +146,17 @@ fun StatusHeader(
         Column(
           modifier =
             Modifier
-              .alpha(1f - fraction)
+              .alpha((1f - 2f * fraction).coerceIn(0f, 1f))
               .windowInsetsPadding(TopAppBarDefaults.windowInsets),
         ) {
           UnfoldedHeader(count, title, help, actions, colors.onContainer, onBack)
         }
         Row(
-          modifier = Modifier.alpha(fraction).windowInsetsPadding(TopAppBarDefaults.windowInsets),
+          modifier =
+            Modifier
+              .alpha(
+                (2f * fraction - 1f).coerceIn(0f, 1f),
+              ).windowInsetsPadding(TopAppBarDefaults.windowInsets),
           verticalAlignment = Alignment.CenterVertically,
         ) {
           FoldedHeader(status, count, title, actions, selectionCount, onBack, onCloseSelection)
