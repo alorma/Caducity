@@ -120,7 +120,12 @@ private fun WeekDayCell(
       Text(
         text = day.date.initial(),
         style = CaducityTheme.typography.labelMedium.copy(fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
-        color = if (isSelected) content else CaducityTheme.colorScheme.onSurfaceVariant,
+        color =
+          if (isSelected) {
+            CaducityTheme.colorScheme.primaryContainer
+          } else {
+            CaducityTheme.colorScheme.onSurfaceVariant
+          },
       )
       Box(
         modifier =

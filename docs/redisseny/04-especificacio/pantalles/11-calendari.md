@@ -22,9 +22,21 @@ Component reutilitzable a dues pantalles. **No canvia la resta de la pantalla.**
 - **Seleccionat**: fons `primary`, text `on-primary` (els punts es mantenen).
 - **En tocar un dia**:
   - Inici: fa scroll fins a la secció d'aquell dia. Si el dia no té productes `SOON` (p. ex. un dia amb només frescos), mostra una línia «Res caduca aviat aquest dia» o, si es prefereix, obre la vista de mes amb aquell dia seleccionat.
-  - Categoria: ressalta (o filtra) les files d'aquell dia.
+  - **Categoria: FILTRA** (no ressalta). Vegeu `CategoriaDia.png` i l'apartat «Dia seleccionat a Categoria» a sota.
   - Tornar a tocar el dia seleccionat el desselecciona.
 - **Accessibilitat**: `selectableGroup` + `Role.Tab`; contentDescription «Dimarts 13, 2 productes» / «Divendres 16, res».
+
+### Dia seleccionat a Categoria (`CategoriaDia.png`)
+
+Substitueix el «ressaltat» (vores al voltant de files), que trencava les llistes connectades i marcava productes sencers quan només una unitat caducava aquell dia.
+
+- El dia triat a la tira queda **seleccionat** (fons `primary`, text `on-primary`, inicial del dia en `primary-container`); avui conserva el seu cercle.
+- La fila de **xips d'estat se substitueix** per un **xip de dia** actiu: `event` + «Dimecres 14» + `close` (fons `primary`, radi 12, 36 dp) i, al costat, «3 unitats caduquen aquest dia» (`ink-variant`). Tocar el xip, la ✕ o el mateix dia de la tira treu el filtre i torna la vista normal (xips d'estat + seccions).
+- La llista mostra **només les unitats que caduquen aquell dia**, en **una sola llista connectada** (sense seccions per estat, sense desplegables). Cada fila: nom del producte + «Unitat 3 de 3 · dc. 14 oct» (o «1 unitat · …» si només n'hi ha una) + pastilla d'estat. Tocar → full Accions d'aquella unitat.
+- A sota, ajuda: `touch_app` + «Toca el dia o la ✕ per tornar a veure-ho tot.»
+- Si el dia no té res a la categoria: «Res de Làctics caduca aquest dia.»
+- En seleccionar el dia, la pantalla fa scroll fins que la tira quedi visible (la tira no s'ha de perdre fora de pantalla mentre hi ha un filtre actiu).
+- A l'**Inici** no canvia: tocar un dia fa scroll a la secció d'aquell dia (allà les seccions ja són per dia).
 
 ## B) Vista de mes (`CalendarRoute(categoryId: String? = null)`)
 

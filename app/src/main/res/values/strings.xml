@@ -395,6 +395,8 @@
   <string name="item_actions_frozen_meta">Frozen</string>
   <string name="item_actions_pack">Pack of %1$d · expires %2$s</string>
   <string name="item_pill_today">Today</string>
+  <string name="item_pill_yesterday">Yesterday</string>
+  <string name="item_pill_tomorrow">Tomorrow</string>
   <plurals name="item_pill_days_left">
     <item quantity="one">%d day</item>
     <item quantity="other">%d days</item>
@@ -524,5 +526,13 @@
   <plurals name="category_delete_body">
     <item quantity="one">This deletes the category and its %d product. It can\'t be undone.</item>
     <item quantity="other">This deletes the category and its %d products. It can\'t be undone.</item>
+  </plurals>
+  <string name="category_day_hint">Tap the day or the ✕ to see everything again.</string>
+  <string name="category_day_clear">Clear the day filter</string>
+  <string name="category_day_empty">Nothing in %s expires this day.</string>
+  <string name="category_unit_of">Unit %1$d of %2$d · %3$s</string>
+  <plurals name="category_day_units">
+    <item quantity="one">%d unit expires this day</item>
+    <item quantity="other">%d units expire this day</item>
   </plurals>
 </resources>

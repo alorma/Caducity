@@ -62,6 +62,7 @@ fun FilterChips(
             labelColor = scheme.onSurface,
             selectedContainerColor = scheme.primary,
             selectedLabelColor = scheme.onPrimary,
+            selectedLeadingIconColor = scheme.onPrimary,
           ),
         leadingIcon =
           when {

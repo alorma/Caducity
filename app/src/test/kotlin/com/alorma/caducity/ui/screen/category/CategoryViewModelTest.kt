@@ -50,6 +50,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import strikt.api.expectThat
 import strikt.assertions.containsExactly
+import strikt.assertions.isEmpty
 import strikt.assertions.isEqualTo
 import strikt.assertions.isFalse
 import strikt.assertions.isNull
@@ -221,18 +222,34 @@ class CategoryViewModelTest {
     }
 
   @Test
-  fun `tapping a day selects it and tapping it again clears it without filtering`() =
+  fun `a selected day lists only the units that expire that day with their position`() =
     runTest {
       category("dairy")
       add("Milk", "dairy", days = 2)
+      add("Milk", "dairy", days = 2)
+      add("Milk", "dairy", days = 5)
       add("Eggs", "dairy", days = 5)
       val vm = viewModel()
 
       vm.onDayClick(inDays(2))
-      val selected = vm.ready { it.selectedDay == inDays(2) }
-      expectThat(selected.visibleSections.sumOf { it.groups.size }).isEqualTo(2)
+      val state = vm.ready { it.selectedDay == inDays(2) }
 
-      vm.onDayClick(inDays(2))
+      expectThat(state.dayUnits.map { it.name }).containsExactly("Milk", "Milk")
+      expectThat(state.dayUnits.map { it.position.index }).containsExactly(1, 2)
+      expectThat(state.dayUnits.map { it.position.count }).containsExactly(3, 3)
+    }
+
+  @Test
+  fun `a day without units is empty and tapping the day again clears it`() =
+    runTest {
+      category("dairy")
+      add("Milk", "dairy", days = 2)
+      val vm = viewModel()
+
+      vm.onDayClick(inDays(4))
+      expectThat(vm.ready { it.selectedDay == inDays(4) }.dayUnits).isEmpty()
+
+      vm.onDayClick(inDays(4))
       expectThat(vm.ready { it.selectedDay == null }.selectedDay).isNull()
     }
 

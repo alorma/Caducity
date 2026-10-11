@@ -140,6 +140,8 @@ data class CategoryData(
   val statusCounts: Map<ExpiryStatus, Int>,
   /** Sections in order Expired, Soon, Fresh, Frozen; empty ones are left out. */
   val sections: List<CategorySection>,
+  /** «Unitat N de M» of every active unit of the category, by item id. */
+  val positions: Map<String, UnitPosition>,
 )
 
 // endregion
