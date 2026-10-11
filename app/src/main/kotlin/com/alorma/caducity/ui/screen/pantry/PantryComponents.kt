@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
@@ -183,7 +184,7 @@ internal fun NewCategoryCard(
       modifier
         .heightIn(min = 178.dp)
         .clip(CaducityShapes.card)
-        .clickable(onClick = onClick)
+        .clickable(role = Role.Button, onClick = onClick)
         .drawBehind {
           val stroke = 2.dp.toPx()
           drawRoundRect(

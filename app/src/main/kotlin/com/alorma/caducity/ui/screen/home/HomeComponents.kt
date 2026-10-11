@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,19 +22,23 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Add
@@ -215,9 +220,15 @@ private fun SummaryCell(
     color = colors.container,
     contentColor = colors.onContainer,
   ) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
-      Text(count.toString(), style = NumberTextStyle)
-      Text(label, style = CaducityTheme.typography.labelMedium)
+    // Three equal-width cells: cap the font scale so labels like «Congelats» never break mid-word.
+    val density = LocalDensity.current
+    CompositionLocalProvider(
+      LocalDensity provides Density(density.density, minOf(density.fontScale, MaxCellFontScale)),
+    ) {
+      Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)) {
+        Text(count.toString(), style = NumberTextStyle)
+        Text(label, style = CaducityTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+      }
     }
   }
 }
@@ -310,7 +321,12 @@ internal fun NothingSoon(
       text = stringResource(R.string.home_nothing_soon_link),
       style = CaducityTheme.typography.labelLarge,
       color = CaducityTheme.colorScheme.primary,
-      modifier = Modifier.clip(CaducityShapes.chip).clickable(onClick = onSeePantry).padding(8.dp),
+      modifier =
+        Modifier
+          .heightIn(min = 48.dp)
+          .clip(CaducityShapes.chip)
+          .clickable(role = Role.Button, onClick = onSeePantry)
+          .padding(horizontal = 8.dp, vertical = 12.dp),
     )
   }
 }
@@ -408,3 +424,5 @@ internal fun WidgetTipCard(
     }
   }
 }
+
+private const val MaxCellFontScale = 1.3f
