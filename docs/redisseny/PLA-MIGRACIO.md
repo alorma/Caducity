@@ -491,11 +491,11 @@ Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(
 
 ### Fase 3 — Navegació (shell)
 **Objectiu:** shell amb barra flotant + FAB, rutes finals i deep links; pantalles velles penjant temporalment de les rutes noves.
-- **Crear:** `ui/navigation/Routes.kt` (`Home`, `Pantry`, `Settings`, `Category(id, filter?)`, `Expired`, **`Calendar(categoryId?, date?)`**, `Add(categoryId?, source?, itemId?)`, `CategoryEditor(id?)`, `ItemActions(itemId)`, `QuickCategory`, `Onboarding`, subpantalles d'Ajustos), `TopLevelBackStack`, `AppShell` amb `FloatingNavBar` (`HorizontalFloatingToolbar`, sempre visible i sota el contingut; decidit 2026-10-11: no s'amaga en scroll) i FAB 64 dp.
+- **Crear:** `ui/navigation/Routes.kt` (`Home`, `Pantry`, `Settings`, `Category(id, filter?)`, `Expired`, **`Calendar(categoryId?, date?)`**, `Add(categoryId?, source?, itemId?)`, `CategoryEditor(id?)`, `ItemActions(itemId)`, `QuickCategory`, `Onboarding`, subpantalles d'Ajustos), `TopLevelBackStack`, `AppShell` amb `FloatingNavBar` (`HorizontalFloatingToolbar`, sempre visible, per sobre del contingut (slot FAB de l'Scaffold pare) i amb `LocalFloatingBarPadding` per a les llistes; decidit 2026-10-11: no s'amaga en scroll) i FAB 64 dp.
 - **Modificar:** `App.kt` (entry provider nou; `BottomSheetSceneStrategy` per a Accions i Nova categoria ràpida), `MainActivity` (`singleTop`, `onNewIntent`), `DeepLinkAction` (`OpenHome`, `OpenExpired`, `OpenAdd(source, categoryId?)`, `OpenCategory`; compatible amb notificacions ja programades), `AppScaffold`, `Actions.kt`/`Screens.kt`, manifest.
 - **Temporal:** Aviat → dashboard vell; Rebost → llista simple; Ajustos → settings vell; FAB → placeholder fins a la fase 4; `Calendar` → pantalla buida fins a la 5.
 - **Riscos:** estat de pestanyes a Nav3; `SettingsContainer` es manté `// TEMP(fase 8)` dins la pantalla Ajustos; `ViewModelStore` per entrada de sheet.
-- **Acceptació:** barra, FAB i pastilla activa farcida conformes a `Rebost.png`/`Main.png`; la barra és sempre visible i el contingut acaba damunt seu; secundàries sense barra; `adb shell am start` amb extras obre la destinació correcta amb l'app oberta i tancada.
+- **Acceptació:** barra, FAB i pastilla activa farcida conformes a `Rebost.png`/`Main.png`; la barra és sempre visible i queda per sobre del contingut; secundàries sense barra; `adb shell am start` amb extras obre la destinació correcta amb l'app oberta i tancada.
 - **Tests:** `TopLevelBackStackTest`, `DeepLinkParsingTest`, `DashboardActionsTest` actualitzat.
 
 ### Fase 4 — Afegeix (prioritat alta)

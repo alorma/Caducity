@@ -35,6 +35,7 @@ import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarSt
 import com.alorma.caducity.ui.components.loading.FullscreenLoading
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.navigation.LocalFloatingBarPadding
 import com.alorma.caducity.ui.screen.dashboard.components.DashboardSuccessContentList
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import org.koin.compose.viewmodel.koinViewModel
@@ -118,7 +119,9 @@ private fun DashboardContent(
             lazyListState.firstVisibleItemScrollOffset > 0
           }
         }
+      // TEMP(fase 5b): lifted above the shell bar so "create category" stays reachable until Home exists.
       ExtendedFloatingActionButton(
+        modifier = Modifier.padding(bottom = LocalFloatingBarPadding.current.calculateBottomPadding()),
         expanded = !expanded.value,
         onClick = onNavigateToCreateProduct,
         text = { Text(stringResource(R.string.dashboard_add)) },
