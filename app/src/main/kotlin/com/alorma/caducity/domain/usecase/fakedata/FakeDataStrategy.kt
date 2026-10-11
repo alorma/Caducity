@@ -26,6 +26,8 @@ data class CategoryConfig(
   /** When null, shape/icon are derived from the name like for migrated categories. */
   val shape: CategoryShape? = null,
   val icon: CategoryIcon? = null,
+  /** Own "soon" margin in days; null follows the global default. */
+  val soonThresholdDays: Int? = null,
 )
 
 /**

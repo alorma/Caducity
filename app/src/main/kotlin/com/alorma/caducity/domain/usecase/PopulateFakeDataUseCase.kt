@@ -50,6 +50,7 @@ class PopulateFakeDataUseCase(
             shape = categoryConfig.shape ?: defaults.shape,
             icon = categoryConfig.icon ?: defaults.icon,
             sortOrder = index,
+            soonThresholdDays = categoryConfig.soonThresholdDays,
           )
 
         // Create category first (empty)

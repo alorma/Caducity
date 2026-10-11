@@ -14,7 +14,7 @@ val MIGRATION_1_2 =
   }
 
 /**
- * v2 → v3: category shape/icon/sortOrder, item discardedDate/createdAt, items without product
+ * v2 → v3: category shape/icon/sortOrder/soonThresholdDays (null = global default), item discardedDate/createdAt, items without product
  * converted to products and `identifier` cleared. Only ADD COLUMN + UPDATE/INSERT (no table rebuilds).
  */
 val MIGRATION_2_3 =
@@ -23,6 +23,7 @@ val MIGRATION_2_3 =
       db.execSQL("ALTER TABLE categories ADD COLUMN shape TEXT NOT NULL DEFAULT 'COOKIE'")
       db.execSQL("ALTER TABLE categories ADD COLUMN icon TEXT NOT NULL DEFAULT 'eco'")
       db.execSQL("ALTER TABLE categories ADD COLUMN sortOrder INTEGER NOT NULL DEFAULT 0")
+      db.execSQL("ALTER TABLE categories ADD COLUMN soonThresholdDays INTEGER")
       db.execSQL("ALTER TABLE items ADD COLUMN discardedDate INTEGER")
       db.execSQL("ALTER TABLE items ADD COLUMN createdAt INTEGER")
 

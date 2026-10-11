@@ -28,6 +28,7 @@ class FakeTestDataStrategy(
     CategoryConfig(
       name = "Làctics",
       description = "Llet, formatge, iogurt i altres productes làctics",
+      soonThresholdDays = 3,
       products =
         listOf(
           createProductWithAllStatuses("Llet sencera", now),
