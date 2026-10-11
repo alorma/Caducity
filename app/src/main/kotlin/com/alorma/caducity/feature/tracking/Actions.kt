@@ -1,40 +1,5 @@
 package com.alorma.caducity.feature.tracking
 
-// Dashboard Actions
-class NavigateToCreateCategoryAction :
-  NavigationAction(
-    actionName = "create_category",
-    origin = "dashboard",
-    parameters = mapOf("source" to "fab"),
-  )
-
-class NavigateToCategoryAction(
-  source: String,
-) : NavigationAction(
-    actionName = "category",
-    origin = "dashboard",
-    parameters = mapOf("source" to source), // "category_title" or "calendar_date"
-  )
-
-class NavigateToFilteredItemsAction(
-  status: String,
-) : NavigationAction(
-    actionName = "filtered_items",
-    origin = "dashboard",
-    parameters =
-      mapOf(
-        "status" to status, // "expired", "expiring_soon", "fresh", "frozen"
-        "source" to "summary",
-      ),
-  )
-
-class NavigateToSettingsAction :
-  NavigationAction(
-    actionName = "settings",
-    origin = "dashboard",
-    parameters = mapOf("source" to "topbar"),
-  )
-
 // Shell (floating navigation bar) Actions
 class NavigateToTabAction(
   tab: String,
@@ -200,4 +165,49 @@ class NavigateToEditItemAction :
     actionName = "edit_item",
     origin = "item_actions",
     parameters = mapOf("source" to "sheet"),
+  )
+
+// Home Actions
+class NavigateToCalendarFromHomeAction(
+  source: String, // button, week_strip
+) : NavigationAction(
+    actionName = "calendar",
+    origin = "home",
+    parameters = mapOf("source" to source),
+  )
+
+class NavigateToSearchAction :
+  NavigationAction(
+    actionName = "search",
+    origin = "home",
+    parameters = mapOf("source" to "button"),
+  )
+
+class NavigateToExpiredFromHomeAction :
+  NavigationAction(
+    actionName = "expired",
+    origin = "home",
+    parameters = mapOf("source" to "banner"),
+  )
+
+class NavigateToPantryFromHomeAction(
+  source: String, // summary_fresh, summary_frozen, nothing_soon
+) : NavigationAction(
+    actionName = "pantry",
+    origin = "home",
+    parameters = mapOf("source" to source),
+  )
+
+class NavigateToItemActionsFromHomeAction :
+  NavigationAction(
+    actionName = "item_actions",
+    origin = "home",
+    parameters = mapOf("source" to "row"),
+  )
+
+class NavigateToAddFromHomeAction :
+  NavigationAction(
+    actionName = "add",
+    origin = "home",
+    parameters = mapOf("source" to "empty_cta"),
   )

@@ -1,0 +1,277 @@
+package com.alorma.caducity.ui.screen.home
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.CategoryIcon
+import com.alorma.caducity.domain.model.CategoryShape
+import com.alorma.caducity.domain.model.HomeData
+import com.alorma.caducity.domain.model.HomeDaySection
+import com.alorma.caducity.domain.model.HomeRow
+import com.alorma.caducity.feature.tracking.HomeScreen as HomeScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
+import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
+import com.alorma.caducity.ui.navigation.LocalFloatingBarPadding
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import org.koin.compose.viewmodel.koinViewModel
+
+@Composable
+fun HomeScreen(
+  onOpenCalendar: (LocalDate?) -> Unit,
+  onOpenSearch: () -> Unit,
+  onOpenExpired: () -> Unit,
+  onOpenPantry: () -> Unit,
+  onOpenItemActions: (itemId: String) -> Unit,
+  onOpenAdd: () -> Unit,
+  modifier: Modifier = Modifier,
+  viewModel: HomeViewModel = koinViewModel(),
+) {
+  TrackScreen(screen = HomeScreenEvent())
+  val state by viewModel.state.collectAsStateWithLifecycle()
+
+  LaunchedEffect(viewModel) {
+    viewModel.navigationSideEffects.collect { effect ->
+      when (effect) {
+        is HomeNavigationSideEffect.OpenCalendar -> onOpenCalendar(effect.date)
+        HomeNavigationSideEffect.OpenSearch -> onOpenSearch()
+        HomeNavigationSideEffect.OpenExpired -> onOpenExpired()
+        HomeNavigationSideEffect.OpenPantry -> onOpenPantry()
+        is HomeNavigationSideEffect.OpenItemActions -> onOpenItemActions(effect.itemId)
+        HomeNavigationSideEffect.OpenAdd -> onOpenAdd()
+      }
+    }
+  }
+
+  ResponsiveCenteredContainer(modifier = modifier) {
+    when (val current = state) {
+      HomeState.Loading -> Unit
+      is HomeState.Ready ->
+        HomeContent(
+          state = current,
+          onNavigate = viewModel::navigate,
+          onConsume = viewModel::onConsume,
+          onDismissWidgetTip = viewModel::onDismissWidgetTip,
+        )
+    }
+  }
+}
+
+/** One entry of the lazy list; building the list first makes «scroll to the first section» a plain index. */
+private sealed interface HomeItem {
+  val key: String
+
+  data object Header : HomeItem {
+    override val key = "header"
+  }
+
+  data object Banner : HomeItem {
+    override val key = "banner"
+  }
+
+  data object Summary : HomeItem {
+    override val key = "summary"
+  }
+
+  data class SectionHeader(
+    val section: HomeDaySection,
+  ) : HomeItem {
+    override val key = "section-${section.date}"
+  }
+
+  data class Row(
+    val section: HomeDaySection,
+    val row: HomeRow,
+    val index: Int,
+  ) : HomeItem {
+    override val key = "row-${section.date}-${row.key}"
+  }
+
+  data object NothingSoon : HomeItem {
+    override val key = "nothing-soon"
+  }
+
+  data object Empty : HomeItem {
+    override val key = "empty"
+  }
+
+  data object WidgetTip : HomeItem {
+    override val key = "widget-tip"
+  }
+}
+
+private fun HomeState.Ready.items(): List<HomeItem> =
+  buildList {
+    add(HomeItem.Header)
+    if (data.isPantryEmpty) {
+      add(HomeItem.Empty)
+      if (widgetTipVisible) add(HomeItem.WidgetTip)
+      return@buildList
+    }
+    if (data.expiredCount > 0) add(HomeItem.Banner)
+    add(HomeItem.Summary)
+    if (data.nothingExpiresSoon) add(HomeItem.NothingSoon)
+    data.sections.forEach { section ->
+      add(HomeItem.SectionHeader(section))
+      section.rows.forEachIndexed { index, row -> add(HomeItem.Row(section, row, index)) }
+    }
+  }
+
+@Composable
+internal fun HomeContent(
+  state: HomeState.Ready,
+  onNavigate: (HomeNavigation) -> Unit,
+  onConsume: (HomeRow) -> Unit,
+  onDismissWidgetTip: () -> Unit,
+  modifier: Modifier = Modifier,
+  listState: LazyListState = rememberLazyListState(),
+) {
+  val data = state.data
+  val items = state.items()
+  val scope = rememberCoroutineScope()
+  val firstSection = items.indexOfFirst { it is HomeItem.SectionHeader }
+
+  LazyColumn(
+    state = listState,
+    modifier = modifier.fillMaxSize().statusBarsPadding(),
+    contentPadding =
+      PaddingValues(
+        start = 20.dp,
+        end = 20.dp,
+        bottom = LocalFloatingBarPadding.current.calculateBottomPadding() + 24.dp,
+      ),
+    verticalArrangement = Arrangement.spacedBy(ConnectedGap),
+  ) {
+    itemsIndexed(items, key = { _, item -> item.key }) { _, item ->
+      when (item) {
+        HomeItem.Header ->
+          HomeHeader(
+            today = data.today,
+            showActions = !data.isPantryEmpty,
+            onCalendar = { onNavigate(HomeNavigation.Calendar()) },
+            onSearch = { onNavigate(HomeNavigation.Search) },
+            modifier = Modifier.padding(bottom = 12.dp),
+          )
+        HomeItem.Banner ->
+          ExpiredBanner(
+            count = data.expiredCount,
+            oldestDaysAgo = data.oldestExpiredDaysAgo ?: 0,
+            onReview = { onNavigate(HomeNavigation.Expired) },
+            modifier = Modifier.padding(bottom = 12.dp),
+          )
+        HomeItem.Summary ->
+          SummaryRow(
+            soon = data.soonCount,
+            fresh = data.freshCount,
+            frozen = data.frozenCount,
+            onSoon = { if (firstSection >= 0) scope.launch { listState.animateScrollToItem(firstSection) } },
+            onFresh = { onNavigate(HomeNavigation.Pantry("summary_fresh")) },
+            onFrozen = { onNavigate(HomeNavigation.Pantry("summary_frozen")) },
+            modifier = Modifier.padding(bottom = 12.dp),
+          )
+        is HomeItem.SectionHeader ->
+          DaySectionHeader(
+            section = item.section,
+            today = data.today,
+            modifier = Modifier.padding(top = 16.dp, bottom = 6.dp),
+          )
+        is HomeItem.Row ->
+          HomeItemRow(
+            row = item.row,
+            index = item.index,
+            count = item.section.rows.size,
+            onClick = { onNavigate(HomeNavigation.ItemActions(item.row.nearestItemId)) },
+            onConsume = { onConsume(item.row) },
+          )
+        HomeItem.NothingSoon -> NothingSoon(onSeePantry = { onNavigate(HomeNavigation.Pantry("nothing_soon")) })
+        HomeItem.Empty -> HomeEmptyState(onAdd = { onNavigate(HomeNavigation.AddFirst) })
+        HomeItem.WidgetTip -> WidgetTipCard(onDismiss = onDismissWidgetTip, modifier = Modifier.padding(top = 40.dp))
+      }
+    }
+  }
+}
+
+private val ConnectedGap = 2.dp
+
+// region Previews
+
+private val today = LocalDate(2026, 10, 11)
+private val dairy = Category("dairy", "Làctics", "", CategoryShape.COOKIE, CategoryIcon("water_full"))
+private val produce = Category("produce", "Fruita i verdura", "", CategoryShape.CLOVER8, CategoryIcon("nutrition"))
+
+private fun row(
+  name: String,
+  category: Category,
+  units: Int = 1,
+) = HomeRow(name, name, category, units, name, null)
+
+private val sampleData =
+  HomeData(
+    today = today,
+    expiredCount = 7,
+    oldestExpiredDaysAgo = 5,
+    soonCount = 9,
+    freshCount = 42,
+    frozenCount = 3,
+    sections =
+      listOf(
+        HomeDaySection(today, listOf(row("Llet sencera", dairy), row("Espinacs", produce))),
+        HomeDaySection(LocalDate(2026, 10, 12), listOf(row("Iogurt", dairy, units = 3), row("Maduixes", produce))),
+      ),
+    isPantryEmpty = false,
+  )
+
+@PreviewLightDark
+@Composable
+private fun HomePreview() {
+  PreviewTheme {
+    HomeContent(HomeState.Ready(sampleData, widgetTipVisible = false), {}, {}, {})
+  }
+}
+
+@PreviewLightDark
+@Composable
+private fun HomeNothingSoonPreview() {
+  PreviewTheme {
+    HomeContent(
+      HomeState.Ready(sampleData.copy(expiredCount = 0, sections = emptyList()), widgetTipVisible = false),
+      {},
+      {},
+      {},
+    )
+  }
+}
+
+@PreviewLightDark
+@Composable
+private fun HomeEmptyPreview() {
+  PreviewTheme {
+    HomeContent(
+      HomeState.Ready(
+        HomeData(today, 0, null, 0, 0, 0, emptyList(), isPantryEmpty = true),
+        widgetTipVisible = true,
+      ),
+      {},
+      {},
+      {},
+    )
+  }
+}
+
+// endregion

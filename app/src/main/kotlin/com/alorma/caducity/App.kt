@@ -42,8 +42,8 @@ import com.alorma.caducity.ui.screen.add.AddScreen
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
 import com.alorma.caducity.ui.screen.category.quick.QuickCategorySheet
-import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
 import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusScreen
+import com.alorma.caducity.ui.screen.home.HomeScreen
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
 import com.alorma.caducity.ui.screen.settings.SettingsContainer
@@ -113,13 +113,15 @@ fun App(
             entry<Onboarding> {
               OnboardingScreen(onComplete = { navigation.resetTo() })
             }
-            // TEMP(fase 5b): old dashboard until Home exists.
             entry<Home> {
-              DashboardScreen(
-                onNavigateToCreateProduct = { navigation.navigate(CategoryEditor()) },
-                onNavigateToCategory = { categoryId -> navigation.navigate(Category(categoryId)) },
-                onNavigateToStatus = { status -> navigation.navigate(FilteredItems(status)) },
-                onNavigateToSettings = { navigation.navigate(Settings) },
+              HomeScreen(
+                onOpenCalendar = { date -> navigation.navigate(Calendar(date = date)) },
+                // TEMP(fase 6): Rebost still has no focused search; this only switches tab.
+                onOpenSearch = { navigation.switchTab(Pantry) },
+                onOpenExpired = { navigation.navigate(Expired) },
+                onOpenPantry = { navigation.switchTab(Pantry) },
+                onOpenItemActions = { navigation.navigate(ItemActions(it)) },
+                onOpenAdd = { navigation.navigate(Add(source = "home_empty")) },
               )
             }
             entry<Pantry> {

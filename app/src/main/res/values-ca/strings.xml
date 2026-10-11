@@ -419,4 +419,38 @@
   <string name="item_actions_snackbar_moved">%1$s mogut a %2$s</string>
   <string name="item_actions_error">No s\'ha pogut fer l\'acció</string>
   <string name="item_actions_error_freeze_expired">Un producte caducat no es pot congelar</string>
+  <string name="home_title">Què caduca</string>
+  <string name="home_calendar">Calendari</string>
+  <string name="home_search">Cerca</string>
+  <plurals name="home_expired_banner_title">
+    <item quantity="one">%d producte caducat</item>
+    <item quantity="other">%d productes caducats</item>
+  </plurals>
+  <plurals name="home_expired_banner_subtitle">
+    <item quantity="one">El més antic, fa %d dia</item>
+    <item quantity="other">El més antic, fa %d dies</item>
+  </plurals>
+  <string name="home_expired_banner_action">Revisa</string>
+  <string name="home_summary_soon">Aviat</string>
+  <string name="home_summary_fresh">Frescos</string>
+  <string name="home_summary_frozen">Congelats</string>
+  <string name="home_section_today">Avui</string>
+  <string name="home_section_tomorrow">Demà</string>
+  <plurals name="home_product_count">
+    <item quantity="one">%d producte</item>
+    <item quantity="other">%d productes</item>
+  </plurals>
+  <plurals name="home_unit_count">
+    <item quantity="one">%d unitat</item>
+    <item quantity="other">%d unitats</item>
+  </plurals>
+  <string name="home_mark_consumed">Marca %1$s com a consumit</string>
+  <string name="home_nothing_soon">Res caduca aviat. Bona feina.</string>
+  <string name="home_nothing_soon_link">Mira el rebost</string>
+  <string name="home_empty_title">El rebost és buit</string>
+  <string name="home_empty_body">Comença per la compra d\'avui: afegeix el que acabes de guardar a la nevera.</string>
+  <string name="home_empty_cta">Afegeix el primer producte</string>
+  <string name="home_widget_tip">Posa el widget a la pantalla d\'inici per afegir sense obrir l\'app.</string>
+  <string name="home_widget_tip_dismiss">Descarta el consell</string>
+  <string name="item_pack_of">pack de %d</string>
 </resources>

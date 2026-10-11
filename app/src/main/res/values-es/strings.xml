@@ -418,4 +418,38 @@
   <string name="item_actions_snackbar_moved">%1$s movido a %2$s</string>
   <string name="item_actions_error">No se ha podido hacer la acción</string>
   <string name="item_actions_error_freeze_expired">Un producto caducado no se puede congelar</string>
+  <string name="home_title">Qué caduca</string>
+  <string name="home_calendar">Calendario</string>
+  <string name="home_search">Buscar</string>
+  <plurals name="home_expired_banner_title">
+    <item quantity="one">%d producto caducado</item>
+    <item quantity="other">%d productos caducados</item>
+  </plurals>
+  <plurals name="home_expired_banner_subtitle">
+    <item quantity="one">El más antiguo, hace %d día</item>
+    <item quantity="other">El más antiguo, hace %d días</item>
+  </plurals>
+  <string name="home_expired_banner_action">Revisa</string>
+  <string name="home_summary_soon">Pronto</string>
+  <string name="home_summary_fresh">Frescos</string>
+  <string name="home_summary_frozen">Congelados</string>
+  <string name="home_section_today">Hoy</string>
+  <string name="home_section_tomorrow">Mañana</string>
+  <plurals name="home_product_count">
+    <item quantity="one">%d producto</item>
+    <item quantity="other">%d productos</item>
+  </plurals>
+  <plurals name="home_unit_count">
+    <item quantity="one">%d unidad</item>
+    <item quantity="other">%d unidades</item>
+  </plurals>
+  <string name="home_mark_consumed">Marca %1$s como consumido</string>
+  <string name="home_nothing_soon">Nada caduca pronto. Buen trabajo.</string>
+  <string name="home_nothing_soon_link">Mira la despensa</string>
+  <string name="home_empty_title">La despensa está vacía</string>
+  <string name="home_empty_body">Empieza por la compra de hoy: añade lo que acabas de guardar en la nevera.</string>
+  <string name="home_empty_cta">Añade el primer producto</string>
+  <string name="home_widget_tip">Pon el widget en la pantalla de inicio para añadir sin abrir la app.</string>
+  <string name="home_widget_tip_dismiss">Descarta el consejo</string>
+  <string name="item_pack_of">pack de %d</string>
 </resources>
