@@ -89,7 +89,9 @@ fun BatchSavedCard(
   onRemove: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  // The whole card edits; the two icon buttons keep their own targets (and the accessible labels).
   Surface(
+    onClick = onEdit,
     shape = RoundedCornerShape(20.dp),
     color = CaducityTheme.colorScheme.surfaceContainer,
     modifier = modifier.width(148.dp).height(148.dp),
