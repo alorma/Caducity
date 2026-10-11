@@ -22,16 +22,26 @@ a{color:#4D5A1E}a:hover{color:#283010}
     <div style="display: flex; align-items: center; gap: 4px; margin-left: -8px">
       <a href="Main.dc.html" aria-label="Tanca" style="width: 48px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #29241C; text-decoration: none"><span class="ms" style="font-size: 24px">close</span></a>
       <h1 style="flex: 1; margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 700; font-stretch: 85%">Afegeix</h1>
-      <span style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 16px; background: #DCE8C4; color: #2F4515; font-size: 13px; font-weight: 700"><span class="ms msf" style="font-size: 18px">check_circle</span>3 desats</span>
+      <span style="display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 16px; background: #DCE8C4; color: #2F4515; font-size: 13px; font-weight: 700"><span class="ms msf" style="font-size: 18px">check_circle</span>12 desats</span>
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 8px">
-      <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #665C4C; padding: 0 4px">En aquesta tanda</div>
-      <div style="display: flex; flex-wrap: wrap; gap: 6px">
-        <button style="display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border: none; border-radius: 12px; background: #F4ECDD; font-family: 'Figtree', sans-serif; font-size: 14px; color: #29241C">Llet sencera <span style="color: #665C4C">· 15/10</span></button>
-        <button style="display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border: none; border-radius: 12px; background: #F4ECDD; font-family: 'Figtree', sans-serif; font-size: 14px; color: #29241C">Iogurt natural ×2 <span style="color: #665C4C">· 18/10</span></button>
-        <button style="display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border: none; border-radius: 12px; background: #F4ECDD; font-family: 'Figtree', sans-serif; font-size: 14px; color: #29241C">Formatge cheddar <span style="color: #665C4C">· 21/10</span></button>
-      </div>
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #665C4C; padding: 0 4px">Desats en aquesta tanda</div>
+      <ul aria-label="Productes desats en aquesta tanda, del més recent al més antic" style="list-style: none; margin: 0 -20px 0 0; padding: 0 20px 0 0; display: flex; gap: 8px; overflow: hidden">
+        <sc-for list="{{saved}}" as="s" hint-placeholder-count="4">
+          <li style="flex: none; width: 148px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 12px 6px 6px 12px; border-radius: 20px; background: #F4ECDD">
+            <div style="display: flex; align-items: flex-start; gap: 6px; padding-right: 6px">
+              <span class="ms msf" aria-hidden="true" style="font-size: 18px; color: #5E7D2E">check_circle</span>
+              <span style="flex: 1; min-width: 0; font-size: 15px; font-weight: 600; line-height: 1.2">{{s.name}}</span>
+            </div>
+            <div style="font-size: 12px; color: #665C4C; line-height: 1.35; padding-right: 6px">{{s.cat}}<br>{{s.meta}}</div>
+            <div style="display: flex; justify-content: flex-end; gap: 0; margin-top: auto">
+              <button aria-label="{{s.editLabel}}" style="width: 44px; height: 44px; border: none; border-radius: 22px; background: transparent; color: #665C4C; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 20px">edit</span></button>
+              <button aria-label="{{s.deleteLabel}}" style="width: 44px; height: 44px; border: none; border-radius: 22px; background: transparent; color: #B23F2A; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 20px">delete</span></button>
+            </div>
+          </li>
+        </sc-for>
+      </ul>
     </div>
 
     <div style="display: flex; flex-direction: column; gap: 8px">
@@ -87,7 +97,16 @@ class Component extends DCLogic {
     return "M" + p.join("L") + "Z";
   }
   renderVals() {
-    return { cookie: this.blob(9, 3, 0) };
+    var rows = [
+      ["Formatge cheddar", "Làctics", "1 unitat · 21/10"],
+      ["Iogurt natural", "Làctics", "2 unitats · 18/10"],
+      ["Llet sencera", "Làctics", "1 unitat · 15/10"],
+      ["Pomes", "Fruita i verdura", "3 unitats · 25/10"]
+    ];
+    var saved = rows.map(function (r) {
+      return { name: r[0], cat: r[1], meta: r[2], editLabel: "Edita " + r[0], deleteLabel: "Treu " + r[0] + " de la tanda" };
+    });
+    return { cookie: this.blob(9, 3, 0), saved: saved };
   }
 }
 </script>

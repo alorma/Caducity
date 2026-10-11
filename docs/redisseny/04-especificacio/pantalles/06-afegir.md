@@ -8,7 +8,7 @@ Substitueix el botó «Add item» amb split i el formulari antic.
 ## Estructura (pantalla completa)
 
 1. Barra: `close` (48 dp) + «Afegeix» (`sheet-title`). En mode tanda, a la dreta pastilla «✓ N desats» (`fresh-container`).
-2. **En aquesta tanda** (només mode tanda): xips 36 dp `surface-card` amb «Nom · dd/mm» de cada ítem desat; tocar-ne un → l'edita.
+2. **Desats en aquesta tanda** (només mode tanda): **fila horitzontal amb scroll** de targetes (vegeu «Mode tanda» a sota). Substitueix els xips «Nom · dd/mm» de la versió anterior.
 3. **Nom** (overline + camp 60 dp, `surface-high`, vora 2 dp `primary` amb focus, radi 16, text 19/600). Focus i teclat oberts en entrar. Botó `cancel` per buidar.
    - **Suggeriment de l'historial** (màx. 1 visible; fila 52 dp `surface-card` radi 16): `history` + nom amb la part escrita en negreta + categoria a la dreta. Tocar → omple nom i categoria.
    - **Producte nou** (cap coincidència): avís `primary-container` amb `add_circle` «**Producte nou.** Tria'n la categoria i la data.»
@@ -25,6 +25,19 @@ Substitueix el botó «Add item» amb split i el formulari antic.
    - Desactivats (fons `surface-high`, text `outline`) mentre faltin camps; a sobre, «Falten la categoria i la data per desar».
 
 ## Mode tanda (`AfegirTanda.png`)
+
+### Fila «Desats en aquesta tanda»
+- `LazyRow` horitzontal, gap 8 dp, padding inicial 20 dp i **sense padding final visible**: la fila arriba fins a la vora dreta de la pantalla perquè es vegi **una part de la targeta següent** (indica que hi ha scroll).
+- Ordre: **el més recent primer** (a l'esquerra). En desar un producte nou, la fila fa scroll a l'inici amb animació (`animateItem()`).
+- **Targeta** de 148 dp d'amplada, `surface-card`, radi 20, padding 12/6/6/12:
+  - `check_circle` farcit 18 dp en `fresh` + nom del producte (`title-row` 15/600, **fins a 2 línies**, sense tallar).
+  - Categoria (`body-small` 12, `ink-variant`) i, a sota, «N unitats · dd/mm».
+  - A baix a la dreta, dos botons d'icona de 44 dp: **Edita** (`edit`, `ink-variant`) → obre l'ítem en mode edició; **Treu de la tanda** (`delete`, `expired`) → esborra l'ítem desat i mostra snackbar «Formatge cheddar tret · Desfés». **Sense diàleg de confirmació** (el Desfés n'és la protecció).
+- Accessibilitat: la fila és una llista («Productes desats en aquesta tanda, del més recent al més antic»); botons amb contentDescription «Edita {nom}» / «Treu {nom} de la tanda».
+- El comptador de la capçalera («✓ 12 desats») mostra el total de la tanda.
+- Si s'esborren tots, la fila desapareix i la pantalla torna a l'aspecte d'Afegeix normal.
+
+### Resta del mode tanda
 - Categoria i data es mostren com a files resum connectades amb botó «Canvia» (en lloc dels xips i el camp de data), més la nota «Es mantenen del producte anterior. Si escrius un nom que ja coneixes, s'omplen amb el seu.»
 - Si l'usuari tria un suggeriment, la categoria s'actualitza a la del suggeriment; la data es manté.
 
