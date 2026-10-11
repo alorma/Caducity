@@ -269,7 +269,7 @@ private fun PantryPreview() {
           query = "",
           results = emptyList(),
         ),
-      focusRequester = FocusRequester(),
+      focusRequester = remember { FocusRequester() },
       onQueryChange = {},
       onNavigate = {},
       onOpenItemActions = {},

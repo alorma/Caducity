@@ -584,4 +584,13 @@
   <string name="ob_category_drinks">Bebidas</string>
   <string name="ob_category_cold_cuts">Embutidos</string>
   <string name="ob_category_ready_meals">Platos preparados</string>
+  <string name="debug_inapp_review_requested">Se ha solicitado el diálogo de valoración (puede no mostrarse en depuración)</string>
+  <string name="quantity_selector_consume_title">¿Cuántos quieres consumir?</string>
+  <string name="quantity_selector_consume_expired_title">¿Cuántos caducados quieres consumir?</string>
+  <string name="quantity_selector_freeze_title">¿Cuántos quieres congelar?</string>
+  <string name="quantity_selector_unfreeze_title">¿Cuántos quieres descongelar?</string>
+  <string name="quantity_selector_delete_title">¿Cuántos quieres borrar?</string>
+  <string name="quantity_selector_confirm">Confirmar (%d)</string>
+  <string name="quantity_selector_cancel">Cancelar</string>
+  <string name="quantity_selector_all">Todos</string>
 </resources>

@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -66,7 +67,6 @@ import com.alorma.caducity.ui.components.status.statusPillText
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import kotlin.time.Instant
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -199,7 +199,7 @@ private fun metaText(state: ItemActionsSheetState.Ready): String {
 /** «dc. 21 oct», localized. */
 @Composable
 private fun formatDate(date: LocalDate): String {
-  val locale = Locale.getDefault()
+  val locale = LocalLocale.current.platformLocale
   return DateTimeFormatter.ofPattern("EEE d MMM", locale).format(date.toJavaLocalDate())
 }
 

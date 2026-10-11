@@ -11,8 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHost
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarResult
@@ -33,6 +35,7 @@ private val FloatingBarContentPadding = PaddingValues(bottom = 96.dp)
  * Parent scaffold of the top-level screens. The [FloatingNavBar] lives in the FAB slot, so it is drawn
  * over [content] (each screen keeps its own scaffold) instead of reserving space below it.
  */
+@Suppress("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun AppShell(
   currentTab: TopLevelRoute,
@@ -45,14 +48,14 @@ fun AppShell(
   content: @Composable () -> Unit,
 ) {
   val snackbarState = rememberAppSnackbarState()
-  val context = LocalContext.current
+  val resources by rememberUpdatedState(LocalResources.current)
   LaunchedEffect(snackbarEvents) {
     snackbarEvents.events.collect { event ->
       launch {
         val result =
           snackbarState.showSnackbar(
-            message = context.getString(event.message, *event.messageArgs.toTypedArray()),
-            actionLabel = event.actionLabel?.let(context::getString),
+            message = resources.getString(event.message, *event.messageArgs.toTypedArray()),
+            actionLabel = event.actionLabel?.let(resources::getString),
             type = event.type,
           )
         if (result == AppSnackbarResult.ActionPerformed) event.onAction?.invoke()
