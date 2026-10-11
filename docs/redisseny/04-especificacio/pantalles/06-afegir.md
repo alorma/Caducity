@@ -34,7 +34,7 @@ Substitueix el botó «Add item» amb split i el formulari antic.
   - Categoria (`body-small` 12, `ink-variant`) i, a sota, «N unitats · dd/mm».
   - A baix a la dreta, dos botons d'icona de 44 dp: **Edita** (`edit`, `ink-variant`) → obre l'ítem en mode edició; **Treu de la tanda** (`delete`, `expired`) → esborra l'ítem desat i mostra snackbar «Formatge cheddar tret · Desfés». **Sense diàleg de confirmació** (el Desfés n'és la protecció).
 - Accessibilitat: la fila és una llista («Productes desats en aquesta tanda, del més recent al més antic»); botons amb contentDescription «Edita {nom}» / «Treu {nom} de la tanda».
-- El comptador de la capçalera («✓ 12 desats») mostra el total de la tanda.
+- El comptador de la capçalera («✓ 12 desats») compta **entrades (productes desats = targetes de la fila), no unitats**. Les unitats ja es veuen a cada targeta («N unitats · dd/mm»). En treure una targeta, el comptador baixa en 1.
 - Si s'esborren tots, la fila desapareix i la pantalla torna a l'aspecte d'Afegeix normal.
 
 ### Resta del mode tanda
