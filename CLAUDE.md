@@ -780,4 +780,4 @@ All dependencies are centralized in `gradle/libs.versions.toml`:
 
 ## CI
 
-Workflows in `.github/workflows` are kept identical to Converses, except for the `google-services.json` step: `pr-build.yml` (ktlint + tests + debug APK), `build-apk.yml`, `screenshot-tests.yml`, `release.yml` (manual, with a `track` input; bumps patch as snapshot afterwards) and `publish-listing.yml`. `bootstrap-play-listing.yml` is one-off, to download the existing Play listing into `app/src/main/play`. The `update-screenshots` label on a PR regenerates screenshot references (`app/src/screenshotTestDebug/reference`).
+Workflows in `.github/workflows` are kept identical to Converses, except for the `google-services.json` step: `pr-build.yml` (ktlint + tests + debug APK), `build-apk.yml`, `screenshot-tests.yml`, `release.yml` (manual, with a `track` input; bumps patch as snapshot afterwards) and `publish-listing.yml`. The `update-screenshots` label on a PR regenerates screenshot references (`app/src/screenshotTestDebug/reference`).
