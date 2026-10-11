@@ -6,6 +6,7 @@ import com.alorma.caducity.data.backup.BackupCategory
 import com.alorma.caducity.data.backup.BackupData
 import com.alorma.caducity.data.backup.BackupProduct
 import com.alorma.caducity.data.backup.BackupProductItem
+import com.alorma.caducity.data.backup.upgradeToV2
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.dao.CategoryDao
 import com.alorma.caducity.data.datasource.room.dao.ItemDao
@@ -14,6 +15,9 @@ import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import com.alorma.caducity.domain.backup.BackupDataSource
+import com.alorma.caducity.domain.model.CategoryDefaults
+import com.alorma.caducity.domain.model.CategoryIcon
+import com.alorma.caducity.domain.model.CategoryShape
 
 class RoomBackupDataSource(
   private val database: AppDatabase,
@@ -23,7 +27,7 @@ class RoomBackupDataSource(
   private val appClock: AppClock,
 ) : BackupDataSource {
   override suspend fun exportBackup(): BackupData {
-    val categories = categoryDao.getAllCategoriesSync()
+    val categories = categoryDao.getCategoriesOrderedSync()
     val products = productDao.getAllProductsSync()
     val items = itemDao.getAllItemsSync()
 
@@ -51,6 +55,9 @@ class RoomBackupDataSource(
           id = category.id,
           name = category.name,
           description = category.description,
+          shape = category.shape.name,
+          icon = category.icon.id,
+          sortOrder = category.sortOrder,
           products = productsByCategory,
           standaloneItems =
             items
@@ -76,20 +83,27 @@ class RoomBackupDataSource(
       remainingDays = item.remainingDays,
       consumedDate = item.consumedDate,
       packSize = item.packSize,
+      discardedDate = item.discardedDate,
+      createdAt = item.createdAt,
     )
 
   override suspend fun importBackup(backup: BackupData) {
+    val data = backup.upgradeToV2()
     database.withTransaction {
       // Clear existing data
       clearAllData()
 
       // Insert categories and items (mapping from old backup format)
-      backup.categories.forEach { category: BackupCategory ->
+      data.categories.forEach { category: BackupCategory ->
+        val defaults = CategoryDefaults.forName(category.name, category.sortOrder ?: 0)
         val categoryEntity =
           CategoryRoomEntity(
             id = category.id,
             name = category.name,
             description = category.description,
+            shape = category.shape?.let(::shapeOrDefault) ?: defaults.shape,
+            icon = category.icon?.let { CategoryIcon(it) } ?: defaults.icon,
+            sortOrder = category.sortOrder ?: 0,
           )
         categoryDao.insertCategory(categoryEntity)
 
@@ -116,6 +130,8 @@ class RoomBackupDataSource(
               remainingDays = item.remainingDays,
               consumedDate = item.consumedDate,
               packSize = item.packSize,
+              discardedDate = item.discardedDate,
+              createdAt = item.createdAt,
             )
           itemDao.insertItem(itemEntity)
         }
@@ -133,6 +149,8 @@ class RoomBackupDataSource(
                 remainingDays = item.remainingDays,
                 consumedDate = item.consumedDate,
                 packSize = item.packSize,
+                discardedDate = item.discardedDate,
+                createdAt = item.createdAt,
               )
             itemDao.insertItem(itemEntity)
           }
@@ -140,6 +158,9 @@ class RoomBackupDataSource(
       }
     }
   }
+
+  private fun shapeOrDefault(name: String): CategoryShape =
+    CategoryShape.entries.firstOrNull { it.name == name } ?: CategoryShape.COOKIE
 
   override suspend fun clearAllData() {
     // Delete items first due to foreign key constraint
