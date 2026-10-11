@@ -160,6 +160,27 @@ class Migration2To3Test {
   }
 
   @Test
+  fun `standalone items named like an existing product join it, ignoring case and accents`() {
+    helper.createDatabase(TEST_DB, 2).apply {
+      execSQL("INSERT INTO categories VALUES ('c1', 'Dairy', '')")
+      execSQL("INSERT INTO products VALUES ('p1', 'c1', 'Café', 1)")
+      execSQL(
+        "INSERT INTO items (id, categoryId, identifier, productId, expirationDate) VALUES " +
+          "('s1', 'c1', 'cafe ', NULL, 10), ('s2', 'c1', 'CAFÉ', NULL, 20), ('s3', 'c1', 'Tea', NULL, 30)",
+      )
+      close()
+    }
+    val db = helper.runMigrationsAndValidate(TEST_DB, 3, true, MIGRATION_2_3)
+
+    val byItem = db.rows("SELECT id, productId FROM items ORDER BY id") { listOf(it.getString(0), it.getString(1)) }
+    expectThat(byItem[0][1]).isEqualTo("p1")
+    expectThat(byItem[1][1]).isEqualTo("p1")
+    expectThat(byItem[2][1]).isNotEqualTo("p1")
+    expectThat(db.count("products")).isEqualTo(2)
+    expectThat(db.foreignKeyViolations()).isEmpty()
+  }
+
+  @Test
   fun `migrates an empty database`() {
     helper.createDatabase(TEST_DB, 2).close()
     val db = helper.runMigrationsAndValidate(TEST_DB, 3, true, MIGRATION_2_3)
