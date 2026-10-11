@@ -30,4 +30,4 @@ Problemes de l'app actual (vegeu `01-app-original/`):
 
 Inclou: totes les pantalles de `02-disseny-nou/`, el design system, la icona, el splash, el widget, les dreceres de la icona i l'onboarding nou.
 
-Fora d'abast: IA, veu, càmera (codi de barres, OCR de dates o tiquets), llista de la compra, sincronització al núvol, tauleta (es pot adaptar després), mode fosc dibuixat (els tokens foscos existeixen i s'han d'implementar, però no hi ha mockups foscos).
+Fora d'abast: IA, veu, càmera (codi de barres, OCR de dates o tiquets), llista de la compra, sincronització al núvol, tauleta (es pot adaptar després), mode fosc: **dins d'abast**, amb mockups i regles a `12-mode-fosc.md`.

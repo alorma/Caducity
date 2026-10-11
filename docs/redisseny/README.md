@@ -11,6 +11,7 @@ Aquest paquet descriu el redisseny complet de **Caducity**, l'app Android de seg
 | `01-app-original/` | Captures de l'app actual (`app/`) i de l'onboarding actual (`onboarding/`), amb els README originals que expliquen cada pantalla. |
 | `02-disseny-nou/captures/` | Captures PNG (@2x) de cada pantalla nova. |
 | `02-disseny-nou/font-dc-html/` | Font HTML de cada pantalla del canvas de disseny. Útil per extreure mides, colors, radis i textos exactes. `canvas.json` és l'índex. |
+| `02-disseny-nou/captures-fosc/` | Captures en mode fosc de 6 pantalles (Inici, Rebost, Categoria, Accions, Afegeix, Caducats); fonts a `font-dc-html/*Fosc.dc.html`. Regles a `04-especificacio/12-mode-fosc.md`. |
 | `03-design-system/` | Design system **Caducity**: `README.md` (principis, estats, formes, patrons) i `tokens.json` (colors clar/fosc, tipografia, espaiat, radis, ombra). |
 | `04-especificacio/` | Especificació funcional i visual per implementar. |
 | `PROMPT-CLAUDE-CODE.md` | Prompt original per demanar el pla de migració (ja executat). |
@@ -29,6 +30,7 @@ Aquest paquet descriu el redisseny complet de **Caducity**, l'app Android de seg
 8. `06-moviment.md` — animacions i transicions.
 9. `07-accessibilitat.md` — requisits d'accessibilitat.
 10. `08-decisions-i-obertes.md` — decisions preses i preguntes pendents.
+11. `12-mode-fosc.md` — mode fosc: regla de substitució clar → fosc, contrast i criteri d'acceptació.
 
 ## Restriccions clau (no negociables)
 
