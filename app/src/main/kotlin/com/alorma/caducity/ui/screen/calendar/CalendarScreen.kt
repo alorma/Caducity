@@ -314,6 +314,7 @@ private fun DayCell(
     modifier =
       modifier
         .height(CellHeight)
+        .clip(CaducityShapes.field)
         .semantics {
           role = Role.Button
           this.selected = isSelected

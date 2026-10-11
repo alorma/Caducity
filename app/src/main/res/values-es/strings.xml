@@ -145,6 +145,7 @@
   <string name="quick_category_title">Nueva categoría</string>
   <string name="category_form_name">Nombre</string>
   <string name="category_form_shape">Forma</string>
+  <string name="category_form_shape_option">Forma %1$d de %2$d</string>
   <string name="category_form_icon">Icono</string>
   <string name="quick_category_note">La descripción y el orden se pueden cambiar después, en Despensa.</string>
   <string name="quick_category_create">Crea y úsala</string>
