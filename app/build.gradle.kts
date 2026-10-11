@@ -14,6 +14,8 @@ plugins {
   alias(libs.plugins.firebase.crashlytics)
 
   alias(libs.plugins.versionPlugin)
+
+  alias(libs.plugins.play.publisher)
 }
 
 android {
