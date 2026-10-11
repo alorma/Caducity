@@ -1,11 +1,14 @@
 package com.alorma.caducity.ui.components.button
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,6 +26,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -81,7 +85,7 @@ fun ConnectedButtonGroup(
   height: Dp = 48.dp,
 ) {
   Row(
-    modifier = modifier.fillMaxWidth(),
+    modifier = modifier.fillMaxWidth().height(IntrinsicSize.Min),
     horizontalArrangement = Arrangement.spacedBy(ConnectedButtonSpacing),
   ) {
     options.forEachIndexed { index, option ->
@@ -99,7 +103,8 @@ fun ConnectedButtonGroup(
         modifier =
           Modifier
             .weight(1f)
-            .height(height)
+            .fillMaxHeight()
+            .heightIn(min = height)
             .semantics { this.role = role },
         shape = connectedButtonShape(index, options.size),
         color = container,
@@ -122,6 +127,11 @@ private fun RowScope.ButtonContent(option: ConnectedButtonOption) {
       Icon(imageVector = it, contentDescription = null, modifier = Modifier.size(20.dp))
       Spacer(Modifier.width(6.dp))
     }
-    Text(text = option.label, style = CaducityTheme.typography.labelLarge, maxLines = 1)
+    Text(
+      text = option.label,
+      style = CaducityTheme.typography.labelLarge,
+      maxLines = 2,
+      textAlign = TextAlign.Center,
+    )
   }
 }
