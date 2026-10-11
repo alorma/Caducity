@@ -1,210 +1,121 @@
-name: Generate Release
+name: Release
 
+# Builds the signed release APK and AAB from main, uploads the AAB and its release notes to Google Play, publishes a GitHub release
+# tagged with the version in version.properties and bumps the patch version (as a snapshot) for the next cycle.
+# Manual trigger only
 on:
   workflow_dispatch:
+    inputs:
+      track:
+        description: Google Play track
+        type: choice
+        options: [internal, alpha, beta, production]
+        default: beta
 
 permissions:
   contents: write
 
+# Google Play només admet una edició oberta a la vegada: comparteix grup amb publish-listing.yml
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: play-publish
+  cancel-in-progress: false
 
 jobs:
-  get-version:
-    name: Get Version
+  release:
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
+    timeout-minutes: 30
+
     steps:
-      - name: Check out code
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
           ref: main
           fetch-depth: 0
 
-      - name: Set up JDK
-        uses: actions/setup-java@v6.0.1
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: 21
+          java-version: "21"
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
-        with:
-          gradle-version: wrapper
-          cache-read-only: false
-
-      - name: Disable snapshot before release
-        uses: ./.github/actions/disable-snapshot
-
-      - name: Get current version
-        id: get_version
-        run: |
-          CURRENT_VERSION=$(./gradlew -q printVersionName)
-          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          echo "Current version to publish: $CURRENT_VERSION"
-
-          echo "**Version from:** \`$CURRENT_VERSION\`" >> $GITHUB_STEP_SUMMARY
-
-  build:
-    name: Build Release AAB and APK
-    runs-on: ubuntu-latest
-    needs: [ get-version ]
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v7
-
-      - name: Set up JDK
-        uses: actions/setup-java@v6.0.1
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
-        with:
-          gradle-version: wrapper
-          cache-read-only: false
-
-      - name: Disable snapshot before release
-        uses: ./.github/actions/disable-snapshot
+      - uses: gradle/actions/setup-gradle@v6
 
       - name: Create google-services.json
         run: |
           echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > app/google-services.json
 
-      - name: Decode Keystore
+      - name: Disable snapshot
+        run: sed -i "s/^snapshot=.*/snapshot=false/" version.properties
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(./gradlew -q printVersionName)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "**Version:** \`$VERSION\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail if the tag already exists
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          if git rev-parse -q --verify "refs/tags/$VERSION" > /dev/null; then
+            echo "Tag $VERSION already exists" >&2
+            exit 1
+          fi
+
+      - name: Decode keystore
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
         run: |
           mkdir -p certs
-          echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > certs/release.keystore
+          echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > certs/release.keystore
 
-      - name: Build release AAB and APK
-        run: |
-          ./gradlew :app:bundleRelease
-          ./gradlew :app:assembleRelease
+      - name: Build signed release APK and AAB
+        run: ./gradlew :app:assembleRelease :app:bundleRelease
         env:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-      - name: Prepare artifacts for upload
-        run: |
-          mkdir -p artifacts/aab
-          cp app/build/outputs/bundle/release/app-release.aab artifacts/aab/
-          cp app/build/outputs/mapping/release/mapping.txt artifacts/aab/
-
-      - name: Upload AAB artifact
+      - name: Upload AAB and mapping
         uses: actions/upload-artifact@v7
         with:
-          name: release-aab
-          path: artifacts/aab/
+          name: caducity-release-aab-${{ steps.version.outputs.version }}
+          path: |
+            app/build/outputs/bundle/release/*.aab
+            app/build/outputs/mapping/release/mapping.txt
+          if-no-files-found: error
           retention-days: 30
 
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: release-apk
-          path: app/build/outputs/apk/release/app-release.apk
-          retention-days: 30
-
-  deploy-google-play:
-    name: Deploy to Google Play
-    runs-on: ubuntu-latest
-    needs: [ get-version, build ]
-    permissions:
-      contents: read
-
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v7
-
-      - name: Set up JDK
-        uses: actions/setup-java@v6.0.1
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
-        with:
-          gradle-version: wrapper
-          cache-read-only: false
-
-      - name: Download AAB artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: release-aab
-          path: artifacts/aab
-
-      - name: Upload to Google Play Production Track
-        run: ./gradlew :app:publishReleaseBundle --artifact-dir artifacts/aab --track production --release-name "${{ needs.get-version.outputs.version }}"
+      # Gradle Play Publisher: puja l'AAB i, de app/src/main/play/release-notes, les notes de cada idioma.
+      # El mapping de R8 va dins l'AAB
+      - name: Upload to Google Play
+        run: ./gradlew :app:publishReleaseBundle --track "${{ inputs.track }}" --release-name "${{ steps.version.outputs.version }}"
         env:
           ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-
-  create-github-release:
-    name: Create GitHub Release
-    runs-on: ubuntu-latest
-    needs: [ get-version, build, deploy-google-play ]
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-        with:
-          ref: main
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Download APK artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: release-apk
-          path: artifacts/apk
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
       - name: Create tag and GitHub release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION: ${{ needs.get-version.outputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
+          mv app/build/outputs/apk/release/app-release.apk "caducity-$VERSION.apk"
+          gh release create "$VERSION" \
+            --title "Caducity $VERSION" \
+            --generate-notes \
+            --target "${{ github.sha }}" \
+            "caducity-$VERSION.apk"
+
+      - name: Bump patch version for the next release
+        run: |
+          MAJOR=$(grep "^major=" version.properties | cut -d= -f2)
+          MINOR=$(grep "^minor=" version.properties | cut -d= -f2)
+          PATCH=$(grep "^patch=" version.properties | cut -d= -f2)
+          NEXT="$MAJOR.$MINOR.$((PATCH + 1))"
+          printf "major=%s\nminor=%s\npatch=%s\nsnapshot=true\n" "$MAJOR" "$MINOR" "$((PATCH + 1))" > version.properties
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          TAG_NAME="${VERSION}"
-          echo "Creating tag: $TAG_NAME"
-
-          # Create and push tag
-          git tag -a "$TAG_NAME" -m "$TAG_NAME"
-          git push origin "$TAG_NAME"
-
-          # Create release with auto-generated notes and attach APK
-          gh release create "$TAG_NAME" \
-            --title "Release $TAG_NAME" \
-            --generate-notes \
-            --target main \
-            artifacts/apk/app-release.apk
-
-  update-version:
-    name: Update Version for Next Release
-    runs-on: ubuntu-latest
-    needs: [ get-version, deploy-google-play, create-github-release ]
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-        with:
-          ref: main
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Bump minor version
-        id: bump
-        uses: ./.github/actions/bump-minor-version
-
-      - name: Commit version changes
-        uses: ./.github/actions/commit-version
-        with:
-          version: ${{ steps.bump.outputs.next_version }}
+          git add version.properties
+          git commit -m "Bump version to $NEXT-SNAPSHOT"
+          git push origin main

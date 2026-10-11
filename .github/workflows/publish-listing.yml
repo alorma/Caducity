@@ -1,0 +1,40 @@
+name: Publish Play listing
+
+# Uploads the Google Play store listing (title, descriptions, graphics and contact details per language)
+# from app/src/main/play. Release notes travel with the AAB in release.yml. Manual trigger only
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Google Play only allows one open edit at a time: shares the group with release.yml
+concurrency:
+  group: play-publish
+  cancel-in-progress: false
+
+jobs:
+  publish-listing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Create google-services.json
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > app/google-services.json
+
+      - name: Publish listing
+        run: ./gradlew :app:publishReleaseListing
+        env:
+          ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_JSON }}
