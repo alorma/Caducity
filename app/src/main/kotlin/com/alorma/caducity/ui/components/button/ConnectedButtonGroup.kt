@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -91,16 +92,15 @@ fun ConnectedButtonGroup(
       val content =
         option.content
           ?: if (selected) CaducityTheme.colorScheme.onPrimary else CaducityTheme.colorScheme.onSurface
+      val role = if (selectedIndex != null) Role.RadioButton else Role.Button
       Surface(
+        selected = selected,
+        onClick = { onClick(index) },
         modifier =
           Modifier
             .weight(1f)
             .height(height)
-            .selectable(
-              selected = selected,
-              role = if (selectedIndex != null) Role.RadioButton else Role.Button,
-              onClick = { onClick(index) },
-            ),
+            .semantics { this.role = role },
         shape = connectedButtonShape(index, options.size),
         color = container,
         contentColor = content,

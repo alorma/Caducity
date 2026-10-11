@@ -1,7 +1,6 @@
 package com.alorma.caducity.ui.components.chips
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -41,11 +39,11 @@ fun QuickDateChips(
   ) {
     options.forEachIndexed { index, option ->
       Surface(
+        onClick = { onClick(index) },
         shape = CaducityShapes.chip,
         color = Color.Transparent,
         border = BorderStroke(1.dp, CaducityTheme.colorScheme.outlineVariant),
         contentColor = CaducityTheme.colorScheme.onSurface,
-        modifier = Modifier.clickable(role = Role.Button, onClick = { onClick(index) }),
       ) {
         Row(
           modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
