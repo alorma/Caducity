@@ -1,11 +1,11 @@
 # Pla de migració al redisseny «Caducity» (Material 3 Expressive)
 
-Versió del pla: **2** · Data: 2026-10-11 · Estat: **aprovat** (respostes P1–P21 incorporades). Es comença per la fase 0.
+Versió del pla: **2** · Data: 2026-10-11 · Estat: **aprovat** (respostes P1–P21 incorporades). **Pendent del senyal de l'usuari per començar la fase 0.**
 
 Base: `main` @ `c204b56`, versió `0.10.0-SNAPSHOT`, Room v2, minSdk 35, compileSdk 37, Compose BOM 2026.09.00, `material3 1.5.0-beta01`, Navigation 3, Koin, `multiplatform-settings`.
 Entrades llegides: paquet de redisseny **v2** (inclosos `RESPOSTES-AL-PLA.md`, `PROMPT-ACTUALITZAR-PLA.md`, `PROMPT-CLAUDE-CODE.md` i `pantalles/11-calendari.md`).
 
-**Cadència de lliurament:** no es publica a Play Store entre fases, però **cada fase acaba en un o més commits** que compilen i passen `./gradlew ktlintCheck test assembleDebug`, i es poden revertir sols. S'accepta UI híbrida entre fases. Es publicarà només quan tot estigui acabat. Es treballa en una branca (`feature/redisseny`), no a `main`.
+**Cadència de lliurament:** no es publica a Play Store entre fases, però **cada fase acaba en un o més commits** que compilen i passen `./gradlew ktlintCheck test assembleDebug`, i es poden revertir sols. S'accepta UI híbrida entre fases. Es publicarà només quan tot estigui acabat. Es treballa **directament a `main`** (sense branques): l'app no es publicarà fins que el redisseny estigui acabat, per tant `main` pot anar en estat híbrid entre fases.
 
 ---
 
