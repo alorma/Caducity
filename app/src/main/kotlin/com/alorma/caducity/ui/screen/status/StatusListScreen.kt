@@ -1,8 +1,8 @@
 package com.alorma.caducity.ui.screen.status
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -17,7 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -30,39 +32,34 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.AcUnit
-import com.alorma.caducity.base.ui.icons.symbols.ArrowBack
 import com.alorma.caducity.base.ui.icons.symbols.CalendarMonth
 import com.alorma.caducity.base.ui.icons.symbols.Check
 import com.alorma.caducity.base.ui.icons.symbols.Checklist
 import com.alorma.caducity.base.ui.icons.symbols.Delete
+import com.alorma.caducity.base.ui.icons.symbols.DeleteSweep
 import com.alorma.caducity.base.ui.icons.symbols.EventRepeat
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.WaterDrop
@@ -85,7 +82,6 @@ import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.product.shortDateText
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
@@ -120,7 +116,9 @@ fun StatusListScreen(
   val dialogState = rememberAppDialogState()
   val bottomSheetState = rememberAppBottomSheetState(skipHalfExpanded = true)
   val scope = rememberCoroutineScope()
-  val colors = status.colors()
+  val listState = rememberLazyListState()
+  val headerState = rememberStatusHeaderState()
+  val connection = remember(listState) { headerState.connection(listState) }
 
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
@@ -133,23 +131,22 @@ fun StatusListScreen(
   SideEffectHandler(viewModel, dialogState, bottomSheetState, scope)
 
   val ready = state as? StatusListState.Ready
+  headerState.enabled = ready?.selecting != true
   AppScaffold(
-    modifier = modifier,
+    modifier = modifier.nestedScroll(connection),
     dialogState = dialogState,
     bottomSheetState = bottomSheetState,
     topBar = {
-      StyledTopAppBar(
-        title = {},
-        colors =
-          TopAppBarDefaults.topAppBarColors(
-            containerColor = colors.container,
-            navigationIconContentColor = colors.onContainer,
-          ),
-        navigationIcon = {
-          IconButton(onClick = onBack) {
-            Icon(Symbols.Outlined.ArrowBack, contentDescription = stringResource(R.string.calendar_back))
-          }
-        },
+      StatusHeader(
+        status = status,
+        count = ready?.totalCount ?: 0,
+        title = stringResource(titleRes(status)),
+        help = ready?.let { helpText(it) }.orEmpty(),
+        actions = ready?.takeIf { !it.isEmpty }?.let { headerActions(it, viewModel) }.orEmpty(),
+        state = headerState,
+        onBack = onBack,
+        selectionCount = ready?.takeIf { it.selecting }?.selectedUnitCount,
+        onCloseSelection = viewModel::onToggleSelecting,
       )
     },
     bottomBar = {
@@ -164,11 +161,14 @@ fun StatusListScreen(
       }
     },
   ) { padding ->
-    ResponsiveCenteredContainer(modifier = Modifier.padding(padding)) {
+    // The list goes under the header (only the bottom inset is applied) so it shows through its shadow.
+    ResponsiveCenteredContainer(modifier = Modifier.padding(bottom = padding.calculateBottomPadding())) {
       if (ready != null) {
         StatusListContent(
           ready = ready,
           viewModel = viewModel,
+          listState = listState,
+          topPadding = padding.calculateTopPadding(),
         )
       }
     }
@@ -297,21 +297,20 @@ private fun AppBottomSheetState.QuickDatesSheet(
 private fun StatusListContent(
   ready: StatusListState.Ready,
   viewModel: StatusListViewModel,
+  listState: LazyListState,
+  topPadding: Dp,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier.fillMaxSize()) {
-    // The header is fixed: it does not scroll with the list.
-    StatusHeader(
-      ready = ready,
-      onToggleSelecting = viewModel::onToggleSelecting,
-      onDiscardAll = viewModel::onDiscardAllClick,
-    )
     if (ready.isEmpty) {
-      StatusEmpty(ready.status, onAdd = { viewModel.navigate(StatusListNavigation.AddFirst) })
+      Box(modifier = Modifier.fillMaxSize().padding(top = topPadding)) {
+        StatusEmpty(ready.status, onAdd = { viewModel.navigate(StatusListNavigation.AddFirst) })
+      }
     } else {
       LazyColumn(
-        modifier = Modifier.fillMaxSize().fadeTopEdge(),
-        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 32.dp),
+        state = listState,
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = topPadding + 8.dp, bottom = 32.dp),
         verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing),
       ) {
         ready.sections.forEach { section ->
@@ -342,72 +341,28 @@ private fun StatusListContent(
 }
 
 @Composable
-private fun StatusHeader(
+private fun headerActions(
   ready: StatusListState.Ready,
-  onToggleSelecting: () -> Unit,
-  onDiscardAll: () -> Unit,
-) {
-  val colors = ready.status.colors()
-  Column(
-    modifier =
-      Modifier
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp))
-        .background(colors.container)
-        .padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
-    verticalArrangement = Arrangement.spacedBy(4.dp),
-  ) {
-    Text(
-      text = pluralStringResource(R.plurals.home_product_count, ready.totalCount, ready.totalCount).uppercase(),
-      style = CaducityTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
-      color = colors.onContainer,
+  viewModel: StatusListViewModel,
+): List<HeaderAction> {
+  val select =
+    HeaderAction(
+      label = stringResource(R.string.status_select),
+      icon = Symbols.Outlined.Checklist,
+      onClick = viewModel::onToggleSelecting,
     )
-    Text(
-      text = stringResource(titleRes(ready.status)),
-      style = CaducityTheme.typography.displaySmall,
-      color = colors.onContainer,
-      modifier = Modifier.semantics { heading() },
+  return if (ready.status == ExpiryStatus.EXPIRED) {
+    listOf(
+      HeaderAction(
+        label = stringResource(R.string.status_discard_all),
+        icon = Symbols.Outlined.DeleteSweep,
+        primary = true,
+        onClick = viewModel::onDiscardAllClick,
+      ),
+      select,
     )
-    Text(
-      text = helpText(ready),
-      style = CaducityTheme.typography.bodyMedium,
-      color = colors.onContainer,
-    )
-    if (!ready.isEmpty) {
-      Row(
-        modifier = Modifier.padding(top = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        if (ready.status == ExpiryStatus.EXPIRED && !ready.selecting) {
-          Button(
-            onClick = onDiscardAll,
-            colors =
-              ButtonDefaults.buttonColors(
-                containerColor = colors.strong,
-                contentColor = CaducityTheme.colorScheme.surface,
-              ),
-            modifier = Modifier.heightIn(min = 44.dp),
-          ) {
-            Icon(Symbols.Outlined.Delete, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(8.dp))
-            Text(stringResource(R.string.status_discard_all))
-          }
-        }
-        OutlinedButton(
-          onClick = onToggleSelecting,
-          border = BorderStroke(1.dp, colors.onContainer),
-          colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.onContainer),
-          modifier = Modifier.heightIn(min = 44.dp),
-        ) {
-          if (!ready.selecting) {
-            Icon(Symbols.Outlined.Checklist, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(8.dp))
-          }
-          Text(stringResource(if (ready.selecting) R.string.status_select_done else R.string.status_select))
-        }
-      }
-    }
+  } else {
+    listOf(select)
   }
 }
 
@@ -719,15 +674,3 @@ private fun StatusEmpty(
     }
   }
 }
-
-/** Rows scrolling under the fixed header fade out instead of showing a cut-off sliver below its rounded corners. */
-private fun Modifier.fadeTopEdge(height: androidx.compose.ui.unit.Dp = 20.dp): Modifier =
-  graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-    .drawWithContent {
-      drawContent()
-      drawRect(
-        brush = Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black), endY = height.toPx()),
-        size = Size(size.width, height.toPx()),
-        blendMode = BlendMode.DstIn,
-      )
-    }
