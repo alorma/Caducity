@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Afegeix producte</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Figtree:wght@400..700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4D5A1E}a:hover{color:#283010}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'opsz' 24;display:inline-block}
+.msf{font-variation-settings:'FILL' 1,'wght' 400,'opsz' 24}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FBF6EC; font-family: 'Figtree', sans-serif; color: #29241C">
+  <div style="padding: 12px 20px 0; display: flex; flex-direction: column; gap: 18px">
+
+    <div style="display: flex; align-items: center; gap: 4px; margin-left: -8px">
+      <a href="Main.dc.html" aria-label="Tanca" style="width: 48px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #29241C; text-decoration: none"><span class="ms" style="font-size: 24px">close</span></a>
+      <h1 style="flex: 1; margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 700; font-stretch: 85%">Afegeix</h1>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="nom" style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #665C4C; padding: 0 4px">Nom</label>
+      <div style="position: relative">
+        <input id="nom" value="Formatge ched" autocomplete="off" style="width: 100%; box-sizing: border-box; height: 60px; border: 2px solid #4D5A1E; border-radius: 16px; background: #ECE2CF; padding: 0 52px 0 18px; font-family: 'Figtree', sans-serif; font-size: 19px; font-weight: 600; color: #29241C">
+        <button aria-label="Esborra el nom" style="position: absolute; right: 8px; top: 8px; width: 44px; height: 44px; border: none; border-radius: 22px; background: transparent; color: #665C4C; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">cancel</span></button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <button style="display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 14px 6px 10px; border: none; border-radius: 16px; background: #F4ECDD; color: #29241C; font-family: 'Figtree', sans-serif; text-align: left; cursor: pointer">
+          <span class="ms" style="font-size: 20px; color: #665C4C">history</span>
+          <span style="flex: 1; font-size: 16px"><b>Formatge ched</b>dar</span>
+          <span style="font-size: 13px; color: #665C4C">Làctics</span>
+        </button>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #665C4C; padding: 0 4px">Categoria</div>
+      <div role="radiogroup" aria-label="Categoria" style="display: flex; flex-wrap: wrap; gap: 6px">
+        <sc-for list="{{cats}}" as="c" hint-placeholder-count="5">
+          <button role="radio" aria-checked="{{c.sel}}" style="flex: none; display: flex; align-items: center; gap: 6px; height: 44px; padding: 0 14px 0 5px; border: {{c.border}}; border-radius: 22px; background: {{c.bg}}; color: #29241C; font-family: 'Figtree', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer">
+            <span style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center">
+              <svg viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{c.shape}}" fill="{{c.fill}}"></path></svg>
+              <span class="ms" style="position: relative; font-size: 18px; color: {{c.ic}}">{{c.icon}}</span>
+            </span>{{c.name}}
+          </button>
+        </sc-for>
+        <a href="AfegirNovaCat.dc.html" style="display: flex; align-items: center; gap: 4px; height: 44px; box-sizing: border-box; padding: 0 16px 0 10px; border: 1px dashed #8A7F6C; border-radius: 22px; color: #4D5A1E; text-decoration: none; font-size: 15px; font-weight: 700"><span class="ms" style="font-size: 20px">add</span>Nova</a>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="data" style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #665C4C; padding: 0 4px">Caduca</label>
+      <div style="display: flex; align-items: center; gap: 12px; height: 72px; box-sizing: border-box; padding: 0 8px 0 18px; border-radius: 16px; background: #ECE2CF">
+        <input id="data" inputmode="numeric" value="21 / 10 / 26" aria-describedby="data-ajuda" style="width: 190px; border: none; background: transparent; font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; font-weight: 800; font-stretch: 80%; color: #29241C; padding: 0">
+        <div id="data-ajuda" style="flex: 1; font-size: 13px; color: #665C4C; line-height: 1.3">dimecres<br>d'aquí 10 dies</div>
+        <button aria-label="Obre el calendari" style="width: 48px; height: 48px; border: none; border-radius: 24px; background: #FBF6EC; color: #4D5A1E; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">calendar_month</span></button>
+      </div>
+      <div style="display: flex; gap: 8px; overflow: hidden; margin-right: -20px">
+        <button style="flex: none; height: 40px; padding: 0 14px; border: 1px solid #DCCFB8; border-radius: 12px; background: transparent; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600; color: #29241C">Demà</button>
+        <button style="flex: none; height: 40px; padding: 0 14px; border: 1px solid #DCCFB8; border-radius: 12px; background: transparent; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600; color: #29241C">+3 dies</button>
+        <button style="flex: none; height: 40px; padding: 0 14px; border: 1px solid #DCCFB8; border-radius: 12px; background: transparent; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600; color: #29241C">+1 setmana</button>
+        <button style="flex: none; height: 40px; padding: 0 14px; border: 1px solid #DCCFB8; border-radius: 12px; background: transparent; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600; color: #29241C">+2 setmanes</button>
+        <button style="flex: none; height: 40px; padding: 0 14px; border: 1px solid #DCCFB8; border-radius: 12px; background: transparent; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600; color: #29241C">+1 mes</button>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 2px">
+      <div style="flex: 1; display: flex; align-items: center; justify-content: space-between; height: 64px; box-sizing: border-box; padding: 0 8px 0 16px; border-radius: 24px 6px 6px 24px; background: #F4ECDD">
+        <span style="font-size: 15px; font-weight: 600">Quantitat</span>
+        <div style="display: flex; align-items: center; gap: 4px">
+          <button aria-label="Una menys" style="width: 44px; height: 44px; border: none; border-radius: 22px 8px 8px 22px; background: #ECE2CF; color: #29241C; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 20px">remove</span></button>
+          <span style="width: 28px; text-align: center; font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 800">1</span>
+          <button aria-label="Una més" style="width: 44px; height: 44px; border: none; border-radius: 8px 22px 22px 8px; background: #ECE2CF; color: #29241C; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 20px">add</span></button>
+        </div>
+      </div>
+      <button aria-pressed="false" style="display: flex; align-items: center; gap: 8px; height: 64px; padding: 0 16px; border: none; border-radius: 6px 24px 24px 6px; background: #F4ECDD; color: #29241C; font-family: 'Figtree', sans-serif; font-size: 15px; font-weight: 600"><span class="ms" style="font-size: 22px; color: #3F7F92">ac_unit</span>Congelat</button>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 20px; right: 20px; bottom: 24px; display: flex; gap: 3px">
+    <a href="AfegirTanda.dc.html" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 64px; border-radius: 32px 8px 8px 32px; background: #4D5A1E; color: #FFFFFF; text-decoration: none; font-size: 17px; font-weight: 700"><span class="ms" style="font-size: 22px">add</span>Desa i un altre</a>
+    <a href="Main.dc.html" style="display: flex; align-items: center; justify-content: center; width: 112px; height: 64px; border-radius: 8px 32px 32px 8px; background: #DCE3B0; color: #283010; text-decoration: none; font-size: 17px; font-weight: 700">Desa</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  blob(n, a, rot) {
+    rot = rot || 0;
+    var p = [];
+    for (var i = 0; i < 120; i++) {
+      var t = i / 120 * Math.PI * 2;
+      var r = 50 - a + a * Math.cos(n * (t + rot));
+      p.push((50 + r * Math.cos(t)).toFixed(1) + " " + (50 + r * Math.sin(t)).toFixed(1));
+    }
+    return "M" + p.join("L") + "Z";
+  }
+  renderVals() {
+    var raw = [
+      ["Làctics", "water_full", this.blob(9, 3, 0), true],
+      ["Fruita i verdura", "nutrition", this.blob(6, 6, 0), false],
+      ["Carn i peix", "set_meal", this.blob(4, 8, Math.PI / 4), false],
+      ["Rebost", "grocery", this.blob(8, 4, 0), false],
+      ["Fleca", "bakery_dining", this.blob(4, 2.5, Math.PI / 4), false]
+    ];
+    return {
+      cats: raw.map(function (c) {
+        return {
+          name: c[0], icon: c[1], shape: c[2], sel: c[3] ? "true" : "false",
+          bg: c[3] ? "#DCE3B0" : "transparent",
+          border: c[3] ? "2px solid #4D5A1E" : "1px solid #DCCFB8",
+          fill: c[3] ? "#4D5A1E" : "#E6DBC5",
+          ic: c[3] ? "#FFFFFF" : "#4D5A1E"
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

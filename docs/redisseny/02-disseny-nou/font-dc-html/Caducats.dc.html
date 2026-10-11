@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Caducats</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Figtree:wght@400..700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4D5A1E}a:hover{color:#283010}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'opsz' 24;display:inline-block}
+.msf{font-variation-settings:'FILL' 1,'wght' 400,'opsz' 24}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FBF6EC; font-family: 'Figtree', sans-serif; color: #29241C">
+
+  <div style="padding: 16px 20px 24px; border-radius: 0 0 32px 32px; background: #F7D8CC; color: #7A2414; display: flex; flex-direction: column; gap: 12px">
+    <a href="Main.dc.html" aria-label="Torna" style="width: 48px; height: 48px; margin-left: -8px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #7A2414; text-decoration: none"><span class="ms" style="font-size: 24px">arrow_back</span></a>
+    <div>
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase">7 productes</div>
+      <h1 style="margin: 6px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 44px; font-weight: 800; font-stretch: 80%; line-height: 1">Caducats</h1>
+      <p style="margin: 8px 0 0; font-size: 15px; line-height: 1.4">Si encara són bons, canvia'n la data. Si no, llença'ls.</p>
+    </div>
+    <div style="display: flex; gap: 8px; margin-top: 4px">
+      <button style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 20px 0 16px; border: none; border-radius: 24px; background: #B23F2A; color: #FFFFFF; font-family: 'Figtree', sans-serif; font-size: 15px; font-weight: 700"><span class="ms" style="font-size: 22px">delete_sweep</span>Llença'ls tots</button>
+      <button style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 18px; border: 1px solid #7A2414; border-radius: 24px; background: transparent; color: #7A2414; font-family: 'Figtree', sans-serif; font-size: 15px; font-weight: 700"><span class="ms" style="font-size: 22px">checklist</span>Selecciona</button>
+    </div>
+  </div>
+
+  <div style="padding: 20px 20px 40px; display: flex; flex-direction: column; gap: 18px">
+    <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 0 4px">
+          <span style="position: relative; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center">
+            <svg viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{g.shape}}" fill="#E6DBC5"></path></svg>
+            <span class="ms" style="position: relative; font-size: 16px; color: #4D5A1E">{{g.icon}}</span>
+          </span>
+          <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 700; font-stretch: 85%">{{g.name}}</h2>
+          <span style="font-size: 13px; color: #665C4C">{{g.count}}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <sc-for list="{{g.rows}}" as="r" hint-placeholder-count="2">
+            <div style="display: flex; align-items: center; gap: 8px; min-height: 64px; box-sizing: border-box; padding: 8px 6px 8px 16px; background: #F4ECDD; border-radius: {{r.rad}}">
+              <div style="flex: 1; min-width: 0">
+                <div style="font-size: 16px; font-weight: 600">{{r.name}}</div>
+                <div style="font-size: 13px; color: #7A2414; margin-top: 2px; font-weight: 600">{{r.when}}</div>
+              </div>
+              <button aria-label="Canvia la data" style="width: 44px; height: 44px; border: none; border-radius: 22px; background: #FBF6EC; color: #4D5A1E; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">event_repeat</span></button>
+              <button aria-label="Llença" style="width: 44px; height: 44px; border: none; border-radius: 22px; background: #FBF6EC; color: #B23F2A; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">delete</span></button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  blob(n, a, rot) {
+    rot = rot || 0;
+    var p = [];
+    for (var i = 0; i < 120; i++) {
+      var t = i / 120 * Math.PI * 2;
+      var r = 50 - a + a * Math.cos(n * (t + rot));
+      p.push((50 + r * Math.cos(t)).toFixed(1) + " " + (50 + r * Math.sin(t)).toFixed(1));
+    }
+    return "M" + p.join("L") + "Z";
+  }
+  rad(i, n) {
+    if (n === 1) return "24px";
+    if (i === 0) return "24px 24px 6px 6px";
+    if (i === n - 1) return "6px 6px 24px 24px";
+    return "6px";
+  }
+  renderVals() {
+    var self = this;
+    var raw = [
+      ["Carn i peix", "set_meal", this.blob(4, 8, Math.PI / 4), [["Pit de pollastre", "Fa 1 dia · ds. 10 oct"], ["Salmó", "Fa 1 dia · ds. 10 oct"], ["Gambes", "Fa 3 dies · dj. 8 oct"]]],
+      ["Fruita i verdura", "nutrition", this.blob(6, 6, 0), [["Pastanagues", "Fa 2 dies · dv. 9 oct"], ["Tomàquets", "Fa 1 dia · ds. 10 oct"]]],
+      ["Làctics", "water_full", this.blob(9, 3, 0), [["Iogurt grec", "Fa 2 dies · dv. 9 oct"]]],
+      ["Rebost", "grocery", this.blob(8, 4, 0), [["Salsa de tomàquet", "Fa 5 dies · dt. 6 oct"]]]
+    ];
+    var groups = raw.map(function (g) {
+      return {
+        name: g[0], icon: g[1], shape: g[2], count: String(g[3].length),
+        rows: g[3].map(function (r, i) { return { name: r[0], when: r[1], rad: self.rad(i, g[3].length) }; })
+      };
+    });
+    return { groups: groups };
+  }
+}
+</script>
+</body>
+</html>
