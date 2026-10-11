@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 import com.alorma.caducity.domain.model.ItemStatus
 import kotlinx.datetime.LocalDate
 
-// TEMP(fase 7): only the old actions sheet and the old Expired screen use it; deleted with them.
+// TEMP(fase 11): only DateItemsUiModel (old calendar components) uses it; deleted with them.
 @Stable
 data class ItemDetailUiModel(
   val id: String,

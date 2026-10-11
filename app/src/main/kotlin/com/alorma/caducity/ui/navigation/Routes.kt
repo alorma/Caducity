@@ -2,7 +2,6 @@ package com.alorma.caducity.ui.navigation
 
 import androidx.navigation3.runtime.NavKey
 import com.alorma.caducity.domain.model.ExpiryStatus
-import com.alorma.caducity.domain.model.ItemStatus
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -50,12 +49,6 @@ data class Category(
 @Serializable
 data class StatusList(
   val status: ExpiryStatus,
-) : AppRoute
-
-// TEMP(fase 7): old "items by status" screen, replaced by Expired.
-@Serializable
-data class FilteredItems(
-  val status: ItemStatus,
 ) : AppRoute
 
 @Serializable

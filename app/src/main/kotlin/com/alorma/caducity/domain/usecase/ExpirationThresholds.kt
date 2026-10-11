@@ -9,7 +9,4 @@ interface ExpirationThresholds {
 
   // TEMP(fase 5): used by the old screens; removed with them.
   val soonExpiringThreshold: Duration
-
-  // TEMP(fase 7): removed with P5.
-  val consumeExpiredThreshold: Duration
 }

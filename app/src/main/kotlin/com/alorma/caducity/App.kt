@@ -24,7 +24,6 @@ import com.alorma.caducity.ui.navigation.AppShell
 import com.alorma.caducity.ui.navigation.Calendar
 import com.alorma.caducity.ui.navigation.Category
 import com.alorma.caducity.ui.navigation.CategoryEditor
-import com.alorma.caducity.ui.navigation.FilteredItems
 import com.alorma.caducity.ui.navigation.Home
 import com.alorma.caducity.ui.navigation.ItemActions
 import com.alorma.caducity.ui.navigation.Onboarding
@@ -43,7 +42,6 @@ import com.alorma.caducity.ui.screen.category.CategoryArgs
 import com.alorma.caducity.ui.screen.category.CategoryScreen
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.quick.QuickCategorySheet
-import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusScreen
 import com.alorma.caducity.ui.screen.home.HomeScreen
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
@@ -158,12 +156,6 @@ fun App(
                 onBack = { navigation.pop() },
                 onOpenItemActions = { itemId -> navigation.navigate(ItemActions(itemId)) },
                 onOpenAdd = { navigation.navigate(Add(source = "status_empty")) },
-              )
-            }
-            entry<FilteredItems> {
-              FilteredItemsByStatusScreen(
-                status = it.status,
-                onNavigateToCategory = { categoryId -> navigation.navigate(Category(categoryId)) },
               )
             }
             entry<Calendar> {

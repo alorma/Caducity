@@ -91,7 +91,6 @@ class ObserveUseCasesTest {
       object : ExpirationThresholds {
         override val soonThresholdDays: Flow<Int> = thresholdFlow
         override val soonExpiringThreshold: Duration = Duration.ZERO
-        override val consumeExpiredThreshold: Duration = Duration.ZERO
       }
     val todayProvider =
       object : TodayProvider {

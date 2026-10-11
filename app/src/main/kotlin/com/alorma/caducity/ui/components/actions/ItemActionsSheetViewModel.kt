@@ -127,7 +127,6 @@ class ItemActionsSheetViewModel(
           categoryId = ready.category.id,
           itemId = itemId,
           quantityToConsume = quantity,
-          forceConsume = true,
         ).onSuccess {
           feedback(
             GlobalSnackbar(

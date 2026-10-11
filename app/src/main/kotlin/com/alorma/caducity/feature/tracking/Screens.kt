@@ -11,8 +11,6 @@ class CategoryScreen : Screen("CategoryScreen")
 
 class CreateCategoryScreen : Screen("CreateCategoryScreen")
 
-class FilteredItemsByStatusScreen : Screen("FilteredItemsByStatusScreen")
-
 class StatusListScreen(
   status: String,
 ) : Screen("StatusListScreen_$status")
@@ -37,13 +35,6 @@ class DebugRemoteConfigsScreen : Screen("DebugRemoteConfigsScreen")
 class AboutScreen : Screen("AboutScreen")
 
 // Bottom sheets (tracked as screens)
-class ItemActionsBottomSheetScreen : Screen("ItemActionsBottomSheetScreen")
-
-class ProductDeleteBottomSheetScreen : Screen("ProductDeleteBottomSheetScreen")
-
-class ProductClearItemsBottomSheetScreen : Screen("ProductClearItemsBottomSheetScreen")
-
-class ProductItemsBottomSheetScreen : Screen("ProductItemsBottomSheetScreen")
 
 class HomeScreen : Screen("HomeScreen")
 
