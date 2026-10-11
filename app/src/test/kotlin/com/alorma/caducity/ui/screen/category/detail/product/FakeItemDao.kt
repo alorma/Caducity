@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.category.detail.product
 
 import com.alorma.caducity.data.datasource.room.dao.ItemDao
+import com.alorma.caducity.data.datasource.room.model.CategoryActiveCountRow
 import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +33,46 @@ class FakeItemDao(
     itemsInMemory.map { items ->
       items.filter { it.categoryId == categoryId && it.productId == null }
     }
+
+  override fun getActiveItems(): Flow<List<ItemRoomEntity>> =
+    itemsInMemory.map { items -> items.filter { it.consumedDate == null && it.discardedDate == null } }
+
+  override fun getActiveCountByCategory(): Flow<List<CategoryActiveCountRow>> =
+    getActiveItems().map { items ->
+      items.groupBy { it.categoryId }.map { (categoryId, group) -> CategoryActiveCountRow(categoryId, group.size) }
+    }
+
+  override suspend fun discardItem(
+    itemId: String,
+    discardedDate: Long,
+  ) {
+    itemsInMemory.value =
+      itemsInMemory.value.map {
+        if (it.id == itemId) it.copy(discardedDate = discardedDate, pausedDate = null, remainingDays = null) else it
+      }
+  }
+
+  override suspend fun restoreItem(itemId: String) {
+    itemsInMemory.value =
+      itemsInMemory.value.map {
+        if (it.id == itemId) it.copy(consumedDate = null, discardedDate = null) else it
+      }
+  }
+
+  override suspend fun moveItem(
+    itemId: String,
+    categoryId: String,
+    productId: String?,
+  ) {
+    itemsInMemory.value =
+      itemsInMemory.value.map {
+        if (it.id == itemId) it.copy(categoryId = categoryId, productId = productId) else it
+      }
+  }
+
+  override suspend fun deleteItems(itemIds: List<String>) {
+    itemsInMemory.value = itemsInMemory.value.filterNot { it.id in itemIds }
+  }
 
   override suspend fun getItem(itemId: String): ItemRoomEntity? = itemsInMemory.value.firstOrNull { it.id == itemId }
 
