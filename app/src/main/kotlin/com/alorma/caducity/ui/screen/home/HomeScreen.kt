@@ -202,7 +202,8 @@ internal fun HomeContent(
             else -> onNavigate(HomeNavigation.Calendar(date = date, source = "week_strip"))
           }
         },
-        modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 12.dp),
+        modifier = Modifier.padding(top = 12.dp, bottom = 12.dp),
+        contentPadding = PaddingValues(horizontal = 20.dp),
       )
     }
     LazyColumn(
