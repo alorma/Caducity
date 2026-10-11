@@ -38,57 +38,27 @@
 
   <string name="products_list_items_frozen">%1$d artículos congelados</string>
 
-  <string name="settings_screen_title">Configuración</string>
-  <string name="settings_appearance_title">Apariencia</string>
-  <string name="settings_appearance_description">Tema, colores y visualización</string>
-  <string name="settings_notifications_title">Notificaciones</string>
-  <string name="settings_notifications_description">Gestionar preferencias de notificaciones</string>
+  <string name="settings_screen_title">Ajustes</string>
   <string name="settings_debug_title">Depuración</string>
   <string name="settings_debug_description">Herramientas de desarrollo y depuración</string>
   <string name="debug_fake_data_success">Datos de prueba creados exitosamente</string>
   <string name="debug_fake_playstore_data_success">PlayStore data generada correctamente</string>
   <string name="debug_error">Error</string>
 
-  <string name="settings_about_title">Acerca de</string>
-  <string name="settings_about_description">Información y créditos de la aplicación</string>
-  <string name="settings_backup_title">Respaldo</string>
-  <string name="settings_backup_description">Exportar y restaurar tus datos</string>
+  <string name="settings_about_title">Acerca de Caducity</string>
+  <string name="settings_backup_title">Copia de seguridad</string>
   <string name="settings_privacy_title">Privacidad</string>
-  <string name="settings_privacy_description">Gestionar consentimiento y preferencias de datos</string>
 
   <string name="dashboard_fab_manual">Manual</string>
 
-  <string name="settings_group_appearance">Apariencia</string>
   <string name="settings_theme_title">Tema</string>
   <string name="settings_theme_light">Claro</string>
   <string name="settings_theme_dark">Oscuro</string>
   <string name="settings_theme_system">Sistema</string>
   <string name="settings_dynamic_colors">Colores dinámicos</string>
-  <string name="settings_calendar_options">Opciones de calendario</string>
-  <string name="settings_first_day_of_week_title">Primer día de la semana</string>
 
-  <string name="settings_group_expiration_colors">Colores de caducidad</string>
-  <string name="settings_color_scheme_title">Esquema de color</string>
-  <string name="settings_color_scheme_vibrant">Vibrante</string>
-  <string name="settings_color_scheme_harmony">Armonico</string>
-  <string name="settings_expiration_legend_fresh">Fresco</string>
-  <string name="settings_expiration_legend_expiring_soon">Próximo</string>
-  <string name="settings_expiration_legend_expired">Caducado</string>
-  <string name="settings_expiration_legend_frozen">Congelado</string>
-  <string name="settings_expiration_legend_consumed">Consumido</string>
 
-  <string name="settings_group_notifications">Notificaciones</string>
-  <string name="settings_enable_notifications">Activar notificaciones</string>
-  <string name="settings_notification_types_title">Tipos de notificación</string>
-  <string name="settings_notification_type_expired">Caducado</string>
-  <string name="settings_notification_type_expiring">Por caducar</string>
-  <string name="settings_notification_schedule_title">Programación de notificaciones</string>
-  <string name="settings_notification_time_title">Hora de notificación</string>
-  <string name="settings_notification_time_dialog_title">Establecer hora de notificación</string>
-  <string name="settings_notification_time_confirm">Confirmar</string>
-  <string name="settings_notification_time_dismiss">Cancelar</string>
 
-  <string name="settings_group_privacy">Privacidad y Datos</string>
   <string name="settings_privacy_screen_title">Privacidad</string>
   <string name="settings_privacy_analytics_title">Análisis</string>
   <string name="settings_privacy_analytics_description">Compartir datos de uso anónimos para ayudar a mejorar la aplicación</string>
@@ -104,29 +74,8 @@
   <string name="debug_consent_ad_personalization_description">Habilitar publicidad personalizada</string>
 
   <!-- About section -->
-  <string name="about_version">Versión</string>
-  <string name="about_developer">Desarrollador</string>
   <string name="about_github_link">Ver en GitHub</string>
 
-  <string name="create_category_screen_title">Crear Categoría</string>
-  <string name="create_category_name_label">Nombre de la Categoría</string>
-  <string name="create_category_name_placeholder">Introduce el nombre de la categoría</string>
-  <string name="create_category_description_label">Descripción</string>
-  <string name="create_category_description_placeholder">Introduce la descripción</string>
-  <string name="create_category_expiration_date_label">Fecha de Caducidad</string>
-  <string name="create_category_expiration_date_placeholder">DD/MM/AAAA</string>
-  <string name="create_category_button_cancel">Cancelar</string>
-  <string name="create_category_button_create">Crear</string>
-  <string name="create_category_content_description_back">Atrás</string>
-  <string name="create_category_items_title">Elementos de la Categoría</string>
-  <string name="create_category_item_identifier_label">Identificador</string>
-  <string name="create_category_item_identifier_placeholder">ej., Lote #1, Unidad A</string>
-  <string name="create_category_add_item">Añadir Elemento</string>
-  <string name="create_category_remove_item">Eliminar</string>
-  <string name="create_category_item_number">Elemento %1$d</string>
-  <string name="create_category_item_quantity_label">Cantidad</string>
-  <string name="create_category_item_quantity_placeholder">1</string>
-  <string name="create_category_item_split_preview">Se crearán %1$d elementos</string>
 
   <!-- Category Detail -->
   <string name="category_detail_auto_identifier_item">Artículo</string>
@@ -295,12 +244,6 @@
   <string name="app_name">Caducity</string>
 
   <!-- Notifications -->
-  <string name="notification_expiring_soon_title_single">Categoría a punto de caducar</string>
-  <string name="notification_expiring_soon_title_plural">%1$d categorías a punto de caducar</string>
-  <string name="notification_expired_title_single">Categoría con productos caducados</string>
-  <string name="notification_expired_title_plural">%1$d categorías con productos caducados</string>
-  <string name="notification_text_more">%1$s y %2$d más</string>
-  <string name="notification_items_count">%1$d elementos</string>
 
   <!-- Navigation -->
   <string name="nav_soon">Pronto</string>
@@ -584,4 +527,41 @@
   <string name="status_dates_in_1w">En 1 semana</string>
   <string name="status_dates_pick">Elige una fecha</string>
   <string name="home_summary_cell_cd">%1$s, %2$s. Abre la lista</string>
+  <string name="category_editor_title_new">Nueva categoría</string>
+  <string name="category_editor_title_edit">Edita la categoría</string>
+  <string name="category_editor_close">Cerrar</string>
+  <string name="category_editor_save">Guardar</string>
+  <string name="category_editor_preview_placeholder">Nombre de la categoría</string>
+  <string name="category_editor_error_failed">No se ha podido guardar la categoría</string>
+  <string name="category_editor_description">Descripción · opcional</string>
+  <string name="category_editor_description_placeholder">Por ejemplo: refrescos, zumos y bebidas fermentadas</string>
+  <string name="category_editor_delete">Borrar la categoría</string>
+  <string name="notification_channel_name">Aviso diario</string>
+  <string name="notification_channel_description">Una notificación al día cuando algo está a punto de caducar</string>
+  <string name="notification_highlight_today">%1$s hoy</string>
+  <string name="notification_highlight_tomorrow">%1$s mañana</string>
+  <string name="notification_highlight_days">%1$s en %2$d días</string>
+  <string name="settings_section_alerts">Avisos</string>
+  <string name="settings_section_appearance">Apariencia</string>
+  <string name="settings_section_data">Datos</string>
+  <string name="settings_notifications">Notificaciones</string>
+  <string name="settings_notifications_time">Cada día a las %s</string>
+  <string name="settings_soon_means">«Pronto» significa</string>
+  <string name="settings_soon_means_sub">Cuando un producto pasa a amarillo y te avisamos</string>
+  <string name="settings_1d">1 día</string>
+  <string name="settings_3d">3 días</string>
+  <string name="settings_1w">1 semana</string>
+  <string name="settings_dynamic_color_on">Con los colores del móvil</string>
+  <string name="settings_dynamic_color_off">Desactivado: paleta Caducity</string>
+  <string name="settings_week_start">La semana empieza</string>
+  <string name="settings_backup_sub">Exporta y restaura</string>
+  <string name="settings_about_sub">Versión y créditos</string>
+  <string name="settings_time_dialog_title">Hora del aviso</string>
+  <string name="settings_dialog_save">Guardar</string>
+  <string name="settings_dialog_cancel">Cancelar</string>
+  <string name="settings_notifications_denied">Permite las notificaciones en los ajustes del sistema para recibir el aviso</string>
+  <plurals name="notification_title">
+    <item quantity="one">%d producto caduca pronto</item>
+    <item quantity="other">%d productos caducan pronto</item>
+  </plurals>
 </resources>

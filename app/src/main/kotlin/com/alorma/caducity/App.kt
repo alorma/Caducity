@@ -7,11 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.retain.retain
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
+import com.alorma.caducity.config.version.AppVersionProvider
+import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.alorma.caducity.feature.deeplink.toRoute
 import com.alorma.caducity.feature.tracking.EventTracker
@@ -30,6 +33,11 @@ import com.alorma.caducity.ui.navigation.Onboarding
 import com.alorma.caducity.ui.navigation.Pantry
 import com.alorma.caducity.ui.navigation.QuickCategory
 import com.alorma.caducity.ui.navigation.Settings
+import com.alorma.caducity.ui.navigation.SettingsAbout
+import com.alorma.caducity.ui.navigation.SettingsBackup
+import com.alorma.caducity.ui.navigation.SettingsDebug
+import com.alorma.caducity.ui.navigation.SettingsDebugRemoteConfigs
+import com.alorma.caducity.ui.navigation.SettingsPrivacy
 import com.alorma.caducity.ui.navigation.StatusList
 import com.alorma.caducity.ui.navigation.TopLevelBackStack
 import com.alorma.caducity.ui.navigation.TopLevelRoute
@@ -40,14 +48,19 @@ import com.alorma.caducity.ui.screen.calendar.CalendarArgs
 import com.alorma.caducity.ui.screen.calendar.CalendarScreen
 import com.alorma.caducity.ui.screen.category.CategoryArgs
 import com.alorma.caducity.ui.screen.category.CategoryScreen
-import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
+import com.alorma.caducity.ui.screen.category.editor.CategoryEditorScreen
 import com.alorma.caducity.ui.screen.category.quick.QuickCategorySheet
 import com.alorma.caducity.ui.screen.home.HomeScreen
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
 import com.alorma.caducity.ui.screen.pantry.PantryScreen
 import com.alorma.caducity.ui.screen.pantry.PantrySearchRequests
-import com.alorma.caducity.ui.screen.settings.SettingsContainer
+import com.alorma.caducity.ui.screen.settings.SettingsScreen
+import com.alorma.caducity.ui.screen.settings.about.AboutScreen
+import com.alorma.caducity.ui.screen.settings.backup.BackupScreen
+import com.alorma.caducity.ui.screen.settings.debug.DebugRemoteConfigsScreen
+import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsScreen
+import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsScreen
 import com.alorma.caducity.ui.screen.status.StatusListScreen
 import com.alorma.caducity.ui.theme.AppTheme
 import org.koin.compose.koinInject
@@ -63,6 +76,8 @@ fun App(
   eventTracker: EventTracker = koinInject(),
   snackbarEvents: GlobalSnackbarEvents = koinInject(),
   searchRequests: PantrySearchRequests = koinInject(),
+  versionProvider: AppVersionProvider = koinInject(),
+  debugModeProvider: DebugModeProvider = koinInject(),
 ) {
   AppTheme(
     themePreferences = koinInject(),
@@ -78,6 +93,7 @@ fun App(
       }
     }
     val activity = LocalActivity.current
+    val uriHandler = LocalUriHandler.current
     val visibleScreen = navigation.backStack.last { it !is ItemActions && it !is QuickCategory }
 
     AppShell(
@@ -136,9 +152,27 @@ fun App(
                 onOpenItemActions = { navigation.navigate(ItemActions(it)) },
               )
             }
-            // TEMP(fase 8): old settings with its nested NavDisplay.
             entry<Settings> {
-              SettingsContainer()
+              SettingsScreen(
+                onOpenBackup = { navigation.navigate(SettingsBackup) },
+                onOpenPrivacy = { navigation.navigate(SettingsPrivacy) },
+                onOpenAbout = { navigation.navigate(SettingsAbout) },
+                onOpenDebug = { navigation.navigate(SettingsDebug) },
+              )
+            }
+            entry<SettingsBackup> { BackupScreen() }
+            entry<SettingsPrivacy> { PrivacySettingsScreen(onClose = { navigation.pop() }) }
+            entry<SettingsAbout> {
+              AboutScreen(
+                appVersion = versionProvider.getVersionName(),
+                onNavigateToRepo = { uriHandler.openUri("https://github.com/alorma/caducity") },
+              )
+            }
+            if (debugModeProvider.isDebugMode()) {
+              entry<SettingsDebug> {
+                DebugSettingsScreen(onNavigateToRemoteConfigs = { navigation.navigate(SettingsDebugRemoteConfigs) })
+              }
+              entry<SettingsDebugRemoteConfigs> { DebugRemoteConfigsScreen() }
             }
             entry<Category> {
               CategoryScreen(
@@ -172,13 +206,18 @@ fun App(
                 onOpenQuickCategory = { navigation.navigate(QuickCategory) },
               )
             }
-            // TEMP(fase 8): the old create screen stands in for the category editor.
             entry<CategoryEditor> {
-              CreateCategoryScreen(
-                onNavigateBack = { navigation.pop() },
-                onNavigateToCategory = { categoryId ->
+              CategoryEditorScreen(
+                categoryId = it.id,
+                onClose = { navigation.pop() },
+                onCreated = { categoryId ->
                   navigation.pop()
                   navigation.navigate(Category(categoryId))
+                },
+                // Deleted from the editor: the category screen under it is gone as well.
+                onDeleted = {
+                  navigation.pop()
+                  navigation.pop()
                 },
               )
             }

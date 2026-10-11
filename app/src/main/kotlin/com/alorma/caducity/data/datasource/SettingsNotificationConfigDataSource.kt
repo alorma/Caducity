@@ -27,13 +27,10 @@ class SettingsNotificationConfigDataSource(
     settings[NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS] = time.toSecondOfDay()
   }
 
-  override suspend fun isNotificationsEnabled(): Boolean = settings.getBoolean(NotificationsEnabledKey, false)
+  override suspend fun isNotificationsEnabled(): Boolean =
+    settings.getBoolean(NotificationConfigDataSource.PREF_DAILY_REMINDER_ENABLED, false)
 
   override suspend fun setNotificationsEnabled(enabled: Boolean) {
-    settings[NotificationsEnabledKey] = enabled
-  }
-
-  companion object {
-    private const val NotificationsEnabledKey = "notifications_enabled_key"
+    settings[NotificationConfigDataSource.PREF_DAILY_REMINDER_ENABLED] = enabled
   }
 }

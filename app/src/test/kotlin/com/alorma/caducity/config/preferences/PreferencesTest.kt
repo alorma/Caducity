@@ -32,10 +32,10 @@ class PreferencesTest {
     expectThat(settings.hasKey("theme_tone")).isFalse()
     expectThat(settings.keys.any { it.startsWith("ai_") }).isFalse()
     expectThat(settings.getInt(NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS, -1)).isEqualTo(12 * 3600)
-    expectThat(settings.getInt("prefs_version", 0)).isEqualTo(1)
+    expectThat(settings.getInt("prefs_version", 0)).isEqualTo(2)
     // Untouched keys.
     expectThat(settings.getString("theme_mode", "")).isEqualTo("DARK")
-    expectThat(settings.getBoolean("notifications_enabled_key", false)).isTrue()
+    expectThat(settings.getBoolean(NotificationConfigDataSource.PREF_DAILY_REMINDER_ENABLED, false)).isTrue()
     expectThat(settings.getBoolean("fire-and-forget-user_onboarding", true)).isFalse()
   }
 

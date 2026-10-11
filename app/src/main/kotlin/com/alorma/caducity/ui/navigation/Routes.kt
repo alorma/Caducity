@@ -83,12 +83,6 @@ data object QuickCategory : AppRoute
 data object Onboarding : AppRoute
 
 @Serializable
-data object SettingsAppearance : AppRoute
-
-@Serializable
-data object SettingsNotifications : AppRoute
-
-@Serializable
 data object SettingsBackup : AppRoute
 
 @Serializable

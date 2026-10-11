@@ -58,10 +58,13 @@ class CaducityApplication : Application() {
     // Create notification channels
     NotificationChannelManager.createNotificationChannels(this)
 
-    // Schedule expiration check work at the user-configured time
+    // Schedule the daily reminder at the user-configured time, or make sure nothing is left scheduled
     applicationScope.launch {
-      val notificationTime = notificationConfigDataSource.getNotificationTime()
-      workScheduler.scheduleExpirationCheck(notificationTime)
+      if (notificationConfigDataSource.isNotificationsEnabled()) {
+        workScheduler.scheduleExpirationCheck(notificationConfigDataSource.getNotificationTime())
+      } else {
+        workScheduler.cancelExpirationCheck()
+      }
     }
 
     // Initialize Remote Config (fetch and activate in background)

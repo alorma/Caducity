@@ -19,7 +19,7 @@ interface NotificationConfigDataSource {
   suspend fun setNotificationTime(time: LocalTime)
 
   /**
-   * Returns whether notifications are enabled.
+   * Returns whether the daily reminder is enabled.
    */
   suspend fun isNotificationsEnabled(): Boolean
 
@@ -29,6 +29,9 @@ interface NotificationConfigDataSource {
   companion object {
     /** SharedPreferences key for the stored notification time (seconds from midnight). */
     const val PREF_NOTIFICATION_TIME_SECONDS = "notification_time_seconds"
+
+    /** SharedPreferences key for the daily reminder switch. */
+    const val PREF_DAILY_REMINDER_ENABLED = "daily_reminder_enabled"
 
     /** Default notification time: 09:00. Existing installs keep 12:00 through the preferences migrator. */
     val DEFAULT_TIME = LocalTime(9, 0)

@@ -71,7 +71,7 @@ fun CategoryForm(
 }
 
 @Composable
-private fun FormOverline(text: String) {
+internal fun FormOverline(text: String) {
   Text(
     text = text.uppercase(),
     style = CaducityTheme.typography.labelSmall,

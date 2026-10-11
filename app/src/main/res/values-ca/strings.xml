@@ -39,57 +39,27 @@
 
   <string name="products_list_items_frozen">%1$d articles congelats</string>
 
-  <string name="settings_screen_title">Configuració</string>
-  <string name="settings_appearance_title">Aparença</string>
-  <string name="settings_appearance_description">Tema, colors i visualització</string>
-  <string name="settings_notifications_title">Notificacions</string>
-  <string name="settings_notifications_description">Gestionar preferències de notificacions</string>
+  <string name="settings_screen_title">Ajustos</string>
   <string name="settings_debug_title">Depuració</string>
   <string name="settings_debug_description">Eines de desenvolupament i depuració</string>
   <string name="debug_fake_data_success">Dades de prova creades amb èxit</string>
   <string name="debug_fake_playstore_data_success">PlayStore data generada correctament</string>
   <string name="debug_error">Error</string>
 
-  <string name="settings_about_title">Quant a</string>
-  <string name="settings_about_description">Informació i crèdits de l\'aplicació</string>
+  <string name="settings_about_title">Quant a Caducity</string>
   <string name="settings_backup_title">Còpia de seguretat</string>
-  <string name="settings_backup_description">Exportar i restaurar les teves dades</string>
-  <string name="settings_privacy_title">Privacitat</string>
-  <string name="settings_privacy_description">Gestionar consentiment i preferències de dades</string>
+  <string name="settings_privacy_title">Privadesa</string>
 
   <string name="dashboard_fab_manual">Manual</string>
 
-  <string name="settings_group_appearance">Aparença</string>
   <string name="settings_theme_title">Tema</string>
   <string name="settings_theme_light">Clar</string>
   <string name="settings_theme_dark">Fosc</string>
   <string name="settings_theme_system">Sistema</string>
   <string name="settings_dynamic_colors">Colors dinàmics</string>
-  <string name="settings_calendar_options">Opcions de calendari</string>
-  <string name="settings_first_day_of_week_title">Primer dia de la setmana</string>
 
-  <string name="settings_group_expiration_colors">Colors de caducitat</string>
-  <string name="settings_color_scheme_title">Esquema de color</string>
-  <string name="settings_color_scheme_vibrant">Vibrant</string>
-  <string name="settings_color_scheme_harmony">Harmonic</string>
-  <string name="settings_expiration_legend_fresh">Fresc</string>
-  <string name="settings_expiration_legend_expiring_soon">Pròxim</string>
-  <string name="settings_expiration_legend_expired">Caducat</string>
-  <string name="settings_expiration_legend_frozen">Congelat</string>
-  <string name="settings_expiration_legend_consumed">Consumit</string>
 
-  <string name="settings_group_notifications">Notificacions</string>
-  <string name="settings_enable_notifications">Activar notificacions</string>
-  <string name="settings_notification_types_title">Tipus de notificació</string>
-  <string name="settings_notification_type_expired">Caducat</string>
-  <string name="settings_notification_type_expiring">Per caducar</string>
-  <string name="settings_notification_schedule_title">Programació de notificacions</string>
-  <string name="settings_notification_time_title">Hora de notificació</string>
-  <string name="settings_notification_time_dialog_title">Establir hora de notificació</string>
-  <string name="settings_notification_time_confirm">Confirmar</string>
-  <string name="settings_notification_time_dismiss">Cancel·lar</string>
 
-  <string name="settings_group_privacy">Privacitat i Dades</string>
   <string name="settings_privacy_screen_title">Privacitat</string>
   <string name="settings_privacy_analytics_title">Analítiques</string>
   <string name="settings_privacy_analytics_description">Compartir dades d\'ús anònimes per ajudar a millorar l\'aplicació</string>
@@ -105,29 +75,8 @@
   <string name="debug_consent_ad_personalization_description">Habilitar publicitat personalitzada</string>
 
   <!-- About section -->
-  <string name="about_version">Versió</string>
-  <string name="about_developer">Desenvolupador</string>
   <string name="about_github_link">Veure a GitHub</string>
 
-  <string name="create_category_screen_title">Crear Categoria</string>
-  <string name="create_category_name_label">Nom de la Categoria</string>
-  <string name="create_category_name_placeholder">Introdueix el nom de la categoria</string>
-  <string name="create_category_description_label">Descripció</string>
-  <string name="create_category_description_placeholder">Introdueix la descripció</string>
-  <string name="create_category_expiration_date_label">Data de Caducitat</string>
-  <string name="create_category_expiration_date_placeholder">DD/MM/AAAA</string>
-  <string name="create_category_button_cancel">Cancel·lar</string>
-  <string name="create_category_button_create">Crear</string>
-  <string name="create_category_content_description_back">Enrere</string>
-  <string name="create_category_items_title">Elements de la Categoria</string>
-  <string name="create_category_item_identifier_label">Identificador</string>
-  <string name="create_category_item_identifier_placeholder">ex., Lot #1, Unitat A</string>
-  <string name="create_category_add_item">Afegir Element</string>
-  <string name="create_category_remove_item">Eliminar</string>
-  <string name="create_category_item_number">Element %1$d</string>
-  <string name="create_category_item_quantity_label">Quantitat</string>
-  <string name="create_category_item_quantity_placeholder">1</string>
-  <string name="create_category_item_split_preview">Es crearan %1$d elements</string>
 
   <!-- Category Detail -->
   <string name="category_detail_auto_identifier_item">Article</string>
@@ -296,12 +245,6 @@
   <string name="app_name">Caducity</string>
 
   <!-- Notifications -->
-  <string name="notification_expiring_soon_title_single">Categoria a punt de caducar</string>
-  <string name="notification_expiring_soon_title_plural">%1$d categories a punt de caducar</string>
-  <string name="notification_expired_title_single">Categoria amb productes caducats</string>
-  <string name="notification_expired_title_plural">%1$d categories amb productes caducats</string>
-  <string name="notification_text_more">%1$s i %2$d més</string>
-  <string name="notification_items_count">%1$d elements</string>
 
   <!-- Navigation -->
   <string name="nav_soon">Aviat</string>
@@ -585,4 +528,41 @@
   <string name="status_dates_in_1w">D\'aquí 1 setmana</string>
   <string name="status_dates_pick">Tria una data</string>
   <string name="home_summary_cell_cd">%1$s, %2$s. Obre la llista</string>
+  <string name="category_editor_title_new">Nova categoria</string>
+  <string name="category_editor_title_edit">Edita la categoria</string>
+  <string name="category_editor_close">Tanca</string>
+  <string name="category_editor_save">Desa</string>
+  <string name="category_editor_preview_placeholder">Nom de la categoria</string>
+  <string name="category_editor_error_failed">No s\'ha pogut desar la categoria</string>
+  <string name="category_editor_description">Descripció · opcional</string>
+  <string name="category_editor_description_placeholder">Per exemple: refrescos, sucs i begudes fermentades</string>
+  <string name="category_editor_delete">Esborra la categoria</string>
+  <string name="notification_channel_name">Avís diari</string>
+  <string name="notification_channel_description">Una notificació al dia quan alguna cosa està a punt de caducar</string>
+  <string name="notification_highlight_today">%1$s avui</string>
+  <string name="notification_highlight_tomorrow">%1$s demà</string>
+  <string name="notification_highlight_days">%1$s d\'aquí a %2$d dies</string>
+  <string name="settings_section_alerts">Avisos</string>
+  <string name="settings_section_appearance">Aparença</string>
+  <string name="settings_section_data">Dades</string>
+  <string name="settings_notifications">Notificacions</string>
+  <string name="settings_notifications_time">Cada dia a les %s</string>
+  <string name="settings_soon_means">«Aviat» vol dir</string>
+  <string name="settings_soon_means_sub">Quan un producte passa a groc i t\'avisem</string>
+  <string name="settings_1d">1 dia</string>
+  <string name="settings_3d">3 dies</string>
+  <string name="settings_1w">1 setmana</string>
+  <string name="settings_dynamic_color_on">Amb els colors del mòbil</string>
+  <string name="settings_dynamic_color_off">Desactivat: paleta Caducity</string>
+  <string name="settings_week_start">La setmana comença</string>
+  <string name="settings_backup_sub">Exporta i restaura</string>
+  <string name="settings_about_sub">Versió i crèdits</string>
+  <string name="settings_time_dialog_title">Hora de l\'avís</string>
+  <string name="settings_dialog_save">Desa</string>
+  <string name="settings_dialog_cancel">Cancel·la</string>
+  <string name="settings_notifications_denied">Permet les notificacions als ajustos del sistema per rebre l\'avís</string>
+  <plurals name="notification_title">
+    <item quantity="one">%d producte caduca aviat</item>
+    <item quantity="other">%d productes caduquen aviat</item>
+  </plurals>
 </resources>
