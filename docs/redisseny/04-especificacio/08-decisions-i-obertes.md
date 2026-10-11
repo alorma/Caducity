@@ -33,7 +33,7 @@
 
 1. ~~Calendari~~ — resolt: vegeu `pantalles/11-calendari.md`.
 2. ~~«Llença» vs «Esborra»~~ — resolt: `DISCARDED` es desa.
-3. **Mode fosc**: tokens definits, sense mockups. Implementar i revisar visualment.
+3. ~~Mode fosc~~ — resolt: vegeu `12-mode-fosc.md` i `02-disseny-nou/captures-fosc/`.
 4. **Tauleta / pantalles grans**: fora d'abast; no trencar-les (màxim d'amplada o `ListDetailPaneScaffold` més endavant).
 5. **Text legal**: revisió per part d'algú de l'àmbit legal.
 6. ~~Cerca global~~ — resolt: obre Rebost amb el cercador enfocat.
