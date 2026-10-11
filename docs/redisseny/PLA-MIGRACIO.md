@@ -16,7 +16,7 @@ S'actualitza en tancar cada fase (regla 6: tests verds → emulador → validaci
 | 0 — Preparació i neteja | ✅ Feta | `5238d33` … `4443491` | 2026-10-11 | Deduït dels commits; no hi ha validació explícita registrada |
 | 1 — Fonaments (tokens, tema, components) | ✅ Feta | `9878c05` … `260468e` | 2026-10-11 | Deduït dels commits |
 | 2 — Model, dades i càlcul d'estat | ✅ Feta | `d2e4ed9` … `d1b365b` | 2026-10-11 | Room v3, backup v2, `PreferencesMigrator` pas 1 |
-| 3 — Navegació (shell) | ✅ Feta | `aa72d49` … `ae8a69f` | 2026-10-11 | Validada per l'usuari. Pendent: prova en tauleta (l'emulador no va arrencar). Canvis: barra sempre visible per sobre del contingut; Ajustos és una icona que obre pantalla secundària; deep links nous (`OpenHome`/`OpenExpired`/`OpenAdd`) a la fase 10 |
+| 3 — Navegació (shell) | ✅ Feta | `aa72d49` … `ae8a69f` | 2026-10-11 | Validada per l'usuari. La prova en tauleta s'ha posposat al repàs global final (decidit 2026-10-11). Canvis: barra sempre visible per sobre del contingut; Ajustos és una icona que obre pantalla secundària; deep links nous (`OpenHome`/`OpenExpired`/`OpenAdd`) a la fase 10 |
 | 4 — Afegeix | ⬜ Pendent | | | |
 | 5 — Full d'Accions, Inici, Calendari | ⬜ Pendent | | | |
 | 6 — Rebost i Categoria | ⬜ Pendent | | | |
