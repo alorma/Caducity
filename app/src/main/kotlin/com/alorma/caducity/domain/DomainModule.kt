@@ -10,8 +10,8 @@ import com.alorma.caducity.domain.usecase.MoveItemToCategoryUseCase
 import com.alorma.caducity.domain.usecase.ObserveCalendarUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoryUseCase
-import com.alorma.caducity.domain.usecase.ObserveExpiredUseCase
 import com.alorma.caducity.domain.usecase.ObserveHomeUseCase
+import com.alorma.caducity.domain.usecase.ObserveItemsByStatusUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.ObservePantryUseCase
 import com.alorma.caducity.domain.usecase.ObserveWeekStripUseCase
@@ -52,7 +52,7 @@ val domainModule =
     factoryOf(::ObserveCalendarUseCase)
     factoryOf(::ObserveWeekStripUseCase)
     factoryOf(::ObserveCategoryUseCase)
-    factoryOf(::ObserveExpiredUseCase)
+    factoryOf(::ObserveItemsByStatusUseCase)
     factoryOf(::ObserveHomeUseCase)
     factoryOf(::ObserveItemsUseCase)
     factoryOf(::ObservePantryUseCase)

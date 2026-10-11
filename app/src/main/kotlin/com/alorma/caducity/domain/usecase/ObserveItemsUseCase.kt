@@ -37,6 +37,7 @@ class ObserveItemsUseCase(
     categoryId = categoryId,
     expiration = expiration,
     status = ExpiryStatus.of(expiration, today, thresholdDays, frozen),
+    frozenSince = frozenSince,
     remainingDays = remainingDays,
     packSize = packSize,
     createdAt = createdAt,
