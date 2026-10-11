@@ -2,6 +2,7 @@ package com.alorma.caducity.data.datasource.room
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.alorma.caducity.domain.model.CategoryDefaults
 import java.util.UUID
 
 val MIGRATION_1_2 =
