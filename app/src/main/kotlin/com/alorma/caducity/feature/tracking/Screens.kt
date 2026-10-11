@@ -13,6 +13,10 @@ class CreateCategoryScreen : Screen("CreateCategoryScreen")
 
 class FilteredItemsByStatusScreen : Screen("FilteredItemsByStatusScreen")
 
+class StatusListScreen(
+  status: String,
+) : Screen("StatusListScreen_$status")
+
 class OnboardingScreen : Screen("OnboardingScreen")
 
 // Settings screens

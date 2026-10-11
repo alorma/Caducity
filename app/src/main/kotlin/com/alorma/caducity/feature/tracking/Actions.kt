@@ -257,3 +257,28 @@ class NavigateToNewCategoryFromPantryAction :
     origin = "pantry",
     parameters = mapOf("source" to "card"),
   )
+
+class NavigateToStatusListFromHomeAction(
+  status: String,
+  source: String,
+) : NavigationAction(
+    actionName = "status_list",
+    origin = "home",
+    parameters = mapOf("status" to status, "source" to source),
+  )
+
+class NavigateToItemActionsFromStatusListAction(
+  status: String,
+) : NavigationAction(
+    actionName = "item_actions",
+    origin = "status_list",
+    parameters = mapOf("status" to status, "source" to "row"),
+  )
+
+class NavigateToAddFromStatusListAction(
+  status: String,
+) : NavigationAction(
+    actionName = "add",
+    origin = "status_list",
+    parameters = mapOf("status" to status, "source" to "empty"),
+  )

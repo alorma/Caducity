@@ -21,7 +21,7 @@ ICONS = [
     "check", "check_circle", "ac_unit", "event_repeat", "delete", "edit", "drive_file_move",
     "undo", "warning", "error", "info", "schedule", "today", "notifications", "backup", "shield",
     "palette", "language", "tune", "lock", "info_i", "widgets",
-    "history", "add_circle", "cancel", "delete_history", "event", "touch_app",
+    "history", "add_circle", "cancel", "delete_history", "event", "touch_app", "checklist", "water_drop",
     # categories
     "water_full", "nutrition", "set_meal", "grocery", "bakery_dining", "local_drink", "icecream",
     "eco", "egg", "lunch_dining", "restaurant", "cookie", "local_pizza", "ramen_dining", "kebab_dining",

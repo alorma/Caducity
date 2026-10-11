@@ -49,6 +49,7 @@ import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugRemoteConfigsViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
 import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsViewModel
+import com.alorma.caducity.ui.screen.status.StatusListViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
 import org.koin.android.ext.koin.androidContext
@@ -109,6 +110,23 @@ val appModule =
         context = androidContext(),
         appClock = get(),
         dateFormat = get(qualifier = ConfigQualifier.DateFormat.HumanReadable),
+      )
+    }
+
+    // Status lists (Caducats, Aviat, Frescos, Congelats)
+    viewModel { params ->
+      StatusListViewModel(
+        status = params.get(),
+        observeByStatus = get(),
+        thresholds = get(),
+        consumeItem = get(),
+        freezeItem = get(),
+        unfreezeItem = get(),
+        rescheduleItem = get(),
+        discardItems = get(),
+        restoreItems = get(),
+        snackbars = get(),
+        eventTracker = get(),
       )
     }
 
