@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.alorma.caducity.data.datasource.room.model.ActiveItemRow
 import com.alorma.caducity.data.datasource.room.model.CategoryActiveCountRow
 import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import kotlinx.coroutines.flow.Flow
@@ -28,6 +29,15 @@ interface ItemDao {
 
   @Query("SELECT * FROM items WHERE consumedDate IS NULL AND discardedDate IS NULL")
   fun getActiveItems(): Flow<List<ItemRoomEntity>>
+
+  @Query(
+    "SELECT i.id AS itemId, i.categoryId AS categoryId, i.productId AS productId, " +
+      "COALESCE(p.name, i.identifier) AS name, i.expirationDate AS expirationDate, i.pausedDate AS pausedDate, " +
+      "i.remainingDays AS remainingDays, i.packSize AS packSize, i.createdAt AS createdAt " +
+      "FROM items i LEFT JOIN products p ON p.id = i.productId " +
+      "WHERE i.consumedDate IS NULL AND i.discardedDate IS NULL",
+  )
+  fun observeActiveItemRows(): Flow<List<ActiveItemRow>>
 
   @Query(
     "SELECT categoryId, COUNT(*) AS activeCount FROM items " +

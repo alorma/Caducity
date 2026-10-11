@@ -1,6 +1,7 @@
 package com.alorma.caducity.domain.model
 
 import kotlin.time.Instant
+import kotlinx.datetime.LocalDate
 
 /** Result of adding units of a product: used to undo the add. */
 data class AddedBatch(
@@ -42,3 +43,17 @@ sealed class PantryError(
 
   data object CategoryNotFound : PantryError("Category not found")
 }
+
+/** An active item as stored, with its product name and local expiration date (no status yet). */
+data class ActiveItem(
+  val itemId: String,
+  val productId: String?,
+  val name: String,
+  val categoryId: String,
+  val expiration: LocalDate,
+  val frozen: Boolean,
+  val remainingDays: Int?,
+  /** Only legacy items can be packs (`> 1`); they count as one unit. */
+  val packSize: Int?,
+  val createdAt: Instant?,
+)

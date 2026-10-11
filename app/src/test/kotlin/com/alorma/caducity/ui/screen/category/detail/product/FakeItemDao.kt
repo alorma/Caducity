@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.category.detail.product
 
 import com.alorma.caducity.data.datasource.room.dao.ItemDao
+import com.alorma.caducity.data.datasource.room.model.ActiveItemRow
 import com.alorma.caducity.data.datasource.room.model.CategoryActiveCountRow
 import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +37,23 @@ class FakeItemDao(
 
   override fun getActiveItems(): Flow<List<ItemRoomEntity>> =
     itemsInMemory.map { items -> items.filter { it.consumedDate == null && it.discardedDate == null } }
+
+  override fun observeActiveItemRows(): Flow<List<ActiveItemRow>> =
+    getActiveItems().map { items ->
+      items.map {
+        ActiveItemRow(
+          itemId = it.id,
+          categoryId = it.categoryId,
+          productId = it.productId,
+          name = it.identifier,
+          expirationDate = it.expirationDate,
+          pausedDate = it.pausedDate,
+          remainingDays = it.remainingDays,
+          packSize = it.packSize,
+          createdAt = it.createdAt,
+        )
+      }
+    }
 
   override fun getActiveCountByCategory(): Flow<List<CategoryActiveCountRow>> =
     getActiveItems().map { items ->

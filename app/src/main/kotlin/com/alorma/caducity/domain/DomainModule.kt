@@ -8,6 +8,12 @@ import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.MoveItemToCategoryUseCase
+import com.alorma.caducity.domain.usecase.ObserveCalendarUseCase
+import com.alorma.caducity.domain.usecase.ObserveCategoryUseCase
+import com.alorma.caducity.domain.usecase.ObserveExpiredUseCase
+import com.alorma.caducity.domain.usecase.ObserveHomeUseCase
+import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
+import com.alorma.caducity.domain.usecase.ObservePantryUseCase
 import com.alorma.caducity.domain.usecase.PopulateFakeDataUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.domain.usecase.SeedCategoriesUseCase
@@ -38,6 +44,12 @@ val domainModule =
     factoryOf(::GetNameSuggestionsUseCase)
     factoryOf(::UpdateCategoryUseCase)
     factoryOf(::SeedCategoriesUseCase)
+    factoryOf(::ObserveCalendarUseCase)
+    factoryOf(::ObserveCategoryUseCase)
+    factoryOf(::ObserveExpiredUseCase)
+    factoryOf(::ObserveHomeUseCase)
+    factoryOf(::ObserveItemsUseCase)
+    factoryOf(::ObservePantryUseCase)
 
     // Debug use cases
     factoryOf(::PopulateFakeDataUseCase)
