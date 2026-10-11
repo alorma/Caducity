@@ -15,6 +15,7 @@ import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.AddedBatch
 import com.alorma.caducity.domain.model.BatchSnapshot
 import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.ItemSnapshot
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.ProductUsage
 import com.alorma.caducity.domain.model.RemovedItem
@@ -174,6 +175,81 @@ class RoomPantryDataSource(
   override suspend fun restore(itemIds: List<String>) {
     database.withTransaction {
       itemIds.forEach { itemDao.restoreItem(it) }
+    }
+  }
+
+  override suspend fun consume(
+    itemIds: List<String>,
+    at: Instant,
+  ) {
+    database.withTransaction {
+      itemIds.forEach { id ->
+        itemDao.getItem(id)?.let {
+          itemDao.updateItem(it.copy(consumedDate = at.toEpochMilliseconds(), pausedDate = null, remainingDays = null))
+        }
+      }
+    }
+  }
+
+  override suspend fun freeze(
+    itemIds: List<String>,
+    at: Instant,
+  ): List<String> =
+    database.withTransaction {
+      val today = at.date()
+      itemIds.filter { id ->
+        val item = itemDao.getItem(id) ?: return@filter false
+        val days = Instant.fromEpochMilliseconds(item.expirationDate).date().toEpochDays() - today.toEpochDays()
+        if (days < 0 || item.pausedDate != null) return@filter false
+        itemDao.updateItem(item.copy(pausedDate = at.toEpochMilliseconds(), remainingDays = days.toInt()))
+        true
+      }
+    }
+
+  override suspend fun reschedule(
+    itemIds: List<String>,
+    newExpiration: Instant,
+  ) {
+    database.withTransaction {
+      itemIds.forEach { id ->
+        itemDao.getItem(id)?.let {
+          itemDao.updateItem(
+            it.copy(expirationDate = newExpiration.toEpochMilliseconds(), pausedDate = null, remainingDays = null),
+          )
+        }
+      }
+    }
+  }
+
+  override suspend fun snapshots(itemIds: List<String>): List<ItemSnapshot> =
+    itemIds.mapNotNull { id ->
+      itemDao.getItem(id)?.let {
+        ItemSnapshot(
+          itemId = it.id,
+          expirationMillis = it.expirationDate,
+          pausedMillis = it.pausedDate,
+          remainingDays = it.remainingDays,
+          consumedMillis = it.consumedDate,
+          discardedMillis = it.discardedDate,
+        )
+      }
+    }
+
+  override suspend fun restoreSnapshots(snapshots: List<ItemSnapshot>) {
+    database.withTransaction {
+      snapshots.forEach { snap ->
+        itemDao.getItem(snap.itemId)?.let {
+          itemDao.updateItem(
+            it.copy(
+              expirationDate = snap.expirationMillis,
+              pausedDate = snap.pausedMillis,
+              remainingDays = snap.remainingDays,
+              consumedDate = snap.consumedMillis,
+              discardedDate = snap.discardedMillis,
+            ),
+          )
+        }
+      }
     }
   }
 

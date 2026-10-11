@@ -137,7 +137,7 @@ class HomeViewModelTest {
     return HomeViewModel(
       observeHome = ObserveHomeUseCase(items, pantry, todayProvider),
       observeWeekStrip = ObserveWeekStripUseCase(ObserveCalendarUseCase(items), todayProvider),
-      consumeItem = ConsumeItemUseCase(itemDataSource),
+      consumeItem = ConsumeItemUseCase(itemDataSource, pantry, clock),
       restoreItems = RestoreItemsUseCase(pantry),
       snackbars = snackbars,
       widgetTipFlag = WidgetTipFlag(SettingsFireAndForgetRunner(MapSettings())),
