@@ -1,15 +1,9 @@
 package com.alorma.caducity.ui.screen.calendar
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +21,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,10 +32,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -81,10 +81,13 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
+import kotlinx.coroutines.launch
+import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.plus
 import kotlinx.datetime.toJavaLocalDate
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -116,8 +119,7 @@ fun CalendarScreen(
         CalendarContent(
           state = current,
           onBack = { viewModel.navigate(CalendarNavigation.Back) },
-          onPrevious = viewModel::onPreviousMonth,
-          onNext = viewModel::onNextMonth,
+          onMonthShown = viewModel::onMonthShown,
           onDayClick = viewModel::onDayClick,
           onRowClick = { viewModel.navigate(CalendarNavigation.ItemActions(it)) },
         )
@@ -129,14 +131,27 @@ fun CalendarScreen(
 internal fun CalendarContent(
   state: CalendarState.Ready,
   onBack: () -> Unit,
-  onPrevious: () -> Unit,
-  onNext: () -> Unit,
+  onMonthShown: (LocalDate) -> Unit,
   onDayClick: (LocalDate) -> Unit,
   onRowClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  // Page MonthPages is the month the screen opened on; the pager reaches MonthPages months either way.
+  val base = remember { state.month.first }
+  val pagerState = rememberPagerState(initialPage = MonthPages, pageCount = { MonthPages * 2 + 1 })
+  val scope = rememberCoroutineScope()
+  val currentOnMonthShown by rememberUpdatedState(onMonthShown)
+  LaunchedEffect(pagerState) {
+    snapshotFlow { pagerState.settledPage }.collect { currentOnMonthShown(monthAt(base, it)) }
+  }
   Column(modifier = modifier.fillMaxSize()) {
-    CalendarTopBar(state = state, onBack = onBack, onPrevious = onPrevious, onNext = onNext)
+    CalendarTopBar(
+      title = monthAt(base, pagerState.currentPage).monthTitle(),
+      categoryName = state.categoryName,
+      onBack = onBack,
+      onPrevious = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) } },
+      onNext = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } },
+    )
     LazyColumn(
       modifier = Modifier.fillMaxSize(),
       contentPadding =
@@ -146,8 +161,8 @@ internal fun CalendarContent(
       item(key = "month") {
         MonthCard(
           state = state,
-          onPrevious = onPrevious,
-          onNext = onNext,
+          pagerState = pagerState,
+          base = base,
           onDayClick = onDayClick,
           modifier = Modifier.padding(bottom = 12.dp),
         )
@@ -177,7 +192,8 @@ internal fun CalendarContent(
 
 @Composable
 private fun CalendarTopBar(
-  state: CalendarState.Ready,
+  title: String,
+  categoryName: String?,
   onBack: () -> Unit,
   onPrevious: () -> Unit,
   onNext: () -> Unit,
@@ -191,13 +207,13 @@ private fun CalendarTopBar(
     title = {
       Column {
         Text(
-          text = state.month.first.monthTitle(),
+          text = title,
           style = CaducityTheme.typography.headlineMedium,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
           modifier = Modifier.semantics { heading() },
         )
-        state.categoryName?.let {
+        categoryName?.let {
           Text(
             text = it,
             style = CaducityTheme.typography.bodyMedium,
@@ -222,41 +238,19 @@ private fun CalendarTopBar(
 @Composable
 private fun MonthCard(
   state: CalendarState.Ready,
-  onPrevious: () -> Unit,
-  onNext: () -> Unit,
+  pagerState: PagerState,
+  base: LocalDate,
   onDayClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  var dragged = 0f
   Surface(
-    modifier =
-      modifier.fillMaxWidth().pointerInput(Unit) {
-        detectHorizontalDragGestures(
-          onDragStart = { dragged = 0f },
-          onDragEnd = {
-            if (dragged > SwipeThreshold) {
-              onPrevious()
-            } else if (dragged < -SwipeThreshold) {
-              onNext()
-            }
-          },
-        ) { _, amount -> dragged += amount }
-      },
+    modifier = modifier.fillMaxWidth(),
     shape = CaducityShapes.group,
     color = CaducityTheme.colorScheme.surfaceContainer,
   ) {
     Column(modifier = Modifier.padding(start = 10.dp, end = 8.dp, top = 8.dp, bottom = 8.dp)) {
-      AnimatedContent(
-        targetState = state.month,
-        transitionSpec = {
-          val forward = targetState.first > initialState.first
-          (
-            slideInHorizontally { if (forward) it else -it } togetherWith
-              slideOutHorizontally { if (forward) -it else it }
-          ).using(SizeTransform(clip = true))
-        },
-        label = "month",
-      ) { month ->
+      HorizontalPager(state = pagerState, verticalAlignment = Alignment.Top) { page ->
+        val month = CalendarMonthModel.of(monthAt(base, page), state.month.firstDayOfWeek)
         Column {
           Row(modifier = Modifier.fillMaxWidth()) {
             month.weekdays.forEach { weekday ->
@@ -288,6 +282,8 @@ private fun MonthCard(
               }
             }
           }
+          // Every month takes 6 rows so the card does not change height while paging.
+          repeat(6 - month.weeks.size) { Spacer(Modifier.height(CellHeight)) }
         }
       }
       Legend(modifier = Modifier.padding(top = 8.dp, bottom = 4.dp))
@@ -475,7 +471,12 @@ private fun CalendarRowItem(
 
 private val CellHeight = 52.dp
 private val DayCircle = 34.dp
-private const val SwipeThreshold = 80f
+private const val MonthPages = 1200
+
+private fun monthAt(
+  base: LocalDate,
+  page: Int,
+): LocalDate = base.plus(DatePeriod(months = page - MonthPages))
 
 /** «dl», «dt»… */
 private fun DayOfWeek.initial(locale: Locale = Locale.getDefault()): String =
@@ -530,8 +531,7 @@ private fun CalendarPreview() {
               ),
           ),
         onBack = {},
-        onPrevious = {},
-        onNext = {},
+        onMonthShown = {},
         onDayClick = {},
         onRowClick = {},
       )

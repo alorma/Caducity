@@ -206,11 +206,11 @@ class CalendarViewModelTest {
       val vm = viewModel()
       vm.ready()
 
-      vm.onNextMonth()
+      vm.onMonthShown(LocalDate(2026, 11, 1))
       val next = vm.ready { it.month.first == LocalDate(2026, 11, 1) }
       expectThat(next.selected).isEqualTo(LocalDate(2026, 11, 1))
 
-      vm.onPreviousMonth()
+      vm.onMonthShown(LocalDate(2026, 10, 1))
       val back = vm.ready { it.month.first == LocalDate(2026, 10, 1) }
       expectThat(back.selected).isEqualTo(today)
     }
