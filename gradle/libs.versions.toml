@@ -1,6 +1,7 @@
 [versions]
 versionPlugin = "1.0.3"
 playPublisher = "4.1.1"
+composeScreenshot = "0.0.1-alpha16"
 
 # Compose
 compose-bom = "2026.09.00"
@@ -62,6 +63,7 @@ uiToolingPreview = "1.12.1"
 uiTooling = "1.12.1"
 
 [libraries]
+compose-screenshot-validation = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "composeScreenshot" }
 # Compose BOM
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 
@@ -159,3 +161,4 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 
 versionPlugin = { id = "io.github.alorma.version", version.ref = "versionPlugin" }
 play-publisher = { id = "com.github.triplet.play", version.ref = "playPublisher" }
+compose-screenshot = { id = "com.android.compose.screenshot", version.ref = "composeScreenshot" }

@@ -1,0 +1,88 @@
+name: Build APK
+
+# Runs the unit tests, builds the debug APK and uploads it as an artifact. Pull requests only build it (pr-build.yml)
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Create google-services.json
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > app/google-services.json
+
+      - name: Run unit tests
+        run: ./gradlew testDebugUnitTest
+
+      - name: Publish test report
+        uses: mikepenz/action-junit-report@v6
+        if: ${{ !cancelled() }}
+        # Les PR de forks no tenen permís per crear el resultat; no ha de fer fallar el job
+        continue-on-error: true
+        with:
+          check_name: Unit test results
+          report_paths: "**/build/test-results/**/*.xml"
+          detailed_summary: true
+
+      - name: Upload test report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: unit-test-report
+          path: "*/build/reports/tests/testDebugUnitTest"
+          retention-days: 7
+
+      - name: Build debug APK
+        run: ./gradlew :app:assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: caducity-debug-${{ github.sha }}
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+  build-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Create google-services.json
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > app/google-services.json
+
+      # Sense keystore es construeix sense signar; serveix per comprovar que R8 i els recursos no trenquen el release
+      - name: Build release APK
+        run: ./gradlew :app:assembleRelease

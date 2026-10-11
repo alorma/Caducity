@@ -49,7 +49,7 @@ fun StatusBadge(
 
 @Preview(name = "Status Badge - All Statuses")
 @Composable
-private fun StatusBadgePreview() {
+internal fun StatusBadgePreview() {
   PreviewTheme {
     Surface {
       Column(

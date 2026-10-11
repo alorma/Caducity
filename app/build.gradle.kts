@@ -1,3 +1,4 @@
+import com.android.compose.screenshot.tasks.PreviewScreenshotValidationTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -16,6 +17,8 @@ plugins {
   alias(libs.plugins.versionPlugin)
 
   alias(libs.plugins.play.publisher)
+
+  alias(libs.plugins.compose.screenshot)
 }
 
 android {
@@ -42,24 +45,19 @@ android {
     }
   }
   signingConfigs {
-    register("release") {
-      val realKeystoreFile = file("../certs/release.keystore")
-      val fakeKeystoreFile = file("../certs/fakeRelease.keystore")
-
-      if (realKeystoreFile.exists() && System.getenv("KEYSTORE_PASSWORD") != null) {
-        storeFile = realKeystoreFile
-        storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "no_value"
-        keyAlias = System.getenv("KEY_ALIAS") ?: "no_value"
-        keyPassword = System.getenv("KEY_PASSWORD") ?: "no_value"
-      } else {
-        storeFile = fakeKeystoreFile
-        storePassword = "caducity"
-        keyAlias = "caducity"
-        keyPassword = "caducity"
-      }
-    }
     named("debug") {
       storeFile = file("../certs/debug.keystore")
+    }
+    // Keystore de release: fora del repo. A la CI es descodifica del secret RELEASE_KEYSTORE_BASE64 a
+    // `certs/release.keystore`; les contrasenyes arriben per KEYSTORE_PASSWORD, KEY_ALIAS i KEY_PASSWORD
+    val releaseKeystore = rootProject.file("certs/release.keystore")
+    if (releaseKeystore.exists() && System.getenv("KEYSTORE_PASSWORD") != null) {
+      create("release") {
+        storeFile = releaseKeystore
+        storePassword = System.getenv("KEYSTORE_PASSWORD")
+        keyAlias = System.getenv("KEY_ALIAS")
+        keyPassword = System.getenv("KEY_PASSWORD")
+      }
     }
   }
   buildTypes {
@@ -67,7 +65,7 @@ android {
       isMinifyEnabled = true
       isShrinkResources = true
 
-      signingConfig = signingConfigs["release"]
+      signingConfigs.findByName("release")?.let { signingConfig = it }
 
       // Enable NDK symbol upload for Firebase Crashlytics
       configure<com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension> {
@@ -92,6 +90,13 @@ android {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
   }
+
+  experimentalProperties["android.experimental.enableScreenshotTest"] = true
+}
+
+// El plugin de captures no té DSL per al llindar des d'AGP 9; es posa a la tasca de validació
+tasks.withType<PreviewScreenshotValidationTask>().configureEach {
+  testEngineInput.threshold.set(0.01f)
 }
 
 // Robolectric llegeix els assets del variant debug de l'app (no els del sourceSet test): hi afegim
@@ -199,4 +204,10 @@ dependencies {
   testImplementation(libs.androidx.test.core)
   testImplementation(libs.androidx.room.testing)
   testImplementation(libs.robolectric)
+
+  // Screenshot tests
+  screenshotTestImplementation(libs.compose.screenshot.validation)
+  screenshotTestImplementation(platform(libs.androidx.compose.bom))
+  screenshotTestImplementation(libs.androidx.compose.ui)
+  screenshotTestImplementation(libs.androidx.compose.ui.tooling)
 }

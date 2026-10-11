@@ -16,6 +16,8 @@ plugins {
   alias(libs.plugins.ktlint) apply false
 
   alias(libs.plugins.play.publisher) apply false
+
+  alias(libs.plugins.compose.screenshot) apply false
 }
 
 subprojects {
