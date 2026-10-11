@@ -1,181 +1,61 @@
-# 🥬 Caducity
+# Caducity
 
 **Track groceries. Reduce waste. Save money.**
 
-Caducity is a Kotlin Multiplatform grocery expiration tracker that helps you monitor your food inventory and never waste groceries again.
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Kotlin-2.2.21-purple?logo=kotlin" alt="Kotlin"/>
-  <img src="https://img.shields.io/badge/Compose%20Multiplatform-1.10.0--rc01-blue?logo=jetpackcompose" alt="Compose"/>
-  <img src="https://img.shields.io/badge/Material%203-Expressive-green" alt="Material 3"/>
-  <img src="https://img.shields.io/badge/platforms-Android%20%7C%20Desktop%20%7C%20Web-lightgrey" alt="Platforms"/>
-</p>
+Caducity is an Android app that tracks when your groceries expire, so you can use them in time and waste less food. Built with Jetpack Compose and Material 3 Expressive.
 
 ---
 
-## ✨ Features
+## Features
 
-### Current
-- 📊 **Dashboard** - Visual overview of all products with status indicators
-- 🔍 **Product Details** - Track individual instances with expiration dates
-- 🎨 **Adaptive UI** - Responsive design for phones, tablets, and desktops
-- 🌓 **Theme Customization** - Light/Dark mode with dynamic colors
-- 🌐 **Multiplatform** - Android, Desktop, Web, and WebAssembly
+- **Home**: what expires soon, grouped by day, with a 7-day strip and a banner for what already expired.
+- **Add**: name, category and expiry date in a few taps, with batch mode, quantity and name suggestions.
+- **Pantry and categories**: browse by category, filter by status or by day, and search.
+- **Status lists**: Expired, Soon, Fresh and Frozen, with bulk actions and undo.
+- **Calendar**: month view of what expires each day.
+- **Daily reminder**: one notification a day, at the time you choose.
+- **Backup and restore**, light/dark theme, dynamic colour, Catalan, Spanish and English.
 
-### Coming Soon
-- ➕ Create and edit products
-- 📝 Manage product instances
-- 🔔 Expiration notifications
-- 📈 Waste statistics & insights
-- 🔎 Search and filter
-
-See [**DEVELOPMENT_PLAN.md**](./DEVELOPMENT_PLAN.md) for the complete roadmap.
+The redesign plan and its status are in [`docs/redisseny/PLA-MIGRACIO.md`](./docs/redisseny/PLA-MIGRACIO.md).
 
 ---
 
-## 🚀 Quick Start
+## Requirements
 
-### Prerequisites
-- JDK 21 or higher
-- Android SDK (for Android builds)
+- JDK 21
+- Android SDK
+- Gradle 9.8.1 (wrapper included)
 
-### Run on Desktop
+## Build
+
 ```bash
-./gradlew :composeApp:run
+./gradlew assembleDebug                      # debug APK
+./gradlew installDebug                       # install on a connected device
+./gradlew ktlintCheck test assembleDebug     # what CI runs on every PR
 ```
 
-### Run on Web
-```bash
-./gradlew jsBrowserDevelopmentRun
-# Open http://localhost:8080
-```
-
-### Install on Android
-```bash
-./gradlew installDebug
-```
-
-For more commands and options, see [**QUICK_START_GUIDE.md**](./QUICK_START_GUIDE.md).
+See [`CLAUDE.md`](./CLAUDE.md) for architecture and development guidelines.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
-Built with **Clean Architecture** principles and **Kotlin Multiplatform**:
+Clean Architecture in a single Android module (`app`), plus `icons` for the generated icon set:
 
 ```
-┌─────────────────────────────────────┐
-│  UI Layer (Compose Multiplatform)   │  ← Screens, ViewModels
-├─────────────────────────────────────┤
-│  Domain Layer                        │  ← Use Cases, Business Logic
-├─────────────────────────────────────┤
-│  Data Layer                          │  ← Repositories, Data Sources
-└─────────────────────────────────────┘
-         ↓           ↓           ↓
-    Android      Desktop     Web/WASM
+app/src/main/kotlin/com/alorma/caducity/
+├── ui/        # Compose screens, components, theme, navigation (Navigation 3)
+├── domain/    # Models and use cases
+├── data/      # Room database, data sources, backup
+├── config/    # Time, preferences, calendar settings
+├── feature/   # Tracking, consent, review, notifications
+└── di/        # Koin modules
 ```
 
-**Key Technologies:**
-- **Compose Multiplatform** - Shared UI across platforms
-- **Material 3 Expressive** - Modern, adaptive design system
-- **Koin** - Dependency injection
-- **Navigation 3** - Type-safe multiplatform navigation
-- **kotlinx-datetime** - Cross-platform date/time handling
+**Key technologies:** Kotlin, Jetpack Compose with Material 3 Expressive, Navigation 3, Room, Koin, WorkManager, kotlinx-datetime, multiplatform-settings, Firebase Analytics and Crashlytics.
 
 ---
 
-## 📂 Project Structure
-
-```
-composeApp/src/
-├── commonMain/         # Shared code (UI, domain, data)
-│   ├── ui/            # Compose screens and components
-│   ├── domain/        # Business logic and use cases
-│   ├── data/          # Data sources and repositories
-│   └── di/            # Dependency injection modules
-├── androidMain/       # Android-specific implementations
-├── desktopMain/       # Desktop-specific implementations
-└── webMain/           # Web-specific implementations
-```
-
----
-
-## 🛠️ Development
-
-### Build
-```bash
-./gradlew clean build
-```
-
-### Test
-```bash
-./gradlew allTests
-```
-
-### Create Distribution
-```bash
-# Desktop
-./gradlew :composeApp:packageDistributionForCurrentOS
-
-# Web
-./gradlew jsBrowserDistribution
-```
-
-See [**CLAUDE.md**](./CLAUDE.md) for detailed development guidelines.
-
----
-
-## 📋 Development Roadmap
-
-The app is being developed in **10 phases** over approximately **5-8 months**:
-
-1. ✅ **Core Product Management** (Partially Complete)
-2. 📋 **Instance Management**
-3. 📋 **Data Persistence**
-4. 📋 **Notifications & Reminders**
-5. 📋 **Enhanced User Experience**
-6. 📋 **Analytics & Insights**
-7. 📋 **Sharing & Collaboration**
-8. 📋 **Advanced Features**
-9. 📋 **Platform Optimization**
-10. 📋 **Polish & Release**
-
-View the full plan in [**DEVELOPMENT_PLAN.md**](./DEVELOPMENT_PLAN.md).
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! This project is in active development. Check the [Development Plan](./DEVELOPMENT_PLAN.md) to see what needs to be built.
-
-### Development Setup
-1. Clone the repository
-2. Open in IntelliJ IDEA or Android Studio
-3. Sync Gradle
-4. Run on your preferred platform
-
----
-
-## 📄 License
+## License
 
 [Add your license here]
-
----
-
-## 🙏 Acknowledgments
-
-Built with:
-- [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html)
-- [Compose Multiplatform](https://www.jetbrains.com/lp/compose-multiplatform/)
-- [Material 3](https://m3.material.io/)
-- [Koin](https://insert-koin.io/)
-
----
-
-## 📞 Contact
-
-[Add your contact information or links here]
-
----
-
-<p align="center">Made with ❤️ to reduce food waste</p>
