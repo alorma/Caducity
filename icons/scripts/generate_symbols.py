@@ -25,7 +25,9 @@ ICONS = [
     # categories
     "water_full", "nutrition", "set_meal", "grocery", "bakery_dining", "local_drink", "icecream",
     "eco", "egg", "lunch_dining", "restaurant", "cookie", "local_pizza", "ramen_dining", "kebab_dining",
-    "emoji_food_beverage", "wine_bar", "coffee", "cake", "fastfood", "pets", "child_care",
+    "emoji_food_beverage", "wine_bar", "coffee", "cake", "fastfood", "pets", "child_care", "soup_kitchen",
+    # onboarding
+    "radio_button_unchecked", "notifications_active", "smartphone", "cloud_upload", "arrow_forward",
 ]
 
 
