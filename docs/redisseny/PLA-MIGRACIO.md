@@ -1,6 +1,6 @@
 # Pla de migració al redisseny «Caducity» (Material 3 Expressive)
 
-Versió del pla: **2** · Data: 2026-10-11 · Estat: **aprovat** (respostes P1–P21 incorporades). **Pendent del senyal de l'usuari per començar la fase 0.**
+Versió del pla: **2** · Data: 2026-10-11 · Estat: **aprovat** (respostes P1–P21 incorporades). **Regles de treball a la secció 9. Pendent del permís explícit de l'usuari per començar la fase 0.**
 
 Base: `main` @ `c204b56`, versió `0.10.0-SNAPSHOT`, Room v2, minSdk 35, compileSdk 37, Compose BOM 2026.09.00, `material3 1.5.0-beta01`, Navigation 3, Koin, `multiplatform-settings`.
 Entrades llegides: paquet de redisseny **v2** (inclosos `RESPOSTES-AL-PLA.md`, `PROMPT-ACTUALITZAR-PLA.md`, `PROMPT-CLAUDE-CODE.md` i `pantalles/11-calendari.md`).
@@ -433,6 +433,15 @@ Totes les P1–P21 estan resoltes (secció 1). Només queda la hipòtesi menor P
 ---
 
 ## 9. Fases
+
+### Regles de treball (obligatòries, abans de començar qualsevol fase)
+
+1. **Tasques concretes dins de cada fase.** Cada fase es descompon en tasques petites i verificables abans de tocar codi; es comparteix la llista amb l'usuari.
+2. **Mai començar una fase sense permís explícit de l'usuari.** En acabar una fase s'atura i es demana permís per a la següent; el permís per a una fase no val per a les altres.
+3. **Cada fase es prova a l'emulador**, tant per l'usuari com per Claude. Claude ho comprova de veritat (instal·lar, arrencar, navegar, captures de pantalla, `logcat` sense errors/crashos) i adjunta l'evidència al resum de fase. L'usuari valida a l'emulador abans de donar la fase per tancada.
+4. **Migracions de BBDD (Room, backup, preferències): proves abans i després.** Es poblen dades estrictes i rellevants (casos límit inclosos), s'executa el codi i els tests **abans** de migrar i **després**, tants cops com calgui fins a tenir seguretat, comprovant integritat (`PRAGMA foreign_key_check`, recomptes, valors esperats). Mai `fallbackToDestructiveMigration`. Cal una còpia/dump prèvia de les dades de prova.
+5. **Sense branques: tot a `main`.** Es fa commit en acabar cada tasca, i abans si el canvi és gran o perillós (esborrats massius, migracions). Cada commit compila i passa `./gradlew ktlintCheck test assembleDebug`; missatges en el format del repo, amb atribució.
+6. **Ordre de tancament de fase:** tests verds → prova a l'emulador (Claude, amb evidència) → validació de l'usuari → commit(s) → aturada i petició de permís per a la següent fase.
 
 Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(s) abans de passar a la següent.
 
