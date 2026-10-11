@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -15,7 +16,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.FloatingToolbarDefaults
-import androidx.compose.material3.FloatingToolbarScrollBehavior
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -60,17 +60,15 @@ fun FloatingNavBar(
   currentTab: TopLevelRoute,
   onTabSelected: (TopLevelRoute) -> Unit,
   onAddClick: () -> Unit,
-  scrollBehavior: FloatingToolbarScrollBehavior,
   modifier: Modifier = Modifier,
 ) {
   Row(
-    modifier = modifier,
+    modifier = modifier.fillMaxWidth(),
     verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(12.dp),
+    horizontalArrangement = Arrangement.SpaceBetween,
   ) {
     HorizontalFloatingToolbar(
       expanded = true,
-      scrollBehavior = scrollBehavior,
       colors =
         FloatingToolbarDefaults.standardFloatingToolbarColors(
           toolbarContainerColor = MaterialTheme.colorScheme.primaryContainer,

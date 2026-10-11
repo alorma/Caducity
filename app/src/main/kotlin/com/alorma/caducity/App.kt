@@ -1,35 +1,51 @@
 package com.alorma.caducity
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.activity.compose.LocalActivity
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.retain.retain
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
+import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
-import com.alorma.caducity.ui.screen.category.create.CreateCategoryRoute
+import com.alorma.caducity.ui.navigation.Add
+import com.alorma.caducity.ui.navigation.AddPlaceholderScreen
+import com.alorma.caducity.ui.navigation.AppShell
+import com.alorma.caducity.ui.navigation.Calendar
+import com.alorma.caducity.ui.navigation.CalendarPlaceholderScreen
+import com.alorma.caducity.ui.navigation.Category
+import com.alorma.caducity.ui.navigation.CategoryEditor
+import com.alorma.caducity.ui.navigation.Expired
+import com.alorma.caducity.ui.navigation.FilteredItems
+import com.alorma.caducity.ui.navigation.Home
+import com.alorma.caducity.ui.navigation.ItemActions
+import com.alorma.caducity.ui.navigation.ItemActionsPlaceholder
+import com.alorma.caducity.ui.navigation.Onboarding
+import com.alorma.caducity.ui.navigation.Pantry
+import com.alorma.caducity.ui.navigation.PantryListPlaceholder
+import com.alorma.caducity.ui.navigation.QuickCategory
+import com.alorma.caducity.ui.navigation.QuickCategoryPlaceholder
+import com.alorma.caducity.ui.navigation.Settings
+import com.alorma.caducity.ui.navigation.TopLevelBackStack
+import com.alorma.caducity.ui.navigation.TopLevelRoute
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
-import com.alorma.caducity.ui.screen.category.detail.CategoryDetailRoute
-import com.alorma.caducity.ui.screen.dashboard.DashboardRoute
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
-import com.alorma.caducity.ui.screen.dashboard.FilteredItemsRoute
 import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusScreen
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
-import com.alorma.caducity.ui.screen.onboarding.OnboardingRoute
 import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
-import com.alorma.caducity.ui.screen.settings.Settings
 import com.alorma.caducity.ui.screen.settings.SettingsContainer
 import com.alorma.caducity.ui.theme.AppTheme
 import org.koin.compose.koinInject
 
 @Suppress("DeferStateReads")
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(
   deepLinkAction: DeepLinkAction? = null,
@@ -38,91 +54,99 @@ fun App(
   AppTheme(
     themePreferences = koinInject(),
   ) {
-    val appBackStack =
+    val navigation =
       retain {
-        val stack =
-          mutableStateListOf<NavKey>(
-            if (onboardingFlag.isEnabled()) OnboardingRoute else DashboardRoute,
-          )
-        when (deepLinkAction) {
-          is DeepLinkAction.OpenProduct ->
-            stack.add(
-              CategoryDetailRoute(deepLinkAction.categoryId, deepLinkAction.productId),
-            )
-          is DeepLinkAction.OpenCategory ->
-            stack.add(
-              CategoryDetailRoute(deepLinkAction.categoryId, null),
-            )
-          null -> Unit
+        TopLevelBackStack(initialRoot = if (onboardingFlag.isEnabled()) Onboarding else Home).also { stack ->
+          when (deepLinkAction) {
+            is DeepLinkAction.OpenProduct ->
+              stack.openFromOutside(Category(deepLinkAction.categoryId, initialProductId = deepLinkAction.productId))
+            is DeepLinkAction.OpenCategory -> stack.openFromOutside(Category(deepLinkAction.categoryId))
+            null -> Unit
+          }
         }
-        stack
       }
+    val activity = LocalActivity.current
+    val visibleScreen = navigation.backStack.last { it !is ItemActions && it !is QuickCategory }
 
-    NavDisplay(
-      modifier = Modifier.fillMaxSize(),
-      backStack = appBackStack,
-      onBack = {
-        if (appBackStack.size > 1) appBackStack.removeLast()
-      },
-      entryDecorators =
-        listOf(
-          rememberSaveableStateHolderNavEntryDecorator(),
-          rememberViewModelStoreNavEntryDecorator(),
-        ),
-      entryProvider =
-        entryProvider {
-          entry<OnboardingRoute> {
-            OnboardingScreen(
-              onComplete = {
-                appBackStack.clear()
-                appBackStack.add(DashboardRoute)
-              },
-            )
-          }
-          entry<DashboardRoute> {
-            DashboardScreen(
-              onNavigateToCreateProduct = {
-                appBackStack.add(CreateCategoryRoute)
-              },
-              onNavigateToCategory = { categoryId ->
-                appBackStack.add(
-                  CategoryDetailRoute(categoryId),
-                )
-              },
-              onNavigateToStatus = { status ->
-                appBackStack.add(FilteredItemsRoute.ByStatus(status))
-              },
-              onNavigateToSettings = { appBackStack.add(Settings) },
-            )
-          }
-          entry<Settings> {
-            SettingsContainer()
-          }
-          entry<CreateCategoryRoute> {
-            CreateCategoryScreen(
-              onNavigateBack = { appBackStack.removeLast() },
-              onNavigateToCategory = { categoryId ->
-                appBackStack.removeLast()
-                appBackStack.add(CategoryDetailRoute(categoryId))
-              },
-            )
-          }
-          entry<CategoryDetailRoute> {
-            CategoryDetailContainer(
-              categoryId = it.categoryId,
-              initialProductId = it.initialProductId,
-              onBack = { appBackStack.removeLast() },
-            )
-          }
-          entry<FilteredItemsRoute.ByStatus> {
-            FilteredItemsByStatusScreen(
-              status = it.status,
-              onNavigateToCategory = { categoryId ->
-                appBackStack.add(CategoryDetailRoute(categoryId))
-              },
-            )
-          }
+    AppShell(
+      currentTab = navigation.currentTab,
+      showNavigation = visibleScreen is TopLevelRoute,
+      onTabSelected = navigation::switchTab,
+      onAddClick = { navigation.navigate(Add(source = "fab")) },
+    ) {
+      NavDisplay(
+        modifier = Modifier,
+        backStack = navigation.backStack,
+        onBack = {
+          if (!navigation.pop()) activity?.finish()
         },
-    )
+        entryDecorators =
+          listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator(),
+          ),
+        sceneStrategies = listOf(BottomSheetSceneStrategy()),
+        entryProvider =
+          entryProvider {
+            entry<Onboarding> {
+              OnboardingScreen(onComplete = { navigation.resetTo() })
+            }
+            // TEMP(fase 5b): old dashboard until Home exists.
+            entry<Home> {
+              DashboardScreen(
+                onNavigateToCreateProduct = { navigation.navigate(CategoryEditor()) },
+                onNavigateToCategory = { categoryId -> navigation.navigate(Category(categoryId)) },
+                onNavigateToStatus = { status -> navigation.navigate(FilteredItems(status)) },
+                onNavigateToSettings = { navigation.navigate(Settings) },
+              )
+            }
+            entry<Pantry> {
+              PantryListPlaceholder(onCategoryClick = { navigation.navigate(Category(it)) })
+            }
+            // TEMP(fase 8): old settings with its nested NavDisplay.
+            entry<Settings> {
+              SettingsContainer()
+            }
+            entry<Category> {
+              CategoryDetailContainer(
+                categoryId = it.id,
+                initialProductId = it.initialProductId,
+                onBack = { navigation.pop() },
+              )
+            }
+            // TEMP(fase 7): old items-by-status screen stands in for Expired.
+            entry<Expired> {
+              FilteredItemsByStatusScreen(
+                status = ItemStatus.Expired,
+                onNavigateToCategory = { categoryId -> navigation.navigate(Category(categoryId)) },
+              )
+            }
+            entry<FilteredItems> {
+              FilteredItemsByStatusScreen(
+                status = it.status,
+                onNavigateToCategory = { categoryId -> navigation.navigate(Category(categoryId)) },
+              )
+            }
+            entry<Calendar> { CalendarPlaceholderScreen() }
+            entry<Add> { AddPlaceholderScreen() }
+            // TEMP(fase 8): the old create screen stands in for the category editor.
+            entry<CategoryEditor> {
+              CreateCategoryScreen(
+                onNavigateBack = { navigation.pop() },
+                onNavigateToCategory = { categoryId ->
+                  navigation.pop()
+                  navigation.navigate(Category(categoryId))
+                },
+              )
+            }
+            entry<ItemActions>(metadata = BottomSheetSceneStrategy.bottomSheet()) {
+              ItemActionsPlaceholder(it.itemId)
+            }
+            entry<QuickCategory>(metadata = BottomSheetSceneStrategy.bottomSheet()) {
+              QuickCategoryPlaceholder()
+            }
+          },
+      )
+    }
   }
 }
