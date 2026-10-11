@@ -9,7 +9,7 @@ Caducity is an Android grocery expiration tracker application built with Jetpack
 ## Requirements
 
 - **JDK 21** - Required for building the project
-- **Gradle 9.3.1** - Included via wrapper
+- **Gradle 9.8.1** - Included via wrapper
 - **Android SDK** - For Android builds
 
 ## Build Commands
