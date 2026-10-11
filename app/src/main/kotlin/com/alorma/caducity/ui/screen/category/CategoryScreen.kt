@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -461,8 +462,11 @@ private fun DayFilter(
           .height(36.dp)
           .clip(CaducityShapes.chip)
           .background(CaducityTheme.colorScheme.primary)
-          .clickable(onClickLabel = stringResource(R.string.category_day_clear), onClick = onClear)
-          .padding(start = 12.dp, end = 8.dp),
+          .clickable(
+            onClickLabel = stringResource(R.string.category_day_clear),
+            role = Role.Button,
+            onClick = onClear,
+          ).padding(start = 12.dp, end = 8.dp),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {

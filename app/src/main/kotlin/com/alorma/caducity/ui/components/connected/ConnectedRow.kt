@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.components.shape.connectedShape
@@ -41,7 +42,7 @@ fun ConnectedRow(
       modifier =
         Modifier
           .fillMaxWidth()
-          .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+          .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
           .padding(contentPadding),
       verticalAlignment = Alignment.CenterVertically,
       content = content,
