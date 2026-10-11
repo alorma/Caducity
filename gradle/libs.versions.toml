@@ -1,5 +1,6 @@
 [versions]
 versionPlugin = "1.0.3"
+playPublisher = "4.1.1"
 
 # Compose
 compose-bom = "2026.09.00"
@@ -157,3 +158,4 @@ firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 
 versionPlugin = { id = "io.github.alorma.version", version.ref = "versionPlugin" }
+play-publisher = { id = "com.github.triplet.play", version.ref = "playPublisher" }

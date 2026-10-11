@@ -116,6 +116,21 @@ jobs:
       contents: read
 
     steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+
+      - name: Set up JDK
+        uses: actions/setup-java@v6.0.1
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          gradle-version: wrapper
+          cache-read-only: false
+
       - name: Download AAB artifact
         uses: actions/download-artifact@v8
         with:
@@ -123,14 +138,9 @@ jobs:
           path: artifacts/aab
 
       - name: Upload to Google Play Production Track
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-          packageName: com.alorma.caducity
-          releaseFiles: artifacts/aab/app-release.aab
-          track: production
-          releaseName: "${{ needs.get-version.outputs.version }}"
-          mappingFile: artifacts/aab/mapping.txt
+        run: ./gradlew :app:publishReleaseBundle --artifact-dir artifacts/aab --track production --release-name "${{ needs.get-version.outputs.version }}"
+        env:
+          ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_JSON }}
 
   create-github-release:
     name: Create GitHub Release

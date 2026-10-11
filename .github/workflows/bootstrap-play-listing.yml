@@ -1,0 +1,59 @@
+name: Bootstrap Play listing
+
+# One-off: downloads the current Google Play listing (texts, graphics, release notes) with Gradle Play Publisher
+# into app/src/main/play and opens a pull request with it. Manual trigger only
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: play-publish
+  cancel-in-progress: false
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - uses: actions/setup-java@v6.0.1
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Create google-services.json
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > app/google-services.json
+
+      - name: Bootstrap listing
+        run: ./gradlew :app:bootstrapReleaseListing
+        env:
+          ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+
+      - name: Open pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "$(git status --porcelain app/src/main/play)" ]; then
+            echo "No listing changes" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+          BRANCH="play-listing-bootstrap-${{ github.run_id }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add app/src/main/play
+          git commit -m "chore: bootstrap Google Play listing"
+          git push -u origin "$BRANCH"
+          gh pr create --base main --head "$BRANCH" \
+            --title "Bootstrap Google Play listing" \
+            --body "Listing downloaded from Google Play with \`bootstrapReleaseListing\`."
