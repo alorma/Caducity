@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -74,6 +73,7 @@ import com.alorma.caducity.ui.components.connected.ConnectedRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.status.StatusPill
 import com.alorma.caducity.ui.components.status.statusPillText
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
@@ -135,7 +135,7 @@ internal fun CalendarContent(
   onRowClick: (String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier = modifier.fillMaxSize().statusBarsPadding()) {
+  Column(modifier = modifier.fillMaxSize()) {
     CalendarTopBar(state = state, onBack = onBack, onPrevious = onPrevious, onNext = onNext)
     LazyColumn(
       modifier = Modifier.fillMaxSize(),
@@ -182,38 +182,41 @@ private fun CalendarTopBar(
   onPrevious: () -> Unit,
   onNext: () -> Unit,
 ) {
-  Row(
-    modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, top = 12.dp),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    IconButton(onClick = onBack) {
-      Icon(Symbols.Outlined.ArrowBack, contentDescription = stringResource(R.string.calendar_back))
-    }
-    Column(modifier = Modifier.weight(1f).padding(start = 4.dp)) {
-      Text(
-        text = state.month.first.monthTitle(),
-        style = CaducityTheme.typography.headlineMedium.copy(fontSize = 30.sp),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.semantics { heading() },
-      )
-      state.categoryName?.let {
+  StyledTopAppBar(
+    navigationIcon = {
+      IconButton(onClick = onBack) {
+        Icon(Symbols.Outlined.ArrowBack, contentDescription = stringResource(R.string.calendar_back))
+      }
+    },
+    title = {
+      Column {
         Text(
-          text = it,
-          style = CaducityTheme.typography.bodyMedium,
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
+          text = state.month.first.monthTitle(),
+          style = CaducityTheme.typography.headlineMedium,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
+          modifier = Modifier.semantics { heading() },
         )
+        state.categoryName?.let {
+          Text(
+            text = it,
+            style = CaducityTheme.typography.bodyMedium,
+            color = CaducityTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+          )
+        }
       }
-    }
-    IconButton(onClick = onPrevious) {
-      Icon(Symbols.Outlined.ChevronLeft, contentDescription = stringResource(R.string.calendar_prev_month))
-    }
-    IconButton(onClick = onNext) {
-      Icon(Symbols.Outlined.ChevronRight, contentDescription = stringResource(R.string.calendar_next_month))
-    }
-  }
+    },
+    actions = {
+      IconButton(onClick = onPrevious) {
+        Icon(Symbols.Outlined.ChevronLeft, contentDescription = stringResource(R.string.calendar_prev_month))
+      }
+      IconButton(onClick = onNext) {
+        Icon(Symbols.Outlined.ChevronRight, contentDescription = stringResource(R.string.calendar_next_month))
+      }
+    },
+  )
 }
 
 @Composable

@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -63,6 +62,7 @@ import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.toComposeShape
 import com.alorma.caducity.ui.components.connected.ConnectedRow
 import com.alorma.caducity.ui.components.threshold.thresholdLabel
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.NumberTextStyle
@@ -78,43 +78,33 @@ internal fun HomeHeader(
   onSearch: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Row(
-    modifier = modifier.fillMaxWidth().padding(top = 28.dp),
-    verticalAlignment = Alignment.Top,
-  ) {
-    Column(modifier = Modifier.weight(1f)) {
-      Text(
-        text = today.headerText().uppercase(),
-        style = CaducityTheme.typography.labelSmall,
-        color = CaducityTheme.colorScheme.onSurfaceVariant,
-      )
-      Text(
-        text = stringResource(R.string.home_title),
-        style = CaducityTheme.typography.displayLarge,
-        modifier = Modifier.semantics { heading() },
-      )
-    }
-    if (showActions) {
-      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        RoundHeaderButton(Symbols.Outlined.CalendarMonth, stringResource(R.string.home_calendar), onCalendar)
-        RoundHeaderButton(Symbols.Outlined.Search, stringResource(R.string.home_search), onSearch)
+  StyledTopAppBar(
+    modifier = modifier,
+    title = {
+      Column {
+        Text(
+          text = today.headerText().uppercase(),
+          style = CaducityTheme.typography.labelSmall,
+          color = CaducityTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+          text = stringResource(R.string.home_title),
+          style = CaducityTheme.typography.headlineMedium,
+          modifier = Modifier.semantics { heading() },
+        )
       }
-    }
-  }
-}
-
-@Composable
-private fun RoundHeaderButton(
-  icon: ImageVector,
-  description: String,
-  onClick: () -> Unit,
-) {
-  IconButton(
-    onClick = onClick,
-    modifier = Modifier.size(48.dp).clip(CircleShape).background(CaducityTheme.colorScheme.surfaceContainerHigh),
-  ) {
-    Icon(icon, contentDescription = description)
-  }
+    },
+    actions = {
+      if (showActions) {
+        IconButton(onClick = onCalendar) {
+          Icon(Symbols.Outlined.CalendarMonth, contentDescription = stringResource(R.string.home_calendar))
+        }
+        IconButton(onClick = onSearch) {
+          Icon(Symbols.Outlined.Search, contentDescription = stringResource(R.string.home_search))
+        }
+      }
+    },
+  )
 }
 
 @Composable
