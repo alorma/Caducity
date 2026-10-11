@@ -164,3 +164,23 @@ data class ExpiredData(
 // endregion
 
 internal val STATUS_ORDER = listOf(ExpiryStatus.EXPIRED, ExpiryStatus.SOON, ExpiryStatus.FRESH, ExpiryStatus.FROZEN)
+
+// region Units
+
+/** «Unitat [index] de [count]»: position of a unit among all the active units of its product. */
+data class UnitPosition(
+  val index: Int,
+  val count: Int,
+)
+
+/** Position of every unit, ordered by `(expiration, createdAt, id)` within its product (stable and derived). */
+fun List<PantryEntry>.unitPositions(): Map<String, UnitPosition> =
+  groupBy { it.groupKey }
+    .values
+    .flatMap { units ->
+      units
+        .sortedWith(compareBy({ it.expiration }, { it.createdAt }, { it.itemId }))
+        .mapIndexed { index, unit -> unit.itemId to UnitPosition(index + 1, units.size) }
+    }.toMap()
+
+// endregion

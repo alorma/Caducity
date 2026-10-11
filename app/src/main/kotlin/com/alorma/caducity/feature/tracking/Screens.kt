@@ -42,3 +42,5 @@ class ProductClearItemsBottomSheetScreen : Screen("ProductClearItemsBottomSheetS
 class ProductItemsBottomSheetScreen : Screen("ProductItemsBottomSheetScreen")
 
 class HomeScreen : Screen("HomeScreen")
+
+class CalendarScreen : Screen("CalendarScreen")

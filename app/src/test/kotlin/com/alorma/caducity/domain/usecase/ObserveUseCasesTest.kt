@@ -67,6 +67,7 @@ class ObserveUseCasesTest {
   private lateinit var category: ObserveCategoryUseCase
   private lateinit var expired: ObserveExpiredUseCase
   private lateinit var calendar: ObserveCalendarUseCase
+  private lateinit var weekStrip: ObserveWeekStripUseCase
 
   @Before
   fun setUp() {
@@ -106,6 +107,7 @@ class ObserveUseCasesTest {
     category = ObserveCategoryUseCase(items, pantry, todayProvider)
     expired = ObserveExpiredUseCase(items, pantry, todayProvider)
     calendar = ObserveCalendarUseCase(items)
+    weekStrip = ObserveWeekStripUseCase(calendar, todayProvider)
   }
 
   @After
@@ -425,6 +427,55 @@ class ObserveUseCasesTest {
       val map = calendar.observe(inDays(0)..inDays(6)).first()
       expectThat(map.keys.toList()).containsExactly(inDays(0), inDays(6))
       expectThat(map.getValue(inDays(0)).first().expiration).isEqualTo(inDays(0))
+    }
+
+  // endregion
+
+  // region Week strip
+
+  @Test
+  fun `week strip starts today, leaves expired out and lists soon before fresh`() =
+    runTest {
+      category("c1")
+      add("Old", "c1", -2)
+      add("Fresh", "c1", 6)
+      add("Soon", "c1", 6, quantity = 2)
+      add("Frozen", "c1", 2, frozen = true)
+
+      val data = weekStrip.observe().first()
+
+      expectThat(data.today).isEqualTo(today)
+      expectThat(data.statusesByDate.keys.toList()).containsExactly(inDays(6))
+      expectThat(data.statusesByDate.getValue(inDays(6))).hasSize(3)
+    }
+
+  @Test
+  fun `week strip can be filtered by category`() =
+    runTest {
+      category("c1")
+      category("c2", "c2", 1)
+      add("A", "c1", 1)
+      add("B", "c2", 2)
+
+      val data = weekStrip.observe(categoryId = "c2").first()
+
+      expectThat(data.statusesByDate.keys.toList()).containsExactly(inDays(2))
+    }
+
+  @Test
+  fun `week strip restarts when the day changes`() =
+    runTest {
+      category("c1")
+      add("Today", "c1", 0)
+      add("Later", "c1", 3)
+      weekStrip.observe().test {
+        expectThat(awaitItem().statusesByDate.keys.toList()).containsExactly(inDays(0), inDays(3))
+        todayFlow.value = inDays(1)
+        val next = awaitItem()
+        expectThat(next.today).isEqualTo(inDays(1))
+        expectThat(next.statusesByDate.keys.toList()).containsExactly(inDays(3))
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
   // endregion

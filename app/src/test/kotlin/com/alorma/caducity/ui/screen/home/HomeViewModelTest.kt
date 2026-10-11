@@ -18,8 +18,10 @@ import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.usecase.AddItemBatchUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
+import com.alorma.caducity.domain.usecase.ObserveCalendarUseCase
 import com.alorma.caducity.domain.usecase.ObserveHomeUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
+import com.alorma.caducity.domain.usecase.ObserveWeekStripUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
@@ -134,6 +136,7 @@ class HomeViewModelTest {
     val items = ObserveItemsUseCase(pantry, thresholds, todayProvider)
     return HomeViewModel(
       observeHome = ObserveHomeUseCase(items, pantry, todayProvider),
+      observeWeekStrip = ObserveWeekStripUseCase(ObserveCalendarUseCase(items), todayProvider),
       consumeItem = ConsumeItemUseCase(itemDataSource),
       restoreItems = RestoreItemsUseCase(pantry),
       snackbars = snackbars,

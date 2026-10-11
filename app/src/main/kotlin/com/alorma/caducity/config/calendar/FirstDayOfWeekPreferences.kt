@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.components.calendar
+package com.alorma.caducity.config.calendar
 
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
@@ -11,7 +11,7 @@ data class CalendarConfigState(
   val firstDayOfWeek: DayOfWeek,
 )
 
-class CalendarPreferences(
+class FirstDayOfWeekPreferences(
   private val settings: Settings,
 ) {
   val state: MutableStateFlow<CalendarConfigState> =
@@ -48,7 +48,7 @@ class CalendarPreferences(
   }
 }
 
-object CalendarPreferencesNoOp {
+object FirstDayOfWeekPreferencesNoOp {
   val state: StateFlow<CalendarConfigState> =
     MutableStateFlow(
       CalendarConfigState(firstDayOfWeek = DayOfWeek.MONDAY),

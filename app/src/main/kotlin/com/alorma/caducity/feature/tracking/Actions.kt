@@ -211,3 +211,13 @@ class NavigateToAddFromHomeAction :
     origin = "home",
     parameters = mapOf("source" to "empty_cta"),
   )
+
+// Calendar Actions
+class CalendarDaySelectAction : Action(name = "calendar_day_select")
+
+class NavigateToItemActionsFromCalendarAction :
+  NavigationAction(
+    actionName = "item_actions",
+    origin = "calendar",
+    parameters = mapOf("source" to "row"),
+  )

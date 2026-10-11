@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.home
 
 import com.alorma.caducity.domain.model.HomeData
+import com.alorma.caducity.domain.usecase.WeekStripData
 import kotlinx.datetime.LocalDate
 
 sealed interface HomeState {
@@ -8,6 +9,7 @@ sealed interface HomeState {
 
   data class Ready(
     val data: HomeData,
+    val weekStrip: WeekStripData,
     val widgetTipVisible: Boolean,
   ) : HomeState
 }

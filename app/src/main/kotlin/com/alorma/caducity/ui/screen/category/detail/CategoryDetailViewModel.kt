@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.category.detail
 
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.config.calendar.FirstDayOfWeekPreferences
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
@@ -9,7 +10,6 @@ import com.alorma.caducity.feature.tracking.CategoryDeletedAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.NavigateToAddItemFromCategoryAction
 import com.alorma.caducity.ui.base.BaseViewModel
-import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,7 +26,7 @@ class CategoryDetailViewModel(
   private val categoryId: String,
   obtainCategoryDetailUseCase: ObtainCategoryDetailUseCase,
   categoryDetailMapper: CategoryDetailMapper,
-  calendarPreferences: CalendarPreferences,
+  calendarPreferences: FirstDayOfWeekPreferences,
   private val createProductUseCase: CreateProductUseCase,
   private val deleteCategoryUseCase: DeleteCategoryUseCase,
   private val getProductItemsUseCase: GetProductItemsUseCase,
