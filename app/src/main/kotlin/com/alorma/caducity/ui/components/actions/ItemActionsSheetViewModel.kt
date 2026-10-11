@@ -98,7 +98,15 @@ class ItemActionsSheetViewModel(
     eventTracker.trackAction(ItemActionAction("consume"))
     val pack = ready.pack
     if (pack != null) {
-      emitSideEffect(ItemActionsSheetSideEffect.ShowQuantitySelector(pack))
+      emitSideEffect(
+        ItemActionsSheetSideEffect.ShowQuantitySelector(
+          max = pack,
+          name = ready.name,
+          category = ready.category,
+          expiration = ready.expiration,
+          daysLeft = ready.daysLeft,
+        ),
+      )
       return
     }
     viewModelScope.launch {

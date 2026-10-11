@@ -55,6 +55,10 @@ sealed interface ItemActionsSheetSideEffect {
 
   data class ShowQuantitySelector(
     val max: Int,
+    val name: String,
+    val category: Category,
+    val expiration: LocalDate,
+    val daysLeft: Int,
   ) : ItemActionsSheetSideEffect
 }
 

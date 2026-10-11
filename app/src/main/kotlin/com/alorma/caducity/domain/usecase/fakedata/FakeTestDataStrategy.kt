@@ -58,6 +58,9 @@ class FakeTestDataStrategy(
   ): ProductConfig {
     val items = mutableListOf<ItemConfig>()
 
+    // One legacy pack of 4 expiring tomorrow, for the quantity dialog
+    items.add(ItemConfig(identifier = "$productName pack", expirationDate = now.plus(1.days), packSize = 4))
+
     // Fresh items (beyond the soonExpiringThreshold)
     repeat(6) { index ->
       val daysAhead = expirationThresholds.soonExpiringThreshold.inWholeDays + 3 + index
