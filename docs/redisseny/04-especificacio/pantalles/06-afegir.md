@@ -32,7 +32,7 @@ Substitueix el botó «Add item» amb split i el formulari antic.
 - **Targeta** de 148 dp d'amplada, `surface-card`, radi 20, padding 12/6/6/12:
   - `check_circle` farcit 18 dp en `fresh` + nom del producte (`title-row` 15/600, **fins a 2 línies**, sense tallar).
   - Categoria (`body-small` 12, `ink-variant`) i, a sota, «N unitats · dd/mm».
-  - A baix a la dreta, dos botons d'icona de 44 dp: **Edita** (`edit`, `ink-variant`) → obre l'ítem en mode edició; **Treu de la tanda** (`delete`, `expired`) → esborra l'ítem desat i mostra snackbar «Formatge cheddar tret · Desfés». **Sense diàleg de confirmació** (el Desfés n'és la protecció).
+  - A baix a la dreta, dos botons d'icona de 44 dp: **Edita** (`edit`, `ink-variant`) → obre l'ítem en mode edició (**tocar qualsevol part de la targeta fa el mateix**); **Treu de la tanda** (`delete`, `expired`) → esborra l'ítem desat i mostra snackbar «Formatge cheddar tret · Desfés». **Sense diàleg de confirmació** (el Desfés n'és la protecció).
 - Accessibilitat: la fila és una llista («Productes desats en aquesta tanda, del més recent al més antic»); botons amb contentDescription «Edita {nom}» / «Treu {nom} de la tanda».
 - El comptador de la capçalera («✓ 12 desats») compta **entrades (productes desats = targetes de la fila), no unitats**. Les unitats ja es veuen a cada targeta («N unitats · dd/mm»). En treure una targeta, el comptador baixa en 1.
 - Si s'esborren tots, la fila desapareix i la pantalla torna a l'aspecte d'Afegeix normal.
