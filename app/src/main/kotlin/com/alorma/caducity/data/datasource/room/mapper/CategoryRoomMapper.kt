@@ -26,6 +26,9 @@ class CategoryRoomMapper(
       id = entity.id,
       name = entity.name,
       description = entity.description,
+      shape = entity.shape,
+      icon = entity.icon,
+      sortOrder = entity.sortOrder,
     )
 
   /**
@@ -36,6 +39,9 @@ class CategoryRoomMapper(
       id = model.id,
       name = model.name,
       description = model.description,
+      shape = model.shape,
+      icon = model.icon,
+      sortOrder = model.sortOrder,
     )
 
   /**

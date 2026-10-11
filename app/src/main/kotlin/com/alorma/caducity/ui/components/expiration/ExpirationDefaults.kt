@@ -22,7 +22,7 @@ object ExpirationDefaults {
       ItemStatus.ExpiringSoon -> stringResource(R.string.expiration_status_badge_expiring_soon)
       ItemStatus.Fresh -> stringResource(R.string.expiration_status_badge_fresh)
       ItemStatus.Frozen -> stringResource(R.string.expiration_status_badge_frozen)
-      ItemStatus.Consumed -> stringResource(R.string.expiration_status_badge_consumed)
+      ItemStatus.Consumed, ItemStatus.Discarded -> stringResource(R.string.expiration_status_badge_consumed)
     }
 
   /** Colors forts (barres, punts, botons): `strong` amb text d'alt contrast. */
@@ -62,7 +62,7 @@ object ExpirationDefaults {
       ItemStatus.ExpiringSoon -> CaducityTheme.colors.soon
       ItemStatus.Expired -> CaducityTheme.colors.expired
       ItemStatus.Frozen -> CaducityTheme.colors.frozen
-      ItemStatus.Consumed -> null
+      ItemStatus.Consumed, ItemStatus.Discarded -> null
     }
 
   @Composable

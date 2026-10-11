@@ -22,6 +22,12 @@ interface CategoryDao {
   @Query("SELECT * FROM categories")
   fun getAllCategories(): Flow<List<CategoryRoomEntity>>
 
+  @Query("SELECT * FROM categories ORDER BY sortOrder, rowid")
+  fun getCategoriesOrdered(): Flow<List<CategoryRoomEntity>>
+
+  @Query("SELECT COALESCE(MAX(sortOrder), -1) FROM categories")
+  suspend fun getMaxSortOrder(): Int
+
   @Query("SELECT * FROM categories WHERE id = :categoryId")
   suspend fun getCategory(categoryId: String): CategoryRoomEntity?
 

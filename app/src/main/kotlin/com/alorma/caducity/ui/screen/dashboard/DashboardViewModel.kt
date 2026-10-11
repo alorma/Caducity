@@ -63,7 +63,7 @@ class DashboardViewModel(
             ItemStatus.ExpiringSoon -> "expiring_soon"
             ItemStatus.Fresh -> "fresh"
             ItemStatus.Frozen -> "frozen"
-            ItemStatus.Consumed -> "consumed"
+            ItemStatus.Consumed, ItemStatus.Discarded -> "consumed"
           }
         eventTracker.trackAction(NavigateToFilteredItemsAction(statusParam))
         emitNavigationSideEffect(DashboardNavigationSideEffect.NavigateToFilteredItems(navigation.status))
