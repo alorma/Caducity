@@ -318,6 +318,5 @@
   <!-- Navigation -->
   <string name="nav_soon">Pronto</string>
   <string name="nav_pantry">Despensa</string>
-  <string name="nav_settings">Ajustes</string>
   <string name="action_add_product">Añadir un producto</string>
 </resources>

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.retain.retain
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -13,6 +14,7 @@ import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
+import com.alorma.caducity.feature.deeplink.toRoute
 import com.alorma.caducity.ui.navigation.Add
 import com.alorma.caducity.ui.navigation.AddPlaceholderScreen
 import com.alorma.caducity.ui.navigation.AppShell
@@ -49,6 +51,7 @@ import org.koin.compose.koinInject
 @Composable
 fun App(
   deepLinkAction: DeepLinkAction? = null,
+  onDeepLinkHandled: () -> Unit = {},
   onboardingFlag: OnboardingFlag = koinInject(),
 ) {
   AppTheme(
@@ -56,15 +59,14 @@ fun App(
   ) {
     val navigation =
       retain {
-        TopLevelBackStack(initialRoot = if (onboardingFlag.isEnabled()) Onboarding else Home).also { stack ->
-          when (deepLinkAction) {
-            is DeepLinkAction.OpenProduct ->
-              stack.openFromOutside(Category(deepLinkAction.categoryId, initialProductId = deepLinkAction.productId))
-            is DeepLinkAction.OpenCategory -> stack.openFromOutside(Category(deepLinkAction.categoryId))
-            null -> Unit
-          }
-        }
+        TopLevelBackStack(initialRoot = if (onboardingFlag.isEnabled()) Onboarding else Home)
       }
+    LaunchedEffect(deepLinkAction) {
+      deepLinkAction?.let {
+        navigation.openFromOutside(it.toRoute())
+        onDeepLinkHandled()
+      }
+    }
     val activity = LocalActivity.current
     val visibleScreen = navigation.backStack.last { it !is ItemActions && it !is QuickCategory }
 
@@ -101,7 +103,10 @@ fun App(
               )
             }
             entry<Pantry> {
-              PantryListPlaceholder(onCategoryClick = { navigation.navigate(Category(it)) })
+              PantryListPlaceholder(
+                onCategoryClick = { navigation.navigate(Category(it)) },
+                onSettingsClick = { navigation.navigate(Settings) },
+              )
             }
             // TEMP(fase 8): old settings with its nested NavDisplay.
             entry<Settings> {

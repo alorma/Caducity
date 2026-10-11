@@ -42,6 +42,7 @@ fun QuickCategoryPlaceholder() = Placeholder("Quick category", Modifier.padding(
 @Composable
 fun PantryListPlaceholder(
   onCategoryClick: (String) -> Unit,
+  onSettingsClick: () -> Unit,
   modifier: Modifier = Modifier,
   observePantry: ObservePantryUseCase = koinInject(),
 ) {
@@ -50,6 +51,13 @@ fun PantryListPlaceholder(
     modifier = modifier.fillMaxSize().statusBarsPadding(),
     contentPadding = PaddingValues(horizontal = 20.dp),
   ) {
+    item {
+      Text(
+        text = "Settings",
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onSettingsClick).padding(vertical = 12.dp),
+      )
+    }
     items(data?.categories.orEmpty(), key = { it.category.id }) { entry ->
       Text(
         text = "${entry.category.name} · ${entry.unitCount}",

@@ -101,7 +101,7 @@ Llegenda: **M** manté · **Mod** modifica · **S** substitueix · **E** elimina
 |---|---|---|---|
 | Back stack únic | `App.kt` (`NavDisplay`, inici = `OnboardingRoute` si `OnboardingFlag.isEnabled()` sinó `DashboardRoute`) | **S** | |
 | Rutes velles | `DashboardRoute`, `FilteredItemsRoute.ByStatus`, `CategoryDetailRoute(categoryId, initialProductId)`, `CreateCategoryRoute`, `AiAssistantRoute`, `Settings`, `OnboardingRoute` | **S** | Fase 3. |
-| Settings amb `NavDisplay` imbricat | `SettingsContainer.kt`, `SettingsRoute.kt` | **S** | Ajustos és una pestanya del shell; Privadesa/Còpia/Quant a, subpantalles del back stack principal. |
+| Settings amb `NavDisplay` imbricat | `SettingsContainer.kt`, `SettingsRoute.kt` | **S** | Ajustos és una pantalla secundària (sense barra), no una pestanya; Privadesa/Còpia/Quant a, subpantalles del back stack principal. |
 | Deep links | `DeepLinkAction` (`OpenProduct`, `OpenCategory`; Parcelable per `Intent`), `MainActivity` | **Mod** | **Només es llegeix a `onCreate`**: cal `onNewIntent` + `singleTop`. |
 | Manifest | `AndroidManifest.xml` | **Mod** | `shortcuts.xml`, receiver del widget; treure `INTERNET`, `FOREGROUND_SERVICE*`, `SystemForegroundService` (fase 0). |
 
@@ -494,7 +494,7 @@ Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(
 - **Crear:** `ui/navigation/Routes.kt` (`Home`, `Pantry`, `Settings`, `Category(id, filter?)`, `Expired`, **`Calendar(categoryId?, date?)`**, `Add(categoryId?, source?, itemId?)`, `CategoryEditor(id?)`, `ItemActions(itemId)`, `QuickCategory`, `Onboarding`, subpantalles d'Ajustos), `TopLevelBackStack`, `AppShell` amb `FloatingNavBar` (`HorizontalFloatingToolbar`, sempre visible i sota el contingut; decidit 2026-10-11: no s'amaga en scroll) i FAB 64 dp.
 - **Modificar:** `App.kt` (entry provider nou; `BottomSheetSceneStrategy` per a Accions i Nova categoria ràpida), `MainActivity` (`singleTop`, `onNewIntent`), `DeepLinkAction` (`OpenHome`, `OpenExpired`, `OpenAdd(source, categoryId?)`, `OpenCategory`; compatible amb notificacions ja programades), `AppScaffold`, `Actions.kt`/`Screens.kt`, manifest.
 - **Temporal:** Aviat → dashboard vell; Rebost → llista simple; Ajustos → settings vell; FAB → placeholder fins a la fase 4; `Calendar` → pantalla buida fins a la 5.
-- **Riscos:** estat de pestanyes a Nav3; `SettingsContainer` es manté `// TEMP(fase 8)` dins la pestanya Ajustos; `ViewModelStore` per entrada de sheet.
+- **Riscos:** estat de pestanyes a Nav3; `SettingsContainer` es manté `// TEMP(fase 8)` dins la pantalla Ajustos; `ViewModelStore` per entrada de sheet.
 - **Acceptació:** barra, FAB i pastilla activa farcida conformes a `Rebost.png`/`Main.png`; la barra és sempre visible i el contingut acaba damunt seu; secundàries sense barra; `adb shell am start` amb extras obre la destinació correcta amb l'app oberta i tancada.
 - **Tests:** `TopLevelBackStackTest`, `DeepLinkParsingTest`, `DashboardActionsTest` actualitzat.
 

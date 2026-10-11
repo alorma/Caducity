@@ -13,7 +13,7 @@ class TopLevelBackStackTest {
     val stack = TopLevelBackStack()
 
     expectThat(stack.currentTab).isEqualTo(Home)
-    expectThat(stack.backStack).containsExactly(Pantry, Settings, Home)
+    expectThat(stack.backStack).containsExactly(Pantry, Home)
   }
 
   @Test
@@ -24,7 +24,7 @@ class TopLevelBackStackTest {
 
     expectThat(stack.currentTab).isEqualTo(Pantry)
     expectThat(stack.current).isEqualTo(Pantry)
-    expectThat(stack.backStack.toSet()).isEqualTo(setOf(Home, Pantry, Settings))
+    expectThat(stack.backStack.toSet()).isEqualTo(setOf(Home, Pantry))
   }
 
   @Test
@@ -39,6 +39,17 @@ class TopLevelBackStackTest {
   }
 
   @Test
+  fun `settings is a secondary route on the current tab`() {
+    val stack = TopLevelBackStack()
+    stack.navigate(Settings)
+
+    expectThat(stack.currentTab).isEqualTo(Home)
+    expectThat(stack.current).isEqualTo(Settings)
+    expectThat(stack.pop()).isTrue()
+    expectThat(stack.current).isEqualTo(Home)
+  }
+
+  @Test
   fun `pop removes secondary route first`() {
     val stack = TopLevelBackStack()
     stack.navigate(Expired)
@@ -50,7 +61,7 @@ class TopLevelBackStackTest {
   @Test
   fun `pop from a tab root goes home and then exits`() {
     val stack = TopLevelBackStack()
-    stack.navigate(Settings)
+    stack.navigate(Pantry)
 
     expectThat(stack.pop()).isTrue()
     expectThat(stack.currentTab).isEqualTo(Home)

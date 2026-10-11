@@ -17,8 +17,9 @@ data object Home : TopLevelRoute
 @Serializable
 data object Pantry : TopLevelRoute
 
+/** Secondary screen (no navigation bar), opened from an icon, not a tab. */
 @Serializable
-data object Settings : TopLevelRoute
+data object Settings : AppRoute
 
 @Serializable
 enum class CategoryFilter {
