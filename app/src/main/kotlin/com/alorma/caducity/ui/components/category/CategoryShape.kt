@@ -5,16 +5,7 @@ import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Shape
 import androidx.graphics.shapes.RoundedPolygon
-
-/** Forma orgànica d'una categoria. Els noms de la UI: Galeta, Flor, Trèvol, Sol, Coixí, Segell. */
-enum class CategoryShape {
-  COOKIE,
-  FLOWER,
-  CLOVER,
-  SUNNY,
-  PUFFY,
-  BURST,
-}
+import com.alorma.caducity.domain.model.CategoryShape
 
 val CategoryShape.polygon: RoundedPolygon
   get() =

@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.components.category
 
 import androidx.compose.material3.MaterialShapes
+import com.alorma.caducity.domain.model.CategoryShape
 import org.junit.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
