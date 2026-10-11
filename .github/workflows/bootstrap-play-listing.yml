@@ -35,7 +35,7 @@ jobs:
           echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > app/google-services.json
 
       - name: Bootstrap listing
-        run: ./gradlew :app:bootstrapReleaseListing --no-products --no-subscriptions
+        run: ./gradlew :app:bootstrapReleaseListing --no-products --no-subscriptions --info
         env:
           ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_JSON }}
 
