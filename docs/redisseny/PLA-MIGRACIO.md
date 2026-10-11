@@ -447,6 +447,15 @@ Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(
 
 **Regla d'eliminació:** un «Eliminar» només es fa a la fase on **mor l'últim consumidor** de l'element; si encara en té, primer es reconnecta. Cada fase ho comprova amb `git grep` abans d'esborrar. Els elements que cal conservar temporalment es marquen `// TEMP(fase N)` amb la fase on s'esborren. Tots els «Eliminar» d'aquest document s'han revisat contra aquesta regla.
 
+### Regla de tauleta per a les pantalles noves (decidida: opció A, B posposada)
+
+- Tauleta **no es dissenya** en aquest redisseny. Es **accepta una regressió temporal**: en tauleta, layout de mòbil centrat amb amplada màxima.
+- **Fase 1:** es conserven `ui/adaptive/WindowSizeClass.kt` i `ResponsiveCenteredContainer`.
+- **Totes les pantalles noves (fases 4–9):** el contingut va dins `ResponsiveCenteredContainer` (**600 dp** per a llistes i formularis; Rebost pot arribar a **~840 dp**). La barra flotant i el FAB s'alineen amb el **contingut centrat**, no amb les vores de la pantalla.
+- **Rebost (fase 6):** la graella usa `calculateGridColumns()` (2 en mòbil, 3–4 en Medium/Expanded; s'ajusta el helper si cal).
+- **Regressió coneguda (documentada):** `AdaptiveCalendar`, el panell lateral de calendari de `CategoryDetailScreen` i les variants expandides del Dashboard (`DashboardSummaryCard`, `DashboardSuccessContentList`) **s'eliminen amb les seves pantalles** (fases 5, 6, 11).
+- **Comprovació:** cada fase d'UI es prova també, si és possible, en un emulador de tauleta només per verificar que no es trenca (contingut centrat, sense talls).
+
 ### Fase 0 — Preparació i neteja (nova)
 **Objectiu:** terreny net abans de redissenyar.
 - Esborrar `feature/ai/**`, `ui/screen/ai/**`, `settings/ai/**`, registres a `AppModule`/`WorkerModule`, entrades a `Dashboard*`/`SettingsRootScreen`/`App.kt`/`Actions.kt`; treure `llamatik` i `firebase-ai` de `libs.versions.toml`/`build.gradle.kts`; del manifest `INTERNET`, `FOREGROUND_SERVICE*`, `SystemForegroundService`; 2 tests d'IA; strings d'IA. Comprovar si `firebase-appcheck-*` només servia per a IA (si sí, fora, i el codi d'AppCheck a `CaducityApplication`).
@@ -462,6 +471,7 @@ Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(
 - **Crear:** `CaducityColors`/`StatusColors`/`ExpiryStatus.colors()`, `CaducityShapes`, `Fonts` + `res/font/bricolage_grotesque.ttf`, `figtree.ttf`, `CategoryShapes` (`CategoryShape` → `MaterialShapes`), components: `ConnectedRow`, `connectedShape`, `StatusPill`, `CategoryShapeIcon`, `ConnectedButtonGroup`, `CaducitySwitch`, `FilterChips`, `QuickDateChips`; pipeline d'icones (P14) amb set inicial (≈60 icones: nav, estat, accions, categoria, `calendar_month`, `chevron_*`).
 - **Modificar:** `Color.kt`, `ColorSchemes.kt`, `Typography.kt` (13 estils), `CaducityTheme`, `AppTheme`, `ShapePosition`, `AppFeedbackType`, `StatusBadge` (adaptador temporal sobre `StatusPill`), `ExpirationDefaults`.
 - **Eliminar:** Tone (9 fitxers), `ExpirationColors`, `CaducityDims` si orfe, fonts velles, fila «Tone».
+- **Regla tauleta (decidida, opció A):** es **conserven** `ui/adaptive/WindowSizeClass.kt` (`rememberIsExpanded`, `rememberIsExpandedOrMedium`, `calculateGridColumns`) i `ResponsiveCenteredContainer`; no s'esborren ni es renomenen. Vegeu «Regla de tauleta per a les pantalles noves» a la secció 9.
 - **Riscos:** colors fixos a pantalles velles (`Color.Green/Cyan`); `wdth` de Bricolage; contrast fosc sense mockups; `material-kolor` pot quedar orfe.
 - **Acceptació:** pantalles velles en crema/oliva sense vermell/llima/neó; galeria de previews (només debug) amb 4 estats, 6 formes, tipografia i components en clar/fosc, comparable amb `03-design-system/README.md`.
 - **Tests:** `connectedShape`, mapeig `CategoryShape`→`MaterialShapes`, `ShapePositionTest` actualitzat; test de contrast WCAG dels parells `*-container`/`on-*-container` llegint `tokens.json` (copiat a `src/test/resources`). Spike de screenshot testing (secció 10).
@@ -616,7 +626,7 @@ Es manté la numeració 0–11 de l'esquema inicial i de `RESPOSTES-AL-PLA.md` (
 - IA, veu, reconeixement d'imatge, codi de barres, OCR de dates/tiquets, càmera.
 - Llista de la compra i sincronització al núvol.
 - Reordenar categories arrossegant (`sortOrder` es desa, sense UI).
-- Tauleta/pantalles grans (només s'evita trencar-les).
+- Tauleta/pantalles grans (només s'evita trencar-les; contingut centrat amb amplada màxima). **Fase futura «Tauleta»:** `ListDetailPaneScaffold` amb Rebost | Categoria i Inici | Calendari de mes; es dissenyarà abans d'implementar-la. Regressió temporal acceptada: es perden `AdaptiveCalendar`, el panell lateral de `CategoryDetailScreen` i les variants expandides del Dashboard.
 - Cerca global avançada (més enllà d'obrir Rebost amb el cercador enfocat).
 - Notificacions per producte, canals separats per estat, avisos de caducats.
 - Mockups foscos (els tokens foscos s'implementen i es revisen sense referència visual).
