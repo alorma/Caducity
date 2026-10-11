@@ -23,6 +23,7 @@ Què cal saber:
 8. **Notificacions**: de «una per producte i categoria» (2 canals, 2 interruptors, hora 12:00) a **una de sola al dia**.
 9. **Glance no admet fonts personalitzades**: el widget usa la tipografia del sistema en negreta (P13).
 10. **El paquet v2 té una discrepància** (secció 4): cinc fitxes de l'especificació diuen estar actualitzades però no ho estan. Decidit (P21): s'alineen al primer commit de la fase 0.
+11. **Mode fosc dissenyat**: hi ha referència visual (`captures-fosc/`, 6 pantalles) i especificació (`04-especificacio/12-mode-fosc.md`). Només canvien els colors; vegeu la nota a cada fase.
 
 Canvis d'aquesta versió del pla respecte a la v1: respostes P1–P16 aplicades; P2/P6 reflectides arreu; migració amb buidat d'`identifier`; calendari dins d'abast (fases 5, 6, 11); fase 7 amb «Res caducat»; full d'Accions avançat a la fase 5; riscos i ordre revisats; P17–P21 resoltes; queda una hipòtesi menor (P22).
 
@@ -472,9 +473,10 @@ Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(
 - **Modificar:** `Color.kt`, `ColorSchemes.kt`, `Typography.kt` (13 estils), `CaducityTheme`, `AppTheme`, `ShapePosition`, `AppFeedbackType`, `StatusBadge` (adaptador temporal sobre `StatusPill`), `ExpirationDefaults`.
 - **Eliminar:** Tone (9 fitxers), `ExpirationColors`, `CaducityDims` si orfe, fonts velles, fila «Tone».
 - **Regla tauleta (decidida, opció A):** es **conserven** `ui/adaptive/WindowSizeClass.kt` (`rememberIsExpanded`, `rememberIsExpandedOrMedium`, `calculateGridColumns`) i `ResponsiveCenteredContainer`; no s'esborren ni es renomenen. Vegeu «Regla de tauleta per a les pantalles noves» a la secció 9.
-- **Riscos:** colors fixos a pantalles velles (`Color.Green/Cyan`); `wdth` de Bricolage; contrast fosc sense mockups; `material-kolor` pot quedar orfe.
-- **Acceptació:** pantalles velles en crema/oliva sense vermell/llima/neó; galeria de previews (només debug) amb 4 estats, 6 formes, tipografia i components en clar/fosc, comparable amb `03-design-system/README.md`.
-- **Tests:** `connectedShape`, mapeig `CategoryShape`→`MaterialShapes`, `ShapePositionTest` actualitzat; test de contrast WCAG dels parells `*-container`/`on-*-container` llegint `tokens.json` (copiat a `src/test/resources`). Spike de screenshot testing (secció 10).
+- **Mode fosc (`12-mode-fosc.md`):** el `darkColorScheme` i els `StatusColors` foscos surten de la taula de substitució (valors `dark` de `tokens.json`). El snackbar usa `inverseSurface`/`inverseOnSurface` (fosc: fons `#F1EADC`, text `#29241C`). Els colors d'estat no canvien amb el color dinàmic, tampoc en fosc.
+- **Riscos:** colors fixos a pantalles velles (`Color.Green/Cyan`); `wdth` de Bricolage; `material-kolor` pot quedar orfe.
+- **Acceptació:** pantalles velles en crema/oliva sense vermell/llima/neó; galeria de previews (només debug) amb 4 estats, 6 formes, tipografia i components en clar/fosc, comparable amb `03-design-system/README.md` i amb `12-mode-fosc.md`.
+- **Tests:** `connectedShape`, mapeig `CategoryShape`→`MaterialShapes`, `ShapePositionTest` actualitzat; test de contrast WCAG dels parells `*-container`/`on-*-container` llegint `tokens.json` (copiat a `src/test/resources`), **cobrint el tema clar i el fosc** (≥ 4,5:1; ràtios de referència a `12-mode-fosc.md`). Spike de screenshot testing (secció 10).
 
 ### Fase 2 — Model, dades i càlcul d'estat
 **Objectiu:** domini i persistència preparats per a totes les pantalles (sense UI).
@@ -502,7 +504,7 @@ Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(
 - **Substitueix:** `CategoryDetailAddItem*` (s'eliminen aquí; el botó d'afegir de l'antic `CategoryDetailScreen` es reconnecta a `Add(categoryId)` `// TEMP(fase 6)`). **No elimina** `ProductActionsSplitButton` (el consumeix `ProductTabContent` fins a la 6) ni `FutureDateSelectableDates` (viu al paquet `category/create`, que s'elimina a la 8): Afegeix simplement no els usa (P15).
 - **Hàptics:** `Confirm` en desar, `Reject` en botó desactivat.
 - **Riscos:** IME vs barra inferior (`imePadding`); mode edició dins el mateix ViewModel; col·lisions de nom; Desfés asíncron de N ítems; accessibilitat del camp de data.
-- **Acceptació:** `Afegir.png`, `AfegirNou.png`, `AfegirTanda.png`, `AfegirNovaCat.png`; nom+categoria+data obligatoris amb «Falten la categoria i la data per desar»; «Desa i un altre» manté categoria i data; Quantitat 3 desa 3 ítems (a Categoria es veuran com «3 unitats», fase 6); data passada es pot desar.
+- **Acceptació:** `Afegir.png`, `AfegirNou.png`, `AfegirTanda.png`, `AfegirNovaCat.png`; nom+categoria+data obligatoris amb «Falten la categoria i la data per desar»; «Desa i un altre» manté categoria i data; Quantitat 3 desa 3 ítems (a Categoria es veuran com «3 unitats», fase 6); data passada es pot desar.; **preview en clar i en fosc; `AfegirFosc.png` forma part de l'acceptació**
 - **Tests:** `AddViewModelTest` (validació, suggeriment omple nom+categoria **però no data**, exacte→noves unitats, tanda, Desfés, edició d'una unitat, congelat), `ExpiryDateParserTest` (`1/2/26`, `01022026`, `31/02`, any de 2 xifres, enganxat, esborrat), `QuickDatesTest`, `QuickCategoryTest` (nom únic), `QuantityBatchTest`.
 
 ### Fase 5 — Full d'Accions, Inici i Calendari
@@ -511,7 +513,7 @@ Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(
 **5a. Full d'Accions** (avançat des de la fase 6 perquè Inici i Calendari l'obren)
 - **Crear:** `ui/components/actions/ItemActionsSheet` + `ItemActionsSheetViewModel` (nom diferent de l'antic `ItemActionsViewModel` per no col·lidir a Koin mentre conviuen) (Consumit, Congela/Descongela, dates ràpides amb Desfés, DatePicker, Edita → `add?itemId=`, Mou a una altra categoria (selector), Esborra amb confirmació); actua sobre **1 unitat**; per a packs antics, Consumit demana quantitat amb `QuantitySelectorDialog`, i el text mostra «pack de N».
 - **No elimina res.** El full antic (`bottomsheet/*`, `ItemActionsViewModel`) segueix sent usat per `CategoryDetail` (fins a la 6) i per `FilteredItemsByStatus` (fins a la 7); conviuen `// TEMP(fase 7)` i s'esborren a la 7. `QuantitySelectorDialog` es conserva (el nou full l'usa per a packs antics).
-- **Acceptació:** `Accions.png`; les dates ràpides sumen a la **data actual de caducitat**, s'apliquen a l'instant i mostren snackbar Desfés.
+- **Acceptació:** `Accions.png`; les dates ràpides sumen a la **data actual de caducitat**, s'apliquen a l'instant i mostren snackbar Desfés.; **preview clar/fosc; `AccionsFosc.png`**
 - **Tests:** `ItemActionsViewModelTest`, `MoveItemToCategoryTest`, `QuickRescheduleTest`, `FreezeUnfreezeTest` (P4).
 
 **5b. Inici «Què caduca» + estat buit**
@@ -526,21 +528,21 @@ Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(
 - **Crear:** `ui/components/weekstrip/` i `ui/screen/calendar/` (paquets nous; no toquen `ui/components/calendar/` antic, que es manté fins a la 11b): `WeekStrip` (finestra mòbil des d'avui, paginació de 7 en 7), `ui/screen/calendar/{CalendarScreen, CalendarViewModel, CalendarMonthGrid, CalendarMonthModel}`, `ObserveCalendarUseCase`, `config/calendar/FirstDayOfWeekPreferences` (mou `CalendarPreferences`, mateixa clau `calendar_first_day_of_week`; cal actualitzar els imports del codi antic que sobreviu fins a la 8 i la 11b: `SettingsContainer`, `CategoryDetail*`, components de calendari antics).
 - **Wiring:** `WeekStrip` a Inici (tocar un dia → scroll a la seva secció; sense secció `SOON` → obre `Calendar(date=)` amb aquell dia seleccionat, P18); botó `calendar_month` de la capçalera; la vista de mes accepta `categoryId?` des del primer dia (l'entrada des de Categoria es connecta a la fase 6); fila del dia seleccionat → full d'Accions (5a).
 - **Riscos:** doble gest de lliscament (pager de mesos vs scroll vertical i gest de tornada); refresc de la tira a mitjanit; punts coherents amb recomptes; zona horària (5.2).
-- **Acceptació:** `Main.png` **complet** (amb la tira de 7 dies: punts, avui ressaltat) i `CalMes.png` (mes d'octubre 2026, llegenda, llista del dia 21, «Làctics · unitat 1 de 3»).
+- **Acceptació:** `Main.png` **complet** (amb la tira de 7 dies: punts, avui ressaltat) i `CalMes.png` (mes d'octubre 2026, llegenda, llista del dia 21, «Làctics · unitat 1 de 3»).; **preview clar/fosc; `MainFosc.png`**
 - **Tests:** `WeekStripTest` (comença avui, 7 dies, màx. 3 punts, filtre per categoria, canvi de dia a mitjanit, sense `expired`), `CalendarMonthTest` (primer dia Dilluns/Dissabte/Diumenge, mesos de 28–31 dies i traspàs, dies passats amb caducats, selecció per defecte avui, filtre per categoria, navegació entre mesos), `ObserveCalendarUseCaseTest` (exclou consumits, llençats i congelats; agrupa per data local sense desfasament de zona; packs antics compten 1).
 
 ### Fase 6 — Rebost i Categoria
 - **Crear:** `ui/screen/pantry/*` (graella 2 col., `CategoryCard` amb pastilla «N caducats» i barra d'estats decorativa, targeta «Nova categoria» discontínua, cercador pastilla amb resultats, P10/P11), `ui/screen/category/*` (capçalera forma 80 dp, **`WeekStrip` filtrada per categoria** (P19: tocar un dia ressalta i fa scroll a les files d'aquell dia), botó `calendar_month` a la barra superior que obre **`Calendar(categoryId)`**, xips de filtre amb recompte, seccions per estat, `ProductRow` simple/desplegable amb «Unitat N» derivat, FAB estès «Afegeix» preseleccionant categoria, menú Edita/Esborra categoria amb confirmació).
 - **Eliminar** (mor aquí l'últim consumidor): `CategoryDetail*`, `category/detail/product/**` (inclou `ProductActionsSplitButton`), `DeleteProductUseCase`, `ClearProductItemsUseCase`, `GetProductItemsUseCase`, `GetCategoryProductsUseCase`, `ProductDeletionStrategy` i `ItemDao.deleteConsumed*/deleteAll*/deleteActive*` (P7); es retira la reconnexió `TEMP` d'Afegeix. **Conserva** el full d'Accions antic (encara el fa servir Caducats vell fins a la 7).
 - **Riscos:** volum (≈2.800 línies velles); estat plegat/desplegat sobre canvis de dades; `animateItem()`; accessibilitat de les barres.
-- **Acceptació:** `Rebost.png`, `Categoria.png` (amb tira de 7 dies, botó de calendari i filtre «Aviat 4»); un producte amb Quantitat 3 d'Afegeix es veu com «3 unitats» desplegable.
+- **Acceptació:** `Rebost.png`, `Categoria.png` (amb tira de 7 dies, botó de calendari i filtre «Aviat 4»); un producte amb Quantitat 3 d'Afegeix es veu com «3 unitats» desplegable.; **preview clar/fosc; `RebostFosc.png` i `CategoriaFosc.png`**
 - **Tests:** `PantryViewModelTest` (ordre per `sortOrder`, recomptes, cerca sense accents), `CategoryViewModelTest` (filtre per argument, seccions, 1 unitat = fila simple, N = desplegable, tira filtrada per categoria, ressalt de dia), `CategoryCalendarEntryTest`.
 
 ### Fase 7 — Caducats
 - **Crear:** `ui/screen/expired/*` (capçalera `expired-container`, grups per categoria ordenats per nombre, fila amb `event_repeat` i `delete`, «Llença'ls tots» amb diàleg, selecció múltiple amb barra «Llença (N)»/«Canvia la data», dates ràpides en full petit reutilitzant `QuickDateChips` creat a la fase 1). Només Llença / Canvia la data (P5).
 - **Eliminar** (mor aquí l'últim consumidor del full antic): `ui/screen/filtered/**`, `GetItemsByStatusUseCase`, `FilteredItemsRoute`, el full d'Accions antic (`bottomsheet/*` excepte `QuantitySelectorDialog`, `ItemActionsViewModel` antic), `SplitAndFreezeItemUseCase`, `SplitAndDeleteItemUseCase`, els mètodes antics bloquejants de `ConsumeItemUseCase` i `consumeExpiredThreshold`.
 - **Riscos:** operacions massives (transacció única); Desfés massiu.
-- **Acceptació:** `Caducats.png`; estat buit «**Res caducat**» («Tot el que tens és dins de data.») amb retorn a Inici.
+- **Acceptació:** `Caducats.png`; estat buit «**Res caducat**» («Tot el que tens és dins de data.») amb retorn a Inici.; **preview clar/fosc; `CaducatsFosc.png`**
 - **Tests:** `ExpiredViewModelTest` (agrupació, selecció, llençar un/tots/seleccionats, desfer, estat buit), `DiscardItemsUseCaseTest`.
 
 ### Fase 8 — Nova/Edita categoria i Ajustos
@@ -548,7 +550,7 @@ Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(
 - **Modificar:** `PrivacySettingsScreen` (+ text acceptat i data), `BackupScreen`, `AboutScreen` (crèdits OFL de Bricolage Grotesque, Figtree i Material Symbols).
 - **Eliminar:** `category/create/**` (inclou `FutureDateSelectableDates` i l'argument `items` de `CreateCategoryUseCase`), `SettingsContainer`, `SettingsRootScreen`, `AppearanceSettingsScreen`, `NotificationsSettingsScreen`.
 - **Notificacions** (aquí desapareixen els dos interruptors): reescriure `ExpirationCheckWorker` a **una sola notificació diària** (títol «N productes caduquen aviat», cos amb els 2–3 més urgents, només si hi ha `SOON` o «avui»; tap → `home`) amb un `NotificationContentBuilder` pur; simplificar `AndroidExpirationNotificationHelper` (sense interruptors expired/soon ni grups); `NotificationChannelManager` amb **un sol canal** i textos a `strings.xml`, i **esborrar els canals antics** (`deleteNotificationChannel`); eliminar `GetExpiringCategoriesUseCase` (mor aquí el seu últim consumidor); pas 2 del `PreferencesMigrator` (6.3). Reprogramar el worker en canviar hora/interruptor/llindar.
-- **Acceptació:** `NovaCategoria.png`, `Ajustos.png`; canviar «La setmana comença» canvia el primer dia a la vista de mes.
+- **Acceptació:** `NovaCategoria.png`, `Ajustos.png`; canviar «La setmana comença» canvia el primer dia a la vista de mes.; **preview clar/fosc** (sense captura fosca: s'aplica la taula de substitució)
 - **Tests:** `CategoryEditorViewModelTest` (nom únic, edita, esborra amb ítems), `SettingsViewModelTest` (llindar canvia l'estat a Inici i Calendari), `NotificationSchedulingTest`, `NotificationContentBuilderTest` (cap notificació si no hi ha `SOON`/«avui», recompte, 2–3 més urgents, «avui»/«demà»), `PreferencesMigratorStep2Test`.
 
 ### Fase 9 — Onboarding nou
@@ -556,12 +558,12 @@ Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(
 - **Modificar:** `OnboardingViewModel` (sense *Skip*; en acabar: desa versió+data de l'avís, crea categories triades amb `shape/icon/sortOrder`, desa avisos/analítiques, `OnboardingFlag.disable()`); flux de reacceptació per a usuaris existents (només el pas 5, P3).
 - **Eliminar:** les 6 pàgines velles, `OnboardingPagerIndicator`, `OnboardingButtons`; simplificar `ConsentPreferences` (DEFAULT / ANALYTICS_ONLY).
 - **Riscos:** permís `POST_NOTIFICATIONS` (concedit, denegat, ja concedit); recreació; acceptació no escrita si el procés mor; **revisió legal del text** (és una proposta).
-- **Acceptació:** `OB1`–`OB5` + `InicibBuit.png`; no es pot desar sense casella.
+- **Acceptació:** `OB1`–`OB5` + `InicibBuit.png`; no es pot desar sense casella.; **preview clar/fosc** (sense captura fosca: taula de substitució; les formes usen els `*-container` foscos)
 - **Tests:** `OnboardingViewModelTest` (sense categories permès, versió d'avís, no accepta sense casella, analytics off per defecte, categories amb forma/icona per defecte, permís concedit/denegat), `DisclaimerVersionTest`.
 
 ### Fase 10 — Icona, splash, widget i dreceres
 - Icona adaptativa (fons `#E8B95A`, Galeta `#4D5A1E`, fulla `#FBF6EC`), monocroma, debug amb franja «DEV» `expired`; `ic_notification` monocrom. El vector definitiu s'ha de dibuixar sobre la retícula de 108 dp (obert #8): si no hi és, es deixa el provisional marcat.
-- Splash: `androidx.core:core-splashscreen`, fons `surface`, icona A.
+- Splash: `androidx.core:core-splashscreen`, fons `surface`; **en fosc, fons `#1C1A15`**; la icona A no canvia (mostassa + oliva).
 - Widget (Glance): `glance-appwidget` + `glance-material3`; `CaducityWidget`, receiver, `appwidget-provider`; dades via Koin; `updateAll()` després de cada escriptura i des del worker diari; botó **Afegeix** → `add?source=widget`, cos → `home`; estat buit; tipografia del sistema en negreta (P13).
 - Dreceres estàtiques: Afegeix producte, Què caduca, Caducats. Activar `WidgetTipCard` d'Inici.
 - **Riscos:** R8 amb Glance; refresc a mitjanit; mides del widget.
@@ -574,7 +576,7 @@ Dos commits: 11a (textos, accessibilitat, mode fosc) i 11b (neteja).
 **11a. Textos, accessibilitat, mode fosc**
 - Textos ca/en/es (`05-textos.md` + secció 7), `plurals`, formats relatius, canals de notificació a `strings.xml`; eliminar claus òrfenes.
 - Accessibilitat (`07-accessibilitat.md` + `Role.Tab` a la tira, `Role.Button` a cel·les del mes, descripcions «Dimarts 13, 2 productes»): àrees ≥ 48 dp, `contentDescription`, `selectableGroup`, `liveRegion` al camp de data, mida de font gran, Desfés accessible amb TalkBack.
-- Mode fosc: revisió visual de totes les pantalles, incloses tira i mes.
+- Mode fosc: comparar les 6 pantalles amb `captures-fosc/` (Inici, Rebost, Categoria, Accions, Afegeix, Caducats) i, per a les que no en tenen (Ajustos, Nova categoria, Calendari/tira i mes, onboarding, widget), comprovar la taula de substitució de `12-mode-fosc.md` i que no queda cap color clar «encallat» (fons crema o text oliva fosc). Icones del sistema clares en fosc.
 
 **11b. Neteja de codi mort**
 - **Eliminar** `ui/components/calendar/**` (10 fitxers antics), `CalendarData`, `AppCalendarConfig*`, la dependència **`kalendar`** (5.13), `material-kolor` si orfe, `uiTiles` si la nova pantalla d'Ajustos no l'usa, icones no usades de `:icons`, `FakeItemDao`/`FakeProductDao` si orfes.
@@ -629,7 +631,6 @@ Es manté la numeració 0–11 de l'esquema inicial i de `RESPOSTES-AL-PLA.md` (
 - Tauleta/pantalles grans (només s'evita trencar-les; contingut centrat amb amplada màxima). **Fase futura «Tauleta»:** `ListDetailPaneScaffold` amb Rebost | Categoria i Inici | Calendari de mes; es dissenyarà abans d'implementar-la. Regressió temporal acceptada: es perden `AdaptiveCalendar`, el panell lateral de `CategoryDetailScreen` i les variants expandides del Dashboard.
 - Cerca global avançada (més enllà d'obrir Rebost amb el cercador enfocat).
 - Notificacions per producte, canals separats per estat, avisos de caducats.
-- Mockups foscos (els tokens foscos s'implementen i es revisen sense referència visual).
 - Revisió legal del text de l'avís (proposta; l'ha de revisar una persona competent abans de publicar).
 - Publicació a Play Store entre fases (decisió de l'usuari).
 
