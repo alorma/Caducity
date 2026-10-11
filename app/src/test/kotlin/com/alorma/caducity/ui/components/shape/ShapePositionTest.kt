@@ -1,5 +1,7 @@
 package com.alorma.caducity.ui.components.shape
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
 import org.junit.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
@@ -176,5 +178,39 @@ class ShapePositionTest {
     expectThat(list.calculateShapeWithGaps(0)).isEqualTo(ShapePosition.Start)
     expectThat(list.calculateShapeWithGaps(1)).isEqualTo(ShapePosition.Middle)
     expectThat(list.calculateShapeWithGaps(2)).isEqualTo(ShapePosition.End)
+  }
+}
+
+class ConnectedShapeTest {
+  private fun r(
+    tl: Int,
+    tr: Int,
+    br: Int,
+    bl: Int,
+  ) = androidx.compose.foundation.shape.RoundedCornerShape(
+    topStart = tl.dp,
+    topEnd = tr.dp,
+    bottomEnd = br.dp,
+    bottomStart = bl.dp,
+  )
+
+  private val Int.dp get() =
+    androidx.compose.ui.unit
+      .Dp(this.toFloat())
+
+  @Test
+  fun `connectedPosition covers all cases`() {
+    expectThat(connectedPosition(0, 1)).isEqualTo(ShapePosition.Single)
+    expectThat(connectedPosition(0, 3)).isEqualTo(ShapePosition.Start)
+    expectThat(connectedPosition(1, 3)).isEqualTo(ShapePosition.Middle)
+    expectThat(connectedPosition(2, 3)).isEqualTo(ShapePosition.End)
+  }
+
+  @Test
+  fun `connectedShape uses 24 outside and 6 inside`() {
+    expectThat(connectedShape(0, 1)).isEqualTo(r(24, 24, 24, 24))
+    expectThat(connectedShape(0, 3)).isEqualTo(r(24, 24, 6, 6))
+    expectThat(connectedShape(1, 3)).isEqualTo(r(6, 6, 6, 6))
+    expectThat(connectedShape(2, 3)).isEqualTo(r(6, 6, 24, 24))
   }
 }

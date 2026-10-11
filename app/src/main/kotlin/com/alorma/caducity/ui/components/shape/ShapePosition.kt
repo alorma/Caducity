@@ -5,6 +5,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.theme.CaducityTheme
 
 enum class ShapePosition {
@@ -96,4 +97,34 @@ fun ShapePosition.toHorizontalShape(
         bottomStart = internalBaseShape.bottomStart,
         bottomEnd = externalBaseShape.bottomEnd,
       )
+  }
+
+/** Posició d'un element dins d'un grup connectat de `count` elements. */
+fun connectedPosition(
+  index: Int,
+  count: Int,
+): ShapePosition =
+  when {
+    count <= 1 -> ShapePosition.Single
+    index <= 0 -> ShapePosition.Start
+    index >= count - 1 -> ShapePosition.End
+    else -> ShapePosition.Middle
+  }
+
+private val GroupRadius = 24.dp
+private val InnerRadius = 6.dp
+
+/**
+ * Forma d'una fila d'una llista connectada vertical (separació de 2 dp):
+ * 24 dp a les cantonades exteriors, 6 dp a les interiors.
+ */
+fun connectedShape(
+  index: Int,
+  count: Int,
+): CornerBasedShape =
+  when (connectedPosition(index, count)) {
+    ShapePosition.None, ShapePosition.Single -> RoundedCornerShape(GroupRadius)
+    ShapePosition.Start -> RoundedCornerShape(GroupRadius, GroupRadius, InnerRadius, InnerRadius)
+    ShapePosition.Middle -> RoundedCornerShape(InnerRadius)
+    ShapePosition.End -> RoundedCornerShape(InnerRadius, InnerRadius, GroupRadius, GroupRadius)
   }
