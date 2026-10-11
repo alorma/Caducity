@@ -157,15 +157,19 @@ fun CategoryScreen(
       )
     },
     floatingActionButton = {
-      ExtendedFloatingActionButton(
-        onClick = { viewModel.navigate(CategoryNavigation.AddItem("fab")) },
-        shape = CaducityShapes.fab,
-        containerColor = CaducityTheme.colorScheme.primary,
-        contentColor = CaducityTheme.colorScheme.onPrimary,
-        modifier = Modifier.height(64.dp),
-        icon = { Icon(Symbols.Outlined.Add, contentDescription = null) },
-        text = { Text(stringResource(R.string.category_add)) },
-      )
+      ResponsiveCenteredContainer(fillHeight = false) {
+        Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), contentAlignment = Alignment.CenterEnd) {
+          ExtendedFloatingActionButton(
+            onClick = { viewModel.navigate(CategoryNavigation.AddItem("fab")) },
+            shape = CaducityShapes.fab,
+            containerColor = CaducityTheme.colorScheme.primary,
+            contentColor = CaducityTheme.colorScheme.onPrimary,
+            modifier = Modifier.height(64.dp),
+            icon = { Icon(Symbols.Outlined.Add, contentDescription = null) },
+            text = { Text(stringResource(R.string.category_add)) },
+          )
+        }
+      }
     },
   ) { padding ->
     ResponsiveCenteredContainer(modifier = Modifier.padding(padding)) {

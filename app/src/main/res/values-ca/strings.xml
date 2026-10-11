@@ -397,7 +397,7 @@
   <string name="settings_1d">1 dia</string>
   <string name="settings_3d">3 dies</string>
   <string name="settings_1w">1 setmana</string>
-  <string name="settings_dynamic_color_on">Amb els colors del mòbil</string>
+  <string name="settings_dynamic_color_on">Amb els colors del dispositiu</string>
   <string name="settings_dynamic_color_off">Desactivat: paleta Caducity</string>
   <string name="settings_week_start">La setmana comença</string>
   <string name="settings_backup_sub">Exporta i restaura</string>
@@ -438,8 +438,8 @@
   <string name="ob_alerts_enabled">Avisos activats</string>
   <string name="ob_not_now">Ara no</string>
   <string name="ob_privacy_title">El teu rebost és teu</string>
-  <string name="ob_privacy_body">Els teus productes es guarden només en aquest mòbil. No cal compte ni registre.</string>
-  <string name="ob_privacy_local">Les dades no surten del mòbil</string>
+  <string name="ob_privacy_body">Els teus productes es guarden només en aquest dispositiu. No cal compte ni registre.</string>
+  <string name="ob_privacy_local">Les dades no surten del dispositiu</string>
   <string name="ob_privacy_backup">Pots fer-ne còpia i exportar-les des d\'Ajustos</string>
   <string name="ob_privacy_analytics">Estadístiques d\'ús anònimes</string>
   <string name="ob_privacy_analytics_sub">Quines pantalles fas servir, mai què guardes. Ens ajuda a millorar l\'app.</string>

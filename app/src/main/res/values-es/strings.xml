@@ -397,7 +397,7 @@
   <string name="settings_1d">1 día</string>
   <string name="settings_3d">3 días</string>
   <string name="settings_1w">1 semana</string>
-  <string name="settings_dynamic_color_on">Con los colores del móvil</string>
+  <string name="settings_dynamic_color_on">Con los colores del dispositivo</string>
   <string name="settings_dynamic_color_off">Desactivado: paleta Caducity</string>
   <string name="settings_week_start">La semana empieza</string>
   <string name="settings_backup_sub">Exporta y restaura</string>
@@ -438,8 +438,8 @@
   <string name="ob_alerts_enabled">Avisos activados</string>
   <string name="ob_not_now">Ahora no</string>
   <string name="ob_privacy_title">Tu despensa es tuya</string>
-  <string name="ob_privacy_body">Tus productos se guardan solo en este móvil. No hace falta cuenta ni registro.</string>
-  <string name="ob_privacy_local">Los datos no salen del móvil</string>
+  <string name="ob_privacy_body">Tus productos se guardan solo en este dispositivo. No hace falta cuenta ni registro.</string>
+  <string name="ob_privacy_local">Los datos no salen del dispositivo</string>
   <string name="ob_privacy_backup">Puedes hacer copia y exportarlos desde Ajustes</string>
   <string name="ob_privacy_analytics">Estadísticas de uso anónimas</string>
   <string name="ob_privacy_analytics_sub">Qué pantallas usas, nunca qué guardas. Nos ayuda a mejorar la app.</string>

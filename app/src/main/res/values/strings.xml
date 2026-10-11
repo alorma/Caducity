@@ -376,7 +376,7 @@
   <string name="settings_1d">1 day</string>
   <string name="settings_3d">3 days</string>
   <string name="settings_1w">1 week</string>
-  <string name="settings_dynamic_color_on">Using your phone\'s colors</string>
+  <string name="settings_dynamic_color_on">Using your device\'s colors</string>
   <string name="settings_dynamic_color_off">Off: Caducity palette</string>
   <string name="settings_week_start">Week starts on</string>
   <string name="settings_backup_sub">Export and restore</string>
@@ -416,8 +416,8 @@
   <string name="ob_alerts_enabled">Alerts on</string>
   <string name="ob_not_now">Not now</string>
   <string name="ob_privacy_title">Your pantry is yours</string>
-  <string name="ob_privacy_body">Your products are stored only on this phone. No account or sign-up needed.</string>
-  <string name="ob_privacy_local">Your data never leaves the phone</string>
+  <string name="ob_privacy_body">Your products are stored only on this device. No account or sign-up needed.</string>
+  <string name="ob_privacy_local">Your data never leaves the device</string>
   <string name="ob_privacy_backup">You can back it up and export it from Settings</string>
   <string name="ob_privacy_analytics">Anonymous usage statistics</string>
   <string name="ob_privacy_analytics_sub">Which screens you use, never what you store. It helps us improve the app.</string>
