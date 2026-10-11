@@ -13,7 +13,9 @@ Aquest paquet descriu el redisseny complet de **Caducity**, l'app Android de seg
 | `02-disseny-nou/font-dc-html/` | Font HTML de cada pantalla del canvas de disseny. Útil per extreure mides, colors, radis i textos exactes. `canvas.json` és l'índex. |
 | `03-design-system/` | Design system **Caducity**: `README.md` (principis, estats, formes, patrons) i `tokens.json` (colors clar/fosc, tipografia, espaiat, radis, ombra). |
 | `04-especificacio/` | Especificació funcional i visual per implementar. |
-| `PROMPT-CLAUDE-CODE.md` | Prompt suggerit per demanar a Claude Code el pla de migració. |
+| `PROMPT-CLAUDE-CODE.md` | Prompt original per demanar el pla de migració (ja executat). |
+| `PROMPT-ACTUALITZAR-PLA.md` | **Següent pas**: prompt per actualitzar `PLA-MIGRACIO.md` amb les respostes i el calendari. |
+| `RESPOSTES-AL-PLA.md` | Respostes a les preguntes P1–P16 del pla de migració. |
 
 ## Especificació (`04-especificacio/`)
 
@@ -21,7 +23,7 @@ Aquest paquet descriu el redisseny complet de **Caducity**, l'app Android de seg
 2. `01-navegacio.md` — nova arquitectura d'informació, rutes, widget i dreceres.
 3. `02-migracio-pantalles.md` — taula pantalla original → pantalla nova (què es manté, què canvia, què desapareix).
 4. `03-design-system-compose.md` — com traduir els tokens a `MaterialTheme` (Color, Type, Shapes, MaterialShapes).
-5. `pantalles/*.md` — una fitxa per pantalla: estructura, components, estats, interaccions, textos.
+5. `pantalles/*.md` — una fitxa per pantalla: estructura, components, estats, interaccions, textos. Inclou `11-calendari.md` (tira de 7 dies + vista de mes).
 6. `04-model-de-dades.md` — canvis de dades i preferències que el disseny necessita.
 7. `05-textos.md` — tots els textos nous en català, amb claus suggerides.
 8. `06-moviment.md` — animacions i transicions.
@@ -37,5 +39,7 @@ Aquest paquet descriu el redisseny complet de **Caducity**, l'app Android de seg
 - Icona de l'app: **proposta A** (Galeta oliva + fulla crema sobre fons mostassa).
 
 ## Canvas de disseny
+
+> **Versió 2** del paquet (2026-10-11): afegeix el calendari (tira de 7 dies + vista de mes) i les respostes al pla de migració.
 
 El disseny viu en un canvas a claude.ai («Caducity · Redisseny») i el design system en un artifact «Caducity». Aquest paquet n'és una còpia estàtica a data **2026-10-11**.

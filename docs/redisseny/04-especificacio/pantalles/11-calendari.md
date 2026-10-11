@@ -1,0 +1,60 @@
+# Calendari: tira de 7 dies i vista de mes
+
+Captures: `Main.png` i `Categoria.png` (tira de 7 dies), `CalMes.png` (vista de mes). Fonts: `Main.dc.html`, `Categoria.dc.html`, `CalMes.dc.html`.
+Substitueix el calendari setmanal per categoria del dashboard antic (`01-app-original/app/01_dashboard.png`) i el de la capçalera del detall de categoria (`app/02_category_detail.png`), amb una versió molt més senzilla.
+
+## A) Tira de 7 dies (`WeekStrip`)
+
+Component reutilitzable a dues pantalles. **No canvia la resta de la pantalla.**
+
+| Pantalla | Posició | Productes que compta |
+|---|---|---|
+| Inici | entre la capçalera (data + «Què caduca» + botons) i el bàner de caducats | tots els actius |
+| Categoria | entre la capçalera (forma + nom) i els xips de filtre | només els de la categoria |
+
+- **Finestra mòbil**: 7 dies seguits que **comencen avui**, no una setmana de calendari, i per tant no depèn de «La setmana comença». Es pot lliscar horitzontalment per veure els 7 dies següents.
+- Graella de 7 columnes iguals, gap 4 dp, **sense targeta de fons** (marge negatiu de −4 dp per alinear el contingut amb la resta).
+- Cada dia és un botó (radi 18, padding 6/0/8, alineació centrada, gap 4):
+  - inicial del dia localitzada (`dl dt dc dj dv ds dg`), 12 sp, pes 600, `ink-variant`;
+  - número del dia, Bricolage 18/800, en un cercle de 34 dp;
+  - fila de punts de 6 dp (gap 3): **un punt per producte** que caduca aquell dia, **màxim 3**, del color fort del seu estat (`soon` o `fresh`). `expired` no hi surt mai, perquè la tira comença avui. Si no hi ha res, la fila queda buida però conserva l'alçada.
+- **Avui**: fons `surface-card` i cercle amb vora 2 dp `ink`.
+- **Seleccionat**: fons `primary`, text `on-primary` (els punts es mantenen).
+- **En tocar un dia**:
+  - Inici: fa scroll fins a la secció d'aquell dia. Si el dia no té productes `SOON` (p. ex. un dia amb només frescos), mostra una línia «Res caduca aviat aquest dia» o, si es prefereix, obre la vista de mes amb aquell dia seleccionat.
+  - Categoria: ressalta (o filtra) les files d'aquell dia.
+  - Tornar a tocar el dia seleccionat el desselecciona.
+- **Accessibilitat**: `selectableGroup` + `Role.Tab`; contentDescription «Dimarts 13, 2 productes» / «Divendres 16, res».
+
+## B) Vista de mes (`CalendarRoute(categoryId: String? = null)`)
+
+### Accés
+- **Inici**: botó rodó de 48 dp amb `calendar_month` (fons `surface-high`), **a l'esquerra de la lupa**, a la capçalera.
+- **Categoria**: botó d'icona `calendar_month` a la barra superior, a l'esquerra de `more_vert`, que obre el calendari **filtrat per aquella categoria**.
+
+### Estructura
+1. Barra: `arrow_back` + «Octubre 2026» (Bricolage 30/800) + `chevron_left` / `chevron_right` («Mes anterior» / «Mes següent»). Lliscar horitzontalment també canvia de mes. Amb `categoryId`, sota el mes es mostra el nom de la categoria (o «Octubre 2026 · Làctics»).
+2. **Targeta del mes** (`surface-card`, radi 24, padding 10/8/8):
+   - capçalera de dies (12 sp, 700, `ink-variant`), que **respecta «La setmana comença»** (Dilluns / Dissabte / Diumenge);
+   - graella de 7 columnes; les cel·les buides abans del dia 1 són invisibles;
+   - **cel·la** de 50 dp (radi 14): número de 15 sp dins un cercle de 30 dp + punts de 5 dp (gap 2, màxim 3) del color fort de l'estat. **Aquí sí surten els dies passats amb punts `expired`** (productes caducats encara actius);
+   - dies passats sense productes: número en `outline`; dies amb productes, avui i seleccionat: pes 700;
+   - **avui**: cercle amb vora 2 dp `ink`; **seleccionat**: fons `primary-container` + vora 2 dp `primary`;
+   - **llegenda** centrada a sota: Caducat · Aviat · Fresc (punt de 8 dp + text 12 sp `ink-variant`). Els congelats no tenen data efectiva i no surten al calendari.
+3. **Dia seleccionat** (per defecte, avui):
+   - títol `section-title` «Dimecres 21» + «d'aquí 10 dies · 2 productes» (`ink-variant`);
+   - llista connectada (mín. 64 dp): forma de categoria 44 dp + nom + «Làctics · unitat 1 de 3» + pastilla d'estat («Fresc», «Avui», «Fa 2 dies»…). En tocar una fila s'obre el **full d'Accions**.
+   - Sense productes: «Res caduca aquest dia».
+4. Sense barra flotant ni FAB (pantalla secundària).
+
+### Accessibilitat
+Cada cel·la amb contentDescription «21 d'octubre, 2 productes» i estat seleccionat; `Role.Button`. La informació d'estat també és a la llista (text), no només als punts.
+
+## Dades
+- `ObserveCalendarUseCase(range: ClosedRange<LocalDate>, categoryId: String?)` → `Map<LocalDate, List<ItemWithStatus>>` d'ítems **actius** (ni consumits ni llençats), sense congelats. Reutilitza `ExpiryStatus` i `TodayProvider`. El fan servir tant la tira (avui..avui+6) com la vista de mes (primer..últim dia visible de la graella).
+- La tira es refresca a mitjanit (canvia el primer dia).
+
+## Tests
+- `WeekStripTest`: comença avui, 7 dies, màxim 3 punts, filtre per categoria, canvi de dia a mitjanit, sense `expired`.
+- `CalendarMonthTest`: primer dia de la setmana Dilluns/Dissabte/Diumenge, mesos de 28–31 dies i anys de traspàs, dies passats amb caducats, selecció per defecte avui, filtre per categoria, navegació entre mesos.
+- `ObserveCalendarUseCaseTest`: exclou consumits, llençats i congelats; agrupa per data local (sense desfasament de zona horària).
