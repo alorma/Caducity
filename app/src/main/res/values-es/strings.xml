@@ -384,6 +384,8 @@
   <string name="item_actions_frozen_meta">Congelado</string>
   <string name="item_actions_pack">Pack de %1$d · caduca %2$s</string>
   <string name="item_pill_today">Hoy</string>
+  <string name="item_pill_yesterday">Ayer</string>
+  <string name="item_pill_tomorrow">Mañana</string>
   <plurals name="item_pill_days_left">
     <item quantity="one">%d día</item>
     <item quantity="other">%d días</item>
@@ -513,5 +515,13 @@
   <plurals name="category_delete_body">
     <item quantity="one">Esto borrará la categoría y su %d producto. No se puede deshacer.</item>
     <item quantity="other">Esto borrará la categoría y sus %d productos. No se puede deshacer.</item>
+  </plurals>
+  <string name="category_day_hint">Toca el día o la ✕ para volver a verlo todo.</string>
+  <string name="category_day_clear">Quitar el filtro del día</string>
+  <string name="category_day_empty">Nada de %s caduca este día.</string>
+  <string name="category_unit_of">Unidad %1$d de %2$d · %3$s</string>
+  <plurals name="category_day_units">
+    <item quantity="one">%d unidad caduca este día</item>
+    <item quantity="other">%d unidades caducan este día</item>
   </plurals>
 </resources>

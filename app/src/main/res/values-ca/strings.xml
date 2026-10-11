@@ -385,6 +385,8 @@
   <string name="item_actions_frozen_meta">Congelat</string>
   <string name="item_actions_pack">Pack de %1$d · caduca %2$s</string>
   <string name="item_pill_today">Avui</string>
+  <string name="item_pill_yesterday">Ahir</string>
+  <string name="item_pill_tomorrow">Demà</string>
   <plurals name="item_pill_days_left">
     <item quantity="one">%d dia</item>
     <item quantity="other">%d dies</item>
@@ -514,5 +516,13 @@
   <plurals name="category_delete_body">
     <item quantity="one">Això esborrarà la categoria i el seu %d producte. No es pot desfer.</item>
     <item quantity="other">Això esborrarà la categoria i els seus %d productes. No es pot desfer.</item>
+  </plurals>
+  <string name="category_day_hint">Toca el dia o la ✕ per tornar a veure-ho tot.</string>
+  <string name="category_day_clear">Treu el filtre del dia</string>
+  <string name="category_day_empty">Res de %s caduca aquest dia.</string>
+  <string name="category_unit_of">Unitat %1$d de %2$d · %3$s</string>
+  <plurals name="category_day_units">
+    <item quantity="one">%d unitat caduca aquest dia</item>
+    <item quantity="other">%d unitats caduquen aquest dia</item>
   </plurals>
 </resources>

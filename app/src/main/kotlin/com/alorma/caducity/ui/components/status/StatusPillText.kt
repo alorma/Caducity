@@ -6,7 +6,7 @@ import androidx.compose.ui.res.stringResource
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ExpiryStatus
 
-/** «Congelat», «Avui», «10 dies» or «Fa 2 dies»: the label of a unit's [StatusPill]. [daysLeft] is negative once expired. */
+/** «Congelat», «Ahir», «Avui», «Demà», «10 dies» or «Fa 2 dies»: the label of a unit's [StatusPill]. [daysLeft] is negative once expired. */
 @Composable
 fun statusPillText(
   status: ExpiryStatus,
@@ -15,6 +15,8 @@ fun statusPillText(
   when {
     status == ExpiryStatus.FROZEN -> stringResource(R.string.item_pill_frozen)
     daysLeft == 0 -> stringResource(R.string.item_pill_today)
+    daysLeft == 1 -> stringResource(R.string.item_pill_tomorrow)
+    daysLeft == -1 -> stringResource(R.string.item_pill_yesterday)
     daysLeft > 0 -> pluralStringResource(R.plurals.item_pill_days_left, daysLeft, daysLeft)
     else -> pluralStringResource(R.plurals.item_pill_days_ago, -daysLeft, -daysLeft)
   }

@@ -2,6 +2,8 @@ package com.alorma.caducity.ui.screen.category
 
 import com.alorma.caducity.domain.model.CategoryData
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.PantryEntry
+import com.alorma.caducity.domain.model.UnitPosition
 import com.alorma.caducity.domain.usecase.WeekStripData
 import kotlinx.datetime.LocalDate
 
@@ -10,6 +12,13 @@ data class CategoryArgs(
   val categoryId: String,
   val filter: ExpiryStatus? = null,
   val highlightProductId: String? = null,
+)
+
+/** A unit listed under a selected day, with its «Unitat N de M». */
+data class DayUnit(
+  val name: String,
+  val unit: PantryEntry,
+  val position: UnitPosition,
 )
 
 sealed interface CategoryState {
@@ -28,6 +37,20 @@ sealed interface CategoryState {
     val highlightProductId: String?,
   ) : CategoryState {
     val visibleSections get() = data.sections.filter { filter == null || it.status == filter }
+
+    /** Units that expire on [selectedDay], in one list (frozen ones have no effective date). */
+    val dayUnits: List<DayUnit>
+      get() {
+        val day = selectedDay ?: return emptyList()
+        return data.sections
+          .filter { it.status != ExpiryStatus.FROZEN }
+          .flatMap { it.groups }
+          .flatMap { group ->
+            group.units.filter { it.expiration == day }.map { unit ->
+              DayUnit(group.name, unit, data.positions[unit.itemId] ?: UnitPosition(1, 1))
+            }
+          }.sortedBy { it.name.lowercase() }
+      }
   }
 }
 

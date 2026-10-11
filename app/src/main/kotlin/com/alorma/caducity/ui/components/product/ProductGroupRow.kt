@@ -63,7 +63,6 @@ fun ProductGroupRow(
   onUnitClick: (itemId: String) -> Unit,
   modifier: Modifier = Modifier,
   categoryName: String? = null,
-  highlighted: Boolean = false,
 ) {
   val nearest = group.nearest
   val nearestDate = nearest.expiration.shortDateText()
@@ -79,13 +78,11 @@ fun ProductGroupRow(
       if (group.isSingle) nearestDate else stringResource(R.string.category_next, nearestDate),
     ).joinToString(" · ")
   val pill = statusPillText(nearest.status, today.daysUntil(nearest.expiration))
-  val container =
-    if (highlighted) CaducityTheme.colorScheme.secondaryContainer else CaducityTheme.colorScheme.surfaceContainer
 
   Surface(
     modifier = modifier,
     shape = connectedShape(index, count),
-    color = container,
+    color = CaducityTheme.colorScheme.surfaceContainer,
     contentColor = CaducityTheme.colorScheme.onSurface,
   ) {
     Column {
