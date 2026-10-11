@@ -28,4 +28,4 @@ Usar el `MotionScheme.expressive()` de M3 (springs) com a base. Totes les animac
 - FAB → pantalla Afegeix: container transform (o shared bounds) si és viable; si no, fade through.
 - Fulls inferiors: comportament estàndard de `ModalBottomSheet`.
 - Snackbar «Desfés»: estàndard.
-- Barra flotant: sempre visible; el contingut acaba damunt seva i no hi passa per sota (decidit 2026-10-11, substitueix l'amagat en scroll).
+- Barra flotant: sempre visible; el contingut acaba damunt seu i no hi passa per sota (decidit 2026-10-11, substitueix l'amagat en scroll).

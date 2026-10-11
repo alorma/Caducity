@@ -319,6 +319,5 @@
   <!-- Navigation -->
   <string name="nav_soon">Aviat</string>
   <string name="nav_pantry">Rebost</string>
-  <string name="nav_settings">Ajustos</string>
   <string name="action_add_product">Afegeix un producte</string>
 </resources>

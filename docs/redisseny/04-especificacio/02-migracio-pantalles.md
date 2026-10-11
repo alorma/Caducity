@@ -27,7 +27,7 @@ Columna «Original»: captures de `01-app-original/`. Columna «Nova»: captures
 ### Dashboard → Inici «Què caduca»
 - Fora: 4 targetes grans d'estat, calendari setmanal per categoria, engranatge.
 - Dins: títol amb data, botons Calendari i Cerca, tira de 7 dies, bàner de caducats (si n'hi ha), resum connectat Aviat · Frescos · Congelats, llista agrupada per dia (Avui, Demà, dia de la setmana) dels productes dins el llindar «Aviat», botó ràpid «Consumit» per fila.
-- Ajustos passa a la barra flotant.
+- Ajustos és una pantalla secundària oberta des d'una icona (no és a la barra flotant).
 
 ### Detall de categoria → Categoria
 - Fora: calendari setmanal antic, pestanyes per producte, xip «#1, #2» separat de la targeta.

@@ -36,7 +36,6 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.HourglassBottom
 import com.alorma.caducity.base.ui.icons.symbols.Kitchen
-import com.alorma.caducity.base.ui.icons.symbols.Settings
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 
 private data class NavDestination(
@@ -50,10 +49,9 @@ private val Destinations =
   listOf(
     NavDestination(Home, R.string.nav_soon, Symbols.Outlined.HourglassBottom, Symbols.Filled.HourglassBottom),
     NavDestination(Pantry, R.string.nav_pantry, Symbols.Outlined.Kitchen, Symbols.Filled.Kitchen),
-    NavDestination(Settings, R.string.nav_settings, Symbols.Outlined.Settings, Symbols.Filled.Settings),
   )
 
-/** Floating bar with the three top-level destinations and the separated add FAB (64 dp, radius 20). */
+/** Floating bar with the two top-level destinations and the separated add FAB (64 dp, radius 20). */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FloatingNavBar(
@@ -83,20 +81,25 @@ fun FloatingNavBar(
         )
       }
     }
-    FloatingActionButton(
-      onClick = onAddClick,
-      modifier = Modifier.size(64.dp),
-      shape = RoundedCornerShape(20.dp),
-      containerColor = MaterialTheme.colorScheme.primary,
-      contentColor = MaterialTheme.colorScheme.onPrimary,
-      elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp),
-    ) {
-      Icon(
-        imageVector = Symbols.Outlined.Add,
-        contentDescription = stringResource(R.string.action_add_product),
-        modifier = Modifier.size(28.dp),
-      )
-    }
+    AddButton(onClick = onAddClick)
+  }
+}
+
+@Composable
+private fun AddButton(onClick: () -> Unit) {
+  FloatingActionButton(
+    onClick = onClick,
+    modifier = Modifier.size(64.dp),
+    shape = RoundedCornerShape(20.dp),
+    containerColor = MaterialTheme.colorScheme.primary,
+    contentColor = MaterialTheme.colorScheme.onPrimary,
+    elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp),
+  ) {
+    Icon(
+      imageVector = Symbols.Outlined.Add,
+      contentDescription = stringResource(R.string.action_add_product),
+      modifier = Modifier.size(28.dp),
+    )
   }
 }
 

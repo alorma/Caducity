@@ -8,7 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
 /**
- * Back stack with one independent stack per tab ([Home], [Pantry], [Settings]).
+ * Back stack with one independent stack per tab ([Home], [Pantry]).
  *
  * Navigation 3 has no native tabs, so this keeps every tab stack alive and exposes them flattened in
  * [backStack] (current tab last) so each tab keeps its entries — and therefore scroll and search
@@ -85,6 +85,6 @@ class TopLevelBackStack(
   }
 
   companion object {
-    val TABS: List<TopLevelRoute> = listOf(Home, Pantry, Settings)
+    val TABS: List<TopLevelRoute> = listOf(Home, Pantry)
   }
 }
