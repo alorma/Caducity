@@ -37,12 +37,21 @@ Component reutilitzable a dues pantalles. **No canvia la resta de la pantalla.**
 2. **Targeta del mes** (`surface-card`, radi 24, padding 10/8/8):
    - capçalera de dies (12 sp, 700, `ink-variant`), que **respecta «La setmana comença»** (Dilluns / Dissabte / Diumenge);
    - graella de 7 columnes; les cel·les buides abans del dia 1 són invisibles;
-   - **cel·la** de 50 dp (radi 14): número de 15 sp dins un cercle de 30 dp + punts de 5 dp (gap 2, màxim 3) del color fort de l'estat. **Aquí sí surten els dies passats amb punts `expired`** (productes caducats encara actius);
+   - **cel·la** de 52 dp, **sense fons propi**: número de 15 sp dins un **cercle de 34 dp** + punts de 5 dp (gap 2, màxim 3) del color fort de l'estat, a sota del cercle. **Aquí sí surten els dies passats amb punts `expired`** (productes caducats encara actius);
    - dies passats sense productes: número en `outline`; dies amb productes, avui i seleccionat: pes 700;
-   - **avui**: cercle amb vora 2 dp `ink`; **seleccionat**: fons `primary-container` + vora 2 dp `primary`;
+   - **Estats del dia — tots sobre el mateix cercle de 34 dp, mai sobre la cel·la sencera:**
+
+     | Estat | Cercle | Número |
+     |---|---|---|
+     | Normal | transparent | `ink` |
+     | **Avui** (no seleccionat) | vora 2 dp `ink`, sense fons | `ink` |
+     | **Seleccionat** (no avui) | fons `primary`, sense vora | `on-primary` |
+     | **Avui i seleccionat** (estat per defecte en obrir) | fons `primary`, **sense vora** (la selecció mana; no es dibuixa el cercle d'avui a dins) | `on-primary` |
+
+     Els punts sempre queden a sota del cercle, fora del fons, perquè es vegin també en el dia seleccionat.
    - **llegenda** centrada a sota: Caducat · Aviat · Fresc (punt de 8 dp + text 12 sp `ink-variant`). Els congelats no tenen data efectiva i no surten al calendari.
 3. **Dia seleccionat** (per defecte, avui):
-   - títol `section-title` «Dimecres 21» + «d'aquí 10 dies · 2 productes» (`ink-variant`);
+   - títol `section-title`: **«Avui»** / **«Demà»** / «Dimecres 21» + subtítol «diumenge 11 · 2 productes» o «d'aquí 10 dies · 2 productes» (`ink-variant`). Quan el dia és avui, el títol és «Avui» (no «Diumenge 11 · Avui»);
    - llista connectada (mín. 64 dp): forma de categoria 44 dp + nom + «Làctics · unitat 1 de 3» + pastilla d'estat («Fresc», «Avui», «Fa 2 dies»…). En tocar una fila s'obre el **full d'Accions**.
    - Sense productes: «Res caduca aquest dia».
 4. Sense barra flotant ni FAB (pantalla secundària).
