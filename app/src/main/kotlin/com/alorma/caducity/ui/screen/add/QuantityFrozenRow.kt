@@ -36,15 +36,16 @@ fun QuantityFrozenRow(
   onQuantityChange: (Int) -> Unit,
   onFrozenChange: (Boolean) -> Unit,
   modifier: Modifier = Modifier,
+  showFrozen: Boolean = true,
 ) {
   Row(
     modifier = modifier.fillMaxWidth().height(64.dp),
     horizontalArrangement = Arrangement.spacedBy(ConnectedButtonSpacing),
   ) {
     Surface(
-      shape = connectedButtonShape(0, 2),
+      shape = connectedButtonShape(0, if (showFrozen) 2 else 1),
       color = CaducityTheme.colorScheme.surfaceContainerHigh,
-      modifier = Modifier.weight(1.4f).height(64.dp),
+      modifier = Modifier.weight(if (showFrozen) 1.4f else 1f).height(64.dp),
     ) {
       Row(
         modifier = Modifier.padding(start = 16.dp, end = 8.dp),
@@ -77,6 +78,7 @@ fun QuantityFrozenRow(
         }
       }
     }
+    if (!showFrozen) return@Row
     val frozenColors = CaducityTheme.colors.frozen
     Surface(
       checked = frozen,

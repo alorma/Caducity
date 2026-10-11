@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.add
 
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.time.TodayProvider
+import com.alorma.caducity.domain.model.AddedBatch
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.AddItemBatchUseCase
@@ -210,7 +211,7 @@ class AddViewModel(
           isNewProduct = false,
           categoryId = item.categoryId,
           frozen = item.frozen,
-          quantity = 1,
+          quantity = entry?.quantity ?: 1,
           editing = EditTarget(itemId, entry),
         )
       }
@@ -240,24 +241,24 @@ class AddViewModel(
     val categoryId = current.categoryId ?: return
     val name = current.name.trim()
 
+    val quantity = current.quantity
+
     _state.update { it.copy(saving = true) }
     viewModelScope.launch {
-      updateItem
-        .update(itemId = edit.itemId, name = name, categoryId = categoryId, date = date)
-        .onSuccess {
+      applyEdit(edit, name, categoryId, date, quantity)
+        .onSuccess { updatedEntry ->
           emitSideEffect(AddSideEffect.Confirm)
           val entry = edit.entry
-          if (entry == null) {
+          if (entry == null || updatedEntry == null) {
             _state.update { it.copy(saving = false) }
             navigate(AddNavigation.Close)
           } else {
-            val updated = entry.copy(name = name, date = date)
             val base = draft
             draft = null
             categoryPinned = false
             _state.update { cur ->
               (base ?: cur.copy(name = "")).copy(
-                added = cur.added.map { if (it == entry) updated else it },
+                added = cur.added.map { if (it == entry) updatedEntry else it },
                 categories = cur.categories,
                 editing = null,
                 saving = false,
@@ -270,6 +271,51 @@ class AddViewModel(
           emitSideEffect(if (pastFrozen) AddSideEffect.ShowFrozenPastDate else AddSideEffect.ShowSaveFailed)
         }
     }
+  }
+
+  /**
+   * Edits one unit (route) or, for a batch chip, every unit of the entry plus its quantity: extra units are
+   * added with the same data and surplus ones removed. Returns the updated entry for a chip edit, null otherwise.
+   */
+  private suspend fun applyEdit(
+    edit: EditTarget,
+    name: String,
+    categoryId: String,
+    date: LocalDate,
+    quantity: Int,
+  ): Result<AddedEntry?> {
+    val entry = edit.entry
+    if (entry == null) {
+      return updateItem.update(edit.itemId, name, categoryId, date).map { null }
+    }
+    var ids = entry.batch.itemIds
+    for (id in ids) {
+      updateItem.update(id, name, categoryId, date).onFailure { return Result.failure(it) }
+    }
+    var productId = entry.batch.productId
+    val difference = quantity - ids.size
+    if (difference > 0) {
+      val added =
+        addItemBatch
+          .add(name = name, categoryId = categoryId, date = date, quantity = difference, frozen = false)
+          .getOrElse { return Result.failure(it) }
+      productId = added.productId
+      ids = ids + added.itemIds
+    } else if (difference < 0) {
+      val surplus = ids.takeLast(-difference)
+      undoAddItems
+        .undo(AddedBatch(productId = productId, itemIds = surplus, productCreated = false))
+        .onFailure { return Result.failure(it) }
+      ids = ids.dropLast(-difference)
+    }
+    return Result.success(
+      entry.copy(
+        batch = AddedBatch(productId = productId, itemIds = ids, productCreated = entry.batch.productCreated),
+        name = name,
+        date = date,
+        quantity = ids.size,
+      ),
+    )
   }
 
   private fun setDate(date: LocalDate) {
