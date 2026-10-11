@@ -46,8 +46,11 @@ data class Category(
   val initialProductId: String? = null,
 ) : AppRoute
 
+/** Caducats, Aviat, Frescos or Congelats: one screen, four variants. */
 @Serializable
-data object Expired : AppRoute
+data class StatusList(
+  val status: ExpiryStatus,
+) : AppRoute
 
 // TEMP(fase 7): old "items by status" screen, replaced by Expired.
 @Serializable

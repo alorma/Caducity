@@ -524,4 +524,63 @@
     <item quantity="one">%d unidad caduca este día</item>
     <item quantity="other">%d unidades caducan este día</item>
   </plurals>
+  <string name="status_title_expired">Caducados</string>
+  <string name="status_title_soon">Pronto</string>
+  <string name="status_title_fresh">Frescos</string>
+  <string name="status_title_frozen">Congelados</string>
+  <string name="status_help_expired">Si aún están buenos, cambia la fecha. Si no, tíralos.</string>
+  <plurals name="status_help_soon">
+    <item quantity="one">Caducan en el próximo día. Úsalos primero.</item>
+    <item quantity="other">Caducan en los próximos %d días. Úsalos primero.</item>
+  </plurals>
+  <string name="status_help_fresh">Aún tienen margen. Primero, los que caducan antes.</string>
+  <string name="status_help_frozen">No caducan mientras están en el congelador. Cuando saques uno, descongélalo y ponle fecha.</string>
+  <string name="status_select">Selecciona</string>
+  <string name="status_select_done">Hecho</string>
+  <string name="status_discard_all">Tíralos todos</string>
+  <plurals name="status_selected_count">
+    <item quantity="one">%d seleccionado</item>
+    <item quantity="other">%d seleccionados</item>
+  </plurals>
+  <string name="status_row_select_cd">Selecciona %1$s</string>
+  <string name="status_date_today">Hoy · %1$s</string>
+  <string name="status_date_tomorrow">Mañana · %1$s</string>
+  <string name="status_date_in_days">En %1$d días · %2$s</string>
+  <string name="status_date_ago_one">Hace 1 día · %1$s</string>
+  <string name="status_date_ago_days">Hace %1$d días · %2$s</string>
+  <string name="status_date_frozen">Congelado el %1$s</string>
+  <string name="status_action_reschedule">Cambia la fecha de %1$s</string>
+  <string name="status_action_discard">Tira %1$s</string>
+  <string name="status_action_freeze">Congela %1$s</string>
+  <string name="status_action_unfreeze">Descongela %1$s</string>
+  <string name="status_bulk_discard">Tirar (%1$d)</string>
+  <string name="status_bulk_reschedule">Cambiar la fecha (%1$d)</string>
+  <string name="status_bulk_consume">Consumido (%1$d)</string>
+  <string name="status_bulk_freeze">Congelar (%1$d)</string>
+  <string name="status_empty_expired_title">Nada caducado</string>
+  <string name="status_empty_expired_body">Todo lo que tienes está en fecha.</string>
+  <string name="status_empty_soon_title">Nada caduca pronto</string>
+  <string name="status_empty_soon_body">Buen trabajo.</string>
+  <string name="status_empty_fresh_title">Nada fresco</string>
+  <string name="status_empty_fresh_body">Añade la compra de hoy.</string>
+  <string name="status_empty_fresh_action">Añadir</string>
+  <string name="status_empty_frozen_title">El congelador está vacío</string>
+  <string name="status_snackbar_consumed_many">%d productos consumidos</string>
+  <string name="status_snackbar_frozen_many">%d productos congelados</string>
+  <string name="status_snackbar_discarded">%1$s tirado</string>
+  <string name="status_snackbar_discarded_many">%d productos tirados</string>
+  <string name="status_snackbar_rescheduled_many">Fecha cambiada en %d productos</string>
+  <string name="status_snackbar_unfrozen">%1$s descongelado</string>
+  <plurals name="status_discard_title">
+    <item quantity="one">¿Tirar %d producto?</item>
+    <item quantity="other">¿Tirar %d productos?</item>
+  </plurals>
+  <string name="status_discard_body">Se marcarán como tirados. Podrás deshacerlo justo después.</string>
+  <string name="status_discard_confirm">Tirar</string>
+  <string name="status_dates_unfreeze_title">¿Qué fecha de caducidad tiene ahora?</string>
+  <string name="status_dates_as_before">Como antes · %1$s</string>
+  <string name="status_dates_tomorrow">Mañana</string>
+  <string name="status_dates_in_3d">En 3 días</string>
+  <string name="status_dates_in_1w">En 1 semana</string>
+  <string name="status_dates_pick">Elige una fecha</string>
 </resources>

@@ -12,7 +12,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
-import com.alorma.caducity.domain.model.ItemStatus
+import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.alorma.caducity.feature.deeplink.toRoute
 import com.alorma.caducity.feature.tracking.EventTracker
@@ -25,7 +25,6 @@ import com.alorma.caducity.ui.navigation.AppShell
 import com.alorma.caducity.ui.navigation.Calendar
 import com.alorma.caducity.ui.navigation.Category
 import com.alorma.caducity.ui.navigation.CategoryEditor
-import com.alorma.caducity.ui.navigation.Expired
 import com.alorma.caducity.ui.navigation.FilteredItems
 import com.alorma.caducity.ui.navigation.Home
 import com.alorma.caducity.ui.navigation.ItemActions
@@ -33,6 +32,7 @@ import com.alorma.caducity.ui.navigation.Onboarding
 import com.alorma.caducity.ui.navigation.Pantry
 import com.alorma.caducity.ui.navigation.QuickCategory
 import com.alorma.caducity.ui.navigation.Settings
+import com.alorma.caducity.ui.navigation.StatusList
 import com.alorma.caducity.ui.navigation.TopLevelBackStack
 import com.alorma.caducity.ui.navigation.TopLevelRoute
 import com.alorma.caducity.ui.navigation.toStatus
@@ -51,6 +51,7 @@ import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
 import com.alorma.caducity.ui.screen.pantry.PantryScreen
 import com.alorma.caducity.ui.screen.pantry.PantrySearchRequests
 import com.alorma.caducity.ui.screen.settings.SettingsContainer
+import com.alorma.caducity.ui.screen.status.StatusListScreen
 import com.alorma.caducity.ui.theme.AppTheme
 import org.koin.compose.koinInject
 
@@ -125,7 +126,7 @@ fun App(
                   searchRequests.request()
                   navigation.switchTab(Pantry)
                 },
-                onOpenExpired = { navigation.navigate(Expired) },
+                onOpenExpired = { navigation.navigate(StatusList(ExpiryStatus.EXPIRED)) },
                 onOpenPantry = { navigation.switchTab(Pantry) },
                 onOpenItemActions = { navigation.navigate(ItemActions(it)) },
                 onOpenAdd = { navigation.navigate(Add(source = "home_empty")) },
@@ -152,11 +153,12 @@ fun App(
                 onOpenItemActions = { itemId -> navigation.navigate(ItemActions(itemId)) },
               )
             }
-            // TEMP(fase 7): old items-by-status screen stands in for Expired.
-            entry<Expired> {
-              FilteredItemsByStatusScreen(
-                status = ItemStatus.Expired,
-                onNavigateToCategory = { categoryId -> navigation.navigate(Category(categoryId)) },
+            entry<StatusList> {
+              StatusListScreen(
+                status = it.status,
+                onBack = { navigation.pop() },
+                onOpenItemActions = { itemId -> navigation.navigate(ItemActions(itemId)) },
+                onOpenAdd = { navigation.navigate(Add(source = "status_empty")) },
               )
             }
             entry<FilteredItems> {

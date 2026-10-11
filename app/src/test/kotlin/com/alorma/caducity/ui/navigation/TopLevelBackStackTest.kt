@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.navigation
 
+import com.alorma.caducity.domain.model.ExpiryStatus
 import org.junit.Test
 import strikt.api.expectThat
 import strikt.assertions.containsExactly
@@ -52,7 +53,7 @@ class TopLevelBackStackTest {
   @Test
   fun `pop removes secondary route first`() {
     val stack = TopLevelBackStack()
-    stack.navigate(Expired)
+    stack.navigate(StatusList(ExpiryStatus.EXPIRED))
 
     expectThat(stack.pop()).isTrue()
     expectThat(stack.current).isEqualTo(Home)
@@ -97,7 +98,7 @@ class TopLevelBackStackTest {
   fun `openFromOutside is ignored during onboarding`() {
     val stack = TopLevelBackStack(initialRoot = Onboarding)
 
-    stack.openFromOutside(Expired)
+    stack.openFromOutside(StatusList(ExpiryStatus.EXPIRED))
 
     expectThat(stack.current).isEqualTo(Onboarding)
   }
