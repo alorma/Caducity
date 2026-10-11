@@ -13,6 +13,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
+import com.alorma.caducity.config.preferences.DisclaimerPreferences
 import com.alorma.caducity.config.version.AppVersionProvider
 import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
@@ -73,6 +74,7 @@ fun App(
   deepLinkAction: DeepLinkAction? = null,
   onDeepLinkHandled: () -> Unit = {},
   onboardingFlag: OnboardingFlag = koinInject(),
+  disclaimerPreferences: DisclaimerPreferences = koinInject(),
   eventTracker: EventTracker = koinInject(),
   snackbarEvents: GlobalSnackbarEvents = koinInject(),
   searchRequests: PantrySearchRequests = koinInject(),
@@ -84,7 +86,10 @@ fun App(
   ) {
     val navigation =
       retain {
-        TopLevelBackStack(initialRoot = if (onboardingFlag.isEnabled()) Onboarding else Home)
+        TopLevelBackStack(
+          initialRoot =
+            if (onboardingFlag.isEnabled() || disclaimerPreferences.needsAcceptance()) Onboarding else Home,
+        )
       }
     LaunchedEffect(deepLinkAction) {
       deepLinkAction?.let {

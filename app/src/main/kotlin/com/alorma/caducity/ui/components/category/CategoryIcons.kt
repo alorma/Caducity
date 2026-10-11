@@ -20,6 +20,7 @@ import com.alorma.caducity.base.ui.icons.symbols.Pets
 import com.alorma.caducity.base.ui.icons.symbols.RamenDining
 import com.alorma.caducity.base.ui.icons.symbols.Restaurant
 import com.alorma.caducity.base.ui.icons.symbols.SetMeal
+import com.alorma.caducity.base.ui.icons.symbols.SoupKitchen
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.WaterFull
 import com.alorma.caducity.base.ui.icons.symbols.WineBar
@@ -44,6 +45,7 @@ object CategoryIcons {
       "local_pizza" to Symbols.Outlined.LocalPizza,
       "ramen_dining" to Symbols.Outlined.RamenDining,
       "kebab_dining" to Symbols.Outlined.KebabDining,
+      "soup_kitchen" to Symbols.Outlined.SoupKitchen,
       "emoji_food_beverage" to Symbols.Outlined.EmojiFoodBeverage,
       "wine_bar" to Symbols.Outlined.WineBar,
       "coffee" to Symbols.Outlined.Coffee,

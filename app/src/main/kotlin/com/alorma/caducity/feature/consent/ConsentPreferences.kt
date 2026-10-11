@@ -16,17 +16,6 @@ data class ConsentPreferences(
     val DEFAULT = ConsentPreferences()
 
     /**
-     * All consents granted.
-     */
-    val ALL_GRANTED =
-      ConsentPreferences(
-        analyticsStorage = ConsentStatus.GRANTED,
-        adStorage = ConsentStatus.GRANTED,
-        adUserData = ConsentStatus.GRANTED,
-        adPersonalization = ConsentStatus.GRANTED,
-      )
-
-    /**
      * Only analytics consent granted (recommended for privacy-focused apps).
      */
     val ANALYTICS_ONLY =

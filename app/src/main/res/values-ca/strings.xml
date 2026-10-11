@@ -58,8 +58,6 @@
   <string name="settings_theme_system">Sistema</string>
   <string name="settings_dynamic_colors">Colors dinàmics</string>
 
-
-
   <string name="settings_privacy_screen_title">Privacitat</string>
   <string name="settings_privacy_analytics_title">Analítiques</string>
   <string name="settings_privacy_analytics_description">Compartir dades d\'ús anònimes per ajudar a millorar l\'aplicació</string>
@@ -76,7 +74,6 @@
 
   <!-- About section -->
   <string name="about_github_link">Veure a GitHub</string>
-
 
   <!-- Category Detail -->
   <string name="category_detail_auto_identifier_item">Article</string>
@@ -194,34 +191,6 @@
   <!-- Clear items -->
   <string name="success_items_cleared">Elements netejats</string>
   <string name="error_clear_items_failed">Error en netejar elements</string>
-
-  <!-- Onboarding -->
-  <string name="onboarding_welcome_title">Benvingut a Caducity</string>
-  <string name="onboarding_welcome_message">Controla els teus aliments i redueix el malbaratament</string>
-  <string name="onboarding_features_title">Característiques Clau</string>
-  <string name="onboarding_features_track">Controla les dates de caducitat de totes les teves categories</string>
-  <string name="onboarding_features_notify">Rep notificacions abans que caduquin les categories</string>
-  <string name="onboarding_features_dashboard">Visualitza estadístiques i informació al teu tauler</string>
-  <string name="onboarding_permissions_title">Mantingues-te Informat</string>
-  <string name="onboarding_permissions_message">Permet les notificacions per rebre alertes oportunes sobre categories que caduquen</string>
-  <string name="onboarding_permissions_granted">Notificacions activades</string>
-  <string name="onboarding_permissions_automatic">Les notificacions estan activades automàticament</string>
-  <string name="onboarding_tutorial_title">Primers Passos</string>
-  <string name="onboarding_tutorial_message">Afegeix la teva primera categoria per començar a controlar dates de caducitat</string>
-  <string name="onboarding_disclaimer_title">Avís Important</string>
-  <string name="onboarding_disclaimer_message">Aquesta aplicació ajuda a controlar les dates de caducitat de productes però no substitueix les pràctiques adequades de seguretat alimentària. Utilitza sempre el teu criteri i segueix les pautes de seguretat alimentària. Els desenvolupadors no són responsables de cap problema de salut derivat del consum de productes caducats.</string>
-
-  <!-- Consent Screen -->
-  <string name="onboarding_consent_title">La Teva Privacitat és Important</string>
-  <string name="onboarding_consent_description">Ajuda\'ns a millorar l\'aplicació compartint dades d\'ús anònimes. Pots canviar això més tard a la configuració.</string>
-  <string name="onboarding_consent_analytics_title">Analítiques</string>
-  <string name="onboarding_consent_analytics_description">Compartir dades d\'ús anònimes per ajudar-nos a millorar l\'aplicació</string>
-  <string name="onboarding_consent_privacy_note">Respectem la teva privacitat. No es recopila ni comparteix cap dada personal amb tercers.</string>
-  <string name="onboarding_button_next">Següent</string>
-  <string name="onboarding_button_skip">Ometre</string>
-  <string name="onboarding_button_previous">Anterior</string>
-  <string name="onboarding_button_understand">Entenc</string>
-  <string name="onboarding_button_allow_notifications">Permetre Notificacions</string>
 
   <!-- Backup & Restore -->
   <string name="backup_screen_title">Còpia de seguretat i Restauració</string>
@@ -565,4 +534,55 @@
     <item quantity="one">%d producte caduca aviat</item>
     <item quantity="other">%d productes caduquen aviat</item>
   </plurals>
+
+  <!-- Onboarding (redisseny) -->
+  <string name="ob_welcome_title">Sàpigues què caduca abans que passi</string>
+  <string name="ob_welcome_body">Apunta el que compres i Caducity t\'avisa quan s\'acosta la data. Menys menjar a les escombraries.</string>
+  <string name="ob_start">Comença</string>
+  <string name="ob_step">Pas %1$d de %2$d</string>
+  <string name="ob_back">Enrere</string>
+  <string name="ob_categories_title">Què guardes a casa?</string>
+  <string name="ob_categories_body">Tria les categories amb què vols començar. Les pots canviar quan vulguis des de Rebost.</string>
+  <string name="ob_categories_continue">Continua amb %d</string>
+  <string name="ob_categories_continue_none">Continua sense categories</string>
+  <string name="ob_alerts_title">Quan t\'avisem?</string>
+  <string name="ob_alerts_body">Un sol avís al dia amb el que caduca aviat. Res més.</string>
+  <string name="ob_alerts_sample_app">Caducity</string>
+  <string name="ob_alerts_sample_title">3 productes caduquen aviat</string>
+  <string name="ob_alerts_sample_body">Llet sencera avui, Mozzarella demà…</string>
+  <string name="ob_alerts_notify_me">Avisa\'m</string>
+  <string name="ob_alerts_before">Abans que caduqui</string>
+  <string name="ob_alerts_days_1">1 dia</string>
+  <string name="ob_alerts_days_3">3 dies</string>
+  <string name="ob_alerts_days_7">1 setmana</string>
+  <string name="ob_alerts_time">Hora</string>
+  <string name="ob_alerts_daily">Cada dia</string>
+  <string name="ob_alerts_enable">Activa els avisos</string>
+  <string name="ob_alerts_enabled">Avisos activats</string>
+  <string name="ob_not_now">Ara no</string>
+  <string name="ob_privacy_title">El teu rebost és teu</string>
+  <string name="ob_privacy_body">Els teus productes es guarden només en aquest mòbil. No cal compte ni registre.</string>
+  <string name="ob_privacy_local">Les dades no surten del mòbil</string>
+  <string name="ob_privacy_backup">Pots fer-ne còpia i exportar-les des d\'Ajustos</string>
+  <string name="ob_privacy_analytics">Estadístiques d\'ús anònimes</string>
+  <string name="ob_privacy_analytics_sub">Quines pantalles fas servir, mai què guardes. Ens ajuda a millorar l\'app.</string>
+  <string name="ob_privacy_default_off">Desactivat per defecte. Ho pots canviar a Ajustos › Privadesa.</string>
+  <string name="ob_continue">Continua</string>
+  <string name="ob_disclaimer_title">Abans de començar</string>
+  <string name="ob_disclaimer_heading">Avís important</string>
+  <string name="ob_disclaimer_p1">Caducity només et recorda les dates que tu hi apuntes. &lt;b&gt;No comprova l\'estat dels aliments ni garanteix que siguin segurs.&lt;/b&gt;</string>
+  <string name="ob_disclaimer_p2">Abans de menjar qualsevol cosa, revisa\'n l\'aspecte, l\'olor, com s\'ha conservat i les indicacions de l\'envàs. Les dates i els avisos de l\'app són orientatius i poden contenir errors.</string>
+  <string name="ob_disclaimer_p3">Ets l\'únic responsable de decidir què consumeixes. Els desenvolupadors no es fan responsables de cap dany derivat del consum d\'aliments.</string>
+  <string name="ob_disclaimer_link">Llegeix les condicions d\'ús completes</string>
+  <string name="ob_disclaimer_check">He llegit l\'avís i entenc que l\'app no garanteix que un aliment sigui segur per menjar.</string>
+  <string name="ob_disclaimer_required">Marca la casella per continuar.</string>
+  <string name="ob_accept_and_start">Accepto i comença</string>
+  <string name="ob_category_dairy">Làctics</string>
+  <string name="ob_category_produce">Fruita i verdura</string>
+  <string name="ob_category_meat_fish">Carn i peix</string>
+  <string name="ob_category_pantry">Rebost</string>
+  <string name="ob_category_bakery">Fleca</string>
+  <string name="ob_category_drinks">Begudes</string>
+  <string name="ob_category_cold_cuts">Embotits</string>
+  <string name="ob_category_ready_meals">Plats preparats</string>
 </resources>
