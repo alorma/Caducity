@@ -2,7 +2,7 @@ package com.alorma.caducity.domain.usecase
 
 import com.alorma.caducity.domain.PantryDataSource
 import com.alorma.caducity.domain.model.Category
-import com.alorma.caducity.domain.model.CategoryDefaults
+import com.alorma.caducity.domain.model.SeedCategory
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.CancellationException
@@ -12,20 +12,19 @@ class SeedCategoriesUseCase(
   private val pantryDataSource: PantryDataSource,
 ) {
   @OptIn(ExperimentalUuidApi::class)
-  suspend fun seed(names: List<String>): Result<Int> =
+  suspend fun seed(seeds: List<SeedCategory>): Result<Int> =
     try {
       if (pantryDataSource.getCategories().isNotEmpty()) {
         Result.success(0)
       } else {
         val categories =
-          names.mapIndexed { index, name ->
-            val defaults = CategoryDefaults.forName(name, index)
+          seeds.mapIndexed { index, seed ->
             Category(
               id = Uuid.random().toString(),
-              name = name,
+              name = seed.name,
               description = "",
-              shape = defaults.shape,
-              icon = defaults.icon,
+              shape = seed.shape,
+              icon = seed.icon,
               sortOrder = index,
             )
           }
