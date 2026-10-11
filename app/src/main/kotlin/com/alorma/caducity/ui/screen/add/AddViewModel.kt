@@ -3,12 +3,15 @@ package com.alorma.caducity.ui.screen.add
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.model.AddedBatch
+import com.alorma.caducity.domain.model.BatchSnapshot
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.AddItemBatchUseCase
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
+import com.alorma.caducity.domain.usecase.RemoveBatchEntryUseCase
+import com.alorma.caducity.domain.usecase.RestoreBatchUseCase
 import com.alorma.caducity.domain.usecase.UndoAddItemsUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
 import com.alorma.caducity.feature.tracking.AddCloseAction
@@ -36,6 +39,8 @@ class AddViewModel(
   private val getNameSuggestions: GetNameSuggestionsUseCase,
   private val getActiveItem: GetActiveItemUseCase,
   private val updateItem: UpdateItemUseCase,
+  private val removeBatchEntry: RemoveBatchEntryUseCase,
+  private val restoreBatch: RestoreBatchUseCase,
   observeCategories: ObserveCategoriesUseCase,
   categoryCreated: CategoryCreatedEvents,
   private val eventTracker: EventTracker,
@@ -169,6 +174,39 @@ class AddViewModel(
 
   /** "Desa i un altre": saves, clears the name and keeps category and date. */
   fun onSaveAndAnother() = save(another = true)
+
+  /** «Treu de la tanda»: deletes the entry's units without asking; the snackbar offers «Desfés». */
+  fun onRemoveEntry(entry: AddedEntry) {
+    if (_state.value.isEditing) return
+    viewModelScope.launch {
+      val index = _state.value.added.indexOf(entry)
+      if (index < 0) return@launch
+      removeBatchEntry
+        .remove(entry.batch)
+        .onSuccess { snapshot ->
+          _state.update { it.copy(added = it.added - entry) }
+          emitSideEffect(AddSideEffect.ShowRemoved(entry, snapshot, index))
+        }.onFailure { emitSideEffect(AddSideEffect.ShowSaveFailed) }
+    }
+  }
+
+  /** «Desfés» of «Treu de la tanda»: the units come back with the same ids and dates, in the same place. */
+  fun onUndoRemove(
+    entry: AddedEntry,
+    snapshot: BatchSnapshot,
+    index: Int,
+  ) {
+    viewModelScope.launch {
+      restoreBatch
+        .restore(snapshot)
+        .onSuccess {
+          _state.update { current ->
+            val position = index.coerceIn(0, current.added.size)
+            current.copy(added = current.added.toMutableList().apply { add(position, entry) })
+          }
+        }.onFailure { emitSideEffect(AddSideEffect.ShowSaveFailed) }
+    }
+  }
 
   /** The snackbar "Desfés" of the entry [entry]. */
   fun onUndo(entry: AddedEntry) {
@@ -312,6 +350,7 @@ class AddViewModel(
       entry.copy(
         batch = AddedBatch(productId = productId, itemIds = ids, productCreated = entry.batch.productCreated),
         name = name,
+        categoryId = categoryId,
         date = date,
         quantity = ids.size,
       ),
@@ -356,7 +395,8 @@ class AddViewModel(
       addItemBatch
         .add(name = name, categoryId = categoryId, date = date, quantity = current.quantity, frozen = current.frozen)
         .onSuccess { batch ->
-          val entry = AddedEntry(batch = batch, name = name, date = date, quantity = current.quantity)
+          val entry =
+            AddedEntry(batch = batch, name = name, categoryId = categoryId, date = date, quantity = current.quantity)
           emitSideEffect(AddSideEffect.Confirm)
           if (another) {
             categoryPinned = false
@@ -367,7 +407,7 @@ class AddViewModel(
                 isNewProduct = false,
                 quantity = 1,
                 frozen = false,
-                added = it.added + entry,
+                added = listOf(entry) + it.added,
                 saving = false,
               )
             }

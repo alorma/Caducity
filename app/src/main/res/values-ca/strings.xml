@@ -353,7 +353,7 @@
   <string name="add_picker_ok">D\'acord</string>
   <string name="add_picker_cancel">Cancel·la</string>
   <string name="add_name_hint_batch">Què més has comprat?</string>
-  <string name="add_batch_label">En aquesta tanda</string>
+  <string name="add_batch_label">Desats en aquesta tanda</string>
   <string name="add_batch_change">Canvia</string>
   <string name="add_batch_note">Es mantenen del producte anterior. Si escrius un nom que ja coneixes, s\'omplen amb el seu.</string>
   <string name="add_batch_today">avui</string>
@@ -371,4 +371,12 @@
   <string name="quick_category_create">Crea i fes-la servir</string>
   <string name="quick_category_error_duplicate">Ja tens una categoria amb aquest nom</string>
   <string name="quick_category_error_failed">No s\'ha pogut crear la categoria</string>
+  <string name="add_removed_snackbar">%1$s tret</string>
+  <string name="add_batch_edit">Edita %1$s</string>
+  <string name="add_batch_remove">Treu %1$s de la tanda</string>
+  <string name="add_batch_list_description">Productes desats en aquesta tanda, del més recent al més antic</string>
+  <plurals name="add_batch_units_date">
+    <item quantity="one">%1$d unitat · %2$s</item>
+    <item quantity="other">%1$d unitats · %2$s</item>
+  </plurals>
 </resources>

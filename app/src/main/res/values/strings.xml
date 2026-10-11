@@ -363,7 +363,7 @@
   <string name="add_picker_ok">OK</string>
   <string name="add_picker_cancel">Cancel</string>
   <string name="add_name_hint_batch">What else did you buy?</string>
-  <string name="add_batch_label">In this batch</string>
+  <string name="add_batch_label">Saved in this batch</string>
   <string name="add_batch_change">Change</string>
   <string name="add_batch_note">Kept from the previous product. If you type a name you already know, they are filled with its own.</string>
   <string name="add_batch_today">today</string>
@@ -381,4 +381,12 @@
   <string name="quick_category_create">Create and use it</string>
   <string name="quick_category_error_duplicate">You already have a category with that name</string>
   <string name="quick_category_error_failed">Could not create the category</string>
+  <string name="add_removed_snackbar">%1$s removed</string>
+  <string name="add_batch_edit">Edit %1$s</string>
+  <string name="add_batch_remove">Remove %1$s from the batch</string>
+  <string name="add_batch_list_description">Products saved in this batch, newest first</string>
+  <plurals name="add_batch_units_date">
+    <item quantity="one">%1$d unit · %2$s</item>
+    <item quantity="other">%1$d units · %2$s</item>
+  </plurals>
 </resources>

@@ -352,7 +352,7 @@
   <string name="add_picker_ok">Aceptar</string>
   <string name="add_picker_cancel">Cancelar</string>
   <string name="add_name_hint_batch">¿Qué más has comprado?</string>
-  <string name="add_batch_label">En esta tanda</string>
+  <string name="add_batch_label">Guardados en esta tanda</string>
   <string name="add_batch_change">Cambia</string>
   <string name="add_batch_note">Se mantienen del producto anterior. Si escribes un nombre que ya conoces, se rellenan con el suyo.</string>
   <string name="add_batch_today">hoy</string>
@@ -370,4 +370,12 @@
   <string name="quick_category_create">Crea y úsala</string>
   <string name="quick_category_error_duplicate">Ya tienes una categoría con ese nombre</string>
   <string name="quick_category_error_failed">No se ha podido crear la categoría</string>
+  <string name="add_removed_snackbar">%1$s quitado</string>
+  <string name="add_batch_edit">Edita %1$s</string>
+  <string name="add_batch_remove">Quita %1$s de la tanda</string>
+  <string name="add_batch_list_description">Productos guardados en esta tanda, del más reciente al más antiguo</string>
+  <plurals name="add_batch_units_date">
+    <item quantity="one">%1$d unidad · %2$s</item>
+    <item quantity="other">%1$d unidades · %2$s</item>
+  </plurals>
 </resources>
