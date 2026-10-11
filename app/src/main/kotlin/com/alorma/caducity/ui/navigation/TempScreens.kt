@@ -26,10 +26,6 @@ import org.koin.compose.koinInject
 @Composable
 fun CalendarPlaceholderScreen(modifier: Modifier = Modifier) = Placeholder("Calendar", modifier)
 
-/** TEMP(fase 5a): replaced by the item actions sheet. */
-@Composable
-fun ItemActionsPlaceholder(itemId: String) = Placeholder("Item actions: $itemId", Modifier.padding(32.dp))
-
 /** TEMP(fase 6): replaced by the Pantry screen. */
 @Composable
 fun PantryListPlaceholder(

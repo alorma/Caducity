@@ -186,3 +186,18 @@ class QuickCategoryCloseAction :
     origin = "quick_category",
     parameters = mapOf("source" to "sheet"),
   )
+
+// Item actions sheet Actions
+class ItemActionAction(
+  action: String, // consume, freeze, unfreeze, quick_date, pick_date, move, delete
+) : Action(
+    name = "item_action",
+    parameters = mapOf("action" to action),
+  )
+
+class NavigateToEditItemAction :
+  NavigationAction(
+    actionName = "edit_item",
+    origin = "item_actions",
+    parameters = mapOf("source" to "sheet"),
+  )

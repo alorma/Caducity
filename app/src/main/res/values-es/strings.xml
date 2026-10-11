@@ -378,4 +378,44 @@
     <item quantity="one">%1$d unidad · %2$s</item>
     <item quantity="other">%1$d unidades · %2$s</item>
   </plurals>
+  <string name="item_actions_unit_of">Unidad %1$d de %2$d · caduca %3$s</string>
+  <string name="item_actions_unit_of_frozen">Unidad %1$d de %2$d · congelado</string>
+  <string name="item_actions_expires">Caduca %1$s</string>
+  <string name="item_actions_frozen_meta">Congelado</string>
+  <string name="item_actions_pack">Pack de %1$d · caduca %2$s</string>
+  <string name="item_pill_today">Hoy</string>
+  <plurals name="item_pill_days_left">
+    <item quantity="one">%d día</item>
+    <item quantity="other">%d días</item>
+  </plurals>
+  <plurals name="item_pill_days_ago">
+    <item quantity="one">Hace %d día</item>
+    <item quantity="other">Hace %d días</item>
+  </plurals>
+  <string name="item_pill_frozen">Congelado</string>
+  <string name="item_actions_consumed">Consumido</string>
+  <string name="item_actions_freeze">Congela</string>
+  <string name="item_actions_unfreeze">Descongela</string>
+  <string name="item_actions_change_date">Cambia la fecha</string>
+  <string name="item_actions_plus_1d">+1 día</string>
+  <string name="item_actions_plus_3d">+3 días</string>
+  <string name="item_actions_plus_1w">+1 semana</string>
+  <string name="item_actions_pick_date">Elige una fecha</string>
+  <string name="item_actions_edit">Edita</string>
+  <string name="item_actions_move">Mover a otra categoría</string>
+  <string name="item_actions_move_title">Mover a…</string>
+  <string name="item_actions_delete">Borra</string>
+  <string name="item_actions_delete_title">¿Borrar %1$s?</string>
+  <string name="item_actions_delete_body">Esta acción no se puede deshacer.</string>
+  <string name="item_actions_cancel">Cancelar</string>
+  <string name="item_actions_unfreeze_title">Nueva fecha de caducidad</string>
+  <string name="item_actions_quantity_title">¿Cuántas unidades quieres consumir?</string>
+  <string name="item_actions_snackbar_consumed">%1$s consumido</string>
+  <string name="item_actions_snackbar_rescheduled">Fecha de %1$s cambiada</string>
+  <string name="item_actions_snackbar_frozen">%1$s congelado</string>
+  <string name="item_actions_snackbar_unfrozen">%1$s descongelado</string>
+  <string name="item_actions_snackbar_deleted">%1$s borrado</string>
+  <string name="item_actions_snackbar_moved">%1$s movido a %2$s</string>
+  <string name="item_actions_error">No se ha podido hacer la acción</string>
+  <string name="item_actions_error_freeze_expired">Un producto caducado no se puede congelar</string>
 </resources>

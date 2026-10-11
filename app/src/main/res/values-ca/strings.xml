@@ -379,4 +379,44 @@
     <item quantity="one">%1$d unitat · %2$s</item>
     <item quantity="other">%1$d unitats · %2$s</item>
   </plurals>
+  <string name="item_actions_unit_of">Unitat %1$d de %2$d · caduca %3$s</string>
+  <string name="item_actions_unit_of_frozen">Unitat %1$d de %2$d · congelat</string>
+  <string name="item_actions_expires">Caduca %1$s</string>
+  <string name="item_actions_frozen_meta">Congelat</string>
+  <string name="item_actions_pack">Pack de %1$d · caduca %2$s</string>
+  <string name="item_pill_today">Avui</string>
+  <plurals name="item_pill_days_left">
+    <item quantity="one">%d dia</item>
+    <item quantity="other">%d dies</item>
+  </plurals>
+  <plurals name="item_pill_days_ago">
+    <item quantity="one">Fa %d dia</item>
+    <item quantity="other">Fa %d dies</item>
+  </plurals>
+  <string name="item_pill_frozen">Congelat</string>
+  <string name="item_actions_consumed">Consumit</string>
+  <string name="item_actions_freeze">Congela</string>
+  <string name="item_actions_unfreeze">Descongela</string>
+  <string name="item_actions_change_date">Canvia la data</string>
+  <string name="item_actions_plus_1d">+1 dia</string>
+  <string name="item_actions_plus_3d">+3 dies</string>
+  <string name="item_actions_plus_1w">+1 setmana</string>
+  <string name="item_actions_pick_date">Tria una data</string>
+  <string name="item_actions_edit">Edita</string>
+  <string name="item_actions_move">Mou a una altra categoria</string>
+  <string name="item_actions_move_title">Mou a…</string>
+  <string name="item_actions_delete">Esborra</string>
+  <string name="item_actions_delete_title">Esborrar %1$s?</string>
+  <string name="item_actions_delete_body">Aquesta acció no es pot desfer.</string>
+  <string name="item_actions_cancel">Cancel·la</string>
+  <string name="item_actions_unfreeze_title">Nova data de caducitat</string>
+  <string name="item_actions_quantity_title">Quantes unitats vols consumir?</string>
+  <string name="item_actions_snackbar_consumed">%1$s consumit</string>
+  <string name="item_actions_snackbar_rescheduled">Data de %1$s canviada</string>
+  <string name="item_actions_snackbar_frozen">%1$s congelat</string>
+  <string name="item_actions_snackbar_unfrozen">%1$s descongelat</string>
+  <string name="item_actions_snackbar_deleted">%1$s esborrat</string>
+  <string name="item_actions_snackbar_moved">%1$s mogut a %2$s</string>
+  <string name="item_actions_error">No s\'ha pogut fer l\'acció</string>
+  <string name="item_actions_error_freeze_expired">Un producte caducat no es pot congelar</string>
 </resources>

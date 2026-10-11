@@ -389,4 +389,44 @@
     <item quantity="one">%1$d unit · %2$s</item>
     <item quantity="other">%1$d units · %2$s</item>
   </plurals>
+  <string name="item_actions_unit_of">Unit %1$d of %2$d · expires %3$s</string>
+  <string name="item_actions_unit_of_frozen">Unit %1$d of %2$d · frozen</string>
+  <string name="item_actions_expires">Expires %1$s</string>
+  <string name="item_actions_frozen_meta">Frozen</string>
+  <string name="item_actions_pack">Pack of %1$d · expires %2$s</string>
+  <string name="item_pill_today">Today</string>
+  <plurals name="item_pill_days_left">
+    <item quantity="one">%d day</item>
+    <item quantity="other">%d days</item>
+  </plurals>
+  <plurals name="item_pill_days_ago">
+    <item quantity="one">%d day ago</item>
+    <item quantity="other">%d days ago</item>
+  </plurals>
+  <string name="item_pill_frozen">Frozen</string>
+  <string name="item_actions_consumed">Consumed</string>
+  <string name="item_actions_freeze">Freeze</string>
+  <string name="item_actions_unfreeze">Unfreeze</string>
+  <string name="item_actions_change_date">Change the date</string>
+  <string name="item_actions_plus_1d">+1 day</string>
+  <string name="item_actions_plus_3d">+3 days</string>
+  <string name="item_actions_plus_1w">+1 week</string>
+  <string name="item_actions_pick_date">Pick a date</string>
+  <string name="item_actions_edit">Edit</string>
+  <string name="item_actions_move">Move to another category</string>
+  <string name="item_actions_move_title">Move to…</string>
+  <string name="item_actions_delete">Delete</string>
+  <string name="item_actions_delete_title">Delete %1$s?</string>
+  <string name="item_actions_delete_body">This can\'t be undone.</string>
+  <string name="item_actions_cancel">Cancel</string>
+  <string name="item_actions_unfreeze_title">New expiry date</string>
+  <string name="item_actions_quantity_title">How many units do you want to consume?</string>
+  <string name="item_actions_snackbar_consumed">%1$s consumed</string>
+  <string name="item_actions_snackbar_rescheduled">Date of %1$s changed</string>
+  <string name="item_actions_snackbar_frozen">%1$s frozen</string>
+  <string name="item_actions_snackbar_unfrozen">%1$s unfrozen</string>
+  <string name="item_actions_snackbar_deleted">%1$s deleted</string>
+  <string name="item_actions_snackbar_moved">%1$s moved to %2$s</string>
+  <string name="item_actions_error">The action couldn\'t be done</string>
+  <string name="item_actions_error_freeze_expired">An expired product can\'t be frozen</string>
 </resources>
