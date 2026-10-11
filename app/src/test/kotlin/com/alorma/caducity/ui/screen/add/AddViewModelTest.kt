@@ -21,6 +21,8 @@ import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
+import com.alorma.caducity.domain.usecase.RemoveBatchEntryUseCase
+import com.alorma.caducity.domain.usecase.RestoreBatchUseCase
 import com.alorma.caducity.domain.usecase.UndoAddItemsUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
@@ -131,6 +133,8 @@ class AddViewModelTest {
     getNameSuggestions = GetNameSuggestionsUseCase(pantry),
     getActiveItem = GetActiveItemUseCase(pantry),
     updateItem = UpdateItemUseCase(itemDataSource, pantry, clock),
+    removeBatchEntry = RemoveBatchEntryUseCase(pantry),
+    restoreBatch = RestoreBatchUseCase(pantry),
     observeCategories = ObserveCategoriesUseCase(pantry),
     categoryCreated = createdEvents,
     eventTracker = EventTracker(emptyList()),
@@ -550,6 +554,146 @@ class AddViewModelTest {
       vm.onQuantityChange(1)
       vm.onSave()
       vm.await { it.editing == null && it.added.single().quantity == 1 }
+      expectThat(items()).hasSize(1)
+    }
+
+  private suspend fun AddViewModel.saveAnother(
+    name: String,
+    days: Int = 5,
+    quantity: Int = 1,
+  ) {
+    fill(name = name, days = days)
+    onQuantityChange(quantity)
+    sideEffects.test {
+      onSaveAndAnother()
+      awaitItem()
+      awaitItem()
+    }
+  }
+
+  @Test
+  fun `the batch lists the most recent first and the counter counts entries, not units`() =
+    runTest {
+      category("dairy")
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+
+      vm.saveAnother("Milk", quantity = 3)
+      vm.saveAnother("Yogurt")
+      vm.saveAnother("Cheese", quantity = 2)
+
+      expectThat(
+        vm.state.value.added
+          .map { it.name },
+      ).containsExactly("Cheese", "Yogurt", "Milk")
+      expectThat(vm.state.value.added).hasSize(3)
+      expectThat(items()).hasSize(6)
+    }
+
+  @Test
+  fun `removing an entry deletes its units and offers an undo`() =
+    runTest {
+      category("dairy")
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.saveAnother("Milk", quantity = 3)
+      vm.saveAnother("Yogurt")
+      val milk =
+        vm.state.value.added
+          .first { it.name == "Milk" }
+
+      vm.sideEffects.test {
+        vm.onRemoveEntry(milk)
+        val effect = awaitItem()
+        expectThat(effect).isA<AddSideEffect.ShowRemoved>()
+      }
+
+      expectThat(
+        vm.state.value.added
+          .map { it.name },
+      ).containsExactly("Yogurt")
+      expectThat(items()).hasSize(1)
+      expectThat(products().map { it.name }).containsExactly("Yogurt")
+    }
+
+  @Test
+  fun `undoing a removal restores the same ids, dates and position`() =
+    runTest {
+      category("dairy")
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.saveAnother("Milk", days = 4, quantity = 2)
+      vm.saveAnother("Yogurt")
+      vm.saveAnother("Cheese")
+      val before = items().sortedBy { it.id }
+      val yogurt =
+        vm.state.value.added
+          .first { it.name == "Yogurt" }
+      val positionBefore =
+        vm.state.value.added
+          .indexOf(yogurt)
+
+      val milk =
+        vm.state.value.added
+          .first { it.name == "Milk" }
+      vm.sideEffects.test {
+        vm.onRemoveEntry(milk)
+        val removed = awaitItem() as AddSideEffect.ShowRemoved
+        vm.onUndoRemove(removed.entry, removed.snapshot, removed.index)
+      }
+      vm.await { it.added.size == 3 }
+
+      expectThat(items().sortedBy { it.id }).isEqualTo(before)
+      expectThat(
+        vm.state.value.added
+          .map { it.name },
+      ).containsExactly("Cheese", "Yogurt", "Milk")
+      expectThat(
+        vm.state.value.added
+          .indexOf(yogurt),
+      ).isEqualTo(positionBefore)
+      expectThat(products().map { it.name }.sorted()).containsExactly("Cheese", "Milk", "Yogurt")
+    }
+
+  @Test
+  fun `removing every entry leaves the batch empty and the screen back to normal`() =
+    runTest {
+      category("dairy")
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.saveAnother("Milk")
+      vm.saveAnother("Yogurt")
+
+      vm.state.value.added.forEach { entry ->
+        vm.sideEffects.test {
+          vm.onRemoveEntry(entry)
+          awaitItem()
+        }
+      }
+
+      expectThat(vm.state.value.added).isEmpty()
+      expectThat(vm.state.value.isBatchMode).isFalse()
+      expectThat(items()).isEmpty()
+    }
+
+  @Test
+  fun `a product that already existed is kept when its batch entry is removed`() =
+    runTest {
+      category("dairy")
+      addBatch.add("Milk", "dairy", inDays(9), 1, false)
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.saveAnother("Milk")
+
+      vm.sideEffects.test {
+        vm.onRemoveEntry(
+          vm.state.value.added
+            .single(),
+        )
+        awaitItem()
+      }
+
+      expectThat(products().map { it.name }).containsExactly("Milk")
       expectThat(items()).hasSize(1)
     }
 }

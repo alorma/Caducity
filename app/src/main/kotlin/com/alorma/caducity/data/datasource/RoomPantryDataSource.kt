@@ -13,9 +13,12 @@ import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import com.alorma.caducity.domain.PantryDataSource
 import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.AddedBatch
+import com.alorma.caducity.domain.model.BatchSnapshot
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.ProductUsage
+import com.alorma.caducity.domain.model.RemovedItem
+import com.alorma.caducity.domain.model.RemovedProduct
 import com.alorma.caducity.domain.model.normalizeForSearch
 import java.util.UUID
 import kotlin.time.Instant
@@ -62,6 +65,62 @@ class RoomPantryDataSource(
     database.withTransaction {
       itemDao.deleteItems(batch.itemIds)
       if (batch.productCreated) productDao.deleteProductIfUnused(batch.productId)
+    }
+  }
+
+  override suspend fun removeBatch(batch: AddedBatch): BatchSnapshot =
+    database.withTransaction {
+      val rows = batch.itemIds.mapNotNull { itemDao.getItem(it) }
+      itemDao.deleteItems(batch.itemIds)
+      val deletedProducts =
+        if (batch.productCreated) {
+          rows
+            .mapNotNull { it.productId }
+            .distinct()
+            .mapNotNull { productDao.getProduct(it) }
+            .also { products -> products.forEach { productDao.deleteProductIfUnused(it.id) } }
+            .filter { productDao.getProduct(it.id) == null }
+        } else {
+          emptyList()
+        }
+      BatchSnapshot(
+        items =
+          rows.map {
+            RemovedItem(
+              id = it.id,
+              categoryId = it.categoryId,
+              productId = it.productId,
+              expirationMillis = it.expirationDate,
+              pausedDate = it.pausedDate,
+              remainingDays = it.remainingDays,
+              createdAt = it.createdAt,
+            )
+          },
+        products = deletedProducts.map { RemovedProduct(it.id, it.categoryId, it.name, it.createdAt) },
+      )
+    }
+
+  override suspend fun restoreBatch(snapshot: BatchSnapshot) {
+    database.withTransaction {
+      snapshot.products.forEach {
+        productDao.insertProduct(
+          ProductRoomEntity(it.id, it.categoryId, it.name, it.createdAt),
+        )
+      }
+      snapshot.items.forEach {
+        itemDao.insertItem(
+          ItemRoomEntity(
+            id = it.id,
+            categoryId = it.categoryId,
+            identifier = "",
+            productId = it.productId,
+            expirationDate = it.expirationMillis,
+            pausedDate = it.pausedDate,
+            remainingDays = it.remainingDays,
+            createdAt = it.createdAt,
+          ),
+        )
+      }
     }
   }
 

@@ -16,6 +16,7 @@ enum class AddMissing {
 data class AddedEntry(
   val batch: AddedBatch,
   val name: String,
+  val categoryId: String,
   val date: LocalDate,
   val quantity: Int,
 )

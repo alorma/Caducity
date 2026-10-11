@@ -21,7 +21,7 @@ private val produce = Category("produce", "Produce", "", CategoryShape.CLOVER8, 
 private val bakery = Category("bakery", "Bakery", "", CategoryShape.PUFFY, CategoryIcon("bakery_dining"), 2)
 private val categories = listOf(dairy, produce, bakery)
 
-private val entry = AddedEntry(AddedBatch("p", listOf("i"), true), "Cheddar", LocalDate(2026, 10, 21), 1)
+private val entry = AddedEntry(AddedBatch("p", listOf("i"), true), "Cheddar", "dairy", LocalDate(2026, 10, 21), 1)
 
 @PreviewDynamicLightDark
 @Composable
@@ -69,7 +69,7 @@ private fun AddBatchPreview() {
           added = listOf(entry),
         )
       Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        BatchEntries(entries = state.added, onEdit = {})
+        BatchSavedRow(entries = state.added, categories = categories, onEdit = {}, onRemove = {})
         BatchSummary(
           category = dairy,
           date = state.date,

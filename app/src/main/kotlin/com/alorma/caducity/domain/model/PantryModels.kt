@@ -10,6 +10,31 @@ data class AddedBatch(
   val productCreated: Boolean,
 )
 
+/** A product deleted together with its last units, kept to bring it back with the same id. */
+data class RemovedProduct(
+  val id: String,
+  val categoryId: String,
+  val name: String,
+  val createdAt: Long,
+)
+
+/** A unit deleted from a batch, with everything needed to restore it with the same id and dates. */
+data class RemovedItem(
+  val id: String,
+  val categoryId: String,
+  val productId: String?,
+  val expirationMillis: Long,
+  val pausedDate: Long?,
+  val remainingDays: Int?,
+  val createdAt: Long?,
+)
+
+/** What [com.alorma.caducity.domain.PantryDataSource.removeBatch] deleted. */
+data class BatchSnapshot(
+  val items: List<RemovedItem>,
+  val products: List<RemovedProduct>,
+)
+
 /** Usage stats of a product (any item, including consumed and discarded). */
 data class ProductUsage(
   val productId: String,

@@ -137,7 +137,14 @@ fun AddScreen(
             .padding(horizontal = ScreenGutter),
         verticalArrangement = Arrangement.spacedBy(20.dp),
       ) {
-        if (state.added.isNotEmpty()) BatchEntries(entries = state.added, onEdit = viewModel::onEditEntry)
+        if (state.added.isNotEmpty()) {
+          BatchSavedRow(
+            entries = state.added,
+            categories = state.categories,
+            onEdit = viewModel::onEditEntry,
+            onRemove = viewModel::onRemoveEntry,
+          )
+        }
         NameSection(state = state, viewModel = viewModel, focusRequester = focusRequester)
         val showCategoryChips = !state.isBatchMode || editCategory
         val showDateField = !state.isBatchMode || editDate
@@ -310,6 +317,19 @@ private fun SideEffectHandler(
             if (result == AppSnackbarResult.ActionPerformed) viewModel.onUndo(effect.entry)
           }
 
+        is AddSideEffect.ShowRemoved ->
+          launch {
+            val result =
+              snackbarState.showSnackbar(
+                message = context.getString(R.string.add_removed_snackbar, effect.entry.name),
+                actionLabel = context.getString(R.string.add_undo),
+                type = AppFeedbackType.Info,
+              )
+            if (result == AppSnackbarResult.ActionPerformed) {
+              viewModel.onUndoRemove(effect.entry, effect.snapshot, effect.index)
+            }
+          }
+
         AddSideEffect.ShowSaveFailed ->
           launch {
             snackbarState.showSnackbar(message = R.string.add_save_failed, type = AppFeedbackType.Error)
@@ -340,10 +360,10 @@ private fun SideEffectHandler(
   }
 }
 
-private val ScreenGutter = 20.dp
+internal val ScreenGutter = 20.dp
 
 /** Lets a scrolling row run to the edges of the container, ignoring the horizontal [gutter] of its parent. */
-private fun Modifier.fullBleed(gutter: Dp): Modifier =
+internal fun Modifier.fullBleed(gutter: Dp): Modifier =
   layout { measurable, constraints ->
     val extra = gutter.roundToPx() * 2
     val placeable =
