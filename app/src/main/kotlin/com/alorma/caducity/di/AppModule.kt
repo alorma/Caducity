@@ -31,7 +31,9 @@ import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.feature.consent.consentModule
 import com.alorma.caducity.feature.review.reviewModule
 import com.alorma.caducity.feature.tracking.trackingModule
+import com.alorma.caducity.ui.components.actions.ItemActionsSheetViewModel
 import com.alorma.caducity.ui.components.bottomsheet.ItemActionsViewModel
+import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.screen.add.AddViewModel
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryViewModel
 import com.alorma.caducity.ui.screen.category.create.FutureDateSelectableDates
@@ -177,4 +179,23 @@ val appModule =
 
     // Item Actions Bottom Sheet
     viewModelOf(::ItemActionsViewModel)
+    singleOf(::GlobalSnackbarEvents)
+    viewModel { params ->
+      ItemActionsSheetViewModel(
+        itemId = params.get(),
+        observeItems = get(),
+        observeCategories = get(),
+        consumeItem = get(),
+        splitAndConsume = get(),
+        freezeItem = get(),
+        unfreezeItem = get(),
+        rescheduleItem = get(),
+        deleteItem = get(),
+        moveItem = get(),
+        restoreItems = get(),
+        appClock = get(),
+        snackbars = get(),
+        eventTracker = get(),
+      )
+    }
   }

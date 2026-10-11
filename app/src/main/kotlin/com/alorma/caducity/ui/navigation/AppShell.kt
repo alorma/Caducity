@@ -9,10 +9,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHost
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarResult
+import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
+import kotlinx.coroutines.launch
 
 /**
  * Space a screen should leave at the end of its scrollable content so the last row can clear the
@@ -33,11 +40,29 @@ fun AppShell(
   onTabSelected: (TopLevelRoute) -> Unit,
   onAddClick: () -> Unit,
   onSettingsClick: () -> Unit,
+  snackbarEvents: GlobalSnackbarEvents,
   modifier: Modifier = Modifier,
   content: @Composable () -> Unit,
 ) {
+  val snackbarState = rememberAppSnackbarState()
+  val context = LocalContext.current
+  LaunchedEffect(snackbarEvents) {
+    snackbarEvents.events.collect { event ->
+      launch {
+        val result =
+          snackbarState.showSnackbar(
+            message = context.getString(event.message, *event.messageArgs.toTypedArray()),
+            actionLabel = event.actionLabel?.let(context::getString),
+            type = event.type,
+          )
+        if (result == AppSnackbarResult.ActionPerformed) event.onAction?.invoke()
+      }
+    }
+  }
+
   Scaffold(
     modifier = modifier,
+    snackbarHost = { AppSnackbarHost(snackbarState) },
     containerColor = MaterialTheme.colorScheme.background,
     contentWindowInsets = WindowInsets.navigationBars,
     floatingActionButtonPosition = FabPosition.Center,

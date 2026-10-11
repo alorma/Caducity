@@ -18,6 +18,8 @@ import com.alorma.caducity.feature.deeplink.toRoute
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.NavigateToAddAction
 import com.alorma.caducity.feature.tracking.NavigateToTabAction
+import com.alorma.caducity.ui.components.actions.ItemActionsSheet
+import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.navigation.Add
 import com.alorma.caducity.ui.navigation.AppShell
 import com.alorma.caducity.ui.navigation.Calendar
@@ -28,7 +30,6 @@ import com.alorma.caducity.ui.navigation.Expired
 import com.alorma.caducity.ui.navigation.FilteredItems
 import com.alorma.caducity.ui.navigation.Home
 import com.alorma.caducity.ui.navigation.ItemActions
-import com.alorma.caducity.ui.navigation.ItemActionsPlaceholder
 import com.alorma.caducity.ui.navigation.Onboarding
 import com.alorma.caducity.ui.navigation.Pantry
 import com.alorma.caducity.ui.navigation.PantryListPlaceholder
@@ -58,6 +59,7 @@ fun App(
   onDeepLinkHandled: () -> Unit = {},
   onboardingFlag: OnboardingFlag = koinInject(),
   eventTracker: EventTracker = koinInject(),
+  snackbarEvents: GlobalSnackbarEvents = koinInject(),
 ) {
   AppTheme(
     themePreferences = koinInject(),
@@ -77,6 +79,7 @@ fun App(
 
     AppShell(
       currentTab = navigation.currentTab,
+      snackbarEvents = snackbarEvents,
       showNavigation = visibleScreen is TopLevelRoute,
       onTabSelected = { tab ->
         if (tab != navigation.currentTab) {
@@ -169,7 +172,14 @@ fun App(
               )
             }
             entry<ItemActions>(metadata = BottomSheetSceneStrategy.bottomSheet()) {
-              ItemActionsPlaceholder(it.itemId)
+              ItemActionsSheet(
+                itemId = it.itemId,
+                onClose = { navigation.pop() },
+                onEdit = { itemId ->
+                  navigation.pop()
+                  navigation.navigate(Add(itemId = itemId, source = "item_actions"))
+                },
+              )
             }
             entry<QuickCategory>(metadata = BottomSheetSceneStrategy.bottomSheet()) {
               QuickCategorySheet(onClose = { navigation.pop() })
