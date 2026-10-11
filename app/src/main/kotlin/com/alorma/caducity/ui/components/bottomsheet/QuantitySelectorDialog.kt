@@ -19,7 +19,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Close
@@ -112,7 +114,7 @@ private fun QuantitySelectorContent(
             contentColor = vibrantColors.onContainer,
           ),
       ) {
-        Icon(AppIcons.Close, contentDescription = "Decrease")
+        Icon(AppIcons.Close, contentDescription = stringResource(R.string.quantity_selector_decrease))
       }
 
       Spacer(modifier = Modifier.width(24.dp))
@@ -134,7 +136,7 @@ private fun QuantitySelectorContent(
             contentColor = vibrantColors.onContainer,
           ),
       ) {
-        Icon(AppIcons.Add, contentDescription = "Increase")
+        Icon(AppIcons.Add, contentDescription = stringResource(R.string.quantity_selector_increase))
       }
     }
 
@@ -149,13 +151,13 @@ private fun QuantitySelectorContent(
           contentColor = vibrantColors.onContainer,
         ),
     ) {
-      Text("All ($maxQuantity)")
+      Text(stringResource(R.string.quantity_selector_all_count, maxQuantity))
     }
 
     Spacer(modifier = Modifier.height(8.dp))
 
     Text(
-      text = "Max: $maxQuantity",
+      text = stringResource(R.string.quantity_selector_max, maxQuantity),
       style = MaterialTheme.typography.bodySmall,
       color = colors.onContainer.copy(alpha = 0.7f),
     )

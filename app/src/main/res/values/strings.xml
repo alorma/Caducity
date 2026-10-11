@@ -5,39 +5,6 @@
   <string name="expiration_status_badge_fresh">Fresh</string>
   <string name="expiration_status_badge_frozen">Frozen</string>
   <string name="expiration_status_badge_consumed">Consumed</string>
-  <string-array name="day_names">
-    <item>Mon</item>
-    <item>Tue</item>
-    <item>Wed</item>
-    <item>Thu</item>
-    <item>Fri</item>
-    <item>Sat</item>
-    <item>Sun</item>
-  </string-array>
-
-  <string name="dashboard_screen_title">Dashboard</string>
-  <string name="products_screen_title">Categories</string>
-  <string name="dashboard_action_collapse">Collapse</string>
-  <string name="dashboard_action_expand">Expand</string>
-  <string name="dashboard_search_placeholder">Search categories…</string>
-  <string name="dashboard_filter_fresh">Fresh</string>
-  <string name="dashboard_filter_expiring_soon">Expiring</string>
-  <string name="dashboard_filter_expired">Expired</string>
-  <string name="dashboard_clear_filters">Clear Filters</string>
-  <string name="dashboard_fab_manual">Manual</string>
-
-  <string name="dashboard_section_expired">Expired</string>
-  <string name="dashboard_section_expiring_soon">Expiring</string>
-  <string name="dashboard_section_fresh">Fresh</string>
-  <string name="dashboard_section_frozen">Frozen</string>
-  <string name="dashboard_section_consumed">Consumed</string>
-  <string name="dashboard_section_empty">Empty</string>
-
-  <string name="filtered_items_by_status_title">%1$s Items</string>
-  <string name="filtered_items_empty">No items match this filter</string>
-  <string name="filtered_items_count">%1$d items</string>
-
-  <string name="products_list_items_frozen">%1$d items frozen</string>
 
   <string name="settings_screen_title">Settings</string>
   <string name="settings_debug_title">Debug</string>
@@ -72,35 +39,6 @@
 
   <string name="about_github_link">View on GitHub</string>
 
-  <!-- Category Detail -->
-  <string name="category_detail_auto_identifier_item">Item</string>
-  <string name="category_detail_add_product_dialog_title">Add Product</string>
-  <string name="category_detail_add_product_dialog_label">Product Name</string>
-  <string name="category_detail_add_product_dialog_placeholder">Enter product name</string>
-  <string name="category_detail_add_product_dialog_cancel">Cancel</string>
-  <string name="category_detail_add_product_dialog_add">Add</string>
-  <string name="category_detail_product_empty_state">No items yet. Tap the + button to add one.</string>
-  <string name="category_detail_empty_category_title">No Products or Items Yet</string>
-  <string name="category_detail_empty_category_message">Get started by creating a product or adding an item directly</string>
-  <string name="category_detail_empty_category_create_product">Create Product</string>
-  <string name="category_detail_empty_category_add_item">Add Item</string>
-  <string name="category_detail_product_other">Other</string>
-  <string name="category_detail_add_item_button">Add item</string>
-  <string name="category_detail_product_actions_tooltip">Product actions</string>
-  <string name="category_detail_add_item_date_picker_ok">OK</string>
-  <string name="category_detail_add_item_date_picker_cancel">Cancel</string>
-  <string name="category_detail_action_menu">Category options</string>
-  <string name="category_detail_action_consume">Consume</string>
-  <string name="category_detail_action_freeze">Freeze</string>
-  <string name="category_detail_action_unfreeze">Unfreeze</string>
-  <string name="category_detail_action_reschedule">Reschedule</string>
-  <string name="category_detail_action_delete">Delete</string>
-  <string name="category_detail_frozen_items">Frozen</string>
-  <string name="category_detail_consumed_items">Consumed</string>
-  <string name="category_detail_section_frozen">Frozen items</string>
-  <string name="category_detail_section_consumed">Consumed items</string>
-  <string name="category_detail_consumed_item_placeholder">No actions available for consumed items</string>
-
   <!-- Relative time values -->
   <string name="relative_time_today">Today</string>
   <string name="relative_time_tomorrow">Tomorrow</string>
@@ -116,84 +54,10 @@
   <string name="relative_time_a_month_ago">A month ago</string>
   <string name="relative_time_months_ago">%1$d months ago</string>
 
-  <!-- Language values -->
-  <string name="language_english">English</string>
-  <string name="language_spanish">Español</string>
-  <string name="language_catalan">Català</string>
-
-  <!-- Item action errors -->
-  <string name="error_item_not_found">Item not found</string>
-  <string name="error_cannot_freeze_expired">Cannot freeze expired items</string>
-  <string name="error_cannot_consume_expired">It is not safe to consume expired products</string>
-  <string name="error_cannot_consume_expired_message">This item has expired and cannot be consumed. Would you like to delete it instead?</string>
-  <string name="error_cannot_consume_expired_positive">Delete</string>
-  <string name="warning_consume_expired_title">Consume Item Expiring Today?</string>
-  <string name="warning_consume_expired_message">This item expires today. Please make sure the product is in good condition before consuming. Do you want to mark it as consumed?</string>
-  <string name="warning_consume_expired_positive">Consume</string>
-  <string name="warning_consume_expired_negative">Cancel</string>
-
-  <!-- Item action success messages -->
-  <string name="success_item_consumed">Item consumed</string>
-  <string name="success_item_frozen">Item frozen</string>
-  <string name="success_item_unfrozen">Item unfrozen</string>
-  <string name="success_item_rescheduled">Item rescheduled</string>
-  <string name="success_item_deleted">Item deleted</string>
-
-  <!-- Item action error messages -->
-  <string name="error_consume_item_failed">Failed to consume item</string>
-  <string name="error_freeze_item_failed">Failed to freeze item</string>
-  <string name="error_unfreeze_item_failed">Failed to unfreeze item</string>
-  <string name="error_reschedule_item_failed">Failed to reschedule item</string>
-  <string name="error_delete_item_failed">Failed to delete item</string>
-  <string name="error_create_product_failed">Failed to create product</string>
-
-  <!-- In-app review debug -->
-  <string name="debug_inapp_review_requested">Review dialog requested (may not show in debug)</string>
-
   <!-- Category deletion -->
-  <string name="category_detail_delete_dialog_title">Delete Category?</string>
-  <string name="category_detail_delete_dialog_message">This will permanently delete this category and all its products and items. This action cannot be undone.</string>
-  <string name="category_detail_delete_dialog_delete">Delete</string>
-  <string name="category_detail_delete_dialog_cancel">Cancel</string>
-  <string name="success_category_deleted">Category deleted</string>
   <string name="error_delete_category_failed">Failed to delete category</string>
 
-  <!-- Product deletion -->
-  <string name="product_delete_menu">Product options</string>
-  <string name="product_clear_items_action">Clear Items</string>
-  <string name="product_clear_items_dialog_title">Clear Items?</string>
-  <string name="product_clear_items_dialog_message">What would you like to clear from this product?</string>
-  <string name="product_clear_consumed_only">Clear Consumed Items</string>
-  <string name="product_clear_consumed_only_desc">Remove only consumed items</string>
-  <string name="product_clear_all_items">Clear All Items</string>
-  <string name="product_clear_all_items_desc">Remove all items (consumed, fresh, expired)</string>
-  <string name="product_delete_action">Delete Product</string>
-  <string name="product_delete_dialog_title">Delete Product?</string>
-  <string name="product_delete_dialog_message">This will permanently delete this product. Items will be moved to the \"Other\" tab. This action cannot be undone.</string>
-  <string name="product_delete_dialog_delete">Delete</string>
-  <string name="product_delete_dialog_cancel">Cancel</string>
-  <string name="success_product_deleted">Product deleted</string>
-  <string name="error_delete_product_failed">Failed to delete product</string>
-
-  <!-- Product deletion with items -->
-  <string name="product_delete_with_items_title">Delete Product with %1$d Items?</string>
-  <string name="product_delete_with_items_message">This product has active items. Choose what to do with them:</string>
-  <string name="product_delete_option_move_to_standalone">Move to "Other"</string>
-  <string name="product_delete_option_move_to_standalone_desc">Items will become standalone items in the "Other" tab</string>
-  <string name="product_delete_option_move_to_product">Move to Another Product</string>
-  <string name="product_delete_option_move_to_product_desc">Select a product to transfer all items to</string>
-  <string name="product_delete_option_cascade_delete">Delete Items</string>
-  <string name="product_delete_option_cascade_delete_desc">Permanently delete all items with this product</string>
-  <string name="product_delete_select_target_title">Select Target Product</string>
-  <string name="product_delete_select_target_message">All %1$d items will be moved to the selected product:</string>
-  <string name="product_delete_select_target_back">Back</string>
-
-  <!-- Clear items -->
-  <string name="success_items_cleared">Items cleared</string>
-  <string name="error_clear_items_failed">Failed to clear items</string>
-
   <!-- Backup & Restore -->
-  <string name="backup_screen_title">Backup &amp; Restore</string>
   <string name="backup_export_title">Export Backup</string>
   <string name="backup_export_description">Save your data to a file</string>
   <string name="backup_restore_title">Restore Backup</string>
@@ -209,21 +73,7 @@
   <string name="backup_error_export_failed">Failed to export backup</string>
   <string name="backup_error_restore_failed">Failed to restore backup</string>
 
-  <string name="dashboard_add">Add</string>
-
-  <!-- Quantity Selector -->
-  <string name="quantity_selector_consume_title">How many to consume?</string>
-  <string name="quantity_selector_consume_expired_title">How many expired items to consume?</string>
-  <string name="quantity_selector_freeze_title">How many to freeze?</string>
-  <string name="quantity_selector_unfreeze_title">How many to unfreeze?</string>
-  <string name="quantity_selector_delete_title">How many to delete?</string>
-  <string name="quantity_selector_confirm">Confirm (%d)</string>
-  <string name="quantity_selector_cancel">Cancel</string>
-  <string name="quantity_selector_all">All</string>
-
   <string name="app_name">Caducity</string>
-
-  <!-- Notifications -->
 
   <!-- Navigation -->
   <string name="nav_soon">Soon</string>
@@ -246,7 +96,10 @@
   <string name="add_quick_1_month">+1 month</string>
   <string name="add_title">Add</string>
   <string name="add_close">Close</string>
-  <string name="add_saved_count">✓ %1$d saved</string>
+  <plurals name="add_saved_count">
+    <item quantity="one">✓ Saved</item>
+    <item quantity="other">✓ %1$d saved</item>
+  </plurals>
   <string name="add_name_label">Name</string>
   <string name="add_name_hint">What are you adding?</string>
   <string name="add_name_clear">Clear name</string>
@@ -333,7 +186,6 @@
   <string name="item_actions_delete_title">Delete %1$s?</string>
   <string name="item_actions_delete_body">This can\'t be undone.</string>
   <string name="item_actions_cancel">Cancel</string>
-  <string name="item_actions_unfreeze_title">New expiry date</string>
   <string name="item_actions_quantity_title">How many units do you want to consume?</string>
   <string name="item_actions_snackbar_consumed">%1$s consumed</string>
   <string name="item_actions_snackbar_rescheduled">Date of %1$s changed</string>
@@ -465,7 +317,6 @@
     <item quantity="one">%d selected</item>
     <item quantity="other">%d selected</item>
   </plurals>
-  <string name="status_row_select_cd">Select %1$s</string>
   <string name="status_date_today">Today · %1$s</string>
   <string name="status_date_tomorrow">Tomorrow · %1$s</string>
   <string name="status_date_in_days">In %1$d days · %2$s</string>
@@ -595,4 +446,9 @@
   <string name="ob_category_drinks">Drinks</string>
   <string name="ob_category_cold_cuts">Cold cuts</string>
   <string name="ob_category_ready_meals">Ready meals</string>
+  <!-- Quantity selector (legacy packs) -->
+  <string name="quantity_selector_decrease">Decrease</string>
+  <string name="quantity_selector_increase">Increase</string>
+  <string name="quantity_selector_all_count">All (%d)</string>
+  <string name="quantity_selector_max">Max: %d</string>
 </resources>

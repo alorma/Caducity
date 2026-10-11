@@ -5,38 +5,6 @@
   <string name="expiration_status_badge_expired">Caducado</string>
   <string name="expiration_status_badge_frozen">Congelado</string>
   <string name="expiration_status_badge_consumed">Consumido</string>
-  <string-array name="day_names">
-    <item>Lun</item>
-    <item>Mar</item>
-    <item>Mié</item>
-    <item>Jue</item>
-    <item>Vie</item>
-    <item>Sáb</item>
-    <item>Dom</item>
-  </string-array>
-
-  <string name="dashboard_screen_title">Panel</string>
-  <string name="products_screen_title">Categorías</string>
-  <string name="dashboard_action_collapse">Colapsar</string>
-  <string name="dashboard_action_expand">Expandir</string>
-  <string name="dashboard_search_placeholder">Buscar categorías…</string>
-  <string name="dashboard_filter_fresh">Fresco</string>
-  <string name="dashboard_filter_expiring_soon">Próximo</string>
-  <string name="dashboard_filter_expired">Caducado</string>
-  <string name="dashboard_clear_filters">Limpiar filtros</string>
-
-  <string name="dashboard_section_expired">Caducado</string>
-  <string name="dashboard_section_expiring_soon">Próximo</string>
-  <string name="dashboard_section_fresh">Fresco</string>
-  <string name="dashboard_section_frozen">Congelado</string>
-  <string name="dashboard_section_consumed">Consumido</string>
-  <string name="dashboard_section_empty">Vacío</string>
-
-  <string name="filtered_items_by_status_title">Artículos %1$s</string>
-  <string name="filtered_items_empty">No hay artículos que coincidan con este filtro</string>
-  <string name="filtered_items_count">%1$d artículos</string>
-
-  <string name="products_list_items_frozen">%1$d artículos congelados</string>
 
   <string name="settings_screen_title">Ajustes</string>
   <string name="settings_debug_title">Depuración</string>
@@ -48,8 +16,6 @@
   <string name="settings_about_title">Acerca de Caducity</string>
   <string name="settings_backup_title">Copia de seguridad</string>
   <string name="settings_privacy_title">Privacidad</string>
-
-  <string name="dashboard_fab_manual">Manual</string>
 
   <string name="settings_theme_title">Tema</string>
   <string name="settings_theme_light">Claro</string>
@@ -74,35 +40,6 @@
   <!-- About section -->
   <string name="about_github_link">Ver en GitHub</string>
 
-  <!-- Category Detail -->
-  <string name="category_detail_auto_identifier_item">Artículo</string>
-  <string name="category_detail_add_product_dialog_title">Añadir Producto</string>
-  <string name="category_detail_add_product_dialog_label">Nombre del Producto</string>
-  <string name="category_detail_add_product_dialog_placeholder">Introduce el nombre del producto</string>
-  <string name="category_detail_add_product_dialog_cancel">Cancelar</string>
-  <string name="category_detail_add_product_dialog_add">Añadir</string>
-  <string name="category_detail_product_empty_state">Aún no hay elementos. Toca el botón + para añadir uno.</string>
-  <string name="category_detail_empty_category_title">Aún no hay Productos ni Elementos</string>
-  <string name="category_detail_empty_category_message">Comienza creando un producto o añadiendo un elemento directamente</string>
-  <string name="category_detail_empty_category_create_product">Crear Producto</string>
-  <string name="category_detail_empty_category_add_item">Añadir Elemento</string>
-  <string name="category_detail_product_other">Otras</string>
-  <string name="category_detail_add_item_button">Añadir elemento</string>
-  <string name="category_detail_product_actions_tooltip">Acciones de producto</string>
-  <string name="category_detail_add_item_date_picker_ok">Aceptar</string>
-  <string name="category_detail_add_item_date_picker_cancel">Cancelar</string>
-  <string name="category_detail_action_menu">Opciones de categoría</string>
-  <string name="category_detail_action_consume">Consumir</string>
-  <string name="category_detail_action_freeze">Congelar</string>
-  <string name="category_detail_action_unfreeze">Descongelar</string>
-  <string name="category_detail_action_reschedule">Reprogramar</string>
-  <string name="category_detail_action_delete">Eliminar</string>
-  <string name="category_detail_frozen_items">Congelados</string>
-  <string name="category_detail_consumed_items">Consumidos</string>
-  <string name="category_detail_section_frozen">Artículos congelados</string>
-  <string name="category_detail_section_consumed">Artículos consumidos</string>
-  <string name="category_detail_consumed_item_placeholder">No hay acciones disponibles para elementos consumidos</string>
-
   <!-- Relative time values -->
   <string name="relative_time_today">Hoy</string>
   <string name="relative_time_tomorrow">Mañana</string>
@@ -118,81 +55,10 @@
   <string name="relative_time_a_month_ago">Hace un mes</string>
   <string name="relative_time_months_ago">Hace %1$d meses</string>
 
-  <!-- Language values -->
-  <string name="language_english">English</string>
-  <string name="language_spanish">Español</string>
-  <string name="language_catalan">Català</string>
-
-  <!-- Item action errors -->
-  <string name="error_item_not_found">Elemento no encontrado</string>
-  <string name="error_cannot_freeze_expired">No se pueden congelar artículos caducados</string>
-  <string name="error_cannot_consume_expired">No es seguro consumir productos caducados</string>
-  <string name="error_cannot_consume_expired_message">Este artículo ha caducado y no puede ser consumido. ¿Deseas eliminarlo en su lugar?</string>
-  <string name="error_cannot_consume_expired_positive">Eliminar</string>
-  <string name="warning_consume_expired_title">¿Consumir Artículo que Caduca Hoy?</string>
-  <string name="warning_consume_expired_message">Este artículo caduca hoy. Por favor, asegúrate de que el producto esté en buen estado antes de consumirlo. ¿Deseas marcarlo como consumido?</string>
-  <string name="warning_consume_expired_positive">Consumir</string>
-  <string name="warning_consume_expired_negative">Cancelar</string>
-
-  <!-- Item action success messages -->
-  <string name="success_item_consumed">Elemento consumido</string>
-  <string name="success_item_frozen">Elemento congelado</string>
-  <string name="success_item_unfrozen">Elemento descongelado</string>
-  <string name="success_item_rescheduled">Elemento reprogramado</string>
-  <string name="success_item_deleted">Elemento eliminado</string>
-
-  <!-- Item action error messages -->
-  <string name="error_consume_item_failed">Error al consumir elemento</string>
-  <string name="error_freeze_item_failed">Error al congelar elemento</string>
-  <string name="error_unfreeze_item_failed">Error al descongelar elemento</string>
-  <string name="error_reschedule_item_failed">Error al reprogramar elemento</string>
-  <string name="error_delete_item_failed">Error al eliminar elemento</string>
-  <string name="error_create_product_failed">Error al crear producto</string>
-
   <!-- Category deletion -->
-  <string name="category_detail_delete_dialog_title">¿Eliminar Categoría?</string>
-  <string name="category_detail_delete_dialog_message">Esto eliminará permanentemente esta categoría y todos sus productos y elementos. Esta acción no se puede deshacer.</string>
-  <string name="category_detail_delete_dialog_delete">Eliminar</string>
-  <string name="category_detail_delete_dialog_cancel">Cancelar</string>
-  <string name="success_category_deleted">Categoría eliminada</string>
   <string name="error_delete_category_failed">Error al eliminar categoría</string>
 
-  <!-- Product deletion -->
-  <string name="product_delete_menu">Opciones de producto</string>
-  <string name="product_clear_items_action">Limpiar Elementos</string>
-  <string name="product_clear_items_dialog_title">¿Limpiar Elementos?</string>
-  <string name="product_clear_items_dialog_message">¿Qué te gustaría limpiar de este producto?</string>
-  <string name="product_clear_consumed_only">Limpiar Elementos Consumidos</string>
-  <string name="product_clear_consumed_only_desc">Eliminar solo elementos consumidos</string>
-  <string name="product_clear_all_items">Limpiar Todos los Elementos</string>
-  <string name="product_clear_all_items_desc">Eliminar todos los elementos (consumidos, frescos, caducados)</string>
-  <string name="product_delete_action">Eliminar Producto</string>
-  <string name="product_delete_dialog_title">¿Eliminar Producto?</string>
-  <string name="product_delete_dialog_message">Esto eliminará permanentemente este producto. Los artículos se moverán a la pestaña \"Otros\". Esta acción no se puede deshacer.</string>
-  <string name="product_delete_dialog_delete">Eliminar</string>
-  <string name="product_delete_dialog_cancel">Cancelar</string>
-  <string name="success_product_deleted">Producto eliminado</string>
-  <string name="error_delete_product_failed">Error al eliminar producto</string>
-
-  <!-- Product deletion with items -->
-  <string name="product_delete_with_items_title">¿Eliminar Producto con %1$d Elementos?</string>
-  <string name="product_delete_with_items_message">Este producto tiene elementos activos. Elige qué hacer con ellos:</string>
-  <string name="product_delete_option_move_to_standalone">Mover a \"Otros\"</string>
-  <string name="product_delete_option_move_to_standalone_desc">Los elementos se convertirán en elementos independientes en la pestaña \"Otros\"</string>
-  <string name="product_delete_option_move_to_product">Mover a Otro Producto</string>
-  <string name="product_delete_option_move_to_product_desc">Seleccionar un producto para transferir todos los elementos</string>
-  <string name="product_delete_option_cascade_delete">Eliminar Elementos</string>
-  <string name="product_delete_option_cascade_delete_desc">Eliminar permanentemente todos los elementos con este producto</string>
-  <string name="product_delete_select_target_title">Seleccionar Producto de Destino</string>
-  <string name="product_delete_select_target_message">Todos los %1$d elementos se moverán al producto seleccionado:</string>
-  <string name="product_delete_select_target_back">Atrás</string>
-
-  <!-- Clear items -->
-  <string name="success_items_cleared">Elementos limpiados</string>
-  <string name="error_clear_items_failed">Error al limpiar elementos</string>
-
   <!-- Backup & Restore -->
-  <string name="backup_screen_title">Respaldo y Restauración</string>
   <string name="backup_export_title">Exportar Respaldo</string>
   <string name="backup_export_description">Guardar tus datos en un archivo</string>
   <string name="backup_restore_title">Restaurar Respaldo</string>
@@ -208,11 +74,7 @@
   <string name="backup_error_export_failed">Error al exportar respaldo</string>
   <string name="backup_error_restore_failed">Error al restaurar respaldo</string>
 
-  <string name="dashboard_add">Añadir</string>
-
   <string name="app_name">Caducity</string>
-
-  <!-- Notifications -->
 
   <!-- Navigation -->
   <string name="nav_soon">Pronto</string>
@@ -226,6 +88,7 @@
   <string name="add_date_help_tomorrow">%1$s · mañana</string>
   <plurals name="add_date_help_days">
     <item quantity="one">%1$s · dentro de %2$d día</item>
+    <item quantity="many">%1$s · dentro de %2$d días</item>
     <item quantity="other">%1$s · dentro de %2$d días</item>
   </plurals>
   <string name="add_quick_tomorrow">Mañana</string>
@@ -235,7 +98,11 @@
   <string name="add_quick_1_month">+1 mes</string>
   <string name="add_title">Añade</string>
   <string name="add_close">Cerrar</string>
-  <string name="add_saved_count">✓ %1$d guardados</string>
+  <plurals name="add_saved_count">
+    <item quantity="one">✓ Guardado</item>
+    <item quantity="many">✓ %1$d guardados</item>
+    <item quantity="other">✓ %1$d guardados</item>
+  </plurals>
   <string name="add_name_label">Nombre</string>
   <string name="add_name_hint">¿Qué añades?</string>
   <string name="add_name_clear">Borrar el nombre</string>
@@ -271,6 +138,7 @@
   <string name="add_batch_tomorrow">mañana</string>
   <plurals name="add_batch_in_days">
     <item quantity="one">dentro de %1$d día</item>
+    <item quantity="many">dentro de %1$d días</item>
     <item quantity="other">dentro de %1$d días</item>
   </plurals>
   <string name="add_edit_title">Edita</string>
@@ -288,6 +156,7 @@
   <string name="add_batch_list_description">Productos guardados en esta tanda, del más reciente al más antiguo</string>
   <plurals name="add_batch_units_date">
     <item quantity="one">%1$d unidad · %2$s</item>
+    <item quantity="many">%1$d unidades · %2$s</item>
     <item quantity="other">%1$d unidades · %2$s</item>
   </plurals>
   <string name="item_actions_unit_of">Unidad %1$d de %2$d · caduca %3$s</string>
@@ -300,10 +169,12 @@
   <string name="item_pill_tomorrow">Mañana</string>
   <plurals name="item_pill_days_left">
     <item quantity="one">%d día</item>
+    <item quantity="many">%d días</item>
     <item quantity="other">%d días</item>
   </plurals>
   <plurals name="item_pill_days_ago">
     <item quantity="one">Hace %d día</item>
+    <item quantity="many">Hace %d días</item>
     <item quantity="other">Hace %d días</item>
   </plurals>
   <string name="item_pill_frozen">Congelado</string>
@@ -322,7 +193,6 @@
   <string name="item_actions_delete_title">¿Borrar %1$s?</string>
   <string name="item_actions_delete_body">Esta acción no se puede deshacer.</string>
   <string name="item_actions_cancel">Cancelar</string>
-  <string name="item_actions_unfreeze_title">Nueva fecha de caducidad</string>
   <string name="item_actions_quantity_title">¿Cuántas unidades quieres consumir?</string>
   <string name="item_actions_snackbar_consumed">%1$s consumido</string>
   <string name="item_actions_snackbar_rescheduled">Fecha de %1$s cambiada</string>
@@ -337,10 +207,12 @@
   <string name="home_search">Buscar</string>
   <plurals name="home_expired_banner_title">
     <item quantity="one">%d producto caducado</item>
+    <item quantity="many">%d productos caducados</item>
     <item quantity="other">%d productos caducados</item>
   </plurals>
   <plurals name="home_expired_banner_subtitle">
     <item quantity="one">El más antiguo, hace %d día</item>
+    <item quantity="many">El más antiguo, hace %d días</item>
     <item quantity="other">El más antiguo, hace %d días</item>
   </plurals>
   <string name="home_expired_banner_action">Revisa</string>
@@ -351,10 +223,12 @@
   <string name="home_section_tomorrow">Mañana</string>
   <plurals name="home_product_count">
     <item quantity="one">%d producto</item>
+    <item quantity="many">%d productos</item>
     <item quantity="other">%d productos</item>
   </plurals>
   <plurals name="home_unit_count">
     <item quantity="one">%d unidad</item>
+    <item quantity="many">%d unidades</item>
     <item quantity="other">%d unidades</item>
   </plurals>
   <string name="home_mark_consumed">Marca %1$s como consumido</string>
@@ -369,6 +243,7 @@
   <string name="week_strip_day_none">%1$s, nada</string>
   <plurals name="week_strip_day_count">
     <item quantity="one">%1$s, %2$d producto</item>
+    <item quantity="many">%1$s, %2$d productos</item>
     <item quantity="other">%1$s, %2$d productos</item>
   </plurals>
   <string name="calendar_back">Volver</string>
@@ -381,6 +256,7 @@
   <string name="calendar_row_meta">%1$s · unidad %2$d de %3$d</string>
   <plurals name="calendar_cell_desc">
     <item quantity="one">%1$s, %2$d producto</item>
+    <item quantity="many">%1$s, %2$d productos</item>
     <item quantity="other">%1$s, %2$d productos</item>
   </plurals>
   <string name="calendar_cell_desc_none">%1$s, nada</string>
@@ -388,10 +264,12 @@
   <string name="calendar_relative_tomorrow">Mañana</string>
   <plurals name="calendar_relative_in">
     <item quantity="one">dentro de %d día</item>
+    <item quantity="many">dentro de %d días</item>
     <item quantity="other">dentro de %d días</item>
   </plurals>
   <plurals name="calendar_relative_ago">
     <item quantity="one">hace %d día</item>
+    <item quantity="many">hace %d días</item>
     <item quantity="other">hace %d días</item>
   </plurals>
   <string name="pantry_overline">%1$s · %2$s</string>
@@ -404,10 +282,12 @@
   <string name="category_unit_n">Unidad %d</string>
   <plurals name="pantry_category_count">
     <item quantity="one">%d categoría</item>
+    <item quantity="many">%d categorías</item>
     <item quantity="other">%d categorías</item>
   </plurals>
   <plurals name="pantry_card_expired">
     <item quantity="one">%d caducado</item>
+    <item quantity="many">%d caducados</item>
     <item quantity="other">%d caducados</item>
   </plurals>
   <string name="category_add">Añade</string>
@@ -426,6 +306,7 @@
   <string name="category_filter_all">Todos</string>
   <plurals name="category_delete_body">
     <item quantity="one">Esto borrará la categoría y su %d producto. No se puede deshacer.</item>
+    <item quantity="many">Esto borrará la categoría y sus %d productos. No se puede deshacer.</item>
     <item quantity="other">Esto borrará la categoría y sus %d productos. No se puede deshacer.</item>
   </plurals>
   <string name="category_day_hint">Toca el día o la ✕ para volver a verlo todo.</string>
@@ -434,6 +315,7 @@
   <string name="category_unit_of">Unidad %1$d de %2$d · %3$s</string>
   <plurals name="category_day_units">
     <item quantity="one">%d unidad caduca este día</item>
+    <item quantity="many">%d unidades caducan este día</item>
     <item quantity="other">%d unidades caducan este día</item>
   </plurals>
   <string name="status_title_expired">Caducados</string>
@@ -443,6 +325,7 @@
   <string name="status_help_expired">Si aún están buenos, cambia la fecha. Si no, tíralos.</string>
   <plurals name="status_help_soon">
     <item quantity="one">Caducan en el próximo día. Úsalos primero.</item>
+    <item quantity="many">Caducan en los próximos %d días. Úsalos primero.</item>
     <item quantity="other">Caducan en los próximos %d días. Úsalos primero.</item>
   </plurals>
   <string name="status_help_fresh">Aún tienen margen. Primero, los que caducan antes.</string>
@@ -452,9 +335,9 @@
   <string name="status_discard_all">Tíralos todos</string>
   <plurals name="status_selected_count">
     <item quantity="one">%d seleccionado</item>
+    <item quantity="many">%d seleccionados</item>
     <item quantity="other">%d seleccionados</item>
   </plurals>
-  <string name="status_row_select_cd">Selecciona %1$s</string>
   <string name="status_date_today">Hoy · %1$s</string>
   <string name="status_date_tomorrow">Mañana · %1$s</string>
   <string name="status_date_in_days">En %1$d días · %2$s</string>
@@ -485,6 +368,7 @@
   <string name="status_snackbar_unfrozen">%1$s descongelado</string>
   <plurals name="status_discard_title">
     <item quantity="one">¿Tirar %d producto?</item>
+    <item quantity="many">¿Tirar %d productos?</item>
     <item quantity="other">¿Tirar %d productos?</item>
   </plurals>
   <string name="status_discard_body">Se marcarán como tirados. Podrás deshacerlo justo después.</string>
@@ -531,6 +415,7 @@
   <string name="settings_notifications_denied">Permite las notificaciones en los ajustes del sistema para recibir el aviso</string>
   <plurals name="notification_title">
     <item quantity="one">%d producto caduca pronto</item>
+    <item quantity="many">%d productos caducan pronto</item>
     <item quantity="other">%d productos caducan pronto</item>
   </plurals>
 
@@ -584,13 +469,9 @@
   <string name="ob_category_drinks">Bebidas</string>
   <string name="ob_category_cold_cuts">Embutidos</string>
   <string name="ob_category_ready_meals">Platos preparados</string>
-  <string name="debug_inapp_review_requested">Se ha solicitado el diálogo de valoración (puede no mostrarse en depuración)</string>
-  <string name="quantity_selector_consume_title">¿Cuántos quieres consumir?</string>
-  <string name="quantity_selector_consume_expired_title">¿Cuántos caducados quieres consumir?</string>
-  <string name="quantity_selector_freeze_title">¿Cuántos quieres congelar?</string>
-  <string name="quantity_selector_unfreeze_title">¿Cuántos quieres descongelar?</string>
-  <string name="quantity_selector_delete_title">¿Cuántos quieres borrar?</string>
-  <string name="quantity_selector_confirm">Confirmar (%d)</string>
-  <string name="quantity_selector_cancel">Cancelar</string>
-  <string name="quantity_selector_all">Todos</string>
+  <!-- Quantity selector (legacy packs) -->
+  <string name="quantity_selector_decrease">Reducir</string>
+  <string name="quantity_selector_increase">Aumentar</string>
+  <string name="quantity_selector_all_count">Todos (%d)</string>
+  <string name="quantity_selector_max">Máximo: %d</string>
 </resources>
