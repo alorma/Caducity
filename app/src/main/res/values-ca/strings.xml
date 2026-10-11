@@ -194,7 +194,6 @@
   <string name="item_actions_delete_title">Esborrar %1$s?</string>
   <string name="item_actions_delete_body">Aquesta acció no es pot desfer.</string>
   <string name="item_actions_cancel">Cancel·la</string>
-  <string name="item_actions_quantity_title">Quantes unitats vols consumir?</string>
   <string name="item_actions_snackbar_consumed">%1$s consumit</string>
   <string name="item_actions_snackbar_rescheduled">Data de %1$s canviada</string>
   <string name="item_actions_snackbar_frozen">%1$s congelat</string>
@@ -470,9 +469,17 @@
   <string name="ob_category_drinks">Begudes</string>
   <string name="ob_category_cold_cuts">Embotits</string>
   <string name="ob_category_ready_meals">Plats preparats</string>
-  <!-- Quantity selector (legacy packs) -->
-  <string name="quantity_selector_decrease">Redueix</string>
-  <string name="quantity_selector_increase">Augmenta</string>
-  <string name="quantity_selector_all_count">Tots (%d)</string>
-  <string name="quantity_selector_max">Màxim: %d</string>
+  <!-- Quantity dialog (legacy packs) -->
+  <string name="quantity_overline">Pack de %1$d · %2$s</string>
+  <string name="quantity_question">Quantes unitats has consumit?</string>
+  <string name="quantity_of">de %d</string>
+  <string name="quantity_all">Tots (%d)</string>
+  <string name="quantity_confirm">Consumeix %d</string>
+  <string name="quantity_confirm_all">Consumeix els %d</string>
+  <string name="quantity_less">Una menys</string>
+  <string name="quantity_more">Una més</string>
+  <string name="quantity_expired">ja ha caducat</string>
+  <string name="quantity_expires_today">caduca avui</string>
+  <string name="quantity_expires_tomorrow">caduca demà</string>
+  <string name="quantity_expires_on">caduca %1$s</string>
 </resources>

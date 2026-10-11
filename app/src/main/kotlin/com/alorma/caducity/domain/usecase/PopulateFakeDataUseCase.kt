@@ -67,12 +67,14 @@ class PopulateFakeDataUseCase(
           shouldFreeze: Boolean,
           remainingDaysWhenFrozen: Int,
           shouldConsume: Boolean,
+          packSize: Int? = null,
         ) {
           val newItem =
             NewItem(
               identifier = "",
               productId = productIdFor(productName),
               expirationDate = expirationDate,
+              packSize = packSize,
             )
           val itemId = itemDataSource.addItem(category.id, newItem)
           when {
@@ -90,6 +92,7 @@ class PopulateFakeDataUseCase(
               item.shouldFreeze,
               item.remainingDaysWhenFrozen,
               item.shouldConsume,
+              item.packSize,
             )
           }
         }

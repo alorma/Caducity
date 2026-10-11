@@ -111,6 +111,28 @@ class AppDialogState {
       }
     }
 
+  /** Shows a dialog that draws itself (e.g. a `BasicAlertDialog`); [content] receives the dismiss callback. */
+  suspend fun showCustomDialog(content: @Composable (dismiss: (DialogResult) -> Unit) -> Unit): DialogResult =
+    mutex.withLock {
+      try {
+        suspendCancellableCoroutine { cancellation ->
+          dialogInfo =
+            object : DialogInfo.CustomAlertDialog {
+              override val properties: DialogProperties = DialogProperties()
+              override val dismiss: (DialogResult) -> Unit = { result ->
+                if (!cancellation.isCompleted) {
+                  cancellation.resume(result)
+                }
+                dialogInfo = null
+              }
+              override val content: @Composable () -> Unit = { content(dismiss) }
+            }
+        }
+      } finally {
+        dialogInfo = null
+      }
+    }
+
   suspend fun showDatePickerDialog(
     datePickerState: DatePickerState,
     positiveButton: @Composable () -> Unit,
