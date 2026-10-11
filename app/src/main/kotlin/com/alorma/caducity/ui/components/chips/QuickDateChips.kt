@@ -1,11 +1,12 @@
 package com.alorma.caducity.ui.components.chips
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,18 +24,16 @@ data class QuickDateOption(
   val icon: ImageVector? = null,
 )
 
-/** Dates ràpides (+1 dia, +3 dies, +1 setmana, Tria): xips de radi 12 sobre `surface-high`. */
-@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+/** Dates ràpides en una sola fila amb scroll horitzontal: xips de radi 12 sobre `surface-high`. */
 @Composable
 fun QuickDateChips(
   options: List<QuickDateOption>,
   onClick: (Int) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  FlowRow(
-    modifier = modifier,
+  Row(
+    modifier = modifier.horizontalScroll(rememberScrollState()),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     options.forEachIndexed { index, option ->
       Surface(

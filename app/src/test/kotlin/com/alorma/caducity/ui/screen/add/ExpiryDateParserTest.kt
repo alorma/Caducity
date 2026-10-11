@@ -73,4 +73,12 @@ class ExpiryDateParserTest {
     // Deleting the slash in "01/" yields "01" digits again: format(digitsOf("01")) == "01".
     expectThat(ExpiryDateParser.format(ExpiryDateParser.digitsOf("01"))).isEqualTo("01")
   }
+
+  @Test
+  fun `normalize pads a pasted separated date`() {
+    expectThat(ExpiryDateParser.normalize("1/2/26")).isEqualTo("010226")
+    expectThat(ExpiryDateParser.normalize("1/2/2026")).isEqualTo("01022026")
+    expectThat(ExpiryDateParser.normalize("01022026")).isEqualTo("01022026")
+    expectThat(ExpiryDateParser.normalize("01/0")).isEqualTo("010")
+  }
 }

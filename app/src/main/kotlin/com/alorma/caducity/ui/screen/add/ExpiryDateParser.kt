@@ -13,6 +13,18 @@ object ExpiryDateParser {
   /** Keeps only digits (max 8) so the field can re-insert the slashes itself. */
   fun digitsOf(input: String): String = input.filter { it.isDigit() }.take(MAX_DIGITS)
 
+  /**
+   * Digits for a typed or pasted [text]: a complete separated date (`1/2/26`) is padded to `010226`,
+   * anything else just keeps its digits.
+   */
+  fun normalize(text: String): String {
+    val date = parse(text)
+    val hasSeparators = text.any { it in separators }
+    if (date == null || !hasSeparators) return digitsOf(text)
+    val parts = text.trim().split(*separators).filter { it.isNotEmpty() }
+    return parts[0].padStart(2, '0') + parts[1].padStart(2, '0') + parts[2]
+  }
+
   /** `01022026` → `01/02/2026`, `010` → `01/0`. Slashes appear as soon as the next group starts. */
   fun format(digits: String): String =
     buildString {

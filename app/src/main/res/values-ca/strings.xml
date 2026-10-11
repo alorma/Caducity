@@ -321,4 +321,18 @@
   <string name="nav_pantry">Rebost</string>
   <string name="nav_settings">Ajustos</string>
   <string name="action_add_product">Afegeix un producte</string>
+  <string name="add_date_placeholder">dd/mm/aa</string>
+  <string name="add_date_pick">Tria la data</string>
+  <string name="add_date_help_expired">ja ha caducat</string>
+  <string name="add_date_help_today">%1$s · avui</string>
+  <string name="add_date_help_tomorrow">%1$s · demà</string>
+  <plurals name="add_date_help_days">
+    <item quantity="one">%1$s · d\'aquí %2$d dia</item>
+    <item quantity="other">%1$s · d\'aquí %2$d dies</item>
+  </plurals>
+  <string name="add_quick_tomorrow">Demà</string>
+  <string name="add_quick_3_days">+3 dies</string>
+  <string name="add_quick_1_week">+1 setmana</string>
+  <string name="add_quick_2_weeks">+2 setmanes</string>
+  <string name="add_quick_1_month">+1 mes</string>
 </resources>
