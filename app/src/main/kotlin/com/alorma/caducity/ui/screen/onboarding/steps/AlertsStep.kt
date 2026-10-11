@@ -31,7 +31,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
-import com.alorma.caducity.base.ui.icons.symbols.Check
 import com.alorma.caducity.base.ui.icons.symbols.CheckCircle
 import com.alorma.caducity.base.ui.icons.symbols.NotificationsActive
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
@@ -122,10 +121,7 @@ fun AlertsStep(
             ConnectedButtonGroup(
               options =
                 THRESHOLD_OPTIONS.map { days ->
-                  ConnectedButtonOption(
-                    label = thresholdLabel(days),
-                    icon = if (days == thresholdDays) Symbols.Outlined.Check else null,
-                  )
+                  ConnectedButtonOption(label = thresholdLabel(days))
                 },
               selectedIndex = THRESHOLD_OPTIONS.indexOf(thresholdDays),
               onClick = { onThresholdChange(THRESHOLD_OPTIONS[it]) },
