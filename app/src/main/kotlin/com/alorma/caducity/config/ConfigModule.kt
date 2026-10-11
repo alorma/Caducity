@@ -8,6 +8,8 @@ import com.alorma.caducity.config.remoteconfig.DebugRemoteConfigRunner
 import com.alorma.caducity.config.remoteconfig.FirebaseRemoteConfigProvider
 import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.config.resources.StringProvider
+import com.alorma.caducity.config.time.AndroidTodayProvider
+import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.config.version.AndroidAppVersionProvider
 import com.alorma.caducity.config.version.AppVersionProvider
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
@@ -21,6 +23,7 @@ import org.koin.dsl.module
 val configModule =
   module {
     single<AppClock> { KotlinAppClock() }
+    single<TodayProvider> { AndroidTodayProvider(context = get(), appClock = get()) }
 
     singleOf(::AndroidAppVersionProvider) {
       bind<AppVersionProvider>()
