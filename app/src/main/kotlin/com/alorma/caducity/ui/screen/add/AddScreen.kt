@@ -35,6 +35,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -209,7 +210,7 @@ private fun AddTopBar(
           modifier = Modifier.padding(end = 12.dp),
         ) {
           Text(
-            text = stringResource(R.string.add_saved_count, savedCount),
+            text = pluralStringResource(R.plurals.add_saved_count, savedCount, savedCount),
             style = CaducityTheme.typography.labelLarge,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
           )
