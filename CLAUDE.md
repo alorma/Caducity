@@ -112,11 +112,11 @@ The app implements Google's consent mode for Firebase Analytics to respect user 
 - **ConsentManager**: Manages consent preferences and applies them to Firebase Analytics
 - **ConsentPreferences**: Data class with predefined consent options (DEFAULT, ANALYTICS_ONLY, ALL_GRANTED)
 - **ConsentFlag**: FireAndForget flag ensuring consent screen is shown only once
-- **ConsentOnboardingPage**: UI component in onboarding flow for collecting user consent
+- **PrivacyStep**: onboarding step (`ui/screen/onboarding/steps/`) for collecting user consent
 
 **Consent Flow**:
 1. On app startup in `MainActivity.onCreate()`, default consent (all denied) is applied
-2. During onboarding (page 5 of 6), user sees consent screen with analytics toggle
+2. During onboarding (the privacy step, 4 of 5), user sees the consent screen with analytics toggle (off by default)
 3. User's choice is persisted via SharedPreferences
 4. ConsentManager applies settings to Firebase Analytics using `setConsent()` API
 5. Consent flag is disabled after onboarding completion
@@ -293,7 +293,7 @@ The domain layer follows Clean Architecture principles with clear separation of 
 **Primary Models:**
 - `Category` - Top-level grouping (id, name, description)
 - `Product` - Mid-level grouping within a category (id, categoryId, name, createdAt)
-- `Item` - Individual trackable unit (id, categoryId, productId?, identifier, expirationDate, status, pausedDate)
+- `Item` - Individual trackable unit (id, categoryId, productId?, expirationDate, status, pausedDate, discardedDate?, createdAt?). `identifier` is legacy: the UI ignores it and "Unit N" is derived. Quantity N creates N independent items
 - `NewItem` - DTO for creating new items (identifier, productId?, expirationDate)
 
 **Status and Utilities:**
@@ -431,10 +431,11 @@ class BackupViewModel : BaseViewModel<
 ### Components (`base/ui/components/`)
 
 **Reusable Components:**
-- `StatusBadge` - Visual indicator for item status (Fresh, ExpiringSoon, Expired, Frozen)
-- `ItemCard` - Card component for displaying items
+- `StatusPill` / `StatusBadge` - Visual indicator for item status (Fresh, ExpiringSoon, Expired, Frozen)
+- `ConnectedRow`, `ConnectedButtonGroup` - Connected groups built on `ShapePosition`
 - `AppScaffold` - Standard scaffold with dialog/snackbar/bottom sheet support
-- `AppCalendar` - Calendar component for date selection and visualization
+- `WeekStrip` (`ui/components/weekstrip/`) - Rolling 7-day strip; the month view is `ui/screen/calendar/` (own grid, no calendar library)
+- `ItemActionsSheet` (`ui/components/actions/`) - Actions for one unit (consume, freeze, reschedule, edit, move, delete)
 - `TopBars` - Standard app bars (TopAppBar, SearchBar, etc.)
 
 ### User Feedback: Dialogs, Snackbars, and Bottom Sheets
