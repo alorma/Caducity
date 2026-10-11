@@ -75,33 +75,6 @@ class CategoryCreatedAction(
     parameters = mapOf("source" to source), // "form_submit"
   )
 
-// Add Item Actions
-class CancelAddItemAction :
-  NavigationAction(
-    actionName = "cancel_add_item",
-    origin = "add_item",
-    parameters = mapOf("source" to "back_button"),
-  )
-
-class ItemSavedAction(
-  hasProduct: Boolean,
-  quantity: Int,
-) : NavigationAction(
-    actionName = "item_saved",
-    origin = "add_item",
-    parameters =
-      mapOf(
-        "has_product" to hasProduct.toString(),
-        "quantity_range" to
-          when {
-            quantity == 1 -> "single"
-            quantity in 2..5 -> "few"
-            quantity in 6..10 -> "several"
-            else -> "many"
-          },
-      ),
-  )
-
 // Product Page Actions
 class NavigateToAddItemFromProductAction :
   NavigationAction(

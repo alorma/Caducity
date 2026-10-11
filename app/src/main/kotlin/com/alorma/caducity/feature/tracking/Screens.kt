@@ -11,8 +11,6 @@ class DashboardScreen : Screen("DashboardScreen")
 
 class CategoryDetailScreen : Screen("CategoryDetailScreen")
 
-class AddItemScreen : Screen("AddItemScreen")
-
 class CreateCategoryScreen : Screen("CreateCategoryScreen")
 
 class FilteredItemsByStatusScreen : Screen("FilteredItemsByStatusScreen")

@@ -7,7 +7,6 @@ import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.data.datasource.RoomBackupDataSource
 import com.alorma.caducity.domain.backup.BackupDataSource
 import com.alorma.caducity.domain.domainModule
-import com.alorma.caducity.domain.usecase.AddItemToCategoryUseCase
 import com.alorma.caducity.domain.usecase.ClearProductItemsUseCase
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
@@ -36,7 +35,6 @@ import com.alorma.caducity.ui.components.bottomsheet.ItemActionsViewModel
 import com.alorma.caducity.ui.screen.add.AddViewModel
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryViewModel
 import com.alorma.caducity.ui.screen.category.create.FutureDateSelectableDates
-import com.alorma.caducity.ui.screen.category.detail.CategoryDetailAddItemViewModel
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailMapper
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailViewModel
 import com.alorma.caducity.ui.screen.category.detail.product.ProductPageMapper
@@ -94,7 +92,6 @@ val appModule =
 
     // Category detail
     singleOf(::ObtainCategoryDetailUseCase)
-    singleOf(::AddItemToCategoryUseCase)
     singleOf(::DeleteItemUseCase)
     singleOf(::DeleteCategoryUseCase)
     singleOf(::ConsumeItemUseCase)
@@ -106,7 +103,6 @@ val appModule =
     singleOf(::SplitAndDeleteItemUseCase)
     singleOf(::CategoryDetailMapper)
     viewModelOf(::CategoryDetailViewModel)
-    viewModelOf(::CategoryDetailAddItemViewModel)
 
     // Quick category sheet
     singleOf(::CategoryCreatedEvents)

@@ -8,10 +8,4 @@ sealed interface CategoryDetailRoutes : NavKey {
   data class Root(
     val categoryId: String,
   ) : CategoryDetailRoutes
-
-  @Serializable
-  data class AddInstance(
-    val categoryId: String,
-    val productId: String? = null,
-  ) : CategoryDetailRoutes
 }
