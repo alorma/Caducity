@@ -38,7 +38,7 @@ val MIGRATION_2_3 =
         val defaults = CategoryDefaults.forName(name, index)
         db.execSQL(
           "UPDATE categories SET sortOrder = ?, shape = ?, icon = ? WHERE id = ?",
-          arrayOf<Any>(index, defaults.shape, defaults.icon, id),
+          arrayOf<Any>(index, defaults.shape.name, defaults.icon.id, id),
         )
       }
     }

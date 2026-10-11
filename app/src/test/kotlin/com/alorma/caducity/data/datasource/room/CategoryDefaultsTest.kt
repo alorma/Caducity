@@ -1,5 +1,7 @@
 package com.alorma.caducity.data.datasource.room
 
+import com.alorma.caducity.domain.model.CategoryIcon
+import com.alorma.caducity.domain.model.CategoryShape
 import org.junit.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
@@ -8,7 +10,7 @@ class CategoryDefaultsTest {
   private fun of(
     name: String,
     index: Int = 0,
-  ) = CategoryDefaults.forName(name, index).let { it.shape to it.icon }
+  ) = CategoryDefaults.forName(name, index).let { it.shape.name to it.icon.id }
 
   @Test
   fun `matches names in English, Spanish and Catalan`() {
@@ -38,10 +40,18 @@ class CategoryDefaultsTest {
 
   @Test
   fun `unmatched names cycle shapes by index with the default icon`() {
-    val shapes = (0..7).map { CategoryDefaults.forName("Zzz", it).shape }
+    val shapes = (0..7).map { CategoryDefaults.forName("Zzz", it).shape.name }
     expectThat(shapes).isEqualTo(
       listOf("COOKIE", "FLOWER", "CLOVER", "SUNNY", "PUFFY", "BURST", "COOKIE", "FLOWER"),
     )
-    expectThat(CategoryDefaults.forName("Zzz", 3).icon).isEqualTo("eco")
+    expectThat(CategoryDefaults.forName("Zzz", 3).icon.id).isEqualTo("eco")
+  }
+
+  @Test
+  fun `converters round-trip and fall back for unknown shapes`() {
+    val converters = AvatarConverters()
+    expectThat(converters.stringToShape(converters.shapeToString(CategoryShape.CLOVER))).isEqualTo(CategoryShape.CLOVER)
+    expectThat(converters.stringToShape("REMOVED_SHAPE")).isEqualTo(CategoryShape.COOKIE)
+    expectThat(converters.stringToIcon("future_icon")).isEqualTo(CategoryIcon("future_icon"))
   }
 }

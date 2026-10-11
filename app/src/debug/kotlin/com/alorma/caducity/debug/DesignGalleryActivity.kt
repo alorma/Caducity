@@ -36,10 +36,10 @@ import com.alorma.caducity.base.ui.icons.symbols.SetMeal
 import com.alorma.caducity.base.ui.icons.symbols.Settings
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.WaterFull
+import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.ui.components.button.ConnectedButtonGroup
 import com.alorma.caducity.ui.components.button.ConnectedButtonOption
-import com.alorma.caducity.ui.components.category.CategoryShape
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.chips.FilterChipOption
 import com.alorma.caducity.ui.components.chips.FilterChips
