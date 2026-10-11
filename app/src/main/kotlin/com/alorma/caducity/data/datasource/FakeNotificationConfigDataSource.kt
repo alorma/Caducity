@@ -15,4 +15,6 @@ class FakeNotificationConfigDataSource : NotificationConfigDataSource {
   }
 
   override suspend fun isNotificationsEnabled(): Boolean = true
+
+  override suspend fun setNotificationsEnabled(enabled: Boolean) = Unit
 }

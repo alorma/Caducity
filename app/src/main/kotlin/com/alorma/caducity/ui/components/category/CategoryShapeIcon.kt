@@ -11,6 +11,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.ui.theme.CaducityTheme
 
 /**

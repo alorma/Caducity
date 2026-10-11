@@ -29,7 +29,7 @@ fun StatusBadge(
       ItemStatus.ExpiringSoon -> stringResource(R.string.expiration_status_badge_expiring_soon)
       ItemStatus.Fresh -> stringResource(R.string.expiration_status_badge_fresh)
       ItemStatus.Frozen -> stringResource(R.string.expiration_status_badge_frozen)
-      ItemStatus.Consumed -> stringResource(R.string.expiration_status_badge_consumed)
+      ItemStatus.Consumed, ItemStatus.Discarded -> stringResource(R.string.expiration_status_badge_consumed)
     }
   val expiry =
     when (status) {
@@ -37,7 +37,7 @@ fun StatusBadge(
       ItemStatus.ExpiringSoon -> ExpiryStatus.SOON
       ItemStatus.Fresh -> ExpiryStatus.FRESH
       ItemStatus.Frozen -> ExpiryStatus.FROZEN
-      ItemStatus.Consumed -> null
+      ItemStatus.Consumed, ItemStatus.Discarded -> null
     }
   if (expiry != null) {
     StatusPill(status = expiry, label = label, modifier = modifier)

@@ -34,7 +34,10 @@ class ItemRoomMapper(
       expirationDate = Instant.fromEpochMilliseconds(entity.expirationDate),
       status = calculateStatus(entity),
       pausedDate = entity.pausedDate?.let { Instant.fromEpochMilliseconds(it) },
+      remainingDays = entity.remainingDays,
       packSize = entity.packSize,
+      discardedDate = entity.discardedDate?.let { Instant.fromEpochMilliseconds(it) },
+      createdAt = entity.createdAt?.let { Instant.fromEpochMilliseconds(it) },
     )
 
   /**
@@ -51,6 +54,8 @@ class ItemRoomMapper(
       remainingDays = null,
       consumedDate = null,
       packSize = model.packSize,
+      discardedDate = model.discardedDate?.toEpochMilliseconds(),
+      createdAt = model.createdAt?.toEpochMilliseconds(),
     )
 
   /**
@@ -75,16 +80,20 @@ class ItemRoomMapper(
       remainingDays = null,
       consumedDate = null,
       packSize = model.packSize,
+      createdAt = appClock.now().toEpochMilliseconds(),
     )
 
   /**
    * Calculates item status based on consumed, frozen, and expiration states
    *
-   * Priority: Consumed > Frozen > Calculated (based on expiration)
+   * Priority: Consumed > Discarded > Frozen > Calculated (based on expiration)
+   *
+   * TEMP(fase 5): the new Observe* use cases compute status from `ExpiryStatus.of`; old screens still read this.
    */
   private fun calculateStatus(entity: ItemRoomEntity): ItemStatus =
     when {
       entity.consumedDate != null -> ItemStatus.Consumed
+      entity.discardedDate != null -> ItemStatus.Discarded
       entity.pausedDate != null -> ItemStatus.Frozen
       else ->
         ItemStatus.calculateStatus(

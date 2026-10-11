@@ -2,6 +2,7 @@ package com.alorma.caducity.data.datasource.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.alorma.caducity.data.datasource.room.dao.CategoryDao
 import com.alorma.caducity.data.datasource.room.dao.ItemDao
 import com.alorma.caducity.data.datasource.room.dao.ProductDao
@@ -15,9 +16,10 @@ import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
     ItemRoomEntity::class,
     ProductRoomEntity::class,
   ],
-  version = 2,
+  version = 3,
   exportSchema = true,
 )
+@TypeConverters(AvatarConverters::class)
 abstract class AppDatabase : RoomDatabase() {
   abstract fun categoryDao(): CategoryDao
 

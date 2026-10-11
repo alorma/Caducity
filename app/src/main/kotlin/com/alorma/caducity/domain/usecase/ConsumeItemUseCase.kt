@@ -7,6 +7,14 @@ import com.alorma.caducity.domain.model.ItemStatus
 class ConsumeItemUseCase(
   private val itemDataSource: ItemDataSource,
 ) {
+  /** Permissive consume (P5): any existing item can be consumed, including expired ones. */
+  suspend fun consume(itemId: String): Result<Unit> {
+    itemDataSource.getItem(itemId) ?: return Result.failure(InstanceActionError.InstanceNotFound)
+    itemDataSource.markItemAsConsumed(itemId)
+    return Result.success(Unit)
+  }
+
+  // TEMP(fase 7): the old action sheet still uses the blocking variants.
   suspend fun consumeItem(itemId: String): Result<Unit> {
     // Get the item to check its status
     val item =

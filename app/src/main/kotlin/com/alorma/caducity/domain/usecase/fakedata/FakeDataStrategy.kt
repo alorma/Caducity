@@ -1,5 +1,7 @@
 package com.alorma.caducity.domain.usecase.fakedata
 
+import com.alorma.caducity.domain.model.CategoryIcon
+import com.alorma.caducity.domain.model.CategoryShape
 import kotlin.time.Instant
 
 /**
@@ -21,6 +23,9 @@ data class CategoryConfig(
   val description: String,
   val products: List<ProductConfig>,
   val standaloneItems: List<StandaloneItemConfig> = emptyList(),
+  /** When null, shape/icon are derived from the name like for migrated categories. */
+  val shape: CategoryShape? = null,
+  val icon: CategoryIcon? = null,
 )
 
 /**
