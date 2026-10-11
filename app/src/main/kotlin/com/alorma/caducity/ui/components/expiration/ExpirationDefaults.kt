@@ -3,14 +3,16 @@ package com.alorma.caducity.ui.components.expiration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.colors.ContainerColors
 import com.alorma.caducity.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.theme.ThemeTone
-import com.alorma.caducity.ui.theme.colors.ExpirationColorsPalette
-import com.materialkolor.ktx.isLight
+import com.alorma.caducity.ui.theme.colors.StatusColors
+
+private val LightInk = Color(0xFF29241C)
+private val LightSurface = Color(0xFFFBF6EC)
 
 object ExpirationDefaults {
   @Composable
@@ -23,76 +25,65 @@ object ExpirationDefaults {
       ItemStatus.Consumed -> stringResource(R.string.expiration_status_badge_consumed)
     }
 
+  /** Colors forts (barres, punts, botons): `strong` amb text d'alt contrast. */
   @Composable
-  fun getVibrantColors(itemStatus: ItemStatus): ContainerColors =
-    expirationColorByStatus(
-      itemStatus = itemStatus,
-      expirationColors = CaducityTheme.expirationColors.vibrant,
+  fun getVibrantColors(itemStatus: ItemStatus): ContainerColors {
+    val strong = strongColor(itemStatus) ?: return consumedColors()
+    return ContainerColors(
+      container = strong,
+      onContainer = contentColorFor(strong),
     )
-
-  @Composable
-  fun getSoftColors(itemStatus: ItemStatus): ContainerColors =
-    expirationColorByStatus(
-      itemStatus = itemStatus,
-      expirationColors = CaducityTheme.expirationColors.soft,
-    )
-
-  @Composable
-  fun getColors(itemStatus: ItemStatus): ContainerColors {
-    val tone = CaducityTheme.themeTone
-    return when (tone) {
-      ThemeTone.VIBRANT -> getVibrantColors(itemStatus)
-      ThemeTone.SOFT -> getSoftColors(itemStatus)
-    }
   }
 
+  /** Colors suaus (pastilles, fons): `*-container` amb `on-*-container`. */
   @Composable
-  fun getInverseColors(itemStatus: ItemStatus): ContainerColors {
-    val tone = CaducityTheme.themeTone
-    return when (tone) {
-      ThemeTone.VIBRANT -> getSoftColors(itemStatus)
-      ThemeTone.SOFT -> getVibrantColors(itemStatus)
-    }
+  fun getSoftColors(itemStatus: ItemStatus): ContainerColors {
+    val colors = statusColors(itemStatus) ?: return consumedColors()
+    return ContainerColors(
+      container = colors.container,
+      onContainer = colors.onContainer,
+    )
   }
 
+  // TEMP(fase 7): el redisseny no té tons; les pantalles velles usen els colors suaus.
   @Composable
-  private fun expirationColorByStatus(
-    itemStatus: ItemStatus,
-    expirationColors: ExpirationColorsPalette,
-  ): ContainerColors =
-    when (itemStatus) {
-      ItemStatus.Fresh -> statusColors(expirationColors.fresh)
-      ItemStatus.ExpiringSoon -> statusColors(expirationColors.expiringSoon)
-      ItemStatus.Expired -> statusColors(expirationColors.expired)
-      ItemStatus.Frozen -> statusColors(expirationColors.frozen)
-      ItemStatus.Consumed -> statusColors(expirationColors.consumed)
-    }
+  fun getColors(itemStatus: ItemStatus): ContainerColors = getSoftColors(itemStatus)
 
+  // TEMP(fase 7)
   @Composable
-  private fun statusColors(color: Color): ContainerColors =
-    ContainerColors(
-      container = color,
-      onContainer = contentColorForExpiration(color),
-    )
+  fun getInverseColors(itemStatus: ItemStatus): ContainerColors = getVibrantColors(itemStatus)
 
-  @Suppress("ContentEmission")
+  /** `null` per a Consumed: no és un estat de color. */
+  @Composable
   @ReadOnlyComposable
-  @Composable
-  private fun contentColorForExpiration(color: Color): Color {
-    val darkMode = CaducityTheme.isDark
-
-    return if (color.isLight()) {
-      if (darkMode) {
-        CaducityTheme.colorScheme.surface
-      } else {
-        CaducityTheme.colorScheme.onSurface
-      }
-    } else {
-      if (darkMode) {
-        CaducityTheme.colorScheme.onSurface
-      } else {
-        CaducityTheme.colorScheme.surface
-      }
+  fun statusColors(itemStatus: ItemStatus): StatusColors? =
+    when (itemStatus) {
+      ItemStatus.Fresh -> CaducityTheme.colors.fresh
+      ItemStatus.ExpiringSoon -> CaducityTheme.colors.soon
+      ItemStatus.Expired -> CaducityTheme.colors.expired
+      ItemStatus.Frozen -> CaducityTheme.colors.frozen
+      ItemStatus.Consumed -> null
     }
-  }
+
+  @Composable
+  @ReadOnlyComposable
+  private fun strongColor(itemStatus: ItemStatus): Color? = statusColors(itemStatus)?.strong
+
+  @Composable
+  @ReadOnlyComposable
+  private fun consumedColors(): ContainerColors =
+    ContainerColors(
+      container = CaducityTheme.colorScheme.surfaceContainerHigh,
+      onContainer = CaducityTheme.colorScheme.onSurfaceVariant,
+    )
+
+  /** Tinta o crema segons la lluminància del fons. */
+  @Composable
+  @ReadOnlyComposable
+  private fun contentColorFor(background: Color): Color =
+    if (background.luminance() > 0.4f) {
+      LightInk
+    } else {
+      LightSurface
+    }
 }

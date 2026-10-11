@@ -1,123 +1,49 @@
 package com.alorma.caducity.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
+import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.expiration.ExpirationDefaults
-import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.components.status.StatusPill
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 
-enum class StatusBadgeSize {
-  Small,
-  Medium,
-  Large,
-  ;
-
-  val dotSize: Dp
-    get() =
-      when (this) {
-        Small -> 6.dp
-        Medium -> 8.dp
-        Large -> 10.dp
-      }
-
-  val horizontalPadding: Dp
-    get() =
-      when (this) {
-        Small -> 8.dp
-        Medium -> 12.dp
-        Large -> 16.dp
-      }
-
-  val verticalPadding: Dp
-    get() =
-      when (this) {
-        Small -> 4.dp
-        Medium -> 6.dp
-        Large -> 8.dp
-      }
-
-  val spacing: Dp
-    get() =
-      when (this) {
-        Small -> 4.dp
-        Medium -> 6.dp
-        Large -> 8.dp
-      }
-
-  @Composable
-  fun textStyle(): TextStyle =
-    when (this) {
-      Small -> MaterialTheme.typography.labelSmall
-      Medium -> MaterialTheme.typography.labelMedium
-      Large -> MaterialTheme.typography.labelLarge
-    }
-}
-
+// TEMP(fase 7): adaptador sobre StatusPill per a les pantalles velles; s'esborra amb elles.
 @Composable
 fun StatusBadge(
   status: ItemStatus,
   modifier: Modifier = Modifier,
-  size: StatusBadgeSize = StatusBadgeSize.Small,
 ) {
-  val colors = ExpirationDefaults.getColors(status)
-
-  Row(
-    modifier =
-      modifier
-        .clip(CaducityTheme.shapes.small)
-        .background(colors.container)
-        .padding(
-          horizontal = size.horizontalPadding,
-          vertical = size.verticalPadding,
-        ),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Spacer(
-      modifier =
-        Modifier
-          .size(size.dotSize)
-          .clip(CircleShape)
-          .background(colors.onContainer),
-    )
-
-    Spacer(modifier = Modifier.width(size.spacing))
-
-    val text =
-      when (status) {
-        ItemStatus.Expired -> stringResource(R.string.expiration_status_badge_expired)
-        ItemStatus.ExpiringSoon -> stringResource(R.string.expiration_status_badge_expiring_soon)
-        ItemStatus.Fresh -> stringResource(R.string.expiration_status_badge_fresh)
-        ItemStatus.Frozen -> stringResource(R.string.expiration_status_badge_frozen)
-        ItemStatus.Consumed -> stringResource(R.string.expiration_status_badge_consumed)
-      }
-
-    Text(
-      text = text,
-      style = size.textStyle(),
-      color = colors.onContainer,
-    )
+  val label =
+    when (status) {
+      ItemStatus.Expired -> stringResource(R.string.expiration_status_badge_expired)
+      ItemStatus.ExpiringSoon -> stringResource(R.string.expiration_status_badge_expiring_soon)
+      ItemStatus.Fresh -> stringResource(R.string.expiration_status_badge_fresh)
+      ItemStatus.Frozen -> stringResource(R.string.expiration_status_badge_frozen)
+      ItemStatus.Consumed -> stringResource(R.string.expiration_status_badge_consumed)
+    }
+  val expiry =
+    when (status) {
+      ItemStatus.Expired -> ExpiryStatus.EXPIRED
+      ItemStatus.ExpiringSoon -> ExpiryStatus.SOON
+      ItemStatus.Fresh -> ExpiryStatus.FRESH
+      ItemStatus.Frozen -> ExpiryStatus.FROZEN
+      ItemStatus.Consumed -> null
+    }
+  if (expiry != null) {
+    StatusPill(status = expiry, label = label, modifier = modifier)
+  } else {
+    val colors = ExpirationDefaults.getSoftColors(status)
+    StatusPill(label = label, container = colors.container, onContainer = colors.onContainer, modifier = modifier)
   }
 }
 
@@ -127,55 +53,17 @@ private fun StatusBadgePreview() {
   PreviewTheme {
     Surface {
       Column(
-        modifier =
-          Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
       ) {
-        val allStatuses =
-          listOf(
-            ItemStatus.Fresh,
-            ItemStatus.ExpiringSoon,
-            ItemStatus.Expired,
-            ItemStatus.Frozen,
-            ItemStatus.Consumed,
-          )
-
-        Text(
-          text = "Small Size",
-          style = MaterialTheme.typography.titleSmall,
-          modifier = Modifier.padding(bottom = 4.dp),
-        )
-        allStatuses.forEach { status ->
-          StatusBadge(
-            status = status,
-            size = StatusBadgeSize.Small,
-          )
-        }
-
-        Text(
-          text = "Medium Size",
-          style = MaterialTheme.typography.titleSmall,
-          modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
-        )
-        allStatuses.forEach { status ->
-          StatusBadge(
-            status = status,
-            size = StatusBadgeSize.Medium,
-          )
-        }
-
-        Text(
-          text = "Large Size",
-          style = MaterialTheme.typography.titleSmall,
-          modifier = Modifier.padding(top = 8.dp, bottom = 4.dp),
-        )
-        allStatuses.forEach { status ->
-          StatusBadge(
-            status = status,
-            size = StatusBadgeSize.Large,
-          )
+        listOf(
+          ItemStatus.Fresh,
+          ItemStatus.ExpiringSoon,
+          ItemStatus.Expired,
+          ItemStatus.Frozen,
+          ItemStatus.Consumed,
+        ).forEach {
+          StatusBadge(status = it)
         }
       }
     }

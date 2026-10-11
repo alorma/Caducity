@@ -129,8 +129,6 @@ dependencies {
   implementation(libs.androidx.ui.tooling.preview)
   debugImplementation(libs.androidx.compose.ui.tooling)
 
-  implementation(libs.material.kolor)
-
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
 
