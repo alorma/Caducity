@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Onboarding · Benvinguda</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Figtree:wght@400..700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#4D5A1E}a:hover{color:#283010}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes pop{0%{transform:scale(0.4);opacity:0}70%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+@keyframes rise{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+.spin{animation:spin 28s linear infinite}
+.spin-r{animation:spin 20s linear infinite reverse}
+.breathe{animation:breathe 4s ease-in-out infinite}
+.pop{animation:pop 700ms cubic-bezier(.3,1.4,.5,1) both}
+.rise1{animation:rise 600ms cubic-bezier(.2,.9,.3,1) 250ms both}
+.rise2{animation:rise 600ms cubic-bezier(.2,.9,.3,1) 400ms both}
+.rise3{animation:rise 600ms cubic-bezier(.2,.9,.3,1) 550ms both}
+@media (prefers-reduced-motion: reduce){.spin,.spin-r,.breathe,.pop,.rise1,.rise2,.rise3{animation:none}}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 1,'wght' 500,'opsz' 48;display:inline-block}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FBF6EC; font-family: 'Figtree', sans-serif; color: #29241C">
+  <div aria-hidden="true" style="position: absolute; right: -60px; top: -40px; width: 260px; height: 260px">
+    <svg class="spin" viewBox="0 0 100 100" style="width: 100%; height: 100%"><path d="{{flower}}" fill="#DCE8C4"></path></svg>
+  </div>
+  <div aria-hidden="true" style="position: absolute; left: -50px; top: 200px; width: 150px; height: 150px">
+    <svg class="spin-r" viewBox="0 0 100 100" style="width: 100%; height: 100%"><path d="{{sunny}}" fill="#F8E2AE"></path></svg>
+  </div>
+  <div aria-hidden="true" style="position: absolute; right: 30px; top: 300px; width: 70px; height: 70px">
+    <svg class="breathe" viewBox="0 0 100 100" style="width: 100%; height: 100%"><path d="{{clover}}" fill="#F7D8CC"></path></svg>
+  </div>
+
+  <div style="position: absolute; left: 24px; right: 24px; top: 400px; display: flex; flex-direction: column; gap: 18px">
+    <div class="pop" style="position: relative; width: 96px; height: 96px; border-radius: 48px; background: #E8B95A; display: flex; align-items: center; justify-content: center; overflow: hidden">
+      <svg class="spin" viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; width: 64px; height: 64px"><path d="{{cookie}}" fill="#4D5A1E"></path></svg>
+      <span class="ms" style="position: relative; font-size: 34px; color: #FBF6EC">eco</span>
+    </div>
+    <h1 class="rise1" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 48px; font-weight: 800; font-stretch: 78%; line-height: 0.98; letter-spacing: -0.5px">Sàpigues què caduca abans que passi</h1>
+    <p class="rise2" style="margin: 0; font-size: 17px; line-height: 1.45; color: #665C4C">Apunta el que compres i Caducity t'avisa quan s'acosta la data. Menys menjar a les escombraries.</p>
+  </div>
+
+  <div class="rise3" style="position: absolute; left: 20px; right: 20px; bottom: 24px">
+    <a href="OB2Categories.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 64px; border-radius: 32px; background: #4D5A1E; color: #FFFFFF; text-decoration: none; font-size: 17px; font-weight: 700">Comença<span class="ms" style="font-size: 22px; font-variation-settings: 'FILL' 0">arrow_forward</span></a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  blob(n, a, rot) {
+    rot = rot || 0;
+    var p = [];
+    for (var i = 0; i < 120; i++) {
+      var t = i / 120 * Math.PI * 2;
+      var r = 50 - a + a * Math.cos(n * (t + rot));
+      p.push((50 + r * Math.cos(t)).toFixed(1) + " " + (50 + r * Math.sin(t)).toFixed(1));
+    }
+    return "M" + p.join("L") + "Z";
+  }
+  renderVals() {
+    return { cookie: this.blob(9, 3, 0), flower: this.blob(6, 6, 0), sunny: this.blob(8, 4, 0), clover: this.blob(4, 8, Math.PI / 4) };
+  }
+}
+</script>
+</body>
+</html>
