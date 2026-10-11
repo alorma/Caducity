@@ -397,21 +397,26 @@ private fun SectionHeader(
     horizontalArrangement = Arrangement.spacedBy(10.dp),
   ) {
     CategoryShapeIcon(section.category.shape, CategoryIcons.vectorOf(section.category.icon), size = 36.dp)
-    Text(
-      text = section.category.name,
-      style = CaducityTheme.typography.titleMedium,
-      modifier = Modifier.weight(1f, fill = false).semantics { heading() },
-      maxLines = 1,
-      overflow = TextOverflow.Ellipsis,
-    )
-    Text(
-      text = section.unitCount.toString(),
-      style = CaducityTheme.typography.bodyMedium,
-      color = CaducityTheme.colorScheme.onSurfaceVariant,
-    )
+    Row(
+      modifier = Modifier.weight(1f),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+      Text(
+        text = section.category.name,
+        style = CaducityTheme.typography.titleMedium,
+        modifier = Modifier.weight(1f, fill = false).semantics { heading() },
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+      )
+      Text(
+        text = section.unitCount.toString(),
+        style = CaducityTheme.typography.bodyMedium,
+        color = CaducityTheme.colorScheme.onSurfaceVariant,
+      )
+    }
     val soonDays = section.soonDays
     if (status == ExpiryStatus.SOON && soonDays != null) {
-      Spacer(Modifier.weight(1f))
       NotifyPill(thresholdLabel(soonDays))
     }
   }
