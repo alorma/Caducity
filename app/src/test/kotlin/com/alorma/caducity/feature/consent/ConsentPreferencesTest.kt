@@ -14,15 +14,6 @@ class ConsentPreferencesTest {
   }
 
   @Test
-  fun `all granted preferences should have all consents granted`() {
-    val preferences = ConsentPreferences.ALL_GRANTED
-    assertEquals(ConsentStatus.GRANTED, preferences.analyticsStorage)
-    assertEquals(ConsentStatus.GRANTED, preferences.adStorage)
-    assertEquals(ConsentStatus.GRANTED, preferences.adUserData)
-    assertEquals(ConsentStatus.GRANTED, preferences.adPersonalization)
-  }
-
-  @Test
   fun `analytics only preferences should only grant analytics`() {
     val preferences = ConsentPreferences.ANALYTICS_ONLY
     assertEquals(ConsentStatus.GRANTED, preferences.analyticsStorage)

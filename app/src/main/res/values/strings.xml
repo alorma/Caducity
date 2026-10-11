@@ -56,8 +56,6 @@
   <string name="settings_theme_system">System</string>
   <string name="settings_dynamic_colors">Dynamic Colors</string>
 
-
-
   <string name="settings_privacy_screen_title">Privacy</string>
   <string name="settings_privacy_analytics_title">Analytics</string>
   <string name="settings_privacy_analytics_description">Share anonymous usage data to help improve the app</string>
@@ -73,7 +71,6 @@
   <string name="debug_consent_ad_personalization_description">Enable personalized advertising</string>
 
   <string name="about_github_link">View on GitHub</string>
-
 
   <!-- Category Detail -->
   <string name="category_detail_auto_identifier_item">Item</string>
@@ -194,34 +191,6 @@
   <!-- Clear items -->
   <string name="success_items_cleared">Items cleared</string>
   <string name="error_clear_items_failed">Failed to clear items</string>
-
-  <!-- Onboarding -->
-  <string name="onboarding_welcome_title">Welcome to Caducity</string>
-  <string name="onboarding_welcome_message">Track your groceries and reduce food waste</string>
-  <string name="onboarding_features_title">Key Features</string>
-  <string name="onboarding_features_track">Track expiration dates for all your categories</string>
-  <string name="onboarding_features_notify">Get notified before categories expire</string>
-  <string name="onboarding_features_dashboard">View statistics and insights on your dashboard</string>
-  <string name="onboarding_permissions_title">Stay Informed</string>
-  <string name="onboarding_permissions_message">Allow notifications to get timely alerts about expiring categories</string>
-  <string name="onboarding_permissions_granted">Notifications enabled</string>
-  <string name="onboarding_permissions_automatic">Notifications are automatically enabled</string>
-  <string name="onboarding_tutorial_title">Getting Started</string>
-  <string name="onboarding_tutorial_message">Add your first category to start tracking expiration dates</string>
-  <string name="onboarding_disclaimer_title">Important Disclaimer</string>
-  <string name="onboarding_disclaimer_message">This app helps track product expiration dates but is not a substitute for proper food safety practices. Always use your judgment and follow food safety guidelines. The developers are not responsible for any health issues arising from consuming expired products.</string>
-
-  <!-- Consent Screen -->
-  <string name="onboarding_consent_title">Your Privacy Matters</string>
-  <string name="onboarding_consent_description">Help us improve the app by sharing anonymous usage data. You can change this later in settings.</string>
-  <string name="onboarding_consent_analytics_title">Analytics</string>
-  <string name="onboarding_consent_analytics_description">Share anonymous usage data to help us improve the app</string>
-  <string name="onboarding_consent_privacy_note">We respect your privacy. No personal data is collected or shared with third parties.</string>
-  <string name="onboarding_button_next">Next</string>
-  <string name="onboarding_button_skip">Skip</string>
-  <string name="onboarding_button_previous">Previous</string>
-  <string name="onboarding_button_understand">I Understand</string>
-  <string name="onboarding_button_allow_notifications">Allow Notifications</string>
 
   <!-- Backup & Restore -->
   <string name="backup_screen_title">Backup &amp; Restore</string>
@@ -575,4 +544,55 @@
     <item quantity="one">%d product expires soon</item>
     <item quantity="other">%d products expire soon</item>
   </plurals>
+
+  <!-- Onboarding (redisseny) -->
+  <string name="ob_welcome_title">Know what expires before it happens</string>
+  <string name="ob_welcome_body">Note down what you buy and Caducity warns you when the date is getting close. Less food in the bin.</string>
+  <string name="ob_start">Start</string>
+  <string name="ob_step">Step %1$d of %2$d</string>
+  <string name="ob_back">Back</string>
+  <string name="ob_categories_title">What do you keep at home?</string>
+  <string name="ob_categories_body">Pick the categories you want to start with. You can change them whenever you like from Pantry.</string>
+  <string name="ob_categories_continue">Continue with %d</string>
+  <string name="ob_categories_continue_none">Continue without categories</string>
+  <string name="ob_alerts_title">When should we warn you?</string>
+  <string name="ob_alerts_body">One alert a day with what expires soon. Nothing else.</string>
+  <string name="ob_alerts_sample_app" translatable="false">Caducity</string>
+  <string name="ob_alerts_sample_title">3 products expire soon</string>
+  <string name="ob_alerts_sample_body">Whole milk today, Mozzarella tomorrow…</string>
+  <string name="ob_alerts_notify_me">Warn me</string>
+  <string name="ob_alerts_before">Before it expires</string>
+  <string name="ob_alerts_days_1">1 day</string>
+  <string name="ob_alerts_days_3">3 days</string>
+  <string name="ob_alerts_days_7">1 week</string>
+  <string name="ob_alerts_time">Time</string>
+  <string name="ob_alerts_daily">Every day</string>
+  <string name="ob_alerts_enable">Turn on alerts</string>
+  <string name="ob_alerts_enabled">Alerts on</string>
+  <string name="ob_not_now">Not now</string>
+  <string name="ob_privacy_title">Your pantry is yours</string>
+  <string name="ob_privacy_body">Your products are stored only on this phone. No account or sign-up needed.</string>
+  <string name="ob_privacy_local">Your data never leaves the phone</string>
+  <string name="ob_privacy_backup">You can back it up and export it from Settings</string>
+  <string name="ob_privacy_analytics">Anonymous usage statistics</string>
+  <string name="ob_privacy_analytics_sub">Which screens you use, never what you store. It helps us improve the app.</string>
+  <string name="ob_privacy_default_off">Off by default. You can change it in Settings › Privacy.</string>
+  <string name="ob_continue">Continue</string>
+  <string name="ob_disclaimer_title">Before we start</string>
+  <string name="ob_disclaimer_heading">Important notice</string>
+  <string name="ob_disclaimer_p1">Caducity only reminds you of the dates you enter. &lt;b&gt;It does not check the condition of food or guarantee it is safe.&lt;/b&gt;</string>
+  <string name="ob_disclaimer_p2">Before eating anything, check how it looks and smells, how it was stored and the instructions on the package. The dates and alerts in the app are indicative and may contain errors.</string>
+  <string name="ob_disclaimer_p3">You alone are responsible for deciding what you eat. The developers are not liable for any harm resulting from consuming food.</string>
+  <string name="ob_disclaimer_link">Read the full terms of use</string>
+  <string name="ob_disclaimer_check">I have read the notice and understand that the app does not guarantee that any food is safe to eat.</string>
+  <string name="ob_disclaimer_required">Tick the box to continue.</string>
+  <string name="ob_accept_and_start">Accept and start</string>
+  <string name="ob_category_dairy">Dairy</string>
+  <string name="ob_category_produce">Fruit &amp; veg</string>
+  <string name="ob_category_meat_fish">Meat &amp; fish</string>
+  <string name="ob_category_pantry">Pantry</string>
+  <string name="ob_category_bakery">Bakery</string>
+  <string name="ob_category_drinks">Drinks</string>
+  <string name="ob_category_cold_cuts">Cold cuts</string>
+  <string name="ob_category_ready_meals">Ready meals</string>
 </resources>
