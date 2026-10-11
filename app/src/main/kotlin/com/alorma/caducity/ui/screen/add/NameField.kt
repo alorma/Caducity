@@ -1,7 +1,6 @@
 package com.alorma.caducity.ui.screen.add
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +25,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -125,9 +123,10 @@ fun SuggestionRow(
   modifier: Modifier = Modifier,
 ) {
   Surface(
+    onClick = onClick,
     shape = CaducityShapes.field,
     color = CaducityTheme.colorScheme.surfaceContainer,
-    modifier = modifier.fillMaxWidth().height(52.dp).clickable(role = Role.Button, onClick = onClick),
+    modifier = modifier.fillMaxWidth().height(52.dp),
   ) {
     Row(
       modifier = Modifier.padding(horizontal = 16.dp),
