@@ -82,9 +82,21 @@ android {
     buildConfig = true
     compose = true
   }
+  testOptions {
+    unitTests.isIncludeAndroidResources = true
+    unitTests.all { it.setForkEvery(1) }
+  }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
+  }
+}
+
+// Robolectric llegeix els assets del variant debug de l'app (no els del sourceSet test): hi afegim
+// els esquemes exportats de Room perquè MigrationTestHelper els trobi. Només debug, pocs KB.
+androidComponents {
+  onVariants(selector().withBuildType("debug")) { variant ->
+    variant.sources.assets?.addStaticSourceDirectory("$projectDir/schemas")
   }
 }
 
@@ -183,4 +195,7 @@ dependencies {
   testImplementation(libs.androidx.room.ktx)
   testImplementation(libs.androidx.test.runner)
   testImplementation(libs.androidx.test.rules)
+  testImplementation(libs.androidx.test.core)
+  testImplementation(libs.androidx.room.testing)
+  testImplementation(libs.robolectric)
 }
