@@ -2,7 +2,6 @@ package com.alorma.caducity.ui.screen.add
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -21,9 +20,6 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Add
@@ -57,15 +53,13 @@ fun CategoryChips(
     categories.forEach { category ->
       val selected = category.id == selectedId
       Surface(
+        selected = selected,
+        onClick = { onSelect(category.id) },
         shape = ChipShape,
         color = if (selected) scheme.primaryContainer else scheme.surfaceContainer,
         contentColor = if (selected) scheme.onPrimaryContainer else scheme.onSurface,
         border = if (selected) BorderStroke(2.dp, CaducityTheme.colorScheme.primary) else null,
-        modifier =
-          Modifier
-            .height(44.dp)
-            .semantics { this.selected = selected }
-            .clickable(role = Role.RadioButton) { onSelect(category.id) },
+        modifier = Modifier.height(44.dp),
       ) {
         Row(
           modifier = Modifier.padding(start = 5.dp, end = 14.dp),
@@ -89,6 +83,7 @@ private fun NewCategoryChip(
   val scheme = CaducityTheme.colorScheme
   val outline = scheme.outline
   Surface(
+    onClick = onClick,
     shape = ChipShape,
     color = if (highlight) scheme.primaryContainer else scheme.surface,
     contentColor = if (highlight) scheme.onPrimaryContainer else scheme.onSurfaceVariant,
@@ -101,7 +96,7 @@ private fun NewCategoryChip(
             cornerRadius = CornerRadius(22.dp.toPx()),
             style = Stroke(width = 1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 8f))),
           )
-        }.clickable(role = Role.Button, onClick = onClick),
+        },
   ) {
     Row(
       modifier = Modifier.padding(horizontal = 14.dp),

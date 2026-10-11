@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -16,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -81,14 +79,12 @@ fun QuantityFrozenRow(
     }
     val frozenColors = CaducityTheme.colors.frozen
     Surface(
+      checked = frozen,
+      onCheckedChange = onFrozenChange,
       shape = connectedButtonShape(1, 2),
       color = if (frozen) frozenColors.container else CaducityTheme.colorScheme.surfaceContainerHigh,
       contentColor = if (frozen) frozenColors.onContainer else CaducityTheme.colorScheme.onSurface,
-      modifier =
-        Modifier
-          .weight(1f)
-          .height(64.dp)
-          .toggleable(value = frozen, role = Role.Switch, onValueChange = onFrozenChange),
+      modifier = Modifier.weight(1f).height(64.dp),
     ) {
       Row(
         modifier = Modifier.padding(horizontal = 12.dp),

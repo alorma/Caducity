@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.add
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Add
@@ -94,10 +92,11 @@ private fun BarButton(
   label: @Composable () -> Unit,
 ) {
   Surface(
+    onClick = onClick,
     shape = connectedButtonShape(index, 2),
     color = if (enabled) container else CaducityTheme.colorScheme.surfaceContainerHigh,
     contentColor = if (enabled) content else CaducityTheme.colorScheme.outline,
-    modifier = modifier.height(64.dp).clickable(role = Role.Button, onClick = onClick),
+    modifier = modifier.height(64.dp),
   ) {
     Row(
       modifier = Modifier.padding(horizontal = 12.dp),
