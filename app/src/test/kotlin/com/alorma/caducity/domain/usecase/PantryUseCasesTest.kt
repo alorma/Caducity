@@ -17,6 +17,8 @@ import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.PantryError
+import com.alorma.caducity.domain.model.SeedCategory
+import com.alorma.caducity.domain.model.SuggestedCategory
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.test.runTest
@@ -429,20 +431,29 @@ class PantryUseCasesTest {
     }
 
   @Test
-  fun `seed creates starter categories once with defaults and order`() =
+  fun `seed creates the chosen suggested categories once, in order, with their shape and icon`() =
     runTest {
-      expectThat(seed.seed(listOf("Dairy", "Produce", "Other")).getOrThrow()).isEqualTo(3)
-      expectThat(seed.seed(listOf("Again")).getOrThrow()).isEqualTo(0)
+      val chosen =
+        listOf(SuggestedCategory.COLD_CUTS, SuggestedCategory.DAIRY, SuggestedCategory.READY_MEALS)
+          .map { SeedCategory(it.name.lowercase(), it.shape, it.icon) }
+      expectThat(seed.seed(chosen).getOrThrow()).isEqualTo(3)
+      expectThat(seed.seed(listOf(SeedCategory("again", CategoryShape.COOKIE, CategoryIcon.DEFAULT))).getOrThrow())
+        .isEqualTo(0)
 
       val categories = pantry.getCategories()
-      expectThat(categories.map { it.name }).containsExactly("Dairy", "Produce", "Other")
+      expectThat(categories.map { it.name }).containsExactly("cold_cuts", "dairy", "ready_meals")
       expectThat(categories.map { it.sortOrder }).containsExactly(0, 1, 2)
-      expectThat(
-        categories.map {
-          it.shape
-        },
-      ).containsExactly(CategoryShape.COOKIE, CategoryShape.CLOVER8, CategoryShape.CLOVER)
+      expectThat(categories.map { it.shape })
+        .containsExactly(CategoryShape.COOKIE, CategoryShape.COOKIE, CategoryShape.CLOVER8)
+      expectThat(categories.map { it.icon.id }).containsExactly("kebab_dining", "water_full", "soup_kitchen")
       expectThat(pantry.getNextSortOrder()).isEqualTo(3)
+    }
+
+  @Test
+  fun `seed with no categories is allowed and creates nothing`() =
+    runTest {
+      expectThat(seed.seed(emptyList()).getOrThrow()).isEqualTo(0)
+      expectThat(pantry.getCategories()).isEmpty()
     }
 
   // endregion
