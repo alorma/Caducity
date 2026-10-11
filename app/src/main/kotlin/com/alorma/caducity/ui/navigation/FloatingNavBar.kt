@@ -36,10 +36,10 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.HourglassBottom
 import com.alorma.caducity.base.ui.icons.symbols.Kitchen
+import com.alorma.caducity.base.ui.icons.symbols.Settings
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 
 private data class NavDestination(
-  val route: TopLevelRoute,
   val label: Int,
   val icon: ImageVector,
   val selectedIcon: ImageVector,
@@ -47,17 +47,21 @@ private data class NavDestination(
 
 private val Destinations =
   listOf(
-    NavDestination(Home, R.string.nav_soon, Symbols.Outlined.HourglassBottom, Symbols.Filled.HourglassBottom),
-    NavDestination(Pantry, R.string.nav_pantry, Symbols.Outlined.Kitchen, Symbols.Filled.Kitchen),
+    Home to NavDestination(R.string.nav_soon, Symbols.Outlined.HourglassBottom, Symbols.Filled.HourglassBottom),
+    Pantry to NavDestination(R.string.nav_pantry, Symbols.Outlined.Kitchen, Symbols.Filled.Kitchen),
   )
 
-/** Floating bar with the two top-level destinations and the separated add FAB (64 dp, radius 20). */
+private val SettingsDestination =
+  NavDestination(R.string.nav_settings, Symbols.Outlined.Settings, Symbols.Filled.Settings)
+
+/** Floating bar with two tabs plus the settings shortcut, and the separated add FAB (64 dp, radius 20). */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FloatingNavBar(
   currentTab: TopLevelRoute,
   onTabSelected: (TopLevelRoute) -> Unit,
   onAddClick: () -> Unit,
+  onSettingsClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Row(
@@ -73,13 +77,19 @@ fun FloatingNavBar(
           toolbarContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ),
     ) {
-      Destinations.forEach { destination ->
+      Destinations.forEach { (route, destination) ->
         NavItem(
           destination = destination,
-          selected = destination.route == currentTab,
-          onClick = { onTabSelected(destination.route) },
+          selected = route == currentTab,
+          onClick = { onTabSelected(route) },
         )
       }
+      // Settings is not a tab: it opens a secondary screen, so it is never shown as selected.
+      NavItem(
+        destination = SettingsDestination,
+        selected = false,
+        onClick = onSettingsClick,
+      )
     }
     AddButton(onClick = onAddClick)
   }

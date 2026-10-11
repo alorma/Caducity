@@ -24,6 +24,7 @@ fun AppShell(
   showNavigation: Boolean,
   onTabSelected: (TopLevelRoute) -> Unit,
   onAddClick: () -> Unit,
+  onSettingsClick: () -> Unit,
   modifier: Modifier = Modifier,
   content: @Composable () -> Unit,
 ) {
@@ -42,6 +43,7 @@ fun AppShell(
           currentTab = currentTab,
           onTabSelected = onTabSelected,
           onAddClick = onAddClick,
+          onSettingsClick = onSettingsClick,
           modifier =
             Modifier
               .windowInsetsPadding(WindowInsets.navigationBars)

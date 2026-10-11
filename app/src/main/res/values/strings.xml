@@ -336,5 +336,6 @@
   <!-- Navigation -->
   <string name="nav_soon">Soon</string>
   <string name="nav_pantry">Pantry</string>
+  <string name="nav_settings">Settings</string>
   <string name="action_add_product">Add a product</string>
 </resources>
