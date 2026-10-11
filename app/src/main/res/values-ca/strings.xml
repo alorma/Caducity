@@ -585,4 +585,13 @@
   <string name="ob_category_drinks">Begudes</string>
   <string name="ob_category_cold_cuts">Embotits</string>
   <string name="ob_category_ready_meals">Plats preparats</string>
+  <string name="debug_inapp_review_requested">S\'ha demanat el diàleg de valoració (pot no mostrar-se en depuració)</string>
+  <string name="quantity_selector_consume_title">Quants en vols consumir?</string>
+  <string name="quantity_selector_consume_expired_title">Quants caducats en vols consumir?</string>
+  <string name="quantity_selector_freeze_title">Quants en vols congelar?</string>
+  <string name="quantity_selector_unfreeze_title">Quants en vols descongelar?</string>
+  <string name="quantity_selector_delete_title">Quants en vols esborrar?</string>
+  <string name="quantity_selector_confirm">Confirma (%d)</string>
+  <string name="quantity_selector_cancel">Cancel·la</string>
+  <string name="quantity_selector_all">Tots</string>
 </resources>
