@@ -15,6 +15,9 @@ import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.alorma.caducity.feature.deeplink.toRoute
+import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.feature.tracking.NavigateToAddAction
+import com.alorma.caducity.feature.tracking.NavigateToTabAction
 import com.alorma.caducity.ui.navigation.Add
 import com.alorma.caducity.ui.navigation.AddPlaceholderScreen
 import com.alorma.caducity.ui.navigation.AppShell
@@ -53,6 +56,7 @@ fun App(
   deepLinkAction: DeepLinkAction? = null,
   onDeepLinkHandled: () -> Unit = {},
   onboardingFlag: OnboardingFlag = koinInject(),
+  eventTracker: EventTracker = koinInject(),
 ) {
   AppTheme(
     themePreferences = koinInject(),
@@ -73,8 +77,16 @@ fun App(
     AppShell(
       currentTab = navigation.currentTab,
       showNavigation = visibleScreen is TopLevelRoute,
-      onTabSelected = navigation::switchTab,
-      onAddClick = { navigation.navigate(Add(source = "fab")) },
+      onTabSelected = { tab ->
+        if (tab != navigation.currentTab) {
+          eventTracker.trackAction(NavigateToTabAction(if (tab == Home) "soon" else "pantry"))
+          navigation.switchTab(tab)
+        }
+      },
+      onAddClick = {
+        eventTracker.trackAction(NavigateToAddAction())
+        navigation.navigate(Add(source = "fab"))
+      },
     ) {
       NavDisplay(
         modifier = Modifier,

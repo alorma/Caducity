@@ -35,6 +35,22 @@ class NavigateToSettingsAction :
     parameters = mapOf("source" to "topbar"),
   )
 
+// Shell (floating navigation bar) Actions
+class NavigateToTabAction(
+  tab: String,
+) : NavigationAction(
+    actionName = "tab",
+    origin = "shell",
+    parameters = mapOf("tab" to tab, "source" to "floating_bar"), // tab: "soon" or "pantry"
+  )
+
+class NavigateToAddAction :
+  NavigationAction(
+    actionName = "add",
+    origin = "shell",
+    parameters = mapOf("source" to "fab"),
+  )
+
 // Onboarding Actions
 class CompleteOnboardingAction :
   NavigationAction(
