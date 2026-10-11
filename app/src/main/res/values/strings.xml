@@ -16,44 +16,6 @@
   </string-array>
 
   <string name="dashboard_screen_title">Dashboard</string>
-  <string name="ai_assistant_title">AI Assistant</string>
-  <string name="ai_assistant_input_placeholder">Ask me to add your groceries…</string>
-  <string name="ai_assistant_send">Send</string>
-  <string name="ai_model_downloading_title">Downloading AI model</string>
-  <string name="ai_model_download_channel_name">AI model downloads</string>
-  <string name="ai_model_download_channel_description">Downloads AI models for offline use</string>
-  <string name="ai_model_preparing">Preparing AI model…</string>
-  <string name="ai_model_downloading">Downloading AI model (%1$d%%)</string>
-  <string name="ai_model_download_failed">Failed to download AI model. Please try again.</string>
-
-  <!-- AI Model Settings -->
-  <string name="settings_ai_model_title">AI Model</string>
-  <string name="settings_ai_model_description">Choose AI model quality</string>
-  <string name="settings_ai_model_select_title">Select model</string>
-  <string name="settings_ai_model_light">Light (Gemma 270M)</string>
-  <string name="settings_ai_model_standard">Standard (Gemma 1B)</string>
-  <string name="settings_ai_model_size">~%1$d MB</string>
-  <string name="settings_ai_model_status_ready">Ready</string>
-  <string name="settings_ai_model_status_not_downloaded">Not downloaded</string>
-  <string name="settings_ai_model_status_downloading">Downloading…</string>
-  <string name="settings_ai_model_status_failed">Download failed</string>
-  <string name="settings_ai_model_status_tap_to_select">Tap to select</string>
-  <string name="settings_ai_model_downloading">Downloading… %1$d%%</string>
-  <string name="settings_ai_model_info_title">About AI models</string>
-  <string name="settings_ai_model_info_description">Models run entirely on your device. The Standard model provides better accuracy for grocery recognition but requires more storage. Wi-Fi is recommended for download.</string>
-
-  <string name="ai_proposal_expires">Expires: %1$s</string>
-  <string name="ai_proposal_match">Matches: %1$s › %2$s</string>
-  <string name="ai_proposal_category_match">Category: %1$s</string>
-  <string name="ai_proposal_no_match">New: %1$s</string>
-  <string name="ai_proposal_add">Add to %1$s</string>
-  <string name="ai_proposal_add_to_category">Add to %1$s</string>
-  <string name="ai_proposal_create">Create in %1$s</string>
-  <string name="ai_parse_error">Sorry, I couldn\'t understand that. Try rephrasing with the products and quantities you bought.</string>
-  <string name="ai_error_no_groceries">I couldn\'t find any groceries in that. Try naming the products and quantities you bought.</string>
-  <string name="ai_error_model_not_ready">The AI model isn\'t ready yet. Please wait for the download to finish and try again.</string>
-  <string name="ai_commit_error">Couldn\'t add that item. Please try again.</string>
-  <string name="ai_error_debug_detail" translatable="false">Debug — model output:\n%1$s</string>
   <string name="products_screen_title">Categories</string>
   <string name="dashboard_action_collapse">Collapse</string>
   <string name="dashboard_action_expand">Expand</string>
@@ -63,24 +25,6 @@
   <string name="dashboard_filter_expired">Expired</string>
   <string name="dashboard_clear_filters">Clear Filters</string>
   <string name="dashboard_fab_manual">Manual</string>
-  <string name="dashboard_fab_ai">AI</string>
-  <string name="dashboard_ai_title">Add Categories with AI</string>
-  <string name="dashboard_ai_prompt_hint">Describe what you bought</string>
-  <string name="dashboard_ai_prompt_example">e.g., "2 tiramisu cups (category desserts) expires tomorrow"</string>
-  <string name="dashboard_ai_generate_button">Generate</string>
-  <string name="dashboard_ai_char_counter">%1$d / 500</string>
-  <string name="dashboard_ai_success">Created %1$d categories, %2$d products, %3$d items</string>
-  <string name="dashboard_ai_generating">Generating categories…</string>
-  <string name="dashboard_ai_error_generic">Failed to generate categories</string>
-
-  <string name="dashboard_ai_review_title">Review Categories</string>
-  <string name="dashboard_ai_review_description">Found %1$d matching categories. Review before adding:</string>
-  <string name="dashboard_ai_review_match_score">%1$d%% match</string>
-  <string name="dashboard_ai_review_will_add">Will add %1$d products, %2$d items</string>
-  <string name="dashboard_ai_review_new_products">New Categories</string>
-  <string name="dashboard_ai_review_new_product">Will be created as new category</string>
-  <string name="dashboard_ai_review_cancel">Cancel</string>
-  <string name="dashboard_ai_review_confirm">Confirm</string>
 
   <string name="dashboard_section_expired">Expired</string>
   <string name="dashboard_section_expiring_soon">Expiring</string>
@@ -233,19 +177,6 @@
   <string name="category_detail_section_frozen">Frozen items</string>
   <string name="category_detail_section_consumed">Consumed items</string>
   <string name="category_detail_consumed_item_placeholder">No actions available for consumed items</string>
-
-  <!-- Category Detail AI -->
-  <string name="category_detail_ai_title">Add Products with AI</string>
-  <string name="category_detail_ai_prompt_hint">Describe the products or items</string>
-  <string name="category_detail_ai_prompt_example">e.g., "3 bottles of 1L whole milk, expires in 5 days"</string>
-  <string name="category_detail_ai_generate_button">Generate</string>
-  <string name="category_detail_ai_generating">Generating products…</string>
-  <string name="category_detail_ai_success">Created %1$d products, %2$d items</string>
-  <string name="category_detail_ai_review_title">Review Products</string>
-  <string name="category_detail_ai_review_description">Generated %1$d products and %2$d items. Review before adding:</string>
-  <string name="category_detail_ai_review_confirm">Add to Category</string>
-  <string name="category_detail_ai_review_cancel">Cancel</string>
-  <string name="category_detail_ai_error_generic">Failed to generate products</string>
 
   <!-- Relative time values -->
   <string name="relative_time_today">Today</string>

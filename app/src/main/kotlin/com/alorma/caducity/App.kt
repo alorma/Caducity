@@ -12,8 +12,6 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
-import com.alorma.caducity.ui.screen.ai.AiAssistantRoute
-import com.alorma.caducity.ui.screen.ai.AiAssistantScreen
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryRoute
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
@@ -95,12 +93,6 @@ fun App(
                 appBackStack.add(FilteredItemsRoute.ByStatus(status))
               },
               onNavigateToSettings = { appBackStack.add(Settings) },
-              onNavigateToAiAssistant = { appBackStack.add(AiAssistantRoute) },
-            )
-          }
-          entry<AiAssistantRoute> {
-            AiAssistantScreen(
-              onNavigateBack = { appBackStack.removeLast() },
             )
           }
           entry<Settings> {

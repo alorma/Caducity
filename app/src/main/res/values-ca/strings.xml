@@ -57,42 +57,7 @@
   <string name="settings_privacy_title">Privacitat</string>
   <string name="settings_privacy_description">Gestionar consentiment i preferències de dades</string>
 
-  <string name="ai_assistant_title">Assistent IA</string>
-  <string name="ai_assistant_input_placeholder">Digues-me què has comprat…</string>
-  <string name="ai_assistant_send">Enviar</string>
-  <string name="ai_model_preparing">Preparant el model IA…</string>
-  <string name="ai_model_download_failed">Error en descarregar el model IA. Torna-ho a intentar.</string>
-  <string name="ai_proposal_expires">Caduca: %1$s</string>
-  <string name="ai_proposal_match">Coincidència: %1$s › %2$s</string>
-  <string name="ai_proposal_category_match">Categoria: %1$s</string>
-  <string name="ai_proposal_no_match">Nou: %1$s</string>
-  <string name="ai_proposal_add">Afegir a %1$s</string>
-  <string name="ai_proposal_add_to_category">Afegir a %1$s</string>
-  <string name="ai_proposal_create">Crear a %1$s</string>
-  <string name="ai_parse_error">No he entès això. Prova de reformular-ho indicant els productes i les quantitats que has comprat.</string>
-  <string name="ai_error_no_groceries">No he trobat cap aliment en això. Prova d\'indicar els productes i les quantitats que has comprat.</string>
-  <string name="ai_error_model_not_ready">El model d\'IA encara no està a punt. Espera que acabi la descàrrega i torna-ho a intentar.</string>
-  <string name="ai_commit_error">No s\'ha pogut afegir aquest producte. Torna-ho a intentar.</string>
-
   <string name="dashboard_fab_manual">Manual</string>
-  <string name="dashboard_fab_ai">IA</string>
-  <string name="dashboard_ai_title">Afegir Categories amb IA</string>
-  <string name="dashboard_ai_prompt_hint">Descriu el que vas comprar</string>
-  <string name="dashboard_ai_prompt_example">ex., "2 tiramisús (categoria postres) caduca demà"</string>
-  <string name="dashboard_ai_generate_button">Generar</string>
-  <string name="dashboard_ai_char_counter">%1$d / 500</string>
-  <string name="dashboard_ai_success">Creades %1$d categories, %2$d productes, %3$d articles</string>
-  <string name="dashboard_ai_generating">Generant categories…</string>
-  <string name="dashboard_ai_error_generic">Error en generar categories</string>
-
-  <string name="dashboard_ai_review_title">Revisar Categories</string>
-  <string name="dashboard_ai_review_description">S\'han trobat %1$d categories coincidents. Revisa abans d\'afegir:</string>
-  <string name="dashboard_ai_review_match_score">%1$d%% coincidència</string>
-  <string name="dashboard_ai_review_will_add">S\'afegiran %1$d productes, %2$d articles</string>
-  <string name="dashboard_ai_review_new_products">Noves Categories</string>
-  <string name="dashboard_ai_review_new_product">Es crearà com a nova categoria</string>
-  <string name="dashboard_ai_review_cancel">Cancel·lar</string>
-  <string name="dashboard_ai_review_confirm">Confirmar</string>
 
   <string name="settings_group_appearance">Aparença</string>
   <string name="settings_theme_title">Tema</string>
@@ -208,19 +173,6 @@
   <string name="category_detail_section_frozen">Articles congelats</string>
   <string name="category_detail_section_consumed">Articles consumits</string>
   <string name="category_detail_consumed_item_placeholder">No hi ha accions disponibles per elements consumits</string>
-
-  <!-- Category Detail AI -->
-  <string name="category_detail_ai_title">Afegir Productes amb IA</string>
-  <string name="category_detail_ai_prompt_hint">Descriu els productes o articles</string>
-  <string name="category_detail_ai_prompt_example">ex., "3 ampolles d\'1L llet sencera, caduca en 5 dies"</string>
-  <string name="category_detail_ai_generate_button">Generar</string>
-  <string name="category_detail_ai_generating">Generant productes…</string>
-  <string name="category_detail_ai_success">Creats %1$d productes, %2$d articles</string>
-  <string name="category_detail_ai_review_title">Revisar Productes</string>
-  <string name="category_detail_ai_review_description">Generats %1$d productes i %2$d articles. Revisa abans d\'afegir:</string>
-  <string name="category_detail_ai_review_confirm">Afegir a Categoria</string>
-  <string name="category_detail_ai_review_cancel">Cancel·lar</string>
-  <string name="category_detail_ai_error_generic">Error en generar productes</string>
 
   <!-- Relative time values -->
   <string name="relative_time_today">Avui</string>

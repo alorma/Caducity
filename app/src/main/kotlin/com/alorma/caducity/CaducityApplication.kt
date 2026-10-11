@@ -7,11 +7,6 @@ import com.alorma.caducity.domain.NotificationConfigDataSource
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.notification.NotificationChannelManager
 import com.google.firebase.Firebase
-import com.google.firebase.FirebaseApp
-import com.google.firebase.appcheck.appCheck
-import com.google.firebase.appcheck.debug.DebugAppCheckProviderFactory
-import com.google.firebase.appcheck.debug.internal.StorageHelper
-import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import com.google.firebase.initialize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -71,25 +66,6 @@ class CaducityApplication : Application() {
   private fun initializeFirebase() {
     // Initialize Firebase (must be done before using Firebase services)
     Firebase.initialize(this)
-
-    // Initialize Firebase App Check
-    val appCheckProvider =
-      if (BuildConfig.DEBUG) {
-        val storageHelper =
-          StorageHelper(
-            FirebaseApp.getInstance().applicationContext,
-            FirebaseApp.getInstance().persistenceKey,
-          )
-        storageHelper.saveDebugSecret(BuildConfig.DEBUG_APP_CHECK_TOKEN)
-
-        DebugAppCheckProviderFactory.getInstance()
-      } else {
-        PlayIntegrityAppCheckProviderFactory.getInstance()
-      }
-
-    Firebase.appCheck.installAppCheckProviderFactory(
-      appCheckProvider,
-    )
   }
 
   private fun initializeRemoteConfig() {
