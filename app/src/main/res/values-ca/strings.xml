@@ -584,4 +584,5 @@
   <string name="status_dates_in_3d">D\'aquí 3 dies</string>
   <string name="status_dates_in_1w">D\'aquí 1 setmana</string>
   <string name="status_dates_pick">Tria una data</string>
+  <string name="home_summary_cell_cd">%1$s, %2$s. Obre la llista</string>
 </resources>

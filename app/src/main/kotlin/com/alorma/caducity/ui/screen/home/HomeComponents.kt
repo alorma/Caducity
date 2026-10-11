@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -199,9 +200,17 @@ private fun SummaryCell(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val description =
+    stringResource(
+      R.string.home_summary_cell_cd,
+      label,
+      pluralStringResource(R.plurals.home_product_count, count, count),
+    )
+  // With nothing in it the cell does not navigate (no ripple either).
   Surface(
     onClick = onClick,
-    modifier = modifier,
+    enabled = count > 0,
+    modifier = modifier.semantics { contentDescription = description },
     shape = shape,
     color = colors.container,
     contentColor = colors.onContainer,

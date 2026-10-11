@@ -39,6 +39,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -47,6 +54,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.AcUnit
@@ -302,7 +310,7 @@ private fun StatusListContent(
       StatusEmpty(ready.status, onAdd = { viewModel.navigate(StatusListNavigation.AddFirst) })
     } else {
       LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().fadeTopEdge(),
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 32.dp),
         verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing),
       ) {
@@ -351,7 +359,7 @@ private fun StatusHeader(
   ) {
     Text(
       text = pluralStringResource(R.plurals.home_product_count, ready.totalCount, ready.totalCount).uppercase(),
-      style = CaducityTheme.typography.labelMedium,
+      style = CaducityTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
       color = colors.onContainer,
     )
     Text(
@@ -371,18 +379,6 @@ private fun StatusHeader(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        OutlinedButton(
-          onClick = onToggleSelecting,
-          border = BorderStroke(1.dp, colors.onContainer),
-          colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.onContainer),
-          modifier = Modifier.heightIn(min = 44.dp),
-        ) {
-          if (!ready.selecting) {
-            Icon(Symbols.Outlined.Checklist, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(8.dp))
-          }
-          Text(stringResource(if (ready.selecting) R.string.status_select_done else R.string.status_select))
-        }
         if (ready.status == ExpiryStatus.EXPIRED && !ready.selecting) {
           Button(
             onClick = onDiscardAll,
@@ -397,6 +393,18 @@ private fun StatusHeader(
             Spacer(Modifier.width(8.dp))
             Text(stringResource(R.string.status_discard_all))
           }
+        }
+        OutlinedButton(
+          onClick = onToggleSelecting,
+          border = BorderStroke(1.dp, colors.onContainer),
+          colors = ButtonDefaults.outlinedButtonColors(contentColor = colors.onContainer),
+          modifier = Modifier.heightIn(min = 44.dp),
+        ) {
+          if (!ready.selecting) {
+            Icon(Symbols.Outlined.Checklist, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(8.dp))
+          }
+          Text(stringResource(if (ready.selecting) R.string.status_select_done else R.string.status_select))
         }
       }
     }
@@ -434,7 +442,7 @@ private fun SectionHeader(
     Text(
       text = section.category.name,
       style = CaducityTheme.typography.titleMedium,
-      modifier = Modifier.weight(1f).semantics { heading() },
+      modifier = Modifier.weight(1f, fill = false).semantics { heading() },
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
     )
@@ -476,7 +484,7 @@ private fun StatusRowItem(
     Column(modifier = Modifier.weight(1f)) {
       Text(
         text = if (quantity != null) "${row.name} · $quantity" else row.name,
-        style = CaducityTheme.typography.titleMedium,
+        style = CaducityTheme.typography.titleSmall,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
       )
@@ -502,6 +510,7 @@ private fun RowButtons(
   viewModel: StatusListViewModel,
 ) {
   val frozenColor = CaducityTheme.colors.frozen.strong
+  val freshColor = CaducityTheme.colors.fresh.strong
   val expiredColor = CaducityTheme.colors.expired.strong
   Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
     when (status) {
@@ -509,6 +518,7 @@ private fun RowButtons(
         RoundButton(
           Symbols.Outlined.EventRepeat,
           stringResource(R.string.status_action_reschedule, row.name),
+          tint = freshColor,
           onClick = { viewModel.onRescheduleClick(row) },
         )
         RoundButton(
@@ -522,12 +532,13 @@ private fun RowButtons(
         RoundButton(
           Symbols.Outlined.Check,
           stringResource(R.string.home_mark_consumed, row.name),
+          tint = freshColor,
           onClick = { viewModel.onConsume(row) },
         )
         RoundButton(
           Symbols.Outlined.AcUnit,
           stringResource(R.string.status_action_freeze, row.name),
-          tint = if (status == ExpiryStatus.SOON) frozenColor else null,
+          tint = frozenColor,
           onClick = { viewModel.onFreeze(row) },
         )
       }
@@ -535,6 +546,7 @@ private fun RowButtons(
         RoundButton(
           Symbols.Outlined.Check,
           stringResource(R.string.home_mark_consumed, row.name),
+          tint = freshColor,
           onClick = { viewModel.onConsume(row) },
         )
         RoundButton(
@@ -553,7 +565,7 @@ private fun RoundButton(
   icon: ImageVector,
   contentDescription: String,
   onClick: () -> Unit,
-  tint: androidx.compose.ui.graphics.Color? = null,
+  tint: Color? = null,
 ) {
   IconButton(
     onClick = onClick,
@@ -707,3 +719,15 @@ private fun StatusEmpty(
     }
   }
 }
+
+/** Rows scrolling under the fixed header fade out instead of showing a cut-off sliver below its rounded corners. */
+private fun Modifier.fadeTopEdge(height: androidx.compose.ui.unit.Dp = 20.dp): Modifier =
+  graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+    .drawWithContent {
+      drawContent()
+      drawRect(
+        brush = Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black), endY = height.toPx()),
+        size = Size(size.width, height.toPx()),
+        blendMode = BlendMode.DstIn,
+      )
+    }

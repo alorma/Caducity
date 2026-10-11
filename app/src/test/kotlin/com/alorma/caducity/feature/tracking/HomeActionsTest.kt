@@ -22,11 +22,12 @@ class HomeActionsTest {
   }
 
   @Test
-  fun `expired action comes from the banner`() {
-    val action = NavigateToExpiredFromHomeAction()
+  fun `status list action carries the status and where it came from`() {
+    val action = NavigateToStatusListFromHomeAction("expired", "banner")
 
-    expectThat(action.name).isEqualTo("nav_expired")
-    expectThat(action.parameters).isEqualTo(mapOf("origin" to "home", "source" to "banner"))
+    expectThat(action.name).isEqualTo("nav_status_list")
+    expectThat(action.parameters)
+      .isEqualTo(mapOf("status" to "expired", "source" to "banner", "origin" to "home"))
   }
 
   @Test

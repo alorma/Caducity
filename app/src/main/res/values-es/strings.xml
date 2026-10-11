@@ -583,4 +583,5 @@
   <string name="status_dates_in_3d">En 3 días</string>
   <string name="status_dates_in_1w">En 1 semana</string>
   <string name="status_dates_pick">Elige una fecha</string>
+  <string name="home_summary_cell_cd">%1$s, %2$s. Abre la lista</string>
 </resources>

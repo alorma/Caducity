@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.home
 
+import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.HomeData
 import com.alorma.caducity.domain.usecase.WeekStripData
 import kotlinx.datetime.LocalDate
@@ -23,7 +24,11 @@ sealed interface HomeNavigation {
 
   data object Search : HomeNavigation
 
-  data object Expired : HomeNavigation
+  /** The banner (`source = banner`) and the summary cells (`source = summary`) open the status lists. */
+  data class StatusList(
+    val status: ExpiryStatus,
+    val source: String,
+  ) : HomeNavigation
 
   data class Pantry(
     val source: String,
@@ -43,7 +48,9 @@ sealed interface HomeNavigationSideEffect {
 
   data object OpenSearch : HomeNavigationSideEffect
 
-  data object OpenExpired : HomeNavigationSideEffect
+  data class OpenStatusList(
+    val status: ExpiryStatus,
+  ) : HomeNavigationSideEffect
 
   data object OpenPantry : HomeNavigationSideEffect
 

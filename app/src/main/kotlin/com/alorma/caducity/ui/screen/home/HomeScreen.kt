@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
+import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.HomeData
 import com.alorma.caducity.domain.model.HomeDaySection
 import com.alorma.caducity.domain.model.HomeRow
@@ -42,7 +43,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomeScreen(
   onOpenCalendar: (LocalDate?) -> Unit,
   onOpenSearch: () -> Unit,
-  onOpenExpired: () -> Unit,
+  onOpenStatusList: (ExpiryStatus) -> Unit,
   onOpenPantry: () -> Unit,
   onOpenItemActions: (itemId: String) -> Unit,
   onOpenAdd: () -> Unit,
@@ -57,7 +58,7 @@ fun HomeScreen(
       when (effect) {
         is HomeNavigationSideEffect.OpenCalendar -> onOpenCalendar(effect.date)
         HomeNavigationSideEffect.OpenSearch -> onOpenSearch()
-        HomeNavigationSideEffect.OpenExpired -> onOpenExpired()
+        is HomeNavigationSideEffect.OpenStatusList -> onOpenStatusList(effect.status)
         HomeNavigationSideEffect.OpenPantry -> onOpenPantry()
         is HomeNavigationSideEffect.OpenItemActions -> onOpenItemActions(effect.itemId)
         HomeNavigationSideEffect.OpenAdd -> onOpenAdd()
@@ -156,7 +157,6 @@ internal fun HomeContent(
   val data = state.data
   val items = state.items()
   val scope = rememberCoroutineScope()
-  val firstSection = items.indexOfFirst { it is HomeItem.SectionHeader }
   var selectedDay by rememberSaveable(stateSaver = LocalDateSaver) { mutableStateOf<LocalDate?>(null) }
 
   LazyColumn(
@@ -202,7 +202,7 @@ internal fun HomeContent(
           ExpiredBanner(
             count = data.expiredCount,
             oldestDaysAgo = data.oldestExpiredDaysAgo ?: 0,
-            onReview = { onNavigate(HomeNavigation.Expired) },
+            onReview = { onNavigate(HomeNavigation.StatusList(ExpiryStatus.EXPIRED, "banner")) },
             modifier = Modifier.padding(bottom = 12.dp),
           )
         HomeItem.Summary ->
@@ -210,9 +210,9 @@ internal fun HomeContent(
             soon = data.soonCount,
             fresh = data.freshCount,
             frozen = data.frozenCount,
-            onSoon = { if (firstSection >= 0) scope.launch { listState.animateScrollToItem(firstSection) } },
-            onFresh = { onNavigate(HomeNavigation.Pantry("summary_fresh")) },
-            onFrozen = { onNavigate(HomeNavigation.Pantry("summary_frozen")) },
+            onSoon = { onNavigate(HomeNavigation.StatusList(ExpiryStatus.SOON, "summary")) },
+            onFresh = { onNavigate(HomeNavigation.StatusList(ExpiryStatus.FRESH, "summary")) },
+            onFrozen = { onNavigate(HomeNavigation.StatusList(ExpiryStatus.FROZEN, "summary")) },
             modifier = Modifier.padding(bottom = 12.dp),
           )
         is HomeItem.SectionHeader ->
