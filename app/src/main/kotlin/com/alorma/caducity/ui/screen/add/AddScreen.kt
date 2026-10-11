@@ -189,36 +189,38 @@ private fun AddTopBar(
   savedCount: Int,
   onClose: () -> Unit,
 ) {
-  TopAppBar(
-    title = {
-      Text(
-        text = stringResource(if (editing) R.string.add_edit_title else R.string.add_title),
-        style = CaducityTheme.typography.titleLarge,
-      )
-    },
-    navigationIcon = {
-      IconButton(onClick = onClose) {
-        Icon(Symbols.Outlined.Close, contentDescription = stringResource(R.string.add_close))
-      }
-    },
-    actions = {
-      if (savedCount > 0 && !editing) {
-        Surface(
-          shape = CaducityShapes.full,
-          color = CaducityTheme.colors.fresh.container,
-          contentColor = CaducityTheme.colors.fresh.onContainer,
-          modifier = Modifier.padding(end = 12.dp),
-        ) {
-          Text(
-            text = pluralStringResource(R.plurals.add_saved_count, savedCount, savedCount),
-            style = CaducityTheme.typography.labelLarge,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-          )
+  ResponsiveCenteredContainer(fillHeight = false) {
+    TopAppBar(
+      title = {
+        Text(
+          text = stringResource(if (editing) R.string.add_edit_title else R.string.add_title),
+          style = CaducityTheme.typography.titleLarge,
+        )
+      },
+      navigationIcon = {
+        IconButton(onClick = onClose) {
+          Icon(Symbols.Outlined.Close, contentDescription = stringResource(R.string.add_close))
         }
-      }
-    },
-    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-  )
+      },
+      actions = {
+        if (savedCount > 0 && !editing) {
+          Surface(
+            shape = CaducityShapes.full,
+            color = CaducityTheme.colors.fresh.container,
+            contentColor = CaducityTheme.colors.fresh.onContainer,
+            modifier = Modifier.padding(end = 12.dp),
+          ) {
+            Text(
+              text = pluralStringResource(R.plurals.add_saved_count, savedCount, savedCount),
+              style = CaducityTheme.typography.labelLarge,
+              modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+            )
+          }
+        }
+      },
+      colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
+    )
+  }
 }
 
 @Composable
