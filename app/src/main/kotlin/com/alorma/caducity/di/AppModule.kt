@@ -33,6 +33,7 @@ import com.alorma.caducity.feature.consent.consentModule
 import com.alorma.caducity.feature.review.reviewModule
 import com.alorma.caducity.feature.tracking.trackingModule
 import com.alorma.caducity.ui.components.bottomsheet.ItemActionsViewModel
+import com.alorma.caducity.ui.screen.add.AddViewModel
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryViewModel
 import com.alorma.caducity.ui.screen.category.create.FutureDateSelectableDates
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailAddItemViewModel
@@ -53,6 +54,7 @@ import com.russhwolf.settings.Settings
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -103,6 +105,19 @@ val appModule =
     singleOf(::CategoryDetailMapper)
     viewModelOf(::CategoryDetailViewModel)
     viewModelOf(::CategoryDetailAddItemViewModel)
+
+    // Add screen
+    viewModel { params ->
+      AddViewModel(
+        initialCategoryId = params.getOrNull(),
+        todayProvider = get(),
+        addItemBatch = get(),
+        undoAddItems = get(),
+        getNameSuggestions = get(),
+        observeCategories = get(),
+        eventTracker = get(),
+      )
+    }
 
     // Product page
     factoryOf(::GetProductItemsUseCase)

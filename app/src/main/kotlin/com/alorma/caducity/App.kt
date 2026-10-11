@@ -19,7 +19,6 @@ import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.NavigateToAddAction
 import com.alorma.caducity.feature.tracking.NavigateToTabAction
 import com.alorma.caducity.ui.navigation.Add
-import com.alorma.caducity.ui.navigation.AddPlaceholderScreen
 import com.alorma.caducity.ui.navigation.AppShell
 import com.alorma.caducity.ui.navigation.Calendar
 import com.alorma.caducity.ui.navigation.CalendarPlaceholderScreen
@@ -38,6 +37,7 @@ import com.alorma.caducity.ui.navigation.QuickCategoryPlaceholder
 import com.alorma.caducity.ui.navigation.Settings
 import com.alorma.caducity.ui.navigation.TopLevelBackStack
 import com.alorma.caducity.ui.navigation.TopLevelRoute
+import com.alorma.caducity.ui.screen.add.AddScreen
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
@@ -149,7 +149,13 @@ fun App(
               )
             }
             entry<Calendar> { CalendarPlaceholderScreen() }
-            entry<Add> { AddPlaceholderScreen() }
+            entry<Add> {
+              AddScreen(
+                categoryId = it.categoryId,
+                onClose = { navigation.pop() },
+                onOpenQuickCategory = { navigation.navigate(QuickCategory) },
+              )
+            }
             // TEMP(fase 8): the old create screen stands in for the category editor.
             entry<CategoryEditor> {
               CreateCategoryScreen(
