@@ -375,4 +375,12 @@
     <item quantity="other">dentro de %1$d días</item>
   </plurals>
   <string name="add_edit_title">Edita</string>
+  <string name="quick_category_title">Nueva categoría</string>
+  <string name="category_form_name">Nombre</string>
+  <string name="category_form_shape">Forma</string>
+  <string name="category_form_icon">Icono</string>
+  <string name="quick_category_note">La descripción y el orden se pueden cambiar después, en Despensa.</string>
+  <string name="quick_category_create">Crea y úsala</string>
+  <string name="quick_category_error_duplicate">Ya tienes una categoría con ese nombre</string>
+  <string name="quick_category_error_failed">No se ha podido crear la categoría</string>
 </resources>

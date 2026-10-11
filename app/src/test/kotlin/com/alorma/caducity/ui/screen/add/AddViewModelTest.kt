@@ -23,6 +23,7 @@ import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.UndoAddItemsUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.ui.screen.category.quick.CategoryCreatedEvents
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
@@ -78,6 +79,7 @@ class AddViewModelTest {
   private lateinit var db: AppDatabase
   private lateinit var pantry: RoomPantryDataSource
   private lateinit var itemDataSource: RoomItemDataSource
+  private val createdEvents = CategoryCreatedEvents()
   private lateinit var addBatch: AddItemBatchUseCase
 
   @Before
@@ -125,6 +127,7 @@ class AddViewModelTest {
     getActiveItem = GetActiveItemUseCase(pantry),
     updateItem = UpdateItemUseCase(itemDataSource, pantry, clock),
     observeCategories = ObserveCategoriesUseCase(pantry),
+    categoryCreated = createdEvents,
     eventTracker = EventTracker(emptyList()),
   )
 
@@ -494,5 +497,19 @@ class AddViewModelTest {
 
       expectThat(vm.state.value.editing).isNull()
       expectThat(vm.state.value.name).isEqualTo("")
+    }
+
+  @Test
+  fun `a category created in the sheet is left selected even if it arrives late`() =
+    runTest {
+      category("dairy")
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+
+      createdEvents.emit("fresh")
+      category("fresh", sortOrder = 1)
+
+      val state = vm.await { it.categoryId == "fresh" }
+      expectThat(state.categories.map { it.id }).containsExactly("dairy", "fresh")
     }
 }

@@ -8,6 +8,8 @@ import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.ItemStatus
+import com.alorma.caducity.domain.model.PantryError
+import com.alorma.caducity.domain.model.normalizeForSearch
 import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -30,11 +32,14 @@ class CreateCategoryUseCase(
     sortOrder: Int? = null,
   ): Result<String> =
     try {
+      val duplicated =
+        pantryDataSource.getCategories().any { it.name.normalizeForSearch() == name.trim().normalizeForSearch() }
+      if (duplicated) return Result.failure(PantryError.DuplicateCategoryName)
       val categoryId = Uuid.random().toString()
       val category =
         Category(
           id = categoryId,
-          name = name,
+          name = name.trim(),
           description = description,
           shape = shape,
           icon = icon,

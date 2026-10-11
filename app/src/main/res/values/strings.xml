@@ -393,4 +393,12 @@
     <item quantity="other">in %1$d days</item>
   </plurals>
   <string name="add_edit_title">Edit</string>
+  <string name="quick_category_title">New category</string>
+  <string name="category_form_name">Name</string>
+  <string name="category_form_shape">Shape</string>
+  <string name="category_form_icon">Icon</string>
+  <string name="quick_category_note">The description and the order can be changed later, in Pantry.</string>
+  <string name="quick_category_create">Create and use it</string>
+  <string name="quick_category_error_duplicate">You already have a category with that name</string>
+  <string name="quick_category_error_failed">Could not create the category</string>
 </resources>
