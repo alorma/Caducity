@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.pantry
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -44,6 +44,7 @@ import com.alorma.caducity.feature.tracking.PantryScreen as PantryScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.product.ProductGroupRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.navigation.LocalFloatingBarPadding
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
@@ -108,57 +109,57 @@ internal fun PantryContent(
   var expanded by rememberSaveable { mutableStateOf(emptySet<String>()) }
   val columns = 2
 
-  LazyColumn(
-    modifier = modifier.fillMaxSize().statusBarsPadding(),
-    contentPadding =
-      PaddingValues(
-        start = 20.dp,
-        end = 20.dp,
-        bottom = LocalFloatingBarPadding.current.calculateBottomPadding() + 24.dp,
-      ),
-    verticalArrangement = Arrangement.spacedBy(10.dp),
-  ) {
-    item(key = "header") {
-      PantryHeader(data)
-    }
-    item(key = "search") {
+  Column(modifier = modifier.fillMaxSize()) {
+    PantryHeader(data)
+    Box(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)) {
       PantrySearchField(state.query, onQueryChange, focusRequester)
     }
-    if (state.isSearching) {
-      searchResults(state, expanded, { key ->
-        expanded =
-          if (key in
-            expanded
-          ) {
-            expanded - key
-          } else {
-            expanded + key
-          }
-      }, onOpenItemActions)
-    } else {
-      val cells: List<PantryCategory?> = data.categories + null
-      items(cells.chunked(columns), key = { row -> row.first()?.category?.id ?: "new-category" }) { row ->
-        Row(
-          modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
-          horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-          row.forEach { cell ->
-            if (cell == null) {
-              NewCategoryCard(
-                onClick = { onNavigate(PantryNavigation.NewCategory) },
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-              )
+    LazyColumn(
+      modifier = Modifier.fillMaxSize(),
+      contentPadding =
+        PaddingValues(
+          start = 20.dp,
+          end = 20.dp,
+          bottom = LocalFloatingBarPadding.current.calculateBottomPadding() + 24.dp,
+        ),
+      verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+      if (state.isSearching) {
+        searchResults(state, expanded, { key ->
+          expanded =
+            if (key in
+              expanded
+            ) {
+              expanded - key
             } else {
-              CategoryCard(
-                entry = cell,
-                today = data.today,
-                onClick = { onNavigate(PantryNavigation.Category(cell.category.id, "card")) },
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-              )
+              expanded + key
             }
-          }
-          if (row.size < columns) {
-            repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
+        }, onOpenItemActions)
+      } else {
+        val cells: List<PantryCategory?> = data.categories + null
+        items(cells.chunked(columns), key = { row -> row.first()?.category?.id ?: "new-category" }) { row ->
+          Row(
+            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+          ) {
+            row.forEach { cell ->
+              if (cell == null) {
+                NewCategoryCard(
+                  onClick = { onNavigate(PantryNavigation.NewCategory) },
+                  modifier = Modifier.weight(1f).fillMaxHeight(),
+                )
+              } else {
+                CategoryCard(
+                  entry = cell,
+                  today = data.today,
+                  onClick = { onNavigate(PantryNavigation.Category(cell.category.id, "card")) },
+                  modifier = Modifier.weight(1f).fillMaxHeight(),
+                )
+              }
+            }
+            if (row.size < columns) {
+              repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
+            }
           }
         }
       }
@@ -205,23 +206,27 @@ private fun LazyListScope.searchResults(
 
 @Composable
 private fun PantryHeader(data: PantryData) {
-  Column(modifier = Modifier.padding(top = 28.dp, bottom = 6.dp)) {
-    Text(
-      text =
-        stringResource(
-          R.string.pantry_overline,
-          pluralStringResource(R.plurals.home_product_count, data.totalUnits, data.totalUnits),
-          pluralStringResource(R.plurals.pantry_category_count, data.categories.size, data.categories.size),
-        ).uppercase(),
-      style = CaducityTheme.typography.labelSmall,
-      color = CaducityTheme.colorScheme.onSurfaceVariant,
-    )
-    Text(
-      text = stringResource(R.string.nav_pantry),
-      style = CaducityTheme.typography.displayLarge,
-      modifier = Modifier.semantics { heading() },
-    )
-  }
+  StyledTopAppBar(
+    title = {
+      Column {
+        Text(
+          text =
+            stringResource(
+              R.string.pantry_overline,
+              pluralStringResource(R.plurals.home_product_count, data.totalUnits, data.totalUnits),
+              pluralStringResource(R.plurals.pantry_category_count, data.categories.size, data.categories.size),
+            ).uppercase(),
+          style = CaducityTheme.typography.labelSmall,
+          color = CaducityTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+          text = stringResource(R.string.nav_pantry),
+          style = CaducityTheme.typography.headlineMedium,
+          modifier = Modifier.semantics { heading() },
+        )
+      }
+    },
+  )
 }
 
 // region Previews
