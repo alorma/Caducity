@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
@@ -55,6 +57,7 @@ import com.alorma.caducity.base.ui.icons.symbols.ArrowBack
 import com.alorma.caducity.base.ui.icons.symbols.Close
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.ui.adaptive.rememberIsExpanded
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
 
@@ -134,6 +137,8 @@ fun StatusHeader(
   val colors = status.colors()
   // The selection bar replaces the header, folded or not.
   val fraction = if (selectionCount != null) 1f else state.fraction
+  // The color goes edge to edge, the content stays in the same column as the list below.
+  val contentMaxWidth = if (rememberIsExpanded()) 600.dp else Dp.Unspecified
   Surface(
     modifier = modifier.fillMaxWidth(),
     color = colors.container,
@@ -146,6 +151,8 @@ fun StatusHeader(
         Column(
           modifier =
             Modifier
+              .widthIn(max = contentMaxWidth)
+              .fillMaxWidth()
               .alpha((1f - 2f * fraction).coerceIn(0f, 1f))
               .windowInsetsPadding(TopAppBarDefaults.windowInsets),
         ) {
@@ -154,6 +161,7 @@ fun StatusHeader(
         Row(
           modifier =
             Modifier
+              .widthIn(max = contentMaxWidth)
               .alpha(
                 (2f * fraction - 1f).coerceIn(0f, 1f),
               ).windowInsetsPadding(TopAppBarDefaults.windowInsets),
@@ -163,15 +171,15 @@ fun StatusHeader(
         }
       },
     ) { measurables, constraints ->
-      val loose = constraints.copy(minHeight = 0)
+      val loose = constraints.copy(minWidth = 0, minHeight = 0)
       val unfolded = measurables[0].measure(loose)
       val folded = measurables[1].measure(loose)
       val height = lerpInt(unfolded.height, folded.height, fraction)
       // The folding range is what the unfolded layer has over the folded one.
       state.rangePx = (unfolded.height - folded.height).coerceAtLeast(0).toFloat()
       layout(constraints.maxWidth, height) {
-        unfolded.place(0, 0)
-        folded.place(0, 0)
+        unfolded.place((constraints.maxWidth - unfolded.width) / 2, 0)
+        folded.place((constraints.maxWidth - folded.width) / 2, 0)
       }
     }
   }

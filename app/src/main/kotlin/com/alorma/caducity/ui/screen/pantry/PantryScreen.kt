@@ -80,7 +80,7 @@ fun PantryScreen(
     }
   }
 
-  ResponsiveCenteredContainer(maxWidth = 840.dp, modifier = modifier) {
+  ResponsiveCenteredContainer(modifier = modifier) {
     when (val current = state) {
       PantryState.Loading -> Unit
       is PantryState.Ready ->
