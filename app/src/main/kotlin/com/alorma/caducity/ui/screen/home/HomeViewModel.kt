@@ -11,10 +11,10 @@ import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemActionAction
 import com.alorma.caducity.feature.tracking.NavigateToAddFromHomeAction
 import com.alorma.caducity.feature.tracking.NavigateToCalendarFromHomeAction
-import com.alorma.caducity.feature.tracking.NavigateToExpiredFromHomeAction
 import com.alorma.caducity.feature.tracking.NavigateToItemActionsFromHomeAction
 import com.alorma.caducity.feature.tracking.NavigateToPantryFromHomeAction
 import com.alorma.caducity.feature.tracking.NavigateToSearchAction
+import com.alorma.caducity.feature.tracking.NavigateToStatusListFromHomeAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
@@ -53,9 +53,11 @@ class HomeViewModel(
         eventTracker.trackAction(NavigateToSearchAction())
         emitNavigationSideEffect(HomeNavigationSideEffect.OpenSearch)
       }
-      HomeNavigation.Expired -> {
-        eventTracker.trackAction(NavigateToExpiredFromHomeAction())
-        emitNavigationSideEffect(HomeNavigationSideEffect.OpenExpired)
+      is HomeNavigation.StatusList -> {
+        eventTracker.trackAction(
+          NavigateToStatusListFromHomeAction(navigation.status.name.lowercase(), navigation.source),
+        )
+        emitNavigationSideEffect(HomeNavigationSideEffect.OpenStatusList(navigation.status))
       }
       is HomeNavigation.Pantry -> {
         eventTracker.trackAction(NavigateToPantryFromHomeAction(navigation.source))

@@ -203,15 +203,8 @@ class NavigateToSearchAction :
     parameters = mapOf("source" to "button"),
   )
 
-class NavigateToExpiredFromHomeAction :
-  NavigationAction(
-    actionName = "expired",
-    origin = "home",
-    parameters = mapOf("source" to "banner"),
-  )
-
 class NavigateToPantryFromHomeAction(
-  source: String, // summary_fresh, summary_frozen, nothing_soon
+  source: String, // nothing_soon
 ) : NavigationAction(
     actionName = "pantry",
     origin = "home",

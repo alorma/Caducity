@@ -12,7 +12,6 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
-import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.alorma.caducity.feature.deeplink.toRoute
 import com.alorma.caducity.feature.tracking.EventTracker
@@ -126,7 +125,7 @@ fun App(
                   searchRequests.request()
                   navigation.switchTab(Pantry)
                 },
-                onOpenExpired = { navigation.navigate(StatusList(ExpiryStatus.EXPIRED)) },
+                onOpenStatusList = { navigation.navigate(StatusList(it)) },
                 onOpenPantry = { navigation.switchTab(Pantry) },
                 onOpenItemActions = { navigation.navigate(ItemActions(it)) },
                 onOpenAdd = { navigation.navigate(Add(source = "home_empty")) },

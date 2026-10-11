@@ -15,6 +15,7 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
+import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.usecase.AddItemBatchUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
@@ -271,15 +272,27 @@ class HomeViewModelTest {
       val vm = viewModel()
 
       vm.navigate(HomeNavigation.Calendar(date = inDays(3), source = "week_strip"))
-      vm.navigate(HomeNavigation.Expired)
+      vm.navigate(HomeNavigation.StatusList(ExpiryStatus.EXPIRED, "banner"))
       vm.navigate(HomeNavigation.ItemActions("abc"))
 
       val effects = vm.navigationSideEffects.take(3).toList()
       expectThat(effects).containsExactly(
         HomeNavigationSideEffect.OpenCalendar(inDays(3)),
-        HomeNavigationSideEffect.OpenExpired,
+        HomeNavigationSideEffect.OpenStatusList(ExpiryStatus.EXPIRED),
         HomeNavigationSideEffect.OpenItemActions("abc"),
       )
+    }
+
+  @Test
+  fun `every summary cell opens the list of its status`() =
+    runTest {
+      val vm = viewModel()
+      val statuses = listOf(ExpiryStatus.SOON, ExpiryStatus.FRESH, ExpiryStatus.FROZEN)
+
+      statuses.forEach { vm.navigate(HomeNavigation.StatusList(it, "summary")) }
+
+      expectThat(vm.navigationSideEffects.take(3).toList())
+        .containsExactly(statuses.map { HomeNavigationSideEffect.OpenStatusList(it) })
     }
 
   @Test
