@@ -19,7 +19,7 @@ class PreferencesTest {
 
   @Test
   fun `step 1 on an existing install sets the threshold, drops removed keys and keeps the 12h reminder`() {
-    settings.putBoolean("user_onboarding", false)
+    settings.putBoolean("fire-and-forget-user_onboarding", false)
     settings.putString("theme_tone", "VIBRANT")
     settings.putString("ai_selected_model", "gemma")
     settings.putLong("ai_download_progress", 5)
@@ -36,12 +36,12 @@ class PreferencesTest {
     // Untouched keys.
     expectThat(settings.getString("theme_mode", "")).isEqualTo("DARK")
     expectThat(settings.getBoolean("notifications_enabled_key", false)).isTrue()
-    expectThat(settings.getBoolean("user_onboarding", true)).isFalse()
+    expectThat(settings.getBoolean("fire-and-forget-user_onboarding", true)).isFalse()
   }
 
   @Test
   fun `step 1 keeps an explicit reminder time and a fresh install gets the new default`() {
-    settings.putBoolean("user_onboarding", false)
+    settings.putBoolean("fire-and-forget-user_onboarding", false)
     settings.putInt(NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS, 7 * 3600)
     PreferencesMigrator(settings).migrate()
     expectThat(settings.getInt(NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS, -1)).isEqualTo(7 * 3600)
@@ -54,7 +54,7 @@ class PreferencesTest {
 
   @Test
   fun `migration is idempotent and does not overwrite later changes`() {
-    settings.putBoolean("user_onboarding", false)
+    settings.putBoolean("fire-and-forget-user_onboarding", false)
     val migrator = PreferencesMigrator(settings)
     migrator.migrate()
     settings.putInt("soon_threshold_days", 7)

@@ -168,7 +168,7 @@ Totes via `com.russhwolf.settings.Settings`.
 | `notifications_enabled_key` (default false, sincronitzada amb el permís) | helper + `SettingsNotificationConfigDataSource` | **Mod** (= `dailyReminderEnabled`) |
 | `notifications_expired_enabled_key`, `notifications_expiring_soon_enabled_key` | helper | **E** |
 | `notification_time_seconds` (default **12:00**) | `NotificationConfigDataSource` | **M** clau; default nou 09:00 |
-| `user_onboarding` (FireAndForget, `autoDisable=false`) | `OnboardingFlag` | **M** (= `onboardingCompleted`, invers) |
+| `fire-and-forget-user_onboarding` (FireAndForget, `autoDisable=false`; la clau real porta el prefix `fire-and-forget-`) | `OnboardingFlag` | **M** (= `onboardingCompleted`, invers) |
 | `analytics_consent` (FireAndForget), `consent_analytics_storage`, `consent_ad_*`, `consent_given` | `feature/consent/*` | **M** (`analyticsEnabled` = `consent_analytics_storage`) |
 | `ai_selected_model` i claus del worker de models | `AiModelPreferences` | **E** (fase 0) |
 | `debug_remote_config_*` | debug | **M** |

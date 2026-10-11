@@ -39,7 +39,9 @@ class PreferencesMigrator(
 
   companion object {
     const val KEY_VERSION = "prefs_version"
-    private const val KEY_ONBOARDING = "user_onboarding"
+
+    // FireAndForget stores its flags with this prefix; the flag exists only on installs that ran the onboarding.
+    private const val KEY_ONBOARDING = "fire-and-forget-user_onboarding"
     private const val KEY_THEME_TONE = "theme_tone"
     private const val AI_PREFIX = "ai_"
     private val LEGACY_DEFAULT_REMINDER = kotlinx.datetime.LocalTime(12, 0)
