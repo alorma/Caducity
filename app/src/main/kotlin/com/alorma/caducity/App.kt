@@ -37,6 +37,7 @@ import com.alorma.caducity.ui.navigation.QuickCategoryPlaceholder
 import com.alorma.caducity.ui.navigation.Settings
 import com.alorma.caducity.ui.navigation.TopLevelBackStack
 import com.alorma.caducity.ui.navigation.TopLevelRoute
+import com.alorma.caducity.ui.screen.add.AddArgs
 import com.alorma.caducity.ui.screen.add.AddScreen
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
@@ -151,7 +152,7 @@ fun App(
             entry<Calendar> { CalendarPlaceholderScreen() }
             entry<Add> {
               AddScreen(
-                categoryId = it.categoryId,
+                args = AddArgs(categoryId = it.categoryId, itemId = it.itemId),
                 onClose = { navigation.pop() },
                 onOpenQuickCategory = { navigation.navigate(QuickCategory) },
               )

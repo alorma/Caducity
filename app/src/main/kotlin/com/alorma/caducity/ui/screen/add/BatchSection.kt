@@ -32,6 +32,7 @@ import kotlinx.datetime.daysUntil
 @Composable
 fun BatchEntries(
   entries: List<AddedEntry>,
+  onEdit: (AddedEntry) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -42,6 +43,7 @@ fun BatchEntries(
     ) {
       entries.forEach { entry ->
         Surface(
+          onClick = { onEdit(entry) },
           shape = CaducityShapes.chip,
           color = CaducityTheme.colorScheme.surfaceContainer,
           contentColor = CaducityTheme.colorScheme.onSurface,

@@ -5,6 +5,7 @@ import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
+import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.MoveItemToCategoryUseCase
@@ -44,6 +45,7 @@ val domainModule =
     factoryOf(::MoveItemToCategoryUseCase)
     factoryOf(::GetNameSuggestionsUseCase)
     factoryOf(::ObserveCategoriesUseCase)
+    factoryOf(::GetActiveItemUseCase)
     factoryOf(::UpdateCategoryUseCase)
     factoryOf(::SeedCategoriesUseCase)
     factoryOf(::ObserveCalendarUseCase)

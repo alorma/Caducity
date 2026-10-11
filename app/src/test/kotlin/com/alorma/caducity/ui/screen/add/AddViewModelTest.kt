@@ -8,6 +8,7 @@ import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.config.time.date
+import com.alorma.caducity.data.datasource.RoomItemDataSource
 import com.alorma.caducity.data.datasource.RoomPantryDataSource
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
@@ -16,9 +17,11 @@ import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.usecase.AddItemBatchUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
+import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.UndoAddItemsUseCase
+import com.alorma.caducity.domain.usecase.UpdateItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
@@ -74,6 +77,7 @@ class AddViewModelTest {
 
   private lateinit var db: AppDatabase
   private lateinit var pantry: RoomPantryDataSource
+  private lateinit var itemDataSource: RoomItemDataSource
   private lateinit var addBatch: AddItemBatchUseCase
 
   @Before
@@ -85,6 +89,7 @@ class AddViewModelTest {
         .allowMainThreadQueries()
         .build()
     val itemMapper = ItemRoomMapper(clock, AppExpirationThresholdsImpl(SoonThresholdPreferences(MapSettings())))
+    itemDataSource = RoomItemDataSource(db.itemDao(), clock, itemMapper)
     pantry =
       RoomPantryDataSource(
         database = db,
@@ -108,16 +113,20 @@ class AddViewModelTest {
     sortOrder: Int = 0,
   ) = db.categoryDao().insertCategory(CategoryRoomEntity(id, id, "", sortOrder = sortOrder))
 
-  private fun viewModel(initialCategoryId: String? = null) =
-    AddViewModel(
-      initialCategoryId = initialCategoryId,
-      todayProvider = todayProvider,
-      addItemBatch = addBatch,
-      undoAddItems = UndoAddItemsUseCase(pantry),
-      getNameSuggestions = GetNameSuggestionsUseCase(pantry),
-      observeCategories = ObserveCategoriesUseCase(pantry),
-      eventTracker = EventTracker(emptyList()),
-    )
+  private fun viewModel(
+    initialCategoryId: String? = null,
+    itemId: String? = null,
+  ) = AddViewModel(
+    args = AddArgs(categoryId = initialCategoryId, itemId = itemId),
+    todayProvider = todayProvider,
+    addItemBatch = addBatch,
+    undoAddItems = UndoAddItemsUseCase(pantry),
+    getNameSuggestions = GetNameSuggestionsUseCase(pantry),
+    getActiveItem = GetActiveItemUseCase(pantry),
+    updateItem = UpdateItemUseCase(itemDataSource, pantry, clock),
+    observeCategories = ObserveCategoriesUseCase(pantry),
+    eventTracker = EventTracker(emptyList()),
+  )
 
   private suspend fun AddViewModel.await(predicate: (AddState) -> Boolean): AddState =
     withContext(Dispatchers.Default) { withTimeout(5_000) { state.first(predicate) } }
@@ -405,5 +414,85 @@ class AddViewModelTest {
         vm.state.value.categories
           .firstOrNull(),
       ).isNotNull()
+    }
+
+  @Test
+  fun `editing from a route loads the unit and saving updates only that unit`() =
+    runTest {
+      category("dairy")
+      category("fruit", sortOrder = 1)
+      val batch = addBatch.add("Milk", "dairy", inDays(5), 2, false).getOrThrow()
+      val itemId = batch.itemIds.first()
+      val vm = viewModel(itemId = itemId)
+      vm.await { it.editing != null && it.date != null }
+
+      expectThat(vm.state.value.name).isEqualTo("Milk")
+      expectThat(vm.state.value.categoryId).isEqualTo("dairy")
+      expectThat(vm.state.value.date).isEqualTo(inDays(5))
+
+      vm.onNameChange("Oat milk")
+      vm.onCategorySelect("fruit")
+      vm.onQuickDate(QuickDate.Tomorrow)
+
+      vm.navigationSideEffects.test {
+        vm.onSave()
+        expectThat(awaitItem()).isEqualTo(AddNavigationSideEffect.Close)
+      }
+
+      val edited = items().first { it.id == itemId }
+      expectThat(edited.categoryId).isEqualTo("fruit")
+      expectThat(items()).hasSize(2)
+      expectThat(items().count { it.categoryId == "dairy" }).isEqualTo(1)
+    }
+
+  @Test
+  fun `editing a batch chip updates the entry and restores the form`() =
+    runTest {
+      category("dairy")
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.fill(name = "Milk")
+      vm.sideEffects.test {
+        vm.onSaveAndAnother()
+        awaitItem()
+        awaitItem()
+      }
+      val entry =
+        vm.state.value.added
+          .single()
+
+      vm.onEditEntry(entry)
+      vm.await { it.editing != null && it.name == "Milk" }
+      vm.onNameChange("Whole milk")
+      vm.onSave()
+
+      val state = vm.await { it.editing == null && it.added.single().name == "Whole milk" }
+      expectThat(state.name).isEqualTo("")
+      expectThat(state.categoryId).isEqualTo("dairy")
+      expectThat(state.isBatchMode).isTrue()
+    }
+
+  @Test
+  fun `closing while editing a batch chip cancels the edit instead of leaving`() =
+    runTest {
+      category("dairy")
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.fill(name = "Milk")
+      vm.sideEffects.test {
+        vm.onSaveAndAnother()
+        awaitItem()
+        awaitItem()
+      }
+      vm.onEditEntry(
+        vm.state.value.added
+          .single(),
+      )
+      vm.await { it.editing != null }
+
+      vm.navigate(AddNavigation.Close)
+
+      expectThat(vm.state.value.editing).isNull()
+      expectThat(vm.state.value.name).isEqualTo("")
     }
 }
