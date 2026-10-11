@@ -40,7 +40,9 @@ jobs:
           ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_JSON }}
 
       - name: List downloaded files
-        run: find app -path '*/play/*' -type f | sort
+        run: |
+          git status --short
+          find . -path ./.git -prune -o -path ./.gradle -prune -o -path '*/build' -prune -o -path '*/play/*' -type f -print | sort
 
       - name: Open pull request
         env:
