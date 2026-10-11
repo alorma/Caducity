@@ -1,0 +1,38 @@
+package com.alorma.caducity.ui.screen.pantry
+
+import com.alorma.caducity.domain.model.PantryData
+import com.alorma.caducity.domain.model.PantrySearchResult
+
+sealed interface PantryState {
+  data object Loading : PantryState
+
+  data class Ready(
+    val data: PantryData,
+    val query: String,
+    /** Only meaningful while [query] is not blank. */
+    val results: List<PantrySearchResult>,
+  ) : PantryState {
+    val isSearching: Boolean get() = query.isNotBlank()
+  }
+}
+
+sealed interface PantryNavigation {
+  data class Category(
+    val categoryId: String,
+    val source: String,
+  ) : PantryNavigation
+
+  data object NewCategory : PantryNavigation
+
+  data object Settings : PantryNavigation
+}
+
+sealed interface PantryNavigationSideEffect {
+  data class OpenCategory(
+    val categoryId: String,
+  ) : PantryNavigationSideEffect
+
+  data object OpenNewCategory : PantryNavigationSideEffect
+
+  data object OpenSettings : PantryNavigationSideEffect
+}

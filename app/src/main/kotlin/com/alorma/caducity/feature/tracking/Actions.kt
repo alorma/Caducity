@@ -221,3 +221,26 @@ class NavigateToItemActionsFromCalendarAction :
     origin = "calendar",
     parameters = mapOf("source" to "row"),
   )
+
+// Pantry Actions
+class NavigateToCategoryFromPantryAction(
+  source: String, // card, search_result
+) : NavigationAction(
+    actionName = "category",
+    origin = "pantry",
+    parameters = mapOf("source" to source),
+  )
+
+class NavigateToNewCategoryFromPantryAction :
+  NavigationAction(
+    actionName = "create_category",
+    origin = "pantry",
+    parameters = mapOf("source" to "card"),
+  )
+
+class NavigateToSettingsFromPantryAction :
+  NavigationAction(
+    actionName = "settings",
+    origin = "pantry",
+    parameters = mapOf("source" to "topbar"),
+  )
