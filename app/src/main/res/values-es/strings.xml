@@ -374,4 +374,5 @@
     <item quantity="one">dentro de %1$d día</item>
     <item quantity="other">dentro de %1$d días</item>
   </plurals>
+  <string name="add_edit_title">Edita</string>
 </resources>

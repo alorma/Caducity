@@ -20,6 +20,18 @@ data class AddedEntry(
   val quantity: Int,
 )
 
+/** Arguments of the Add route. [itemId] opens the screen editing that unit. */
+data class AddArgs(
+  val categoryId: String? = null,
+  val itemId: String? = null,
+)
+
+/** The unit being edited (one unit, P20). [entry] is set when it was picked from «En aquesta tanda». */
+data class EditTarget(
+  val itemId: String,
+  val entry: AddedEntry? = null,
+)
+
 data class AddState(
   val today: LocalDate,
   val name: String = "",
@@ -35,8 +47,11 @@ data class AddState(
   val frozen: Boolean = false,
   val added: List<AddedEntry> = emptyList(),
   val saving: Boolean = false,
+  val editing: EditTarget? = null,
 ) {
-  val isBatchMode: Boolean get() = added.isNotEmpty()
+  val isEditing: Boolean get() = editing != null
+
+  val isBatchMode: Boolean get() = added.isNotEmpty() && !isEditing
 
   val missing: List<AddMissing>
     get() =
@@ -47,7 +62,7 @@ data class AddState(
       }
 
   /** In batch mode with the name empty, "Desa" becomes "Fet" and nothing else is needed. */
-  val isDone: Boolean get() = isBatchMode && name.isBlank()
+  val isDone: Boolean get() = isBatchMode && name.isBlank() && !isEditing
 
   val canSave: Boolean get() = missing.isEmpty() && !saving
 

@@ -109,11 +109,13 @@ val appModule =
     // Add screen
     viewModel { params ->
       AddViewModel(
-        initialCategoryId = params.getOrNull(),
+        args = params.get(),
         todayProvider = get(),
         addItemBatch = get(),
         undoAddItems = get(),
         getNameSuggestions = get(),
+        getActiveItem = get(),
+        updateItem = get(),
         observeCategories = get(),
         eventTracker = get(),
       )

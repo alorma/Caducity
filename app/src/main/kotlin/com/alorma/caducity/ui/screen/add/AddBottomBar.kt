@@ -45,11 +45,25 @@ fun AddBottomBar(
         modifier = Modifier.padding(horizontal = 4.dp),
       )
     }
+    val scheme = CaducityTheme.colorScheme
+    if (state.isEditing) {
+      BarButton(
+        modifier = Modifier.fillMaxWidth(),
+        index = 0,
+        count = 1,
+        enabled = state.canSave,
+        container = scheme.primary,
+        content = scheme.onPrimary,
+        onClick = onSave,
+      ) {
+        Text(stringResource(R.string.add_save), style = CaducityTheme.typography.labelLarge, maxLines = 1)
+      }
+      return@Column
+    }
     Row(
       modifier = Modifier.fillMaxWidth().height(64.dp),
       horizontalArrangement = Arrangement.spacedBy(ConnectedButtonSpacing),
     ) {
-      val scheme = CaducityTheme.colorScheme
       val anotherEnabled = state.canSave && !state.isDone
       BarButton(
         modifier = Modifier.weight(1f),
@@ -84,6 +98,7 @@ fun AddBottomBar(
 @Composable
 private fun BarButton(
   index: Int,
+  count: Int = 2,
   enabled: Boolean,
   container: Color,
   content: Color,
@@ -93,7 +108,7 @@ private fun BarButton(
 ) {
   Surface(
     onClick = onClick,
-    shape = connectedButtonShape(index, 2),
+    shape = connectedButtonShape(index, count),
     color = if (enabled) container else CaducityTheme.colorScheme.surfaceContainerHigh,
     contentColor = if (enabled) content else CaducityTheme.colorScheme.outline,
     modifier = modifier.height(64.dp),

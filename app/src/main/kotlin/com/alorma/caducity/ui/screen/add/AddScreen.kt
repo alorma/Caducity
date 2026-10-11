@@ -64,11 +64,11 @@ import org.koin.core.parameter.parametersOf
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 fun AddScreen(
-  categoryId: String?,
+  args: AddArgs,
   onClose: () -> Unit,
   onOpenQuickCategory: () -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: AddViewModel = koinViewModel { parametersOf(categoryId) },
+  viewModel: AddViewModel = koinViewModel { parametersOf(args) },
 ) {
   val state by viewModel.state.collectAsState()
   val dialogState = rememberAppDialogState()
@@ -106,7 +106,9 @@ fun AddScreen(
     snackbarState = snackbarState,
     bottomSheetState = bottomSheetState,
     topBar = {
-      AddTopBar(savedCount = state.added.size, onClose = { viewModel.navigate(AddNavigation.Close) })
+      AddTopBar(editing = state.isEditing, savedCount = state.added.size, onClose = {
+        viewModel.navigate(AddNavigation.Close)
+      })
     },
     bottomBar = {
       // The bar rides above the keyboard and the navigation bar; the scaffold shrinks the content for it.
@@ -135,7 +137,7 @@ fun AddScreen(
             .padding(horizontal = ScreenGutter),
         verticalArrangement = Arrangement.spacedBy(20.dp),
       ) {
-        if (state.isBatchMode) BatchEntries(entries = state.added)
+        if (state.added.isNotEmpty()) BatchEntries(entries = state.added, onEdit = viewModel::onEditEntry)
         NameSection(state = state, viewModel = viewModel, focusRequester = focusRequester)
         val showCategoryChips = !state.isBatchMode || editCategory
         val showDateField = !state.isBatchMode || editDate
@@ -157,12 +159,14 @@ fun AddScreen(
           }, onNew = { viewModel.navigate(AddNavigation.QuickCategory) })
         }
         if (showDateField) DateSection(state = state, viewModel = viewModel)
-        QuantityFrozenRow(
-          quantity = state.quantity,
-          frozen = state.frozen,
-          onQuantityChange = viewModel::onQuantityChange,
-          onFrozenChange = viewModel::onFrozenChange,
-        )
+        if (!state.isEditing) {
+          QuantityFrozenRow(
+            quantity = state.quantity,
+            frozen = state.frozen,
+            onQuantityChange = viewModel::onQuantityChange,
+            onFrozenChange = viewModel::onFrozenChange,
+          )
+        }
       }
     }
   }
@@ -171,18 +175,24 @@ fun AddScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddTopBar(
+  editing: Boolean,
   savedCount: Int,
   onClose: () -> Unit,
 ) {
   TopAppBar(
-    title = { Text(text = stringResource(R.string.add_title), style = CaducityTheme.typography.titleLarge) },
+    title = {
+      Text(
+        text = stringResource(if (editing) R.string.add_edit_title else R.string.add_title),
+        style = CaducityTheme.typography.titleLarge,
+      )
+    },
     navigationIcon = {
       IconButton(onClick = onClose) {
         Icon(Symbols.Outlined.Close, contentDescription = stringResource(R.string.add_close))
       }
     },
     actions = {
-      if (savedCount > 0) {
+      if (savedCount > 0 && !editing) {
         Surface(
           shape = CaducityShapes.full,
           color = CaducityTheme.colors.fresh.container,

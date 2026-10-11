@@ -375,4 +375,5 @@
     <item quantity="one">d\'aquí %1$d dia</item>
     <item quantity="other">d\'aquí %1$d dies</item>
   </plurals>
+  <string name="add_edit_title">Edita</string>
 </resources>
