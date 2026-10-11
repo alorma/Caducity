@@ -9,7 +9,7 @@ data class BackupData(
   val categories: List<BackupCategory>,
 ) {
   companion object {
-    const val CURRENT_VERSION = 1
+    const val CURRENT_VERSION = 2
   }
 }
 
@@ -18,6 +18,10 @@ data class BackupCategory(
   val id: String,
   val name: String,
   val description: String,
+  // v2; absent in v1 backups (defaults are derived from the name on import)
+  val shape: String? = null,
+  val icon: String? = null,
+  val sortOrder: Int? = null,
   val products: List<BackupProduct>,
   val standaloneItems: List<BackupProductItem>,
 )
@@ -40,4 +44,7 @@ data class BackupProductItem(
   val remainingDays: Int? = null,
   val consumedDate: Long? = null,
   val packSize: Int? = null,
+  // v2; absent in v1 backups
+  val discardedDate: Long? = null,
+  val createdAt: Long? = null,
 )

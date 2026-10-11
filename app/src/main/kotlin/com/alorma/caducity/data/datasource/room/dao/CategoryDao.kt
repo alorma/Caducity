@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.data.datasource.room.model.CategoryWithItemsRoomEntity
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +22,19 @@ interface CategoryDao {
 
   @Query("SELECT * FROM categories")
   fun getAllCategories(): Flow<List<CategoryRoomEntity>>
+
+  @Query("SELECT * FROM categories ORDER BY sortOrder, rowid")
+  fun getCategoriesOrdered(): Flow<List<CategoryRoomEntity>>
+
+  @Query("SELECT * FROM categories ORDER BY sortOrder, rowid")
+  suspend fun getCategoriesOrderedSync(): List<CategoryRoomEntity>
+
+  /** In-place update. Never use REPLACE for this: it would delete the row and cascade to its items. */
+  @Update
+  suspend fun updateCategory(category: CategoryRoomEntity)
+
+  @Query("SELECT COALESCE(MAX(sortOrder), -1) FROM categories")
+  suspend fun getMaxSortOrder(): Int
 
   @Query("SELECT * FROM categories WHERE id = :categoryId")
   suspend fun getCategory(categoryId: String): CategoryRoomEntity?

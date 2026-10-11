@@ -22,6 +22,9 @@ sealed class ItemStatus {
   @Serializable
   data object Consumed : ItemStatus()
 
+  @Serializable
+  data object Discarded : ItemStatus()
+
   companion object Companion {
     /**
      * Calculates the expiration status for a product instance.

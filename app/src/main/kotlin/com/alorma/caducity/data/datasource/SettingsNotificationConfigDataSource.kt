@@ -9,7 +9,7 @@ import kotlinx.datetime.LocalTime
  * Settings-backed implementation of NotificationConfigDataSource.
  * Persists notification preferences in shared preferences via multiplatform-settings.
  * The notification time is stored as seconds from midnight (single Int).
- * Default notification time is [NotificationConfigDataSource.DEFAULT_TIME] (noon).
+ * Default notification time is [NotificationConfigDataSource.DEFAULT_TIME] (09:00).
  */
 class SettingsNotificationConfigDataSource(
   private val settings: Settings,
@@ -28,6 +28,10 @@ class SettingsNotificationConfigDataSource(
   }
 
   override suspend fun isNotificationsEnabled(): Boolean = settings.getBoolean(NotificationsEnabledKey, false)
+
+  override suspend fun setNotificationsEnabled(enabled: Boolean) {
+    settings[NotificationsEnabledKey] = enabled
+  }
 
   companion object {
     private const val NotificationsEnabledKey = "notifications_enabled_key"

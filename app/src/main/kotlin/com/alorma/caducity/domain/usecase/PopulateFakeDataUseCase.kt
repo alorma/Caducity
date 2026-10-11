@@ -6,9 +6,12 @@ import com.alorma.caducity.domain.ItemDataSource
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.backup.BackupDataSource
 import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.CategoryDefaults
 import com.alorma.caducity.domain.model.NewItem
+import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.fakedata.FakeDataStrategy
 import java.util.UUID
+import kotlin.time.Instant
 import kotlinx.collections.immutable.persistentListOf
 
 /**
@@ -36,65 +39,70 @@ class PopulateFakeDataUseCase(
       // Get category configurations from the strategy
       val categoryConfigs = strategy.getCategoryConfigs(now)
 
-      // Create each category with its products and items
-      categoryConfigs.forEach { categoryConfig ->
+      // Create each category with its products and items, in order
+      categoryConfigs.forEachIndexed { index, categoryConfig ->
+        val defaults = CategoryDefaults.forName(categoryConfig.name, index)
         val category =
           Category(
             id = UUID.randomUUID().toString(),
             name = categoryConfig.name,
             description = categoryConfig.description,
+            shape = categoryConfig.shape ?: defaults.shape,
+            icon = categoryConfig.icon ?: defaults.icon,
+            sortOrder = index,
           )
 
         // Create category first (empty)
         categoryDataSource.createCategory(category, persistentListOf())
 
-        // Create products with items
-        categoryConfig.products.forEach { productConfig ->
-          val product = productDataSource.createProduct(category.id, productConfig.name)
+        // Every item belongs to a product; the free-text `identifier` is no longer used by the app.
+        val productIdsByName = mutableMapOf<String, String>()
 
-          // Add items to the product
-          productConfig.items.forEach { itemConfig ->
-            val newItem =
-              NewItem(
-                identifier = itemConfig.identifier,
-                productId = product.id,
-                expirationDate = itemConfig.expirationDate,
-              )
+        suspend fun productIdFor(name: String): String =
+          productIdsByName.getOrPut(name.normalizeForSearch()) { productDataSource.createProduct(category.id, name).id }
 
-            val itemId = itemDataSource.addItem(category.id, newItem)
-
-            // Apply item-specific actions
-            when {
-              itemConfig.shouldFreeze -> {
-                itemDataSource.freezeItem(itemId, remainingDays = itemConfig.remainingDaysWhenFrozen)
-              }
-              itemConfig.shouldConsume -> {
-                itemDataSource.markItemAsConsumed(itemId)
-              }
-            }
+        suspend fun addItem(
+          productName: String,
+          expirationDate: Instant,
+          shouldFreeze: Boolean,
+          remainingDaysWhenFrozen: Int,
+          shouldConsume: Boolean,
+        ) {
+          val newItem =
+            NewItem(
+              identifier = "",
+              productId = productIdFor(productName),
+              expirationDate = expirationDate,
+            )
+          val itemId = itemDataSource.addItem(category.id, newItem)
+          when {
+            shouldFreeze -> itemDataSource.freezeItem(itemId, remainingDays = remainingDaysWhenFrozen)
+            shouldConsume -> itemDataSource.markItemAsConsumed(itemId)
           }
         }
 
-        // Create standalone items (no product)
-        categoryConfig.standaloneItems.forEach { standaloneConfig ->
-          val newItem =
-            NewItem(
-              identifier = standaloneConfig.identifier,
-              productId = null,
-              expirationDate = standaloneConfig.expirationDate,
+        categoryConfig.products.forEach { productConfig ->
+          productIdFor(productConfig.name)
+          productConfig.items.forEach { item ->
+            addItem(
+              productConfig.name,
+              item.expirationDate,
+              item.shouldFreeze,
+              item.remainingDaysWhenFrozen,
+              item.shouldConsume,
             )
-
-          val itemId = itemDataSource.addItem(category.id, newItem)
-
-          // Apply item-specific actions
-          when {
-            standaloneConfig.shouldFreeze -> {
-              itemDataSource.freezeItem(itemId, remainingDays = standaloneConfig.remainingDaysWhenFrozen)
-            }
-            standaloneConfig.shouldConsume -> {
-              itemDataSource.markItemAsConsumed(itemId)
-            }
           }
+        }
+
+        // Legacy standalone configs become products named after their identifier.
+        categoryConfig.standaloneItems.forEach { item ->
+          addItem(
+            item.identifier,
+            item.expirationDate,
+            item.shouldFreeze,
+            item.remainingDaysWhenFrozen,
+            item.shouldConsume,
+          )
         }
       }
 

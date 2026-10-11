@@ -9,7 +9,7 @@ interface ItemComparator : Comparator<Item>
  * Default comparator for sorting Item objects.
  *
  * Sorting priority:
- * 1. Status (Expired -> ExpiringSoon -> Fresh -> Frozen -> Consumed)
+ * 1. Status (Expired -> ExpiringSoon -> Fresh -> Frozen -> Consumed -> Discarded)
  * 2. Expiration date (earliest first)
  */
 class StatusItemComparator : ItemComparator {
@@ -21,6 +21,7 @@ class StatusItemComparator : ItemComparator {
         ItemStatus.Fresh -> 2
         ItemStatus.Frozen -> 3
         ItemStatus.Consumed -> 4
+        ItemStatus.Discarded -> 5
       }
     }.thenBy { it.expirationDate }
 

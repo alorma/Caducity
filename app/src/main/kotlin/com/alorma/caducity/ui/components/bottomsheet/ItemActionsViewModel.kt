@@ -60,6 +60,7 @@ class ItemActionsViewModel(
       ItemStatus.Expired -> "expired"
       ItemStatus.Frozen -> "frozen"
       ItemStatus.Consumed -> "consumed"
+      ItemStatus.Discarded -> "discarded"
     }
 
   fun calculateStatusForDate(dateMillis: Long?): AppFeedbackType {
@@ -121,7 +122,8 @@ class ItemActionsViewModel(
           }
         }
 
-        ItemStatus.Consumed -> {
+        // TEMP(fase 5): Discarded is only produced by the new screens; treat it like Consumed here.
+        ItemStatus.Consumed, ItemStatus.Discarded -> {
           // Consumed items show placeholder (for future features)
           persistentListOf(
             ItemAction.Placeholder,

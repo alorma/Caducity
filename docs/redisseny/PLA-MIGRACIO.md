@@ -168,7 +168,7 @@ Totes via `com.russhwolf.settings.Settings`.
 | `notifications_enabled_key` (default false, sincronitzada amb el permís) | helper + `SettingsNotificationConfigDataSource` | **Mod** (= `dailyReminderEnabled`) |
 | `notifications_expired_enabled_key`, `notifications_expiring_soon_enabled_key` | helper | **E** |
 | `notification_time_seconds` (default **12:00**) | `NotificationConfigDataSource` | **M** clau; default nou 09:00 |
-| `user_onboarding` (FireAndForget, `autoDisable=false`) | `OnboardingFlag` | **M** (= `onboardingCompleted`, invers) |
+| `fire-and-forget-user_onboarding` (FireAndForget, `autoDisable=false`; la clau real porta el prefix `fire-and-forget-`) | `OnboardingFlag` | **M** (= `onboardingCompleted`, invers) |
 | `analytics_consent` (FireAndForget), `consent_analytics_storage`, `consent_ad_*`, `consent_given` | `feature/consent/*` | **M** (`analyticsEnabled` = `consent_analytics_storage`) |
 | `ai_selected_model` i claus del worker de models | `AiModelPreferences` | **E** (fase 0) |
 | `debug_remote_config_*` | debug | **M** |
@@ -362,13 +362,13 @@ Després, a `migrate()` amb Kotlin (testable):
    | Paraules clau | Forma | Icona |
    |---|---|---|
    | dairy, lácteos, lactics, llet, leche | `COOKIE` | `water_full` |
-   | produce, fruit, fruta, verdura, fruita | `FLOWER` | `nutrition` |
+   | produce, fruit, fruta, verdura, fruita | `CLOVER8` | `nutrition` |
    | meat, fish, carne, pescado, carn, peix | `CLOVER` | `set_meal` |
    | pantry, despensa, rebost | `SUNNY` | `grocery` |
    | bakery, panader, fleca, pan | `PUFFY` | `bakery_dining` |
    | drink, bebida, beguda | `BURST` | `local_drink` |
    | frozen, congelad | `BURST` | `icecream` |
-   | sense coincidència | cicle `COOKIE, FLOWER, CLOVER, SUNNY, PUFFY, BURST` per `sortOrder` | `eco` |
+   | sense coincidència | cicle `COOKIE, CLOVER8, CLOVER, SUNNY, PUFFY, BURST` per `sortOrder` | `eco` |
 
 3. **Ítems sense producte → productes:** per cada `(categoryId, identifier)` amb `productId IS NULL AND identifier <> ''`, inserir un `Product` (`id` UUID en Kotlin, `name = identifier`, `createdAt = MIN(expirationDate)`), assignar `productId`.
 4. **Buidat d'`identifier` (decidit):** `UPDATE items SET identifier = '' WHERE productId IS NOT NULL` (inclou els ítems que ja tenien producte, p. ex. «Cheddar Cheese #1», i els convertits al pas 3). Es perd l'etiqueta lliure antiga. La UI **a més** ignora sempre `identifier` (doble seguretat).
@@ -461,7 +461,7 @@ Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(
 **Objectiu:** terreny net abans de redissenyar.
 - Esborrar `feature/ai/**`, `ui/screen/ai/**`, `settings/ai/**`, registres a `AppModule`/`WorkerModule`, entrades a `Dashboard*`/`SettingsRootScreen`/`App.kt`/`Actions.kt`; treure `llamatik` i `firebase-ai` de `libs.versions.toml`/`build.gradle.kts`; del manifest `INTERNET`, `FOREGROUND_SERVICE*`, `SystemForegroundService`; 2 tests d'IA; strings d'IA. Comprovar si `firebase-appcheck-*` només servia per a IA (si sí, fora, i el codi d'AppCheck a `CaducityApplication`).
 - Infra de tests: `room-testing`, Robolectric activat (`isIncludeAndroidResources`, esquemes com a assets de test).
-- Spike (no es commiteja): compilar `MaterialShapes.{Cookie9Sided,Flower,Clover4Leaf,Sunny,Puffy,SoftBurst}`, `HorizontalFloatingToolbar` (+ `exitAlwaysScrollBehavior`), `ButtonGroup`, `LargeFlexibleTopAppBar`, `FontVariation.width` a `material3 1.5.0-beta01`.
+- Spike (no es commiteja): compilar `MaterialShapes.{Cookie9Sided,Clover8Leaf,Clover4Leaf,Sunny,Puffy,SoftBurst}`, `HorizontalFloatingToolbar` (+ `exitAlwaysScrollBehavior`), `ButtonGroup`, `LargeFlexibleTopAppBar`, `FontVariation.width` a `material3 1.5.0-beta01`.
 - **Primer commit** (P21): `docs: alinear especificació amb decisions` — alinear `01-navegacio.md`, `02-migracio-pantalles.md`, `04-model-de-dades.md`, `05-textos.md` i `08-decisions-i-obertes.md` amb les decisions ja preses (sense canviar cap decisió de disseny). Abans de fer-lo, es comunica a l'usuari quins fitxers es toquen i què hi canvia.
 - **Riscos:** acoblament de `firebase-ai`/AppCheck; mitigació: grep per símbol abans d'esborrar.
 - **Acceptació:** l'app arrenca; sense cap entrada d'IA; APK debug més petit.

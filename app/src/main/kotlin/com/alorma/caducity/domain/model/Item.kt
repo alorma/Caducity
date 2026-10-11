@@ -10,5 +10,12 @@ data class Item(
   val expirationDate: Instant,
   val status: ItemStatus,
   val pausedDate: Instant? = null,
+  val remainingDays: Int? = null,
   val packSize: Int? = null,
-)
+  val discardedDate: Instant? = null,
+  val createdAt: Instant? = null,
+) {
+  /** An item is active until it is consumed or discarded. */
+  val isActive: Boolean
+    get() = status != ItemStatus.Consumed && status != ItemStatus.Discarded
+}
