@@ -31,7 +31,7 @@ data class CategoryDefaults(
         Rule(
           listOf("produce", "fruit", "fruta", "verdura"),
           emptyList(),
-          CategoryShape.FLOWER,
+          CategoryShape.CLOVER8,
           CategoryIcon("nutrition"),
         ),
         Rule(
