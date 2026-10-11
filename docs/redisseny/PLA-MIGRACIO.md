@@ -22,7 +22,8 @@ S'actualitza en tancar cada fase (regla 6: tests verds → emulador → validaci
 | 6 — Rebost i Categoria | ✅ Feta | `e24a10e`, `aad8097`, `0a390ae`, `eb72c49`, `7f62109` | 2026-10-11 | Validada per l'usuari. Provada a l'emulador (clar; el fosc no s'ha provat). Rebost amb cercador enfocable des d'Inici; Categoria amb capçalera fixa, tira de 7 dies, xips i filtre per dia (P19 canviat a «filtra», segons `CategoriaDia.png`); píndoles Ahir/Avui/Demà. Eliminats `CategoryDetail*`, pàgines de producte i els use cases/DAOs de P7. `ItemDetailUiModel` (fins a la 7) i `DateItemsUiModel` (fins a l'11b) es mantenen `// TEMP`. Capçalera fixa a la resta de pantalles: M2. La prova en tauleta queda per al repàs global final |
 | 7 — Pantalles d'estat (Caducats, Aviat, Frescos, Congelats) | ✅ Feta | `7d83245`, `4f8d0ad`, `cf03ab2`, `544cde8`, `e1bf916`, `9afdf9e` | 2026-10-11 | Validada per l'usuari. Tests i ktlint verds; provada a l'emulador (clar; el fosc no s'ha provat), sense crashos. `StatusListScreen(status)` amb les quatre variants, selecció múltiple i Desfés exacte per instantània (`ItemSnapshot`); l'Inici hi connecta bàner i caselles (a 0 no navega). S'han eliminat `filtered/**`, el full d'Accions antic i els mètodes de consum amb bloqueig. `ItemDetailUiModel` es manté `// TEMP(fase 11)`. Capçalera col·lapsable en fer scroll (pròpia, amb `nestedScroll`; `MotionLayout` a M3). La prova en tauleta queda per al repàs global final |
 | 8 — Nova/Edita categoria i Ajustos | ✅ Feta | `9a62625` | 2026-10-11 | Validada per l'usuari. Tests i ktlint verds; provada a l'emulador (clar; el fosc, l'edició i la notificació real no s'han provat). Editor de categoria (nova/edita/esborra), Ajustos nous (Còpia, Privadesa, Quant a i Debug passen a rutes de la pila principal), una sola notificació diària amb un sol canal (canals antics esborrats) i pas 2 del `PreferencesMigrator` (també s'esborra `notifications_enabled_key`; l'interruptor passa a `daily_reminder_enabled`). Bullet de release notes pendent per al final del rediseny |
-| 9 — Onboarding nou | ⬜ Pendent | | | |
+| 8b — Marge d'«Aviat» per categoria | ⬜ Pendent | | | Canvi afegit el 2026-10-11 (`pantalles/14-marge-per-categoria.md`). Va després de la 8 i abans de la 9 |
+| 9 — Onboarding nou | ⬜ Pendent | | | Recull el marge de les categories suggerides (vegeu 8b) |
 | 10 — Icona, splash, widget, dreceres | 🟡 Parcial | `3d59630` | 2026-10-11 | Icona adaptativa feta; widget i dreceres es fan al final (decidit 2026-10-11) |
 | 11 — Textos, accessibilitat, mode fosc, neteja | ⬜ Pendent | | | |
 
@@ -362,6 +363,23 @@ Conseqüència: **fase 11 elimina** `ui/components/calendar/**`, `CalendarData` 
 
 ---
 
+### 5.14 Marge d'«Aviat» per categoria (nou, 2026-10-11)
+
+Font: `pantalles/14-marge-per-categoria.md` (captures `Marge*.png`). Cada categoria pot tenir el seu marge (`soonThresholdDays: Int?`); si és `null` val el llindar global, que passa a dir-se «"Aviat" per defecte». `SOON` = `avui <= data <= avui + marge`.
+
+- **On es calcula l'estat:** avui `ExpiryStatus.of(expiry, today, thresholdDays, frozen)` rep el llindar global i `ObserveItemsUseCase` el combina amb `ExpirationThresholds.soonThresholdDays`. Cal que `ActiveItem` porti el marge de la seva categoria (`categorySoonDays: Int?`) i que `PantryEntry` exposi el marge **efectiu**; l'`ExpiryStatusCalculator` de l'especificació és la mateixa funció pura amb un paràmetre més (es manté `ExpiryStatus.of` com a nucli; no es duplica el càlcul).
+- **Llocs que filtren per `SOON`** (tots han de fer servir el marge efectiu; es revisen amb `git grep ExpiryStatus.SOON`): `ObserveHomeUseCase` (secció per dia, casella Aviat), `ObserveItemsByStatusUseCase` (pantalla Aviat), `ObserveWeekStripUseCase`/`ObserveCalendarUseCase` (punts i colors), `ObserveCategoryUseCase`/`ObservePantryUseCase` (recomptes), `NotificationContentBuilder` (fase 8), widget (fase 10, `WidgetStateMapper`).
+- **Notificació:** el criteri canvia a «passa a `SOON` avui (`data − marge == avui`) o caduca avui/demà»; `NotificationContentBuilder` rep el marge efectiu per entrada.
+- **Preferència global:** `soonThresholdDays` es manté (1/3/7) com a per defecte; l'escala de parades (1 dia … 3 mesos, `ThresholdStops`) només s'aplica al marge per categoria.
+
+**Punts que xoquen amb el que ja hi ha (cal decidir):**
+1. **Usuaris existents: decidit (2026-10-11) que no canvia res.** Totes les categories existents queden amb `soonThresholdDays = null` i segueixen el per defecte (3 dies), així que «llindar 3 = sense canvi visible» (5.2) continua valent. Els valors suggerits (p. ex. Rebost 1 mes = 30 dies, de la taula de l'especificació) només s'apliquen a les categories noves de l'onboarding i al botó «Torna als valors suggerits». No hi ha, doncs, cap omplert a la migració.
+2. **Ajustos (fase 8, ja feta)** té «"Aviat" vol dir» i l'editor no té «Avisa'm abans»: es modifiquen a la 8b (no es reobre la 8).
+3. **Backup:** `BackupCategory` guanya `soonThresholdDays` nullable. La versió 2 del backup encara no s'ha publicat, així que **s'amplia la v2 sense pujar `CURRENT_VERSION`**; els fitxers sense el camp → `null`.
+4. **Inici (fase 5b, feta):** les seccions per dia passen a arribar només fins a `avui + 6` i la resta de `SOON` va a «Més endavant»; canvia `HomeData`/`ObserveHomeUseCase` i `HomeScreen`.
+5. **Pantalla Aviat (fase 7, feta):** canvia la frase d'ajuda (ara no hi ha un únic N) i cada grup rep la pastilla «Avisa N abans».
+6. El paquet del canvi es va fer sobre una còpia més antiga dels documents: només s'han fusionat els trossos del marge; `04-model-de-dades.md`, `05-textos.md`, `08-decisions-i-obertes.md` i `README.md` conserven la resta del que ja hi havia (unitats, calendari, mode fosc…). Les preferències segueixen sent `multiplatform-settings`, no DataStore.
+
 ## 6. Migracions
 
 ### 6.1 Room v2 → v3 (`MIGRATION_2_3`)
@@ -421,6 +439,19 @@ S'executa a `CaducityApplication.onCreate()` abans de `scheduleExpirationCheck`;
 El migrador té **passos versionats** per respectar la regla d'eliminació: el **pas 1 (fase 2)** fixa `soonThresholdDays`, esborra `theme_tone` i `ai_*` i prepara les claus noves; el **pas 2 (fase 8)** deriva `dailyReminderEnabled`/`dailyReminderTime` de les claus antigues i esborra `notifications_expired_enabled_key` i `notifications_expiring_soon_enabled_key`. Els canals antics (`product_expiring_soon`, `product_expired`) s'esborren a la **fase 8** (no al migrador), quan ja no hi ha codi que els recreï.
 
 ---
+
+### 6.4 Marge per categoria dins la migració v2 → v3 (decidit 2026-10-11)
+
+**Decisió: dins la `MIGRATION_2_3` (6.1), sense v4.** La v3 no s'ha publicat mai (l'últim tag és `0.9.0`, a Room v2), així que cap usuari de producció la veurà. S'afegeix una línia a la migració i s'editen `CategoryRoomEntity`/`3.json`:
+
+```sql
+ALTER TABLE categories ADD COLUMN soonThresholdDays INTEGER;   -- NULL = per defecte
+```
+- `CategoryRoomEntity.soonThresholdDays: Int? = null` (sense `defaultValue`); `@Database(version = 3)` es manté; es **regenera `3.json`**.
+- Cap `UPDATE`: totes les categories existents queden a `null` (5.14.1).
+- **Cost, només per a les instal·lacions de desenvolupament:** una base de dades ja creada amb la v3 antiga (emuladors i mòbils amb builds de `main`) no es torna a migrar i Room la rebutja per hash diferent. Cal **desinstal·lar l'app o esborrar-ne les dades** una vegada. Per això la 8b ho ha d'anunciar en acabar.
+- **Suggerits:** taula única `SuggestedThresholds` (Carn i peix 2, Fleca 2, Làctics 3, Fruita i verdura 3, Embotits 3, Plats preparats 2, Begudes 7, Rebost 30) usada per l'onboarding (`SeedCategoriesUseCase`) i per «Torna als valors suggerits».
+- **Backup:** vegeu 5.14.3. Tests: `Migration2To3Test` ampliat (columna nova, categories existents a `null`; 1→3 inclòs) i `BackupTest` ampliat.
 
 ## 7. Textos nous no recollits a `05-textos.md` (calendari)
 
@@ -596,7 +627,18 @@ Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(
 - **Acceptació:** `NovaCategoria.png`, `Ajustos.png`; canviar «La setmana comença» canvia el primer dia a la vista de mes.; **preview clar/fosc** (sense captura fosca: s'aplica la taula de substitució)
 - **Tests:** `CategoryEditorViewModelTest` (nom únic, edita, esborra amb ítems), `SettingsViewModelTest` (llindar canvia l'estat a Inici i Calendari), `NotificationSchedulingTest`, `NotificationContentBuilderTest` (cap notificació si no hi ha `SOON`/«avui», recompte, 2–3 més urgents, «avui»/«demà»), `PreferencesMigratorStep2Test`.
 
+### Fase 8b — Marge d'«Aviat» per categoria
+Un o més commits. Font: `pantalles/14-marge-per-categoria.md`, 5.14 i 6.4. Cap codi d'aquesta fase s'ha escrit encara.
+- **Dades:** columna nova dins la `MIGRATION_2_3` (6.4), `CategoryRoomEntity`/`Category.soonThresholdDays`, DAOs i mappers, backup (`BackupCategory` + camp nullable), `SuggestedThresholds`, `ThresholdStops` (parada ↔ dies; un valor fora de parades es conserva i el slider mostra la més propera).
+- **Domini:** el càlcul d'estat usa el marge efectiu (5.14); `ActiveItem`/`PantryEntry` el porten; revisió de tots els filtres per `SOON`; `UpdateCategoryUseCase`/`CreateCategoryUseCase` accepten `soonThresholdDays: Int?`; `ObserveHomeUseCase` limita les seccions a `avui + 6` i afegeix «Més endavant»; `NotificationContentBuilder` amb el criteri nou.
+- **UI:** `ThresholdSlider` (slider discret de 8 parades, `stateDescription`, hàptic); pantalla **«Marge per categoria»** (`Settings › Marge per categoria`, files desplegables d'una en una, «Torna als valors suggerits» amb diàleg); **Ajustos** (fila «"Aviat" per defecte» + fila nova amb resum d'una línia); **Nova/edita categoria** (secció «Avisa'm abans», previsualització de 96 dp; sense tocar-ho es desa `null`); **Inici** («Més endavant» plegable, ajuda); **Aviat** (frase nova + pastilla «Avisa N abans» per grup).
+- **Fora d'aquesta fase:** onboarding (la 9 crea les categories suggerides amb el marge via `SeedCategoriesUseCase` i canvia el text del pas Avisos), widget (la 10 usa el marge efectiu), textos en en/es (fase 11a; aquí ca + en/es bàsics amb les claus de `05-textos.md`).
+- **Riscos:** instal·lacions de desenvolupament ja a la v3 antiga (cal reinstal·lar, 6.4); filtres per `SOON` oblidats (`git grep ExpiryStatus.SOON`); `Slider` M3 expressive amb `steps` i accessibilitat.
+- **Acceptació:** `MargeAjustos.png`, `MargeCategories.png`, `MargeNovaCategoria.png`, `MargeInici.png`, `MargeAviat.png`; **preview clar/fosc**; canviar el marge d'una categoria canvia a l'acte qui és «Aviat» a Inici, Aviat, tira i calendari.
+- **Tests:** `ExpiryStatusCalculatorTest` (marge propi vs per defecte; límits: avui + marge inclòs, +1 exclòs; canviar el global no afecta categories amb marge propi), `ThresholdStopsTest`, `HomeSectionsTest` (fins a avui+6, «Més endavant», casella Aviat compta tots els `SOON`), `DailyNotificationTest` (només el primer dia a `SOON` + avui/demà; un producte amb marge d'1 mes no es repeteix), `Migration2To3Test` ampliat, `BackupTest` ampliat, `CategoryEditorViewModelTest` ampliat (`null` si no es toca, valor si es toca), `SettingsViewModelTest` ampliat.
+
 ### Fase 9 — Onboarding nou
+- **Marge (de la 8b):** les categories suggerides es creen amb el seu marge (`SuggestedThresholds`); el selector del pas Avisos és el «per defecte» amb l'ajuda «Cada categoria ja porta el seu marge. Aquest és per a les que creïs tu.».
 - **Crear:** `WelcomeStep`, `CategoriesStep` (targetes casella, «Continua amb N»), `AlertsStep` (notificació d'exemple, llindar, hora, «Activa els avisos»/«Ara no»/«Avisos activats»), `PrivacyStep` (analítiques off), `DisclaimerStep` (casella desmarcada, botó desactivat, versionat), barra segmentada amb `progressSemantics`, animacions de `06-moviment.md` (respectant animació reduïda), `SeedCategoriesUseCase`.
 - **Modificar:** `OnboardingViewModel` (sense *Skip*; en acabar: desa versió+data de l'avís, crea categories triades amb `shape/icon/sortOrder`, desa avisos/analítiques, `OnboardingFlag.disable()`); flux de reacceptació per a usuaris existents (només el pas 5, P3).
 - **Eliminar:** les 6 pàgines velles, `OnboardingPagerIndicator`, `OnboardingButtons`; simplificar `ConsentPreferences` (DEFAULT / ANALYTICS_ONLY).
@@ -607,7 +649,7 @@ Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(
 ### Fase 10 — Icona, splash, widget i dreceres
 - Icona adaptativa (fons `#E8B95A`, Galeta `#4D5A1E`, fulla `#FBF6EC`), monocroma, debug amb franja «DEV» `expired`; `ic_notification` monocrom. El vector definitiu s'ha de dibuixar sobre la retícula de 108 dp (obert #8): si no hi és, es deixa el provisional marcat.
 - Splash: `androidx.core:core-splashscreen`, fons `surface`; **en fosc, fons `#1C1A15`**; la icona A no canvia (mostassa + oliva).
-- Widget (Glance): `glance-appwidget` + `glance-material3`; `CaducityWidget`, receiver, `appwidget-provider`; dades via Koin; `updateAll()` després de cada escriptura i des del worker diari; botó **Afegeix** → `add?source=widget`, cos → `home`; estat buit; tipografia del sistema en negreta (P13).
+- Widget (Glance, amb el marge efectiu de cada categoria, 8b): `glance-appwidget` + `glance-material3`; `CaducityWidget`, receiver, `appwidget-provider`; dades via Koin; `updateAll()` després de cada escriptura i des del worker diari; botó **Afegeix** → `add?source=widget`, cos → `home`; estat buit; tipografia del sistema en negreta (P13).
 - Dreceres estàtiques: Afegeix producte, Què caduca, Caducats (`StatusList(EXPIRED)`). Activar `WidgetTipCard` d'Inici.
 - **Riscos:** R8 amb Glance; refresc a mitjanit; mides del widget.
 - **Acceptació:** `Icona.png`, `Splash.png`, `Accessos.png`; la icona temàtica (Android 13+) es veu monocroma.
@@ -651,7 +693,7 @@ Dos commits: 11a (textos, accessibilitat, mode fosc) i 11b (neteja).
 ## 11. Ordre i dependències entre fases
 
 ```
-0 ─▶ 1 ─▶ 2 ─▶ 3 ─▶ 4 ─▶ 5a ─▶ 5b ─▶ 5c ─▶ 6 ─▶ 7 ─▶ 8 ─▶ 9 ─▶ 10 ─▶ 11
+0 ─▶ 1 ─▶ 2 ─▶ 3 ─▶ 4 ─▶ 5a ─▶ 5b ─▶ 5c ─▶ 6 ─▶ 7 ─▶ 8 ─▶ 8b ─▶ 9 ─▶ 10 ─▶ 11
                     │      ▲      │
                     │      └ Accions (5a) l'obren Inici (5b), Calendari (5c), Categoria (6), pantalles d'estat (7)
                     └ QuickCategorySheet i ShapePicker/IconPicker (4) reutilitzats a 8
@@ -663,6 +705,7 @@ Es manté la numeració 0–11 de l'esquema inicial i de `RESPOSTES-AL-PLA.md` (
 3. **El calendari entra a la 5 (tira + mes) i a la 6 (entrada des de Categoria)**; `Calendar(categoryId?)` suporta categoria des de la 5c.
 4. **`QuickCategorySheet` i els seus components** (`CategoryForm`, `ShapePicker`, `IconPicker`) es construeixen a la 4 i es reutilitzen a la 8.
 5. **La fase 5 es divideix en tres commits** (5a, 5b, 5c); la 11 en dos (11a, 11b).
+6. **Fase 8b (marge per categoria), afegida el 2026-10-11** després de validar la 8: toca dades, domini i pantalles de les fases 5, 7 i 8 ja fetes, i l'onboarding (9) i el widget (10) hi depenen.
 
 ---
 
@@ -689,6 +732,7 @@ Es manté la numeració 0–11 de l'esquema inicial i de `RESPOSTES-AL-PLA.md` (
 | Canvi silenciós d'estat d'ítems | Test d'equivalència entre càlcul antic i nou (llindar 3, `<=`) |
 | Desfasament de data per zona horària (afecta també a tira i mes) | `LocalDate` al domini; tests amb zones UTC±12 |
 | Eliminacions que trenquen la compilació | Regla d'eliminació (secció 9): només quan mor l'últim consumidor, comprovat amb `git grep`; `// TEMP(fase N)` |
+| Marge per categoria canvia l'estat d'ítems existents (8b) | Cap: les categories existents queden a `null` (5.14.1); test d'equivalència amb marge `null` ≡ comportament actual |
 | Es perd l'etiqueta lliure `identifier` («Batch #1») en migrar | Acceptat (decisió); documentat a 6.1 |
 | UI híbrida entre fases (no es publica) | Cada fase manté l'app funcional; adaptadors `// TEMP(fase N)` eliminats a la fase indicada |
 | Fase 5 és gran (Accions + Inici + Calendari) | Tres commits (5a/5b/5c); 5a es pot entregar i provar sola |

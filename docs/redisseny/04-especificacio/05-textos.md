@@ -128,8 +128,8 @@ Segona persona del singular, frases curtes, verbs en imperatiu als botons (Afege
 | `settings_section_alerts` / `_appearance` / `_data` | Avisos / Aparença / Dades |
 | `settings_notifications` | Notificacions |
 | `settings_notifications_time` | Cada dia a les %s |
-| `settings_soon_means` | «Aviat» vol dir |
-| `settings_soon_means_sub` | Quan un producte passa a groc i t'avisem |
+| `settings_soon_means` | «Aviat» per defecte |
+| `settings_soon_means_sub` | Per a les categories sense marge propi |
 | `settings_1d` / `_3d` / `_1w` | 1 dia / 3 dies / 1 setmana |
 | `settings_theme` | Tema — Clar / Fosc / Sistema |
 | `settings_dynamic_color` | Color dinàmic |
@@ -210,3 +210,25 @@ Segona persona del singular, frases curtes, verbs en imperatiu als botons (Afege
 |---|---|
 | `item_pack_of` | pack de %d |
 | `item_units` | %d unitats (plurals: 1 unitat) |
+
+## Marge per categoria
+| Clau | Text |
+|---|---|
+| `settings_threshold_per_category` | Marge per categoria |
+| `threshold_screen_title` | Marge per categoria |
+| `threshold_screen_intro` | Quants dies abans de caducar un producte passa a «Aviat» i t'avisem. |
+| `threshold_row_sub` | Avisa %s abans |
+| `threshold_row_default` | Per defecte (Ajustos) |
+| `threshold_suggested` | Suggerit per a %1$s: %2$s |
+| `threshold_reset` | Torna als valors suggerits |
+| `threshold_days_before` | %s abans de caducar |
+| `threshold_group_days` / `_weeks` / `_months` | dies / setmanes / mesos |
+| `threshold_stop_*` | 1 dia · 2 dies · 3 dies · 1 setmana · 2 setmanes · 1 mes · 2 mesos · 3 mesos |
+| `category_notify_before` | Avisa'm abans |
+| `category_notify_help` | Llisca o toca un punt. %1$s passaran a «Aviat» %2$s abans. |
+| `home_later_title` | Més endavant |
+| `home_later_range` | Del %1$s al %2$s |
+| `home_later_help` | Ja són «Aviat» pel marge de la seva categoria. |
+| `status_soon_help` | Segons el marge de cada categoria. Fes-los servir primer. |
+| `status_group_threshold` | Avisa %s abans |
+| `onboarding_threshold_help` | Cada categoria ja porta el seu marge. Aquest és per a les que creïs tu. |
