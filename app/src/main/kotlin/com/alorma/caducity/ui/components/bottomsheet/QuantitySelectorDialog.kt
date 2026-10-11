@@ -20,11 +20,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.Add
 import com.alorma.caducity.base.ui.icons.AppIcons
-import com.alorma.caducity.base.ui.icons.Close
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
@@ -114,7 +115,12 @@ private fun QuantitySelectorContent(
             contentColor = vibrantColors.onContainer,
           ),
       ) {
-        Icon(AppIcons.Close, contentDescription = stringResource(R.string.quantity_selector_decrease))
+        val decreaseLabel = stringResource(R.string.quantity_selector_decrease)
+        Text(
+          text = "−",
+          style = MaterialTheme.typography.titleLarge,
+          modifier = Modifier.semantics { contentDescription = decreaseLabel },
+        )
       }
 
       Spacer(modifier = Modifier.width(24.dp))
