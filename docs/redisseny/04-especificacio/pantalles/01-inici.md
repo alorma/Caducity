@@ -18,7 +18,7 @@ Substitueix: `01-app-original/app/01_dashboard.png`.
 4. **Resum connectat** (3 caselles, gap 3, radis 20/8)
    - Aviat (`soon-container`), Frescos (`fresh-container`), Congelats (`frozen-container`). Número `number`, etiqueta `label` 13.
    - Cada casella obre la seva pantalla d'estat: Aviat → `StatusListRoute(SOON)`, Frescos → `StatusListRoute(FRESH)`, Congelats → `StatusListRoute(FROZEN)`. Mateixa plantilla que Caducats (vegeu `13-pantalles-estat.md`). Amb recompte 0, la casella no navega.
-5. **Seccions per dia**: només productes `SOON` (dins el llindar). Agrupats per dia: «Avui», «Demà», després «Dimarts 13», «Dimecres 14»…
+5. **Seccions per dia**: només productes `SOON` (dins el marge de la seva categoria, vegeu `14-marge-per-categoria.md`), **fins a avui + 6**. La resta de `SOON` va a la secció plegada **«Més endavant»** (`MargeInici.png`). Agrupats per dia: «Avui», «Demà», després «Dimarts 13», «Dimecres 14»…
    - Capçalera de secció: títol `section-title` + subtítol «dilluns 12 · 3 productes» (`ink-variant`).
    - **Fila** (llista connectada, mín. 68 dp): forma de categoria 44 dp + nom (`title-row`) + «Categoria · quantitat» (`body-small`) + botó rodó 44 dp `check` («Marca com a consumit») sobre `surface`.
    - **Una fila per (producte, dia)**: si un producte té diverses unitats que caduquen el mateix dia, una sola fila amb «N unitats». El recompte de la secció compta unitats.

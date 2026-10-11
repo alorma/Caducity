@@ -51,7 +51,7 @@ Estat **derivat** (no desat) a partir de la data i del llindar:
 ```
 FROZEN   si item.frozen == true
 EXPIRED  si expiryDate < avui
-SOON     si avui <= expiryDate <= avui + llindar
+SOON     si avui <= expiryDate <= avui + (category.soonThresholdDays ?: llindar global)
 FRESH    altrament
 ```
 
@@ -83,7 +83,7 @@ Estat de pantalla (no persistent): llista d'ítems desats en aquesta sessió, ca
 | Clau | Tipus | Per defecte | On es canvia |
 |---|---|---|---|
 | `onboardingCompleted` | bool | false | Onboarding |
-| `soonThresholdDays` | int (1, 3, 7) | 3 | Onboarding pas 2, Ajustos › Avisos |
+| `soonThresholdDays` | int (1, 3, 7) | 3 | Onboarding pas 2, Ajustos › Avisos. És el **per defecte**; cada categoria pot tenir el seu (`CategoryEntity.soonThresholdDays`, vegeu `pantalles/14-marge-per-categoria.md`). |
 | `dailyReminderEnabled` | bool | true si es concedeix el permís | Onboarding, Ajustos |
 | `dailyReminderTime` | LocalTime | 09:00 | Onboarding, Ajustos |
 | `analyticsEnabled` | bool | **false** | Onboarding pas 3, Ajustos › Privadesa |
@@ -99,5 +99,8 @@ Estat de pantalla (no persistent): llista d'ítems desats en aquesta sessió, ca
 
 ## Notificacions
 
-- **Una sola notificació diària** a l'hora configurada, només si hi ha productes `SOON` o que caduquen avui. Títol: «N productes caduquen aviat». Text: els 2–3 més urgents («Llet sencera avui, Mozzarella demà…»).
+- **Una sola notificació diària** a l'hora configurada. Hi entren només els productes que **passen a `SOON` avui** i els que **caduquen avui o demà** (així els marges llargs no es repeteixen cada dia). Títol: «N productes caduquen aviat». Text: els 2–3 més urgents («Llet sencera avui, Mozzarella demà…»).
 - Permís `POST_NOTIFICATIONS` sol·licitat des del botó «Activa els avisos» de l'onboarding (no en obrir l'app).
+
+## Marge per categoria
+`CategoryEntity.soonThresholdDays: Int?` (null = per defecte). Valors suggerits de les categories de l'onboarding: Carn i peix 2, Fleca 2, Làctics 3, Fruita i verdura 3, Embotits 3, Plats preparats 2, Begudes 7, Rebost 30. Detall a `pantalles/14-marge-per-categoria.md`.

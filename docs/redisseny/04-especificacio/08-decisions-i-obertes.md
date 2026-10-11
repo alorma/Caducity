@@ -28,6 +28,8 @@
 | Cerca de l'Inici | Obre Rebost amb el cercador enfocat. |
 | Dates passades | Es permet desar-les amb l'avís «ja ha caducat». |
 | Setmana | «La setmana comença» afecta la vista de mes. |
+| Marge d'«Aviat» | Per categoria (`soonThresholdDays` nullable), amb el global com a per defecte. Slider de 8 parades (1 dia → 3 mesos). Vegeu `pantalles/14-marge-per-categoria.md`. |
+| Notificació amb marges llargs | Només el primer dia a `SOON` + avui/demà. |
 
 ## Temes oberts
 
@@ -39,3 +41,4 @@
 6. ~~Cerca global~~ — resolt: obre Rebost amb el cercador enfocat.
 7. **Ordenar categories** (arrossegar a Rebost): fora d'abast.
 8. **Icona vectorial definitiva**: cal dibuixar-la sobre la retícula d'icona adaptativa.
+9. **Marge personalitzat exacte** (p. ex. 10 dies): pendent; ara només parades fixes.

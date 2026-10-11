@@ -4,10 +4,11 @@ Captura: `NovaCategoria.png`. Font: `NovaCategoria.dc.html`. Substitueix `app/06
 
 ## Estructura
 1. Barra: `close` + «Nova categoria» + botó **Desa** (pastilla `primary`, 44 dp). Desactivat sense nom.
-2. **Previsualització** centrada: forma 120 dp + icona 52 + nom (`Bricolage 28/800`). S'actualitza en viu.
+2. **Previsualització** centrada: forma 96 dp + icona 42 + nom (`Bricolage 28/800`). S'actualitza en viu.
 3. **Nom** (camp 56 dp).
 4. **Forma**: 6 opcions (Galeta, Flor, Trèvol, Sol, Coixí, Segell), graella 6 columnes, 52 dp.
 5. **Icona**: 12 opcions, graella 6×2, 48 dp.
-6. **Descripció · opcional**: àrea de text 80 dp, placeholder «Per exemple: refrescos, sucs i begudes fermentades».
+6. **Avisa'm abans**: `ThresholdSlider` (vegeu `14-marge-per-categoria.md`, `MargeNovaCategoria.png`). Si no es toca, es desa `null` (segueix el per defecte).
+7. **Descripció · opcional**: àrea de text 80 dp, placeholder «Per exemple: refrescos, sucs i begudes fermentades».
 
 Validació: nom únic (sense distingir majúscules); si es repeteix, missatge d'error sota el camp i Desa desactivat.

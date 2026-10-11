@@ -31,7 +31,7 @@ Igual que la de `05-caducats.md`; només canvien els colors, els textos i les ac
 | Estat | Colors | Títol | Frase d'ajuda | Línia de data | Ordre de files | Botó 1 | Botó 2 | Selecció múltiple |
 |---|---|---|---|---|---|---|---|---|
 | `EXPIRED` | `expired-container` / `on-expired-container` | Caducats | «Si encara són bons, canvia'n la data. Si no, llença'ls.» | «Fa 1 dia · ds. 10 oct» | més antic primer | `event_repeat` Canvia la data | `delete` Llença (color `expired`) | Llença (N) · Canvia la data |
-| `SOON` | `soon-container` / `on-soon` | Aviat | «Caduquen en els pròxims N dies. Fes-los servir primer.» (N = llindar d'Ajustos) | «Avui · dg. 11 oct», «Demà · …», «D'aquí 2 dies · …» | data asc. | `check` Consumit | `ac_unit` Congela (color `frozen`) | Consumit (N) · Congela (N) |
+| `SOON` | `soon-container` / `on-soon` | Aviat | «Segons el marge de cada categoria. Fes-los servir primer.» + pastilla «Avisa N abans» a cada grup (vegeu `14-marge-per-categoria.md`) | «Avui · dg. 11 oct», «Demà · …», «D'aquí 2 dies · …» | data asc. | `check` Consumit | `ac_unit` Congela (color `frozen`) | Consumit (N) · Congela (N) |
 | `FRESH` | `fresh-container` / `on-fresh` | Frescos | «Encara tenen marge. Primer, els que caduquen abans.» | «D'aquí 22 dies · dl. 2 nov» | data asc. | `check` Consumit | `ac_unit` Congela | Consumit (N) · Congela (N) |
 | `FROZEN` | `frozen-container` / `on-frozen` | Congelats | «No caduquen mentre són al congelador. Quan en treguis un, descongela'l i posa-li data.» | «Congelat el 2 oct» | congelat fa més temps primer | `check` Consumit | `water_drop` Descongela (color `frozen`) | Consumit (N) |
 
@@ -75,7 +75,7 @@ Els tres primers tornen a l'Inici en buidar-se; a la pràctica la casella amb 0 
 - **S'elimina** el comportament antic «Aviat → scroll a la primera secció» i «Frescos/Congelats → Rebost».
 
 ## Dades
-- `ObserveItemsByStatusUseCase(status: ExpiryStatus)` → `Flow<List<CategoryGroup>>` d'ítems actius, agrupats per categoria i ordenats segons la taula. Reutilitza `ExpiryStatus`, el llindar d'Ajustos i `TodayProvider`. Caducats el fa servir també (substitueix la consulta pròpia si n'hi ha).
+- `ObserveItemsByStatusUseCase(status: ExpiryStatus)` → `Flow<List<CategoryGroup>>` d'ítems actius, agrupats per categoria i ordenats segons la taula. Reutilitza `ExpiryStatus`, el marge per categoria (o el per defecte) i `TodayProvider`. Caducats el fa servir també (substitueix la consulta pròpia si n'hi ha).
 - Una sola `StatusListViewModel(status)`; les accions (consumir, congelar, descongelar, canviar data, llençar) delegen als use cases existents.
 
 ## Tests

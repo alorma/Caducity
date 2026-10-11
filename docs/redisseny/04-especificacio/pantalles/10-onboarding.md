@@ -42,3 +42,7 @@ Recomanat: un `HorizontalPager` sense gest de lliscar lliure (avança amb botons
 
 ## Després
 `InicibBuit.png` — vegeu `01-inici.md`.
+
+## Marge per categoria
+- Les categories suggerides es creen amb el seu marge (taula a `14-marge-per-categoria.md`); no es mostra al pas Categories.
+- Al pas Avisos, el selector de llindar és el **per defecte**. Ajuda: «Cada categoria ja porta el seu marge. Aquest és per a les que creïs tu.»

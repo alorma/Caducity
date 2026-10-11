@@ -24,7 +24,7 @@ Aquest paquet descriu el redisseny complet de **Caducity**, l'app Android de seg
 2. `01-navegacio.md` — nova arquitectura d'informació, rutes, widget i dreceres.
 3. `02-migracio-pantalles.md` — taula pantalla original → pantalla nova (què es manté, què canvia, què desapareix).
 4. `03-design-system-compose.md` — com traduir els tokens a `MaterialTheme` (Color, Type, Shapes, MaterialShapes).
-5. `pantalles/*.md` — una fitxa per pantalla: estructura, components, estats, interaccions, textos. Inclou `11-calendari.md` (tira de 7 dies + vista de mes) i `13-pantalles-estat.md` (Caducats, Aviat, Frescos i Congelats amb una plantilla comuna).
+5. `pantalles/*.md` — una fitxa per pantalla: estructura, components, estats, interaccions, textos. Inclou `11-calendari.md` (tira de 7 dies + vista de mes) i `13-pantalles-estat.md` (Caducats, Aviat, Frescos i Congelats amb una plantilla comuna) i `14-marge-per-categoria.md` (marge d'«Aviat» per categoria).
 6. `04-model-de-dades.md` — canvis de dades i preferències que el disseny necessita.
 7. `05-textos.md` — tots els textos nous en català, amb claus suggerides.
 8. `06-moviment.md` — animacions i transicions.

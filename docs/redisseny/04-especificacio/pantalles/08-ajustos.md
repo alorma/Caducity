@@ -7,7 +7,8 @@ Captura: `Ajustos.png`. Font: `Ajustos.dc.html`. Substitueix `app/07_settings.pn
 1. `arrow_back` + títol `screen-title` «Ajustos» (pot ser `LargeFlexibleTopAppBar` que es plega).
 2. **Avisos**
    - Notificacions (`notifications`) · «Cada dia a les 9:00» · interruptor. Tocar el text obre el selector d'hora.
-   - «"Aviat" vol dir» · «Quan un producte passa a groc i t'avisem» · grup connectat **1 dia / 3 dies / 1 setmana** (seleccionat `primary` amb `check`).
+   - «"Aviat" per defecte» · «Per a les categories sense marge propi» · grup connectat **1 dia / 3 dies / 1 setmana** (seleccionat `primary` amb `check`).
+   - **Marge per categoria** (`tune`) · resum d'una línia · `chevron_right` → pantalla «Marge per categoria». Vegeu `14-marge-per-categoria.md` i `MargeAjustos.png`.
 3. **Aparença**
    - Tema: **Clar / Fosc / Sistema** (grup connectat).
    - Color dinàmic · «Desactivat: paleta Caducity» · interruptor (off per defecte).
