@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -60,10 +61,12 @@ fun WeekStrip(
   selected: LocalDate?,
   onDayClick: (LocalDate) -> Unit,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
   val pagerState = rememberPagerState(pageCount = { ObserveWeekStripUseCase.WINDOWS })
   HorizontalPager(
     state = pagerState,
+    contentPadding = contentPadding,
     modifier =
       modifier
         .fillMaxWidth()
