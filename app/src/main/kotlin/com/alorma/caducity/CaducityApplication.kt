@@ -1,6 +1,7 @@
 package com.alorma.caducity
 
 import android.app.Application
+import com.alorma.caducity.config.preferences.PreferencesMigrator
 import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.di.appModule
 import com.alorma.caducity.domain.NotificationConfigDataSource
@@ -28,6 +29,7 @@ class CaducityApplication : Application() {
   private val workScheduler: ExpirationWorkScheduler by inject()
   private val notificationConfigDataSource: NotificationConfigDataSource by inject()
   private val remoteConfigRunner: RemoteConfigRunner by inject()
+  private val preferencesMigrator: PreferencesMigrator by inject()
 
   // Application-scoped coroutine scope for background operations
   private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -49,6 +51,9 @@ class CaducityApplication : Application() {
       workManagerFactory() // Enable Koin WorkManager integration
       modules(appModule)
     }
+
+    // Migrate stored preferences before anything reads them (e.g. the reminder time)
+    preferencesMigrator.migrate()
 
     // Create notification channels
     NotificationChannelManager.createNotificationChannels(this)

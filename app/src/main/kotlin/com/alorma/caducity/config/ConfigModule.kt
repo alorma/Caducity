@@ -4,6 +4,9 @@ import com.alorma.caducity.BuildConfig
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.clock.KotlinAppClock
 import com.alorma.caducity.config.language.LocalizedDateFormatter
+import com.alorma.caducity.config.preferences.DisclaimerPreferences
+import com.alorma.caducity.config.preferences.PreferencesMigrator
+import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.config.remoteconfig.DebugRemoteConfigRunner
 import com.alorma.caducity.config.remoteconfig.FirebaseRemoteConfigProvider
 import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
@@ -30,6 +33,10 @@ val configModule =
     }
 
     singleOf(::LocalizedDateFormatter)
+
+    singleOf(::SoonThresholdPreferences)
+    singleOf(::DisclaimerPreferences)
+    singleOf(::PreferencesMigrator)
 
     single<DateTimeFormat<LocalDate>>(qualifier = ConfigQualifier.DateFormat.HumanReadable) {
       LocalDate.Format {

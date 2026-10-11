@@ -182,6 +182,7 @@ dependencies {
   testImplementation(libs.junit)
   testImplementation(libs.strikt.core)
   testImplementation(libs.turbine)
+  testImplementation(libs.multiplatform.settings.test)
   testImplementation(libs.mockito.kotlin)
   testImplementation(libs.mockito.core)
   testImplementation(libs.kotlinx.coroutines.test)
