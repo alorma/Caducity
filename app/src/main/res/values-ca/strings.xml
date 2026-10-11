@@ -365,4 +365,14 @@
   <string name="add_frozen_past_date">Un producte congelat no pot tenir una data passada</string>
   <string name="add_picker_ok">D\'acord</string>
   <string name="add_picker_cancel">Cancel·la</string>
+  <string name="add_name_hint_batch">Què més has comprat?</string>
+  <string name="add_batch_label">En aquesta tanda</string>
+  <string name="add_batch_change">Canvia</string>
+  <string name="add_batch_note">Es mantenen del producte anterior. Si escrius un nom que ja coneixes, s\'omplen amb el seu.</string>
+  <string name="add_batch_today">avui</string>
+  <string name="add_batch_tomorrow">demà</string>
+  <plurals name="add_batch_in_days">
+    <item quantity="one">d\'aquí %1$d dia</item>
+    <item quantity="other">d\'aquí %1$d dies</item>
+  </plurals>
 </resources>

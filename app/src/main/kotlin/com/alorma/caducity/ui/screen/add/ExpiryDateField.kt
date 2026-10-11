@@ -6,6 +6,7 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -160,6 +161,7 @@ private fun DayOfWeek.localizedName(): String =
 fun QuickDateRow(
   onSelect: (QuickDate) -> Unit,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(),
 ) {
   val options =
     QuickDate.entries.map { quick ->
@@ -180,6 +182,7 @@ fun QuickDateRow(
     options = options,
     onClick = { onSelect(QuickDate.entries[it]) },
     modifier = modifier,
+    contentPadding = contentPadding,
   )
 }
 

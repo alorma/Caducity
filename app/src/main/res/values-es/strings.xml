@@ -364,4 +364,14 @@
   <string name="add_frozen_past_date">Un producto congelado no puede tener una fecha pasada</string>
   <string name="add_picker_ok">Aceptar</string>
   <string name="add_picker_cancel">Cancelar</string>
+  <string name="add_name_hint_batch">¿Qué más has comprado?</string>
+  <string name="add_batch_label">En esta tanda</string>
+  <string name="add_batch_change">Cambia</string>
+  <string name="add_batch_note">Se mantienen del producto anterior. Si escribes un nombre que ya conoces, se rellenan con el suyo.</string>
+  <string name="add_batch_today">hoy</string>
+  <string name="add_batch_tomorrow">mañana</string>
+  <plurals name="add_batch_in_days">
+    <item quantity="one">dentro de %1$d día</item>
+    <item quantity="other">dentro de %1$d días</item>
+  </plurals>
 </resources>

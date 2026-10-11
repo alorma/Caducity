@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.add
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -23,14 +24,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Close
@@ -70,6 +76,8 @@ fun AddScreen(
   val bottomSheetState = rememberAppBottomSheetState()
   val datePickerState = rememberDatePickerState()
   val focusRequester = remember { FocusRequester() }
+  var editCategory by rememberSaveable { mutableStateOf(false) }
+  var editDate by rememberSaveable { mutableStateOf(false) }
   val haptics = LocalHapticFeedback.current
   val context = LocalContext.current
 
@@ -124,12 +132,31 @@ fun AddScreen(
             .fillMaxSize()
             .padding(insets)
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = ScreenGutter),
         verticalArrangement = Arrangement.spacedBy(20.dp),
       ) {
+        if (state.isBatchMode) BatchEntries(entries = state.added)
         NameSection(state = state, viewModel = viewModel, focusRequester = focusRequester)
-        CategorySection(state = state, viewModel = viewModel)
-        DateSection(state = state, viewModel = viewModel)
+        val showCategoryChips = !state.isBatchMode || editCategory
+        val showDateField = !state.isBatchMode || editDate
+        if (state.isBatchMode) {
+          BatchSummary(
+            category = state.categories.firstOrNull { it.id == state.categoryId },
+            date = state.date,
+            today = state.today,
+            onChangeCategory = { editCategory = true },
+            onChangeDate = { editDate = true },
+            showCategory = !editCategory,
+            showDate = !editDate,
+          )
+        }
+        if (showCategoryChips) {
+          CategorySection(state = state, onSelect = {
+            viewModel.onCategorySelect(it)
+            editCategory = false
+          }, onNew = { viewModel.navigate(AddNavigation.QuickCategory) })
+        }
+        if (showDateField) DateSection(state = state, viewModel = viewModel)
         QuantityFrozenRow(
           quantity = state.quantity,
           frozen = state.frozen,
@@ -187,6 +214,7 @@ private fun NameSection(
       onNameChange = viewModel::onNameChange,
       onClear = viewModel::onClearName,
       focusRequester = focusRequester,
+      batchMode = state.isBatchMode,
     )
     val suggestion = state.suggestion
     when {
@@ -206,7 +234,8 @@ private fun NameSection(
 @Composable
 private fun CategorySection(
   state: AddState,
-  viewModel: AddViewModel,
+  onSelect: (String) -> Unit,
+  onNew: () -> Unit,
 ) {
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     AddOverline(stringResource(R.string.add_category_label))
@@ -214,8 +243,8 @@ private fun CategorySection(
       categories = state.categories,
       selectedId = state.categoryId,
       highlightNew = state.isNewProduct && state.categoryId == null,
-      onSelect = viewModel::onCategorySelect,
-      onNew = { viewModel.navigate(AddNavigation.QuickCategory) },
+      onSelect = onSelect,
+      onNew = onNew,
     )
   }
 }
@@ -234,7 +263,11 @@ private fun DateSection(
       onDigitsChange = viewModel::onDateTextChange,
       onPickerClick = viewModel::onPickDate,
     )
-    QuickDateRow(onSelect = viewModel::onQuickDate)
+    QuickDateRow(
+      onSelect = viewModel::onQuickDate,
+      modifier = Modifier.fullBleed(ScreenGutter),
+      contentPadding = PaddingValues(horizontal = ScreenGutter),
+    )
   }
 }
 
@@ -294,3 +327,16 @@ private fun SideEffectHandler(
     }
   }
 }
+
+private val ScreenGutter = 20.dp
+
+/** Lets a scrolling row run to the edges of the container, ignoring the horizontal [gutter] of its parent. */
+private fun Modifier.fullBleed(gutter: Dp): Modifier =
+  layout { measurable, constraints ->
+    val extra = gutter.roundToPx() * 2
+    val placeable =
+      measurable.measure(
+        constraints.copy(minWidth = constraints.maxWidth + extra, maxWidth = constraints.maxWidth + extra),
+      )
+    layout(constraints.maxWidth, placeable.height) { placeable.place(-extra / 2, 0) }
+  }
