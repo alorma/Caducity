@@ -304,10 +304,6 @@
   <string name="status_title_fresh">Fresh</string>
   <string name="status_title_frozen">Frozen</string>
   <string name="status_help_expired">If they\'re still good, change the date. If not, throw them out.</string>
-  <plurals name="status_help_soon">
-    <item quantity="one">They expire within the next day. Use them first.</item>
-    <item quantity="other">They expire within the next %d days. Use them first.</item>
-  </plurals>
   <string name="status_help_fresh">They still have time. The ones expiring first come first.</string>
   <string name="status_help_frozen">They don\'t expire while in the freezer. When you take one out, thaw it and give it a date.</string>
   <string name="status_select">Select</string>
@@ -377,8 +373,6 @@
   <string name="settings_section_data">Data</string>
   <string name="settings_notifications">Notifications</string>
   <string name="settings_notifications_time">Every day at %s</string>
-  <string name="settings_soon_means">“Soon” means</string>
-  <string name="settings_soon_means_sub">When a product turns yellow and we let you know</string>
   <string name="settings_1d">1 day</string>
   <string name="settings_3d">3 days</string>
   <string name="settings_1w">1 week</string>
@@ -412,7 +406,7 @@
   <string name="ob_alerts_sample_title">3 products expire soon</string>
   <string name="ob_alerts_sample_body">Whole milk today, Mozzarella tomorrow…</string>
   <string name="ob_alerts_notify_me">Warn me</string>
-  <string name="ob_alerts_before">Before it expires</string>
+  <string name="ob_alerts_before">By default</string>
   <string name="ob_alerts_days_1">1 day</string>
   <string name="ob_alerts_days_3">3 days</string>
   <string name="ob_alerts_days_7">1 week</string>
@@ -459,4 +453,53 @@
   <string name="quantity_expires_today">expires today</string>
   <string name="quantity_expires_tomorrow">expires tomorrow</string>
   <string name="quantity_expires_on">expires %1$s</string>
+  <string name="settings_soon_default">“Soon” by default</string>
+  <string name="settings_soon_default_sub">For categories without their own margin</string>
+  <string name="settings_category_margins">Margin per category</string>
+  <string name="margins_title">Margin per category</string>
+  <string name="margins_help">How many days before a product expires it becomes “Soon” and we let you know.</string>
+  <string name="margins_row_default">Default (Settings)</string>
+  <string name="margins_row_notify">Warns %s before</string>
+  <string name="margins_suggested_hint">Suggested for %1$s: %2$s</string>
+  <string name="margins_restore">Back to suggested values</string>
+  <string name="margins_restore_title">Restore suggested values?</string>
+  <string name="margins_restore_body">Suggested categories get their suggested margin. The ones you created go back to the default.</string>
+  <string name="margins_restore_confirm">Restore</string>
+  <string name="margins_restore_cancel">Cancel</string>
+  <string name="margins_restored">Suggested values restored</string>
+  <string name="margins_failed">Couldn\'t save the margin</string>
+  <string name="category_editor_margin">Warn me before</string>
+  <string name="category_editor_margin_help">Slide or tap a dot. “%1$s” will turn “Soon” %2$s before it expires.</string>
+  <string name="category_editor_margin_this_category">This category</string>
+  <string name="home_later_title">Later</string>
+  <string name="home_later_names_two">%1$s and %2$s</string>
+  <string name="home_later_names_more">%1$s, %2$s and %3$d more</string>
+  <string name="home_later_range">From %1$s to %2$s</string>
+  <string name="home_later_on">On %s</string>
+  <string name="home_later_expand">Show products</string>
+  <string name="home_later_collapse">Hide products</string>
+  <string name="home_later_help_one">Already “Soon” because of their category\'s margin (%1$s, %2$s).</string>
+  <string name="home_later_help_many">Already “Soon” because of their category\'s margin.</string>
+  <string name="status_help_soon_margin">Based on each category\'s margin. Use them first.</string>
+  <string name="status_notify_pill">Warns %s before</string>
+  <string name="ob_alerts_default_help">Every category already has its own margin. This one is for the ones you create.</string>
+  <string name="threshold_unit_days">days</string>
+  <string name="threshold_unit_weeks">weeks</string>
+  <string name="threshold_unit_months">months</string>
+  <plurals name="threshold_days">
+    <item quantity="one">%d day</item>
+    <item quantity="other">%d days</item>
+  </plurals>
+  <plurals name="threshold_weeks">
+    <item quantity="one">%d week</item>
+    <item quantity="other">%d weeks</item>
+  </plurals>
+  <plurals name="threshold_months">
+    <item quantity="one">%d month</item>
+    <item quantity="other">%d months</item>
+  </plurals>
+  <plurals name="threshold_days_before">
+    <item quantity="one">%d day before it expires</item>
+    <item quantity="other">%d days before it expires</item>
+  </plurals>
 </resources>

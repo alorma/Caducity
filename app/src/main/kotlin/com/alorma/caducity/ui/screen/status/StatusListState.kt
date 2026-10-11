@@ -27,6 +27,8 @@ data class StatusRow(
 data class StatusSection(
   val category: Category,
   val rows: List<StatusRow>,
+  /** Effective "soon" margin of the category, for the «Avisa N abans» pill of the Aviat list. */
+  val soonDays: Int? = null,
 ) {
   val unitCount: Int get() = rows.sumOf { it.unitCount }
 }
@@ -40,8 +42,6 @@ sealed interface StatusListState {
     val today: LocalDate,
     val totalCount: Int,
     val sections: List<StatusSection>,
-    /** «Aviat» threshold in days, for the help text. */
-    val soonDays: Int,
     val selecting: Boolean,
     val selectedKeys: Set<String>,
   ) : StatusListState {

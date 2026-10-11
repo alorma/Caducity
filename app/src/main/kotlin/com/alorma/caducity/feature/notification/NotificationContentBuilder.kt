@@ -22,7 +22,10 @@ data class ReminderContent(
 object NotificationContentBuilder {
   const val MAX_HIGHLIGHTS = 3
 
-  /** `null` when nothing is `SOON` (which includes everything that expires today): no notification. */
+  /**
+   * `null` when there is nothing to say. Only units that enter `SOON` today (first day inside their
+   * own margin) or expire today/tomorrow count, so long margins do not repeat for weeks.
+   */
   fun build(
     entries: List<PantryEntry>,
     today: LocalDate,
@@ -30,7 +33,10 @@ object NotificationContentBuilder {
     val soon =
       entries
         .filter { it.status == ExpiryStatus.SOON }
-        .sortedWith(compareBy<PantryEntry> { it.expiration }.thenBy { it.name.normalizeForSearch() })
+        .filter {
+          val daysLeft = today.daysUntil(it.expiration)
+          daysLeft == it.soonDays || daysLeft <= 1
+        }.sortedWith(compareBy<PantryEntry> { it.expiration }.thenBy { it.name.normalizeForSearch() })
     if (soon.isEmpty()) return null
 
     val highlights =

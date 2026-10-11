@@ -47,16 +47,22 @@ import com.alorma.caducity.base.ui.icons.symbols.Check
 import com.alorma.caducity.base.ui.icons.symbols.ChevronRight
 import com.alorma.caducity.base.ui.icons.symbols.Close
 import com.alorma.caducity.base.ui.icons.symbols.DeleteHistory
+import com.alorma.caducity.base.ui.icons.symbols.Event
+import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
+import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
+import com.alorma.caducity.base.ui.icons.symbols.Info
 import com.alorma.caducity.base.ui.icons.symbols.Search
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.Widgets
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.HomeDaySection
+import com.alorma.caducity.domain.model.HomeLater
 import com.alorma.caducity.domain.model.HomeRow
 import com.alorma.caducity.ui.components.category.CategoryIcons
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.toComposeShape
 import com.alorma.caducity.ui.components.connected.ConnectedRow
+import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.NumberTextStyle
@@ -271,6 +277,8 @@ internal fun HomeItemRow(
   onClick: () -> Unit,
   onConsume: () -> Unit,
   modifier: Modifier = Modifier,
+  /** Extra detail after the quantity (the date in «Més endavant»). */
+  meta: String? = null,
 ) {
   val quantity =
     row.legacyPack?.let { stringResource(R.string.item_pack_of, it) }
@@ -287,7 +295,7 @@ internal fun HomeItemRow(
     Column(modifier = Modifier.weight(1f)) {
       Text(row.name, style = CaducityTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
       Text(
-        "${row.category.name} · $quantity",
+        listOfNotNull(row.category.name, quantity, meta).joinToString(" · "),
         style = CaducityTheme.typography.bodySmall,
         color = CaducityTheme.colorScheme.onSurfaceVariant,
         maxLines = 1,
@@ -426,3 +434,114 @@ internal fun WidgetTipCard(
 }
 
 private const val MaxCellFontScale = 1.3f
+
+@Composable
+internal fun LaterHeader(
+  later: HomeLater,
+  modifier: Modifier = Modifier,
+) {
+  val count = pluralStringResource(R.plurals.home_product_count, later.unitCount, later.unitCount)
+  Row(
+    modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp),
+    verticalAlignment = Alignment.Bottom,
+    horizontalArrangement = Arrangement.spacedBy(10.dp),
+  ) {
+    Text(
+      stringResource(R.string.home_later_title),
+      style = CaducityTheme.typography.headlineSmall,
+      modifier = Modifier.semantics { heading() },
+    )
+    Text(
+      count,
+      style = CaducityTheme.typography.bodyMedium,
+      color = CaducityTheme.colorScheme.onSurfaceVariant,
+      modifier = Modifier.padding(bottom = 2.dp),
+    )
+  }
+}
+
+/** The folded «Més endavant» card: the names, the date interval and a button to unfold. */
+@Composable
+internal fun LaterCollapsedCard(
+  later: HomeLater,
+  expanded: Boolean,
+  onToggle: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val names = later.rows.map { it.row.name }.distinct()
+  val namesText =
+    when {
+      names.size == 1 -> names[0]
+      names.size == 2 -> stringResource(R.string.home_later_names_two, names[0], names[1])
+      else -> stringResource(R.string.home_later_names_more, names[0], names[1], names.size - 2)
+    }
+  val range =
+    if (later.firstDate == later.lastDate) {
+      stringResource(R.string.home_later_on, later.firstDate.shortDateText())
+    } else {
+      stringResource(R.string.home_later_range, later.firstDate.shortDateText(), later.lastDate.shortDateText())
+    }
+  ConnectedRow(
+    index = 0,
+    count = 1,
+    onClick = onToggle,
+    modifier = modifier.heightIn(min = 68.dp),
+    contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
+  ) {
+    Box(
+      modifier = Modifier.size(44.dp).clip(CircleShape).background(CaducityTheme.colors.surfaceShape),
+      contentAlignment = Alignment.Center,
+    ) {
+      Icon(Symbols.Outlined.Event, contentDescription = null, tint = CaducityTheme.colorScheme.primary)
+    }
+    Spacer(Modifier.width(14.dp))
+    Column(modifier = Modifier.weight(1f)) {
+      Text(namesText, style = CaducityTheme.typography.titleSmall, maxLines = 2, overflow = TextOverflow.Ellipsis)
+      Text(
+        range,
+        style = CaducityTheme.typography.bodySmall,
+        color = CaducityTheme.colorScheme.onSurfaceVariant,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+      )
+    }
+    Icon(
+      imageVector = if (expanded) Symbols.Outlined.ExpandLess else Symbols.Outlined.ExpandMore,
+      contentDescription =
+        stringResource(if (expanded) R.string.home_later_collapse else R.string.home_later_expand),
+      modifier =
+        Modifier
+          .size(44.dp)
+          .clip(CircleShape)
+          .background(CaducityTheme.colorScheme.surface)
+          .padding(10.dp),
+    )
+  }
+}
+
+@Composable
+internal fun LaterHelp(
+  later: HomeLater,
+  modifier: Modifier = Modifier,
+) {
+  val single = later.margins.singleOrNull()
+  val text =
+    if (single != null) {
+      stringResource(R.string.home_later_help_one, single.category.name, thresholdLabel(single.days))
+    } else {
+      stringResource(R.string.home_later_help_many)
+    }
+  Row(
+    modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp),
+    verticalAlignment = Alignment.Top,
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    Icon(
+      Symbols.Outlined.Info,
+      contentDescription = null,
+      tint = CaducityTheme.colorScheme.onSurfaceVariant,
+      modifier = Modifier.size(18.dp),
+    )
+    Text(text, style = CaducityTheme.typography.bodySmall, color = CaducityTheme.colorScheme.onSurfaceVariant)
+  }
+}

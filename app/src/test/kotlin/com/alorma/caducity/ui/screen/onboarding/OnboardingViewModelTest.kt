@@ -228,6 +228,29 @@ class OnboardingViewModelTest {
     }
 
   @Test
+  fun `every suggested category is created with the margin that fits what it is`() =
+    runTest {
+      SuggestedCategory.entries.forEach { if (it !in vm.state.value.selectedCategories) vm.onToggleCategory(it) }
+      vm.goTo(OnboardingStep.Disclaimer)
+      vm.onDisclaimerCheckedChange(true)
+      vm.acceptAndAwait()
+
+      val margins = pantry.getCategories().associate { it.name to it.soonThresholdDays }
+      expectThat(margins).isEqualTo(
+        mapOf(
+          "Dairy" to 3,
+          "Fruit & veg" to 3,
+          "Meat & fish" to 2,
+          "Pantry" to 30,
+          "Bakery" to 2,
+          "Drinks" to 7,
+          "Cold cuts" to 3,
+          "Ready meals" to 2,
+        ),
+      )
+    }
+
+  @Test
   fun `no categories is allowed`() =
     runTest {
       vm.goTo(OnboardingStep.Categories)

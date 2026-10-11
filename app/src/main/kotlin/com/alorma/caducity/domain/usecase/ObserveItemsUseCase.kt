@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.datetime.LocalDate
 
 /**
- * Active items with their status. The status is recomputed whenever the data, the "soon" threshold
- * or the day changes, so it is never stale after midnight.
+ * Active items with their status. The status is recomputed whenever the data, the "soon" margins
+ * (global default or per category) or the day changes, so it is never stale after midnight.
  */
 class ObserveItemsUseCase(
   private val pantryDataSource: PantryDataSource,
@@ -21,10 +21,12 @@ class ObserveItemsUseCase(
   fun observe(): Flow<List<PantryEntry>> =
     combine(
       pantryDataSource.observeActiveItems(),
+      pantryDataSource.observeCategories(),
       expirationThresholds.soonThresholdDays,
       todayProvider.observe(),
-    ) { items, thresholdDays, today ->
-      items.map { it.toEntry(today, thresholdDays) }
+    ) { items, categories, defaultDays, today ->
+      val ownDays = categories.associate { it.id to it.soonThresholdDays }
+      items.map { it.toEntry(today, ownDays[it.categoryId] ?: defaultDays) }
     }
 
   private fun ActiveItem.toEntry(
@@ -41,5 +43,6 @@ class ObserveItemsUseCase(
     remainingDays = remainingDays,
     packSize = packSize,
     createdAt = createdAt,
+    soonDays = thresholdDays,
   )
 }

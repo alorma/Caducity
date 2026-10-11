@@ -126,6 +126,12 @@ fun AlertsStep(
               onClick = { onThresholdChange(THRESHOLD_OPTIONS[it]) },
               height = 48.dp,
             )
+            Spacer(Modifier.size(12.dp))
+            Text(
+              text = stringResource(R.string.ob_alerts_default_help),
+              style = CaducityTheme.typography.bodySmall,
+              color = CaducityTheme.colorScheme.onSurfaceVariant,
+            )
           }
         }
         ConnectedRow(index = 1, count = 2, contentPadding = PaddingValues16) {

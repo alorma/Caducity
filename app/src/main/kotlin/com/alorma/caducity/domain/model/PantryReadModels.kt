@@ -15,6 +15,8 @@ data class PantryEntry(
   val remainingDays: Int?,
   val packSize: Int?,
   val createdAt: Instant?,
+  /** Effective "soon" margin in days: the category's own or the global default. */
+  val soonDays: Int,
 ) {
   /** Stable key of the product this unit belongs to (legacy items without product group by name). */
   val groupKey: String
@@ -63,6 +65,9 @@ fun List<PantryEntry>.toProductGroups(): List<ProductGroup> =
 
 // region Home
 
+/** Days shown as sections in Home (today + 6), the same window as the week strip. */
+const val HOME_SECTION_DAYS = 7
+
 data class HomeRow(
   val key: String,
   val name: String,
@@ -82,6 +87,29 @@ data class HomeDaySection(
   val unitCount: Int get() = rows.sumOf { it.unitCount }
 }
 
+/** A "soon" product beyond the day sections: it entered "soon" through its category's margin. */
+data class HomeLaterRow(
+  val date: LocalDate,
+  val row: HomeRow,
+)
+
+/** The units that are "soon" but expire after the last day section, folded into «Més endavant». */
+data class HomeLater(
+  /** Ordered by date, then name. */
+  val rows: List<HomeLaterRow>,
+  /** Categories involved with their effective margin, shortest margin first. */
+  val margins: List<HomeLaterMargin>,
+) {
+  val unitCount: Int get() = rows.sumOf { it.row.unitCount }
+  val firstDate: LocalDate get() = rows.first().date
+  val lastDate: LocalDate get() = rows.last().date
+}
+
+data class HomeLaterMargin(
+  val category: Category,
+  val days: Int,
+)
+
 data class HomeData(
   val today: LocalDate,
   val expiredCount: Int,
@@ -89,12 +117,14 @@ data class HomeData(
   val soonCount: Int,
   val freshCount: Int,
   val frozenCount: Int,
+  /** Day sections from today to today + [HOME_SECTION_DAYS] - 1. */
   val sections: List<HomeDaySection>,
+  val later: HomeLater?,
   /** No active item at all (empty pantry). */
   val isPantryEmpty: Boolean,
 ) {
   /** There are items but none is about to expire (and no section to show). */
-  val nothingExpiresSoon: Boolean get() = !isPantryEmpty && sections.isEmpty()
+  val nothingExpiresSoon: Boolean get() = !isPantryEmpty && sections.isEmpty() && later == null
 }
 
 // endregion
@@ -153,7 +183,10 @@ data class StatusCategoryGroup(
   val category: Category,
   /** One entry per unit, in the order of the status (see [com.alorma.caducity.domain.usecase.ObserveItemsByStatusUseCase]). */
   val entries: List<PantryEntry>,
-)
+) {
+  /** Effective "soon" margin of the category (all its entries share it). */
+  val soonDays: Int? get() = entries.firstOrNull()?.soonDays
+}
 
 data class StatusListData(
   val status: ExpiryStatus,

@@ -63,6 +63,7 @@ class CategoryEditorViewModelTest {
   private lateinit var create: CreateCategoryUseCase
   private lateinit var update: UpdateCategoryUseCase
   private lateinit var delete: DeleteCategoryUseCase
+  private lateinit var thresholds: AppExpirationThresholdsImpl
   private val created = mutableListOf<CategoryEditorViewModel>()
 
   @Before
@@ -73,7 +74,7 @@ class CategoryEditorViewModelTest {
         .inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(), AppDatabase::class.java)
         .allowMainThreadQueries()
         .build()
-    val thresholds = AppExpirationThresholdsImpl(SoonThresholdPreferences(MapSettings()))
+    thresholds = AppExpirationThresholdsImpl(SoonThresholdPreferences(MapSettings()))
     val itemMapper = ItemRoomMapper(clock, thresholds)
     val categoryMapper = CategoryRoomMapper(ProductRoomMapper(), itemMapper)
     pantry = RoomPantryDataSource(db, db.categoryDao(), db.itemDao(), db.productDao(), categoryMapper, clock)
@@ -92,7 +93,7 @@ class CategoryEditorViewModelTest {
 
   private suspend fun viewModel(categoryId: String? = null): CategoryEditorViewModel {
     val vm =
-      CategoryEditorViewModel(categoryId, pantry, create, update, delete, EventTracker(emptyList()))
+      CategoryEditorViewModel(categoryId, pantry, create, update, delete, thresholds, EventTracker(emptyList()))
         .also(created::add)
     // Room runs its queries off the test dispatcher: wait for the editor to load.
     withContext(Dispatchers.Default) { withTimeout(5_000) { vm.state.first { !it.loading } } }
@@ -115,6 +116,47 @@ class CategoryEditorViewModelTest {
       vm.onNameChange("Begudes")
       expectThat(vm.state.value.error).isNull()
       expectThat(vm.state.value.canSave).isTrue()
+    }
+
+  @Test
+  fun `the margin slider starts on the default and an untouched one is saved as null`() =
+    runTest {
+      val vm = viewModel()
+      expectThat(vm.state.value.shownSoonDays).isEqualTo(3)
+      expectThat(vm.state.value.soonDays).isNull()
+
+      vm.onNameChange("Begudes")
+      vm.onSave()
+      real { vm.navigationSideEffects.first() }
+      expectThat(pantry.getCategories().single().soonThresholdDays).isNull()
+    }
+
+  @Test
+  fun `a margin picked on the slider is saved and loaded back when editing`() =
+    runTest {
+      val vm = viewModel()
+      vm.onNameChange("Rebost")
+      vm.onSoonDaysChange(30)
+      vm.onSave()
+      real { vm.navigationSideEffects.first() }
+      val saved = pantry.getCategories().single()
+      expectThat(saved.soonThresholdDays).isEqualTo(30)
+
+      val edit = viewModel(saved.id)
+      expectThat(edit.state.value.soonDays).isEqualTo(30)
+      expectThat(edit.state.value.shownSoonDays).isEqualTo(30)
+    }
+
+  @Test
+  fun `editing a category without its own margin keeps it following the default`() =
+    runTest {
+      val id = create.createCategory("Lactics", "").getOrThrow()
+      val vm = viewModel(id)
+      expectThat(vm.state.value.soonDays).isNull()
+      vm.onNameChange("Lactics i ous")
+      vm.onSave()
+      real { vm.navigationSideEffects.first() }
+      expectThat(pantry.getCategories().single().soonThresholdDays).isNull()
     }
 
   @Test

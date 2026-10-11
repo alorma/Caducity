@@ -41,6 +41,7 @@ import com.alorma.caducity.ui.screen.settings.SettingsViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugRemoteConfigsViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
+import com.alorma.caducity.ui.screen.settings.margins.CategoryMarginsViewModel
 import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsViewModel
 import com.alorma.caducity.ui.screen.status.StatusListViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
@@ -106,7 +107,6 @@ val appModule =
       StatusListViewModel(
         status = params.get(),
         observeByStatus = get(),
-        thresholds = get(),
         consumeItem = get(),
         freezeItem = get(),
         unfreezeItem = get(),
@@ -169,6 +169,7 @@ val appModule =
         createCategory = get(),
         updateCategory = get(),
         deleteCategory = get(),
+        expirationThresholds = get(),
         eventTracker = get(),
       )
     }
@@ -190,6 +191,7 @@ val appModule =
     viewModelOf(::BackupViewModel)
 
     // Privacy Settings
+    viewModelOf(::CategoryMarginsViewModel)
     viewModelOf(::PrivacySettingsViewModel)
 
     // Debug Settings

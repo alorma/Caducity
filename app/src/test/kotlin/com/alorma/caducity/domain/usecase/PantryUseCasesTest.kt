@@ -405,7 +405,7 @@ class PantryUseCasesTest {
       category("c1", "Dairy")
       addBatch.add("Milk", "c1", inDays(2), 3, false)
 
-      updateCategory.update("c1", "Lácteos", CategoryShape.PUFFY, CategoryIcon("nutrition")).getOrThrow()
+      updateCategory.update("c1", "Lácteos", CategoryShape.PUFFY, CategoryIcon("nutrition"), null).getOrThrow()
 
       val updated = db.categoryDao().getCategory("c1")!!
       expectThat(updated.name).isEqualTo("Lácteos")
@@ -416,6 +416,42 @@ class PantryUseCasesTest {
     }
 
   @Test
+  fun `a category margin is stored on create and update and can go back to the default`() =
+    runTest {
+      val id = "c1"
+      db.categoryDao().insertCategory(CategoryRoomEntity(id, "Pantry", "", soonThresholdDays = 30))
+      expectThat(pantry.getCategories().single().soonThresholdDays).isEqualTo(30)
+
+      updateCategory.update(id, "Pantry", CategoryShape.COOKIE, CategoryIcon.DEFAULT, 14).getOrThrow()
+      expectThat(db.categoryDao().getCategory(id)!!.soonThresholdDays).isEqualTo(14)
+
+      updateCategory.update(id, "Pantry", CategoryShape.COOKIE, CategoryIcon.DEFAULT, null).getOrThrow()
+      expectThat(db.categoryDao().getCategory(id)!!.soonThresholdDays).isNull()
+    }
+
+  @Test
+  fun `the margins screen sets one margin and restores the suggested ones`() =
+    runTest {
+      val thresholds = CategoryThresholdsUseCase(pantry)
+      val dairy = "dairy"
+      val pantryId = "pantry"
+      val own = "own"
+      category(dairy, "Làctics", 0)
+      category(pantryId, "Rebost", 1)
+      category(own, "Snacks", 2)
+
+      thresholds.set(dairy, 14).getOrThrow()
+      thresholds.set(own, 60).getOrThrow()
+      expectThat(db.categoryDao().getCategory(dairy)!!.soonThresholdDays).isEqualTo(14)
+      expectThat(thresholds.set("zzz", 3)).isFailure().isA<PantryError.CategoryNotFound>()
+
+      thresholds.restoreSuggested().getOrThrow()
+      expectThat(db.categoryDao().getCategory(dairy)!!.soonThresholdDays).isEqualTo(3)
+      expectThat(db.categoryDao().getCategory(pantryId)!!.soonThresholdDays).isEqualTo(30)
+      expectThat(db.categoryDao().getCategory(own)!!.soonThresholdDays).isNull()
+    }
+
+  @Test
   fun `updating a category rejects duplicates, blanks and unknown ids`() =
     runTest {
       category("c1", "Dairy", 0)
@@ -423,11 +459,11 @@ class PantryUseCasesTest {
       val shape = CategoryShape.COOKIE
       val icon = CategoryIcon.DEFAULT
       expectThat(
-        updateCategory.update("c2", " dairy ", shape, icon),
+        updateCategory.update("c2", " dairy ", shape, icon, null),
       ).isFailure().isA<PantryError.DuplicateCategoryName>()
-      expectThat(updateCategory.update("c2", "  ", shape, icon)).isFailure().isA<PantryError.BlankName>()
-      expectThat(updateCategory.update("zzz", "New", shape, icon)).isFailure().isA<PantryError.CategoryNotFound>()
-      expectThat(updateCategory.update("c2", "pantry", shape, icon)).isSuccess()
+      expectThat(updateCategory.update("c2", "  ", shape, icon, null)).isFailure().isA<PantryError.BlankName>()
+      expectThat(updateCategory.update("zzz", "New", shape, icon, null)).isFailure().isA<PantryError.CategoryNotFound>()
+      expectThat(updateCategory.update("c2", "pantry", shape, icon, null)).isSuccess()
     }
 
   @Test

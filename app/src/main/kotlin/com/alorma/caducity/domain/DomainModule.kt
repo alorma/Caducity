@@ -2,6 +2,7 @@ package com.alorma.caducity.domain
 
 import com.alorma.caducity.domain.usecase.AddItemBatchUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
+import com.alorma.caducity.domain.usecase.CategoryThresholdsUseCase
 import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
@@ -48,6 +49,7 @@ val domainModule =
     factoryOf(::RemoveBatchEntryUseCase)
     factoryOf(::RestoreBatchUseCase)
     factoryOf(::UpdateCategoryUseCase)
+    factoryOf(::CategoryThresholdsUseCase)
     factoryOf(::SeedCategoriesUseCase)
     factoryOf(::ObserveCalendarUseCase)
     factoryOf(::ObserveWeekStripUseCase)
