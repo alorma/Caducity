@@ -41,6 +41,8 @@ import com.alorma.caducity.ui.screen.category.detail.CategoryDetailMapper
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailViewModel
 import com.alorma.caducity.ui.screen.category.detail.product.ProductPageMapper
 import com.alorma.caducity.ui.screen.category.detail.product.ProductPageViewModel
+import com.alorma.caducity.ui.screen.category.quick.CategoryCreatedEvents
+import com.alorma.caducity.ui.screen.category.quick.QuickCategoryViewModel
 import com.alorma.caducity.ui.screen.dashboard.dashboardModule
 import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusViewModel
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
@@ -106,6 +108,10 @@ val appModule =
     viewModelOf(::CategoryDetailViewModel)
     viewModelOf(::CategoryDetailAddItemViewModel)
 
+    // Quick category sheet
+    singleOf(::CategoryCreatedEvents)
+    viewModelOf(::QuickCategoryViewModel)
+
     // Add screen
     viewModel { params ->
       AddViewModel(
@@ -117,6 +123,7 @@ val appModule =
         getActiveItem = get(),
         updateItem = get(),
         observeCategories = get(),
+        categoryCreated = get(),
         eventTracker = get(),
       )
     }

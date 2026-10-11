@@ -206,3 +206,10 @@ class AddQuickCategoryAction :
     origin = "add",
     parameters = mapOf("source" to "category_chips"),
   )
+
+class QuickCategoryCloseAction :
+  NavigationAction(
+    actionName = "close_quick_category",
+    origin = "quick_category",
+    parameters = mapOf("source" to "sheet"),
+  )

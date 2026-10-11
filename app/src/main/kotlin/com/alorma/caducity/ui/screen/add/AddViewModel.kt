@@ -14,6 +14,7 @@ import com.alorma.caducity.feature.tracking.AddCloseAction
 import com.alorma.caducity.feature.tracking.AddQuickCategoryAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.screen.category.quick.CategoryCreatedEvents
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,6 +36,7 @@ class AddViewModel(
   private val getActiveItem: GetActiveItemUseCase,
   private val updateItem: UpdateItemUseCase,
   observeCategories: ObserveCategoriesUseCase,
+  categoryCreated: CategoryCreatedEvents,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<AddNavigation, AddNavigationSideEffect, AddSideEffect>() {
   private val _state = MutableStateFlow(AddState(today = todayProvider.today(), categoryId = args.categoryId))
@@ -47,18 +49,24 @@ class AddViewModel(
   /** The form as it was before editing a unit picked from «En aquesta tanda». */
   private var draft: AddState? = null
 
+  /** A category just created in the sheet that the categories flow has not delivered yet. */
+  private var pendingCategoryId: String? = null
+
   init {
     args.itemId?.let { startEdit(it, entry = null) }
     viewModelScope.launch {
       observeCategories.observe().collect { categories ->
         _state.update { current ->
+          val pending = pendingCategoryId?.takeIf { id -> categories.any { it.id == id } }
+          if (pending != null) pendingCategoryId = null
           current.copy(
             categories = categories,
-            categoryId = current.categoryId?.takeIf { id -> categories.any { it.id == id } },
+            categoryId = pending ?: current.categoryId?.takeIf { id -> categories.any { it.id == id } },
           )
         }
       }
     }
+    viewModelScope.launch { categoryCreated.events.collect(::onCategoryCreated) }
   }
 
   override fun navigate(navigation: AddNavigation) {
@@ -127,7 +135,14 @@ class AddViewModel(
   }
 
   /** The quick category sheet created [categoryId]: it is left selected. */
-  fun onCategoryCreated(categoryId: String) = onCategorySelect(categoryId)
+  private fun onCategoryCreated(categoryId: String) {
+    categoryPinned = true
+    if (_state.value.categories.any { it.id == categoryId }) {
+      _state.update { it.copy(categoryId = categoryId) }
+    } else {
+      pendingCategoryId = categoryId
+    }
+  }
 
   fun onDateTextChange(text: String) = setDigits(ExpiryDateParser.normalize(text))
 

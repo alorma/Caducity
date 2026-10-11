@@ -33,7 +33,6 @@ import com.alorma.caducity.ui.navigation.Onboarding
 import com.alorma.caducity.ui.navigation.Pantry
 import com.alorma.caducity.ui.navigation.PantryListPlaceholder
 import com.alorma.caducity.ui.navigation.QuickCategory
-import com.alorma.caducity.ui.navigation.QuickCategoryPlaceholder
 import com.alorma.caducity.ui.navigation.Settings
 import com.alorma.caducity.ui.navigation.TopLevelBackStack
 import com.alorma.caducity.ui.navigation.TopLevelRoute
@@ -41,6 +40,7 @@ import com.alorma.caducity.ui.screen.add.AddArgs
 import com.alorma.caducity.ui.screen.add.AddScreen
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
+import com.alorma.caducity.ui.screen.category.quick.QuickCategorySheet
 import com.alorma.caducity.ui.screen.dashboard.DashboardScreen
 import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusScreen
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
@@ -171,7 +171,7 @@ fun App(
               ItemActionsPlaceholder(it.itemId)
             }
             entry<QuickCategory>(metadata = BottomSheetSceneStrategy.bottomSheet()) {
-              QuickCategoryPlaceholder()
+              QuickCategorySheet(onClose = { navigation.pop() })
             }
           },
       )

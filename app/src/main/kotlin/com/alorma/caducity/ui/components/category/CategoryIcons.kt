@@ -53,6 +53,23 @@ object CategoryIcons {
     )
   }
 
+  /** The 12 icons offered when creating or editing a category. */
+  val picker: List<CategoryIcon> =
+    listOf(
+      "eco",
+      "nutrition",
+      "water_full",
+      "set_meal",
+      "grocery",
+      "bakery_dining",
+      "local_drink",
+      "icecream",
+      "egg",
+      "cookie",
+      "restaurant",
+      "coffee",
+    ).map(::CategoryIcon)
+
   fun vectorOf(icon: CategoryIcon): ImageVector = all[icon.id] ?: all.getValue(CategoryIcon.DEFAULT.id)
 }
 

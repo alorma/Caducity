@@ -376,4 +376,12 @@
     <item quantity="other">d\'aquí %1$d dies</item>
   </plurals>
   <string name="add_edit_title">Edita</string>
+  <string name="quick_category_title">Nova categoria</string>
+  <string name="category_form_name">Nom</string>
+  <string name="category_form_shape">Forma</string>
+  <string name="category_form_icon">Icona</string>
+  <string name="quick_category_note">La descripció i l\'ordre es poden canviar després, a Rebost.</string>
+  <string name="quick_category_create">Crea i fes-la servir</string>
+  <string name="quick_category_error_duplicate">Ja tens una categoria amb aquest nom</string>
+  <string name="quick_category_error_failed">No s\'ha pogut crear la categoria</string>
 </resources>
