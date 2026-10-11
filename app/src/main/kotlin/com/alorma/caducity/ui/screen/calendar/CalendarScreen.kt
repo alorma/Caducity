@@ -29,7 +29,6 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -315,35 +314,39 @@ private fun DayCell(
     modifier =
       modifier
         .height(CellHeight)
-        .clip(RoundedCornerShape(14.dp))
-        .then(
-          if (isSelected) {
-            Modifier
-              .background(colorScheme.primaryContainer)
-              .border(BorderStroke(2.dp, colorScheme.primary), RoundedCornerShape(14.dp))
-          } else {
-            Modifier
-          },
-        ).semantics {
+        .semantics {
           role = Role.Button
           this.selected = isSelected
           contentDescription = description
         }.clickable(onClick = onClick),
     contentAlignment = Alignment.TopCenter,
   ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(top = 6.dp)) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(top = 2.dp)) {
+      // Today and selected are drawn on this circle only, never on the whole cell. Selected wins over today.
       Box(
         modifier =
           Modifier
-            .size(30.dp)
-            .then(if (isToday) Modifier.border(BorderStroke(2.dp, colorScheme.onSurface), CircleShape) else Modifier),
+            .size(DayCircle)
+            .clip(CircleShape)
+            .then(
+              when {
+                isSelected -> Modifier.background(colorScheme.primary)
+                isToday -> Modifier.border(BorderStroke(2.dp, colorScheme.onSurface), CircleShape)
+                else -> Modifier
+              },
+            ),
         contentAlignment = Alignment.Center,
       ) {
         Text(
           text = date.day.toString(),
           style = CaducityTheme.typography.bodyMedium.copy(fontSize = 15.sp),
           fontWeight = if (hasItems || isToday || isSelected) FontWeight.Bold else FontWeight.Normal,
-          color = if (isPast && !hasItems && !isToday && !isSelected) colorScheme.outline else colorScheme.onSurface,
+          color =
+            when {
+              isSelected -> colorScheme.onPrimary
+              isPast && !hasItems && !isToday -> colorScheme.outline
+              else -> colorScheme.onSurface
+            },
         )
       }
       Row(horizontalArrangement = Arrangement.spacedBy(2.dp), modifier = Modifier.padding(top = 2.dp).height(5.dp)) {
@@ -389,18 +392,24 @@ private fun DayTitle(
   modifier: Modifier = Modifier,
 ) {
   val days = state.today.daysUntil(state.selected)
-  val relative =
+  val title =
+    when (days) {
+      0 -> stringResource(R.string.calendar_relative_today)
+      1 -> stringResource(R.string.calendar_relative_tomorrow)
+      else -> state.selected.dayTitle()
+    }
+  // «Avui» / «Demà» already say when it is, so their subtitle gives the date instead.
+  val whenText =
     when {
-      days == 0 -> stringResource(R.string.calendar_relative_today)
-      days == 1 -> stringResource(R.string.calendar_relative_tomorrow)
+      days == 0 || days == 1 -> state.selected.dayTitle().replaceFirstChar { it.lowercase() }
       days > 1 -> pluralStringResource(R.plurals.calendar_relative_in, days, days)
       else -> pluralStringResource(R.plurals.calendar_relative_ago, -days, -days)
     }
   val subtitle =
     if (state.rows.isEmpty()) {
-      relative
+      whenText
     } else {
-      "$relative · ${pluralStringResource(R.plurals.home_product_count, state.rows.size, state.rows.size)}"
+      "$whenText · ${pluralStringResource(R.plurals.home_product_count, state.rows.size, state.rows.size)}"
     }
   Row(
     modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp),
@@ -408,7 +417,7 @@ private fun DayTitle(
     horizontalArrangement = Arrangement.spacedBy(10.dp),
   ) {
     Text(
-      text = state.selected.dayTitle(),
+      text = title,
       style = CaducityTheme.typography.headlineSmall,
       modifier = Modifier.semantics { heading() },
     )
@@ -460,7 +469,8 @@ private fun CalendarRowItem(
   }
 }
 
-private val CellHeight = 50.dp
+private val CellHeight = 52.dp
+private val DayCircle = 34.dp
 private const val SwipeThreshold = 80f
 
 /** «dl», «dt»… */

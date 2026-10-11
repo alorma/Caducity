@@ -50,6 +50,7 @@ import org.robolectric.annotation.Config
 import strikt.api.expectThat
 import strikt.assertions.contains
 import strikt.assertions.containsExactly
+import strikt.assertions.hasSize
 import strikt.assertions.isEqualTo
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -241,5 +242,25 @@ class CalendarViewModelTest {
           .single()
           .name,
       ).isEqualTo("Soon")
+    }
+
+  @Test
+  fun `grid dots and the day list come from the same units for every day, today included`() =
+    runTest {
+      category("dairy")
+      add("Past", days = -2)
+      add("Today", days = 0, quantity = 2)
+      add("Tomorrow", days = 1)
+      add("Later", days = 9, quantity = 3)
+      val vm = viewModel()
+      val month = vm.ready { it.statusesByDate.isNotEmpty() }
+
+      month.statusesByDate.forEach { (date, statuses) ->
+        vm.onDayClick(date)
+        val day = vm.ready { it.selected == date }
+        expectThat(day.rows.size).isEqualTo(statuses.size)
+        expectThat(day.rows.map { it.status }.sortedBy { it.ordinal }).isEqualTo(statuses)
+      }
+      expectThat(month.statusesByDate.getValue(today)).hasSize(2)
     }
 }
