@@ -24,7 +24,6 @@ import com.alorma.caducity.feature.consent.consentModule
 import com.alorma.caducity.feature.review.reviewModule
 import com.alorma.caducity.feature.tracking.trackingModule
 import com.alorma.caducity.ui.components.actions.ItemActionsSheetViewModel
-import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.screen.add.AddViewModel
 import com.alorma.caducity.ui.screen.calendar.CalendarViewModel
@@ -65,9 +64,7 @@ val appModule =
     includes(reviewModule)
     includes(trackingModule)
 
-    // TEMP(fase 10): the old calendar components still read the mapper.
     singleOf(::FirstDayOfWeekPreferences)
-    singleOf(::AppCalendarConfigMapper)
 
     // Calendar
     viewModel { params ->
