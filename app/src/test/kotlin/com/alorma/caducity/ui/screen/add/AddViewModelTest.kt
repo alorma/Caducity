@@ -517,4 +517,39 @@ class AddViewModelTest {
       val state = vm.await { it.categoryId == "fresh" }
       expectThat(state.categories.map { it.id }).containsExactly("dairy", "fresh")
     }
+
+  @Test
+  fun `editing a batch chip can change the quantity up and down`() =
+    runTest {
+      category("dairy")
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.fill(name = "Milk")
+      vm.onQuantityChange(2)
+      vm.sideEffects.test {
+        vm.onSaveAndAnother()
+        awaitItem()
+        awaitItem()
+      }
+      vm.onEditEntry(
+        vm.state.value.added
+          .single(),
+      )
+      vm.await { it.editing != null && it.quantity == 2 }
+
+      vm.onQuantityChange(4)
+      vm.onSave()
+      vm.await { it.editing == null && it.added.single().quantity == 4 }
+      expectThat(items()).hasSize(4)
+
+      vm.onEditEntry(
+        vm.state.value.added
+          .single(),
+      )
+      vm.await { it.editing != null }
+      vm.onQuantityChange(1)
+      vm.onSave()
+      vm.await { it.editing == null && it.added.single().quantity == 1 }
+      expectThat(items()).hasSize(1)
+    }
 }

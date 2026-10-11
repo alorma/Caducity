@@ -159,8 +159,10 @@ fun AddScreen(
           }, onNew = { viewModel.navigate(AddNavigation.QuickCategory) })
         }
         if (showDateField) DateSection(state = state, viewModel = viewModel)
-        if (!state.isEditing) {
+        // A single unit (from the route) has no quantity; a batch chip edits the whole entry.
+        if (state.editing?.let { it.entry == null } != true) {
           QuantityFrozenRow(
+            showFrozen = !state.isEditing,
             quantity = state.quantity,
             frozen = state.frozen,
             onQuantityChange = viewModel::onQuantityChange,
