@@ -1,9 +1,11 @@
 package com.alorma.caducity.domain
 
+import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.AddedBatch
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ProductUsage
 import kotlin.time.Instant
+import kotlinx.coroutines.flow.Flow
 
 /** Transactional operations of the redesigned screens (add, edit, move, discard, categories). */
 interface PantryDataSource {
@@ -50,6 +52,12 @@ interface PantryDataSource {
     itemId: String,
     newExpiration: Instant,
   )
+
+  /** Items that are neither consumed nor discarded. Re-emits on any change. */
+  fun observeActiveItems(): Flow<List<ActiveItem>>
+
+  /** Categories ordered by `sortOrder`. Re-emits on any change. */
+  fun observeCategories(): Flow<List<Category>>
 
   suspend fun getProductUsage(): List<ProductUsage>
 

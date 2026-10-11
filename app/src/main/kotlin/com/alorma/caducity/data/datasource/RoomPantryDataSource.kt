@@ -2,6 +2,7 @@ package com.alorma.caducity.data.datasource
 
 import androidx.room.withTransaction
 import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.config.time.date
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.dao.CategoryDao
 import com.alorma.caducity.data.datasource.room.dao.ItemDao
@@ -10,6 +11,7 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import com.alorma.caducity.domain.PantryDataSource
+import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.AddedBatch
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.PantryError
@@ -17,6 +19,8 @@ import com.alorma.caducity.domain.model.ProductUsage
 import com.alorma.caducity.domain.model.normalizeForSearch
 import java.util.UUID
 import kotlin.time.Instant
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class RoomPantryDataSource(
   private val database: AppDatabase,
@@ -129,6 +133,26 @@ class RoomPantryDataSource(
       )
     }
   }
+
+  override fun observeActiveItems(): Flow<List<ActiveItem>> =
+    itemDao.observeActiveItemRows().map { rows ->
+      rows.map { row ->
+        ActiveItem(
+          itemId = row.itemId,
+          productId = row.productId,
+          name = row.name,
+          categoryId = row.categoryId,
+          expiration = Instant.fromEpochMilliseconds(row.expirationDate).date(),
+          frozen = row.pausedDate != null,
+          remainingDays = row.remainingDays,
+          packSize = row.packSize,
+          createdAt = row.createdAt?.let { Instant.fromEpochMilliseconds(it) },
+        )
+      }
+    }
+
+  override fun observeCategories(): Flow<List<Category>> =
+    categoryDao.getCategoriesOrdered().map { it.map(categoryMapper::toModel) }
 
   override suspend fun getProductUsage(): List<ProductUsage> =
     productDao.getProductUsage().map {
