@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.calendar.FirstDayOfWeekPreferences
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.domain.NotificationConfigDataSource
+import com.alorma.caducity.domain.model.normalizeForSearch
+import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.NavigateFromSettingsAction
@@ -29,6 +31,7 @@ class SettingsViewModel(
   private val notificationConfig: NotificationConfigDataSource,
   private val workScheduler: ExpirationWorkScheduler,
   private val soonThreshold: SoonThresholdPreferences,
+  observeCategories: ObserveCategoriesUseCase,
   private val themePreferences: ThemePreferences,
   private val firstDayOfWeekPreferences: FirstDayOfWeekPreferences,
   private val eventTracker: EventTracker,
@@ -43,15 +46,21 @@ class SettingsViewModel(
   val state: StateFlow<SettingsState> =
     combine(
       reminder,
-      soonThreshold.thresholdDays,
+      combine(soonThreshold.thresholdDays, observeCategories.observe()) { days, categories ->
+        days to categories
+      },
       snapshotFlow { themePreferences.themeMode.value },
       snapshotFlow { themePreferences.useDynamicColors.value },
       firstDayOfWeekPreferences.state,
-    ) { reminder, threshold, themeMode, dynamicColors, calendar ->
+    ) { reminder, (threshold, categories), themeMode, dynamicColors, calendar ->
       SettingsState(
         reminderEnabled = reminder.enabled,
         reminderTime = reminder.time,
         soonThresholdDays = threshold,
+        categoryMargins =
+          categories
+            .map { CategoryMarginSummary(it.name, it.soonThresholdDays ?: threshold) }
+            .sortedWith(compareBy({ it.days }, { it.name.normalizeForSearch() })),
         themeMode = themeMode,
         dynamicColors = dynamicColors,
         firstDayOfWeek = calendar.firstDayOfWeek,
@@ -73,6 +82,10 @@ class SettingsViewModel(
       SettingsNavigation.Backup -> {
         eventTracker.trackAction(NavigateFromSettingsAction("backup"))
         emitNavigationSideEffect(SettingsNavigationSideEffect.OpenBackup)
+      }
+      SettingsNavigation.CategoryMargins -> {
+        eventTracker.trackAction(NavigateFromSettingsAction("category_margins"))
+        emitNavigationSideEffect(SettingsNavigationSideEffect.OpenCategoryMargins)
       }
       SettingsNavigation.Privacy -> {
         eventTracker.trackAction(NavigateFromSettingsAction("privacy"))

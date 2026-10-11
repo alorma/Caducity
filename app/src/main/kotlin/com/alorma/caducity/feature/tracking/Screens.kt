@@ -24,6 +24,8 @@ class BackupScreen : Screen("BackupScreen")
 
 class PrivacySettingsScreen : Screen("PrivacySettingsScreen")
 
+class CategoryMarginsScreen : Screen("CategoryMarginsScreen")
+
 class DebugSettingsScreen : Screen("DebugSettingsScreen")
 
 class DebugRemoteConfigsScreen : Screen("DebugRemoteConfigsScreen")

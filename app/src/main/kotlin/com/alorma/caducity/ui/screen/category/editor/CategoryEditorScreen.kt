@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -15,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,6 +51,8 @@ import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.threshold.ThresholdSlider
+import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -119,6 +123,7 @@ fun CategoryEditorScreen(
         onDescriptionChange = viewModel::onDescriptionChange,
         onShapeChange = viewModel::onShapeChange,
         onIconChange = viewModel::onIconChange,
+        onSoonDaysChange = viewModel::onSoonDaysChange,
         onDelete = viewModel::onDeleteClick,
       )
     }
@@ -132,6 +137,7 @@ private fun CategoryEditorContent(
   onDescriptionChange: (String) -> Unit,
   onShapeChange: (CategoryShape) -> Unit,
   onIconChange: (CategoryIcon) -> Unit,
+  onSoonDaysChange: (Int) -> Unit,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -150,7 +156,7 @@ private fun CategoryEditorContent(
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-      CategoryShapeIcon(shape = state.shape, icon = state.icon.imageVector, size = 120.dp, selected = true)
+      CategoryShapeIcon(shape = state.shape, icon = state.icon.imageVector, size = 96.dp, selected = true)
       Text(
         text = state.name.ifBlank { stringResource(R.string.category_editor_preview_placeholder) },
         style = CaducityTheme.typography.headlineSmall,
@@ -193,6 +199,31 @@ private fun CategoryEditorContent(
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       FormOverline(stringResource(R.string.category_form_icon))
       IconPicker(selected = state.icon, onSelect = onIconChange)
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      FormOverline(stringResource(R.string.category_editor_margin))
+      Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = CaducityTheme.colorScheme.surfaceContainer,
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        Column(
+          modifier = Modifier.padding(16.dp),
+          verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+          ThresholdSlider(days = state.shownSoonDays, onDaysChange = onSoonDaysChange)
+          Text(
+            text =
+              stringResource(
+                R.string.category_editor_margin_help,
+                state.name.trim().ifBlank { stringResource(R.string.category_editor_margin_this_category) },
+                thresholdLabel(state.shownSoonDays),
+              ),
+            style = CaducityTheme.typography.bodySmall,
+            color = CaducityTheme.colorScheme.onSurfaceVariant,
+          )
+        }
+      }
     }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       FormOverline(stringResource(R.string.category_editor_description))

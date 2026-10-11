@@ -86,6 +86,9 @@ data object Onboarding : AppRoute
 data object SettingsBackup : AppRoute
 
 @Serializable
+data object SettingsCategoryMargins : AppRoute
+
+@Serializable
 data object SettingsPrivacy : AppRoute
 
 @Serializable

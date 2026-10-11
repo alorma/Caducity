@@ -25,6 +25,8 @@ class CreateCategoryUseCase(
     shape: CategoryShape = CategoryShape.COOKIE,
     icon: CategoryIcon = CategoryIcon.DEFAULT,
     sortOrder: Int? = null,
+    /** `null` follows the global default. */
+    soonThresholdDays: Int? = null,
   ): Result<String> =
     try {
       val duplicated =
@@ -39,6 +41,7 @@ class CreateCategoryUseCase(
           shape = shape,
           icon = icon,
           sortOrder = sortOrder ?: pantryDataSource.getNextSortOrder(),
+          soonThresholdDays = soonThresholdDays,
         )
 
       categoryDataSource.createCategory(category, persistentListOf())

@@ -41,6 +41,7 @@ import com.alorma.caducity.base.ui.icons.symbols.Notifications
 import com.alorma.caducity.base.ui.icons.symbols.Settings
 import com.alorma.caducity.base.ui.icons.symbols.Shield
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
+import com.alorma.caducity.base.ui.icons.symbols.Tune
 import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.feature.debug.DebugModeProvider
@@ -54,6 +55,7 @@ import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
@@ -71,6 +73,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun SettingsScreen(
   onOpenBackup: () -> Unit,
+  onOpenCategoryMargins: () -> Unit,
   onOpenPrivacy: () -> Unit,
   onOpenAbout: () -> Unit,
   onOpenDebug: () -> Unit,
@@ -89,6 +92,7 @@ fun SettingsScreen(
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
         SettingsNavigationSideEffect.OpenBackup -> onOpenBackup()
+        SettingsNavigationSideEffect.OpenCategoryMargins -> onOpenCategoryMargins()
         SettingsNavigationSideEffect.OpenPrivacy -> onOpenPrivacy()
         SettingsNavigationSideEffect.OpenAbout -> onOpenAbout()
         SettingsNavigationSideEffect.OpenDebug -> onOpenDebug()
@@ -164,12 +168,17 @@ private fun SettingsContent(
       val oneDay = stringResource(R.string.settings_1d)
       val threeDays = stringResource(R.string.settings_3d)
       val oneWeek = stringResource(R.string.settings_1w)
+      val marginsSummary =
+        state.categoryMargins
+          .map { "${it.name} ${thresholdLabel(it.days)}" }
+          .joinToString(" · ")
+          .ifBlank { null }
       StyledSettingsGroup(title = { Text(stringResource(R.string.settings_section_alerts)) }) {
         StyledSettingsCard(
           icon = { Icon(Symbols.Outlined.Notifications, contentDescription = null) },
           title = stringResource(R.string.settings_notifications),
           subtitle = stringResource(R.string.settings_notifications_time, formatTime(state.reminderTime)),
-          shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
+          shapes = ListItemDefaults.segmentedShapes(index = 0, count = 3),
           onClick = onReminderTimeClick,
           action = {
             Switch(
@@ -179,8 +188,8 @@ private fun SettingsContent(
           },
         )
         StyledSettingsButtonGroupCard(
-          title = stringResource(R.string.settings_soon_means),
-          subtitle = stringResource(R.string.settings_soon_means_sub),
+          title = stringResource(R.string.settings_soon_default),
+          subtitle = stringResource(R.string.settings_soon_default_sub),
           selectedItem = state.soonThresholdDays,
           items = SoonThresholdPreferences.ALLOWED_DAYS,
           itemTitleMap = { days ->
@@ -191,7 +200,16 @@ private fun SettingsContent(
             }
           },
           onItemSelected = onSoonThresholdChange,
-          shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
+          shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
+        )
+        StyledSettingsCard(
+          icon = { Icon(Symbols.Outlined.Tune, contentDescription = null) },
+          title = stringResource(R.string.settings_category_margins),
+          subtitle = marginsSummary,
+          subtitleMaxLines = 1,
+          action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
+          onClick = { onNavigate(SettingsNavigation.CategoryMargins) },
+          shapes = ListItemDefaults.segmentedShapes(index = 2, count = 3),
         )
       }
     }

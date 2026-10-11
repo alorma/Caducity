@@ -323,11 +323,6 @@
   <string name="status_title_fresh">Frescos</string>
   <string name="status_title_frozen">Congelados</string>
   <string name="status_help_expired">Si aún están buenos, cambia la fecha. Si no, tíralos.</string>
-  <plurals name="status_help_soon">
-    <item quantity="one">Caducan en el próximo día. Úsalos primero.</item>
-    <item quantity="many">Caducan en los próximos %d días. Úsalos primero.</item>
-    <item quantity="other">Caducan en los próximos %d días. Úsalos primero.</item>
-  </plurals>
   <string name="status_help_fresh">Aún tienen margen. Primero, los que caducan antes.</string>
   <string name="status_help_frozen">No caducan mientras están en el congelador. Cuando saques uno, descongélalo y ponle fecha.</string>
   <string name="status_select">Selecciona</string>
@@ -399,8 +394,6 @@
   <string name="settings_section_data">Datos</string>
   <string name="settings_notifications">Notificaciones</string>
   <string name="settings_notifications_time">Cada día a las %s</string>
-  <string name="settings_soon_means">«Pronto» significa</string>
-  <string name="settings_soon_means_sub">Cuando un producto pasa a amarillo y te avisamos</string>
   <string name="settings_1d">1 día</string>
   <string name="settings_3d">3 días</string>
   <string name="settings_1w">1 semana</string>
@@ -435,7 +428,7 @@
   <string name="ob_alerts_sample_title">3 productos caducan pronto</string>
   <string name="ob_alerts_sample_body">Leche entera hoy, Mozzarella mañana…</string>
   <string name="ob_alerts_notify_me">Avísame</string>
-  <string name="ob_alerts_before">Antes de que caduque</string>
+  <string name="ob_alerts_before">Por defecto</string>
   <string name="ob_alerts_days_1">1 día</string>
   <string name="ob_alerts_days_3">3 días</string>
   <string name="ob_alerts_days_7">1 semana</string>
@@ -482,4 +475,57 @@
   <string name="quantity_expires_today">caduca hoy</string>
   <string name="quantity_expires_tomorrow">caduca mañana</string>
   <string name="quantity_expires_on">caduca %1$s</string>
+  <string name="settings_soon_default">«Pronto» por defecto</string>
+  <string name="settings_soon_default_sub">Para las categorías sin margen propio</string>
+  <string name="settings_category_margins">Margen por categoría</string>
+  <string name="margins_title">Margen por categoría</string>
+  <string name="margins_help">Cuántos días antes de caducar un producto pasa a «Pronto» y te avisamos.</string>
+  <string name="margins_row_default">Por defecto (Ajustes)</string>
+  <string name="margins_row_notify">Avisa %s antes</string>
+  <string name="margins_suggested_hint">Sugerido para %1$s: %2$s</string>
+  <string name="margins_restore">Volver a los valores sugeridos</string>
+  <string name="margins_restore_title">¿Volver a los valores sugeridos?</string>
+  <string name="margins_restore_body">Las categorías sugeridas recuperan su margen sugerido. Las que has creado vuelven al valor por defecto.</string>
+  <string name="margins_restore_confirm">Restaurar</string>
+  <string name="margins_restore_cancel">Cancelar</string>
+  <string name="margins_restored">Valores sugeridos restaurados</string>
+  <string name="margins_failed">No se ha podido guardar el margen</string>
+  <string name="category_editor_margin">Avísame antes</string>
+  <string name="category_editor_margin_help">Desliza o toca un punto. «%1$s» pasará a «Pronto» %2$s antes de caducar.</string>
+  <string name="category_editor_margin_this_category">Esta categoría</string>
+  <string name="home_later_title">Más adelante</string>
+  <string name="home_later_names_two">%1$s y %2$s</string>
+  <string name="home_later_names_more">%1$s, %2$s y %3$d más</string>
+  <string name="home_later_range">Del %1$s al %2$s</string>
+  <string name="home_later_on">El %s</string>
+  <string name="home_later_expand">Mostrar los productos</string>
+  <string name="home_later_collapse">Ocultar los productos</string>
+  <string name="home_later_help_one">Ya están «Pronto» por el margen de su categoría (%1$s, %2$s).</string>
+  <string name="home_later_help_many">Ya están «Pronto» por el margen de su categoría.</string>
+  <string name="status_help_soon_margin">Según el margen de cada categoría. Úsalos primero.</string>
+  <string name="status_notify_pill">Avisa %s antes</string>
+  <string name="ob_alerts_default_help">Cada categoría ya tiene su margen. Este es para las que crees tú.</string>
+  <string name="threshold_unit_days">días</string>
+  <string name="threshold_unit_weeks">semanas</string>
+  <string name="threshold_unit_months">meses</string>
+  <plurals name="threshold_days">
+    <item quantity="one">%d día</item>
+    <item quantity="many">%d días</item>
+    <item quantity="other">%d días</item>
+  </plurals>
+  <plurals name="threshold_weeks">
+    <item quantity="one">%d semana</item>
+    <item quantity="many">%d semanas</item>
+    <item quantity="other">%d semanas</item>
+  </plurals>
+  <plurals name="threshold_months">
+    <item quantity="one">%d mes</item>
+    <item quantity="many">%d meses</item>
+    <item quantity="other">%d meses</item>
+  </plurals>
+  <plurals name="threshold_days_before">
+    <item quantity="one">%d día antes de que caduque</item>
+    <item quantity="many">%d días antes de que caduque</item>
+    <item quantity="other">%d días antes de que caduque</item>
+  </plurals>
 </resources>

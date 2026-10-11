@@ -119,7 +119,10 @@ class ObserveUseCasesTest {
     id: String,
     name: String = id,
     sortOrder: Int = 0,
-  ) = db.categoryDao().insertCategory(CategoryRoomEntity(id, name, "", sortOrder = sortOrder))
+    soonDays: Int? = null,
+  ) = db.categoryDao().insertCategory(
+    CategoryRoomEntity(id, name, "", sortOrder = sortOrder, soonThresholdDays = soonDays),
+  )
 
   private suspend fun add(
     name: String,
@@ -170,6 +173,69 @@ class ObserveUseCasesTest {
     }
 
   @Test
+  fun `a category with its own margin ignores the default, limits included`() =
+    runTest {
+      category("own", soonDays = 30)
+      category("plain", sortOrder = 1)
+      listOf(30, 31).forEach { add("Own$it", "own", it) }
+      listOf(3, 4).forEach { add("Plain$it", "plain", it) }
+
+      val statuses = items.observe().first().associate { it.name to it.status }
+      expectThat(statuses).isEqualTo(
+        mapOf(
+          "Own30" to ExpiryStatus.SOON,
+          "Own31" to ExpiryStatus.FRESH,
+          "Plain3" to ExpiryStatus.SOON,
+          "Plain4" to ExpiryStatus.FRESH,
+        ),
+      )
+      expectThat(
+        items
+          .observe()
+          .first()
+          .first { it.name == "Own30" }
+          .soonDays,
+      ).isEqualTo(30)
+      expectThat(
+        items
+          .observe()
+          .first()
+          .first { it.name == "Plain3" }
+          .soonDays,
+      ).isEqualTo(3)
+    }
+
+  @Test
+  fun `changing the default does not touch categories with their own margin`() =
+    runTest {
+      category("own", soonDays = 2)
+      category("plain", sortOrder = 1)
+      add("Own", "own", 5)
+      add("Plain", "plain", 5)
+      thresholdFlow.value = 7
+
+      val statuses = items.observe().first().associate { it.name to it.status }
+      expectThat(statuses["Own"]).isEqualTo(ExpiryStatus.FRESH)
+      expectThat(statuses["Plain"]).isEqualTo(ExpiryStatus.SOON)
+    }
+
+  @Test
+  fun `editing the margin of a category re-labels its units right away`() =
+    runTest {
+      category("c1")
+      add("Pasta", "c1", 20)
+      items.observe().test {
+        expectThat(awaitItem().single().status).isEqualTo(ExpiryStatus.FRESH)
+        val current = pantry.getCategories().single()
+        pantry.updateCategory(current.copy(soonThresholdDays = 30))
+        expectThat(awaitItem().single().status).isEqualTo(ExpiryStatus.SOON)
+        pantry.updateCategory(current.copy(soonThresholdDays = null))
+        expectThat(awaitItem().single().status).isEqualTo(ExpiryStatus.FRESH)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+
+  @Test
   fun `consumed and discarded items are not observed`() =
     runTest {
       category("c1")
@@ -212,6 +278,57 @@ class ObserveUseCasesTest {
       expectThat(data.oldestExpiredDaysAgo).isEqualTo(9)
       expectThat(data.isPantryEmpty).isFalse()
       expectThat(data.nothingExpiresSoon).isFalse()
+    }
+
+  @Test
+  fun `home sections stop at today plus six and the rest of the soon units go to later`() =
+    runTest {
+      category("c1", "Dairy", soonDays = 7)
+      category("c2", "Pantry", 1, soonDays = 30)
+      add("Milk", "c1", 6)
+      add("Pasta", "c2", 7)
+      add("Rice", "c2", 20, quantity = 2)
+      add("Beans", "c2", 40)
+
+      val data = home.observe().first()
+
+      expectThat(data.sections.map { it.date }).containsExactly(inDays(6))
+      val later = data.later!!
+      expectThat(later.rows.map { it.date to it.row.name }).containsExactly(inDays(7) to "Pasta", inDays(20) to "Rice")
+      expectThat(later.unitCount).isEqualTo(3)
+      expectThat(later.firstDate).isEqualTo(inDays(7))
+      expectThat(later.lastDate).isEqualTo(inDays(20))
+      expectThat(later.margins.map { it.category.id to it.days }).containsExactly("c2" to 30)
+      expectThat(data.soonCount).isEqualTo(4)
+      expectThat(data.freshCount).isEqualTo(1)
+    }
+
+  @Test
+  fun `home with only later units is not empty of soon and has no later when nothing is beyond`() =
+    runTest {
+      category("c1", soonDays = 30)
+      add("Pasta", "c1", 15)
+      val data = home.observe().first()
+      expectThat(data.sections).isEmpty()
+      expectThat(data.later!!.unitCount).isEqualTo(1)
+      expectThat(data.nothingExpiresSoon).isFalse()
+
+      consume.consume(add("Rice", "c1", 1).itemIds.single())
+      expectThat(
+        home
+          .observe()
+          .first()
+          .later!!
+          .unitCount,
+      ).isEqualTo(1)
+    }
+
+  @Test
+  fun `home has no later section without units beyond the window`() =
+    runTest {
+      category("c1")
+      add("Milk", "c1", 2)
+      expectThat(home.observe().first().later).isNull()
     }
 
   @Test
@@ -438,6 +555,18 @@ class ObserveUseCasesTest {
       todayFlow.value = today.plus(2, DateTimeUnit.DAY).plus(2, DateTimeUnit.DAY)
       expectThat(byStatus.observe(ExpiryStatus.EXPIRED).first().totalCount).isEqualTo(2)
       todayFlow.value = today
+    }
+
+  @Test
+  fun `the soon list tells each category its own margin`() =
+    runTest {
+      category("c1", "Dairy")
+      category("c2", "Pantry", 1, soonDays = 30)
+      add("Milk", "c1", 2)
+      add("Pasta", "c2", 25)
+
+      val groups = byStatus.observe(ExpiryStatus.SOON).first().groups
+      expectThat(groups.associate { it.category.id to it.soonDays }).isEqualTo(mapOf("c1" to 3, "c2" to 30))
     }
 
   @Test

@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import com.alorma.compose.settings.ui.core.LocalSettingsTileColors
 import com.alorma.compose.settings.ui.expressive.SettingsMenuLink
 import com.alorma.compose.settings.ui.expressive.SettingsTileDefaults
@@ -22,6 +23,7 @@ fun StyledSettingsCard(
   icon: (@Composable () -> Unit)? = null,
   action: (@Composable () -> Unit)? = null,
   enabled: Boolean = true,
+  subtitleMaxLines: Int = Int.MAX_VALUE,
   colors: ListItemColors = LocalSettingsTileColors.current ?: SettingsTileDefaults.colors(),
 ) {
   SettingsMenuLink(
@@ -37,7 +39,7 @@ fun StyledSettingsCard(
     subtitle =
       if (subtitle != null
       ) {
-        { Text(text = subtitle) }
+        { Text(text = subtitle, maxLines = subtitleMaxLines, overflow = TextOverflow.Ellipsis) }
       } else {
         null
       },

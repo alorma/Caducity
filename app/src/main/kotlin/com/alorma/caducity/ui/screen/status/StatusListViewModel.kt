@@ -7,7 +7,6 @@ import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.StatusListData
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
-import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsByStatusUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
@@ -36,7 +35,6 @@ import kotlinx.datetime.LocalDate
 class StatusListViewModel(
   private val status: ExpiryStatus,
   observeByStatus: ObserveItemsByStatusUseCase,
-  thresholds: ExpirationThresholds,
   private val consumeItem: ConsumeItemUseCase,
   private val freezeItem: FreezeItemUseCase,
   private val unfreezeItem: UnfreezeItemUseCase,
@@ -50,12 +48,11 @@ class StatusListViewModel(
   private val selectedKeys = MutableStateFlow(emptySet<String>())
 
   val state: StateFlow<StatusListState> =
-    combine<_, _, _, _, StatusListState>(
+    combine<_, _, _, StatusListState>(
       observeByStatus.observe(status),
-      thresholds.soonThresholdDays,
       selecting,
       selectedKeys,
-    ) { data, soonDays, isSelecting, selected ->
+    ) { data, isSelecting, selected ->
       val sections = data.toSections()
       val keys = sections.flatMap { s -> s.rows.map { it.key } }.toSet()
       StatusListState.Ready(
@@ -63,7 +60,6 @@ class StatusListViewModel(
         today = data.today,
         totalCount = data.totalCount,
         sections = sections,
-        soonDays = soonDays,
         selecting = isSelecting,
         selectedKeys = selected intersect keys,
       )
@@ -340,6 +336,6 @@ class StatusListViewModel(
               entries = units,
             )
           }
-      StatusSection(category = group.category, rows = rows)
+      StatusSection(category = group.category, rows = rows, soonDays = group.soonDays)
     }
 }

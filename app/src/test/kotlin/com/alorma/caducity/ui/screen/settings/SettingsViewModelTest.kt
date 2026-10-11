@@ -4,6 +4,9 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.calendar.FirstDayOfWeekPreferences
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.data.datasource.SettingsNotificationConfigDataSource
+import com.alorma.caducity.domain.PantryDataSource
+import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.theme.ThemeMode
@@ -12,6 +15,7 @@ import com.russhwolf.settings.MapSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -22,6 +26,8 @@ import kotlinx.datetime.LocalTime
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import strikt.api.expectThat
 import strikt.assertions.containsExactly
 import strikt.assertions.isEmpty
@@ -52,12 +58,30 @@ class SettingsViewModelTest {
   private val thresholds = SoonThresholdPreferences(settings)
   private val firstDay = FirstDayOfWeekPreferences(settings)
   private val config = SettingsNotificationConfigDataSource(settings)
+  private val categories =
+    MutableStateFlow(
+      listOf(
+        Category("c1", "Rebost", "", soonThresholdDays = 30),
+        Category("c2", "Làctics", "", soonThresholdDays = null),
+        Category("c3", "Fleca", "", soonThresholdDays = 2),
+      ),
+    )
   private lateinit var vm: SettingsViewModel
 
   @Before
   fun setUp() {
     Dispatchers.setMain(UnconfinedTestDispatcher())
-    vm = SettingsViewModel(config, scheduler, thresholds, ThemePreferencesNoOp, firstDay, EventTracker(emptyList()))
+    val pantry = mock<PantryDataSource> { on { observeCategories() } doReturn categories }
+    vm =
+      SettingsViewModel(
+        config,
+        scheduler,
+        thresholds,
+        ObserveCategoriesUseCase(pantry),
+        ThemePreferencesNoOp,
+        firstDay,
+        EventTracker(emptyList()),
+      )
   }
 
   @After
@@ -96,6 +120,22 @@ class SettingsViewModelTest {
       vm.onSoonThresholdChange(7)
       expectThat(thresholds.current()).isEqualTo(7)
       expectThat(vm.state.first { it.soonThresholdDays == 7 }.soonThresholdDays).isEqualTo(7)
+    }
+
+  @Test
+  fun `the category margins are listed shortest first and follow the default when they have none`() =
+    runTest {
+      val margins = vm.state.first { it.categoryMargins.isNotEmpty() }.categoryMargins
+      expectThat(margins).containsExactly(
+        CategoryMarginSummary("Fleca", 2),
+        CategoryMarginSummary("Làctics", 3),
+        CategoryMarginSummary("Rebost", 30),
+      )
+
+      vm.onSoonThresholdChange(7)
+      val updated = vm.state.first { it.soonThresholdDays == 7 }.categoryMargins
+      expectThat(updated.first { it.name == "Làctics" }.days).isEqualTo(7)
+      expectThat(updated.first { it.name == "Rebost" }.days).isEqualTo(30)
     }
 
   @Test
