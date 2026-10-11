@@ -55,24 +55,44 @@ class ProductDeletedAction :
     parameters = mapOf("source" to "delete_dialog"),
   )
 
-// Category Detail Actions
+// Category Actions
 class NavigateToAddItemFromCategoryAction(
-  source: String,
-  hasProduct: Boolean,
+  source: String, // fab
 ) : NavigationAction(
     actionName = "add_item",
-    origin = "category_detail",
-    parameters =
-      mapOf(
-        "source" to source, // "fab", "product_tab"
-        "has_product" to hasProduct.toString(),
-      ),
+    origin = "category",
+    parameters = mapOf("source" to source),
   )
+
+class NavigateToCalendarFromCategoryAction :
+  NavigationAction(
+    actionName = "calendar",
+    origin = "category",
+    parameters = mapOf("source" to "topbar"),
+  )
+
+class NavigateToCategoryEditorAction :
+  NavigationAction(
+    actionName = "edit_category",
+    origin = "category",
+    parameters = mapOf("source" to "menu"),
+  )
+
+class NavigateToItemActionsFromCategoryAction :
+  NavigationAction(
+    actionName = "item_actions",
+    origin = "category",
+    parameters = mapOf("source" to "row"),
+  )
+
+class CategoryFilterAction(
+  status: String, // all, expired, soon, fresh, frozen
+) : Action(name = "category_filter", parameters = mapOf("status" to status))
 
 class CategoryDeletedAction :
   NavigationAction(
     actionName = "category_deleted",
-    origin = "category_detail",
+    origin = "category",
     parameters = mapOf("source" to "delete_dialog"),
   )
 

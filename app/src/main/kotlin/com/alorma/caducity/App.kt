@@ -35,12 +35,14 @@ import com.alorma.caducity.ui.navigation.QuickCategory
 import com.alorma.caducity.ui.navigation.Settings
 import com.alorma.caducity.ui.navigation.TopLevelBackStack
 import com.alorma.caducity.ui.navigation.TopLevelRoute
+import com.alorma.caducity.ui.navigation.toStatus
 import com.alorma.caducity.ui.screen.add.AddArgs
 import com.alorma.caducity.ui.screen.add.AddScreen
 import com.alorma.caducity.ui.screen.calendar.CalendarArgs
 import com.alorma.caducity.ui.screen.calendar.CalendarScreen
+import com.alorma.caducity.ui.screen.category.CategoryArgs
+import com.alorma.caducity.ui.screen.category.CategoryScreen
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
-import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
 import com.alorma.caducity.ui.screen.category.quick.QuickCategorySheet
 import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusScreen
 import com.alorma.caducity.ui.screen.home.HomeScreen
@@ -141,11 +143,13 @@ fun App(
               SettingsContainer()
             }
             entry<Category> {
-              CategoryDetailContainer(
-                categoryId = it.id,
-                initialProductId = it.initialProductId,
+              CategoryScreen(
+                args = CategoryArgs(it.id, it.filter?.toStatus(), it.initialProductId),
                 onBack = { navigation.pop() },
-                onAddItem = { navigation.navigate(Add(categoryId = it, source = "category")) },
+                onOpenAdd = { navigation.navigate(Add(categoryId = it.id, source = "category")) },
+                onOpenCalendar = { navigation.navigate(Calendar(categoryId = it.id)) },
+                onOpenEditor = { navigation.navigate(CategoryEditor(it.id)) },
+                onOpenItemActions = { itemId -> navigation.navigate(ItemActions(itemId)) },
               )
             }
             // TEMP(fase 7): old items-by-status screen stands in for Expired.

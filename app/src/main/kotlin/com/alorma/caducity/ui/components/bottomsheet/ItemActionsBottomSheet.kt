@@ -41,7 +41,6 @@ import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetStat
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.LocalAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
-import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlin.time.Instant
 import kotlinx.coroutines.CoroutineScope

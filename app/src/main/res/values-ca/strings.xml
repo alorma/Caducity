@@ -497,4 +497,22 @@
     <item quantity="one">%d caducat</item>
     <item quantity="other">%d caducats</item>
   </plurals>
+  <string name="category_add">Afegeix</string>
+  <string name="category_delete_title">Esborrar %s?</string>
+  <string name="category_delete_confirm">Esborra</string>
+  <string name="category_delete_cancel">Cancel·la</string>
+  <string name="category_calendar_cd">Calendari de %s</string>
+  <string name="category_menu">Opcions de la categoria</string>
+  <string name="category_menu_edit">Edita la categoria</string>
+  <string name="category_menu_delete">Esborra la categoria</string>
+  <string name="category_empty">Encara no hi ha cap producte en aquesta categoria.</string>
+  <string name="category_status_expired">Caducat</string>
+  <string name="category_status_soon">Aviat</string>
+  <string name="category_status_fresh">Fresc</string>
+  <string name="category_status_frozen">Congelat</string>
+  <string name="category_filter_all">Tots</string>
+  <plurals name="category_delete_body">
+    <item quantity="one">Això esborrarà la categoria i el seu %d producte. No es pot desfer.</item>
+    <item quantity="other">Això esborrarà la categoria i els seus %d productes. No es pot desfer.</item>
+  </plurals>
 </resources>

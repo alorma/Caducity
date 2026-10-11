@@ -23,7 +23,6 @@ import com.alorma.caducity.feature.tracking.ItemRescheduledAction
 import com.alorma.caducity.feature.tracking.ItemUnfrozenAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.screen.category.detail.ItemDetailUiModel
 import kotlin.time.Instant
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow

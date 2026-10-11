@@ -2,11 +2,9 @@ package com.alorma.caducity.domain
 
 import com.alorma.caducity.domain.usecase.AddItemBatchUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
-import com.alorma.caducity.domain.usecase.CreateProductUseCase
 import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
-import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.MoveItemToCategoryUseCase
 import com.alorma.caducity.domain.usecase.ObserveCalendarUseCase
@@ -36,8 +34,6 @@ val domainModule =
     factoryOf(::AppExpirationThresholdsImpl) bind ExpirationThresholds::class
 
     // Product use cases (was Variant)
-    factoryOf(::CreateProductUseCase)
-    factoryOf(::GetCategoryProductsUseCase)
 
     // Redesign use cases
     factoryOf(::AddItemBatchUseCase)

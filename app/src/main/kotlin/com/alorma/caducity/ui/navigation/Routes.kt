@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.navigation
 
 import androidx.navigation3.runtime.NavKey
+import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.ItemStatus
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
@@ -29,11 +30,19 @@ enum class CategoryFilter {
   Frozen,
 }
 
+fun CategoryFilter.toStatus(): ExpiryStatus =
+  when (this) {
+    CategoryFilter.Fresh -> ExpiryStatus.FRESH
+    CategoryFilter.Soon -> ExpiryStatus.SOON
+    CategoryFilter.Expired -> ExpiryStatus.EXPIRED
+    CategoryFilter.Frozen -> ExpiryStatus.FROZEN
+  }
+
 @Serializable
 data class Category(
   val id: String,
   val filter: CategoryFilter? = null,
-  // TEMP(fase 6): the old category screen scrolls to a product opened from a notification.
+  /** Product to highlight: notifications scheduled before the redesign open a product. */
   val initialProductId: String? = null,
 ) : AppRoute
 

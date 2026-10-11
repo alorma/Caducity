@@ -110,42 +110,8 @@ class RoomItemDataSource(
     }
   }
 
-  override fun getItemsByProduct(
-    categoryId: String,
-    productId: String?,
-  ): Flow<List<Item>> =
-    if (productId != null) {
-      itemDao.getProductItems(categoryId, productId)
-    } else {
-      itemDao.getStandaloneItems(categoryId)
-    }.map { entities ->
-      entities.map { entity -> itemMapper.toModel(entity) }
-    }
-
   override fun getAllItems(): Flow<List<Item>> =
     itemDao.getAllItems().map { entities ->
       entities.map { entity -> itemMapper.toModel(entity) }
     }
-
-  override suspend fun clearConsumedItems(
-    categoryId: String,
-    productId: String?,
-  ) {
-    if (productId != null) {
-      itemDao.deleteConsumedItemsByProduct(categoryId, productId)
-    } else {
-      itemDao.deleteConsumedStandaloneItems(categoryId)
-    }
-  }
-
-  override suspend fun clearAllItems(
-    categoryId: String,
-    productId: String?,
-  ) {
-    if (productId != null) {
-      itemDao.deleteAllItemsByProduct(categoryId, productId)
-    } else {
-      itemDao.deleteAllStandaloneItems(categoryId)
-    }
-  }
 }

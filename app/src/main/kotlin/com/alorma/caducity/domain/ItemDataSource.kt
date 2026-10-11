@@ -33,20 +33,5 @@ interface ItemDataSource {
     newPackSize: Int,
   )
 
-  fun getItemsByProduct(
-    categoryId: String,
-    productId: String?,
-  ): Flow<List<Item>>
-
-  suspend fun clearConsumedItems(
-    categoryId: String,
-    productId: String?,
-  )
-
-  suspend fun clearAllItems(
-    categoryId: String,
-    productId: String?,
-  )
-
   fun getAllItems(): Flow<List<Item>>
 }

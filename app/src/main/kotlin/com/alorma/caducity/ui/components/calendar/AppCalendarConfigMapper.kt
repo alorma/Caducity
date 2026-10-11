@@ -6,7 +6,6 @@ import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.shape.calculateShapeWithGaps
-import com.alorma.caducity.ui.screen.category.detail.DateItemsUiModel
 import com.kizitonwose.calendar.core.minusMonths
 import com.kizitonwose.calendar.core.plusMonths
 import kotlinx.collections.immutable.ImmutableList

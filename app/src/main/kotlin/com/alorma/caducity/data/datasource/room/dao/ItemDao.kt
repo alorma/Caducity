@@ -18,15 +18,6 @@ interface ItemDao {
   @Query("SELECT * FROM items WHERE categoryId = :categoryId")
   fun getCategoryItems(categoryId: String): Flow<List<ItemRoomEntity>>
 
-  @Query("SELECT * FROM items WHERE categoryId = :categoryId AND productId = :productId")
-  fun getProductItems(
-    categoryId: String,
-    productId: String,
-  ): Flow<List<ItemRoomEntity>>
-
-  @Query("SELECT * FROM items WHERE categoryId = :categoryId AND productId IS NULL")
-  fun getStandaloneItems(categoryId: String): Flow<List<ItemRoomEntity>>
-
   @Query("SELECT * FROM items WHERE consumedDate IS NULL AND discardedDate IS NULL")
   fun getActiveItems(): Flow<List<ItemRoomEntity>>
 
@@ -83,27 +74,6 @@ interface ItemDao {
     fromProductId: String,
     toProductId: String?,
   )
-
-  @Query("DELETE FROM items WHERE productId = :productId AND consumedDate IS NULL")
-  suspend fun deleteActiveItemsByProduct(productId: String)
-
-  @Query("DELETE FROM items WHERE categoryId = :categoryId AND productId = :productId AND consumedDate IS NOT NULL")
-  suspend fun deleteConsumedItemsByProduct(
-    categoryId: String,
-    productId: String,
-  )
-
-  @Query("DELETE FROM items WHERE categoryId = :categoryId AND productId = :productId")
-  suspend fun deleteAllItemsByProduct(
-    categoryId: String,
-    productId: String,
-  )
-
-  @Query("DELETE FROM items WHERE categoryId = :categoryId AND productId IS NULL AND consumedDate IS NOT NULL")
-  suspend fun deleteConsumedStandaloneItems(categoryId: String)
-
-  @Query("DELETE FROM items WHERE categoryId = :categoryId AND productId IS NULL")
-  suspend fun deleteAllStandaloneItems(categoryId: String)
 
   // Backup & Restore methods
   @Query("SELECT * FROM items")

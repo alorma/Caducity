@@ -46,11 +46,11 @@ import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.PantryCategory
 import com.alorma.caducity.ui.components.category.CategoryIcons
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
+import com.alorma.caducity.ui.components.category.categoryMeta
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.daysUntil
 
 @Composable
 internal fun PantrySearchField(
@@ -129,7 +129,7 @@ internal fun CategoryCard(
           overflow = TextOverflow.Ellipsis,
         )
         Text(
-          text = cardMeta(entry, today),
+          text = categoryMeta(entry.unitCount, entry.nearest, today),
           style = CaducityTheme.typography.bodySmall,
           color = CaducityTheme.colorScheme.onSurfaceVariant,
           maxLines = 2,
@@ -139,23 +139,6 @@ internal fun CategoryCard(
       StatusBar(entry)
     }
   }
-}
-
-@Composable
-private fun cardMeta(
-  entry: PantryCategory,
-  today: LocalDate,
-): String {
-  val count = pluralStringResource(R.plurals.home_product_count, entry.unitCount, entry.unitCount)
-  val nearest = entry.nearest ?: return count
-  val relative =
-    when (val days = today.daysUntil(nearest)) {
-      0 -> stringResource(R.string.calendar_relative_today)
-      1 -> stringResource(R.string.calendar_relative_tomorrow)
-      in 2..Int.MAX_VALUE -> pluralStringResource(R.plurals.calendar_relative_in, days, days)
-      else -> pluralStringResource(R.plurals.calendar_relative_ago, -days, -days)
-    }
-  return stringResource(R.string.pantry_card_meta, count, relative.replaceFirstChar { it.lowercase() })
 }
 
 /** Decorative: the textual information is already on the card. */
