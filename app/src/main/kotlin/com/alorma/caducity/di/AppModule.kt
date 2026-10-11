@@ -51,6 +51,7 @@ import com.alorma.caducity.ui.screen.home.HomeViewModel
 import com.alorma.caducity.ui.screen.home.WidgetTipFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
+import com.alorma.caducity.ui.screen.pantry.PantrySearchRequests
 import com.alorma.caducity.ui.screen.pantry.PantryViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugRemoteConfigsViewModel
@@ -100,6 +101,7 @@ val appModule =
     viewModelOf(::HomeViewModel)
 
     // Pantry
+    singleOf(::PantrySearchRequests)
     viewModelOf(::PantryViewModel)
 
     single { Settings() }
