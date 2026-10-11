@@ -331,7 +331,7 @@ private fun DayCell(
         }.clickable(onClick = onClick),
     contentAlignment = Alignment.TopCenter,
   ) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(top = 3.dp)) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(top = 6.dp)) {
       Box(
         modifier =
           Modifier
