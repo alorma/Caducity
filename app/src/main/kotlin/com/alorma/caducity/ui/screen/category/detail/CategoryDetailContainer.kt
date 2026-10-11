@@ -26,6 +26,8 @@ import org.koin.core.parameter.parametersOf
 fun CategoryDetailContainer(
   categoryId: String,
   onBack: () -> Unit,
+  // TEMP(fase 6): the old screen only knows how to open Add for the whole category.
+  onAddItem: (categoryId: String) -> Unit,
   initialProductId: String? = null,
   modifier: Modifier = Modifier,
 ) {
@@ -66,11 +68,7 @@ fun CategoryDetailContainer(
           LaunchedEffect(viewModel) {
             viewModel.navigationSideEffects.collect { effect ->
               when (effect) {
-                is CategoryDetailNavigationSideEffect.NavigateToAddItem -> {
-                  productDetailBackStack.add(
-                    CategoryDetailRoutes.AddInstance(categoryId, effect.productId),
-                  )
-                }
+                is CategoryDetailNavigationSideEffect.NavigateToAddItem -> onAddItem(categoryId)
                 CategoryDetailNavigationSideEffect.NavigateBack -> {
                   // Request review before navigating back, only after 3 actions (when counter reaches 0)
                   if (showAppReviewFlag.isEnabled() && activity != null) {
@@ -88,13 +86,6 @@ fun CategoryDetailContainer(
             categoryId = it.categoryId,
             initialProductId = initialProductId,
             viewModel = viewModel,
-          )
-        }
-        entry<CategoryDetailRoutes.AddInstance> {
-          CategoryDetailAddItemScreen(
-            categoryId = it.categoryId,
-            productId = it.productId,
-            onNavigateBack = { productDetailBackStack.removeLastOrNull() },
           )
         }
       },

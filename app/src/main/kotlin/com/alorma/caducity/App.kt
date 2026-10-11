@@ -134,6 +134,7 @@ fun App(
                 categoryId = it.id,
                 initialProductId = it.initialProductId,
                 onBack = { navigation.pop() },
+                onAddItem = { navigation.navigate(Add(categoryId = it, source = "category")) },
               )
             }
             // TEMP(fase 7): old items-by-status screen stands in for Expired.

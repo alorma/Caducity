@@ -22,10 +22,6 @@ import org.koin.compose.koinInject
 
 // TEMP(fase 3): placeholders until the real screens land. Each one is deleted by the phase noted below.
 
-/** TEMP(fase 4): replaced by the Add screen. */
-@Composable
-fun AddPlaceholderScreen(modifier: Modifier = Modifier) = Placeholder("Add", modifier)
-
 /** TEMP(fase 5c): replaced by the Calendar screen. */
 @Composable
 fun CalendarPlaceholderScreen(modifier: Modifier = Modifier) = Placeholder("Calendar", modifier)
@@ -33,10 +29,6 @@ fun CalendarPlaceholderScreen(modifier: Modifier = Modifier) = Placeholder("Cale
 /** TEMP(fase 5a): replaced by the item actions sheet. */
 @Composable
 fun ItemActionsPlaceholder(itemId: String) = Placeholder("Item actions: $itemId", Modifier.padding(32.dp))
-
-/** TEMP(fase 4): replaced by the quick category sheet. */
-@Composable
-fun QuickCategoryPlaceholder() = Placeholder("Quick category", Modifier.padding(32.dp))
 
 /** TEMP(fase 6): replaced by the Pantry screen. */
 @Composable
