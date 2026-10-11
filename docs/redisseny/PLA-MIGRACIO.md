@@ -26,6 +26,9 @@ S'actualitza en tancar cada fase (regla 6: tests verds → emulador → validaci
 | 10 — Textos, accessibilitat, mode fosc, neteja | ✅ Feta | `3544f75` … (10b), `f7baa9f`, `2d97d06`, `78ed121`, `e0522eb` | 2026-10-12 | Validada per l'usuari (2026-10-12). 10b: eliminats `ui/components/calendar/**`, `kalendar` i models orfes; README/ROADMAP/CLAUDE.md al dia; lint sense errors (14 arreglats). 10a: 117 claus òrfenes fora, plurals ca/es amb `many`, diàleg de quantitat localitzat i redissenyat (`15-dialeg-quantitat.md`, extra no previst). Accessibilitat: tira/mes/camp de data ja tenien rols i `liveRegion`; afegits rols als `clickable` que faltaven i límit d'escala de font a les caselles de l'Inici. Mode fosc revisat a l'emulador (Inici, Rebost, Ajustos, Accions, diàleg). **Queda per al repàs global final:** TalkBack real, revisió de les traduccions ca/es i lletra gran a més pantalles. Nota M4 afegida |
 | 11 — Marge d'«Aviat» per categoria (abans 8b) | ✅ Feta | `40f5e1d`, `1878e2b`, `9533dcb` | 2026-10-12 | Validada per l'usuari (2026-10-12). Columna dins `MIGRATION_2_3` i `3.json` regenerat (cal reinstal·lar les instal·lacions de desenvolupament amb la v3 antiga). `ThresholdSlider`, pantalla «Marge per categoria», Ajustos, editor, Inici («Més endavant») i Aviat; notificació amb el criteri nou; onboarding i fake data amb marges suggerits. Tests i ktlint verds; provada a l'emulador en clar i fosc, la tauleta queda per al repàs global. Punt a millorar M5: cap categoria es pot dir «Rebost» |
 | 12 — Icona, splash, widget, dreceres | ✅ Feta (sense widget ni dreceres) | `3d59630`, `bf4037d`, `19bb67f` | 2026-10-12 | Validada per l'usuari (2026-10-12). Icona adaptativa, splash natiu d'Android 12+ (sense `core-splashscreen` perquè `minSdk` és 35: fons `surface` clar `#FBF6EC` i fosc `#1C1A15` a `Theme.Caducity`) i icona petita de notificació monocroma. Repàs a la tauleta (clar i fosc): barres superiors, botó «Add», capçalera d'estat i Rebost acotats a la columna de 600 dp (`94210b7`, `e9dde39`); «phone» → «device». Widget i dreceres queden per a un futur (decidit 2026-10-12) |
+| 13 — Landing i política de privacitat (nova) | ⏳ Pendent (falta disseny) | — | 2026-10-12 | Fora de l'app, al repo `alorma/ConversesLanding`. Vegeu la fase 13 |
+
+**Repàs global final (tancat el 2026-10-12, validat per l'usuari):** prova a tauleta de les fases 3–9 feta; mode fosc validat; edició de categoria i notificació diària provades. **Descartat de moment:** TalkBack real, revisió de les traduccions ca/es i lletra gran a més pantalles. **Recorregut amb instal·lació neta i actualització des de la v0.10 (acceptació de la 10b):** es farà amb la build de release, no abans.
 
 ---
 
@@ -650,7 +653,7 @@ Dos commits: 10a (textos, accessibilitat, mode fosc) i 10b (neteja).
 - **Acceptació:** `./gradlew lint ktlintCheck test assembleRelease` verd; recorregut manual complet (instal·lació neta i actualització des de la v0.10) sense crashes; `git grep` sense `ThemeTone|kalendar|llamatik|ExpirationColors|firebase-ai`.
 
 ### Fase 11 — Marge d'«Aviat» per categoria (abans 8b)
-Un o més commits. Font: `pantalles/14-marge-per-categoria.md`, 5.14 i 6.4. Cap codi d'aquesta fase s'ha escrit encara. Va **després de l'onboarding (9) i dels textos/neteja (10)**: cal tocar també l'onboarding i afegir els textos en ca/en/es.
+Un o més commits. Font: `pantalles/14-marge-per-categoria.md`, 5.14 i 6.4. Va **després de l'onboarding (9) i dels textos/neteja (10)**: cal tocar també l'onboarding i afegir els textos en ca/en/es.
 - **Dades:** columna nova dins la `MIGRATION_2_3` (6.4), `CategoryRoomEntity`/`Category.soonThresholdDays`, DAOs i mappers, backup (`BackupCategory` + camp nullable), `SuggestedThresholds`, `ThresholdStops` (parada ↔ dies; un valor fora de parades es conserva i el slider mostra la més propera).
 - **Domini:** el càlcul d'estat usa el marge efectiu (5.14); `ActiveItem`/`PantryEntry` el porten; revisió de tots els filtres per `SOON`; `UpdateCategoryUseCase`/`CreateCategoryUseCase` accepten `soonThresholdDays: Int?`; `ObserveHomeUseCase` limita les seccions a `avui + 6` i afegeix «Més endavant»; `NotificationContentBuilder` amb el criteri nou.
 - **UI:** `ThresholdSlider` (slider discret de 8 parades, `stateDescription`, hàptic); pantalla **«Marge per categoria»** (`Settings › Marge per categoria`, files desplegables d'una en una, «Torna als valors suggerits» amb diàleg); **Ajustos** (fila «"Aviat" per defecte» + fila nova amb resum d'una línia); **Nova/edita categoria** (secció «Avisa'm abans», previsualització de 96 dp; sense tocar-ho es desa `null`); **Inici** («Més endavant» plegable, ajuda); **Aviat** (frase nova + pastilla «Avisa N abans» per grup).
@@ -670,6 +673,13 @@ Icona adaptativa ja feta (`3d59630`). La resta és opcional: es pot publicar sen
 - **Riscos:** R8 amb Glance; refresc a mitjanit; mides del widget.
 - **Acceptació:** `Icona.png`, `Splash.png`, `Accessos.png`; la icona temàtica (Android 13+) es veu monocroma.
 - **Tests:** `WidgetStateMapperTest` (N aviat, N caducats, 2 propers, buit), `ShortcutIntentTest`.
+
+### Fase 13 — Landing de Caducity i política de privacitat (nova, 2026-10-12)
+Fora d'aquest repo: una pàgina nova a `https://github.com/alorma/ConversesLanding`, que serà la landing de Caducity. **Falta el disseny**; no es pot començar fins que n'hi hagi.
+- **Contingut:** landing de l'app + **pàgina de política de privacitat**. La URL de la política és la que es posarà a Google Play Console (fitxa de la botiga) en lloc de l'actual.
+- **Text legal:** és el moment de la revisió de l'avís (hipòtesi del pas 5 de l'onboarding i `privacy_policy.md`/`terms_and_conditions.md`). La pàgina i l'app han de dir el mateix; cal revisar-lo per una persona competent abans de publicar. Si el text canvia, es puja la versió de l'avís (`disclaimer_accepted_version`) i els usuaris existents el tornen a acceptar (P3).
+- **Pendent de decidir:** disseny de la landing; estructura del repo (carpeta/ruta nova, idiomes ca/en/es); si l'app enllaça la política des d'Ajustos › Privadesa; URL final per a Play.
+- **Bloqueja la publicació:** sí, per a la política de privacitat de Play (no per a la resta de l'app).
 ---
 
 ## 10. Dependències i estratègia de tests
@@ -695,7 +705,7 @@ Icona adaptativa ja feta (`3d59630`). La resta és opcional: es pot publicar sen
 ## 11. Ordre i dependències entre fases
 
 ```
-0 ─▶ 1 ─▶ 2 ─▶ 3 ─▶ 4 ─▶ 5a ─▶ 5b ─▶ 5c ─▶ 6 ─▶ 7 ─▶ 8 ─▶ 9 ─▶ 10 ─▶ 11 ─▶ 12 (opcional)
+0 ─▶ 1 ─▶ 2 ─▶ 3 ─▶ 4 ─▶ 5a ─▶ 5b ─▶ 5c ─▶ 6 ─▶ 7 ─▶ 8 ─▶ 9 ─▶ 10 ─▶ 11 ─▶ 12 (opcional) ─▶ 13 (landing + privacitat, falta disseny)
                     │      ▲      │
                     │      └ Accions (5a) l'obren Inici (5b), Calendari (5c), Categoria (6), pantalles d'estat (7)
                     └ QuickCategorySheet i ShapePicker/IconPicker (4) reutilitzats a 8
@@ -720,7 +730,7 @@ La numeració és 0–12 (abans hi havia un salt a la 10: el 2026-10-11 s'han re
 - Tauleta/pantalles grans (només s'evita trencar-les; contingut centrat amb amplada màxima). **Fase futura «Tauleta»:** `ListDetailPaneScaffold` amb Rebost | Categoria i Inici | Calendari de mes; es dissenyarà abans d'implementar-la. Regressió temporal acceptada: es perden `AdaptiveCalendar`, el panell lateral de `CategoryDetailScreen` i les variants expandides del Dashboard.
 - Cerca global avançada (més enllà d'obrir Rebost amb el cercador enfocat).
 - Notificacions per producte, canals separats per estat, avisos de caducats.
-- Revisió legal del text de l'avís (proposta; l'ha de revisar una persona competent abans de publicar).
+- Revisió legal del text de l'avís (proposta; l'ha de revisar una persona competent abans de publicar). Es fa a la fase 13, amb la landing.
 - Publicació a Play Store entre fases (decisió de l'usuari).
 
 (El **calendari ja no és fora d'abast**: és dins d'abast, fases 5 i 6.)
