@@ -8,18 +8,13 @@ import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.data.datasource.RoomBackupDataSource
 import com.alorma.caducity.domain.backup.BackupDataSource
 import com.alorma.caducity.domain.domainModule
-import com.alorma.caducity.domain.usecase.ClearProductItemsUseCase
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
-import com.alorma.caducity.domain.usecase.DeleteProductUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
-import com.alorma.caducity.domain.usecase.GetCategoryProductsUseCase
 import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
 import com.alorma.caducity.domain.usecase.GetItemsByStatusUseCase
-import com.alorma.caducity.domain.usecase.GetProductItemsUseCase
-import com.alorma.caducity.domain.usecase.ObtainCategoryDetailUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.SplitAndConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.SplitAndDeleteItemUseCase
@@ -38,12 +33,9 @@ import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.screen.add.AddViewModel
 import com.alorma.caducity.ui.screen.calendar.CalendarViewModel
+import com.alorma.caducity.ui.screen.category.CategoryViewModel
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryViewModel
 import com.alorma.caducity.ui.screen.category.create.FutureDateSelectableDates
-import com.alorma.caducity.ui.screen.category.detail.CategoryDetailMapper
-import com.alorma.caducity.ui.screen.category.detail.CategoryDetailViewModel
-import com.alorma.caducity.ui.screen.category.detail.product.ProductPageMapper
-import com.alorma.caducity.ui.screen.category.detail.product.ProductPageViewModel
 import com.alorma.caducity.ui.screen.category.quick.CategoryCreatedEvents
 import com.alorma.caducity.ui.screen.category.quick.QuickCategoryViewModel
 import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusViewModel
@@ -60,7 +52,6 @@ import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
 import org.koin.android.ext.koin.androidContext
-import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -121,8 +112,16 @@ val appModule =
       )
     }
 
-    // Category detail
-    singleOf(::ObtainCategoryDetailUseCase)
+    // Category
+    viewModel { params ->
+      CategoryViewModel(
+        args = params.get(),
+        observeCategory = get(),
+        observeWeekStrip = get(),
+        deleteCategory = get(),
+        eventTracker = get(),
+      )
+    }
     singleOf(::DeleteItemUseCase)
     singleOf(::DeleteCategoryUseCase)
     singleOf(::ConsumeItemUseCase)
@@ -132,8 +131,6 @@ val appModule =
     singleOf(::SplitAndConsumeItemUseCase)
     singleOf(::SplitAndFreezeItemUseCase)
     singleOf(::SplitAndDeleteItemUseCase)
-    singleOf(::CategoryDetailMapper)
-    viewModelOf(::CategoryDetailViewModel)
 
     // Quick category sheet
     singleOf(::CategoryCreatedEvents)
@@ -158,12 +155,6 @@ val appModule =
     }
 
     // Product page
-    factoryOf(::GetProductItemsUseCase)
-    factoryOf(::GetCategoryProductsUseCase)
-    factoryOf(::ProductPageMapper)
-    factoryOf(::DeleteProductUseCase)
-    factoryOf(::ClearProductItemsUseCase)
-    viewModelOf(::ProductPageViewModel)
 
     // Create category
     singleOf(::CreateCategoryUseCase)

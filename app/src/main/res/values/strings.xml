@@ -507,4 +507,22 @@
     <item quantity="one">%d expired</item>
     <item quantity="other">%d expired</item>
   </plurals>
+  <string name="category_add">Add</string>
+  <string name="category_delete_title">Delete %s?</string>
+  <string name="category_delete_confirm">Delete</string>
+  <string name="category_delete_cancel">Cancel</string>
+  <string name="category_calendar_cd">%s calendar</string>
+  <string name="category_menu">Category options</string>
+  <string name="category_menu_edit">Edit category</string>
+  <string name="category_menu_delete">Delete category</string>
+  <string name="category_empty">There are no products in this category yet.</string>
+  <string name="category_status_expired">Expired</string>
+  <string name="category_status_soon">Soon</string>
+  <string name="category_status_fresh">Fresh</string>
+  <string name="category_status_frozen">Frozen</string>
+  <string name="category_filter_all">All</string>
+  <plurals name="category_delete_body">
+    <item quantity="one">This deletes the category and its %d product. It can\'t be undone.</item>
+    <item quantity="other">This deletes the category and its %d products. It can\'t be undone.</item>
+  </plurals>
 </resources>

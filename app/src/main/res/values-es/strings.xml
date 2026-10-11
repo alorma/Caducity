@@ -496,4 +496,22 @@
     <item quantity="one">%d caducado</item>
     <item quantity="other">%d caducados</item>
   </plurals>
+  <string name="category_add">Añade</string>
+  <string name="category_delete_title">¿Borrar %s?</string>
+  <string name="category_delete_confirm">Borrar</string>
+  <string name="category_delete_cancel">Cancelar</string>
+  <string name="category_calendar_cd">Calendario de %s</string>
+  <string name="category_menu">Opciones de la categoría</string>
+  <string name="category_menu_edit">Editar categoría</string>
+  <string name="category_menu_delete">Borrar categoría</string>
+  <string name="category_empty">Todavía no hay ningún producto en esta categoría.</string>
+  <string name="category_status_expired">Caducado</string>
+  <string name="category_status_soon">Pronto</string>
+  <string name="category_status_fresh">Fresco</string>
+  <string name="category_status_frozen">Congelado</string>
+  <string name="category_filter_all">Todos</string>
+  <plurals name="category_delete_body">
+    <item quantity="one">Esto borrará la categoría y su %d producto. No se puede deshacer.</item>
+    <item quantity="other">Esto borrará la categoría y sus %d productos. No se puede deshacer.</item>
+  </plurals>
 </resources>
