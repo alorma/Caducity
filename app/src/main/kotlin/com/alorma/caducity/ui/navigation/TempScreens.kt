@@ -22,10 +22,6 @@ import org.koin.compose.koinInject
 
 // TEMP(fase 3): placeholders until the real screens land. Each one is deleted by the phase noted below.
 
-/** TEMP(fase 5c): replaced by the Calendar screen. */
-@Composable
-fun CalendarPlaceholderScreen(modifier: Modifier = Modifier) = Placeholder("Calendar", modifier)
-
 /** TEMP(fase 6): replaced by the Pantry screen. */
 @Composable
 fun PantryListPlaceholder(

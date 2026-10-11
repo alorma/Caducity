@@ -12,7 +12,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -23,9 +27,11 @@ import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.HomeData
 import com.alorma.caducity.domain.model.HomeDaySection
 import com.alorma.caducity.domain.model.HomeRow
+import com.alorma.caducity.domain.usecase.WeekStripData
 import com.alorma.caducity.feature.tracking.HomeScreen as HomeScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
+import com.alorma.caducity.ui.components.weekstrip.WeekStrip
 import com.alorma.caducity.ui.navigation.LocalFloatingBarPadding
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.coroutines.launch
@@ -81,6 +87,10 @@ private sealed interface HomeItem {
     override val key = "header"
   }
 
+  data object WeekStrip : HomeItem {
+    override val key = "week-strip"
+  }
+
   data object Banner : HomeItem {
     override val key = "banner"
   }
@@ -124,6 +134,7 @@ private fun HomeState.Ready.items(): List<HomeItem> =
       if (widgetTipVisible) add(HomeItem.WidgetTip)
       return@buildList
     }
+    add(HomeItem.WeekStrip)
     if (data.expiredCount > 0) add(HomeItem.Banner)
     add(HomeItem.Summary)
     if (data.nothingExpiresSoon) add(HomeItem.NothingSoon)
@@ -146,6 +157,7 @@ internal fun HomeContent(
   val items = state.items()
   val scope = rememberCoroutineScope()
   val firstSection = items.indexOfFirst { it is HomeItem.SectionHeader }
+  var selectedDay by rememberSaveable(stateSaver = LocalDateSaver) { mutableStateOf<LocalDate?>(null) }
 
   LazyColumn(
     state = listState,
@@ -166,6 +178,24 @@ internal fun HomeContent(
             showActions = !data.isPantryEmpty,
             onCalendar = { onNavigate(HomeNavigation.Calendar()) },
             onSearch = { onNavigate(HomeNavigation.Search) },
+            modifier = Modifier.padding(bottom = 12.dp),
+          )
+        HomeItem.WeekStrip ->
+          WeekStrip(
+            data = state.weekStrip,
+            selected = selectedDay,
+            onDayClick = { date ->
+              val sectionIndex = items.indexOfFirst { it is HomeItem.SectionHeader && it.section.date == date }
+              when {
+                selectedDay == date -> selectedDay = null
+                sectionIndex >= 0 -> {
+                  selectedDay = date
+                  scope.launch { listState.animateScrollToItem(sectionIndex) }
+                }
+                // No «soon» section that day: open the month view on it (P18).
+                else -> onNavigate(HomeNavigation.Calendar(date = date, source = "week_strip"))
+              }
+            },
             modifier = Modifier.padding(bottom = 12.dp),
           )
         HomeItem.Banner ->
@@ -209,6 +239,11 @@ internal fun HomeContent(
 
 private val ConnectedGap = 2.dp
 
+private val LocalDateSaver =
+  Saver<LocalDate?, String>(save = {
+    it?.toString() ?: ""
+  }, restore = { if (it.isEmpty()) null else LocalDate.parse(it) })
+
 // region Previews
 
 private val today = LocalDate(2026, 10, 11)
@@ -241,7 +276,7 @@ private val sampleData =
 @Composable
 private fun HomePreview() {
   PreviewTheme {
-    HomeContent(HomeState.Ready(sampleData, widgetTipVisible = false), {}, {}, {})
+    HomeContent(HomeState.Ready(sampleData, WeekStripData(today, emptyMap()), widgetTipVisible = false), {}, {}, {})
   }
 }
 
@@ -250,7 +285,11 @@ private fun HomePreview() {
 private fun HomeNothingSoonPreview() {
   PreviewTheme {
     HomeContent(
-      HomeState.Ready(sampleData.copy(expiredCount = 0, sections = emptyList()), widgetTipVisible = false),
+      HomeState.Ready(
+        sampleData.copy(expiredCount = 0, sections = emptyList()),
+        WeekStripData(today, emptyMap()),
+        widgetTipVisible = false,
+      ),
       {},
       {},
       {},
@@ -265,6 +304,7 @@ private fun HomeEmptyPreview() {
     HomeContent(
       HomeState.Ready(
         HomeData(today, 0, null, 0, 0, 0, emptyList(), isPantryEmpty = true),
+        WeekStripData(today, emptyMap()),
         widgetTipVisible = true,
       ),
       {},

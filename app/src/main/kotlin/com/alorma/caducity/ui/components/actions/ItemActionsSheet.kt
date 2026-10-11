@@ -33,7 +33,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -49,7 +48,6 @@ import com.alorma.caducity.base.ui.icons.symbols.DriveFileMove
 import com.alorma.caducity.base.ui.icons.symbols.Edit
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.Category
-import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.ui.components.bottomsheet.QuantitySelectorResult
 import com.alorma.caducity.ui.components.bottomsheet.showQuantitySelectorDialog
 import com.alorma.caducity.ui.components.category.CategoryIcons
@@ -64,6 +62,7 @@ import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.status.StatusPill
+import com.alorma.caducity.ui.components.status.statusPillText
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import java.time.format.DateTimeFormatter
@@ -180,7 +179,7 @@ private fun Header(
         color = CaducityTheme.colorScheme.onSurfaceVariant,
       )
     }
-    StatusPill(status = state.status, label = pillText(state))
+    StatusPill(status = state.status, label = statusPillText(state.status, state.daysLeft))
   }
 }
 
@@ -196,15 +195,6 @@ private fun metaText(state: ItemActionsSheetState.Ready): String {
     else -> stringResource(R.string.item_actions_expires, date)
   }
 }
-
-@Composable
-private fun pillText(state: ItemActionsSheetState.Ready): String =
-  when {
-    state.status == ExpiryStatus.FROZEN -> stringResource(R.string.item_pill_frozen)
-    state.daysLeft == 0 -> stringResource(R.string.item_pill_today)
-    state.daysLeft > 0 -> pluralStringResource(R.plurals.item_pill_days_left, state.daysLeft, state.daysLeft)
-    else -> pluralStringResource(R.plurals.item_pill_days_ago, -state.daysLeft, -state.daysLeft)
-  }
 
 /** «dc. 21 oct», localized. */
 @Composable

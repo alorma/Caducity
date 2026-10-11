@@ -5,6 +5,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.HomeRow
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveHomeUseCase
+import com.alorma.caducity.domain.usecase.ObserveWeekStripUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemActionAction
@@ -27,6 +28,7 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(
   observeHome: ObserveHomeUseCase,
+  observeWeekStrip: ObserveWeekStripUseCase,
   private val consumeItem: ConsumeItemUseCase,
   private val restoreItems: RestoreItemsUseCase,
   private val snackbars: GlobalSnackbarEvents,
@@ -37,8 +39,8 @@ class HomeViewModel(
   private val widgetTipDismissed = MutableStateFlow(!WIDGET_AVAILABLE || !widgetTipFlag.isEnabled())
 
   val state: StateFlow<HomeState> =
-    combine(observeHome.observe(), widgetTipDismissed) { data, dismissed ->
-      HomeState.Ready(data = data, widgetTipVisible = !dismissed) as HomeState
+    combine(observeHome.observe(), observeWeekStrip.observe(), widgetTipDismissed) { data, weekStrip, dismissed ->
+      HomeState.Ready(data = data, weekStrip = weekStrip, widgetTipVisible = !dismissed) as HomeState
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeState.Loading)
 
   override fun navigate(navigation: HomeNavigation) {

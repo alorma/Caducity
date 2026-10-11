@@ -1,6 +1,7 @@
 package com.alorma.caducity.di
 
 import com.alorma.caducity.config.ConfigQualifier
+import com.alorma.caducity.config.calendar.FirstDayOfWeekPreferences
 import com.alorma.caducity.config.configModule
 import com.alorma.caducity.config.time.RelativeTimeFormatter
 import com.alorma.caducity.data.dataModule
@@ -34,9 +35,9 @@ import com.alorma.caducity.feature.tracking.trackingModule
 import com.alorma.caducity.ui.components.actions.ItemActionsSheetViewModel
 import com.alorma.caducity.ui.components.bottomsheet.ItemActionsViewModel
 import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
-import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.screen.add.AddViewModel
+import com.alorma.caducity.ui.screen.calendar.CalendarViewModel
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryViewModel
 import com.alorma.caducity.ui.screen.category.create.FutureDateSelectableDates
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailMapper
@@ -76,9 +77,22 @@ val appModule =
     includes(reviewModule)
     includes(trackingModule)
 
-    // TEMP(fase 5c/11): old calendar components still read these; CalendarPreferences moves in 5c.
-    singleOf(::CalendarPreferences)
+    // TEMP(fase 11): the old calendar components still read the mapper.
+    singleOf(::FirstDayOfWeekPreferences)
     singleOf(::AppCalendarConfigMapper)
+
+    // Calendar
+    viewModel { params ->
+      CalendarViewModel(
+        args = params.get(),
+        observeCalendar = get(),
+        observeItems = get(),
+        observeCategories = get(),
+        firstDayOfWeekPreferences = get(),
+        todayProvider = get(),
+        eventTracker = get(),
+      )
+    }
 
     // Home
     singleOf(::WidgetTipFlag)

@@ -23,7 +23,6 @@ import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.navigation.Add
 import com.alorma.caducity.ui.navigation.AppShell
 import com.alorma.caducity.ui.navigation.Calendar
-import com.alorma.caducity.ui.navigation.CalendarPlaceholderScreen
 import com.alorma.caducity.ui.navigation.Category
 import com.alorma.caducity.ui.navigation.CategoryEditor
 import com.alorma.caducity.ui.navigation.Expired
@@ -39,6 +38,8 @@ import com.alorma.caducity.ui.navigation.TopLevelBackStack
 import com.alorma.caducity.ui.navigation.TopLevelRoute
 import com.alorma.caducity.ui.screen.add.AddArgs
 import com.alorma.caducity.ui.screen.add.AddScreen
+import com.alorma.caducity.ui.screen.calendar.CalendarArgs
+import com.alorma.caducity.ui.screen.calendar.CalendarScreen
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryScreen
 import com.alorma.caducity.ui.screen.category.detail.CategoryDetailContainer
 import com.alorma.caducity.ui.screen.category.quick.QuickCategorySheet
@@ -155,7 +156,13 @@ fun App(
                 onNavigateToCategory = { categoryId -> navigation.navigate(Category(categoryId)) },
               )
             }
-            entry<Calendar> { CalendarPlaceholderScreen() }
+            entry<Calendar> {
+              CalendarScreen(
+                args = CalendarArgs(categoryId = it.categoryId, date = it.date),
+                onBack = { navigation.pop() },
+                onOpenItemActions = { itemId -> navigation.navigate(ItemActions(itemId)) },
+              )
+            }
             entry<Add> {
               AddScreen(
                 args = AddArgs(categoryId = it.categoryId, itemId = it.itemId),

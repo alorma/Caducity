@@ -463,4 +463,32 @@
   <string name="home_widget_tip">Put the widget on your home screen to add without opening the app.</string>
   <string name="home_widget_tip_dismiss">Dismiss the tip</string>
   <string name="item_pack_of">pack of %d</string>
+  <string name="week_strip_day_none">%1$s, nothing</string>
+  <plurals name="week_strip_day_count">
+    <item quantity="one">%1$s, %2$d product</item>
+    <item quantity="other">%1$s, %2$d products</item>
+  </plurals>
+  <string name="calendar_back">Back</string>
+  <string name="calendar_prev_month">Previous month</string>
+  <string name="calendar_next_month">Next month</string>
+  <string name="calendar_legend_expired">Expired</string>
+  <string name="calendar_legend_soon">Soon</string>
+  <string name="calendar_legend_fresh">Fresh</string>
+  <string name="calendar_day_empty">Nothing expires this day</string>
+  <string name="calendar_row_meta">%1$s · unit %2$d of %3$d</string>
+  <plurals name="calendar_cell_desc">
+    <item quantity="one">%1$s, %2$d product</item>
+    <item quantity="other">%1$s, %2$d products</item>
+  </plurals>
+  <string name="calendar_cell_desc_none">%1$s, nothing</string>
+  <string name="calendar_relative_today">Today</string>
+  <string name="calendar_relative_tomorrow">Tomorrow</string>
+  <plurals name="calendar_relative_in">
+    <item quantity="one">in %d day</item>
+    <item quantity="other">in %d days</item>
+  </plurals>
+  <plurals name="calendar_relative_ago">
+    <item quantity="one">%d day ago</item>
+    <item quantity="other">%d days ago</item>
+  </plurals>
 </resources>

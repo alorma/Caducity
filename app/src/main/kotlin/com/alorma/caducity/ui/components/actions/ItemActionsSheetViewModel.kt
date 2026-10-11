@@ -5,7 +5,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.model.InstanceActionError
 import com.alorma.caducity.domain.model.ItemStatus
-import com.alorma.caducity.domain.model.PantryEntry
+import com.alorma.caducity.domain.model.unitPositions
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
@@ -66,12 +66,12 @@ class ItemActionsSheetViewModel(
         if (entries.isNotEmpty() || categories.isNotEmpty()) close()
         ItemActionsSheetState.Loading
       } else {
-        val siblings = entries.siblingsOf(entry)
+        val position = entries.unitPositions().getValue(itemId)
         ItemActionsSheetState.Ready(
           name = entry.name,
           category = category,
-          unitIndex = siblings.indexOfFirst { it.itemId == itemId } + 1,
-          unitCount = siblings.size,
+          unitIndex = position.index,
+          unitCount = position.count,
           pack = entry.legacyPack,
           expiration = entry.expiration,
           status = entry.status,
@@ -297,10 +297,6 @@ class ItemActionsSheetViewModel(
   }
 
   private fun ready() = state.value as? ItemActionsSheetState.Ready
-
-  private fun List<PantryEntry>.siblingsOf(entry: PantryEntry): List<PantryEntry> =
-    filter { it.groupKey == entry.groupKey }
-      .sortedWith(compareBy({ it.expiration }, { it.createdAt }, { it.itemId }))
 
   private fun LocalDate.toUtcMillis(): Long = atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
 }

@@ -12,10 +12,10 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.alorma.caducity.config.calendar.FirstDayOfWeekPreferences
 import com.alorma.caducity.config.version.AppVersionProvider
 import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.feature.notification.NotificationDebugHelper
-import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import com.alorma.caducity.ui.screen.settings.about.AboutScreen
 import com.alorma.caducity.ui.screen.settings.appearance.AppearanceSettingsScreen
 import com.alorma.caducity.ui.screen.settings.backup.BackupScreen
@@ -30,7 +30,7 @@ import org.koin.compose.koinInject
 fun SettingsContainer(
   modifier: Modifier = Modifier,
   themePreferences: ThemePreferences = koinInject(),
-  calendarPreferences: CalendarPreferences = koinInject(),
+  calendarPreferences: FirstDayOfWeekPreferences = koinInject(),
   debugModeProvider: DebugModeProvider = koinInject(),
   debugHelper: NotificationDebugHelper = koinInject(),
   versionProvider: AppVersionProvider = koinInject(),
