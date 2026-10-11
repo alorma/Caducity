@@ -235,7 +235,12 @@ class FakePlayStoreDataStrategy : FakeDataStrategy {
             name = "Pèsols congelats",
             items =
               listOf(
-                ItemConfig("Pèsols congelats #1", now.plus(120.days), shouldFreeze = true, remainingDaysWhenFrozen = 120),
+                ItemConfig(
+                  "Pèsols congelats #1",
+                  now.plus(120.days),
+                  shouldFreeze = true,
+                  remainingDaysWhenFrozen = 120,
+                ),
                 ItemConfig("Pèsols congelats #2", now.plus(180.days)),
                 ItemConfig("Pèsols congelats #3", now.plus(240.days)),
               ),
