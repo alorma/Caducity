@@ -40,6 +40,29 @@ Igual que la de `05-caducats.md`; només canvien els colors, els textos i les ac
 - **Descongela** → obre el mateix bloc de dates ràpides que «Canvia la data» (full petit) per posar la nova data de caducitat; en confirmar, l'ítem surt de Congelats.
 - Les files amb diverses unitats actuen sobre **una** unitat (la més propera a caducar); el full Accions permet triar-ne més.
 
+## En fer scroll: capçalera plegada
+
+Captures: `CaducatsScroll.png`, `EstatAviatScroll.png`, `EstatFrescosScroll.png`. Fonts: `*Scroll.dc.html`. (Les maquetes porten més dades que les de l'estat inicial perquè la llista pugui fer scroll; per això Caducats hi diu «11 productes».)
+
+La capçalera gran es plega en una **barra superior** quan la llista fa scroll (M3 *large flexible top app bar* → *small*, amb `TopAppBarScrollBehavior` `exitUntilCollapsed` o equivalent; la transició és contínua, lligada a l'scroll).
+
+**Barra plegada** (alçada 72 dp, padding 12/8/12/4):
+- Fons: el mateix `*-container` de l'estat (no canvia a `surface`); **radi inferior 24** i ombra suau (elevació 2) perquè es vegi la llista passant per sota.
+- `arrow_back` (48 dp) · bloc de títol: títol en Bricolage 24/800 (`font-stretch` 80 %) + recompte a sota en *overline* 12/700 majúscules (`on-*-container`).
+- **Accions a la dreta**, botons d'icona de 48 dp:
+  - Totes les variants: `checklist` «Selecciona».
+  - Caducats, a més i **a l'esquerra** de Selecciona: `delete_sweep` «Llença'ls tots» com a **botó d'icona ple** (fons `expired`, icona blanca) — continua sent l'acció principal. Obre el mateix diàleg «Llençar N productes?».
+- La **frase d'ajuda desapareix** en plegar-se (només té sentit en entrar).
+- Botons amb contentDescription igual que el text dels botons grans; *tooltip* en pulsació llarga.
+
+**Comportament**
+- En tornar a dalt de tot, la capçalera es desplega de nou (títol gran + frase + botons amb text).
+- Si la llista no omple la pantalla (p. ex. Congelats amb 3 productes), no hi ha scroll i la capçalera es queda desplegada.
+- En **mode selecció**, la barra (plegada o no) es transforma en la barra de selecció: `close` + «N seleccionats» + accions de l'estat; la barra inferior d'accions massives es manté com a l'apartat «Variants».
+- Mode fosc: mateixos tokens `*-container` / `on-*-container` de la versió fosca.
+
+**Tests (UI)**: en fer scroll la capçalera es plega i els botons passen a icones; a dalt es desplega; sense scroll no es plega; Llença'ls tots des de la barra plegada obre el diàleg.
+
 ## Estats buits
 - Caducats: «Res caducat» + «Tot el que tens és dins de data.»
 - Aviat: «Res caduca aviat» + «Bona feina.»
