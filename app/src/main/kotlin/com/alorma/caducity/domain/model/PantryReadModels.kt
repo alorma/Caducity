@@ -11,6 +11,7 @@ data class PantryEntry(
   val categoryId: String,
   val expiration: LocalDate,
   val status: ExpiryStatus,
+  val frozenSince: Instant?,
   val remainingDays: Int?,
   val packSize: Int?,
   val createdAt: Instant?,
@@ -146,19 +147,20 @@ data class CategoryData(
 
 // endregion
 
-// region Expired
+// region Status list
 
-data class ExpiredCategoryGroup(
+data class StatusCategoryGroup(
   val category: Category,
-  /** One entry per unit, oldest first. */
+  /** One entry per unit, in the order of the status (see [com.alorma.caducity.domain.usecase.ObserveItemsByStatusUseCase]). */
   val entries: List<PantryEntry>,
 )
 
-data class ExpiredData(
+data class StatusListData(
+  val status: ExpiryStatus,
   val today: LocalDate,
   val totalCount: Int,
-  /** Ordered by number of expired units, descending. */
-  val groups: List<ExpiredCategoryGroup>,
+  /** Ordered by number of units, descending. */
+  val groups: List<StatusCategoryGroup>,
 ) {
   val isEmpty: Boolean get() = totalCount == 0
 }

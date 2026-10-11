@@ -203,6 +203,7 @@ class RoomPantryDataSource(
           categoryId = row.categoryId,
           expiration = Instant.fromEpochMilliseconds(row.expirationDate).date(),
           frozen = row.pausedDate != null,
+          frozenSince = row.pausedDate?.let { Instant.fromEpochMilliseconds(it) },
           remainingDays = row.remainingDays,
           packSize = row.packSize,
           createdAt = row.createdAt?.let { Instant.fromEpochMilliseconds(it) },

@@ -23,6 +23,7 @@ import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -65,7 +66,7 @@ class ObserveUseCasesTest {
   private lateinit var home: ObserveHomeUseCase
   private lateinit var pantryUseCase: ObservePantryUseCase
   private lateinit var category: ObserveCategoryUseCase
-  private lateinit var expired: ObserveExpiredUseCase
+  private lateinit var byStatus: ObserveItemsByStatusUseCase
   private lateinit var calendar: ObserveCalendarUseCase
   private lateinit var weekStrip: ObserveWeekStripUseCase
 
@@ -105,7 +106,7 @@ class ObserveUseCasesTest {
     home = ObserveHomeUseCase(items, pantry, todayProvider)
     pantryUseCase = ObservePantryUseCase(items, pantry, todayProvider)
     category = ObserveCategoryUseCase(items, pantry, todayProvider)
-    expired = ObserveExpiredUseCase(items, pantry, todayProvider)
+    byStatus = ObserveItemsByStatusUseCase(items, pantry, todayProvider)
     calendar = ObserveCalendarUseCase(items)
     weekStrip = ObserveWeekStripUseCase(calendar, todayProvider)
   }
@@ -371,7 +372,7 @@ class ObserveUseCasesTest {
       add("Three", "b", -5)
       add("Fresh", "a", 10)
 
-      val data = expired.observe().first()
+      val data = byStatus.observe(ExpiryStatus.EXPIRED).first()
       expectThat(data.totalCount).isEqualTo(3)
       expectThat(data.groups.map { it.category.id }).containsExactly("b", "a")
       expectThat(
@@ -383,9 +384,77 @@ class ObserveUseCasesTest {
       expectThat(data.isEmpty).isFalse()
 
       discard.discard(data.groups.flatMap { it.entries }.map { it.itemId })
-      val after = expired.observe().first()
+      val after = byStatus.observe(ExpiryStatus.EXPIRED).first()
       expectThat(after.isEmpty).isTrue()
       expectThat(one.itemIds).hasSize(1)
+    }
+
+  @Test
+  fun `each status lists only its own units`() =
+    runTest {
+      category("c1")
+      add("Old", "c1", -2)
+      add("Soon", "c1", 2)
+      add("Fresh", "c1", 10)
+      add("Ice", "c1", 30, frozen = true)
+
+      fun names(status: ExpiryStatus) =
+        byStatus
+          .observe(status)
+          .let { runBlocking { it.first() } }
+          .groups
+          .flatMap { it.entries }
+          .map { it.name }
+
+      expectThat(names(ExpiryStatus.EXPIRED)).containsExactly("Old")
+      expectThat(names(ExpiryStatus.SOON)).containsExactly("Soon")
+      expectThat(names(ExpiryStatus.FRESH)).containsExactly("Fresh")
+      expectThat(names(ExpiryStatus.FROZEN)).containsExactly("Ice")
+    }
+
+  @Test
+  fun `soon rows go by date and the threshold and midnight move units between statuses`() =
+    runTest {
+      category("c1")
+      add("Later", "c1", 3)
+      add("Sooner", "c1", 1)
+      add("Far", "c1", 5)
+
+      val soon = byStatus.observe(ExpiryStatus.SOON).first()
+      expectThat(soon.totalCount).isEqualTo(2)
+      expectThat(
+        soon.groups
+          .single()
+          .entries
+          .map { it.name },
+      ).containsExactly("Sooner", "Later")
+
+      thresholdFlow.value = 7
+      expectThat(byStatus.observe(ExpiryStatus.SOON).first().totalCount).isEqualTo(3)
+      thresholdFlow.value = 3
+
+      todayFlow.value = today.plus(2, DateTimeUnit.DAY)
+      expectThat(byStatus.observe(ExpiryStatus.EXPIRED).first().totalCount).isEqualTo(1)
+      expectThat(byStatus.observe(ExpiryStatus.SOON).first().totalCount).isEqualTo(2)
+      todayFlow.value = today.plus(2, DateTimeUnit.DAY).plus(2, DateTimeUnit.DAY)
+      expectThat(byStatus.observe(ExpiryStatus.EXPIRED).first().totalCount).isEqualTo(2)
+      todayFlow.value = today
+    }
+
+  @Test
+  fun `frozen units carry the date they were frozen`() =
+    runTest {
+      category("c1")
+      add("First", "c1", 20, frozen = true)
+      add("Second", "c1", 20, frozen = true)
+      val data = byStatus.observe(ExpiryStatus.FROZEN).first()
+      expectThat(data.totalCount).isEqualTo(2)
+      expectThat(
+        data.groups
+          .single()
+          .entries
+          .all { it.frozenSince != null },
+      ).isTrue()
     }
 
   // endregion
