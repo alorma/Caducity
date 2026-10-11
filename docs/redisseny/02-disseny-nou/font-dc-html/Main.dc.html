@@ -24,7 +24,24 @@ a{color:#4D5A1E}a:hover{color:#283010}
         <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #665C4C">Diumenge, 11 d'octubre</div>
         <h1 style="margin: 6px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 44px; font-weight: 800; font-stretch: 80%; line-height: 1; letter-spacing: -0.5px">Què caduca</h1>
       </div>
-      <button aria-label="Cerca" style="width: 48px; height: 48px; flex: none; border: none; border-radius: 24px; background: #ECE2CF; color: #29241C; display: flex; align-items: center; justify-content: center; cursor: pointer"><span class="ms" style="font-size: 24px">search</span></button>
+      <div style="display: flex; gap: 8px; flex: none">
+        <a href="CalMes.dc.html" aria-label="Calendari" style="width: 48px; height: 48px; border-radius: 24px; background: #ECE2CF; color: #29241C; display: flex; align-items: center; justify-content: center; text-decoration: none"><span class="ms" style="font-size: 24px">calendar_month</span></a>
+        <button aria-label="Cerca" style="width: 48px; height: 48px; flex: none; border: none; border-radius: 24px; background: #ECE2CF; color: #29241C; display: flex; align-items: center; justify-content: center; cursor: pointer"><span class="ms" style="font-size: 24px">search</span></button>
+      </div>
+    </div>
+
+    <div role="tablist" aria-label="Pròxims 7 dies" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin: -4px -4px 0">
+      <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+        <button role="tab" aria-selected="false" aria-label="{{d.label}}" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0 8px; border: none; border-radius: 18px; background: {{d.bg}}; color: #29241C; font-family: 'Figtree', sans-serif; cursor: pointer">
+          <span style="font-size: 12px; font-weight: 600; color: #665C4C">{{d.wd}}</span>
+          <span style="width: 34px; height: 34px; box-sizing: border-box; border-radius: 17px; border: {{d.ring}}; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 800">{{d.n}}</span>
+          <span style="display: flex; gap: 3px; height: 6px">
+            <sc-for list="{{d.dots}}" as="c" hint-placeholder-count="1">
+              <span style="width: 6px; height: 6px; border-radius: 3px; background: {{c}}"></span>
+            </sc-for>
+          </span>
+        </button>
+      </sc-for>
     </div>
 
     <a href="Caducats.dc.html" style="display: flex; align-items: center; gap: 14px; padding: 12px 14px 12px 12px; border-radius: 24px; background: #F7D8CC; color: #7A2414; text-decoration: none">
@@ -135,7 +152,20 @@ class Component extends DCLogic {
         })
       };
     });
-    return { sections: sections, burst: S.burst };
+    var A = "#D9A23A", F = "#7E9B4C";
+    var week = [
+      ["dg", 11, [A, A], "Avui, 2 productes"], ["dl", 12, [A, A, A], "Demà, 3 productes"],
+      ["dt", 13, [A, A], "Dimarts 13, 2 productes"], ["dc", 14, [A, A], "Dimecres 14, 2 productes"],
+      ["dj", 15, [F], "Dijous 15, 1 producte"], ["dv", 16, [], "Divendres 16, res"], ["ds", 17, [F], "Dissabte 17, 1 producte"]
+    ];
+    var days = week.map(function (d, i) {
+      return {
+        wd: d[0], n: d[1], dots: d[2], label: d[3],
+        bg: i === 0 ? "#F4ECDD" : "transparent",
+        ring: i === 0 ? "2px solid #29241C" : "2px solid transparent"
+      };
+    });
+    return { sections: sections, burst: S.burst, days: days };
   }
 }
 </script>

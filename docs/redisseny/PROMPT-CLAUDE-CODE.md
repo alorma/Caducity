@@ -1,3 +1,9 @@
+# Prompt suggerit per a Claude Code
+
+Copia aquest text a Claude Code, des de l'arrel del repositori de Caducity, amb aquesta carpeta (`caducity-redisseny/`) accessible (per exemple a `docs/redisseny/`).
+
+---
+
 Tenim un redisseny complet de l'app a `docs/redisseny/`. Llegeix primer `README.md` i després tots els fitxers de `04-especificacio/` (inclosa la carpeta `pantalles/`). Fes servir les captures de `01-app-original/` (estat actual) i `02-disseny-nou/captures/` (estat objectiu) com a referència visual, i els `.dc.html` de `02-disseny-nou/font-dc-html/` per a valors exactes (mides, colors, radis, textos). El design system és a `03-design-system/` (`tokens.json` és la font de veritat dels valors).
 
 **No escriguis codi encara.** Vull un **pla de migració** a `docs/redisseny/PLA-MIGRACIO.md` que:
