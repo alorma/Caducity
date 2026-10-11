@@ -27,140 +27,140 @@ class FakePlayStoreDataStrategy : FakeDataStrategy {
 
   private fun createDairyCategory(now: Instant): CategoryConfig =
     CategoryConfig(
-      name = "Dairy",
-      description = "Milk, cheese, yogurt and other dairy products",
+      name = "Làctics",
+      description = "Llet, formatge, iogurt i altres productes làctics",
       products =
         listOf(
           ProductConfig(
-            name = "Whole Milk",
+            name = "Llet sencera",
             items =
               listOf(
-                ItemConfig("Whole Milk #1", now.plus(2.days)),
-                ItemConfig("Whole Milk #2", now.plus(5.days)),
-                ItemConfig("Whole Milk #3", now.plus(8.days)),
+                ItemConfig("Llet sencera #1", now.plus(2.days)),
+                ItemConfig("Llet sencera #2", now.plus(5.days)),
+                ItemConfig("Llet sencera #3", now.plus(8.days)),
               ),
           ),
           ProductConfig(
-            name = "Cheddar Cheese",
+            name = "Formatge cheddar",
             items =
               listOf(
-                ItemConfig("Cheddar Cheese #1", now.plus(10.days)),
-                ItemConfig("Cheddar Cheese #2", now.plus(15.days)),
-                ItemConfig("Cheddar Cheese #3", now.plus(20.days)),
+                ItemConfig("Formatge cheddar #1", now.plus(10.days)),
+                ItemConfig("Formatge cheddar #2", now.plus(15.days)),
+                ItemConfig("Formatge cheddar #3", now.plus(20.days)),
               ),
           ),
           ProductConfig(
-            name = "Greek Yogurt",
+            name = "Iogurt grec",
             items =
               listOf(
-                ItemConfig("Greek Yogurt #1", now.plus(3.days)),
-                ItemConfig("Greek Yogurt #2", now.plus(7.days)),
-                ItemConfig("Greek Yogurt #3", now.minus(1.days)),
+                ItemConfig("Iogurt grec #1", now.plus(3.days)),
+                ItemConfig("Iogurt grec #2", now.plus(7.days)),
+                ItemConfig("Iogurt grec #3", now.minus(1.days)),
               ),
           ),
         ),
       standaloneItems =
         listOf(
-          StandaloneItemConfig("Butter", now.plus(10.days)),
-          StandaloneItemConfig("Sour Cream", now.plus(5.days)),
+          StandaloneItemConfig("Mantega", now.plus(10.days)),
+          StandaloneItemConfig("Nata agra", now.plus(5.days)),
         ),
     )
 
   private fun createProduceCategory(now: Instant): CategoryConfig =
     CategoryConfig(
-      name = "Produce",
-      description = "Fresh fruits and vegetables",
+      name = "Fruita i verdura",
+      description = "Fruita i verdura fresques",
       products =
         listOf(
           ProductConfig(
-            name = "Apples",
+            name = "Pomes",
             items =
               listOf(
-                ItemConfig("Apples #1", now.plus(5.days)),
-                ItemConfig("Apples #2", now.plus(10.days)),
-                ItemConfig("Apples #3", now.plus(15.days)),
+                ItemConfig("Pomes #1", now.plus(5.days)),
+                ItemConfig("Pomes #2", now.plus(10.days)),
+                ItemConfig("Pomes #3", now.plus(15.days)),
               ),
           ),
           ProductConfig(
-            name = "Carrots",
+            name = "Pastanagues",
             items =
               listOf(
-                ItemConfig("Carrots #1", now.plus(8.days)),
-                ItemConfig("Carrots #2", now.plus(12.days)),
-                ItemConfig("Carrots #3", now.minus(2.days)),
+                ItemConfig("Pastanagues #1", now.plus(8.days)),
+                ItemConfig("Pastanagues #2", now.plus(12.days)),
+                ItemConfig("Pastanagues #3", now.minus(2.days)),
               ),
           ),
           ProductConfig(
-            name = "Spinach",
+            name = "Espinacs",
             items =
               listOf(
-                ItemConfig("Spinach #1", now.plus(2.days)),
-                ItemConfig("Spinach #2", now.plus(4.days)),
-                ItemConfig("Spinach #3", now.plus(6.days)),
+                ItemConfig("Espinacs #1", now.plus(2.days)),
+                ItemConfig("Espinacs #2", now.plus(4.days)),
+                ItemConfig("Espinacs #3", now.plus(6.days)),
               ),
           ),
           ProductConfig(
-            name = "Tomatoes",
+            name = "Tomàquets",
             items =
               listOf(
-                ItemConfig("Tomatoes #1", now.plus(3.days)),
-                ItemConfig("Tomatoes #2", now.minus(1.days)),
-                ItemConfig("Tomatoes #3", now.plus(7.days)),
+                ItemConfig("Tomàquets #1", now.plus(3.days)),
+                ItemConfig("Tomàquets #2", now.minus(1.days)),
+                ItemConfig("Tomàquets #3", now.plus(7.days)),
               ),
           ),
         ),
       standaloneItems =
         listOf(
-          StandaloneItemConfig("Bananas", now.plus(3.days)),
-          StandaloneItemConfig("Lettuce", now.plus(4.days)),
+          StandaloneItemConfig("Plàtans", now.plus(3.days)),
+          StandaloneItemConfig("Enciam", now.plus(4.days)),
         ),
     )
 
   private fun createMeatCategory(now: Instant): CategoryConfig =
     CategoryConfig(
-      name = "Meat & Seafood",
-      description = "Fresh and frozen meats and seafood",
+      name = "Carn i peix",
+      description = "Carns i peix, frescos i congelats",
       products =
         listOf(
           ProductConfig(
-            name = "Chicken Breast",
+            name = "Pit de pollastre",
             items =
               listOf(
-                ItemConfig("Chicken Breast #1", now.plus(2.days)),
-                ItemConfig("Chicken Breast #2", now.plus(4.days)),
-                ItemConfig("Chicken Breast #3", now.minus(1.days)),
+                ItemConfig("Pit de pollastre #1", now.plus(2.days)),
+                ItemConfig("Pit de pollastre #2", now.plus(4.days)),
+                ItemConfig("Pit de pollastre #3", now.minus(1.days)),
               ),
           ),
           ProductConfig(
-            name = "Ground Beef",
+            name = "Carn picada",
             items =
               listOf(
-                ItemConfig("Ground Beef #1", now.plus(3.days)),
-                ItemConfig("Ground Beef #2", now.plus(5.days)),
-                ItemConfig("Ground Beef #3", now.plus(7.days)),
+                ItemConfig("Carn picada #1", now.plus(3.days)),
+                ItemConfig("Carn picada #2", now.plus(5.days)),
+                ItemConfig("Carn picada #3", now.plus(7.days)),
               ),
           ),
           ProductConfig(
-            name = "Salmon Fillet",
+            name = "Filet de salmó",
             items =
               listOf(
-                ItemConfig("Salmon Fillet #1", now.plus(2.days)),
-                ItemConfig("Salmon Fillet #2", now.minus(2.days)),
-                ItemConfig("Salmon Fillet #3", now.plus(6.days)),
+                ItemConfig("Filet de salmó #1", now.plus(2.days)),
+                ItemConfig("Filet de salmó #2", now.minus(2.days)),
+                ItemConfig("Filet de salmó #3", now.plus(6.days)),
               ),
           ),
         ),
       standaloneItems =
         listOf(
-          StandaloneItemConfig("Bacon", now.plus(7.days)),
-          StandaloneItemConfig("Shrimp", now.minus(1.days)),
+          StandaloneItemConfig("Cansalada", now.plus(7.days)),
+          StandaloneItemConfig("Gambes", now.minus(1.days)),
         ),
     )
 
   private fun createPantryCategory(now: Instant): CategoryConfig =
     CategoryConfig(
-      name = "Pantry",
-      description = "Dry goods, canned foods, and condiments",
+      name = "Rebost",
+      description = "Pasta, conserves i condiments",
       products =
         listOf(
           ProductConfig(
@@ -173,44 +173,44 @@ class FakePlayStoreDataStrategy : FakeDataStrategy {
               ),
           ),
           ProductConfig(
-            name = "Rice",
+            name = "Arròs",
             items =
               listOf(
-                ItemConfig("Rice #1", now.plus(180.days)),
-                ItemConfig("Rice #2", now.plus(240.days)),
-                ItemConfig("Rice #3", now.plus(300.days)),
+                ItemConfig("Arròs #1", now.plus(180.days)),
+                ItemConfig("Arròs #2", now.plus(240.days)),
+                ItemConfig("Arròs #3", now.plus(300.days)),
               ),
           ),
           ProductConfig(
-            name = "Tomato Sauce",
+            name = "Tomàquet triturat",
             items =
               listOf(
-                ItemConfig("Tomato Sauce #1", now.plus(30.days)),
-                ItemConfig("Tomato Sauce #2", now.plus(45.days)),
-                ItemConfig("Tomato Sauce #3", now.minus(5.days)),
+                ItemConfig("Tomàquet triturat #1", now.plus(30.days)),
+                ItemConfig("Tomàquet triturat #2", now.plus(45.days)),
+                ItemConfig("Tomàquet triturat #3", now.minus(5.days)),
               ),
           ),
           ProductConfig(
-            name = "Olive Oil",
+            name = "Oli d'oliva",
             items =
               listOf(
-                ItemConfig("Olive Oil #1", now.plus(90.days)),
-                ItemConfig("Olive Oil #2", now.plus(150.days)),
-                ItemConfig("Olive Oil #3", now.plus(210.days)),
+                ItemConfig("Oli d'oliva #1", now.plus(90.days)),
+                ItemConfig("Oli d'oliva #2", now.plus(150.days)),
+                ItemConfig("Oli d'oliva #3", now.plus(210.days)),
               ),
           ),
         ),
       standaloneItems =
         listOf(
-          StandaloneItemConfig("Bread", now.plus(2.days)),
-          StandaloneItemConfig("Crackers", now.plus(14.days)),
+          StandaloneItemConfig("Pa", now.plus(2.days)),
+          StandaloneItemConfig("Galetes salades", now.plus(14.days)),
         ),
     )
 
   private fun createFrozenCategory(now: Instant): CategoryConfig =
     CategoryConfig(
-      name = "Frozen Foods",
-      description = "Frozen meals, vegetables, and desserts",
+      name = "Congelats",
+      description = "Plats cuinats, verdures i postres congelats",
       products =
         listOf(
           ProductConfig(
@@ -223,28 +223,28 @@ class FakePlayStoreDataStrategy : FakeDataStrategy {
               ),
           ),
           ProductConfig(
-            name = "Ice Cream",
+            name = "Gelat",
             items =
               listOf(
-                ItemConfig("Ice Cream #1", now.plus(45.days), shouldFreeze = true, remainingDaysWhenFrozen = 45),
-                ItemConfig("Ice Cream #2", now.plus(75.days)),
-                ItemConfig("Ice Cream #3", now.plus(105.days)),
+                ItemConfig("Gelat #1", now.plus(45.days), shouldFreeze = true, remainingDaysWhenFrozen = 45),
+                ItemConfig("Gelat #2", now.plus(75.days)),
+                ItemConfig("Gelat #3", now.plus(105.days)),
               ),
           ),
           ProductConfig(
-            name = "Frozen Peas",
+            name = "Pèsols congelats",
             items =
               listOf(
-                ItemConfig("Frozen Peas #1", now.plus(120.days), shouldFreeze = true, remainingDaysWhenFrozen = 120),
-                ItemConfig("Frozen Peas #2", now.plus(180.days)),
-                ItemConfig("Frozen Peas #3", now.plus(240.days)),
+                ItemConfig("Pèsols congelats #1", now.plus(120.days), shouldFreeze = true, remainingDaysWhenFrozen = 120),
+                ItemConfig("Pèsols congelats #2", now.plus(180.days)),
+                ItemConfig("Pèsols congelats #3", now.plus(240.days)),
               ),
           ),
         ),
       standaloneItems =
         listOf(
-          StandaloneItemConfig("Waffles", now.plus(60.days)),
-          StandaloneItemConfig("French Fries", now.plus(90.days)),
+          StandaloneItemConfig("Gofres", now.plus(60.days)),
+          StandaloneItemConfig("Patates fregides", now.plus(90.days)),
         ),
     )
 }
