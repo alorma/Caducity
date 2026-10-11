@@ -36,7 +36,6 @@ koin = "4.2.2"
 kalendar = "2.10.1"
 fireandforget = "1.3.0"
 
-materialKolor = "5.0.1"
 
 googleServices = "4.5.0"
 firebaseCrashlytics = "3.0.8"
@@ -126,7 +125,6 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 koin-test = { group = "io.insert-koin", name = "koin-test" }
 koin-test-junit4 = { group = "io.insert-koin", name = "koin-test-junit4" }
 
-material-kolor = { group = "com.materialkolor", name = "material-kolor", version.ref = "materialKolor" }
 
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 

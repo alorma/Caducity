@@ -26,10 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.ui.theme.colors.BaseExpirationColors
-import com.alorma.caducity.ui.theme.colors.ExpirationColors
-import com.alorma.caducity.ui.theme.colors.SoftExpirationColors
-import com.alorma.caducity.ui.theme.colors.VibrantExpirationColors
+import com.alorma.caducity.ui.theme.colors.DarkCaducityColors
+import com.alorma.caducity.ui.theme.colors.LightCaducityColors
 import com.alorma.caducity.ui.theme.colors.darkColorScheme
 import com.alorma.caducity.ui.theme.colors.dynamicColorScheme
 import com.alorma.caducity.ui.theme.colors.lightColorScheme
@@ -84,13 +82,13 @@ fun AppThemeContent(
 
   MaterialExpressiveTheme(
     colorScheme = colorScheme,
+    shapes = CaducityMaterialShapes,
     typography = caducityTypography(),
     motionScheme = MotionScheme.expressive(),
     content = {
       InternalTheme(
         dims = dims,
         darkMode = darkTheme,
-        themeTone = themePreferences.themeTone.value,
         content = content,
       )
     },
@@ -111,37 +109,14 @@ fun AppThemeContent(
 fun InternalTheme(
   dims: CaducityDims,
   darkMode: Boolean,
-  themeTone: ThemeTone,
   content: @Composable () -> Unit,
 ) {
   val colorScheme = CaducityTheme.colorScheme
 
-  val baseExpirationColors =
-    BaseExpirationColors(
-      error = colorScheme.error,
-    )
-
-  val baseColor = colorScheme.surfaceContainer
-
-  val expirationColors =
-    ExpirationColors(
-      vibrant =
-        VibrantExpirationColors(
-          default = baseExpirationColors,
-          baseColor = baseColor,
-        ),
-      soft =
-        SoftExpirationColors(
-          default = baseExpirationColors,
-          baseColor = baseColor,
-        ),
-    )
-
   CompositionLocalProvider(
     LocalCaducityDims provides dims,
     LocalDarkMode provides darkMode,
-    LocalThemeTone provides themeTone,
-    LocalExpirationColors provides expirationColors,
+    LocalCaducityColors provides if (darkMode) DarkCaducityColors else LightCaducityColors,
   ) {
     val settingsColors =
       ListItemDefaults.colors(
@@ -196,67 +171,32 @@ private fun MaterialColorsPreviewContent() {
 @Suppress("ModifierRequired")
 @PreviewDynamicLightDark
 @Composable
-fun ExpirationColorsVibrantPreview() {
+fun StatusColorsPreview() {
   PreviewTheme {
-    ExpirationColorsVibrantPreviewContent()
-  }
-}
+    Surface {
+      Column(
+        modifier =
+          Modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+      ) {
+        Text(
+          text = "Status colors",
+          style = CaducityTheme.typography.titleLarge,
+          color = CaducityTheme.colorScheme.onSurface,
+        )
 
-@Composable
-private fun ExpirationColorsVibrantPreviewContent() {
-  Surface {
-    Column(
-      modifier =
-        Modifier
-          .padding(16.dp)
-          .verticalScroll(rememberScrollState()),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      Text(
-        text = "Expiration Colors - Vibrant",
-        style = CaducityTheme.typography.titleLarge,
-        color = CaducityTheme.colorScheme.onSurface,
-      )
-
-      ColorRow("Fresh", CaducityTheme.expirationColors.vibrant.fresh)
-      ColorRow("Expiring Soon", CaducityTheme.expirationColors.vibrant.expiringSoon)
-      ColorRow("Expired", CaducityTheme.expirationColors.vibrant.expired)
-      ColorRow("Frozen", CaducityTheme.expirationColors.vibrant.frozen)
-      ColorRow("Consumed", CaducityTheme.expirationColors.vibrant.consumed)
-    }
-  }
-}
-
-@Suppress("ModifierRequired")
-@PreviewDynamicLightDark
-@Composable
-fun ExpirationColorsSoftPreview() {
-  PreviewTheme {
-    ExpirationColorsSoftPreviewContent()
-  }
-}
-
-@Composable
-private fun ExpirationColorsSoftPreviewContent() {
-  Surface {
-    Column(
-      modifier =
-        Modifier
-          .padding(16.dp)
-          .verticalScroll(rememberScrollState()),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      Text(
-        text = "Expiration Colors - Soft",
-        style = CaducityTheme.typography.titleLarge,
-        color = CaducityTheme.colorScheme.onSurface,
-      )
-
-      ColorRow("Fresh", CaducityTheme.expirationColors.soft.fresh)
-      ColorRow("Expiring Soon", CaducityTheme.expirationColors.soft.expiringSoon)
-      ColorRow("Expired", CaducityTheme.expirationColors.soft.expired)
-      ColorRow("Frozen", CaducityTheme.expirationColors.soft.frozen)
-      ColorRow("Consumed", CaducityTheme.expirationColors.soft.consumed)
+        listOf(
+          "Expired" to CaducityTheme.colors.expired,
+          "Soon" to CaducityTheme.colors.soon,
+          "Fresh" to CaducityTheme.colors.fresh,
+          "Frozen" to CaducityTheme.colors.frozen,
+        ).forEach { (name, colors) ->
+          ColorRow("$name strong", colors.strong)
+          ColorRow("$name container", colors.container)
+        }
+      }
     }
   }
 }
