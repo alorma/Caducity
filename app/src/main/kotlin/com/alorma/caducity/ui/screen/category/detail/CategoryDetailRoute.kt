@@ -3,11 +3,6 @@ package com.alorma.caducity.ui.screen.category.detail
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-data class CategoryDetailRoute(
-  val categoryId: String,
-  val initialProductId: String? = null,
-) : NavKey
-
 sealed interface CategoryDetailRoutes : NavKey {
   @Serializable
   data class Root(
