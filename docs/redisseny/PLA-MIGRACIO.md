@@ -689,3 +689,11 @@ Es manté la numeració 0–11 de l'esquema inicial i de `RESPOSTES-AL-PLA.md` (
 | P22 | Límit màxim de **Quantitat** per alta a Afegeix (l'especificació no en defineix). | 20 |
 
 Totes les altres preguntes (P1–P21) estan resoltes (secció 1).
+
+---
+
+## 15. Punts a millorar (després del redisseny)
+
+| # | Punt | Detall |
+|---|---|---|
+| M1 | Canvi de mes del calendari amb `HorizontalPager` | Avui (fase 5c) el mes canvia amb un gest de lliscar a la targeta i amb les fletxes, amb animació en deixar anar. L'especificació (`11-calendari.md`) demana un pager, on es veu el mes veí mentre s'arrossega. No s'ha fet perquè `CalendarViewModel` només carrega les dades del mes visible: el mes veí es veuria sense punts fins a acabar el gest. Per fer-ho cal que el ViewModel carregui també el mes anterior i el següent (rang ampliat a `ObserveCalendarUseCase`) i que `CalendarScreen` canviï `AnimatedContent` + `detectHorizontalDragGestures` per un `HorizontalPager` de mesos. |
