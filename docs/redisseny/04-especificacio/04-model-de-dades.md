@@ -13,6 +13,13 @@ Category
 
 Canvi d'UI, no de dades: si un producte té **una sola unitat**, la UI el mostra com una fila simple; si en té diverses, com a fila desplegable.
 
+### Unitats i quantitat
+
+- Cada **unitat** és un `Item`. El selector de **Quantitat** d'Afegeix crea **N ítems independents** amb la mateixa data; Consumit, Congela, Llença, canvi de data i Esborra actuen sobre **una** unitat.
+- «Unitat N» és **derivat** (posició dins el producte, ordenada per data); el camp lliure `identifier` es buida i la UI l'ignora.
+- Ítems antics amb `packSize > 1` (no se'n creen de nous): es mostren com «pack de N», compten com **una** unitat i conserven el consum parcial.
+- **Mode edició** (`add?itemId=`): edita **una unitat**; el selector de quantitat s'amaga. Si es canvia el nom, la unitat passa al producte amb aquest nom dins la categoria, o se'n crea un de nou si no existeix; un producte que queda sense unitats actives s'amaga de la UI però es conserva (historial d'autocompletat).
+
 ## Category — camps nous
 
 | Camp | Tipus | Notes |
@@ -56,7 +63,7 @@ Final de vida — cal distingir com surt un ítem del rebost:
 | **Llença** (a Caducats) | `DISCARDED` | Nou. Permet comptar el malbaratament en el futur. |
 | **Esborra** | Eliminació (error d'entrada) | No compta com a consumit ni llençat. |
 
-Si avui «Consume» esborra la fila, valorar un camp `endedAt` + `endReason` (o una taula d'esdeveniments) en lloc d'esborrar. Si es considera massa, `DISCARDED` pot ser igual a esborrar en aquesta fase; deixar-ho documentat.
+**Decisió:** `CONSUMED` i `DISCARDED` es **desen** (la fila es conserva amb la seva data de final de vida); només «Esborra» elimina la fila. Els ítems consumits o llençats no compten com a actius a cap pantalla.
 
 ## Historial per autocompletar (Afegeix)
 
@@ -69,7 +76,9 @@ No és IA: és una consulta local.
 
 Estat de pantalla (no persistent): llista d'ítems desats en aquesta sessió, categoria i data actuals (es mantenen després de «Desa i un altre»), suport de **Desfés** de l'últim desat.
 
-## Preferències (DataStore)
+## Preferències
+
+> Es mantenen amb `multiplatform-settings` (SharedPreferences); no es migra a DataStore.
 
 | Clau | Tipus | Per defecte | On es canvia |
 |---|---|---|---|
@@ -82,7 +91,7 @@ Estat de pantalla (no persistent): llista d'ítems desats en aquesta sessió, ca
 | `disclaimerAcceptedAt` | timestamp | — | Onboarding pas 4 |
 | `themeMode` | enum | SYSTEM | Ajustos |
 | `dynamicColor` | bool | **false** | Ajustos |
-| `firstDayOfWeek` | enum | MONDAY | Ajustos |
+| `firstDayOfWeek` | enum (Dilluns, Dissabte, Diumenge) | MONDAY | Ajustos (afecta la vista de mes; la tira de 7 dies sempre comença avui) |
 | `widgetTipDismissed` | bool | false | Inici buit |
 | ~~`tone`~~ | — | — | **Eliminar** (Vibrant/Soft) |
 

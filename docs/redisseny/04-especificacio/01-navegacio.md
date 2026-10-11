@@ -17,11 +17,14 @@ Splash
  └── (primer cop) Onboarding: Benvinguda → Categories → Avisos → Privadesa → Avís important
  └── Shell principal amb barra flotant [Aviat · Rebost · Ajustos] + FAB «Afegeix»
        ├── Aviat (Inici «Què caduca»)              ← destinació inicial
+       │     ├── tira de 7 dies → dia de la secció, o Calendari (mes) si el dia no té productes «Aviat»
+       │     ├── botó calendari → Calendari (mes)
        │     ├── bàner caducats → Caducats
        │     ├── resum Aviat/Frescos/Congelats → Caducats / Rebost (filtrat)
        │     └── fila → full Accions del producte
        ├── Rebost (graella de categories)
        │     ├── targeta categoria → Categoria
+       │     │     ├── botó calendari → Calendari (mes) filtrat per la categoria
        │     │     └── fila / unitat → full Accions del producte
        │     └── «Nova categoria» → Nova categoria (pantalla completa)
        └── Ajustos
@@ -35,7 +38,7 @@ Splash
 - `HorizontalFloatingToolbar` (M3 Expressive) amb fons `primary-container`, flotant a 24 dp del límit inferior i 20 dp dels laterals, `shadow-float`.
 - 3 destinacions: **Aviat** (`hourglass_bottom`), **Rebost** (`kitchen`), **Ajustos** (`settings`). La destinació activa es mostra com a pastilla `primary` amb icona farcida + etiqueta; les altres, només icona (amb `contentDescription`).
 - A la dreta, separat, **FAB** de 64 dp, radi 20, `primary`, icona `add` (veu: «Afegeix un producte»).
-- Pantalles secundàries (Categoria, Caducats, Afegeix, Nova categoria) no mostren la barra; la pantalla Categoria mostra un **FAB estès** «Afegeix» que preselecciona la categoria.
+- Pantalles secundàries (Categoria, Caducats, Calendari, Afegeix, Nova categoria) no mostren la barra; la pantalla Categoria mostra un **FAB estès** «Afegeix» que preselecciona la categoria.
 
 ## Rutes suggerides
 
@@ -46,7 +49,8 @@ Splash
 | `pantry` | Rebost | — |
 | `category/{id}` | Categoria | `filter?` (estat) |
 | `expired` | Caducats | — |
-| `add` | Afegeix | `categoryId?`, `source?` (`widget`, `shortcut`, `app`) |
+| `add` | Afegeix | `categoryId?`, `source?` (`widget`, `shortcut`, `app`), `itemId?` (mode edició d'una unitat) |
+| `calendar` | Calendari (vista de mes) | `categoryId?`, `date?` (dia seleccionat) |
 | `category/new` | Nova categoria | — |
 | `settings` | Ajustos | — |
 | (sheet) | Accions del producte | `itemId` |
