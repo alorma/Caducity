@@ -31,7 +31,6 @@ import com.alorma.caducity.ui.navigation.Home
 import com.alorma.caducity.ui.navigation.ItemActions
 import com.alorma.caducity.ui.navigation.Onboarding
 import com.alorma.caducity.ui.navigation.Pantry
-import com.alorma.caducity.ui.navigation.PantryListPlaceholder
 import com.alorma.caducity.ui.navigation.QuickCategory
 import com.alorma.caducity.ui.navigation.Settings
 import com.alorma.caducity.ui.navigation.TopLevelBackStack
@@ -47,6 +46,8 @@ import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusScreen
 import com.alorma.caducity.ui.screen.home.HomeScreen
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingScreen
+import com.alorma.caducity.ui.screen.pantry.PantryScreen
+import com.alorma.caducity.ui.screen.pantry.PantrySearchRequests
 import com.alorma.caducity.ui.screen.settings.SettingsContainer
 import com.alorma.caducity.ui.theme.AppTheme
 import org.koin.compose.koinInject
@@ -61,6 +62,7 @@ fun App(
   onboardingFlag: OnboardingFlag = koinInject(),
   eventTracker: EventTracker = koinInject(),
   snackbarEvents: GlobalSnackbarEvents = koinInject(),
+  searchRequests: PantrySearchRequests = koinInject(),
 ) {
   AppTheme(
     themePreferences = koinInject(),
@@ -117,8 +119,10 @@ fun App(
             entry<Home> {
               HomeScreen(
                 onOpenCalendar = { date -> navigation.navigate(Calendar(date = date)) },
-                // TEMP(fase 6): Rebost still has no focused search; this only switches tab.
-                onOpenSearch = { navigation.switchTab(Pantry) },
+                onOpenSearch = {
+                  searchRequests.request()
+                  navigation.switchTab(Pantry)
+                },
                 onOpenExpired = { navigation.navigate(Expired) },
                 onOpenPantry = { navigation.switchTab(Pantry) },
                 onOpenItemActions = { navigation.navigate(ItemActions(it)) },
@@ -126,9 +130,10 @@ fun App(
               )
             }
             entry<Pantry> {
-              PantryListPlaceholder(
-                onCategoryClick = { navigation.navigate(Category(it)) },
-                onSettingsClick = { navigation.navigate(Settings) },
+              PantryScreen(
+                onOpenCategory = { navigation.navigate(Category(it)) },
+                onOpenNewCategory = { navigation.navigate(CategoryEditor()) },
+                onOpenItemActions = { navigation.navigate(ItemActions(it)) },
               )
             }
             // TEMP(fase 8): old settings with its nested NavDisplay.

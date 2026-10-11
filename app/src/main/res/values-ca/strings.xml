@@ -481,4 +481,20 @@
     <item quantity="one">fa %d dia</item>
     <item quantity="other">fa %d dies</item>
   </plurals>
+  <string name="pantry_overline">%1$s · %2$s</string>
+  <string name="pantry_search">Cerca un producte</string>
+  <string name="pantry_search_clear">Esborra la cerca</string>
+  <string name="pantry_card_meta">%1$s · propera, %2$s</string>
+  <string name="pantry_new_category">Nova categoria</string>
+  <string name="pantry_no_results">Cap producte coincideix amb la cerca.</string>
+  <string name="category_next">propera %s</string>
+  <string name="category_unit_n">Unitat %d</string>
+  <plurals name="pantry_category_count">
+    <item quantity="one">%d categoria</item>
+    <item quantity="other">%d categories</item>
+  </plurals>
+  <plurals name="pantry_card_expired">
+    <item quantity="one">%d caducat</item>
+    <item quantity="other">%d caducats</item>
+  </plurals>
 </resources>

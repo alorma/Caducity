@@ -23,8 +23,6 @@ sealed interface PantryNavigation {
   ) : PantryNavigation
 
   data object NewCategory : PantryNavigation
-
-  data object Settings : PantryNavigation
 }
 
 sealed interface PantryNavigationSideEffect {
@@ -33,6 +31,4 @@ sealed interface PantryNavigationSideEffect {
   ) : PantryNavigationSideEffect
 
   data object OpenNewCategory : PantryNavigationSideEffect
-
-  data object OpenSettings : PantryNavigationSideEffect
 }

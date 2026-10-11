@@ -5,7 +5,6 @@ import com.alorma.caducity.domain.usecase.ObservePantryUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.NavigateToCategoryFromPantryAction
 import com.alorma.caducity.feature.tracking.NavigateToNewCategoryFromPantryAction
-import com.alorma.caducity.feature.tracking.NavigateToSettingsFromPantryAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,10 +45,6 @@ class PantryViewModel(
       PantryNavigation.NewCategory -> {
         eventTracker.trackAction(NavigateToNewCategoryFromPantryAction())
         emitNavigationSideEffect(PantryNavigationSideEffect.OpenNewCategory)
-      }
-      PantryNavigation.Settings -> {
-        eventTracker.trackAction(NavigateToSettingsFromPantryAction())
-        emitNavigationSideEffect(PantryNavigationSideEffect.OpenSettings)
       }
     }
   }

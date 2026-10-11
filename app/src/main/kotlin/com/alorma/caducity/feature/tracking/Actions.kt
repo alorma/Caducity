@@ -237,10 +237,3 @@ class NavigateToNewCategoryFromPantryAction :
     origin = "pantry",
     parameters = mapOf("source" to "card"),
   )
-
-class NavigateToSettingsFromPantryAction :
-  NavigationAction(
-    actionName = "settings",
-    origin = "pantry",
-    parameters = mapOf("source" to "topbar"),
-  )
