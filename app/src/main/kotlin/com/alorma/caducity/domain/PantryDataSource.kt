@@ -4,6 +4,7 @@ import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.AddedBatch
 import com.alorma.caducity.domain.model.BatchSnapshot
 import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.ItemSnapshot
 import com.alorma.caducity.domain.model.ProductUsage
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
@@ -62,6 +63,29 @@ interface PantryDataSource {
     itemId: String,
     newExpiration: Instant,
   )
+
+  /** Marks the units as consumed in one transaction; a frozen unit is unfrozen. */
+  suspend fun consume(
+    itemIds: List<String>,
+    at: Instant,
+  )
+
+  /** Freezes the units in one transaction; units already expired are skipped. Returns the ids frozen. */
+  suspend fun freeze(
+    itemIds: List<String>,
+    at: Instant,
+  ): List<String>
+
+  /** Gives all the units [newExpiration] in one transaction; frozen units are unfrozen. */
+  suspend fun reschedule(
+    itemIds: List<String>,
+    newExpiration: Instant,
+  )
+
+  /** Current state of the units, to hand to [restoreSnapshots] as the undo of a bulk action. */
+  suspend fun snapshots(itemIds: List<String>): List<ItemSnapshot>
+
+  suspend fun restoreSnapshots(snapshots: List<ItemSnapshot>)
 
   /** Items that are neither consumed nor discarded. Re-emits on any change. */
   fun observeActiveItems(): Flow<List<ActiveItem>>

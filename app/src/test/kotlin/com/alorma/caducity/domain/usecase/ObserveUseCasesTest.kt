@@ -101,7 +101,7 @@ class ObserveUseCasesTest {
       }
     addBatch = AddItemBatchUseCase(pantry, clock)
     discard = DiscardItemsUseCase(pantry, clock)
-    consume = ConsumeItemUseCase(RoomItemDataSource(db.itemDao(), clock, itemMapper))
+    consume = ConsumeItemUseCase(RoomItemDataSource(db.itemDao(), clock, itemMapper), pantry, clock)
     items = ObserveItemsUseCase(pantry, thresholds, todayProvider)
     home = ObserveHomeUseCase(items, pantry, todayProvider)
     pantryUseCase = ObservePantryUseCase(items, pantry, todayProvider)

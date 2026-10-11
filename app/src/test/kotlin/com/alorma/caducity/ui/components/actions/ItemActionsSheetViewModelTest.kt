@@ -142,16 +142,16 @@ class ItemActionsSheetViewModelTest {
   ): List<String> = addBatch.add(name, categoryId, inDays(days), quantity, false).getOrThrow().itemIds
 
   private fun viewModel(itemId: String): ItemActionsSheetViewModel {
-    val consume = ConsumeItemUseCase(itemDataSource)
+    val consume = ConsumeItemUseCase(itemDataSource, pantry, clock)
     return ItemActionsSheetViewModel(
       itemId = itemId,
       observeItems = ObserveItemsUseCase(pantry, thresholds, todayProvider),
       observeCategories = ObserveCategoriesUseCase(pantry),
       consumeItem = consume,
       splitAndConsume = SplitAndConsumeItemUseCase(itemDataSource, consume),
-      freezeItem = FreezeItemUseCase(itemDataSource, clock),
+      freezeItem = FreezeItemUseCase(itemDataSource, pantry, clock),
       unfreezeItem = UnfreezeItemUseCase(itemDataSource, pantry, clock),
-      rescheduleItem = RescheduleItemUseCase(itemDataSource),
+      rescheduleItem = RescheduleItemUseCase(itemDataSource, pantry),
       deleteItem = DeleteItemUseCase(itemDataSource),
       moveItem = MoveItemToCategoryUseCase(pantry),
       restoreItems = RestoreItemsUseCase(pantry),

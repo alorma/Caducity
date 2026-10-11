@@ -67,6 +67,8 @@ class PantryUseCasesTest {
   private lateinit var seed: SeedCategoriesUseCase
   private lateinit var unfreeze: UnfreezeItemUseCase
   private lateinit var consume: ConsumeItemUseCase
+  private lateinit var freeze: FreezeItemUseCase
+  private lateinit var reschedule: RescheduleItemUseCase
 
   @Before
   fun setUp() {
@@ -96,7 +98,9 @@ class PantryUseCasesTest {
     updateCategory = UpdateCategoryUseCase(pantry)
     seed = SeedCategoriesUseCase(pantry)
     unfreeze = UnfreezeItemUseCase(itemDataSource, pantry, clock)
-    consume = ConsumeItemUseCase(itemDataSource)
+    consume = ConsumeItemUseCase(itemDataSource, pantry, clock)
+    freeze = FreezeItemUseCase(itemDataSource, pantry, clock)
+    reschedule = RescheduleItemUseCase(itemDataSource, pantry)
   }
 
   @After
@@ -464,6 +468,90 @@ class PantryUseCasesTest {
       expectThat(item.remainingDays).isNull()
       expectThat(item.expirationDate).isEqualTo(inDays(12).toExpirationInstant().toEpochMilliseconds())
       expectThat(unfreeze.proposedDate(id)).isNull()
+    }
+
+  // endregion
+
+  // region Bulk actions
+
+  private suspend fun addMany(
+    vararg days: Int,
+    frozen: Boolean = false,
+  ) = days.map {
+    addBatch
+      .add("P$it", "c1", inDays(it), 1, frozen)
+      .getOrThrow()
+      .itemIds
+      .single()
+  }
+
+  @Test
+  fun `bulk consume marks every unit and the snapshot undo brings frozen units back frozen`() =
+    runTest {
+      category("c1")
+      val ids = addMany(5, 9) + addMany(20, frozen = true)
+      val snapshots = restore.snapshots(ids)
+
+      consume.consume(ids).getOrThrow()
+      ids.forEach { expectThat(db.itemDao().getItem(it)!!.consumedDate).isNotNull() }
+
+      restore.restoreSnapshots(snapshots).getOrThrow()
+      ids.forEach { expectThat(db.itemDao().getItem(it)!!.consumedDate).isNull() }
+      val frozen = db.itemDao().getItem(ids.last())!!
+      expectThat(frozen.pausedDate).isNotNull()
+      expectThat(frozen.remainingDays).isEqualTo(20)
+    }
+
+  @Test
+  fun `bulk freeze freezes with remaining days, skips expired and undoes exactly`() =
+    runTest {
+      category("c1")
+      val ids = addMany(4, 10, -1)
+      val snapshots = restore.snapshots(ids)
+
+      val frozen = freeze.freeze(ids).getOrThrow()
+      expectThat(frozen).containsExactly(ids[0], ids[1])
+      expectThat(db.itemDao().getItem(ids[0])!!.remainingDays).isEqualTo(4)
+      expectThat(db.itemDao().getItem(ids[1])!!.remainingDays).isEqualTo(10)
+      expectThat(db.itemDao().getItem(ids[2])!!.pausedDate).isNull()
+
+      restore.restoreSnapshots(snapshots).getOrThrow()
+      ids.forEach {
+        expectThat(db.itemDao().getItem(it)!!.pausedDate).isNull()
+        expectThat(db.itemDao().getItem(it)!!.remainingDays).isNull()
+      }
+    }
+
+  @Test
+  fun `bulk reschedule moves every unit to the same date and undo restores each one`() =
+    runTest {
+      category("c1")
+      val ids = addMany(-3, -1)
+      val before = restore.snapshots(ids)
+
+      reschedule.reschedule(ids, inDays(5)).getOrThrow()
+      ids.forEach {
+        expectThat(
+          db.itemDao().getItem(it)!!.expirationDate,
+        ).isEqualTo(inDays(5).toExpirationInstant().toEpochMilliseconds())
+      }
+
+      restore.restoreSnapshots(before).getOrThrow()
+      expectThat(db.itemDao().getItem(ids[0])!!.expirationDate).isEqualTo(before[0].expirationMillis)
+      expectThat(db.itemDao().getItem(ids[1])!!.expirationDate).isEqualTo(before[1].expirationMillis)
+    }
+
+  @Test
+  fun `bulk discard of expired units is undone by the snapshot`() =
+    runTest {
+      category("c1")
+      val ids = addMany(-3, -1)
+      val snapshots = restore.snapshots(ids)
+
+      discard.discard(ids).getOrThrow()
+      ids.forEach { expectThat(db.itemDao().getItem(it)!!.discardedDate).isNotNull() }
+      restore.restoreSnapshots(snapshots).getOrThrow()
+      ids.forEach { expectThat(db.itemDao().getItem(it)!!.discardedDate).isNull() }
     }
 
   // endregion
