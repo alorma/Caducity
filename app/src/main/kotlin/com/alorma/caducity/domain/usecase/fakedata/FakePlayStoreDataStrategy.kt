@@ -162,7 +162,7 @@ class FakePlayStoreDataStrategy : FakeDataStrategy {
 
   private fun createPantryCategory(now: Instant): CategoryConfig =
     CategoryConfig(
-      name = "Rebost",
+      name = "Secs i conserves",
       description = "Pasta, conserves i condiments",
       soonThresholdDays = 30,
       products =

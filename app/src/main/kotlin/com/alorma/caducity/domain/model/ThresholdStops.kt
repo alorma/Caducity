@@ -33,7 +33,7 @@ object SuggestedThresholds {
       listOf("dairy", "lacteo", "lactic", "llet", "leche") to SuggestedCategory.DAIRY,
       listOf("produce", "fruit", "fruta", "verdura") to SuggestedCategory.PRODUCE,
       listOf("meat", "fish", "carne", "pescado", "carn", "peix") to SuggestedCategory.MEAT_FISH,
-      listOf("pantry", "despensa", "rebost") to SuggestedCategory.PANTRY,
+      listOf("dry goods", "secs", "secos", "conserv", "pantry", "despensa", "rebost") to SuggestedCategory.PANTRY,
       listOf("bakery", "panader", "fleca") to SuggestedCategory.BAKERY,
       listOf("drink", "bebida", "begud") to SuggestedCategory.DRINKS,
       listOf("cold cut", "fiambre", "embutido", "embotit") to SuggestedCategory.COLD_CUTS,
