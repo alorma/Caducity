@@ -55,7 +55,8 @@ class CalendarViewModel(
     ).flatMapLatest { params ->
       val month = CalendarMonthModel.of(params.monthStart, params.firstDayOfWeek)
       combine(
-        observeCalendar.observe(month.range, args.categoryId),
+        // The neighbour months are loaded too, so the pager shows their dots while it is being dragged.
+        observeCalendar.observe(month.previous().first..month.next().last, args.categoryId),
         observeItems.observe(),
         observeCategories.observe(),
       ) { byDate, items, categories ->
@@ -99,20 +100,13 @@ class CalendarViewModel(
     selected.value = date
   }
 
-  fun onPreviousMonth() = showMonth(monthStart.value.previousMonth())
-
-  fun onNextMonth() = showMonth(monthStart.value.nextMonth())
-
-  /** Changing month selects today if it is in that month, otherwise its first day. */
-  private fun showMonth(first: LocalDate) {
+  /** The pager settled on the month starting at [first]; it selects today if it is in that month, otherwise its first day. */
+  fun onMonthShown(first: LocalDate) {
+    if (first == monthStart.value) return
     monthStart.value = first
     val today = todayProvider.today()
     selected.value = if (today.firstOfMonth() == first) today else first
   }
 
   private fun LocalDate.firstOfMonth() = LocalDate(year, month, 1)
-
-  private fun LocalDate.previousMonth() = CalendarMonthModel(this, DayOfWeek.MONDAY).previous().first
-
-  private fun LocalDate.nextMonth() = CalendarMonthModel(this, DayOfWeek.MONDAY).next().first
 }
