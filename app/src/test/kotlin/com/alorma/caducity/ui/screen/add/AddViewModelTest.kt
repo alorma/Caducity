@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.add
 
 import android.app.Application
+import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
@@ -28,6 +29,7 @@ import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
@@ -106,6 +108,7 @@ class AddViewModelTest {
 
   @After
   fun tearDown() {
+    created.forEach { it.viewModelScope.cancel() }
     db.close()
     Dispatchers.resetMain()
   }
@@ -114,6 +117,8 @@ class AddViewModelTest {
     id: String,
     sortOrder: Int = 0,
   ) = db.categoryDao().insertCategory(CategoryRoomEntity(id, id, "", sortOrder = sortOrder))
+
+  private val created = mutableListOf<AddViewModel>()
 
   private fun viewModel(
     initialCategoryId: String? = null,
@@ -129,7 +134,7 @@ class AddViewModelTest {
     observeCategories = ObserveCategoriesUseCase(pantry),
     categoryCreated = createdEvents,
     eventTracker = EventTracker(emptyList()),
-  )
+  ).also { created += it }
 
   private suspend fun AddViewModel.await(predicate: (AddState) -> Boolean): AddState =
     withContext(Dispatchers.Default) { withTimeout(5_000) { state.first(predicate) } }
