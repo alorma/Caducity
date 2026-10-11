@@ -1,8 +1,8 @@
 package com.alorma.caducity.data.datasource.room
 
+import android.app.Application
 import androidx.room.testing.MigrationTestHelper
 import androidx.test.platform.app.InstrumentationRegistry
-import com.alorma.caducity.di.MIGRATION_1_2
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,7 +16,7 @@ import strikt.assertions.isEqualTo
  * funciona, amb la migració 1→2 existent. Les migracions noves (2→3) tindran els seus propis tests.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [35])
+@Config(sdk = [35], application = Application::class)
 class MigrationInfraSmokeTest {
   @get:Rule
   val helper =
