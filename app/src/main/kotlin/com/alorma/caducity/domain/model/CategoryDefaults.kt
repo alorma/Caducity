@@ -39,7 +39,12 @@ data class CategoryDefaults(
           CategoryShape.CLOVER,
           CategoryIcon("set_meal"),
         ),
-        Rule(listOf("pantry", "despensa", "rebost"), emptyList(), CategoryShape.SUNNY, CategoryIcon("grocery")),
+        Rule(
+          listOf("dry goods", "secs", "secos", "conserv", "pantry", "despensa", "rebost"),
+          emptyList(),
+          CategoryShape.SUNNY,
+          CategoryIcon("grocery"),
+        ),
         Rule(listOf("bakery", "panader", "fleca"), listOf("pan"), CategoryShape.PUFFY, CategoryIcon("bakery_dining")),
         Rule(listOf("drink", "bebida", "begud"), emptyList(), CategoryShape.BURST, CategoryIcon("local_drink")),
         Rule(listOf("frozen", "congelad", "congelat"), emptyList(), CategoryShape.BURST, CategoryIcon("icecream")),

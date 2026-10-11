@@ -220,7 +220,7 @@ class OnboardingViewModelTest {
 
       val categories = pantry.getCategories()
       expectThat(categories.map { it.name })
-        .containsExactly("Dairy", "Fruit & veg", "Meat & fish", "Pantry", "Bakery", "Cold cuts")
+        .containsExactly("Dairy", "Fruit & veg", "Meat & fish", "Dry goods", "Bakery", "Cold cuts")
       expectThat(categories.map { it.sortOrder }).containsExactly(0, 1, 2, 3, 4, 5)
       expectThat(categories.first().shape).isEqualTo(CategoryShape.COOKIE)
       expectThat(categories.map { it.icon.id })
@@ -241,7 +241,7 @@ class OnboardingViewModelTest {
           "Dairy" to 3,
           "Fruit & veg" to 3,
           "Meat & fish" to 2,
-          "Pantry" to 30,
+          "Dry goods" to 30,
           "Bakery" to 2,
           "Drinks" to 7,
           "Cold cuts" to 3,
