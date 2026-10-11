@@ -39,6 +39,7 @@ import com.alorma.caducity.ui.components.button.ConnectedButtonOption
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
 import com.alorma.caducity.ui.components.connected.ConnectedRow
 import com.alorma.caducity.ui.components.motion.Reveal
+import com.alorma.caducity.ui.screen.onboarding.components.OnboardingBackAndPrimary
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingBackButton
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingPrimaryButton
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingStepLayout
@@ -68,10 +69,10 @@ fun AlertsStep(
     body = stringResource(R.string.ob_alerts_body),
     actions = {
       if (permissionGranted) {
-        OnboardingPrimaryButton(
-          text = stringResource(R.string.ob_continue),
-          onClick = onEnable,
-          modifier = Modifier.fillMaxWidth(),
+        OnboardingBackAndPrimary(
+          primaryText = stringResource(R.string.ob_continue),
+          onPrimary = onEnable,
+          onBack = onBack,
         )
       } else {
         OnboardingPrimaryButton(
@@ -80,14 +81,12 @@ fun AlertsStep(
           modifier = Modifier.fillMaxWidth(),
           leadingIcon = Symbols.Outlined.NotificationsActive,
         )
-      }
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        OnboardingBackButton(onBack)
-        if (!permissionGranted) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          OnboardingBackButton(onBack)
           TextButton(onClick = onNotNow) {
             Text(
               text = stringResource(R.string.ob_not_now),
