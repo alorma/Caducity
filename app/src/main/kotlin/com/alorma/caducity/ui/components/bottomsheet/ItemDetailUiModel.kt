@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 import com.alorma.caducity.domain.model.ItemStatus
 import kotlinx.datetime.LocalDate
 
-// TEMP(fase 11): only DateItemsUiModel (old calendar components) uses it; deleted with them.
+// TEMP(fase 10): only DateItemsUiModel (old calendar components) uses it; deleted with them.
 @Stable
 data class ItemDetailUiModel(
   val id: String,

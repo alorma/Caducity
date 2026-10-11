@@ -35,7 +35,7 @@ class HomeViewModel(
   private val widgetTipFlag: WidgetTipFlag,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<HomeNavigation, HomeNavigationSideEffect, Unit>() {
-  // TEMP(fase 10): there is no widget yet, so its tip is never offered.
+  // TEMP(fase 12): there is no widget yet, so its tip is never offered.
   private val widgetTipDismissed = MutableStateFlow(!WIDGET_AVAILABLE || !widgetTipFlag.isEnabled())
 
   val state: StateFlow<HomeState> =

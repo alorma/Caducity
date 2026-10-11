@@ -6,7 +6,7 @@ import com.alorma.caducity.ui.components.bottomsheet.ItemDetailUiModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.datetime.LocalDate
 
-// TEMP(fase 11b): input of the old calendar components; deleted with them.
+// TEMP(fase 10b): input of the old calendar components; deleted with them.
 @Stable
 data class DateItemsUiModel(
   val text: String,

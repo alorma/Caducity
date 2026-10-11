@@ -65,7 +65,7 @@ val appModule =
     includes(reviewModule)
     includes(trackingModule)
 
-    // TEMP(fase 11): the old calendar components still read the mapper.
+    // TEMP(fase 10): the old calendar components still read the mapper.
     singleOf(::FirstDayOfWeekPreferences)
     singleOf(::AppCalendarConfigMapper)
 
