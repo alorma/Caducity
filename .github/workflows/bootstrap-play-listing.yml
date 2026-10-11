@@ -1,7 +1,7 @@
 name: Bootstrap Play listing
 
 # One-off: downloads the current Google Play listing (texts, graphics, release notes) with Gradle Play Publisher
-# into app/src/main/play and opens a pull request with it. Manual trigger only
+# into app/src/*/play and opens a pull request with it. Manual trigger only
 on:
   workflow_dispatch:
 
@@ -39,11 +39,14 @@ jobs:
         env:
           ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_JSON }}
 
+      - name: List downloaded files
+        run: find app -path '*/play/*' -type f | sort
+
       - name: Open pull request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ -z "$(git status --porcelain app/src/main/play)" ]; then
+          if [ -z "$(git status --porcelain -- "app/src/*/play")" ]; then
             echo "No listing changes" >> $GITHUB_STEP_SUMMARY
             exit 0
           fi
@@ -51,7 +54,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
-          git add app/src/main/play
+          git add -- "app/src/*/play"
           git commit -m "chore: bootstrap Google Play listing"
           git push -u origin "$BRANCH"
           gh pr create --base main --head "$BRANCH" \
