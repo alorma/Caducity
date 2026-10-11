@@ -112,7 +112,7 @@ fun ShapePicker(
               Modifier
                 .size(30.dp)
                 .clip(shape.toComposeShape())
-                .background(if (isSelected) scheme.primary else CaducityTheme.colors.surfaceShape),
+                .background(if (isSelected) scheme.primary else scheme.primary.copy(alpha = 0.4f)),
           )
         }
       }
