@@ -21,4 +21,5 @@ data class SeedCategory(
   val name: String,
   val shape: CategoryShape,
   val icon: CategoryIcon,
+  val soonThresholdDays: Int? = null,
 )

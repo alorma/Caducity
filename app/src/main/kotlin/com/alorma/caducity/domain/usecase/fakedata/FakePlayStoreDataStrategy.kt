@@ -29,6 +29,7 @@ class FakePlayStoreDataStrategy : FakeDataStrategy {
     CategoryConfig(
       name = "Làctics",
       description = "Llet, formatge, iogurt i altres productes làctics",
+      soonThresholdDays = 3,
       products =
         listOf(
           ProductConfig(
@@ -70,6 +71,7 @@ class FakePlayStoreDataStrategy : FakeDataStrategy {
     CategoryConfig(
       name = "Fruita i verdura",
       description = "Fruita i verdura fresques",
+      soonThresholdDays = 3,
       products =
         listOf(
           ProductConfig(
@@ -120,6 +122,7 @@ class FakePlayStoreDataStrategy : FakeDataStrategy {
     CategoryConfig(
       name = "Carn i peix",
       description = "Carns i peix, frescos i congelats",
+      soonThresholdDays = 2,
       products =
         listOf(
           ProductConfig(
@@ -161,6 +164,7 @@ class FakePlayStoreDataStrategy : FakeDataStrategy {
     CategoryConfig(
       name = "Rebost",
       description = "Pasta, conserves i condiments",
+      soonThresholdDays = 30,
       products =
         listOf(
           ProductConfig(

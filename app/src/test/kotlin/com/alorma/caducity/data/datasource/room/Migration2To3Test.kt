@@ -102,6 +102,18 @@ class Migration2To3Test {
       listOf("c4", "SUNNY", "eco", 3),
       listOf("c5", "PUFFY", "eco", 4),
     )
+    // Existing categories keep following the global default (no per-category margin).
+    expectThat(
+      db
+        .rows("SELECT COUNT(*) FROM categories WHERE soonThresholdDays IS NOT NULL") { listOf(it.getInt(0)) }
+        .single()
+        .single(),
+    ).isEqualTo(0)
+    db.execSQL("UPDATE categories SET soonThresholdDays = 30 WHERE id = 'c1'")
+    expectThat(
+      db.rows("SELECT soonThresholdDays FROM categories WHERE id = 'c1'") { listOf(it.getInt(0)) }.single().single(),
+    ).isEqualTo(30)
+    db.execSQL("UPDATE categories SET soonThresholdDays = NULL WHERE id = 'c1'")
     // Description untouched.
     expectThat(
       db.rows("SELECT description FROM categories WHERE id = 'c2'") { listOf(it.getString(0)) }.single().single(),

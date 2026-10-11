@@ -97,6 +97,7 @@ class BackupTest {
     val data = json.decodeFromString<BackupData>(v1Json)
     expectThat(data.version).isEqualTo(1)
     expectThat(data.categories.first().shape).isNull()
+    expectThat(data.categories.first().soonThresholdDays).isNull()
     expectThat(
       data.categories
         .first()
@@ -145,7 +146,22 @@ class BackupTest {
   @Test
   fun `upgrade leaves a v2 backup untouched`() {
     val v2 =
-      BackupData(2, 1, listOf(BackupCategory("c", "Dairy", "", "BURST", "icecream", 4, emptyList(), emptyList())))
+      BackupData(
+        2,
+        1,
+        listOf(
+          BackupCategory(
+            "c",
+            "Dairy",
+            "",
+            "BURST",
+            "icecream",
+            4,
+            products = emptyList(),
+            standaloneItems = emptyList(),
+          ),
+        ),
+      )
     expectThat(v2.upgradeToV2()).isEqualTo(v2)
   }
 
@@ -192,7 +208,15 @@ class BackupTest {
   fun `v2 export and import round-trips every field including avatars and discarded items`() =
     runTest {
       db.categoryDao().insertCategory(
-        CategoryRoomEntity("c1", "Dairy", "d", CategoryShape.PUFFY, CategoryIcon("icecream"), 3),
+        CategoryRoomEntity(
+          "c1",
+          "Dairy",
+          "d",
+          CategoryShape.PUFFY,
+          CategoryIcon("icecream"),
+          3,
+          soonThresholdDays = 30,
+        ),
       )
       db.categoryDao().insertCategory(
         CategoryRoomEntity("c2", "Other", "", CategoryShape.SUNNY, CategoryIcon("future_icon"), 1),
@@ -209,6 +233,8 @@ class BackupTest {
       val exported = backup.exportBackup()
       expectThat(exported.version).isEqualTo(2)
       expectThat(exported.categories.map { it.id }).containsExactly("c2", "c1")
+      expectThat(exported.categories.associate { it.id to it.soonThresholdDays })
+        .isEqualTo(mapOf("c1" to 30, "c2" to null))
 
       val text =
         Json {
@@ -233,7 +259,22 @@ class BackupTest {
   fun `import falls back to defaults for an unknown shape and rejects newer versions`() =
     runTest {
       val data =
-        BackupData(2, 1, listOf(BackupCategory("c1", "Dairy", "", "REMOVED_SHAPE", "x", 0, emptyList(), emptyList())))
+        BackupData(
+          2,
+          1,
+          listOf(
+            BackupCategory(
+              "c1",
+              "Dairy",
+              "",
+              "REMOVED_SHAPE",
+              "x",
+              0,
+              products = emptyList(),
+              standaloneItems = emptyList(),
+            ),
+          ),
+        )
       backup.importBackup(data)
       expectThat(db.categoryDao().getCategory("c1")?.shape).isEqualTo(CategoryShape.COOKIE)
       expectThat(db.categoryDao().getCategory("c1")?.shape).isNotEqualTo(null)

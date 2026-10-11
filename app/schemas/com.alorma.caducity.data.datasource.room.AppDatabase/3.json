@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "db4fae0a2420fcc90d4b287fd94e60bc",
+    "identityHash": "f7a96135c7280a3266fbb9e7de2bc675",
     "entities": [
       {
         "tableName": "categories",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `shape` TEXT NOT NULL DEFAULT 'COOKIE', `icon` TEXT NOT NULL DEFAULT 'eco', `sortOrder` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `shape` TEXT NOT NULL DEFAULT 'COOKIE', `icon` TEXT NOT NULL DEFAULT 'eco', `sortOrder` INTEGER NOT NULL DEFAULT 0, `soonThresholdDays` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -46,6 +46,11 @@
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
+          },
+          {
+            "fieldPath": "soonThresholdDays",
+            "columnName": "soonThresholdDays",
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -233,7 +238,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'db4fae0a2420fcc90d4b287fd94e60bc')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f7a96135c7280a3266fbb9e7de2bc675')"
     ]
   }
 }

@@ -58,6 +58,7 @@ class RoomBackupDataSource(
           shape = category.shape.name,
           icon = category.icon.id,
           sortOrder = category.sortOrder,
+          soonThresholdDays = category.soonThresholdDays,
           products = productsByCategory,
           standaloneItems =
             items
@@ -104,6 +105,7 @@ class RoomBackupDataSource(
             shape = category.shape?.let(::shapeOrDefault) ?: defaults.shape,
             icon = category.icon?.let { CategoryIcon(it) } ?: defaults.icon,
             sortOrder = category.sortOrder ?: 0,
+            soonThresholdDays = category.soonThresholdDays,
           )
         categoryDao.insertCategory(categoryEntity)
 

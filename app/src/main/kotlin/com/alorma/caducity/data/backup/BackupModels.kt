@@ -22,6 +22,8 @@ data class BackupCategory(
   val shape: String? = null,
   val icon: String? = null,
   val sortOrder: Int? = null,
+  // absent in older v2 files and in v1: follows the global default
+  val soonThresholdDays: Int? = null,
   val products: List<BackupProduct>,
   val standaloneItems: List<BackupProductItem>,
 )

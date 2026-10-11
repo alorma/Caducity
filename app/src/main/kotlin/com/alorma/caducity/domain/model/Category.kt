@@ -7,4 +7,6 @@ data class Category(
   val shape: CategoryShape = CategoryShape.COOKIE,
   val icon: CategoryIcon = CategoryIcon.DEFAULT,
   val sortOrder: Int = 0,
+  /** Days before expiry when a unit becomes "soon"; null follows the global default. */
+  val soonThresholdDays: Int? = null,
 )
