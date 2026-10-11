@@ -382,4 +382,14 @@
   <string name="add_frozen_past_date">A frozen product cannot have a past date</string>
   <string name="add_picker_ok">OK</string>
   <string name="add_picker_cancel">Cancel</string>
+  <string name="add_name_hint_batch">What else did you buy?</string>
+  <string name="add_batch_label">In this batch</string>
+  <string name="add_batch_change">Change</string>
+  <string name="add_batch_note">Kept from the previous product. If you type a name you already know, they are filled with its own.</string>
+  <string name="add_batch_today">today</string>
+  <string name="add_batch_tomorrow">tomorrow</string>
+  <plurals name="add_batch_in_days">
+    <item quantity="one">in %1$d day</item>
+    <item quantity="other">in %1$d days</item>
+  </plurals>
 </resources>

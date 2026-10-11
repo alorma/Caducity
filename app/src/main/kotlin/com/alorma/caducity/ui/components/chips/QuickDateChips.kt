@@ -1,8 +1,10 @@
 package com.alorma.caducity.ui.components.chips
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -24,21 +27,23 @@ data class QuickDateOption(
   val icon: ImageVector? = null,
 )
 
-/** Dates ràpides en una sola fila amb scroll horitzontal: xips de radi 12 sobre `surface-high`. */
+/** Dates ràpides en una sola fila amb scroll horitzontal: xips outlined de radi 12. */
 @Composable
 fun QuickDateChips(
   options: List<QuickDateOption>,
   onClick: (Int) -> Unit,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(),
 ) {
   Row(
-    modifier = modifier.horizontalScroll(rememberScrollState()),
+    modifier = modifier.horizontalScroll(rememberScrollState()).padding(contentPadding),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     options.forEachIndexed { index, option ->
       Surface(
         shape = CaducityShapes.chip,
-        color = CaducityTheme.colorScheme.surfaceContainerHigh,
+        color = Color.Transparent,
+        border = BorderStroke(1.dp, CaducityTheme.colorScheme.outlineVariant),
         contentColor = CaducityTheme.colorScheme.onSurface,
         modifier = Modifier.clickable(role = Role.Button, onClick = { onClick(index) }),
       ) {
