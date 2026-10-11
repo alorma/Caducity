@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.config.time.date
 import com.alorma.caducity.data.datasource.RoomItemDataSource
 import com.alorma.caducity.data.datasource.RoomPantryDataSource
@@ -16,6 +17,7 @@ import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.PantryError
+import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.DateTimeUnit
@@ -73,7 +75,7 @@ class PantryUseCasesTest {
         .inMemoryDatabaseBuilder(ApplicationProvider.getApplicationContext(), AppDatabase::class.java)
         .allowMainThreadQueries()
         .build()
-    val itemMapper = ItemRoomMapper(clock, AppExpirationThresholdsImpl())
+    val itemMapper = ItemRoomMapper(clock, AppExpirationThresholdsImpl(SoonThresholdPreferences(MapSettings())))
     itemDataSource = RoomItemDataSource(db.itemDao(), clock, itemMapper)
     pantry =
       RoomPantryDataSource(
