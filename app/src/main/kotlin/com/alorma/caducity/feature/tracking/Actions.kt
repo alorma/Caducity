@@ -41,7 +41,7 @@ class NavigateToTabAction(
 ) : NavigationAction(
     actionName = "tab",
     origin = "shell",
-    parameters = mapOf("tab" to tab, "source" to "floating_bar"), // tab: "soon" or "pantry"
+    parameters = mapOf("tab" to tab, "source" to "floating_bar"), // tab: "soon", "pantry" or "settings"
   )
 
 class NavigateToAddAction :

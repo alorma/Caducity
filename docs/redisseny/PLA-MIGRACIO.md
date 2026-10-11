@@ -101,7 +101,7 @@ Llegenda: **M** manté · **Mod** modifica · **S** substitueix · **E** elimina
 |---|---|---|---|
 | Back stack únic | `App.kt` (`NavDisplay`, inici = `OnboardingRoute` si `OnboardingFlag.isEnabled()` sinó `DashboardRoute`) | **S** | |
 | Rutes velles | `DashboardRoute`, `FilteredItemsRoute.ByStatus`, `CategoryDetailRoute(categoryId, initialProductId)`, `CreateCategoryRoute`, `AiAssistantRoute`, `Settings`, `OnboardingRoute` | **S** | Fase 3. |
-| Settings amb `NavDisplay` imbricat | `SettingsContainer.kt`, `SettingsRoute.kt` | **S** | Ajustos és una pantalla secundària (sense barra), no una pestanya; Privadesa/Còpia/Quant a, subpantalles del back stack principal. |
+| Settings amb `NavDisplay` imbricat | `SettingsContainer.kt`, `SettingsRoute.kt` | **S** | Ajustos és una icona de la barra que obre una pantalla secundària (sense barra), no una pestanya; Privadesa/Còpia/Quant a, subpantalles del back stack principal. |
 | Deep links | `DeepLinkAction` (`OpenProduct`, `OpenCategory`; Parcelable per `Intent`), `MainActivity` | **Mod** | **Només es llegeix a `onCreate`**: cal `onNewIntent` + `singleTop`. |
 | Manifest | `AndroidManifest.xml` | **Mod** | `shortcuts.xml`, receiver del widget; treure `INTERNET`, `FOREGROUND_SERVICE*`, `SystemForegroundService` (fase 0). |
 

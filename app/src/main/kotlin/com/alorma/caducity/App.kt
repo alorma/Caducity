@@ -83,6 +83,10 @@ fun App(
           navigation.switchTab(tab)
         }
       },
+      onSettingsClick = {
+        eventTracker.trackAction(NavigateToTabAction("settings"))
+        navigation.navigate(Settings)
+      },
       onAddClick = {
         eventTracker.trackAction(NavigateToAddAction())
         navigation.navigate(Add(source = "fab"))
