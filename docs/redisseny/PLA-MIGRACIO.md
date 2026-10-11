@@ -1,11 +1,30 @@
 # Pla de migració al redisseny «Caducity» (Material 3 Expressive)
 
-Versió del pla: **2** · Data: 2026-10-11 · Estat: **aprovat** (respostes P1–P21 incorporades). **Regles de treball a la secció 9. Pendent del permís explícit de l'usuari per començar la fase 0.**
+Versió del pla: **2** · Data: 2026-10-11 · Estat: **aprovat** (respostes P1–P21 incorporades). **Regles de treball a la secció 9. Estat de les fases: taula següent.**
 
 Base: `main` @ `c204b56`, versió `0.10.0-SNAPSHOT`, Room v2, minSdk 35, compileSdk 37, Compose BOM 2026.09.00, `material3 1.5.0-beta01`, Navigation 3, Koin, `multiplatform-settings`.
 Entrades llegides: paquet de redisseny **v2** (inclosos `RESPOSTES-AL-PLA.md`, `PROMPT-ACTUALITZAR-PLA.md`, `PROMPT-CLAUDE-CODE.md` i `pantalles/11-calendari.md`).
 
 **Cadència de lliurament:** no es publica a Play Store entre fases, però **cada fase acaba en un o més commits** que compilen i passen `./gradlew ktlintCheck test assembleDebug`, i es poden revertir sols. S'accepta UI híbrida entre fases. Es publicarà només quan tot estigui acabat. Es treballa **directament a `main`** (sense branques): l'app no es publicarà fins que el redisseny estigui acabat, per tant `main` pot anar en estat híbrid entre fases.
+
+## Estat de les fases
+
+S'actualitza en tancar cada fase (regla 6: tests verds → emulador → validació de l'usuari). Només es marca **Feta** després de la validació explícita.
+
+| Fase | Estat | Commits | Data | Notes |
+|---|---|---|---|---|
+| 0 — Preparació i neteja | ✅ Feta | `5238d33` … `4443491` | 2026-10-11 | Deduït dels commits; no hi ha validació explícita registrada |
+| 1 — Fonaments (tokens, tema, components) | ✅ Feta | `9878c05` … `260468e` | 2026-10-11 | Deduït dels commits |
+| 2 — Model, dades i càlcul d'estat | ✅ Feta | `d2e4ed9` … `d1b365b` | 2026-10-11 | Room v3, backup v2, `PreferencesMigrator` pas 1 |
+| 3 — Navegació (shell) | ✅ Feta | `aa72d49` … `ae8a69f` | 2026-10-11 | Validada per l'usuari. Pendent: prova en tauleta (l'emulador no va arrencar). Canvis: barra sempre visible per sobre del contingut; Ajustos és una icona que obre pantalla secundària; deep links nous (`OpenHome`/`OpenExpired`/`OpenAdd`) a la fase 10 |
+| 4 — Afegeix | ⬜ Pendent | | | |
+| 5 — Full d'Accions, Inici, Calendari | ⬜ Pendent | | | |
+| 6 — Rebost i Categoria | ⬜ Pendent | | | |
+| 7 — Caducats | ⬜ Pendent | | | |
+| 8 — Nova/Edita categoria i Ajustos | ⬜ Pendent | | | Cal definir l'entrada definitiva a Ajustos |
+| 9 — Onboarding nou | ⬜ Pendent | | | |
+| 10 — Icona, splash, widget, dreceres | 🟡 Parcial | `3d59630` | 2026-10-11 | Icona adaptativa feta; widget i dreceres es fan al final (decidit 2026-10-11) |
+| 11 — Textos, accessibilitat, mode fosc, neteja | ⬜ Pendent | | | |
 
 ---
 
@@ -442,7 +461,7 @@ Totes les P1–P21 estan resoltes (secció 1). Només queda la hipòtesi menor P
 3. **Cada fase es prova a l'emulador**, tant per l'usuari com per Claude. Claude ho comprova de veritat (instal·lar, arrencar, navegar, captures de pantalla, `logcat` sense errors/crashos) i adjunta l'evidència al resum de fase. L'usuari valida a l'emulador abans de donar la fase per tancada.
 4. **Migracions de BBDD (Room, backup, preferències): proves abans i després.** Es poblen dades estrictes i rellevants (casos límit inclosos), s'executa el codi i els tests **abans** de migrar i **després**, tants cops com calgui fins a tenir seguretat, comprovant integritat (`PRAGMA foreign_key_check`, recomptes, valors esperats). Mai `fallbackToDestructiveMigration`. Cal una còpia/dump prèvia de les dades de prova.
 5. **Sense branques: tot a `main`.** Es fa commit en acabar cada tasca, i abans si el canvi és gran o perillós (esborrats massius, migracions). Cada commit compila i passa `./gradlew ktlintCheck test assembleDebug`; missatges en el format del repo, amb atribució.
-6. **Ordre de tancament de fase:** tests verds → prova a l'emulador (Claude, amb evidència) → validació de l'usuari → commit(s) → aturada i petició de permís per a la següent fase.
+6. **Ordre de tancament de fase:** tests verds → prova a l'emulador (Claude, amb evidència) → validació de l'usuari → commit(s) → **actualitzar la taula «Estat de les fases»** → aturada i petició de permís per a la següent fase.
 
 Totes: `./gradlew ktlintCheck test assembleDebug` verd, app arrencable i commit(s) abans de passar a la següent.
 
