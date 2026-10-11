@@ -20,14 +20,22 @@
 | Analítiques | Off per defecte. |
 | Tone Vibrant/Soft | Eliminat. |
 | Debug a Ajustos | Només en build debug. |
+| IA | Eliminada del codi existent (Llamatik, `firebase-ai`, assistent). |
+| Quantitat | El selector crea N ítems independents; les accions actuen sobre una unitat. Els `packSize > 1` antics es mostren com «pack de N». |
+| Llença | `DISCARDED` es desa; només Esborra elimina la fila. |
+| Calendari | Tira de 7 dies (Inici i Categoria) + vista de mes (`11-calendari.md`). Punts i recomptes per unitat. |
+| Avís legal per a usuaris existents | Es mostra una sola vegada només el pas d'acceptació. |
+| Cerca de l'Inici | Obre Rebost amb el cercador enfocat. |
+| Dates passades | Es permet desar-les amb l'avís «ja ha caducat». |
+| Setmana | «La setmana comença» afecta la vista de mes. |
 
 ## Temes oberts
 
-1. **Calendari.** El nou disseny ha tret el calendari setmanal per categoria. Es vol recuperar alguna vista de calendari més senzilla (p. ex. una tira de la setmana a l'Inici amb punts d'estat per dia i/o una vista de mes amb punts). **Pendent de disseny** — no implementar fins tenir-lo; deixar l'Inici preparat per afegir-hi una capçalera.
-2. **«Llença» vs «Esborra»**: decidir si `DISCARDED` es desa (per estadístiques futures de malbaratament) o equival a esborrar en aquesta fase.
+1. ~~Calendari~~ — resolt: vegeu `pantalles/11-calendari.md`.
+2. ~~«Llença» vs «Esborra»~~ — resolt: `DISCARDED` es desa.
 3. **Mode fosc**: tokens definits, sense mockups. Implementar i revisar visualment.
 4. **Tauleta / pantalles grans**: fora d'abast; no trencar-les (màxim d'amplada o `ListDetailPaneScaffold` més endavant).
 5. **Text legal**: revisió per part d'algú de l'àmbit legal.
-6. **Cerca global** (botó de l'Inici): comportament concret per definir (pot obrir Rebost amb el cercador enfocat).
+6. ~~Cerca global~~ — resolt: obre Rebost amb el cercador enfocat.
 7. **Ordenar categories** (arrossegar a Rebost): fora d'abast.
 8. **Icona vectorial definitiva**: cal dibuixar-la sobre la retícula d'icona adaptativa.

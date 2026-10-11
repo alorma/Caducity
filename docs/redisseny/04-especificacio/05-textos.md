@@ -187,3 +187,26 @@ Segona persona del singular, frases curtes, verbs en imperatiu als botons (Afege
 | `shortcut_add` / `_home` / `_expired` | Afegeix producte / Què caduca / Caducats |
 | `notif_title` | %d productes caduquen aviat |
 | `notif_body` | %1$s avui, %2$s demà… |
+
+## Calendari
+| Clau | Text |
+|---|---|
+| `home_calendar` | Calendari (contentDescription del botó de l'Inici) |
+| `home_search` | Cerca (contentDescription) |
+| `home_week_strip` | Pròxims 7 dies |
+| `week_day_desc` | %1$s, %2$d productes (plurals: 1 producte) |
+| `week_day_desc_none` | %1$s, res |
+| `week_day_initials` | dl · dt · dc · dj · dv · ds · dg |
+| `calendar_month_prev` / `_next` | Mes anterior / Mes següent |
+| `calendar_back` | Torna |
+| `calendar_day_subtitle` | d'aquí 10 dies · 2 productes |
+| `calendar_day_empty` | Res caduca aquest dia |
+| `calendar_row_meta` | %1$s · unitat %2$d de %3$d |
+| `calendar_cell_desc` | %1$s, %2$d productes (plurals: 1 producte) |
+| `category_calendar_cd` | Calendari de %s |
+
+## Unitats
+| Clau | Text |
+|---|---|
+| `item_pack_of` | pack de %d |
+| `item_units` | %d unitats (plurals: 1 unitat) |
