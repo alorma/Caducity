@@ -190,3 +190,19 @@ class ItemDeletedAction(
     name = "item_deleted",
     parameters = mapOf("item_status" to itemStatus) + parameters,
   )
+
+// Add Screen Actions
+class AddCloseAction(
+  batch: Boolean,
+) : NavigationAction(
+    actionName = "close_add",
+    origin = "add",
+    parameters = mapOf("source" to if (batch) "done" else "close"),
+  )
+
+class AddQuickCategoryAction :
+  NavigationAction(
+    actionName = "quick_category",
+    origin = "add",
+    parameters = mapOf("source" to "category_chips"),
+  )
