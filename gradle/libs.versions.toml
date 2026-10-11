@@ -35,7 +35,6 @@ multiplatform-settings = "1.3.0"
 room = "2.8.5"
 uiTiles = "3.3.0"
 koin = "4.2.2"
-kalendar = "2.10.1"
 fireandforget = "1.3.0"
 
 
@@ -109,7 +108,6 @@ koin-compose = { group = "io.insert-koin", name = "koin-compose" }
 koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel" }
 koin-androidx-workmanager = { group = "io.insert-koin", name = "koin-androidx-workmanager" }
 
-kalendar = { group = "com.kizitonwose.calendar", name = "compose-multiplatform", version.ref = "kalendar" }
 
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
