@@ -11,7 +11,7 @@ class CategoryShapeTest {
   @Test
   fun `each category shape maps to its MaterialShapes polygon`() {
     expectThat(CategoryShape.COOKIE.polygon).isSameInstanceAs(MaterialShapes.Cookie9Sided)
-    expectThat(CategoryShape.FLOWER.polygon).isSameInstanceAs(MaterialShapes.Flower)
+    expectThat(CategoryShape.CLOVER8.polygon).isSameInstanceAs(MaterialShapes.Clover8Leaf)
     expectThat(CategoryShape.CLOVER.polygon).isSameInstanceAs(MaterialShapes.Clover4Leaf)
     expectThat(CategoryShape.SUNNY.polygon).isSameInstanceAs(MaterialShapes.Sunny)
     expectThat(CategoryShape.PUFFY.polygon).isSameInstanceAs(MaterialShapes.Puffy)

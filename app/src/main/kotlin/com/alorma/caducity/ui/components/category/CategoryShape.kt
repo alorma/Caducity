@@ -11,7 +11,7 @@ val CategoryShape.polygon: RoundedPolygon
   get() =
     when (this) {
       CategoryShape.COOKIE -> MaterialShapes.Cookie9Sided
-      CategoryShape.FLOWER -> MaterialShapes.Flower
+      CategoryShape.CLOVER8 -> MaterialShapes.Clover8Leaf
       CategoryShape.CLOVER -> MaterialShapes.Clover4Leaf
       CategoryShape.SUNNY -> MaterialShapes.Sunny
       CategoryShape.PUFFY -> MaterialShapes.Puffy

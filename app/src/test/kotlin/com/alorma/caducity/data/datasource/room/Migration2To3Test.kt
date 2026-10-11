@@ -97,7 +97,7 @@ class Migration2To3Test {
       }
     expectThat(categories).containsExactly(
       listOf("c1", "COOKIE", "water_full", 0),
-      listOf("c2", "FLOWER", "nutrition", 1),
+      listOf("c2", "CLOVER8", "nutrition", 1),
       listOf("c3", "PUFFY", "bakery_dining", 2),
       listOf("c4", "SUNNY", "eco", 3),
       listOf("c5", "PUFFY", "eco", 4),
