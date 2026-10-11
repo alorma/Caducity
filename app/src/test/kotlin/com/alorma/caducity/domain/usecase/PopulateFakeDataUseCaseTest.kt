@@ -86,7 +86,7 @@ class PopulateFakeDataUseCaseTest {
       val categories = db.categoryDao().getCategoriesOrderedSync()
       expectThat(
         categories.map { it.name },
-      ).containsExactly("Dairy", "Produce", "Meat & Seafood", "Pantry", "Frozen Foods")
+      ).containsExactly("Làctics", "Fruita i verdura", "Carn i peix", "Rebost", "Congelats")
       expectThat(categories.map { it.sortOrder }).containsExactly(0, 1, 2, 3, 4)
       expectThat(
         categories.map { it.icon.id },

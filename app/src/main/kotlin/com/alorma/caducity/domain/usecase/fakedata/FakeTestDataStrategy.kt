@@ -26,26 +26,26 @@ class FakeTestDataStrategy(
 
   private fun createDairyCategory(now: Instant): CategoryConfig =
     CategoryConfig(
-      name = "Dairy",
-      description = "Milk, cheese, yogurt and other dairy products",
+      name = "Làctics",
+      description = "Llet, formatge, iogurt i altres productes làctics",
       products =
         listOf(
-          createProductWithAllStatuses("Whole Milk", now),
-          createProductWithAllStatuses("Cheddar Cheese", now),
+          createProductWithAllStatuses("Llet sencera", now),
+          createProductWithAllStatuses("Formatge cheddar", now),
         ),
-      standaloneItems = createStandaloneItemsWithAllStatuses("Standalone", now),
+      standaloneItems = createStandaloneItemsWithAllStatuses("Solt", now),
     )
 
   private fun createProduceCategory(now: Instant): CategoryConfig =
     CategoryConfig(
-      name = "Produce",
-      description = "Fresh fruits and vegetables",
+      name = "Fruita i verdura",
+      description = "Fruita i verdura fresques",
       products =
         listOf(
-          createProductWithAllStatuses("Apples", now),
-          createProductWithAllStatuses("Carrots", now),
+          createProductWithAllStatuses("Pomes", now),
+          createProductWithAllStatuses("Pastanagues", now),
         ),
-      standaloneItems = createStandaloneItemsWithAllStatuses("Standalone", now),
+      standaloneItems = createStandaloneItemsWithAllStatuses("Solt", now),
     )
 
   /**
@@ -63,7 +63,7 @@ class FakeTestDataStrategy(
       val daysAhead = expirationThresholds.soonExpiringThreshold.inWholeDays + 3 + index
       items.add(
         ItemConfig(
-          identifier = "$productName Fresh #${index + 1}",
+          identifier = "$productName Fresc #${index + 1}",
           expirationDate = now.plus(daysAhead.days),
         ),
       )
@@ -74,7 +74,7 @@ class FakeTestDataStrategy(
       val daysAhead = 1 + index // 1-6 days from now
       items.add(
         ItemConfig(
-          identifier = "$productName Expiring #${index + 1}",
+          identifier = "$productName Caduca aviat #${index + 1}",
           expirationDate = now.plus(daysAhead.days),
         ),
       )
@@ -87,7 +87,7 @@ class FakeTestDataStrategy(
     repeat(3) { index ->
       items.add(
         ItemConfig(
-          identifier = "$productName Expired Near #${index + 1}",
+          identifier = "$productName Caducat recent #${index + 1}",
           expirationDate = now.minus((index + 1).days), // 1-3 days ago
         ),
       )
@@ -97,7 +97,7 @@ class FakeTestDataStrategy(
     repeat(3) { index ->
       items.add(
         ItemConfig(
-          identifier = "$productName Expired Far #${index + 1}",
+          identifier = "$productName Caducat fa temps #${index + 1}",
           expirationDate = now.minus((consumeThresholdDays + index + 1).days),
         ),
       )
@@ -107,7 +107,7 @@ class FakeTestDataStrategy(
     repeat(6) { index ->
       items.add(
         ItemConfig(
-          identifier = "$productName Frozen #${index + 1}",
+          identifier = "$productName Congelat #${index + 1}",
           expirationDate = now.plus((5 + index).days),
           shouldFreeze = true,
           remainingDaysWhenFrozen = 5,
@@ -120,7 +120,7 @@ class FakeTestDataStrategy(
     repeat(3) { index ->
       items.add(
         ItemConfig(
-          identifier = "$productName Consumed Near #${index + 1}",
+          identifier = "$productName Consumit recent #${index + 1}",
           expirationDate = now.minus((index + 1).days), // 1-3 days ago
           shouldConsume = true,
         ),
@@ -131,7 +131,7 @@ class FakeTestDataStrategy(
     repeat(3) { index ->
       items.add(
         ItemConfig(
-          identifier = "$productName Consumed Far #${index + 1}",
+          identifier = "$productName Consumit fa temps #${index + 1}",
           expirationDate = now.minus((consumeThresholdDays + index + 1).days),
           shouldConsume = true,
         ),
@@ -156,7 +156,7 @@ class FakeTestDataStrategy(
       val daysAhead = expirationThresholds.soonExpiringThreshold.inWholeDays + 3 + index
       items.add(
         StandaloneItemConfig(
-          identifier = "$prefix Fresh #${index + 1}",
+          identifier = "$prefix Fresc #${index + 1}",
           expirationDate = now.plus(daysAhead.days),
         ),
       )
@@ -166,7 +166,7 @@ class FakeTestDataStrategy(
     repeat(6) { index ->
       items.add(
         StandaloneItemConfig(
-          identifier = "$prefix Expiring #${index + 1}",
+          identifier = "$prefix Caduca aviat #${index + 1}",
           expirationDate = now.plus((1 + index).days),
         ),
       )
@@ -176,7 +176,7 @@ class FakeTestDataStrategy(
     repeat(3) { index ->
       items.add(
         StandaloneItemConfig(
-          identifier = "$prefix Expired Near #${index + 1}",
+          identifier = "$prefix Caducat recent #${index + 1}",
           expirationDate = now.minus((index + 1).days),
         ),
       )
@@ -186,7 +186,7 @@ class FakeTestDataStrategy(
     repeat(3) { index ->
       items.add(
         StandaloneItemConfig(
-          identifier = "$prefix Expired Far #${index + 1}",
+          identifier = "$prefix Caducat fa temps #${index + 1}",
           expirationDate = now.minus((consumeThresholdDays + index + 1).days),
         ),
       )
@@ -196,7 +196,7 @@ class FakeTestDataStrategy(
     repeat(6) { index ->
       items.add(
         StandaloneItemConfig(
-          identifier = "$prefix Frozen #${index + 1}",
+          identifier = "$prefix Congelat #${index + 1}",
           expirationDate = now.plus((5 + index).days),
           shouldFreeze = true,
           remainingDaysWhenFrozen = 5,
@@ -208,7 +208,7 @@ class FakeTestDataStrategy(
     repeat(3) { index ->
       items.add(
         StandaloneItemConfig(
-          identifier = "$prefix Consumed Near #${index + 1}",
+          identifier = "$prefix Consumit recent #${index + 1}",
           expirationDate = now.minus((index + 1).days),
           shouldConsume = true,
         ),
@@ -219,7 +219,7 @@ class FakeTestDataStrategy(
     repeat(3) { index ->
       items.add(
         StandaloneItemConfig(
-          identifier = "$prefix Consumed Far #${index + 1}",
+          identifier = "$prefix Consumit fa temps #${index + 1}",
           expirationDate = now.minus((consumeThresholdDays + index + 1).days),
           shouldConsume = true,
         ),
