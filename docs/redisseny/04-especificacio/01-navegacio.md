@@ -20,7 +20,7 @@ Splash
        │     ├── tira de 7 dies → dia de la secció, o Calendari (mes) si el dia no té productes «Aviat»
        │     ├── botó calendari → Calendari (mes)
        │     ├── bàner caducats → Caducats
-       │     ├── resum Aviat/Frescos/Congelats → Caducats / Rebost (filtrat)
+       │     ├── resum Aviat/Frescos/Congelats → pantalla d'estat (Aviat / Frescos / Congelats)
        │     └── fila → full Accions del producte
        ├── Rebost (graella de categories)
        │     ├── targeta categoria → Categoria
@@ -38,7 +38,7 @@ Splash
 - `HorizontalFloatingToolbar` (M3 Expressive) amb fons `primary-container`, flotant a 24 dp del límit inferior i 20 dp dels laterals, `shadow-float`.
 - 2 pestanyes: **Aviat** (`hourglass_bottom`), **Rebost** (`kitchen`), més la icona **Ajustos** (`settings`) que no és pestanya (decidit 2026-10-11): mai es mostra seleccionada i obre una pantalla secundària sense barra ni FAB. La pestanya activa es mostra com a pastilla `primary` amb icona farcida + etiqueta; les altres, només icona (amb `contentDescription`).
 - A la dreta, separat, **FAB** de 64 dp, radi 20, `primary`, icona `add` (veu: «Afegeix un producte»).
-- Pantalles secundàries (Categoria, Caducats, Calendari, Afegeix, Nova categoria) no mostren la barra; la pantalla Categoria mostra un **FAB estès** «Afegeix» que preselecciona la categoria.
+- Pantalles secundàries (Categoria, Caducats i les altres pantalles d'estat, Calendari, Afegeix, Nova categoria) no mostren la barra; la pantalla Categoria mostra un **FAB estès** «Afegeix» que preselecciona la categoria.
 
 ## Rutes suggerides
 
@@ -48,7 +48,8 @@ Splash
 | `home` | Inici «Què caduca» | — |
 | `pantry` | Rebost | — |
 | `category/{id}` | Categoria | `filter?` (estat) |
-| `expired` | Caducats | — |
+| `expired` | Caducats (= `StatusListRoute(EXPIRED)`) | — |
+| `status/{soon\|fresh\|frozen}` | Aviat / Frescos / Congelats (`StatusListRoute`) | — |
 | `add` | Afegeix | `categoryId?`, `source?` (`widget`, `shortcut`, `app`), `itemId?` (mode edició d'una unitat) |
 | `calendar` | Calendari (vista de mes) | `categoryId?`, `date?` (dia seleccionat) |
 | `category/new` | Nova categoria | — |

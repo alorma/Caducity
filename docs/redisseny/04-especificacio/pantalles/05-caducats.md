@@ -2,6 +2,8 @@
 
 Captura: `Caducats.png`. Font: `Caducats.dc.html`. Substitueix `app/05_filtered_expired.png`.
 
+> És una variant de la plantilla comuna de pantalles d'estat (`13-pantalles-estat.md`). Aviat, Frescos i Congelats fan servir la mateixa plantilla amb altres colors i accions.
+
 ## Estructura
 
 1. **Capçalera** a tota amplada, `expired-container`, radi inferior 32, text `on-expired-container`:
