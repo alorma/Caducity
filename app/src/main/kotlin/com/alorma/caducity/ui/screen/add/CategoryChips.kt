@@ -62,11 +62,11 @@ fun CategoryChips(
         modifier = Modifier.height(44.dp),
       ) {
         Row(
-          modifier = Modifier.padding(start = 5.dp, end = 14.dp),
+          modifier = Modifier.padding(start = 6.dp, end = 14.dp),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-          CategoryShapeIcon(shape = category.shape, icon = category.icon.imageVector, size = 34.dp, selected = selected)
+          CategoryShapeIcon(shape = category.shape, icon = category.icon.imageVector, size = 32.dp, selected = selected)
           Text(category.name, style = CaducityTheme.typography.labelLarge, maxLines = 1)
         }
       }
