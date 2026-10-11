@@ -1,0 +1,103 @@
+package com.alorma.caducity.ui.screen.home
+
+import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.R
+import com.alorma.caducity.domain.model.HomeRow
+import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
+import com.alorma.caducity.domain.usecase.ObserveHomeUseCase
+import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
+import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.feature.tracking.ItemActionAction
+import com.alorma.caducity.feature.tracking.NavigateToAddFromHomeAction
+import com.alorma.caducity.feature.tracking.NavigateToCalendarFromHomeAction
+import com.alorma.caducity.feature.tracking.NavigateToExpiredFromHomeAction
+import com.alorma.caducity.feature.tracking.NavigateToItemActionsFromHomeAction
+import com.alorma.caducity.feature.tracking.NavigateToPantryFromHomeAction
+import com.alorma.caducity.feature.tracking.NavigateToSearchAction
+import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
+import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+
+class HomeViewModel(
+  observeHome: ObserveHomeUseCase,
+  private val consumeItem: ConsumeItemUseCase,
+  private val restoreItems: RestoreItemsUseCase,
+  private val snackbars: GlobalSnackbarEvents,
+  private val widgetTipFlag: WidgetTipFlag,
+  private val eventTracker: EventTracker,
+) : BaseViewModel<HomeNavigation, HomeNavigationSideEffect, Unit>() {
+  // TEMP(fase 10): there is no widget yet, so its tip is never offered.
+  private val widgetTipDismissed = MutableStateFlow(!WIDGET_AVAILABLE || !widgetTipFlag.isEnabled())
+
+  val state: StateFlow<HomeState> =
+    combine(observeHome.observe(), widgetTipDismissed) { data, dismissed ->
+      HomeState.Ready(data = data, widgetTipVisible = !dismissed) as HomeState
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeState.Loading)
+
+  override fun navigate(navigation: HomeNavigation) {
+    when (navigation) {
+      is HomeNavigation.Calendar -> {
+        eventTracker.trackAction(NavigateToCalendarFromHomeAction(navigation.source))
+        emitNavigationSideEffect(HomeNavigationSideEffect.OpenCalendar(navigation.date))
+      }
+      HomeNavigation.Search -> {
+        eventTracker.trackAction(NavigateToSearchAction())
+        emitNavigationSideEffect(HomeNavigationSideEffect.OpenSearch)
+      }
+      HomeNavigation.Expired -> {
+        eventTracker.trackAction(NavigateToExpiredFromHomeAction())
+        emitNavigationSideEffect(HomeNavigationSideEffect.OpenExpired)
+      }
+      is HomeNavigation.Pantry -> {
+        eventTracker.trackAction(NavigateToPantryFromHomeAction(navigation.source))
+        emitNavigationSideEffect(HomeNavigationSideEffect.OpenPantry)
+      }
+      is HomeNavigation.ItemActions -> {
+        eventTracker.trackAction(NavigateToItemActionsFromHomeAction())
+        emitNavigationSideEffect(HomeNavigationSideEffect.OpenItemActions(navigation.itemId))
+      }
+      HomeNavigation.AddFirst -> {
+        eventTracker.trackAction(NavigateToAddFromHomeAction())
+        emitNavigationSideEffect(HomeNavigationSideEffect.OpenAdd)
+      }
+    }
+  }
+
+  /** ✓ marks **one** unit (the closest to expire) of the row as consumed (P6), with undo. */
+  fun onConsume(row: HomeRow) {
+    eventTracker.trackAction(ItemActionAction("consume_home"))
+    viewModelScope.launch {
+      consumeItem
+        .consume(row.nearestItemId)
+        .onSuccess {
+          snackbars.show(
+            GlobalSnackbar(
+              message = R.string.item_actions_snackbar_consumed,
+              messageArgs = listOf(row.name),
+              actionLabel = R.string.add_undo,
+              type = AppFeedbackType.Success,
+              onAction = { restoreItems.restore(listOf(row.nearestItemId)) },
+            ),
+          )
+        }.onFailure {
+          snackbars.show(GlobalSnackbar(R.string.item_actions_error, type = AppFeedbackType.Error))
+        }
+    }
+  }
+
+  fun onDismissWidgetTip() {
+    widgetTipFlag.disable()
+    widgetTipDismissed.value = true
+  }
+
+  private companion object {
+    const val WIDGET_AVAILABLE = false
+  }
+}

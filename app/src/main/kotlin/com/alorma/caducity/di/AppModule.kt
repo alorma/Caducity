@@ -33,6 +33,8 @@ import com.alorma.caducity.feature.review.reviewModule
 import com.alorma.caducity.feature.tracking.trackingModule
 import com.alorma.caducity.ui.components.actions.ItemActionsSheetViewModel
 import com.alorma.caducity.ui.components.bottomsheet.ItemActionsViewModel
+import com.alorma.caducity.ui.components.calendar.AppCalendarConfigMapper
+import com.alorma.caducity.ui.components.calendar.CalendarPreferences
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.screen.add.AddViewModel
 import com.alorma.caducity.ui.screen.category.create.CreateCategoryViewModel
@@ -43,8 +45,9 @@ import com.alorma.caducity.ui.screen.category.detail.product.ProductPageMapper
 import com.alorma.caducity.ui.screen.category.detail.product.ProductPageViewModel
 import com.alorma.caducity.ui.screen.category.quick.CategoryCreatedEvents
 import com.alorma.caducity.ui.screen.category.quick.QuickCategoryViewModel
-import com.alorma.caducity.ui.screen.dashboard.dashboardModule
 import com.alorma.caducity.ui.screen.filtered.FilteredItemsByStatusViewModel
+import com.alorma.caducity.ui.screen.home.HomeViewModel
+import com.alorma.caducity.ui.screen.home.WidgetTipFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
@@ -73,7 +76,13 @@ val appModule =
     includes(reviewModule)
     includes(trackingModule)
 
-    includes(dashboardModule)
+    // TEMP(fase 5c/11): old calendar components still read these; CalendarPreferences moves in 5c.
+    singleOf(::CalendarPreferences)
+    singleOf(::AppCalendarConfigMapper)
+
+    // Home
+    singleOf(::WidgetTipFlag)
+    viewModelOf(::HomeViewModel)
 
     single { Settings() }
 

@@ -7,8 +7,6 @@ package com.alorma.caducity.feature.tracking
  * All screen names include the "Screen" suffix for consistency in analytics.
  */
 
-class DashboardScreen : Screen("DashboardScreen")
-
 class CategoryDetailScreen : Screen("CategoryDetailScreen")
 
 class CreateCategoryScreen : Screen("CreateCategoryScreen")
@@ -42,3 +40,5 @@ class ProductDeleteBottomSheetScreen : Screen("ProductDeleteBottomSheetScreen")
 class ProductClearItemsBottomSheetScreen : Screen("ProductClearItemsBottomSheetScreen")
 
 class ProductItemsBottomSheetScreen : Screen("ProductItemsBottomSheetScreen")
+
+class HomeScreen : Screen("HomeScreen")
