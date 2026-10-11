@@ -26,8 +26,5 @@ sealed interface SettingsRoute : NavKey {
   data object Privacy : SettingsRoute
 
   @Serializable
-  data object AiModel : SettingsRoute
-
-  @Serializable
   data object DebugRemoteConfigs : SettingsRoute
 }
