@@ -13,7 +13,6 @@ import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
-import com.alorma.caducity.domain.usecase.GetExpiringCategoriesUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.SplitAndConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
@@ -30,8 +29,7 @@ import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.screen.add.AddViewModel
 import com.alorma.caducity.ui.screen.calendar.CalendarViewModel
 import com.alorma.caducity.ui.screen.category.CategoryViewModel
-import com.alorma.caducity.ui.screen.category.create.CreateCategoryViewModel
-import com.alorma.caducity.ui.screen.category.create.FutureDateSelectableDates
+import com.alorma.caducity.ui.screen.category.editor.CategoryEditorViewModel
 import com.alorma.caducity.ui.screen.category.quick.CategoryCreatedEvents
 import com.alorma.caducity.ui.screen.category.quick.QuickCategoryViewModel
 import com.alorma.caducity.ui.screen.home.HomeViewModel
@@ -40,6 +38,7 @@ import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
 import com.alorma.caducity.ui.screen.pantry.PantrySearchRequests
 import com.alorma.caducity.ui.screen.pantry.PantryViewModel
+import com.alorma.caducity.ui.screen.settings.SettingsViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugRemoteConfigsViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
@@ -96,7 +95,6 @@ val appModule =
     // Onboarding
     singleOf(::OnboardingFlag)
     viewModelOf(::OnboardingViewModel)
-    singleOf(::GetExpiringCategoriesUseCase)
 
     factory {
       RelativeTimeFormatter(
@@ -165,11 +163,21 @@ val appModule =
 
     // Product page
 
-    // Create category
+    // Category editor (new and edit)
     singleOf(::CreateCategoryUseCase)
-    viewModelOf(::CreateCategoryViewModel)
+    viewModel { params ->
+      CategoryEditorViewModel(
+        categoryId = params.getOrNull(),
+        pantryDataSource = get(),
+        createCategory = get(),
+        updateCategory = get(),
+        deleteCategory = get(),
+        eventTracker = get(),
+      )
+    }
 
-    singleOf(::FutureDateSelectableDates)
+    // Settings
+    viewModelOf(::SettingsViewModel)
 
     // Backup & Restore
     singleOf(::RoomBackupDataSource) bind BackupDataSource::class

@@ -40,10 +40,6 @@
   <string name="products_list_items_frozen">%1$d items frozen</string>
 
   <string name="settings_screen_title">Settings</string>
-  <string name="settings_appearance_title">Appearance</string>
-  <string name="settings_appearance_description">Theme, colors, and display</string>
-  <string name="settings_notifications_title">Notifications</string>
-  <string name="settings_notifications_description">Manage notification preferences</string>
   <string name="settings_debug_title">Debug</string>
   <string name="settings_debug_description">Developer and debugging tools</string>
   <string name="debug_fake_data_success">Fake data populated successfully</string>
@@ -51,43 +47,17 @@
   <string name="debug_error">Error</string>
 
   <string name="settings_about_title">About</string>
-  <string name="settings_about_description">App information and credits</string>
   <string name="settings_backup_title">Backup</string>
-  <string name="settings_backup_description">Export and restore your data</string>
   <string name="settings_privacy_title">Privacy</string>
-  <string name="settings_privacy_description">Manage consent and data preferences</string>
 
-  <string name="settings_group_appearance">Appearance</string>
   <string name="settings_theme_title">Theme</string>
   <string name="settings_theme_light">Light</string>
   <string name="settings_theme_dark">Dark</string>
   <string name="settings_theme_system">System</string>
   <string name="settings_dynamic_colors">Dynamic Colors</string>
-  <string name="settings_calendar_options">Calendar options</string>
-  <string name="settings_first_day_of_week_title">First Day of Week</string>
 
-  <string name="settings_group_expiration_colors">Expiration Colors</string>
-  <string name="settings_color_scheme_title">Color Scheme</string>
-  <string name="settings_color_scheme_vibrant">Vibrant</string>
-  <string name="settings_color_scheme_harmony">Harmony</string>
-  <string name="settings_expiration_legend_fresh">Fresh</string>
-  <string name="settings_expiration_legend_expiring_soon">Expiring</string>
-  <string name="settings_expiration_legend_expired">Expired</string>
-  <string name="settings_expiration_legend_frozen">Frozen</string>
-  <string name="settings_expiration_legend_consumed">Consumed</string>
 
-  <string name="settings_group_notifications">Notifications</string>
-  <string name="settings_enable_notifications">Enable Notifications</string>
-  <string name="settings_notification_types_title">Notification Types</string>
-  <string name="settings_notification_type_expired">Expired</string>
-  <string name="settings_notification_type_expiring">Expiring</string>
-  <string name="settings_notification_schedule_title">Notification Schedule</string>
-  <string name="settings_notification_time_title">Notification Time</string>
-  <string name="settings_notification_time_dialog_title">Set Notification Time</string>
-  <string name="settings_notification_time_confirm">Confirm</string>
-  <string name="settings_notification_time_dismiss">Cancel</string>
 
-  <string name="settings_group_privacy">Privacy &amp; Data</string>
   <string name="settings_privacy_screen_title">Privacy</string>
   <string name="settings_privacy_analytics_title">Analytics</string>
   <string name="settings_privacy_analytics_description">Share anonymous usage data to help improve the app</string>
@@ -102,29 +72,8 @@
   <string name="debug_consent_ad_personalization_title">Ad Personalization</string>
   <string name="debug_consent_ad_personalization_description">Enable personalized advertising</string>
 
-  <string name="about_version">Version</string>
-  <string name="about_developer">Developer</string>
   <string name="about_github_link">View on GitHub</string>
 
-  <string name="create_category_screen_title">Create Category</string>
-  <string name="create_category_name_label">Category Name</string>
-  <string name="create_category_name_placeholder">Enter category name</string>
-  <string name="create_category_description_label">Description</string>
-  <string name="create_category_description_placeholder">Enter description</string>
-  <string name="create_category_expiration_date_label">Expiration Date</string>
-  <string name="create_category_expiration_date_placeholder">DD/MM/YYYY</string>
-  <string name="create_category_button_cancel">Cancel</string>
-  <string name="create_category_button_create">Create</string>
-  <string name="create_category_content_description_back">Back</string>
-  <string name="create_category_items_title">Category Items</string>
-  <string name="create_category_item_identifier_label">Identifier</string>
-  <string name="create_category_item_identifier_placeholder">e.g., Batch #1, Unit A</string>
-  <string name="create_category_add_item">Add Item</string>
-  <string name="create_category_remove_item">Remove</string>
-  <string name="create_category_item_number">Item %1$d</string>
-  <string name="create_category_item_quantity_label">Quantity</string>
-  <string name="create_category_item_quantity_placeholder">1</string>
-  <string name="create_category_item_split_preview">%1$d items will be created</string>
 
   <!-- Category Detail -->
   <string name="category_detail_auto_identifier_item">Item</string>
@@ -306,12 +255,6 @@
   <string name="app_name">Caducity</string>
 
   <!-- Notifications -->
-  <string name="notification_expiring_soon_title_single">Category expiring soon</string>
-  <string name="notification_expiring_soon_title_plural">%1$d categories expiring soon</string>
-  <string name="notification_expired_title_single">Category has expired items</string>
-  <string name="notification_expired_title_plural">%1$d categories have expired items</string>
-  <string name="notification_text_more">%1$s and %2$d more</string>
-  <string name="notification_items_count">%1$d items</string>
 
   <!-- Navigation -->
   <string name="nav_soon">Soon</string>
@@ -595,4 +538,41 @@
   <string name="status_dates_in_1w">In 1 week</string>
   <string name="status_dates_pick">Pick a date</string>
   <string name="home_summary_cell_cd">%1$s, %2$s. Opens the list</string>
+  <string name="category_editor_title_new">New category</string>
+  <string name="category_editor_title_edit">Edit category</string>
+  <string name="category_editor_close">Close</string>
+  <string name="category_editor_save">Save</string>
+  <string name="category_editor_preview_placeholder">Category name</string>
+  <string name="category_editor_error_failed">Could not save the category</string>
+  <string name="category_editor_description">Description · optional</string>
+  <string name="category_editor_description_placeholder">For example: soft drinks, juices and fermented drinks</string>
+  <string name="category_editor_delete">Delete category</string>
+  <string name="notification_channel_name">Daily reminder</string>
+  <string name="notification_channel_description">One notification a day when something is about to expire</string>
+  <string name="notification_highlight_today">%1$s today</string>
+  <string name="notification_highlight_tomorrow">%1$s tomorrow</string>
+  <string name="notification_highlight_days">%1$s in %2$d days</string>
+  <string name="settings_section_alerts">Alerts</string>
+  <string name="settings_section_appearance">Appearance</string>
+  <string name="settings_section_data">Data</string>
+  <string name="settings_notifications">Notifications</string>
+  <string name="settings_notifications_time">Every day at %s</string>
+  <string name="settings_soon_means">“Soon” means</string>
+  <string name="settings_soon_means_sub">When a product turns yellow and we let you know</string>
+  <string name="settings_1d">1 day</string>
+  <string name="settings_3d">3 days</string>
+  <string name="settings_1w">1 week</string>
+  <string name="settings_dynamic_color_on">Using your phone\'s colors</string>
+  <string name="settings_dynamic_color_off">Off: Caducity palette</string>
+  <string name="settings_week_start">Week starts on</string>
+  <string name="settings_backup_sub">Export and restore</string>
+  <string name="settings_about_sub">Version and credits</string>
+  <string name="settings_time_dialog_title">Reminder time</string>
+  <string name="settings_dialog_save">Save</string>
+  <string name="settings_dialog_cancel">Cancel</string>
+  <string name="settings_notifications_denied">Allow notifications in the system settings to get the reminder</string>
+  <plurals name="notification_title">
+    <item quantity="one">%d product expires soon</item>
+    <item quantity="other">%d products expire soon</item>
+  </plurals>
 </resources>

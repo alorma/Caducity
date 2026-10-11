@@ -28,7 +28,7 @@ import kotlinx.datetime.LocalTime
 
 /**
  * Android implementation of ExpirationNotificationHelper.
- * Builds and shows notifications using Android's notification system.
+ * Builds and shows the daily reminder using Android's notification system.
  */
 class AndroidExpirationNotificationHelper(
   private val context: Context,
@@ -39,17 +39,9 @@ class AndroidExpirationNotificationHelper(
   private val notifications: MutableState<Boolean> =
     mutableStateOf(
       // Initialize based on both permission status and saved preference
-      settings.getBoolean(NotificationsEnabledKey, false) && checkNotificationPermission(),
+      settings.getBoolean(NotificationConfigDataSource.PREF_DAILY_REMINDER_ENABLED, false) &&
+        checkNotificationPermission(),
     )
-
-  private val expiredNotifications: MutableState<Boolean> =
-    mutableStateOf(settings.getBoolean(ExpiredNotificationsEnabledKey, true))
-
-  private val expiringSoonNotifications: MutableState<Boolean> =
-    mutableStateOf(settings.getBoolean(ExpiringSoonNotificationsEnabledKey, true))
-
-  private val notificationTime: MutableState<LocalTime> =
-    mutableStateOf(readNotificationTime())
 
   // Cache large icon bitmap to avoid repeated conversions
   private val largeIconBitmap by lazy {
@@ -90,7 +82,7 @@ class AndroidExpirationNotificationHelper(
     // If permission was revoked externally, update state to false
     if (notifications.value && !checkNotificationPermission()) {
       notifications.value = false
-      settings[NotificationsEnabledKey] = false
+      settings[NotificationConfigDataSource.PREF_DAILY_REMINDER_ENABLED] = false
     }
     return notifications
   }
@@ -98,149 +90,63 @@ class AndroidExpirationNotificationHelper(
   override fun setNotificationsEnabled(enabled: Boolean) {
     if (enabled) {
       // Can only enable if permission is granted
-      val hasPermission = checkNotificationPermission()
-      if (hasPermission) {
-        settings[NotificationsEnabledKey] = true
+      if (checkNotificationPermission()) {
+        settings[NotificationConfigDataSource.PREF_DAILY_REMINDER_ENABLED] = true
         notifications.value = true
+        workScheduler.scheduleExpirationCheck(readNotificationTime())
       }
     } else {
-      settings[NotificationsEnabledKey] = false
+      settings[NotificationConfigDataSource.PREF_DAILY_REMINDER_ENABLED] = false
       notifications.value = false
+      workScheduler.cancelExpirationCheck()
     }
   }
 
   override fun hasNotificationPermission(): Boolean = checkNotificationPermission()
 
-  override fun showExpiringSoonNotification(product: NotificationProduct) {
-    if (!areNotificationsEnabled().value || !areExpiringSoonNotificationsEnabled().value) return
-    showProductNotification(
-      product = product,
-      channelId = NotificationChannelManager.CHANNEL_ID_EXPIRING_SOON,
-      priority = NotificationCompat.PRIORITY_DEFAULT,
-    )
-  }
-
-  override fun showExpiredNotification(product: NotificationProduct) {
-    if (!areNotificationsEnabled().value || !areExpiredNotificationsEnabled().value) return
-    showProductNotification(
-      product = product,
-      channelId = NotificationChannelManager.CHANNEL_ID_EXPIRED,
-      priority = NotificationCompat.PRIORITY_HIGH,
-    )
-  }
-
-  private fun showProductNotification(
-    product: NotificationProduct,
-    channelId: String,
-    priority: Int,
-  ) {
+  override fun showDailyReminder(content: ReminderContent) {
+    if (!areNotificationsEnabled().value) return
     NotificationChannelManager.createNotificationChannels(context)
     val notificationManager = context.getSystemService<NotificationManager>()
 
     val intent =
       Intent(context, MainActivity::class.java).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        putExtra(
-          MainActivity.EXTRA_DEEP_LINK_ACTION,
-          DeepLinkAction.OpenProduct(categoryId = product.categoryId, productId = product.productId),
-        )
+        putExtra(MainActivity.EXTRA_DEEP_LINK_ACTION, DeepLinkAction.OpenHome)
       }
     val pendingIntent =
       PendingIntent.getActivity(
         context,
-        product.notificationId,
+        NOTIFICATION_ID,
         intent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
       )
 
-    val itemLines = buildItemLines(product.items)
-    val builder =
+    val body = buildBody(content)
+    val notification =
       NotificationCompat
-        .Builder(context, channelId)
+        .Builder(context, NotificationChannelManager.CHANNEL_ID_DAILY_REMINDER)
         .setSmallIcon(R.drawable.ic_notification)
         .also { b -> largeIconBitmap?.let { b.setLargeIcon(it) } }
-        .setContentTitle(product.title)
-        .setContentText(itemLines.firstOrNull() ?: "")
-        .setPriority(priority)
+        .setContentTitle(stringProvider.getQuantityString(R.plurals.notification_title, content.count, content.count))
+        .setContentText(body)
+        .setStyle(NotificationCompat.BigTextStyle().bigText(body))
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         .setAutoCancel(true)
         .setContentIntent(pendingIntent)
-        .setGroup(product.groupKey)
+        .build()
 
-    if (itemLines.size > 1) {
-      val style = NotificationCompat.InboxStyle().setBigContentTitle(product.title)
-      itemLines.forEach { style.addLine(it) }
-      builder.setStyle(style)
-    }
-
-    notificationManager?.notify(product.notificationId, builder.build())
+    notificationManager?.notify(NOTIFICATION_ID, notification)
   }
 
-  override fun showExpiringSoonGroupSummary(summary: NotificationGroupSummary) {
-    if (!areNotificationsEnabled().value || !areExpiringSoonNotificationsEnabled().value) return
-    showGroupSummaryNotification(
-      summary = summary,
-      channelId = NotificationChannelManager.CHANNEL_ID_EXPIRING_SOON,
-      priority = NotificationCompat.PRIORITY_DEFAULT,
-    )
-  }
-
-  override fun showExpiredGroupSummary(summary: NotificationGroupSummary) {
-    if (!areNotificationsEnabled().value || !areExpiredNotificationsEnabled().value) return
-    showGroupSummaryNotification(
-      summary = summary,
-      channelId = NotificationChannelManager.CHANNEL_ID_EXPIRED,
-      priority = NotificationCompat.PRIORITY_HIGH,
-    )
-  }
-
-  private fun showGroupSummaryNotification(
-    summary: NotificationGroupSummary,
-    channelId: String,
-    priority: Int,
-  ) {
-    NotificationChannelManager.createNotificationChannels(context)
-    val notificationManager = context.getSystemService<NotificationManager>()
-
-    val intent =
-      Intent(context, MainActivity::class.java).apply {
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        putExtra(
-          MainActivity.EXTRA_DEEP_LINK_ACTION,
-          DeepLinkAction.OpenCategory(categoryId = summary.categoryId),
-        )
+  private fun buildBody(content: ReminderContent): String =
+    content.highlights.joinToString(separator = ", ") { highlight ->
+      when (highlight.daysLeft) {
+        0 -> stringProvider.getString(R.string.notification_highlight_today, highlight.name)
+        1 -> stringProvider.getString(R.string.notification_highlight_tomorrow, highlight.name)
+        else -> stringProvider.getString(R.string.notification_highlight_days, highlight.name, highlight.daysLeft)
       }
-    val pendingIntent =
-      PendingIntent.getActivity(
-        context,
-        summary.notificationId,
-        intent,
-        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-      )
-
-    val builder =
-      NotificationCompat
-        .Builder(context, channelId)
-        .setSmallIcon(R.drawable.ic_notification)
-        .also { b -> largeIconBitmap?.let { b.setLargeIcon(it) } }
-        .setContentTitle(summary.categoryName)
-        .setContentText(stringProvider.getString(R.string.notification_items_count, summary.count))
-        .setPriority(priority)
-        .setAutoCancel(true)
-        .setContentIntent(pendingIntent)
-        .setGroup(summary.groupKey)
-        .setGroupSummary(true)
-
-    notificationManager?.notify(summary.notificationId, builder.build())
-  }
-
-  private fun buildItemLines(items: List<NotificationItem>): List<String> {
-    val named = items.mapNotNull { it.identifier?.takeIf { id -> id.isNotBlank() } }
-    return if (named.isNotEmpty()) {
-      named
-    } else {
-      listOf(stringProvider.getString(R.string.notification_items_count, items.size))
     }
-  }
 
   override fun launch() {
     permissionsLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -259,31 +165,7 @@ class AndroidExpirationNotificationHelper(
     }
   }
 
-  override fun areExpiredNotificationsEnabled(): MutableState<Boolean> = expiredNotifications
-
-  override fun setExpiredNotificationsEnabled(enabled: Boolean) {
-    settings[ExpiredNotificationsEnabledKey] = enabled
-    expiredNotifications.value = enabled
-  }
-
-  override fun areExpiringSoonNotificationsEnabled(): MutableState<Boolean> = expiringSoonNotifications
-
-  override fun setExpiringSoonNotificationsEnabled(enabled: Boolean) {
-    settings[ExpiringSoonNotificationsEnabledKey] = enabled
-    expiringSoonNotifications.value = enabled
-  }
-
-  override fun getNotificationTime(): MutableState<LocalTime> = notificationTime
-
-  override fun setNotificationTime(time: LocalTime) {
-    settings[NotificationConfigDataSource.PREF_NOTIFICATION_TIME_SECONDS] = time.toSecondOfDay()
-    notificationTime.value = time
-    workScheduler.rescheduleExpirationCheck(time)
-  }
-
   companion object {
-    private const val NotificationsEnabledKey = "notifications_enabled_key"
-    private const val ExpiredNotificationsEnabledKey = "notifications_expired_enabled_key"
-    private const val ExpiringSoonNotificationsEnabledKey = "notifications_expiring_soon_enabled_key"
+    private const val NOTIFICATION_ID = 1001
   }
 }

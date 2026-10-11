@@ -24,20 +24,21 @@ class CompleteOnboardingAction :
     parameters = emptyMap(),
   )
 
-// Create Category Actions
-class CancelCreateCategoryAction :
-  NavigationAction(
-    actionName = "cancel_create_category",
-    origin = "create_category",
-    parameters = mapOf("source" to "back_button"),
+// Category editor Actions
+class CategoryEditorCloseAction(
+  mode: String,
+) : NavigationAction(
+    actionName = "close_category_editor",
+    origin = "category_editor",
+    parameters = mapOf("mode" to mode), // "create" or "edit"
   )
 
-class CategoryCreatedAction(
-  source: String,
+class CategorySavedAction(
+  mode: String,
 ) : NavigationAction(
-    actionName = "category_created",
-    origin = "create_category",
-    parameters = mapOf("source" to source), // "form_submit"
+    actionName = "category_saved",
+    origin = "category_editor",
+    parameters = mapOf("mode" to mode), // "create" or "edit"
   )
 
 // Product Page Actions
@@ -274,4 +275,13 @@ class NavigateToAddFromStatusListAction(
     actionName = "add",
     origin = "status_list",
     parameters = mapOf("status" to status, "source" to "empty"),
+  )
+
+// Settings Actions
+class NavigateFromSettingsAction(
+  destination: String,
+) : NavigationAction(
+    actionName = "settings_$destination",
+    origin = "settings",
+    parameters = emptyMap(), // destination: "backup", "privacy", "about" or "debug"
   )

@@ -15,6 +15,8 @@ class UpdateCategoryUseCase(
     name: String,
     shape: CategoryShape,
     icon: CategoryIcon,
+    /** `null` keeps the stored description. */
+    description: String? = null,
   ): Result<Unit> {
     val trimmed = name.trim()
     if (trimmed.isEmpty()) return Result.failure(PantryError.BlankName)
@@ -29,7 +31,14 @@ class UpdateCategoryUseCase(
         }
       if (duplicated) return Result.failure(PantryError.DuplicateCategoryName)
 
-      pantryDataSource.updateCategory(current.copy(name = trimmed, shape = shape, icon = icon))
+      pantryDataSource.updateCategory(
+        current.copy(
+          name = trimmed,
+          shape = shape,
+          icon = icon,
+          description = description?.trim() ?: current.description,
+        ),
+      )
       Result.success(Unit)
     } catch (e: CancellationException) {
       throw e

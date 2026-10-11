@@ -6,14 +6,11 @@ import com.alorma.caducity.domain.PantryDataSource
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
-import com.alorma.caducity.domain.model.Item
-import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.normalizeForSearch
-import kotlin.time.Instant
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 class CreateCategoryUseCase(
   private val categoryDataSource: CategoryDataSource,
@@ -25,8 +22,6 @@ class CreateCategoryUseCase(
   suspend fun createCategory(
     name: String,
     description: String,
-    // TEMP(fase 8): the new create screen has no initial items.
-    items: List<Pair<String, Instant>> = emptyList(),
     shape: CategoryShape = CategoryShape.COOKIE,
     icon: CategoryIcon = CategoryIcon.DEFAULT,
     sortOrder: Int? = null,
@@ -46,25 +41,7 @@ class CreateCategoryUseCase(
           sortOrder = sortOrder ?: pantryDataSource.getNextSortOrder(),
         )
 
-      val now = appClock.now()
-      val categoryItems =
-        items
-          .map { (identifier, expirationDate) ->
-            Item(
-              id = Uuid.random().toString(),
-              categoryId = categoryId,
-              identifier = identifier,
-              expirationDate = expirationDate,
-              status =
-                ItemStatus.calculateStatus(
-                  expirationDate = expirationDate,
-                  now = now,
-                  soonExpiringThreshold = expirationThresholds.soonExpiringThreshold,
-                ),
-            )
-          }.toImmutableList()
-
-      categoryDataSource.createCategory(category, categoryItems)
+      categoryDataSource.createCategory(category, persistentListOf())
       Result.success(categoryId)
     } catch (e: Exception) {
       Result.failure(e)

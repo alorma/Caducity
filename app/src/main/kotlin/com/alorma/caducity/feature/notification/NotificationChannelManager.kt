@@ -3,48 +3,34 @@ package com.alorma.caducity.feature.notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import com.alorma.caducity.R
 
 /**
- * Manages notification channels for the app.
+ * Manages the notification channel of the app: a single one for the daily reminder.
  * Notification channels are required on Android O (API 26) and above.
  */
 object NotificationChannelManager {
-  const val CHANNEL_ID_EXPIRING_SOON = "product_expiring_soon"
-  const val CHANNEL_ID_EXPIRED = "product_expired"
+  const val CHANNEL_ID_DAILY_REMINDER = "daily_reminder"
 
-  /**
-   * Creates all notification channels for the app.
-   * This method is safe to call multiple times - channels will only be created once.
-   *
-   * @param context Application or Activity context
-   */
+  // Channels of the versions before the redesign, deleted so they no longer show in the system settings.
+  private val LEGACY_CHANNEL_IDS = listOf("product_expiring_soon", "product_expired")
+
+  /** Creates the channel (safe to call many times) and deletes the ones of the old versions. */
   fun createNotificationChannels(context: Context) {
     val notificationManager =
       context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    val expiringSoonChannel =
+    LEGACY_CHANNEL_IDS.forEach(notificationManager::deleteNotificationChannel)
+
+    val channel =
       NotificationChannel(
-        CHANNEL_ID_EXPIRING_SOON,
-        "Expiring Soon Alerts",
+        CHANNEL_ID_DAILY_REMINDER,
+        context.getString(R.string.notification_channel_name),
         NotificationManager.IMPORTANCE_DEFAULT,
       ).apply {
-        description = "Notifications for categories with items approaching their expiration date"
-        enableVibration(true)
-        enableLights(true)
+        description = context.getString(R.string.notification_channel_description)
       }
 
-    val expiredChannel =
-      NotificationChannel(
-        CHANNEL_ID_EXPIRED,
-        "Expired Alerts",
-        NotificationManager.IMPORTANCE_HIGH,
-      ).apply {
-        description = "Notifications for categories with items that have already expired"
-        enableVibration(true)
-        enableLights(true)
-      }
-
-    notificationManager.createNotificationChannel(expiringSoonChannel)
-    notificationManager.createNotificationChannel(expiredChannel)
+    notificationManager.createNotificationChannel(channel)
   }
 }

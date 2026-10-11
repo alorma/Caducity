@@ -1,0 +1,357 @@
+package com.alorma.caducity.ui.screen.settings
+
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.symbols.Backup
+import com.alorma.caducity.base.ui.icons.symbols.ChevronRight
+import com.alorma.caducity.base.ui.icons.symbols.Info
+import com.alorma.caducity.base.ui.icons.symbols.Notifications
+import com.alorma.caducity.base.ui.icons.symbols.Settings
+import com.alorma.caducity.base.ui.icons.symbols.Shield
+import com.alorma.caducity.base.ui.icons.symbols.Symbols
+import com.alorma.caducity.config.language.LocalizedDateFormatter
+import com.alorma.caducity.config.preferences.SoonThresholdPreferences
+import com.alorma.caducity.feature.debug.DebugModeProvider
+import com.alorma.caducity.feature.tracking.SettingsScreen as SettingsScreenEvent
+import com.alorma.caducity.feature.tracking.TrackScreen
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
+import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
+import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
+import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.topbar.NavigationIcon
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
+import com.alorma.caducity.ui.theme.ThemeMode
+import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
+import kotlinx.coroutines.launch
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalTime
+import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
+
+@Composable
+fun SettingsScreen(
+  onOpenBackup: () -> Unit,
+  onOpenPrivacy: () -> Unit,
+  onOpenAbout: () -> Unit,
+  onOpenDebug: () -> Unit,
+  modifier: Modifier = Modifier,
+  viewModel: SettingsViewModel = koinViewModel(),
+  debugModeProvider: DebugModeProvider = koinInject(),
+  localizedDateFormatter: LocalizedDateFormatter = koinInject(),
+) {
+  TrackScreen(screen = SettingsScreenEvent())
+  val state by viewModel.state.collectAsStateWithLifecycle()
+  val dialogState = rememberAppDialogState()
+  val snackbarState = rememberAppSnackbarState()
+  val context = LocalContext.current
+
+  LaunchedEffect(viewModel) {
+    viewModel.navigationSideEffects.collect { effect ->
+      when (effect) {
+        SettingsNavigationSideEffect.OpenBackup -> onOpenBackup()
+        SettingsNavigationSideEffect.OpenPrivacy -> onOpenPrivacy()
+        SettingsNavigationSideEffect.OpenAbout -> onOpenAbout()
+        SettingsNavigationSideEffect.OpenDebug -> onOpenDebug()
+      }
+    }
+  }
+  SideEffectHandler(viewModel, dialogState, snackbarState, localizedDateFormatter)
+
+  val permissionLauncher =
+    rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+      if (granted) viewModel.onReminderToggle(true) else viewModel.onNotificationsDenied()
+    }
+  // The user can revoke the permission from the system settings: then the reminder is shown (and works) as off.
+  val hasPermission =
+    ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
+      PackageManager.PERMISSION_GRANTED
+
+  AppScaffold(
+    modifier = modifier,
+    dialogState = dialogState,
+    snackbarState = snackbarState,
+    topBar = {
+      StyledTopAppBar(
+        navigationIcon = { NavigationIcon() },
+        title = { Text(stringResource(R.string.settings_screen_title)) },
+      )
+    },
+  ) { padding ->
+    ResponsiveSettingsContainer(modifier = Modifier.padding(padding)) {
+      SettingsContent(
+        state = state,
+        reminderOn = state.reminderEnabled && hasPermission,
+        isDebug = debugModeProvider.isDebugMode(),
+        localizedDateFormatter = localizedDateFormatter,
+        onReminderToggle = { enabled ->
+          if (!enabled || hasPermission) {
+            viewModel.onReminderToggle(enabled)
+          } else {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+          }
+        },
+        onReminderTimeClick = viewModel::onReminderTimeClick,
+        onSoonThresholdChange = viewModel::onSoonThresholdChange,
+        onThemeModeChange = viewModel::onThemeModeChange,
+        onDynamicColorsChange = viewModel::onDynamicColorsChange,
+        onWeekStartClick = viewModel::onWeekStartClick,
+        onNavigate = viewModel::navigate,
+      )
+    }
+  }
+}
+
+@Composable
+private fun SettingsContent(
+  state: SettingsState,
+  reminderOn: Boolean,
+  isDebug: Boolean,
+  localizedDateFormatter: LocalizedDateFormatter,
+  onReminderToggle: (Boolean) -> Unit,
+  onReminderTimeClick: () -> Unit,
+  onSoonThresholdChange: (Int) -> Unit,
+  onThemeModeChange: (ThemeMode) -> Unit,
+  onDynamicColorsChange: (Boolean) -> Unit,
+  onWeekStartClick: () -> Unit,
+  onNavigate: (SettingsNavigation) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  LazyColumn(
+    modifier = modifier.padding(horizontal = 16.dp),
+    verticalArrangement = Arrangement.spacedBy(24.dp),
+  ) {
+    item {
+      val oneDay = stringResource(R.string.settings_1d)
+      val threeDays = stringResource(R.string.settings_3d)
+      val oneWeek = stringResource(R.string.settings_1w)
+      StyledSettingsGroup(title = { Text(stringResource(R.string.settings_section_alerts)) }) {
+        StyledSettingsCard(
+          icon = { Icon(Symbols.Outlined.Notifications, contentDescription = null) },
+          title = stringResource(R.string.settings_notifications),
+          subtitle = stringResource(R.string.settings_notifications_time, formatTime(state.reminderTime)),
+          shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
+          onClick = onReminderTimeClick,
+          action = {
+            Switch(
+              checked = reminderOn,
+              onCheckedChange = onReminderToggle,
+            )
+          },
+        )
+        StyledSettingsButtonGroupCard(
+          title = stringResource(R.string.settings_soon_means),
+          subtitle = stringResource(R.string.settings_soon_means_sub),
+          selectedItem = state.soonThresholdDays,
+          items = SoonThresholdPreferences.ALLOWED_DAYS,
+          itemTitleMap = { days ->
+            when (days) {
+              1 -> oneDay
+              7 -> oneWeek
+              else -> threeDays
+            }
+          },
+          onItemSelected = onSoonThresholdChange,
+          shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
+        )
+      }
+    }
+
+    item {
+      val dynamicColors = supportsDynamicColors()
+      val themeLight = stringResource(R.string.settings_theme_light)
+      val themeDark = stringResource(R.string.settings_theme_dark)
+      val themeSystem = stringResource(R.string.settings_theme_system)
+      StyledSettingsGroup(title = { Text(stringResource(R.string.settings_section_appearance)) }) {
+        StyledSettingsButtonGroupCard(
+          title = stringResource(R.string.settings_theme_title),
+          selectedItem = state.themeMode,
+          items = listOf(ThemeMode.LIGHT, ThemeMode.DARK, ThemeMode.SYSTEM),
+          itemTitleMap = { mode ->
+            when (mode) {
+              ThemeMode.LIGHT -> themeLight
+              ThemeMode.DARK -> themeDark
+              ThemeMode.SYSTEM -> themeSystem
+            }
+          },
+          onItemSelected = onThemeModeChange,
+          shapes = ListItemDefaults.segmentedShapes(index = 0, count = if (dynamicColors) 3 else 2),
+        )
+        if (dynamicColors) {
+          StyledSettingsSwitchCard(
+            title = stringResource(R.string.settings_dynamic_colors),
+            subtitle =
+              stringResource(
+                if (state.dynamicColors) R.string.settings_dynamic_color_on else R.string.settings_dynamic_color_off,
+              ),
+            state = state.dynamicColors,
+            onCheckedChange = onDynamicColorsChange,
+            shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
+          )
+        }
+        StyledSettingsCard(
+          title = stringResource(R.string.settings_week_start),
+          subtitle = localizedDateFormatter.getDayOfWeekFullName(state.firstDayOfWeek),
+          action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
+          onClick = onWeekStartClick,
+          shapes =
+            ListItemDefaults.segmentedShapes(
+              index = if (dynamicColors) 2 else 1,
+              count = if (dynamicColors) 3 else 2,
+            ),
+        )
+      }
+    }
+
+    item {
+      val rows = if (isDebug) 4 else 3
+      StyledSettingsGroup(title = { Text(stringResource(R.string.settings_section_data)) }) {
+        StyledSettingsCard(
+          icon = { Icon(Symbols.Outlined.Backup, contentDescription = null) },
+          title = stringResource(R.string.settings_backup_title),
+          subtitle = stringResource(R.string.settings_backup_sub),
+          onClick = { onNavigate(SettingsNavigation.Backup) },
+          shapes = ListItemDefaults.segmentedShapes(index = 0, count = rows),
+        )
+        StyledSettingsCard(
+          icon = { Icon(Symbols.Outlined.Shield, contentDescription = null) },
+          title = stringResource(R.string.settings_privacy_title),
+          onClick = { onNavigate(SettingsNavigation.Privacy) },
+          shapes = ListItemDefaults.segmentedShapes(index = 1, count = rows),
+        )
+        StyledSettingsCard(
+          icon = { Icon(Symbols.Outlined.Info, contentDescription = null) },
+          title = stringResource(R.string.settings_about_title),
+          subtitle = stringResource(R.string.settings_about_sub),
+          onClick = { onNavigate(SettingsNavigation.About) },
+          shapes = ListItemDefaults.segmentedShapes(index = 2, count = rows),
+        )
+        if (isDebug) {
+          StyledSettingsCard(
+            icon = { Icon(Symbols.Outlined.Settings, contentDescription = null) },
+            title = stringResource(R.string.settings_debug_title),
+            subtitle = stringResource(R.string.settings_debug_description),
+            onClick = { onNavigate(SettingsNavigation.Debug) },
+            shapes = ListItemDefaults.segmentedShapes(index = 3, count = rows),
+          )
+        }
+      }
+    }
+  }
+}
+
+private fun formatTime(time: LocalTime): String = "%d:%02d".format(time.hour, time.minute)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SideEffectHandler(
+  viewModel: SettingsViewModel,
+  dialogState: AppDialogState,
+  snackbarState: AppSnackbarState,
+  localizedDateFormatter: LocalizedDateFormatter,
+) {
+  val scope = rememberCoroutineScope()
+  LaunchedEffect(viewModel) {
+    viewModel.sideEffects.collect { effect ->
+      when (effect) {
+        is SettingsSideEffect.ShowTimePicker ->
+          scope.launch {
+            val pickerState = TimePickerState(effect.current.hour, effect.current.minute, is24Hour = true)
+            val result =
+              dialogState.showAlertDialog(
+                title = { Text(stringResource(R.string.settings_time_dialog_title)) },
+                content = { TimePicker(state = pickerState) },
+                positiveButton = { Text(stringResource(R.string.settings_dialog_save)) },
+                negativeButton = { Text(stringResource(R.string.settings_dialog_cancel)) },
+                type = AppFeedbackType.Info,
+              )
+            if (result == DialogResult.Positive) {
+              viewModel.onReminderTimeChange(LocalTime(pickerState.hour, pickerState.minute))
+            }
+          }
+        is SettingsSideEffect.ShowWeekStartPicker ->
+          scope.launch {
+            var selected by mutableStateOf(effect.current)
+            val result =
+              dialogState.showAlertDialog(
+                title = { Text(stringResource(R.string.settings_week_start)) },
+                content = {
+                  Column(Modifier.selectableGroup()) {
+                    WEEK_START_OPTIONS.forEach { day ->
+                      Row(
+                        modifier =
+                          Modifier
+                            .selectable(
+                              selected = selected == day,
+                              role = Role.RadioButton,
+                              onClick = { selected = day },
+                            ).padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                      ) {
+                        RadioButton(selected = selected == day, onClick = null)
+                        Text(
+                          text = localizedDateFormatter.getDayOfWeekFullName(day),
+                          modifier = Modifier.padding(start = 12.dp),
+                        )
+                      }
+                    }
+                  }
+                },
+                positiveButton = { Text(stringResource(R.string.settings_dialog_save)) },
+                negativeButton = { Text(stringResource(R.string.settings_dialog_cancel)) },
+                type = AppFeedbackType.Info,
+              )
+            if (result == DialogResult.Positive) viewModel.onFirstDayOfWeekChange(selected)
+          }
+        SettingsSideEffect.NotificationsDenied ->
+          scope.launch {
+            snackbarState.showSnackbar(
+              message = R.string.settings_notifications_denied,
+              type = AppFeedbackType.Error,
+            )
+          }
+      }
+    }
+  }
+}
+
+private val WEEK_START_OPTIONS = listOf(DayOfWeek.MONDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)

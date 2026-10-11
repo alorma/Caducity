@@ -9,7 +9,7 @@ package com.alorma.caducity.feature.tracking
 
 class CategoryScreen : Screen("CategoryScreen")
 
-class CreateCategoryScreen : Screen("CreateCategoryScreen")
+class CategoryEditorScreen : Screen("CategoryEditorScreen")
 
 class StatusListScreen(
   status: String,
@@ -20,11 +20,7 @@ class OnboardingScreen : Screen("OnboardingScreen")
 // Settings screens
 class SettingsScreen : Screen("SettingsScreen")
 
-class AppearanceSettingsScreen : Screen("AppearanceSettingsScreen")
-
 class BackupScreen : Screen("BackupScreen")
-
-class NotificationsSettingsScreen : Screen("NotificationsSettingsScreen")
 
 class PrivacySettingsScreen : Screen("PrivacySettingsScreen")
 
