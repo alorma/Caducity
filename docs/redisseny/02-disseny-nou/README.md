@@ -22,3 +22,7 @@ Captures @2x (780×1688 per a mòbil) generades des del canvas. La font de cada 
 | `InicibBuit.png` | Inici buit (després de l'onboarding) | `pantalles/01-inici.md` |
 
 Nota: `OB5Avis.png` mostra l'estat inicial (casella desmarcada, botó desactivat).
+
+## Mode fosc
+
+Captures a `captures-fosc/` (fonts `font-dc-html/*Fosc.dc.html`): `MainFosc.png`, `RebostFosc.png`, `CategoriaFosc.png`, `AccionsFosc.png`, `AfegirFosc.png`, `CaducatsFosc.png`. Mateix layout que en clar; només canvien els colors. Regles a `04-especificacio/12-mode-fosc.md`.
