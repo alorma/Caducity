@@ -1,7 +1,6 @@
-package com.alorma.caducity.data.datasource.room
+package com.alorma.caducity.domain.model
 
-import com.alorma.caducity.domain.model.CategoryIcon
-import com.alorma.caducity.domain.model.CategoryShape
+import com.alorma.caducity.data.datasource.room.AvatarConverters
 import org.junit.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo

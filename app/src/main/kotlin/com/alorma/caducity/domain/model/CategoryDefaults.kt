@@ -1,10 +1,9 @@
-package com.alorma.caducity.data.datasource.room
+package com.alorma.caducity.domain.model
 
-import com.alorma.caducity.domain.model.CategoryIcon
-import com.alorma.caducity.domain.model.CategoryShape
-import java.text.Normalizer
-
-/** Default shape/icon assigned to a category from its name (shared by the v2→v3 migration and the v1 backup import). */
+/**
+ * Default shape/icon assigned to a category from its name. Shared by the v2→v3 migration,
+ * the v1 backup import and category seeding.
+ */
 data class CategoryDefaults(
   val shape: CategoryShape,
   val icon: CategoryIcon,
@@ -51,7 +50,7 @@ data class CategoryDefaults(
       name: String,
       index: Int,
     ): CategoryDefaults {
-      val words = normalize(name).split(Regex("[^a-z0-9]+")).filter { it.isNotEmpty() }
+      val words = name.normalizeForSearch().split(Regex("[^a-z0-9]+")).filter { it.isNotEmpty() }
       val rule =
         RULES.firstOrNull { rule ->
           words.any { word -> rule.prefixes.any(word::startsWith) || word in rule.exactWords }
@@ -62,10 +61,5 @@ data class CategoryDefaults(
         CategoryDefaults(SHAPE_CYCLE[Math.floorMod(index, SHAPE_CYCLE.size)], CategoryIcon.DEFAULT)
       }
     }
-
-    private fun normalize(text: String): String =
-      Normalizer
-        .normalize(text.lowercase(), Normalizer.Form.NFD)
-        .replace(Regex("\\p{Mn}+"), "")
   }
 }

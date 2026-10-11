@@ -34,6 +34,7 @@ class ItemRoomMapper(
       expirationDate = Instant.fromEpochMilliseconds(entity.expirationDate),
       status = calculateStatus(entity),
       pausedDate = entity.pausedDate?.let { Instant.fromEpochMilliseconds(it) },
+      remainingDays = entity.remainingDays,
       packSize = entity.packSize,
       discardedDate = entity.discardedDate?.let { Instant.fromEpochMilliseconds(it) },
       createdAt = entity.createdAt?.let { Instant.fromEpochMilliseconds(it) },
