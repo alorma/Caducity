@@ -1,22 +1,30 @@
 package com.alorma.caducity.ui.navigation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 
 /**
- * Shell shown over the top-level screens: [content] plus the [FloatingNavBar].
- * The bar is always visible and sits below the content, so it never covers it while scrolling.
+ * Space a screen should leave at the end of its scrollable content so the last row can clear the
+ * floating bar, which is drawn above the content. Zero when the bar is not shown.
+ */
+val LocalFloatingBarPadding = compositionLocalOf { PaddingValues() }
+
+private val FloatingBarContentPadding = PaddingValues(bottom = 96.dp)
+
+/**
+ * Parent scaffold of the top-level screens. The [FloatingNavBar] lives in the FAB slot, so it is drawn
+ * over [content] (each screen keeps its own scaffold) instead of reserving space below it.
  */
 @Composable
 fun AppShell(
@@ -28,28 +36,30 @@ fun AppShell(
   modifier: Modifier = Modifier,
   content: @Composable () -> Unit,
 ) {
-  Column(
-    modifier =
-      modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background),
-  ) {
-    Box(modifier = Modifier.weight(1f)) {
-      content()
-    }
-    if (showNavigation) {
-      ResponsiveCenteredContainer(fillHeight = false) {
-        FloatingNavBar(
-          currentTab = currentTab,
-          onTabSelected = onTabSelected,
-          onAddClick = onAddClick,
-          onSettingsClick = onSettingsClick,
-          modifier =
-            Modifier
-              .windowInsetsPadding(WindowInsets.navigationBars)
-              .padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 24.dp),
-        )
+  Scaffold(
+    modifier = modifier,
+    containerColor = MaterialTheme.colorScheme.background,
+    contentWindowInsets = WindowInsets.navigationBars,
+    floatingActionButtonPosition = FabPosition.Center,
+    floatingActionButton = {
+      if (showNavigation) {
+        ResponsiveCenteredContainer(fillHeight = false) {
+          FloatingNavBar(
+            currentTab = currentTab,
+            onTabSelected = onTabSelected,
+            onAddClick = onAddClick,
+            onSettingsClick = onSettingsClick,
+            modifier = Modifier.padding(horizontal = 20.dp),
+          )
+        }
       }
+    },
+  ) {
+    // The scaffold padding is ignored on purpose: the bar overlays the content.
+    CompositionLocalProvider(
+      LocalFloatingBarPadding provides if (showNavigation) FloatingBarContentPadding else PaddingValues(),
+    ) {
+      content()
     }
   }
 }
