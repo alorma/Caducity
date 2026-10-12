@@ -30,6 +30,13 @@ Mètodes ja existents que es reutilitzen: `PantryDataSource.addBatch` (cerca/cre
 
 **Sortida:** l'app s'actualitza des de v3 sense pèrdua de dades i cap pantalla canvia.
 
+- [x] Tasques 1-3 i 8 (migració): `65ebd93`, ktlint `a6cd7b5`
+- [x] Tasques 4, 5, 7 (filtres de «viu» i restauració): `7e792d2`
+- [x] Tasca 6 (backup, format v3): `34dea3f`
+- [x] Dades falses amb ingredients transformats: `010951c`; una sola estratègia de dades falses (sense PlayStore): `51ba87b`
+
+Validada amb l'app `.dev` al Pixel 8a: v3 → v4 amb 61 ítems, 5 categories i 27 productes intactes. Nota: `ItemDataSource.markItemAsTransformed` és provisional (només dades falses); la fase 2 el substitueix per `transform`.
+
 ## Fase 2 — Cas d'ús transaccional
 
 1. Models de domini: `TransformIngredient(itemIds)`, `TransformResult(name, servings, categoryId, expiration, frozenCount)`.
@@ -92,7 +99,7 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 
 | Fase | Estat |
 | --- | --- |
-| 1 — Model i migració | Pendent |
+| 1 — Model i migració | Validada |
 | 2 — Cas d'ús transaccional | Pendent |
 | 3 — Pantalla Transforma | Pendent |
 | 4 — Selector d'ingredients | Pendent |
