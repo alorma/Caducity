@@ -11,6 +11,7 @@ What is left after the «Caducity» redesign (1.0.0). The plan and the design pa
 - **Fingerprint for actions, free for reading** (configurable): biometric prompt before actions that change data (consume, freeze, reschedule, edit, move, delete); browsing stays open. A setting turns it on or off.
 - **Haptics**: haptic feedback on key interactions (for example consume, freeze, delete, confirmations).
 - **Product cost**: optional price on a product, entered per unit or as a total split across the N units created. Lets the app show how much is spent on food and how much is thrown away (expired or discarded items).
+- **In-app review**: ask for a Play Store review with the Play In-App Review API (`com.google.android.play:review`), at a good moment (for example after a few items consumed), never on first launch or after an error. Google limits how often the prompt shows, so it may not appear every time.
 
 ## Quality
 
