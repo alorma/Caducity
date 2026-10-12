@@ -130,6 +130,13 @@
   <string name="add_saved_snackbar">%1$s desat</string>
   <string name="add_undo">Desfés</string>
   <string name="transform_done">%1$d ingredients transformats en %2$d productes</string>
+  <string name="transform_section_result">Resultat</string>
+  <string name="transform_result_name">Nom</string>
+  <string name="transform_result_name_hint">Què estàs cuinant?</string>
+  <string name="transform_servings">Racions</string>
+  <string name="transform_date_hint">Data de l\'ingredient que caduca primer (%s).</string>
+  <string name="transform_freeze">Congela\'n</string>
+  <string name="transform_freeze_summary">%1$d a la nevera · %2$d al congelador</string>
   <string name="transform_title">Transforma</string>
   <string name="transform_save">Desa</string>
   <string name="transform_section_ingredients">Ingredients</string>

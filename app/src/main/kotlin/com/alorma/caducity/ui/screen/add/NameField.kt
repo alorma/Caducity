@@ -67,6 +67,7 @@ fun NameField(
   focusRequester: FocusRequester,
   modifier: Modifier = Modifier,
   batchMode: Boolean = false,
+  hint: String? = null,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
   val focused by interactionSource.collectIsFocusedAsState()
@@ -89,7 +90,7 @@ fun NameField(
       Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
         if (name.isEmpty()) {
           Text(
-            text = stringResource(if (batchMode) R.string.add_name_hint_batch else R.string.add_name_hint),
+            text = hint ?: stringResource(if (batchMode) R.string.add_name_hint_batch else R.string.add_name_hint),
             style = textStyle.copy(color = CaducityTheme.colorScheme.outline),
           )
         }

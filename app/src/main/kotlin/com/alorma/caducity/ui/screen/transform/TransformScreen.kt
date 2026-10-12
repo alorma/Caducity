@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -13,11 +14,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,7 +40,11 @@ import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.screen.add.ScreenGutter
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -51,7 +59,10 @@ fun TransformScreen(
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarState()
   val bottomSheetState = rememberAppBottomSheetState()
+  val datePickerState = rememberDatePickerState()
+  val focusRequester = remember { FocusRequester() }
 
+  LaunchedEffect(Unit) { focusRequester.requestFocus() }
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
@@ -60,7 +71,12 @@ fun TransformScreen(
     }
   }
 
-  SideEffectHandler(viewModel = viewModel, dialogState = dialogState, snackbarState = snackbarState)
+  SideEffectHandler(
+    viewModel = viewModel,
+    dialogState = dialogState,
+    snackbarState = snackbarState,
+    datePickerState = datePickerState,
+  )
 
   AppScaffold(
     modifier = modifier,
@@ -93,6 +109,27 @@ fun TransformScreen(
           // TODO(transforma-phase-4): opens the ingredient picker.
           onAdd = {},
         )
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          Text(
+            text = stringResource(R.string.transform_section_result),
+            style = CaducityTheme.typography.labelLarge,
+            color = CaducityTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 4.dp),
+          )
+          state.results.forEach { result ->
+            ResultCard(
+              state = state,
+              result = result,
+              focusRequester = focusRequester,
+              onNameChange = { viewModel.onNameChange(result.id, it) },
+              onSuggestionClick = { viewModel.onSuggestionClick(result.id) },
+              onServingsChange = { viewModel.onServingsChange(result.id, it) },
+              onCategorySelect = { viewModel.onCategorySelect(result.id, it) },
+              onPickDate = { viewModel.onPickDate(result.id) },
+              onFrozenCountChange = { viewModel.onFrozenCountChange(result.id, it) },
+            )
+          }
+        }
       }
     }
   }
@@ -134,11 +171,13 @@ private fun TransformTopBar(
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalTime::class)
 @Composable
 private fun SideEffectHandler(
   viewModel: TransformViewModel,
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
+  datePickerState: DatePickerState,
 ) {
   LaunchedEffect(viewModel) {
     viewModel.sideEffects.collect { effect ->
@@ -162,8 +201,22 @@ private fun SideEffectHandler(
         TransformSideEffect.ShowFrozenPastDate ->
           launch { snackbarState.showSnackbar(message = R.string.add_frozen_past_date, type = AppFeedbackType.Error) }
 
-        // TODO(transforma-task-3): the date picker of a result.
-        is TransformSideEffect.ShowDatePicker -> Unit
+        is TransformSideEffect.ShowDatePicker ->
+          launch {
+            datePickerState.selectedDateMillis = effect.currentMillis
+            val result =
+              dialogState.showDatePickerDialog(
+                datePickerState = datePickerState,
+                positiveButton = { Text(stringResource(R.string.add_picker_ok)) },
+                negativeButton = { Text(stringResource(R.string.add_picker_cancel)) },
+                type = AppFeedbackType.Info,
+              )
+            val picked = datePickerState.selectedDateMillis
+            if (result == DialogResult.Positive && picked != null) {
+              val date = Instant.fromEpochMilliseconds(picked).toLocalDateTime(TimeZone.UTC).date
+              viewModel.onDatePicked(effect.resultId, date)
+            }
+          }
       }
     }
   }
