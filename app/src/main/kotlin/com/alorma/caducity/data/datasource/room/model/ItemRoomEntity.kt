@@ -36,4 +36,7 @@ data class ItemRoomEntity(
   val packSize: Int? = null, // Pack size - null means single item, >1 means pack
   val discardedDate: Long? = null, // When discarded - null means not discarded
   val createdAt: Long? = null, // When created - null for rows created before v3
+  val transformedDate: Long? = null, // When used as a transform ingredient - null means not transformed
+  val transformationId: String? = null, // Transformation that consumed this ingredient
+  val originTransformationId: String? = null, // Transformation that produced this item
 )

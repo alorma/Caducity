@@ -9,14 +9,16 @@ import com.alorma.caducity.data.datasource.room.dao.ProductDao
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
+import com.alorma.caducity.data.datasource.room.model.TransformationRoomEntity
 
 @Database(
   entities = [
     CategoryRoomEntity::class,
     ItemRoomEntity::class,
     ProductRoomEntity::class,
+    TransformationRoomEntity::class,
   ],
-  version = 3,
+  version = 4,
   exportSchema = true,
 )
 @TypeConverters(AvatarConverters::class)

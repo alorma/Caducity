@@ -13,6 +13,17 @@ val MIGRATION_1_2 =
     }
   }
 
+/** v3 → v4: transform ingredients/results (item columns + `transformations` table). Only ADD COLUMN + CREATE TABLE. */
+val MIGRATION_3_4 =
+  object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+      db.execSQL("ALTER TABLE items ADD COLUMN transformedDate INTEGER")
+      db.execSQL("ALTER TABLE items ADD COLUMN transformationId TEXT")
+      db.execSQL("ALTER TABLE items ADD COLUMN originTransformationId TEXT")
+      db.execSQL("CREATE TABLE IF NOT EXISTS `transformations` (`id` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))")
+    }
+  }
+
 /**
  * v2 → v3: category shape/icon/sortOrder/soonThresholdDays (null = global default), item discardedDate/createdAt, items without product
  * converted to products and `identifier` cleared. Only ADD COLUMN + UPDATE/INSERT (no table rebuilds).
