@@ -167,6 +167,16 @@
   <string name="transform_discard_message">No se transformará nada.</string>
   <string name="transform_discard_confirm">Descartar</string>
   <string name="transform_discard_keep">Seguir editando</string>
+  <string name="transform_picker_title">Añade ingredientes</string>
+  <string name="transform_picker_search">Busca en la despensa</string>
+  <string name="transform_picker_filter_all">Todos</string>
+  <string name="transform_picker_meta">%1$s · %2$s</string>
+  <string name="transform_picker_empty">No hay coincidencias</string>
+  <plurals name="transform_picker_add">
+    <item quantity="one">Añade %d ingrediente</item>
+    <item quantity="many">Añade %d ingredientes</item>
+    <item quantity="other">Añade %d ingredientes</item>
+  </plurals>
   <string name="add_save_failed">No se ha podido guardar</string>
   <string name="add_frozen_past_date">Un producto congelado no puede tener una fecha pasada</string>
   <string name="add_picker_ok">Aceptar</string>

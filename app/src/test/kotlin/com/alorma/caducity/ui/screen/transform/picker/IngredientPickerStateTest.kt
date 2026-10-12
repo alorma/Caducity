@@ -87,8 +87,14 @@ class IngredientPickerStateTest {
   }
 
   @Test
-  fun `a selected product enters with its closest unit`() {
-    expectThat(groups.nearestItemIds(setOf("Pastanagues", "Llet"))).containsExactlyInAnyOrder("carrot2", "milk")
+  fun `a new product enters with its closest unit`() {
+    expectThat(groups.chosenItemIds(setOf("Pastanagues", "Llet"), current = emptyList()))
+      .containsExactlyInAnyOrder("carrot2", "milk")
+  }
+
+  @Test
+  fun `a product that was already an ingredient keeps its unit`() {
+    expectThat(groups.chosenItemIds(setOf("Pastanagues"), current = listOf("carrot1"))).containsExactly("carrot1")
   }
 
   @Test

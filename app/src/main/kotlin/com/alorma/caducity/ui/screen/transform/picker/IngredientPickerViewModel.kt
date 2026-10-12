@@ -15,6 +15,7 @@ class IngredientPickerViewModel(
   private val args: IngredientPickerArgs,
   observeItems: ObserveItemsUseCase,
   observeCategories: ObserveCategoriesUseCase,
+  private val results: IngredientPickerResults,
 ) : BaseViewModel<IngredientPickerNavigation, IngredientPickerNavigationSideEffect, Unit>() {
   private val _state = MutableStateFlow(IngredientPickerState())
   val state: StateFlow<IngredientPickerState> = _state.asStateFlow()
@@ -34,9 +35,8 @@ class IngredientPickerViewModel(
       IngredientPickerNavigation.Close -> emitNavigationSideEffect(IngredientPickerNavigationSideEffect.Close)
       IngredientPickerNavigation.Confirm -> {
         val current = _state.value
-        emitNavigationSideEffect(
-          IngredientPickerNavigationSideEffect.Confirm(current.groups.nearestItemIds(current.selectedKeys)),
-        )
+        results.deliver(current.groups.chosenItemIds(current.selectedKeys, args.selectedItemIds))
+        emitNavigationSideEffect(IngredientPickerNavigationSideEffect.Close)
       }
     }
   }

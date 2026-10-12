@@ -29,6 +29,7 @@ import com.alorma.caducity.ui.navigation.Calendar
 import com.alorma.caducity.ui.navigation.Category
 import com.alorma.caducity.ui.navigation.CategoryEditor
 import com.alorma.caducity.ui.navigation.Home
+import com.alorma.caducity.ui.navigation.IngredientPicker
 import com.alorma.caducity.ui.navigation.ItemActions
 import com.alorma.caducity.ui.navigation.Onboarding
 import com.alorma.caducity.ui.navigation.Pantry
@@ -68,6 +69,8 @@ import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsScreen
 import com.alorma.caducity.ui.screen.status.StatusListScreen
 import com.alorma.caducity.ui.screen.transform.TransformArgs
 import com.alorma.caducity.ui.screen.transform.TransformScreen
+import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerArgs
+import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerScreen
 import com.alorma.caducity.ui.theme.AppTheme
 import org.koin.compose.koinInject
 
@@ -224,6 +227,13 @@ fun App(
             entry<Transform> {
               TransformScreen(
                 args = TransformArgs(itemIds = it.itemIds),
+                onClose = { navigation.pop() },
+                onOpenIngredientPicker = { selected -> navigation.navigate(IngredientPicker(selected)) },
+              )
+            }
+            entry<IngredientPicker> {
+              IngredientPickerScreen(
+                args = IngredientPickerArgs(selectedItemIds = it.selectedItemIds),
                 onClose = { navigation.pop() },
               )
             }

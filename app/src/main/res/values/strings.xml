@@ -162,6 +162,15 @@
   <string name="transform_discard_message">Nothing will be transformed.</string>
   <string name="transform_discard_confirm">Discard</string>
   <string name="transform_discard_keep">Keep editing</string>
+  <string name="transform_picker_title">Add ingredients</string>
+  <string name="transform_picker_search">Search the pantry</string>
+  <string name="transform_picker_filter_all">All</string>
+  <string name="transform_picker_meta">%1$s · %2$s</string>
+  <string name="transform_picker_empty">Nothing matches</string>
+  <plurals name="transform_picker_add">
+    <item quantity="one">Add %d ingredient</item>
+    <item quantity="other">Add %d ingredients</item>
+  </plurals>
   <string name="add_save_failed">Could not save</string>
   <string name="add_frozen_past_date">A frozen product cannot have a past date</string>
   <string name="add_picker_ok">OK</string>

@@ -13,11 +13,13 @@ import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.TransformItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.feature.tracking.NavigateToIngredientPickerAction
 import com.alorma.caducity.feature.tracking.TransformCloseAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerResults
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,6 +39,7 @@ class TransformViewModel(
   observeCategories: ObserveCategoriesUseCase,
   private val snackbars: GlobalSnackbarEvents,
   private val eventTracker: EventTracker,
+  private val pickerResults: IngredientPickerResults,
 ) : BaseViewModel<TransformNavigation, TransformNavigationSideEffect, TransformSideEffect>() {
   private val _state = MutableStateFlow(TransformState(today = todayProvider.today()))
   val state: StateFlow<TransformState> = _state.asStateFlow()
@@ -53,6 +56,7 @@ class TransformViewModel(
         _state.update { it.copy(categories = categories) }
       }
     }
+    viewModelScope.launch { pickerResults.results.collect(::onIngredientsPicked) }
     viewModelScope.launch {
       val active = getActiveItem.all().associateBy { it.itemId }
       val picked = args.itemIds.mapNotNull { active[it] }
@@ -68,6 +72,11 @@ class TransformViewModel(
         eventTracker.trackAction(TransformCloseAction())
         emitNavigationSideEffect(TransformNavigationSideEffect.Close)
       }
+      TransformNavigation.IngredientPicker -> {
+        eventTracker.trackAction(NavigateToIngredientPickerAction())
+        val selected = _state.value.ingredients.flatMap { it.units.map { unit -> unit.itemId } }
+        emitNavigationSideEffect(TransformNavigationSideEffect.OpenIngredientPicker(selected))
+      }
     }
   }
 
@@ -78,15 +87,19 @@ class TransformViewModel(
 
   fun onDiscardConfirmed() = navigate(TransformNavigation.Close)
 
-  /** Adds the products of [itemIds] as ingredients; one already there keeps its count. */
-  fun onIngredientsAdded(itemIds: List<String>) {
+  /** The picker's selection is the final list: the ones left out go, the ones already there keep their count. */
+  private fun onIngredientsPicked(itemIds: List<String>) {
     viewModelScope.launch {
       val active = getActiveItem.all()
       val byId = active.associateBy { it.itemId }
-      val added = itemIds.mapNotNull { byId[it] }.toIngredients(active)
+      val picked = itemIds.mapNotNull { byId[it] }.toIngredients(active)
+      if (picked.isEmpty()) return@launch
       _state.update { current ->
+        val pickedKeys = picked.map { it.key }.toSet()
         val known = current.ingredients.map { it.key }.toSet()
-        current.copy(ingredients = current.ingredients + added.filter { it.key !in known })
+        current.copy(
+          ingredients = current.ingredients.filter { it.key in pickedKeys } + picked.filter { it.key !in known },
+        )
       }
     }
   }
