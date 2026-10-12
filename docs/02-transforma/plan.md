@@ -68,6 +68,14 @@ Decisió oberta 4 aplicada: un resultat congelat guarda els dies fins a la seva 
 
 **Sortida:** la pantalla es pot obrir amb dades de prova (preview o ruta de depuració) i desa de veritat.
 
+- [x] Tasques 1 i 5 (ruta `Transform`, `TransformViewModel`, estat, navegació i side effects; textos a cada tasca): `871d44e`
+- [x] Tasca 2 (barra superior, ingredients connectats, diàleg de descart; entrada «Open Transforma» a Depuració): `2638905`
+- [x] Tasca 3 (targeta de resultat simple): `0849ce6`
+- [x] Tasca 4 (diversos resultats, plegats i expandibles): `334aae6`
+- [x] Tasca 7 i plurals del missatge en desar («1 producte», «1 ingredient»): `ce8a30e`
+
+Validada amb l'app `.dev` al Pixel 8a: desa de veritat i «Desfés» restaura els ingredients. «Afegeix ingredient» no fa res fins a la fase 4. Decisió oberta 2 aplicada: un ingredient caducat dona data per defecte «avui» (`TODO(transforma-open-2)`).
+
 ## Fase 4 — Selector d'ingredients
 
 1. `IngredientPickerScreen` a pantalla completa: cerca, xips d'estat (Tots · Aviat · Fresc · Congelat) i de categoria, llista amb casella, meta i pastilla d'estat; inclou congelats; els ja afegits surten marcats; botó «Afegeix N ingredients».
@@ -108,7 +116,7 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | --- | --- |
 | 1 — Model i migració | Validada |
 | 2 — Cas d'ús transaccional | Validada |
-| 3 — Pantalla Transforma | Pendent |
+| 3 — Pantalla Transforma | Validada |
 | 4 — Selector d'ingredients | Pendent |
 | 5 — Entrades i flux final | Pendent |
 | 6 — Qualitat | Pendent |
