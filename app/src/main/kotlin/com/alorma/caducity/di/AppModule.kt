@@ -15,6 +15,7 @@ import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.SplitAndConsumeItemUseCase
+import com.alorma.caducity.domain.usecase.TransformItemsUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
@@ -137,6 +138,7 @@ val appModule =
     singleOf(::RescheduleItemUseCase)
     singleOf(::UnfreezeItemUseCase)
     singleOf(::SplitAndConsumeItemUseCase)
+    singleOf(::TransformItemsUseCase)
 
     // Quick category sheet
     singleOf(::CategoryCreatedEvents)
