@@ -7,6 +7,12 @@ data class TransformIngredient(
   val itemIds: List<String>,
 )
 
+/** An ingredient as the user picked it: spend [count] of its [candidateItemIds] (`1 de N`), soonest to expire first. */
+data class IngredientSpend(
+  val candidateItemIds: List<String>,
+  val count: Int,
+)
+
 /** One product created by a transformation: [servings] independent items, [frozenCount] of them frozen. */
 data class TransformResult(
   val name: String,
