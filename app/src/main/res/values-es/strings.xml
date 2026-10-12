@@ -130,6 +130,16 @@
   <string name="add_saved_snackbar">%1$s guardado</string>
   <string name="add_undo">Deshacer</string>
   <string name="transform_done">%1$d ingredientes transformados en %2$d productos</string>
+  <string name="transform_title">Transforma</string>
+  <string name="transform_save">Guardar</string>
+  <string name="transform_section_ingredients">Ingredientes</string>
+  <string name="transform_add_ingredient">Añadir ingrediente</string>
+  <string name="transform_ingredient_units">%1$d de %2$d</string>
+  <string name="transform_ingredient_remove">Quitar %1$s</string>
+  <string name="transform_discard_title">¿Descartar los cambios?</string>
+  <string name="transform_discard_message">No se transformará nada.</string>
+  <string name="transform_discard_confirm">Descartar</string>
+  <string name="transform_discard_keep">Seguir editando</string>
   <string name="add_save_failed">No se ha podido guardar</string>
   <string name="add_frozen_past_date">Un producto congelado no puede tener una fecha pasada</string>
   <string name="add_picker_ok">Aceptar</string>

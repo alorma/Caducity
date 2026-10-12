@@ -220,6 +220,7 @@ val appModule =
         populateFakeDataUseCase = get(),
         fakeTestDataStrategy = get(),
         consentManager = get(),
+        getActiveItem = get(),
       )
     }
 
