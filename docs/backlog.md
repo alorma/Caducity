@@ -9,6 +9,9 @@ What is left after the «Caducity» redesign (1.0.0). The plan and the design pa
 - **`WidgetTipCard` on Home**: depends on the widget. Turn it on when the widget ships (`HomeViewModel`, `// TEMP(fase 12)`).
 - **Tablet and large screens**: today the phone layout is centered with a max width (600 dp; Pantry up to ~840 dp). A real design is needed first: `ListDetailPaneScaffold` with Pantry | Category and Home | month calendar.
 
+- **Fingerprint for actions, free for reading** (configurable): biometric prompt before actions that change data (consume, freeze, reschedule, edit, move, delete); browsing stays open. A setting turns it on or off.
+- **Haptics**: haptic feedback on key interactions (for example consume, freeze, delete, confirmations).
+
 ## Quality
 
 - **TalkBack on a real device**: roles and `liveRegion` are in place but it was never tried with TalkBack.
