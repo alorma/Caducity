@@ -27,6 +27,10 @@
   <string name="settings_privacy_analytics_title">Analytics</string>
   <string name="settings_privacy_analytics_description">Share anonymous usage data to help improve the app</string>
   <string name="settings_privacy_info">Changes to these settings take effect immediately. We respect your privacy and only collect anonymous usage data when you explicitly grant permission.</string>
+  <string name="settings_privacy_policy_title">Privacy policy</string>
+  <string name="settings_privacy_policy_subtitle">Read our privacy policy</string>
+  <string name="url_privacy_policy">https://converses.app/caducity/privacy/</string>
+  <string name="url_food_safety">https://converses.app/caducity/food-safety/</string>
 
   <!-- Debug - Consent Settings -->
   <string name="debug_consent_section_title">Consent Settings (Debug)</string>
@@ -403,7 +407,7 @@
   <string name="ob_categories_continue_none">Continue without categories</string>
   <string name="ob_alerts_title">When should we warn you?</string>
   <string name="ob_alerts_body">One alert a day with what expires soon. Nothing else.</string>
-  <string name="ob_alerts_sample_app" translatable="false">Caducity</string>
+  <string name="ob_alerts_sample_app">Caducity</string>
   <string name="ob_alerts_sample_title">3 products expire soon</string>
   <string name="ob_alerts_sample_body">Whole milk today, Mozzarella tomorrow…</string>
   <string name="ob_alerts_notify_me">Warn me</string>

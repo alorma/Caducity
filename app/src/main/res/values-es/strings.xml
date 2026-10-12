@@ -27,6 +27,10 @@
   <string name="settings_privacy_analytics_title">Análisis</string>
   <string name="settings_privacy_analytics_description">Compartir datos de uso anónimos para ayudar a mejorar la aplicación</string>
   <string name="settings_privacy_info">Los cambios en esta configuración surten efecto inmediatamente. Respetamos tu privacidad y solo recopilamos datos de uso anónimos cuando otorgas permiso explícito.</string>
+  <string name="settings_privacy_policy_title">Política de privacidad</string>
+  <string name="settings_privacy_policy_subtitle">Lee nuestra política de privacidad</string>
+  <string name="url_privacy_policy">https://converses.app/caducity/es/privacidad/</string>
+  <string name="url_food_safety">https://converses.app/caducity/es/seguridad-alimentaria/</string>
 
   <!-- Debug - Consent Settings -->
   <string name="debug_consent_section_title">Configuración de Consentimiento (Debug)</string>
