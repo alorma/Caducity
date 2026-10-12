@@ -93,6 +93,8 @@ class ItemRoomMapper(
   private fun calculateStatus(entity: ItemRoomEntity): ItemStatus =
     when {
       entity.consumedDate != null -> ItemStatus.Consumed
+      // A transformed ingredient is out of the pantry like a consumed one (no extra status needed for legacy readers).
+      entity.transformedDate != null -> ItemStatus.Consumed
       entity.discardedDate != null -> ItemStatus.Discarded
       entity.pausedDate != null -> ItemStatus.Frozen
       else ->

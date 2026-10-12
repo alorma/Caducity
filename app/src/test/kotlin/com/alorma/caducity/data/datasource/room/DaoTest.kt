@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
+import com.alorma.caducity.data.datasource.room.model.TransformationRoomEntity
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
 import kotlinx.coroutines.flow.first
@@ -115,6 +116,25 @@ class DaoTest {
           .first()
           .associate { it.categoryId to it.activeCount }
       expectThat(counts).isEqualTo(mapOf("c1" to 1, "c2" to 1))
+    }
+
+  @Test
+  fun `transformed items are excluded from every live query and restore brings them back`() =
+    runTest {
+      seed()
+      db.transformationDao().insertTransformation(TransformationRoomEntity("t1", 500))
+      db.itemDao().updateItem(db.itemDao().getItem("i1")!!.copy(transformedDate = 500, transformationId = "t1"))
+
+      val dao = db.itemDao()
+      expectThat(dao.getActiveItems().first().map { it.id }).containsExactlyInAnyOrder("i2", "i4")
+      expectThat(dao.observeActiveItemRows().first().map { it.itemId }).containsExactlyInAnyOrder("i2", "i4")
+      val counts = dao.getActiveCountByCategory().first().associate { it.categoryId to it.activeCount }
+      expectThat(counts).isEqualTo(mapOf("c1" to 1, "c2" to 1))
+      expectThat(db.productDao().getActiveItemCount("p1")).isEqualTo(1)
+
+      dao.restoreItem("i1")
+      expectThat(dao.getActiveItems().first().map { it.id }).containsExactlyInAnyOrder("i1", "i2", "i4")
+      expectThat(dao.getItem("i1")?.transformedDate).isNull()
     }
 
   @Test
