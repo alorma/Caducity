@@ -1,7 +1,11 @@
 package com.alorma.caducity.ui.screen.settings
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +41,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Backup
 import com.alorma.caducity.base.ui.icons.symbols.ChevronRight
 import com.alorma.caducity.base.ui.icons.symbols.Info
+import com.alorma.caducity.base.ui.icons.symbols.Language
 import com.alorma.caducity.base.ui.icons.symbols.Notifications
 import com.alorma.caducity.base.ui.icons.symbols.Settings
 import com.alorma.caducity.base.ui.icons.symbols.Shield
@@ -64,6 +69,7 @@ import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.theme.ThemeMode
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
+import java.util.Locale
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalTime
@@ -254,7 +260,20 @@ private fun SettingsContent(
           shapes =
             ListItemDefaults.segmentedShapes(
               index = if (dynamicColors) 2 else 1,
-              count = if (dynamicColors) 3 else 2,
+              count = if (dynamicColors) 4 else 3,
+            ),
+        )
+        val context = LocalContext.current
+        StyledSettingsCard(
+          icon = { Icon(Symbols.Outlined.Language, contentDescription = null) },
+          title = stringResource(R.string.settings_app_language),
+          subtitle = currentLanguageName(context),
+          action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
+          onClick = { context.openLanguageSettings() },
+          shapes =
+            ListItemDefaults.segmentedShapes(
+              index = if (dynamicColors) 3 else 2,
+              count = if (dynamicColors) 4 else 3,
             ),
         )
       }
@@ -373,3 +392,18 @@ private fun SideEffectHandler(
 }
 
 private val WEEK_START_OPTIONS = listOf(DayOfWeek.MONDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
+
+private val SupportedLanguages = setOf("ca", "es", "en")
+
+/** Language the app is showing; a system language the app does not have falls back to English. */
+private fun currentLanguageName(context: Context): String {
+  val configured = context.resources.configuration.locales[0]
+  val locale = if (configured.language in SupportedLanguages) configured else Locale.ENGLISH
+  return locale.getDisplayLanguage(locale).replaceFirstChar { it.titlecase(locale) }
+}
+
+private fun Context.openLanguageSettings() {
+  startActivity(
+    Intent(Settings.ACTION_APP_LOCALE_SETTINGS).setData(Uri.fromParts("package", packageName, null)),
+  )
+}
