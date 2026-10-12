@@ -238,10 +238,11 @@ class TransformViewModel(
       transformItems
         .transform(spends, results)
         .onSuccess { batch ->
+          val (message, messageArgs) = doneMessage(current.ingredients.sumOf { it.count }, results.size)
           snackbars.show(
             GlobalSnackbar(
-              message = R.string.transform_done,
-              messageArgs = listOf(current.ingredients.sumOf { it.count }, results.size),
+              message = message,
+              messageArgs = messageArgs,
               actionLabel = R.string.add_undo,
               type = AppFeedbackType.Success,
               onAction = { transformItems.undo(batch) },
@@ -258,6 +259,18 @@ class TransformViewModel(
         }
     }
   }
+
+  /** One string per singular/plural pair: a plural resource can only follow one of the two numbers. */
+  private fun doneMessage(
+    ingredients: Int,
+    products: Int,
+  ): Pair<Int, List<Any>> =
+    when {
+      ingredients == 1 && products == 1 -> R.string.transform_done_one_one to emptyList()
+      ingredients == 1 -> R.string.transform_done_one_ingredient to listOf(products)
+      products == 1 -> R.string.transform_done_one_product to listOf(ingredients)
+      else -> R.string.transform_done to listOf(ingredients, products)
+    }
 
   private fun hasChanges(): Boolean {
     val current = _state.value
