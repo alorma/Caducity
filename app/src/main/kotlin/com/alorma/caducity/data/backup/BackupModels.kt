@@ -7,11 +7,19 @@ data class BackupData(
   val version: Int,
   val exportDate: Long,
   val categories: List<BackupCategory>,
+  // v3; absent in older backups
+  val transformations: List<BackupTransformation> = emptyList(),
 ) {
   companion object {
-    const val CURRENT_VERSION = 2
+    const val CURRENT_VERSION = 3
   }
 }
+
+@Serializable
+data class BackupTransformation(
+  val id: String,
+  val createdAt: Long,
+)
 
 @Serializable
 data class BackupCategory(
@@ -49,4 +57,8 @@ data class BackupProductItem(
   // v2; absent in v1 backups
   val discardedDate: Long? = null,
   val createdAt: Long? = null,
+  // v3; absent in older backups
+  val transformedDate: Long? = null,
+  val transformationId: String? = null,
+  val originTransformationId: String? = null,
 )
