@@ -83,6 +83,11 @@ Validada amb l'app `.dev` al Pixel 8a: desa de veritat i «Desfés» restaura el
 3. Resultat retornat a `TransformViewModel` (fusiona sense duplicar).
 4. Tests: filtres per cerca/estat/categoria; selecció prèvia.
 
+- [x] Tasca 1 (estat, filtres i `IngredientPickerViewModel`, amb tests): `1be0e88`
+- [x] Tasques 2, 3 i 4 (pantalla, ruta `IngredientPicker`, retorn a Transforma via `IngredientPickerResults`, tracking `nav_ingredient_picker`): `4478fe9`
+
+Validada a l'emulador (el Pixel no era a l'adb): preselecció, recompte del botó i fusió a Transforma. El botó queda desactivat amb 0 seleccionats. Els filtres només estan validats amb tests; previews clar/fosc i captures, a la fase 6.
+
 ## Fase 5 — Entrades i flux final
 
 1. **Barra de selecció** (`StatusListScreen`/`StatusListViewModel`, i Categoria si té selecció): grup connectat **Consumit · Congela · Transforma**, 68 dp, Transforma `primary`, etiqueta amb recompte per a accessibilitat. Seleccions de diverses seccions i de diverses unitats.
@@ -117,7 +122,7 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 1 — Model i migració | Validada |
 | 2 — Cas d'ús transaccional | Validada |
 | 3 — Pantalla Transforma | Validada |
-| 4 — Selector d'ingredients | Pendent |
+| 4 — Selector d'ingredients | Validada |
 | 5 — Entrades i flux final | Pendent |
 | 6 — Qualitat | Pendent |
 
