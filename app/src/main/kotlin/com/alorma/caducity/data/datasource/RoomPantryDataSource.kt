@@ -10,6 +10,7 @@ import com.alorma.caducity.data.datasource.room.dao.ProductDao
 import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
+import com.alorma.caducity.data.datasource.room.model.TransformationRoomEntity
 import com.alorma.caducity.domain.PantryDataSource
 import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.AddedBatch
@@ -20,7 +21,11 @@ import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.ProductUsage
 import com.alorma.caducity.domain.model.RemovedItem
 import com.alorma.caducity.domain.model.RemovedProduct
+import com.alorma.caducity.domain.model.TransformIngredient
+import com.alorma.caducity.domain.model.TransformResult
+import com.alorma.caducity.domain.model.TransformedBatch
 import com.alorma.caducity.domain.model.normalizeForSearch
+import com.alorma.caducity.domain.usecase.toExpirationInstant
 import java.util.UUID
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
@@ -221,6 +226,71 @@ class RoomPantryDataSource(
     }
   }
 
+  override suspend fun transform(
+    ingredients: List<TransformIngredient>,
+    results: List<TransformResult>,
+    at: Instant,
+  ): TransformedBatch =
+    database.withTransaction {
+      val now = at.toEpochMilliseconds()
+      val today = at.date()
+      val transformationId = UUID.randomUUID().toString()
+      database.transformationDao().insertTransformation(TransformationRoomEntity(transformationId, now))
+
+      val ingredientIds = ingredients.flatMap { it.itemIds }.distinct()
+      val ingredientSnapshots = snapshots(ingredientIds)
+
+      val resultItemIds = mutableListOf<String>()
+      val createdProductIds = mutableListOf<String>()
+      results.forEach { result ->
+        val (product, created) = findOrCreateProduct(result.categoryId, result.name)
+        if (created) createdProductIds += product.id
+        // TODO(transforma-open-4): frozen results keep the days until their date, like the add-frozen path.
+        val remainingDays = (result.expiration.toEpochDays() - today.toEpochDays()).toInt()
+        repeat(result.servings) { index ->
+          val id = UUID.randomUUID().toString()
+          val frozen = index < result.frozenCount
+          itemDao.insertItem(
+            ItemRoomEntity(
+              id = id,
+              categoryId = result.categoryId,
+              identifier = "",
+              productId = product.id,
+              expirationDate = result.expiration.toExpirationInstant().toEpochMilliseconds(),
+              pausedDate = now.takeIf { frozen },
+              remainingDays = remainingDays.takeIf { frozen },
+              createdAt = now,
+              originTransformationId = transformationId,
+            ),
+          )
+          resultItemIds += id
+        }
+      }
+
+      ingredientIds.forEach { id ->
+        itemDao.getItem(id)?.let {
+          itemDao.updateItem(
+            it.copy(
+              transformedDate = now,
+              transformationId = transformationId,
+              pausedDate = null,
+              remainingDays = null,
+            ),
+          )
+        }
+      }
+      TransformedBatch(transformationId, resultItemIds, createdProductIds, ingredientSnapshots)
+    }
+
+  override suspend fun undoTransform(batch: TransformedBatch) {
+    database.withTransaction {
+      itemDao.deleteItems(batch.resultItemIds)
+      batch.createdProductIds.forEach { productDao.deleteProductIfUnused(it) }
+      restoreSnapshots(batch.ingredientSnapshots)
+      database.transformationDao().deleteTransformation(batch.transformationId)
+    }
+  }
+
   override suspend fun snapshots(itemIds: List<String>): List<ItemSnapshot> =
     itemIds.mapNotNull { id ->
       itemDao.getItem(id)?.let {
@@ -231,6 +301,8 @@ class RoomPantryDataSource(
           remainingDays = it.remainingDays,
           consumedMillis = it.consumedDate,
           discardedMillis = it.discardedDate,
+          transformedMillis = it.transformedDate,
+          transformationId = it.transformationId,
         )
       }
     }
@@ -246,6 +318,8 @@ class RoomPantryDataSource(
               remainingDays = snap.remainingDays,
               consumedDate = snap.consumedMillis,
               discardedDate = snap.discardedMillis,
+              transformedDate = snap.transformedMillis,
+              transformationId = snap.transformationId,
             ),
           )
         }

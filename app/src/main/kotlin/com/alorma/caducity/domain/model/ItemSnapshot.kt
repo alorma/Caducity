@@ -8,4 +8,6 @@ data class ItemSnapshot(
   val remainingDays: Int?,
   val consumedMillis: Long?,
   val discardedMillis: Long?,
+  val transformedMillis: Long?,
+  val transformationId: String?,
 )
