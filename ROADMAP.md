@@ -1,19 +1,11 @@
 # Caducity Roadmap
 
-The current work is the **«Caducity» redesign** (Material 3 Expressive). Its phases, decisions and status live in [`docs/redisseny/PLA-MIGRACIO.md`](./docs/redisseny/PLA-MIGRACIO.md); that file is the source of truth.
-
-The app is not published between phases. It is released once the redesign is finished.
-
-## After the redesign
-
-The improvement points of section 15 of the plan are done.
-
-Out of scope for now: shopping list, cloud sync, barcode or camera input, tablet layouts (see section 12 of the plan).
+What is left is in [`docs/backlog.md`](./docs/backlog.md). The «Caducity» redesign (Material 3 Expressive) shipped in 1.0.0; its plan is in the git history (`docs/redisseny`).
 
 ## Design principles
 
 - **Minimalist UI**: no cluttered screens, bottom sheets and dialogs for secondary actions.
-- **Material 3 Expressive**: follow the design system in `docs/redisseny`.
+- **Material 3 Expressive**: follow the existing theme and components in `ui/theme` and `ui/components`.
 - **Connected groups**: lists use the `ShapePosition` pattern.
 - **Side effects**: dialogs, snackbars and bottom sheets always go through side effects, never UI state.
 - **Clean Architecture**: keep domain, data and UI separated.

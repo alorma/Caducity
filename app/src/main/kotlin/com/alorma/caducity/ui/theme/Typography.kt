@@ -74,7 +74,7 @@ val NumberTextStyle = display(30, 30, FontWeight.ExtraBold)
 /** `overline`: l'estil porta l'espaiat; el text s'ha de passar en majúscules. */
 val OverlineTextStyle = text(12, 16, FontWeight.Bold).copy(letterSpacing = 1.2.sp)
 
-// Escala: docs/redisseny/04-especificacio/03-design-system-compose.md
+// Escala tipogràfica del redisseny (historial de git: docs/redisseny)
 fun caducityTypography(): Typography =
   Typography(
     displayLarge = display(44, 44, FontWeight.ExtraBold),
