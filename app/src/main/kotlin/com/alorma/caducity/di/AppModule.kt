@@ -47,6 +47,8 @@ import com.alorma.caducity.ui.screen.settings.margins.CategoryMarginsViewModel
 import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsViewModel
 import com.alorma.caducity.ui.screen.status.StatusListViewModel
 import com.alorma.caducity.ui.screen.transform.TransformViewModel
+import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerResults
+import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
 import org.koin.android.ext.koin.androidContext
@@ -156,6 +158,18 @@ val appModule =
         observeCategories = get(),
         snackbars = get(),
         eventTracker = get(),
+        pickerResults = get(),
+      )
+    }
+
+    // Ingredient picker
+    singleOf(::IngredientPickerResults)
+    viewModel { params ->
+      IngredientPickerViewModel(
+        args = params.get(),
+        observeItems = get(),
+        observeCategories = get(),
+        results = get(),
       )
     }
 

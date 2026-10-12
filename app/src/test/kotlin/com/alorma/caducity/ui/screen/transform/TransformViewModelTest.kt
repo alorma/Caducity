@@ -24,6 +24,7 @@ import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.TransformItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerResults
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
@@ -49,6 +50,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import strikt.api.expectThat
+import strikt.assertions.containsExactly
+import strikt.assertions.containsExactlyInAnyOrder
 import strikt.assertions.hasSize
 import strikt.assertions.isA
 import strikt.assertions.isEmpty
@@ -79,6 +82,7 @@ class TransformViewModelTest {
   private lateinit var addBatch: AddItemBatchUseCase
   private val created = mutableListOf<TransformViewModel>()
   private val snackbars = GlobalSnackbarEvents()
+  private val pickerResults = IngredientPickerResults()
 
   @Before
   fun setUp() {
@@ -145,6 +149,7 @@ class TransformViewModelTest {
       observeCategories = ObserveCategoriesUseCase(pantry),
       snackbars = snackbars,
       eventTracker = EventTracker(emptyList()),
+      pickerResults = pickerResults,
     ).also { created += it }
 
   private suspend fun TransformViewModel.await(predicate: (TransformState) -> Boolean): TransformState =
@@ -212,6 +217,43 @@ class TransformViewModelTest {
           .key,
       )
       expectThat(vm.state.value.defaultExpiration).isEqualTo(inDays(6))
+    }
+
+  @Test
+  fun `the picker selection adds new ingredients, drops the left out and keeps counts`() =
+    runTest {
+      val chicken = add("Chicken", days = 6, quantity = 2)
+      val carrots = add("Carrots", days = 2)
+      val onions = add("Onions", days = 9)
+      val vm = ready(chicken.itemIds + carrots.itemIds)
+      val chickenKey =
+        vm.state.value.ingredients
+          .first { it.name == "Chicken" }
+          .key
+      vm.onIngredientCountChange(chickenKey, 2)
+
+      pickerResults.deliver(listOf(chicken.itemIds.first(), onions.itemIds.single()))
+      val state = vm.await { s -> s.ingredients.any { it.name == "Onions" } }
+
+      expectThat(state.ingredients.map { it.name }).containsExactly("Chicken", "Onions")
+      expectThat(state.ingredients.first { it.name == "Chicken" }.count).isEqualTo(2)
+      expectThat(state.ingredients.first { it.name == "Onions" }.count).isEqualTo(1)
+    }
+
+  @Test
+  fun `opening the picker hands over the units already used`() =
+    runTest {
+      val batch = add("Chicken", days = 6, quantity = 2)
+      val vm = ready(batch.itemIds.take(1))
+
+      vm.navigationSideEffects.test {
+        vm.navigate(TransformNavigation.IngredientPicker)
+        val effect = awaitItem()
+        expectThat(effect).isA<TransformNavigationSideEffect.OpenIngredientPicker>()
+        expectThat((effect as TransformNavigationSideEffect.OpenIngredientPicker).selectedItemIds)
+          .containsExactlyInAnyOrder(batch.itemIds)
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
   @Test

@@ -167,6 +167,13 @@ class TransformCloseAction :
     parameters = emptyMap(),
   )
 
+class NavigateToIngredientPickerAction :
+  NavigationAction(
+    actionName = "ingredient_picker",
+    origin = "transform",
+    parameters = mapOf("source" to "add_ingredient"),
+  )
+
 class AddQuickCategoryAction :
   NavigationAction(
     actionName = "quick_category",

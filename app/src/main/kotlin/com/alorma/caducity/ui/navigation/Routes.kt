@@ -70,6 +70,12 @@ data class Transform(
   val itemIds: List<String> = emptyList(),
 ) : AppRoute
 
+/** Full screen: picks the products of the pantry that Transform uses as ingredients. */
+@Serializable
+data class IngredientPicker(
+  val selectedItemIds: List<String> = emptyList(),
+) : AppRoute
+
 @Serializable
 data class CategoryEditor(
   val id: String? = null,

@@ -51,6 +51,7 @@ import org.koin.core.parameter.parametersOf
 fun TransformScreen(
   args: TransformArgs,
   onClose: () -> Unit,
+  onOpenIngredientPicker: (selectedItemIds: List<String>) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: TransformViewModel = koinViewModel { parametersOf(args) },
 ) {
@@ -78,6 +79,7 @@ fun TransformScreen(
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
         TransformNavigationSideEffect.Close -> onClose()
+        is TransformNavigationSideEffect.OpenIngredientPicker -> onOpenIngredientPicker(effect.selectedItemIds)
       }
     }
   }
@@ -117,8 +119,7 @@ fun TransformScreen(
           categories = state.categories,
           onCountChange = viewModel::onIngredientCountChange,
           onRemove = viewModel::onRemoveIngredient,
-          // TODO(transforma-phase-4): opens the ingredient picker.
-          onAdd = {},
+          onAdd = { viewModel.navigate(TransformNavigation.IngredientPicker) },
         )
         ResultsSection(state = state, actions = actions)
         Text(

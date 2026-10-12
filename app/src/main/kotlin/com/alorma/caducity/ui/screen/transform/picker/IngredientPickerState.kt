@@ -61,7 +61,13 @@ fun List<ProductGroup>.keysOf(itemIds: Collection<String>): Set<String> =
     group.units.any { it.itemId in itemIds }
   }.map { it.key }.toSet()
 
-/** The closest unit of every selected product: each one enters Transform as an ingredient of one unit. */
-fun List<ProductGroup>.nearestItemIds(keys: Set<String>): List<String> =
+/**
+ * One unit per selected product, which enters Transform as an ingredient: the unit that was already an
+ * ingredient ([current]) or, for a new one, the closest to expire.
+ */
+fun List<ProductGroup>.chosenItemIds(
+  keys: Set<String>,
+  current: Collection<String>,
+): List<String> =
   filter { it.key in keys }
-    .map { it.nearest.itemId }
+    .map { group -> group.units.firstOrNull { it.itemId in current }?.itemId ?: group.nearest.itemId }
