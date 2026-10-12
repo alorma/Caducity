@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Icona de Google Play</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 1,'wght' 500,'opsz' 48;display:inline-block}
+</style>
+</helmet>
+<div role="img" aria-label="Icona de Caducity: una fulla dins d'una galeta oliva sobre fons mostassa" style="width: 512px; height: 512px; position: relative; overflow: hidden; background: #E8B95A; display: flex; align-items: center; justify-content: center">
+  <svg viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; width: 341px; height: 341px"><path d="{{cookie}}" fill="#4D5A1E"></path></svg>
+  <span class="ms" aria-hidden="true" style="position: relative; font-size: 183px; color: #FBF6EC">eco</span>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":512,"height":512}}'>
+class Component extends DCLogic {
+  blob(n, a, rot) {
+    rot = rot || 0;
+    var p = [];
+    for (var i = 0; i < 120; i++) {
+      var t = i / 120 * Math.PI * 2;
+      var r = 50 - a + a * Math.cos(n * (t + rot));
+      p.push((50 + r * Math.cos(t)).toFixed(1) + " " + (50 + r * Math.sin(t)).toFixed(1));
+    }
+    return "M" + p.join("L") + "Z";
+  }
+  renderVals() {
+    return { cookie: this.blob(9, 3, 0) };
+  }
+}
+</script>
+</body>
+</html>
