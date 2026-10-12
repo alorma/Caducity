@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
@@ -22,6 +23,7 @@ import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
@@ -52,6 +54,8 @@ fun PrivacySettingsContent(
   onClose: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val uriHandler = LocalUriHandler.current
+  val privacyPolicyUrl = stringResource(R.string.url_privacy_policy)
   AppScaffold(
     modifier = Modifier.then(modifier),
     topBar = {
@@ -78,8 +82,14 @@ fun PrivacySettingsContent(
               title = stringResource(R.string.settings_privacy_analytics_title),
               subtitle = stringResource(R.string.settings_privacy_analytics_description),
               state = analyticsEnabled,
-              shapes = ListItemDefaults.shapes(),
+              shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
               onCheckedChange = onAnalyticsToggle,
+            )
+            StyledSettingsCard(
+              title = stringResource(R.string.settings_privacy_policy_title),
+              subtitle = stringResource(R.string.settings_privacy_policy_subtitle),
+              shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
+              onClick = { uriHandler.openUri(privacyPolicyUrl) },
             )
           }
         }

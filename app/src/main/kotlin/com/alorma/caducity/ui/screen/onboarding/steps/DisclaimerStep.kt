@@ -36,8 +36,6 @@ import com.alorma.caducity.ui.screen.onboarding.components.OnboardingStepLayout
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 
-private const val TERMS_URL = "https://github.com/alorma/caducity/blob/main/terms_and_conditions.md"
-
 @Composable
 fun DisclaimerStep(
   stepNumber: Int?,
@@ -49,6 +47,7 @@ fun DisclaimerStep(
   accepting: Boolean = false,
 ) {
   val uriHandler = LocalUriHandler.current
+  val foodSafetyUrl = stringResource(R.string.url_food_safety)
   val soon = CaducityTheme.colors.soon
   OnboardingStepLayout(
     modifier = modifier,
@@ -86,7 +85,7 @@ fun DisclaimerStep(
             style = CaducityTheme.typography.labelLarge.copy(textDecoration = TextDecoration.Underline),
             modifier =
               Modifier
-                .clickable(role = Role.Button) { uriHandler.openUri(TERMS_URL) }
+                .clickable(role = Role.Button) { uriHandler.openUri(foodSafetyUrl) }
                 .padding(vertical = 8.dp),
           )
         }
