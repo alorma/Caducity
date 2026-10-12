@@ -202,7 +202,6 @@ val appModule =
         notificationDebugHelper = get(),
         populateFakeDataUseCase = get(),
         fakeTestDataStrategy = get(),
-        fakePlayStoreDataStrategy = get(),
         consentManager = get(),
       )
     }

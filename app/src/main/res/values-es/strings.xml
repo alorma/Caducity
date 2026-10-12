@@ -10,7 +10,6 @@
   <string name="settings_debug_title">Depuración</string>
   <string name="settings_debug_description">Herramientas de desarrollo y depuración</string>
   <string name="debug_fake_data_success">Datos de prueba creados exitosamente</string>
-  <string name="debug_fake_playstore_data_success">PlayStore data generada correctamente</string>
   <string name="debug_error">Error</string>
 
   <string name="settings_about_title">Acerca de Caducity</string>

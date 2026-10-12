@@ -2,7 +2,6 @@ package com.alorma.caducity.ui.screen.settings.debug
 
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.PopulateFakeDataUseCase
-import com.alorma.caducity.domain.usecase.fakedata.FakePlayStoreDataStrategy
 import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
 import com.alorma.caducity.feature.consent.ConsentManager
 import com.alorma.caducity.feature.consent.ConsentStatus
@@ -21,14 +20,12 @@ class DebugSettingsViewModel(
   private val notificationDebugHelper: NotificationDebugHelper,
   private val populateFakeDataUseCase: PopulateFakeDataUseCase,
   private val fakeTestDataStrategy: FakeTestDataStrategy,
-  private val fakePlayStoreDataStrategy: FakePlayStoreDataStrategy,
   private val consentManager: ConsentManager,
 ) : BaseViewModel<Unit, DebugSettingsSideEffect, DebugSettingsSideEffect>() {
   private val _uiState =
     MutableStateFlow(
       DebugSettingsUiState(
         onPopulateFakeData = ::onPopulateFakeData,
-        onPopulateFakePlayStoreData = ::onPopulateFakePlayStoreData,
         onTriggerNotificationCheck = ::onTriggerNotificationCheck,
         onToggleAdStorage = ::onToggleAdStorage,
         onToggleAdUserData = ::onToggleAdUserData,
@@ -56,24 +53,6 @@ class DebugSettingsViewModel(
         onSuccess = {
           emitSideEffect(DebugSettingsSideEffect.FakeDataPopulated)
           _uiState.value = _uiState.value.copy(isGenerating = false)
-        },
-        onFailure = {
-          emitSideEffect(DebugSettingsSideEffect.Error)
-        },
-      )
-    }
-  }
-
-  fun onPopulateFakePlayStoreData() {
-    viewModelScope.launch {
-      _uiState.value = _uiState.value.copy(isGeneratingPlayStore = true)
-
-      val result = populateFakeDataUseCase.execute(fakePlayStoreDataStrategy)
-
-      result.fold(
-        onSuccess = {
-          emitSideEffect(DebugSettingsSideEffect.FakePlayStoreDataPopulated)
-          _uiState.value = _uiState.value.copy(isGeneratingPlayStore = false)
         },
         onFailure = {
           emitSideEffect(DebugSettingsSideEffect.Error)
@@ -132,12 +111,10 @@ class DebugSettingsViewModel(
  */
 data class DebugSettingsUiState(
   val isGenerating: Boolean = false,
-  val isGeneratingPlayStore: Boolean = false,
   val adStorageEnabled: Boolean = false,
   val adUserDataEnabled: Boolean = false,
   val adPersonalizationEnabled: Boolean = false,
   val onPopulateFakeData: () -> Unit,
-  val onPopulateFakePlayStoreData: () -> Unit,
   val onTriggerNotificationCheck: () -> Unit,
   val onToggleAdStorage: (Boolean) -> Unit,
   val onToggleAdUserData: (Boolean) -> Unit,
@@ -149,8 +126,6 @@ data class DebugSettingsUiState(
  */
 sealed interface DebugSettingsSideEffect {
   data object FakeDataPopulated : DebugSettingsSideEffect
-
-  data object FakePlayStoreDataPopulated : DebugSettingsSideEffect
 
   data object Error : DebugSettingsSideEffect
 }

@@ -24,7 +24,6 @@ import com.alorma.caducity.domain.usecase.SeedCategoriesUseCase
 import com.alorma.caducity.domain.usecase.UndoAddItemsUseCase
 import com.alorma.caducity.domain.usecase.UpdateCategoryUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
-import com.alorma.caducity.domain.usecase.fakedata.FakePlayStoreDataStrategy
 import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
@@ -64,5 +63,4 @@ val domainModule =
 
     // Fake data strategies
     factoryOf(::FakeTestDataStrategy)
-    factoryOf(::FakePlayStoreDataStrategy)
   }

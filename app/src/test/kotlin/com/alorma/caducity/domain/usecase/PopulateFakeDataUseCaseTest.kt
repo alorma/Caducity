@@ -14,7 +14,6 @@ import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
-import com.alorma.caducity.domain.usecase.fakedata.FakePlayStoreDataStrategy
 import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
@@ -80,19 +79,15 @@ class PopulateFakeDataUseCaseTest {
   fun tearDown() = db.close()
 
   @Test
-  fun `play store data creates ordered categories with shape and icon and only product items`() =
+  fun `test data creates ordered categories with shape and icon and only product items`() =
     runTest {
-      expectThat(populate.execute(FakePlayStoreDataStrategy())).isSuccess()
+      expectThat(populate.execute(FakeTestDataStrategy(thresholds))).isSuccess()
 
       val categories = db.categoryDao().getCategoriesOrderedSync()
-      expectThat(
-        categories.map { it.name },
-      ).containsExactly("Làctics", "Fruita i verdura", "Carn i peix", "Secs i conserves", "Congelats")
-      expectThat(categories.map { it.sortOrder }).containsExactly(0, 1, 2, 3, 4)
-      expectThat(
-        categories.map { it.icon.id },
-      ).containsExactly("water_full", "nutrition", "set_meal", "grocery", "icecream")
-      expectThat(categories.map { it.shape.name }).containsExactly("COOKIE", "CLOVER8", "CLOVER", "SUNNY", "BURST")
+      expectThat(categories.map { it.name }).containsExactly("Làctics", "Fruita i verdura")
+      expectThat(categories.map { it.sortOrder }).containsExactly(0, 1)
+      expectThat(categories.map { it.icon.id }).containsExactly("water_full", "nutrition")
+      expectThat(categories.map { it.shape.name }).containsExactly("COOKIE", "CLOVER8")
 
       val items = db.itemDao().getAllItemsSync()
       expectThat(items.size).isGreaterThan(30)
@@ -105,8 +100,10 @@ class PopulateFakeDataUseCaseTest {
   @Test
   fun `running again replaces the previous data and test data also has no standalone items`() =
     runTest {
-      populate.execute(FakePlayStoreDataStrategy())
+      populate.execute(FakeTestDataStrategy(thresholds))
+      val itemsAfterFirstRun = db.itemDao().getAllItemsSync().size
       expectThat(populate.execute(FakeTestDataStrategy(thresholds))).isSuccess()
+      expectThat(db.itemDao().getAllItemsSync().size).isEqualTo(itemsAfterFirstRun)
 
       val categories = db.categoryDao().getCategoriesOrderedSync()
       expectThat(categories.map { it.sortOrder }).isEqualTo(categories.indices.toList())
