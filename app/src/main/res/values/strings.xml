@@ -127,6 +127,9 @@
   <string name="add_saved_snackbar">%1$s saved</string>
   <string name="add_undo">Undo</string>
   <string name="transform_done">%1$d ingredients turned into %2$d products</string>
+  <string name="transform_done_one_ingredient">1 ingredient turned into %1$d products</string>
+  <string name="transform_done_one_product">%1$d ingredients turned into 1 product</string>
+  <string name="transform_done_one_one">1 ingredient turned into 1 product</string>
   <string name="transform_section_result">Result</string>
   <string name="transform_result_name">Name</string>
   <string name="transform_result_name_hint">What are you cooking?</string>

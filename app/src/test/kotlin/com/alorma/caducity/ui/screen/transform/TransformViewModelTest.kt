@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
+import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.config.time.TodayProvider
@@ -77,6 +78,7 @@ class TransformViewModelTest {
   private lateinit var pantry: RoomPantryDataSource
   private lateinit var addBatch: AddItemBatchUseCase
   private val created = mutableListOf<TransformViewModel>()
+  private val snackbars = GlobalSnackbarEvents()
 
   @Before
   fun setUp() {
@@ -141,7 +143,7 @@ class TransformViewModelTest {
       getNameSuggestions = GetNameSuggestionsUseCase(pantry),
       transformItems = TransformItemsUseCase(pantry, clock),
       observeCategories = ObserveCategoriesUseCase(pantry),
-      snackbars = GlobalSnackbarEvents(),
+      snackbars = snackbars,
       eventTracker = EventTracker(emptyList()),
     ).also { created += it }
 
@@ -327,6 +329,29 @@ class TransformViewModelTest {
       expectThat(active.filter { it.name == "Broth" }).hasSize(4)
       expectThat(active.filter { it.name == "Broth" && it.frozen }).hasSize(1)
       expectThat(active.filter { it.name == "Chicken" }).hasSize(1)
+    }
+
+  @Test
+  fun `the saved message follows the singular and plural of both numbers`() =
+    runTest {
+      val chicken = add("Chicken", days = 3, quantity = 3)
+      val carrots = add("Carrots", days = 4)
+      val vm = ready(chicken.itemIds.take(1))
+      vm.onNameChange(0, "Broth")
+
+      snackbars.events.test {
+        vm.onSave()
+        expectThat(awaitItem().message).isEqualTo(R.string.transform_done_one_one)
+      }
+
+      val many = ready((chicken.itemIds.drop(1) + carrots.itemIds))
+      many.onNameChange(0, "Stew")
+      snackbars.events.test {
+        many.onSave()
+        val message = awaitItem()
+        expectThat(message.message).isEqualTo(R.string.transform_done_one_product)
+        expectThat(message.messageArgs).isEqualTo(listOf<Any>(3))
+      }
     }
 
   @Test

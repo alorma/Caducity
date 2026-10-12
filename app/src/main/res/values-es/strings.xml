@@ -130,6 +130,9 @@
   <string name="add_saved_snackbar">%1$s guardado</string>
   <string name="add_undo">Deshacer</string>
   <string name="transform_done">%1$d ingredientes transformados en %2$d productos</string>
+  <string name="transform_done_one_ingredient">1 ingrediente transformado en %1$d productos</string>
+  <string name="transform_done_one_product">%1$d ingredientes transformados en 1 producto</string>
+  <string name="transform_done_one_one">1 ingrediente transformado en 1 producto</string>
   <string name="transform_section_result">Resultado</string>
   <string name="transform_result_name">Nombre</string>
   <string name="transform_result_name_hint">¿Qué estás cocinando?</string>

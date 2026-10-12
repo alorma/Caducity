@@ -130,6 +130,9 @@
   <string name="add_saved_snackbar">%1$s desat</string>
   <string name="add_undo">Desfés</string>
   <string name="transform_done">%1$d ingredients transformats en %2$d productes</string>
+  <string name="transform_done_one_ingredient">1 ingredient transformat en %1$d productes</string>
+  <string name="transform_done_one_product">%1$d ingredients transformats en 1 producte</string>
+  <string name="transform_done_one_one">1 ingredient transformat en 1 producte</string>
   <string name="transform_section_result">Resultat</string>
   <string name="transform_result_name">Nom</string>
   <string name="transform_result_name_hint">Què estàs cuinant?</string>
