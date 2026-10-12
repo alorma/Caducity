@@ -46,6 +46,7 @@ import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
 import com.alorma.caducity.ui.screen.settings.margins.CategoryMarginsViewModel
 import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsViewModel
 import com.alorma.caducity.ui.screen.status.StatusListViewModel
+import com.alorma.caducity.ui.screen.transform.TransformViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
 import com.russhwolf.settings.Settings
 import org.koin.android.ext.koin.androidContext
@@ -143,6 +144,20 @@ val appModule =
     // Quick category sheet
     singleOf(::CategoryCreatedEvents)
     viewModelOf(::QuickCategoryViewModel)
+
+    // Transform screen
+    viewModel { params ->
+      TransformViewModel(
+        args = params.get(),
+        todayProvider = get(),
+        getActiveItem = get(),
+        getNameSuggestions = get(),
+        transformItems = get(),
+        observeCategories = get(),
+        snackbars = get(),
+        eventTracker = get(),
+      )
+    }
 
     // Add screen
     viewModel { params ->
