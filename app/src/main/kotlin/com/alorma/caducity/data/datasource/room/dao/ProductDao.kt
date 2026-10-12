@@ -41,6 +41,9 @@ interface ProductDao {
   @Delete
   suspend fun deleteProduct(product: ProductRoomEntity)
 
-  @Query("SELECT COUNT(*) FROM items WHERE productId = :productId AND consumedDate IS NULL AND discardedDate IS NULL")
+  @Query(
+    "SELECT COUNT(*) FROM items WHERE productId = :productId " +
+      "AND consumedDate IS NULL AND discardedDate IS NULL AND transformedDate IS NULL",
+  )
   suspend fun getActiveItemCount(productId: String): Int
 }
