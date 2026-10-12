@@ -1,0 +1,6 @@
+Versión 1.0.0:
+• Un aspecto totalmente nuevo, con tema claro y oscuro
+• Calendario nuevo: mira qué caduca cada día del mes
+• Añade productos más rápido, escribiendo la fecha con el teclado numérico
+• Elige con cuántos días de antelación empieza «pronto» en cada categoría
+• Un único aviso diario, a la hora que elijas

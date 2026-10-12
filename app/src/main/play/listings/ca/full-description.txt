@@ -1,16 +1,29 @@
-Deixa de llençar menjar caducat i de malbaratar diners! Caducity t'ajuda a controlar els teus queviures i les dates de caducitat perquè els puguis consumir abans que es facin malbé.
+Deixa de llençar menjar i diners. Caducity et mostra què està a punt de caducar perquè ho puguis consumir a temps.
 
-NO ET PASSIS MAI DE LA DATA DE CADUCITAT
-Rep notificacions a temps quan els teus aliments estiguin a punt de caducar. Caducity fa comprovacions diàries i t'avisa abans que sigui massa tard, perquè tinguis temps d'aprofitar els productes o de planificar els menjars.
+QUÈ CADUCA, D'UN COP D'ULL
+L'Inici agrupa els productes en caducats, avui, demà i la resta de la setmana, ordenats per urgència. Cada producte té un estat: fresc, caduca aviat, caducat o congelat.
 
-PANELL INTEL·LIGENT
-Mira d'un cop d'ull quins productes són frescos, quins caduquen aviat i quins ja han caducat. Les etiquetes d'estat amb colors et permeten prioritzar què cal consumir primer. Controla el teu inventari i redueix el malbaratament alimentari.
+AFEGEIX UN PRODUCTE EN POCS TOCS
+Escriu el nom, tria la categoria i escriu la data amb el teclat numèric, tal com surt a l'envàs. Si n'afegeixes diverses unitats, es crea un ítem independent per a cada una, i pots afegir molts productes seguits.
 
-PER QUÈ CADUCITY?
-• Estalvia diners reduint el malbaratament alimentari
-• Planifica els menjars segons el que caduca primer
-• Fes el seguiment de diverses unitats del mateix producte
-• Interfície senzilla i neta, fàcil d'utilitzar
-• Actualitzacions i millores periòdiques
+UN TOC PER ACTUAR
+Obre qualsevol ítem per consumir-lo, congelar-lo, canviar-ne la data, editar-lo, moure'l o esborrar-lo. T'has equivocat? Desfés-ho.
 
-Uneix-te a la lluita contra el malbaratament alimentari. Descarrega Caducity avui i pren el control dels teus queviures!
+EL TEU REBOST, PER CATEGORIES
+Cada categoria té la seva forma, la seva icona i una barra amb l'estat dels productes. Filtra per estat i per dia amb la tira de 7 dies.
+
+CALENDARI
+Mira què caduca cada dia del mes, amb un punt de color per a cada estat.
+
+«AVIAT» A LA TEVA MANERA
+La llet i les conserves no necessiten el mateix avís. Tria amb quants dies d'antelació es considera «aviat» cada categoria.
+
+UN AVÍS AL DIA
+Una sola notificació diària, a l'hora que triïs, amb el que caduca avui i demà.
+
+PRIVAT PER DISSENY
+Els teus productes es queden en aquest dispositiu. Sense compte ni registre. Les estadístiques d'ús anònimes estan desactivades per defecte i les pots canviar a Ajustos. Fes còpia de seguretat i restaura les dades des d'Ajustos.
+
+Disponible en català, castellà i anglès, amb tema clar i fosc.
+
+Caducity t'ajuda a planificar, però no substitueix el teu criteri: comprova sempre el producte i l'envàs abans de menjar-lo.
