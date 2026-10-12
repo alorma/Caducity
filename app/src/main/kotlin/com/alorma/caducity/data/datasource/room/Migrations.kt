@@ -20,7 +20,10 @@ val MIGRATION_3_4 =
       db.execSQL("ALTER TABLE items ADD COLUMN transformedDate INTEGER")
       db.execSQL("ALTER TABLE items ADD COLUMN transformationId TEXT")
       db.execSQL("ALTER TABLE items ADD COLUMN originTransformationId TEXT")
-      db.execSQL("CREATE TABLE IF NOT EXISTS `transformations` (`id` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))")
+      db.execSQL(
+        "CREATE TABLE IF NOT EXISTS `transformations` " +
+          "(`id` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+      )
     }
   }
 

@@ -43,7 +43,7 @@ class Migration3To4Test {
   @Test
   fun `migrates populated database preserving data`() {
     helper.createDatabase(TEST_DB, 3).apply {
-      execSQL("INSERT INTO categories (id, name, description, shape, icon, sortOrder) VALUES ('c1', 'Dairy', '', 'COOKIE', 'eco', 0)")
+      execSQL(CATEGORY_V3)
       execSQL("INSERT INTO products VALUES ('p1', 'c1', 'Milk', 500)")
       execSQL(
         "INSERT INTO items (id, categoryId, identifier, productId, expirationDate, pausedDate, remainingDays, " +
@@ -94,7 +94,7 @@ class Migration3To4Test {
   @Test
   fun `new columns and table are writable`() {
     helper.createDatabase(TEST_DB, 3).apply {
-      execSQL("INSERT INTO categories (id, name, description, shape, icon, sortOrder) VALUES ('c1', 'Dairy', '', 'COOKIE', 'eco', 0)")
+      execSQL(CATEGORY_V3)
       execSQL("INSERT INTO items (id, categoryId, identifier, expirationDate) VALUES ('i1', 'c1', '', 1000)")
       close()
     }
@@ -118,7 +118,10 @@ class Migration3To4Test {
   fun `chain 2 to 4 works`() {
     helper.createDatabase(TEST_DB, 2).apply {
       execSQL("INSERT INTO categories VALUES ('c1', 'Dairy', '')")
-      execSQL("INSERT INTO items (id, categoryId, identifier, productId, expirationDate) VALUES ('i1', 'c1', 'Yogurt', NULL, 100)")
+      execSQL(
+        "INSERT INTO items (id, categoryId, identifier, productId, expirationDate) " +
+          "VALUES ('i1', 'c1', 'Yogurt', NULL, 100)",
+      )
       close()
     }
     val db = helper.runMigrationsAndValidate(TEST_DB, 4, true, MIGRATION_2_3, MIGRATION_3_4)
@@ -127,5 +130,8 @@ class Migration3To4Test {
 
   private companion object {
     const val TEST_DB = "migration-3-4-test"
+    const val CATEGORY_V3 =
+      "INSERT INTO categories (id, name, description, shape, icon, sortOrder) " +
+        "VALUES ('c1', 'Dairy', '', 'COOKIE', 'eco', 0)"
   }
 }
