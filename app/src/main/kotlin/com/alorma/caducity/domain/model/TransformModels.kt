@@ -16,5 +16,13 @@ data class TransformResult(
   val frozenCount: Int,
 )
 
+/** What a transformation did, enough to undo it: new items/products and the previous state of the ingredients. */
+data class TransformedBatch(
+  val transformationId: String,
+  val resultItemIds: List<String>,
+  val createdProductIds: List<String>,
+  val ingredientSnapshots: List<ItemSnapshot>,
+)
+
 /** Default date of a result: the one of the ingredient that expires first; it never gets longer on its own. */
 fun defaultResultExpiration(ingredientExpirations: List<LocalDate>): LocalDate? = ingredientExpirations.minOrNull()

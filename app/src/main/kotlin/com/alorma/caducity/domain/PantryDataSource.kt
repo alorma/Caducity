@@ -6,6 +6,9 @@ import com.alorma.caducity.domain.model.BatchSnapshot
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ItemSnapshot
 import com.alorma.caducity.domain.model.ProductUsage
+import com.alorma.caducity.domain.model.TransformIngredient
+import com.alorma.caducity.domain.model.TransformResult
+import com.alorma.caducity.domain.model.TransformedBatch
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 
@@ -81,6 +84,20 @@ interface PantryDataSource {
     itemIds: List<String>,
     newExpiration: Instant,
   )
+
+  /**
+   * In one transaction: creates a transformation, creates each of [results] (product found or created, one item per
+   * serving, [TransformResult.frozenCount] of them frozen) and closes the [ingredients] as transformed at [at].
+   * Returns what [undoTransform] needs.
+   */
+  suspend fun transform(
+    ingredients: List<TransformIngredient>,
+    results: List<TransformResult>,
+    at: Instant,
+  ): TransformedBatch
+
+  /** Deletes the results and the products created, restores the ingredients as they were and drops the transformation. */
+  suspend fun undoTransform(batch: TransformedBatch)
 
   /** Current state of the units, to hand to [restoreSnapshots] as the undo of a bulk action. */
   suspend fun snapshots(itemIds: List<String>): List<ItemSnapshot>
