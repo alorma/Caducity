@@ -1,6 +1,6 @@
 name: Release
 
-# Builds the signed release APK and AAB from main, uploads the AAB and its release notes to Google Play, publishes a GitHub release
+# Builds the signed release APK and AAB from main, uploads the AAB, its release notes and the store listing to Google Play, publishes a GitHub release
 # tagged with the version in version.properties and bumps the patch version (as a snapshot) for the next cycle.
 # Manual trigger only
 on:
@@ -119,3 +119,13 @@ jobs:
           git add version.properties
           git commit -m "Bump version to $NEXT-SNAPSHOT"
           git push origin main
+
+      # Last on purpose: the listing is shared by all tracks and it is not part of the release, so if it fails the
+      # AAB, the tag and the version bump are already done. Re-run publish-listing.yml to retry it alone
+      - name: Publish Play listing
+        run: ./gradlew :app:publishReleaseListing
+        env:
+          ANDROID_PUBLISHER_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}

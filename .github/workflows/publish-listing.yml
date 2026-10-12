@@ -1,7 +1,7 @@
 name: Publish Play listing
 
 # Uploads the Google Play store listing (title, descriptions, graphics and contact details per language)
-# from app/src/main/play. Release notes travel with the AAB in release.yml. Manual trigger only
+# from app/src/main/play. Release notes travel with the AAB in release.yml, which also publishes the listing; use this one to update only the listing. Manual trigger only
 on:
   workflow_dispatch:
 
