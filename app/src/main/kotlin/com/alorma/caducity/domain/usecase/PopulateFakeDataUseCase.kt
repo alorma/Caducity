@@ -15,12 +15,7 @@ import kotlin.time.Instant
 import kotlinx.collections.immutable.persistentListOf
 
 /**
- * Use case to populate the database with fake data using a strategy pattern
- *
- * Different strategies can create different data sets for different purposes:
- * - Test data with comprehensive status coverage
- * - PlayStore data with consistent products for screenshots
- * - Custom data sets as needed
+ * Use case to populate the database with fake data using a strategy pattern (debug builds only).
  */
 class PopulateFakeDataUseCase(
   private val backupDataSource: BackupDataSource,
