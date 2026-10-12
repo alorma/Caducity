@@ -137,6 +137,23 @@
   <string name="transform_date_hint">Data de l\'ingredient que caduca primer (%s).</string>
   <string name="transform_freeze">Congela\'n</string>
   <string name="transform_freeze_summary">%1$d a la nevera · %2$d al congelador</string>
+  <string name="transform_section_results">Resultat · %d productes</string>
+  <string name="transform_add_result">Afegeix un altre resultat</string>
+  <string name="transform_results_hint">Toca un resultat per canviar-ne el nom, les unitats, la categoria, la data o quantes en congeles.</string>
+  <string name="transform_footer">Els ingredients desapareixen del rebost en desar.</string>
+  <string name="transform_result_unnamed">Producte nou</string>
+  <string name="transform_result_remove">Treu %1$s</string>
+  <string name="transform_result_expires">caduca %1$s</string>
+  <plurals name="transform_result_units">
+    <item quantity="one">%d unitat</item>
+    <item quantity="many">%d unitats</item>
+    <item quantity="other">%d unitats</item>
+  </plurals>
+  <plurals name="transform_result_frozen_chip">
+    <item quantity="one">%d congelat</item>
+    <item quantity="many">%d congelats</item>
+    <item quantity="other">%d congelats</item>
+  </plurals>
   <string name="transform_title">Transforma</string>
   <string name="transform_save">Desa</string>
   <string name="transform_section_ingredients">Ingredients</string>
