@@ -47,6 +47,8 @@ data class ItemConfig(
   val shouldFreeze: Boolean = false,
   val remainingDaysWhenFrozen: Int = 5,
   val shouldConsume: Boolean = false,
+  /** Used as an ingredient of a Transforma: must disappear from every live view. */
+  val shouldTransform: Boolean = false,
   /** Legacy pack (`> 1`) to exercise the partial-consume dialog; new items are always independent units. */
   val packSize: Int? = null,
 )

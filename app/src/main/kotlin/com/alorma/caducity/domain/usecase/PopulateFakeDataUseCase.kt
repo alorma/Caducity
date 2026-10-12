@@ -69,6 +69,7 @@ class PopulateFakeDataUseCase(
           remainingDaysWhenFrozen: Int,
           shouldConsume: Boolean,
           packSize: Int? = null,
+          shouldTransform: Boolean = false,
         ) {
           val newItem =
             NewItem(
@@ -81,6 +82,7 @@ class PopulateFakeDataUseCase(
           when {
             shouldFreeze -> itemDataSource.freezeItem(itemId, remainingDays = remainingDaysWhenFrozen)
             shouldConsume -> itemDataSource.markItemAsConsumed(itemId)
+            shouldTransform -> itemDataSource.markItemAsTransformed(itemId)
           }
         }
 
@@ -94,6 +96,7 @@ class PopulateFakeDataUseCase(
               item.remainingDaysWhenFrozen,
               item.shouldConsume,
               item.packSize,
+              item.shouldTransform,
             )
           }
         }
