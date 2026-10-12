@@ -7,7 +7,7 @@ composeScreenshot = "0.0.1-alpha16"
 compose-bom = "2026.09.00"
 
 # Kotlin
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 ksp = "2.3.12"
 
 # Android
