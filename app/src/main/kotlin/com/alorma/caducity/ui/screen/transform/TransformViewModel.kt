@@ -1,0 +1,292 @@
+package com.alorma.caducity.ui.screen.transform
+
+import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.R
+import com.alorma.caducity.config.time.TodayProvider
+import com.alorma.caducity.domain.model.ActiveItem
+import com.alorma.caducity.domain.model.IngredientSpend
+import com.alorma.caducity.domain.model.PantryError
+import com.alorma.caducity.domain.model.TransformResult
+import com.alorma.caducity.domain.model.normalizeForSearch
+import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
+import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
+import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
+import com.alorma.caducity.domain.usecase.TransformItemsUseCase
+import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.feature.tracking.TransformCloseAction
+import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
+import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
+
+class TransformViewModel(
+  private val args: TransformArgs,
+  todayProvider: TodayProvider,
+  private val getActiveItem: GetActiveItemUseCase,
+  private val getNameSuggestions: GetNameSuggestionsUseCase,
+  private val transformItems: TransformItemsUseCase,
+  observeCategories: ObserveCategoriesUseCase,
+  private val snackbars: GlobalSnackbarEvents,
+  private val eventTracker: EventTracker,
+) : BaseViewModel<TransformNavigation, TransformNavigationSideEffect, TransformSideEffect>() {
+  private val _state = MutableStateFlow(TransformState(today = todayProvider.today()))
+  val state: StateFlow<TransformState> = _state.asStateFlow()
+
+  private var nextResultId = 1
+  private val suggestionJobs = mutableMapOf<Int, Job>()
+
+  /** Ingredients as they were first shown: a different list or count counts as a change to discard. */
+  private var initialIngredients: List<Pair<String, Int>>? = null
+
+  init {
+    viewModelScope.launch {
+      observeCategories.observe().collect { categories ->
+        _state.update { it.copy(categories = categories) }
+      }
+    }
+    viewModelScope.launch {
+      val active = getActiveItem.all().associateBy { it.itemId }
+      val picked = args.itemIds.mapNotNull { active[it] }
+      val ingredients = picked.toIngredients(active.values.toList())
+      initialIngredients = ingredients.signature()
+      _state.update { it.copy(ingredients = ingredients) }
+    }
+  }
+
+  override fun navigate(navigation: TransformNavigation) {
+    when (navigation) {
+      TransformNavigation.Close -> {
+        eventTracker.trackAction(TransformCloseAction())
+        emitNavigationSideEffect(TransformNavigationSideEffect.Close)
+      }
+    }
+  }
+
+  /** The × of the top bar: asks first when there is something to lose. */
+  fun onCloseRequest() {
+    if (hasChanges()) emitSideEffect(TransformSideEffect.ShowDiscardConfirm) else navigate(TransformNavigation.Close)
+  }
+
+  fun onDiscardConfirmed() = navigate(TransformNavigation.Close)
+
+  /** Adds the products of [itemIds] as ingredients; one already there keeps its count. */
+  fun onIngredientsAdded(itemIds: List<String>) {
+    viewModelScope.launch {
+      val active = getActiveItem.all()
+      val byId = active.associateBy { it.itemId }
+      val added = itemIds.mapNotNull { byId[it] }.toIngredients(active)
+      _state.update { current ->
+        val known = current.ingredients.map { it.key }.toSet()
+        current.copy(ingredients = current.ingredients + added.filter { it.key !in known })
+      }
+    }
+  }
+
+  fun onIngredientCountChange(
+    key: String,
+    count: Int,
+  ) {
+    _state.update { current ->
+      current.copy(
+        ingredients =
+          current.ingredients.map {
+            if (it.key ==
+              key
+            ) {
+              it.copy(count = count.coerceIn(1, it.available))
+            } else {
+              it
+            }
+          },
+      )
+    }
+  }
+
+  /** Removing the last ingredient leaves nothing to transform: it confirms and closes. */
+  fun onRemoveIngredient(key: String) {
+    if (_state.value.ingredients
+        .singleOrNull()
+        ?.key == key
+    ) {
+      emitSideEffect(TransformSideEffect.ShowDiscardConfirm)
+      return
+    }
+    _state.update { current -> current.copy(ingredients = current.ingredients.filterNot { it.key == key }) }
+  }
+
+  fun onAddResult() {
+    val id = nextResultId++
+    _state.update { it.copy(results = it.results + ResultUi(id = id), expandedResultId = id) }
+  }
+
+  fun onRemoveResult(id: Int) {
+    if (_state.value.results.size <= 1) return
+    suggestionJobs.remove(id)?.cancel()
+    _state.update { current ->
+      val results = current.results.filterNot { it.id == id }
+      current.copy(
+        results = results,
+        expandedResultId =
+          if (current.expandedResultId ==
+            id
+          ) {
+            results.first().id
+          } else {
+            current.expandedResultId
+          },
+      )
+    }
+  }
+
+  fun onToggleResult(id: Int) {
+    _state.update { it.copy(expandedResultId = if (it.expandedResultId == id) NONE_EXPANDED else id) }
+  }
+
+  fun onNameChange(
+    id: Int,
+    name: String,
+  ) {
+    updateResult(id) { it.copy(name = name, suggestion = null, historyCategoryId = null) }
+    suggestionJobs.remove(id)?.cancel()
+    if (name.isBlank()) return
+    suggestionJobs[id] =
+      viewModelScope.launch {
+        val typed = name.trim().normalizeForSearch()
+        val suggestions = getNameSuggestions.suggest(name)
+        val exact = suggestions.firstOrNull { it.name.normalizeForSearch() == typed }
+        updateResult(id) {
+          it.copy(
+            suggestion =
+              suggestions.firstOrNull { s ->
+                s !== exact
+              },
+            historyCategoryId = exact?.categoryId,
+          )
+        }
+      }
+  }
+
+  /** Tapping the suggestion fills the name and takes the category it already has. */
+  fun onSuggestionClick(id: Int) {
+    val suggestion =
+      _state.value.results
+        .firstOrNull { it.id == id }
+        ?.suggestion ?: return
+    suggestionJobs.remove(id)?.cancel()
+    updateResult(id) { it.copy(name = suggestion.name, suggestion = null, historyCategoryId = suggestion.categoryId) }
+  }
+
+  fun onServingsChange(
+    id: Int,
+    servings: Int,
+  ) {
+    val clamped = servings.coerceIn(1, TransformItemsUseCase.MAX_SERVINGS)
+    updateResult(id) { it.copy(servings = clamped, frozenCount = it.frozenCount.coerceAtMost(clamped)) }
+  }
+
+  fun onFrozenCountChange(
+    id: Int,
+    count: Int,
+  ) = updateResult(id) { it.copy(frozenCount = count.coerceIn(0, it.servings)) }
+
+  fun onCategorySelect(
+    id: Int,
+    categoryId: String,
+  ) = updateResult(id) { it.copy(categoryOverride = categoryId) }
+
+  fun onPickDate(id: Int) {
+    val current = _state.value
+    val result = current.results.firstOrNull { it.id == id } ?: return
+    emitSideEffect(
+      TransformSideEffect.ShowDatePicker(
+        id,
+        current.expirationOf(result).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds(),
+      ),
+    )
+  }
+
+  fun onDatePicked(
+    id: Int,
+    date: LocalDate,
+  ) = updateResult(id) { it.copy(expirationOverride = date) }
+
+  fun onSave() {
+    val current = _state.value
+    if (!current.canSave) return
+    val spends = current.ingredients.map { IngredientSpend(it.units.map { unit -> unit.itemId }, it.count) }
+    val results =
+      current.results.map {
+        TransformResult(
+          name = it.name.trim(),
+          servings = it.servings,
+          categoryId = current.categoryOf(it) ?: return,
+          expiration = current.expirationOf(it),
+          frozenCount = it.frozenCount,
+        )
+      }
+    _state.update { it.copy(saving = true) }
+    viewModelScope.launch {
+      transformItems
+        .transform(spends, results)
+        .onSuccess { batch ->
+          snackbars.show(
+            GlobalSnackbar(
+              message = R.string.transform_done,
+              messageArgs = listOf(current.ingredients.sumOf { it.count }, results.size),
+              actionLabel = R.string.add_undo,
+              type = AppFeedbackType.Success,
+              onAction = { transformItems.undo(batch) },
+            ),
+          )
+          _state.update { it.copy(saving = false) }
+          navigate(TransformNavigation.Close)
+        }.onFailure { error ->
+          _state.update { it.copy(saving = false) }
+          val pastFrozen = error is PantryError.PastDateWhenFrozen
+          emitSideEffect(
+            if (pastFrozen) TransformSideEffect.ShowFrozenPastDate else TransformSideEffect.ShowSaveFailed,
+          )
+        }
+    }
+  }
+
+  private fun hasChanges(): Boolean {
+    val current = _state.value
+    return current.results.any { it != ResultUi(id = it.id) } || current.ingredients.signature() != initialIngredients
+  }
+
+  private fun updateResult(
+    id: Int,
+    transform: (ResultUi) -> ResultUi,
+  ) {
+    _state.update { current -> current.copy(results = current.results.map { if (it.id == id) transform(it) else it }) }
+  }
+
+  /** Units of the same product become one ingredient: the picked ones are spent, the rest of the product is available. */
+  private fun List<ActiveItem>.toIngredients(active: List<ActiveItem>): List<IngredientUi> =
+    groupBy { it.productId ?: it.itemId }.map { (key, picked) ->
+      val units = (active.filter { (it.productId ?: it.itemId) == key }).sortedBy { it.expiration }
+      IngredientUi(
+        key = key,
+        name = picked.first().name,
+        categoryId = picked.first().categoryId,
+        units = units,
+        count = picked.size,
+      )
+    }
+
+  private fun List<IngredientUi>.signature(): List<Pair<String, Int>> = map { it.key to it.count }
+
+  private companion object {
+    const val NONE_EXPANDED = -1
+  }
+}

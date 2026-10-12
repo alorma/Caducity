@@ -159,6 +159,14 @@ class AddCloseAction(
     parameters = mapOf("source" to if (batch) "done" else "close"),
   )
 
+// Transform Screen Actions
+class TransformCloseAction :
+  NavigationAction(
+    actionName = "close_transform",
+    origin = "transform",
+    parameters = emptyMap(),
+  )
+
 class AddQuickCategoryAction :
   NavigationAction(
     actionName = "quick_category",

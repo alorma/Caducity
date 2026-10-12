@@ -129,6 +129,7 @@
   <string name="add_missing_many">Falten %1$s per desar</string>
   <string name="add_saved_snackbar">%1$s desat</string>
   <string name="add_undo">Desfés</string>
+  <string name="transform_done">%1$d ingredients transformats en %2$d productes</string>
   <string name="add_save_failed">No s\'ha pogut desar</string>
   <string name="add_frozen_past_date">Un producte congelat no pot tenir una data passada</string>
   <string name="add_picker_ok">D\'acord</string>

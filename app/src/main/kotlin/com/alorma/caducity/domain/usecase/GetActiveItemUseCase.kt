@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.first
 class GetActiveItemUseCase(
   private val pantryDataSource: PantryDataSource,
 ) {
-  suspend fun get(itemId: String): ActiveItem? =
-    pantryDataSource.observeActiveItems().first().firstOrNull { it.itemId == itemId }
+  suspend fun get(itemId: String): ActiveItem? = all().firstOrNull { it.itemId == itemId }
+
+  suspend fun all(): List<ActiveItem> = pantryDataSource.observeActiveItems().first()
 }

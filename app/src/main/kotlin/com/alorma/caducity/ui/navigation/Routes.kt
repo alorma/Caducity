@@ -64,6 +64,12 @@ data class Add(
   val itemId: String? = null,
 ) : AppRoute
 
+/** Full screen: turns [itemIds] (and any ingredient added later) into new products. */
+@Serializable
+data class Transform(
+  val itemIds: List<String> = emptyList(),
+) : AppRoute
+
 @Serializable
 data class CategoryEditor(
   val id: String? = null,
