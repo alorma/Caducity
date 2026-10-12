@@ -142,6 +142,17 @@ class FakeTestDataStrategy(
       )
     }
 
+    // Transformed ingredients: must not show up anywhere (they would otherwise be fresh)
+    repeat(3) { index ->
+      items.add(
+        ItemConfig(
+          identifier = "$productName Transformat #${index + 1}",
+          expirationDate = now.plus((10 + index).days),
+          shouldTransform = true,
+        ),
+      )
+    }
+
     return ProductConfig(name = productName, items = items)
   }
 

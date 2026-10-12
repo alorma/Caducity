@@ -18,6 +18,7 @@ import com.alorma.caducity.domain.usecase.fakedata.FakePlayStoreDataStrategy
 import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -114,5 +115,17 @@ class PopulateFakeDataUseCaseTest {
         .query("PRAGMA foreign_key_check")
         .use { expectThat(it.count).isEqualTo(0) }
       expectThat(categories.first().shape).isA<com.alorma.caducity.domain.model.CategoryShape>()
+    }
+
+  @Test
+  fun `test data includes transformed ingredients that are not live`() =
+    runTest {
+      expectThat(populate.execute(FakeTestDataStrategy(thresholds))).isSuccess()
+
+      val transformed = db.itemDao().getAllItemsSync().filter { it.transformedDate != null }
+      expectThat(transformed).isNotEmpty()
+      val liveItems = db.itemDao().getActiveItems().first()
+      val live = liveItems.map { it.id }.toSet()
+      expectThat(transformed.none { it.id in live }).isEqualTo(true)
     }
 }
