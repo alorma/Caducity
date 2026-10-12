@@ -1,16 +1,20 @@
 package com.alorma.caducity.domain.usecase
 
 import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.CategoryDataSource
 import com.alorma.caducity.domain.ItemDataSource
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.backup.BackupDataSource
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryDefaults
+import com.alorma.caducity.domain.model.IngredientSpend
 import com.alorma.caducity.domain.model.NewItem
+import com.alorma.caducity.domain.model.TransformResult
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.fakedata.FakeDataStrategy
 import java.util.UUID
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 import kotlinx.collections.immutable.persistentListOf
 
@@ -22,6 +26,7 @@ class PopulateFakeDataUseCase(
   private val categoryDataSource: CategoryDataSource,
   private val itemDataSource: ItemDataSource,
   private val productDataSource: ProductDataSource,
+  private val transformItems: TransformItemsUseCase,
   private val appClock: AppClock,
 ) {
   suspend fun execute(strategy: FakeDataStrategy): Result<Unit> =
@@ -65,7 +70,7 @@ class PopulateFakeDataUseCase(
           shouldConsume: Boolean,
           packSize: Int? = null,
           shouldTransform: Boolean = false,
-        ) {
+        ): String? {
           val newItem =
             NewItem(
               identifier = "",
@@ -77,22 +82,39 @@ class PopulateFakeDataUseCase(
           when {
             shouldFreeze -> itemDataSource.freezeItem(itemId, remainingDays = remainingDaysWhenFrozen)
             shouldConsume -> itemDataSource.markItemAsConsumed(itemId)
-            shouldTransform -> itemDataSource.markItemAsTransformed(itemId)
           }
+          return itemId.takeIf { shouldTransform }
         }
 
         categoryConfig.products.forEach { productConfig ->
           productIdFor(productConfig.name)
-          productConfig.items.forEach { item ->
-            addItem(
-              productConfig.name,
-              item.expirationDate,
-              item.shouldFreeze,
-              item.remainingDaysWhenFrozen,
-              item.shouldConsume,
-              item.packSize,
-              item.shouldTransform,
-            )
+          val ingredientIds =
+            productConfig.items.mapNotNull { item ->
+              addItem(
+                productConfig.name,
+                item.expirationDate,
+                item.shouldFreeze,
+                item.remainingDaysWhenFrozen,
+                item.shouldConsume,
+                item.packSize,
+                item.shouldTransform,
+              )
+            }
+          if (ingredientIds.isNotEmpty()) {
+            transformItems
+              .transform(
+                ingredients = listOf(IngredientSpend(ingredientIds, ingredientIds.size)),
+                results =
+                  listOf(
+                    TransformResult(
+                      name = "${productConfig.name} elaborat",
+                      servings = 2,
+                      categoryId = category.id,
+                      expiration = (now + 3.days).date(),
+                      frozenCount = 1,
+                    ),
+                  ),
+              ).getOrThrow()
           }
         }
 
