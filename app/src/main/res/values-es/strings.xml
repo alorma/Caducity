@@ -137,6 +137,23 @@
   <string name="transform_date_hint">Fecha del ingrediente que caduca primero (%s).</string>
   <string name="transform_freeze">Congela</string>
   <string name="transform_freeze_summary">%1$d en la nevera · %2$d en el congelador</string>
+  <string name="transform_section_results">Resultado · %d productos</string>
+  <string name="transform_add_result">Añadir otro resultado</string>
+  <string name="transform_results_hint">Toca un resultado para cambiar su nombre, las unidades, la categoría, la fecha o cuántas congelas.</string>
+  <string name="transform_footer">Los ingredientes desaparecen de la despensa al guardar.</string>
+  <string name="transform_result_unnamed">Producto nuevo</string>
+  <string name="transform_result_remove">Quitar %1$s</string>
+  <string name="transform_result_expires">caduca %1$s</string>
+  <plurals name="transform_result_units">
+    <item quantity="one">%d unidad</item>
+    <item quantity="many">%d unidades</item>
+    <item quantity="other">%d unidades</item>
+  </plurals>
+  <plurals name="transform_result_frozen_chip">
+    <item quantity="one">%d congelado</item>
+    <item quantity="many">%d congelados</item>
+    <item quantity="other">%d congelados</item>
+  </plurals>
   <string name="transform_title">Transforma</string>
   <string name="transform_save">Guardar</string>
   <string name="transform_section_ingredients">Ingredientes</string>

@@ -21,7 +21,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -60,9 +59,21 @@ fun TransformScreen(
   val snackbarState = rememberAppSnackbarState()
   val bottomSheetState = rememberAppBottomSheetState()
   val datePickerState = rememberDatePickerState()
-  val focusRequester = remember { FocusRequester() }
+  val actions =
+    remember(viewModel) {
+      ResultActions(
+        onToggle = viewModel::onToggleResult,
+        onRemove = viewModel::onRemoveResult,
+        onAdd = viewModel::onAddResult,
+        onNameChange = viewModel::onNameChange,
+        onSuggestionClick = viewModel::onSuggestionClick,
+        onServingsChange = viewModel::onServingsChange,
+        onCategorySelect = viewModel::onCategorySelect,
+        onPickDate = viewModel::onPickDate,
+        onFrozenCountChange = viewModel::onFrozenCountChange,
+      )
+    }
 
-  LaunchedEffect(Unit) { focusRequester.requestFocus() }
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
@@ -109,27 +120,13 @@ fun TransformScreen(
           // TODO(transforma-phase-4): opens the ingredient picker.
           onAdd = {},
         )
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          Text(
-            text = stringResource(R.string.transform_section_result),
-            style = CaducityTheme.typography.labelLarge,
-            color = CaducityTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = 4.dp),
-          )
-          state.results.forEach { result ->
-            ResultCard(
-              state = state,
-              result = result,
-              focusRequester = focusRequester,
-              onNameChange = { viewModel.onNameChange(result.id, it) },
-              onSuggestionClick = { viewModel.onSuggestionClick(result.id) },
-              onServingsChange = { viewModel.onServingsChange(result.id, it) },
-              onCategorySelect = { viewModel.onCategorySelect(result.id, it) },
-              onPickDate = { viewModel.onPickDate(result.id) },
-              onFrozenCountChange = { viewModel.onFrozenCountChange(result.id, it) },
-            )
-          }
-        }
+        ResultsSection(state = state, actions = actions)
+        Text(
+          text = stringResource(R.string.transform_footer),
+          style = CaducityTheme.typography.bodySmall,
+          color = CaducityTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
+        )
       }
     }
   }
