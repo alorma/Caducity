@@ -49,6 +49,13 @@ Validada amb l'app `.dev` al Pixel 8a: v3 → v4 amb 61 ítems, 5 categories i 2
 
 **Sortida:** cas d'ús verd sense UI.
 
+- [x] Tasques 1 i 6 (models i helper de data): `33631c1`
+- [x] Tasques 2 i 3 (`transform`/`undoTransform`, `ItemSnapshot` amb `transformedMillis` i `transformationId`): `f281745`
+- [x] Tasques 4, 5 i 7 (tests a cada commit; `TransformItemsUseCase`; el cas d'ús rep `IngredientSpend(candidateItemIds, count)` i tria les unitats que caduquen primer): `1e34a91`
+- [x] Dades falses amb `transform`, sense `markItemAsTransformed`: `87e7f78`
+
+Decisió oberta 4 aplicada: un resultat congelat guarda els dies fins a la seva data (`TODO(transforma-open-4)`); es rebutja amb data passada.
+
 ## Fase 3 — Pantalla Transforma (sense entrades)
 
 1. Ruta a pantalla completa a `Routes.kt` / `AppShell.kt`, amb `TransformViewModel` (`BaseViewModel<TransformNavigation, TransformNavigationSideEffect, TransformSideEffect>`) i `TransformState`.
@@ -100,7 +107,7 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | Fase | Estat |
 | --- | --- |
 | 1 — Model i migració | Validada |
-| 2 — Cas d'ús transaccional | Pendent |
+| 2 — Cas d'ús transaccional | Validada |
 | 3 — Pantalla Transforma | Pendent |
 | 4 — Selector d'ingredients | Pendent |
 | 5 — Entrades i flux final | Pendent |
