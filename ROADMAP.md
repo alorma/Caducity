@@ -4,14 +4,9 @@ The current work is the **«Caducity» redesign** (Material 3 Expressive). Its p
 
 The app is not published between phases. It is released once the redesign is finished.
 
-## Ideas after the redesign
+## After the redesign
 
-Collected in section 15 of the plan («Punts a millorar»):
-
-- Month change in the calendar with a `HorizontalPager`.
-- Shared top bar with a fixed header on every screen.
-- Collapsible header with `MotionLayout`.
-- Reconsider an external calendar library instead of the own one.
+The improvement points of section 15 of the plan are done.
 
 Out of scope for now: shopping list, cloud sync, barcode or camera input, tablet layouts (see section 12 of the plan).
 
