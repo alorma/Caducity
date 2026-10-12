@@ -7,6 +7,6 @@ class OnboardingFlag(
   runner: FireAndForgetRunner,
 ) : FireAndForget(
     fireAndForgetRunner = runner,
-    name = "user_onboarding",
-    autoDisable = false, // Change once onboarding is perfect
+    name = "user_onboarding_v2",
+    autoDisable = false,
   )

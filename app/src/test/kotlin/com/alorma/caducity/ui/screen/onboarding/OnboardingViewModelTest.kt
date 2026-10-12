@@ -47,6 +47,7 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import strikt.api.expectThat
@@ -91,6 +92,7 @@ class OnboardingViewModelTest {
   private val settings = MapSettings()
   private val runner = SettingsFireAndForgetRunner(settings)
   private val onboardingFlag = OnboardingFlag(runner)
+  private val legacyOnboardingFlag = LegacyOnboardingFlag(runner)
   private val consentFlag = ConsentFlag(runner)
   private val consentManager = mock<ConsentManager>()
   private val disclaimer = DisclaimerPreferences(settings)
@@ -130,6 +132,7 @@ class OnboardingViewModelTest {
   private fun newViewModel() =
     OnboardingViewModel(
       onboardingFlag = onboardingFlag,
+      legacyOnboardingFlag = legacyOnboardingFlag,
       consentFlag = consentFlag,
       consentManager = consentManager,
       disclaimerPreferences = disclaimer,
@@ -349,5 +352,43 @@ class OnboardingViewModelTest {
     onboardingFlag.disable()
     disclaimer.accept(now)
     expectThat(newViewModel().state.value.reacceptOnly).isFalse()
+  }
+
+  @Test
+  fun `a user from before 1_0_0 gets welcome, privacy and notice, and keeps categories, margin and reminder`() =
+    runTest {
+      legacyOnboardingFlag.disable()
+      thresholds.setThresholdDays(7)
+      whenever(consentManager.getConsentPreferences()).thenReturn(ConsentPreferences.ANALYTICS_ONLY)
+      val returning = newViewModel()
+      expectThat(returning.state.value.returning).isTrue()
+      expectThat(returning.state.value.reacceptOnly).isFalse()
+      expectThat(returning.state.value.analyticsEnabled).isTrue()
+      expectThat(returning.state.value.stepNumber).isNull()
+
+      returning.onContinue()
+      expectThat(returning.state.value.step).isEqualTo(OnboardingStep.Privacy)
+      returning.onContinue()
+      expectThat(returning.state.value.step).isEqualTo(OnboardingStep.Disclaimer)
+      returning.onBack()
+      expectThat(returning.state.value.step).isEqualTo(OnboardingStep.Privacy)
+      returning.onContinue()
+
+      returning.onAnalyticsChange(false)
+      returning.onDisclaimerCheckedChange(true)
+      expectThat(returning.acceptAndAwait()).isEqualTo(OnboardingNavigationSideEffect.NavigateToApp)
+
+      expectThat(disclaimer.needsAcceptance()).isFalse()
+      expectThat(onboardingFlag.isEnabled()).isFalse()
+      expectThat(pantry.getCategories()).isEmpty()
+      expectThat(scheduler.calls).isEmpty()
+      expectThat(thresholds.current()).isEqualTo(7)
+      verify(consentManager).setConsentPreferences(ConsentPreferences.DEFAULT)
+      returning.viewModelScope.cancel()
+    }
+
+  @Test
+  fun `a fresh install is not treated as a returning user`() {
+    expectThat(newViewModel().state.value.returning).isFalse()
   }
 }

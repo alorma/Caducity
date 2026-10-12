@@ -119,7 +119,7 @@ fun OnboardingScreen(
             )
           OnboardingStep.Privacy ->
             PrivacyStep(
-              stepNumber = 3,
+              stepNumber = state.stepNumber,
               analyticsEnabled = state.analyticsEnabled,
               onAnalyticsChange = viewModel::onAnalyticsChange,
               onBack = viewModel::onBack,

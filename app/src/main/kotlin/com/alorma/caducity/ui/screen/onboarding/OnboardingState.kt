@@ -17,6 +17,8 @@ data class OnboardingState(
   val step: OnboardingStep = OnboardingStep.Welcome,
   /** True when the user came back only to accept a new version of the legal notice (P3). */
   val reacceptOnly: Boolean = false,
+  /** True for users who already used the app before 1.0.0: welcome, privacy and notice only, nothing else is stored. */
+  val returning: Boolean = false,
   val goingForward: Boolean = true,
   val selectedCategories: Set<SuggestedCategory> =
     SuggestedCategory.entries.filter { it.selectedByDefault }.toSet(),
@@ -27,9 +29,17 @@ data class OnboardingState(
   val disclaimerChecked: Boolean = false,
   val completing: Boolean = false,
 ) {
-  /** 1..4 for the steps that show «Pas N de 4»; null for the welcome and the re-acceptance. */
+  val steps: List<OnboardingStep>
+    get() =
+      if (returning) {
+        listOf(OnboardingStep.Welcome, OnboardingStep.Privacy, OnboardingStep.Disclaimer)
+      } else {
+        OnboardingStep.entries
+      }
+
+  /** 1..4 for the steps that show «Pas N de 4»; null for the welcome, the re-acceptance and the returning users. */
   val stepNumber: Int?
-    get() = if (reacceptOnly) null else step.ordinal.takeIf { it in 1..STEP_COUNT }
+    get() = if (reacceptOnly || returning) null else step.ordinal.takeIf { it in 1..STEP_COUNT }
 
   val canGoBack: Boolean get() = !reacceptOnly && step != OnboardingStep.Welcome
 
