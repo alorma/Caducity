@@ -43,6 +43,7 @@ import com.alorma.caducity.ui.navigation.SettingsPrivacy
 import com.alorma.caducity.ui.navigation.StatusList
 import com.alorma.caducity.ui.navigation.TopLevelBackStack
 import com.alorma.caducity.ui.navigation.TopLevelRoute
+import com.alorma.caducity.ui.navigation.Transform
 import com.alorma.caducity.ui.navigation.toStatus
 import com.alorma.caducity.ui.screen.add.AddArgs
 import com.alorma.caducity.ui.screen.add.AddScreen
@@ -65,6 +66,8 @@ import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsScreen
 import com.alorma.caducity.ui.screen.settings.margins.CategoryMarginsScreen
 import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsScreen
 import com.alorma.caducity.ui.screen.status.StatusListScreen
+import com.alorma.caducity.ui.screen.transform.TransformArgs
+import com.alorma.caducity.ui.screen.transform.TransformScreen
 import com.alorma.caducity.ui.theme.AppTheme
 import org.koin.compose.koinInject
 
@@ -179,7 +182,10 @@ fun App(
             }
             if (debugModeProvider.isDebugMode()) {
               entry<SettingsDebug> {
-                DebugSettingsScreen(onNavigateToRemoteConfigs = { navigation.navigate(SettingsDebugRemoteConfigs) })
+                DebugSettingsScreen(
+                  onNavigateToRemoteConfigs = { navigation.navigate(SettingsDebugRemoteConfigs) },
+                  onNavigateToTransform = { itemIds -> navigation.navigate(Transform(itemIds)) },
+                )
               }
               entry<SettingsDebugRemoteConfigs> { DebugRemoteConfigsScreen() }
             }
@@ -213,6 +219,12 @@ fun App(
                 args = AddArgs(categoryId = it.categoryId, itemId = it.itemId),
                 onClose = { navigation.pop() },
                 onOpenQuickCategory = { navigation.navigate(QuickCategory) },
+              )
+            }
+            entry<Transform> {
+              TransformScreen(
+                args = TransformArgs(itemIds = it.itemIds),
+                onClose = { navigation.pop() },
               )
             }
             entry<CategoryEditor> {

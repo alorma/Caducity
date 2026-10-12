@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.settings.debug
 
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.PopulateFakeDataUseCase
 import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
 import com.alorma.caducity.feature.consent.ConsentManager
@@ -21,11 +22,13 @@ class DebugSettingsViewModel(
   private val populateFakeDataUseCase: PopulateFakeDataUseCase,
   private val fakeTestDataStrategy: FakeTestDataStrategy,
   private val consentManager: ConsentManager,
+  private val getActiveItem: GetActiveItemUseCase,
 ) : BaseViewModel<Unit, DebugSettingsSideEffect, DebugSettingsSideEffect>() {
   private val _uiState =
     MutableStateFlow(
       DebugSettingsUiState(
         onPopulateFakeData = ::onPopulateFakeData,
+        onOpenTransform = ::onOpenTransform,
         onTriggerNotificationCheck = ::onTriggerNotificationCheck,
         onToggleAdStorage = ::onToggleAdStorage,
         onToggleAdUserData = ::onToggleAdUserData,
@@ -58,6 +61,21 @@ class DebugSettingsViewModel(
           emitSideEffect(DebugSettingsSideEffect.Error)
         },
       )
+    }
+  }
+
+  /** Opens Transforma with the soonest unit of up to three products, until the real entries exist. */
+  fun onOpenTransform() {
+    viewModelScope.launch {
+      val ids =
+        getActiveItem
+          .all()
+          .filterNot { it.frozen }
+          .sortedBy { it.expiration }
+          .distinctBy { it.productId ?: it.itemId }
+          .take(3)
+          .map { it.itemId }
+      emitSideEffect(if (ids.isEmpty()) DebugSettingsSideEffect.Error else DebugSettingsSideEffect.OpenTransform(ids))
     }
   }
 
@@ -115,6 +133,7 @@ data class DebugSettingsUiState(
   val adUserDataEnabled: Boolean = false,
   val adPersonalizationEnabled: Boolean = false,
   val onPopulateFakeData: () -> Unit,
+  val onOpenTransform: () -> Unit,
   val onTriggerNotificationCheck: () -> Unit,
   val onToggleAdStorage: (Boolean) -> Unit,
   val onToggleAdUserData: (Boolean) -> Unit,
@@ -128,4 +147,8 @@ sealed interface DebugSettingsSideEffect {
   data object FakeDataPopulated : DebugSettingsSideEffect
 
   data object Error : DebugSettingsSideEffect
+
+  data class OpenTransform(
+    val itemIds: List<String>,
+  ) : DebugSettingsSideEffect
 }

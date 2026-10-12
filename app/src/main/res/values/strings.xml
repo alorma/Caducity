@@ -127,6 +127,16 @@
   <string name="add_saved_snackbar">%1$s saved</string>
   <string name="add_undo">Undo</string>
   <string name="transform_done">%1$d ingredients turned into %2$d products</string>
+  <string name="transform_title">Transform</string>
+  <string name="transform_save">Save</string>
+  <string name="transform_section_ingredients">Ingredients</string>
+  <string name="transform_add_ingredient">Add ingredient</string>
+  <string name="transform_ingredient_units">%1$d of %2$d</string>
+  <string name="transform_ingredient_remove">Remove %1$s</string>
+  <string name="transform_discard_title">Discard changes?</string>
+  <string name="transform_discard_message">Nothing will be transformed.</string>
+  <string name="transform_discard_confirm">Discard</string>
+  <string name="transform_discard_keep">Keep editing</string>
   <string name="add_save_failed">Could not save</string>
   <string name="add_frozen_past_date">A frozen product cannot have a past date</string>
   <string name="add_picker_ok">OK</string>

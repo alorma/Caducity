@@ -36,6 +36,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun DebugSettingsScreen(
   onNavigateToRemoteConfigs: () -> Unit,
+  onNavigateToTransform: (itemIds: List<String>) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: DebugSettingsViewModel = koinViewModel(),
 ) {
@@ -65,6 +66,8 @@ fun DebugSettingsScreen(
             )
           }
         }
+
+        is DebugSettingsSideEffect.OpenTransform -> onNavigateToTransform(effect.itemIds)
       }
     }
   }
@@ -119,6 +122,20 @@ private fun DebugSettingsContent(
               shapes = ListItemDefaults.shapes(),
               onClick = { uiState.onPopulateFakeData() },
               enabled = !uiState.isGenerating,
+            )
+          }
+        }
+
+        // Transforma Group
+        item {
+          StyledSettingsGroup(
+            title = { Text("Transforma") },
+          ) {
+            StyledSettingsCard(
+              title = "Open Transforma",
+              subtitle = "With the soonest unit of up to three products",
+              shapes = ListItemDefaults.shapes(),
+              onClick = { uiState.onOpenTransform() },
             )
           }
         }
@@ -204,6 +221,7 @@ fun DebugSettingsScreenPreview() {
             adUserDataEnabled = true,
             adPersonalizationEnabled = true,
             onPopulateFakeData = {},
+            onOpenTransform = {},
             onTriggerNotificationCheck = {},
             onToggleAdStorage = {},
             onToggleAdUserData = {},

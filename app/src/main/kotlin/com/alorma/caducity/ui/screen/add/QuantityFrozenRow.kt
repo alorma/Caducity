@@ -101,7 +101,7 @@ fun QuantityFrozenRow(
 }
 
 @Composable
-private fun StepButton(
+internal fun StepButton(
   enabled: Boolean,
   onClick: () -> Unit,
   label: String,
