@@ -37,7 +37,7 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 
 @Composable
 fun PrivacyStep(
-  stepNumber: Int,
+  stepNumber: Int?,
   analyticsEnabled: Boolean,
   onAnalyticsChange: (Boolean) -> Unit,
   onBack: () -> Unit,

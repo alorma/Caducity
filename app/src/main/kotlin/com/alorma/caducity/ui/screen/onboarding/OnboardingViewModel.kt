@@ -13,6 +13,7 @@ import com.alorma.caducity.domain.usecase.SeedCategoriesUseCase
 import com.alorma.caducity.feature.consent.ConsentFlag
 import com.alorma.caducity.feature.consent.ConsentManager
 import com.alorma.caducity.feature.consent.ConsentPreferences
+import com.alorma.caducity.feature.consent.ConsentStatus
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.tracking.CompleteOnboardingAction
 import com.alorma.caducity.feature.tracking.EventTracker
@@ -28,10 +29,12 @@ import kotlinx.datetime.LocalTime
 /**
  * Onboarding: welcome → categories → alerts → privacy → legal notice. Nothing is stored until the notice is accepted,
  * so a process death mid-way just restarts the flow. Users who already finished the old onboarding only see the
- * notice (re-acceptance) and nothing else is touched.
+ * notice (re-acceptance) and nothing else is touched. Users who used the app before 1.0.0 get a short informative
+ * version (welcome, privacy, notice): their categories, margin and reminder are kept, only the consent is asked again.
  */
 class OnboardingViewModel(
   private val onboardingFlag: OnboardingFlag,
+  private val legacyOnboardingFlag: LegacyOnboardingFlag,
   private val consentFlag: ConsentFlag,
   private val consentManager: ConsentManager,
   private val disclaimerPreferences: DisclaimerPreferences,
@@ -47,6 +50,11 @@ class OnboardingViewModel(
     MutableStateFlow(
       if (!onboardingFlag.isEnabled() && disclaimerPreferences.needsAcceptance()) {
         OnboardingState(step = OnboardingStep.Disclaimer, reacceptOnly = true)
+      } else if (onboardingFlag.isEnabled() && !legacyOnboardingFlag.isEnabled()) {
+        OnboardingState(
+          returning = true,
+          analyticsEnabled = consentManager.getConsentPreferences().analyticsStorage == ConsentStatus.GRANTED,
+        )
       } else {
         OnboardingState()
       },
@@ -55,14 +63,14 @@ class OnboardingViewModel(
 
   fun onContinue() {
     _state.update { current ->
-      val next = OnboardingStep.entries.getOrNull(current.step.ordinal + 1)
+      val next = current.steps.getOrNull(current.steps.indexOf(current.step) + 1)
       if (next == null || current.reacceptOnly) current else current.copy(step = next, goingForward = true)
     }
   }
 
   fun onBack() {
     _state.update { current ->
-      val previous = OnboardingStep.entries.getOrNull(current.step.ordinal - 1)
+      val previous = current.steps.getOrNull(current.steps.indexOf(current.step) - 1)
       if (previous == null || !current.canGoBack) current else current.copy(step = previous, goingForward = false)
     }
   }
@@ -112,7 +120,8 @@ class OnboardingViewModel(
     _state.update { it.copy(completing = true) }
     viewModelScope.launch {
       try {
-        if (!current.reacceptOnly) saveChoices(current)
+        if (!current.reacceptOnly && !current.returning) saveChoices(current)
+        if (current.returning) saveConsent(current)
         disclaimerPreferences.accept(appClock.now())
         if (!current.reacceptOnly) {
           consentFlag.disable()
@@ -144,6 +153,10 @@ class OnboardingViewModel(
       workScheduler.cancelExpirationCheck()
     }
 
+    saveConsent(state)
+  }
+
+  private fun saveConsent(state: OnboardingState) {
     consentManager.setConsentPreferences(
       if (state.analyticsEnabled) ConsentPreferences.ANALYTICS_ONLY else ConsentPreferences.DEFAULT,
     )

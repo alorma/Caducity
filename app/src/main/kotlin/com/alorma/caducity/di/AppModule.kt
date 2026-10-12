@@ -33,6 +33,7 @@ import com.alorma.caducity.ui.screen.category.quick.CategoryCreatedEvents
 import com.alorma.caducity.ui.screen.category.quick.QuickCategoryViewModel
 import com.alorma.caducity.ui.screen.home.HomeViewModel
 import com.alorma.caducity.ui.screen.home.WidgetTipFlag
+import com.alorma.caducity.ui.screen.onboarding.LegacyOnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingFlag
 import com.alorma.caducity.ui.screen.onboarding.OnboardingViewModel
 import com.alorma.caducity.ui.screen.pantry.PantrySearchRequests
@@ -92,6 +93,7 @@ val appModule =
 
     // Onboarding
     singleOf(::OnboardingFlag)
+    singleOf(::LegacyOnboardingFlag)
     viewModelOf(::OnboardingViewModel)
 
     factory {
