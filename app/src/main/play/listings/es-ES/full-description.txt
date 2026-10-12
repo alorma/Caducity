@@ -1,16 +1,29 @@
-¡Deja de tirar comida caducada y de malgastar dinero! Caducity te ayuda a controlar tus alimentos y sus fechas de caducidad para que puedas consumirlos antes de que se estropeen.
+Deja de tirar comida y dinero. Caducity te muestra qué está a punto de caducar para que puedas consumirlo a tiempo.
 
-NUNCA TE PASES DE LA FECHA DE CADUCIDAD
-Recibe notificaciones a tiempo cuando tus alimentos estén a punto de caducar. Caducity hace comprobaciones diarias y te avisa antes de que sea demasiado tarde, para que tengas tiempo de aprovechar los productos o planificar tus comidas.
+QUÉ CADUCA, DE UN VISTAZO
+Inicio agrupa los productos en caducados, hoy, mañana y el resto de la semana, ordenados por urgencia. Cada producto tiene un estado: fresco, caduca pronto, caducado o congelado.
 
-PANEL INTELIGENTE
-Consulta de un vistazo qué productos están frescos, cuáles caducan pronto y cuáles ya han caducado. Las etiquetas de estado con colores te permiten priorizar qué consumir primero. Controla tu inventario y reduce el desperdicio de comida.
+AÑADE UN PRODUCTO EN POCOS TOQUES
+Escribe el nombre, elige la categoría y escribe la fecha con el teclado numérico, tal como aparece en el envase. Si añades varias unidades, se crea un ítem independiente para cada una, y puedes añadir muchos productos seguidos.
 
-¿POR QUÉ CADUCITY?
-• Ahorra dinero reduciendo el desperdicio de comida
-• Planifica tus comidas según lo que caduca primero
-• Haz seguimiento de varias unidades del mismo producto
-• Interfaz sencilla y limpia, fácil de usar
-• Actualizaciones y mejoras periódicas
+UN TOQUE PARA ACTUAR
+Abre cualquier ítem para consumirlo, congelarlo, cambiar su fecha, editarlo, moverlo o borrarlo. ¿Te has equivocado? Deshazlo.
 
-Únete a la lucha contra el desperdicio de comida. ¡Descarga Caducity hoy y toma el control de tus alimentos!
+TU DESPENSA, POR CATEGORÍAS
+Cada categoría tiene su forma, su icono y una barra con el estado de los productos. Filtra por estado y por día con la tira de 7 días.
+
+CALENDARIO
+Mira qué caduca cada día del mes, con un punto de color para cada estado.
+
+«PRONTO» A TU MANERA
+La leche y las conservas no necesitan el mismo aviso. Elige con cuántos días de antelación se considera «pronto» cada categoría.
+
+UN AVISO AL DÍA
+Una sola notificación diaria, a la hora que elijas, con lo que caduca hoy y mañana.
+
+PRIVADO POR DISEÑO
+Tus productos se quedan en este dispositivo. Sin cuenta ni registro. Las estadísticas de uso anónimas están desactivadas por defecto y puedes cambiarlas en Ajustes. Haz copia de seguridad y restaura tus datos desde Ajustes.
+
+Disponible en catalán, castellano e inglés, con tema claro y oscuro.
+
+Caducity te ayuda a planificar, pero no sustituye tu criterio: comprueba siempre el producto y el envase antes de comer.

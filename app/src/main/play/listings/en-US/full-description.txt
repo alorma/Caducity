@@ -1,16 +1,29 @@
-Stop throwing away expired food and wasting money! Caducity helps you track your groceries and monitor expiration dates so you can consume products before they go bad.                                                    
-                                                                                                                                                                                                                             
-  NEVER MISS AN EXPIRATION DATE                                                                                                                                                                                              
-  Get timely notifications when your groceries are about to expire. Caducity runs daily checks and alerts you before it's too late, giving you time to use up products or plan meals accordingly.                            
-                                                                                                                                                                                                                             
-  SMART DASHBOARD                                                                                                                                                                                                            
-  See at a glance which products are fresh, expiring soon, or already expired. Color-coded status badges make it easy to prioritize what to consume first. Track your inventory and reduce food waste with intelligent insights.
-                                                                                                                                                                                                                                                                                                                                                                                                                          
-  WHY CADUCITY?                                                                                                                                                                                                              
-  • Save money by reducing food waste                                                                                                                                                                                        
-  • Plan meals based on what expires first                                                                                                                                                                                   
-  • Keep track of multiple product instances                                                                                                                                                                                 
-  • Simple, clean interface that's easy to use                                                                                                                                                                               
-  • Regular updates and improvements                                                                                                                                                                                         
-                                                                                                                                                                                                                             
-  Join the fight against food waste. Download Caducity today and take control of your groceries!
+Stop throwing away food and money. Caducity shows you what is about to expire, so you eat it in time.
+
+WHAT EXPIRES, AT A GLANCE
+Home groups your products as expired, today, tomorrow and the rest of the week, most urgent first. Each product has a status: fresh, expiring soon, expired or frozen.
+
+ADD A PRODUCT IN A FEW TAPS
+Type the name, pick a category and type the date with the number keyboard, just as it is printed on the package. Adding several units creates one independent item for each, and you can add many products in a row.
+
+ONE TAP TO ACT
+Open any item to consume it, freeze it, change its date, edit it, move it or delete it. Made a mistake? Undo it.
+
+YOUR PANTRY, BY CATEGORY
+Every category has its own shape, icon and a bar with the state of its products. Filter by status and by day with the 7-day strip.
+
+CALENDAR
+See what expires each day of the month, with a colored dot for each status.
+
+"EXPIRING SOON" YOUR WAY
+Milk and canned food do not need the same notice. Set how many days ahead each category counts as expiring soon.
+
+ONE REMINDER A DAY
+A single daily notification, at the time you choose, with what expires today and tomorrow.
+
+PRIVATE BY DESIGN
+Your products stay on this device. No account, no sign-up. Anonymous usage statistics are off by default and you can change them in Settings. Back up and restore your data from Settings.
+
+Available in English, Catalan and Spanish, with light and dark themes.
+
+Caducity helps you plan, but it does not replace your judgment: always check the product and its package before eating it.

@@ -1,0 +1,6 @@
+Versió 1.0.0:
+• Un aspecte completament nou, amb tema clar i fosc
+• Calendari nou: mira què caduca cada dia del mes
+• Afegeix productes més de pressa, escrivint la data amb el teclat numèric
+• Tria amb quants dies d'antelació comença «aviat» a cada categoria
+• Un únic avís diari, a l'hora que triïs

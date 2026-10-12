@@ -1,0 +1,6 @@
+Version 1.0.0:
+• A completely new look, with light and dark themes
+• New calendar: see what expires each day of the month
+• Add products faster, typing the date with the number keyboard
+• Set how many days ahead "expiring soon" starts for each category
+• One daily reminder, at the time you choose
