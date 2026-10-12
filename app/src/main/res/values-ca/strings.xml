@@ -400,6 +400,7 @@
   <string name="settings_dynamic_color_on">Amb els colors del dispositiu</string>
   <string name="settings_dynamic_color_off">Desactivat: paleta Caducity</string>
   <string name="settings_week_start">La setmana comença</string>
+  <string name="settings_app_language">Idioma de l\'aplicació</string>
   <string name="settings_backup_sub">Exporta i restaura</string>
   <string name="settings_about_sub">Versió i crèdits</string>
   <string name="settings_time_dialog_title">Hora de l\'avís</string>

@@ -379,6 +379,7 @@
   <string name="settings_dynamic_color_on">Using your device\'s colors</string>
   <string name="settings_dynamic_color_off">Off: Caducity palette</string>
   <string name="settings_week_start">Week starts on</string>
+  <string name="settings_app_language">App language</string>
   <string name="settings_backup_sub">Export and restore</string>
   <string name="settings_about_sub">Version and credits</string>
   <string name="settings_time_dialog_title">Reminder time</string>
