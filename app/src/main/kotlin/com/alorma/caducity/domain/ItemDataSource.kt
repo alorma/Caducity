@@ -16,9 +16,6 @@ interface ItemDataSource {
 
   suspend fun markItemAsConsumed(itemId: String)
 
-  /** Debug/fake-data only until the Transforma use case exists: closes the item as a transformed ingredient. */
-  suspend fun markItemAsTransformed(itemId: String)
-
   suspend fun freezeItem(
     itemId: String,
     remainingDays: Int,

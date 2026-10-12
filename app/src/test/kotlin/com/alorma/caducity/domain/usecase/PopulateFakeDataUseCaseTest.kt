@@ -9,6 +9,7 @@ import com.alorma.caducity.config.time.date
 import com.alorma.caducity.data.datasource.RoomBackupDataSource
 import com.alorma.caducity.data.datasource.RoomCategoryDataSource
 import com.alorma.caducity.data.datasource.RoomItemDataSource
+import com.alorma.caducity.data.datasource.RoomPantryDataSource
 import com.alorma.caducity.data.datasource.RoomProductDataSource
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
@@ -71,6 +72,18 @@ class PopulateFakeDataUseCaseTest {
           ),
         itemDataSource = RoomItemDataSource(db.itemDao(), clock, itemMapper),
         productDataSource = RoomProductDataSource(db.productDao(), db.itemDao(), clock, productMapper),
+        transformItems =
+          TransformItemsUseCase(
+            RoomPantryDataSource(
+              db,
+              db.categoryDao(),
+              db.itemDao(),
+              db.productDao(),
+              CategoryRoomMapper(productMapper, itemMapper),
+              clock,
+            ),
+            clock,
+          ),
         appClock = clock,
       )
   }
@@ -124,5 +137,9 @@ class PopulateFakeDataUseCaseTest {
       val liveItems = db.itemDao().getActiveItems().first()
       val live = liveItems.map { it.id }.toSet()
       expectThat(transformed.none { it.id in live }).isEqualTo(true)
+      expectThat(transformed.all { it.transformationId != null }).isEqualTo(true)
+      val produced = db.itemDao().getAllItemsSync().filter { it.originTransformationId != null }
+      expectThat(produced).isNotEmpty()
+      expectThat(produced.all { it.id in live }).isEqualTo(true)
     }
 }

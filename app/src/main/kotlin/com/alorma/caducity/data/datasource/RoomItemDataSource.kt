@@ -49,18 +49,6 @@ class RoomItemDataSource(
     }
   }
 
-  override suspend fun markItemAsTransformed(itemId: String) {
-    itemDao.getItem(itemId)?.let { item ->
-      itemDao.updateItem(
-        item.copy(
-          transformedDate = appClock.now().toEpochMilliseconds(),
-          pausedDate = null,
-          remainingDays = null,
-        ),
-      )
-    }
-  }
-
   override suspend fun freezeItem(
     itemId: String,
     remainingDays: Int,
