@@ -6,6 +6,7 @@ import com.alorma.caducity.data.backup.BackupCategory
 import com.alorma.caducity.data.backup.BackupData
 import com.alorma.caducity.data.backup.BackupProduct
 import com.alorma.caducity.data.backup.BackupProductItem
+import com.alorma.caducity.data.backup.BackupTransformation
 import com.alorma.caducity.data.backup.upgradeToV2
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.dao.CategoryDao
@@ -14,6 +15,7 @@ import com.alorma.caducity.data.datasource.room.dao.ProductDao
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
+import com.alorma.caducity.data.datasource.room.model.TransformationRoomEntity
 import com.alorma.caducity.domain.backup.BackupDataSource
 import com.alorma.caducity.domain.model.CategoryDefaults
 import com.alorma.caducity.domain.model.CategoryIcon
@@ -72,6 +74,8 @@ class RoomBackupDataSource(
       version = BackupData.CURRENT_VERSION,
       exportDate = appClock.now().toEpochMilliseconds(),
       categories = backupCategories,
+      transformations =
+        database.transformationDao().getAllTransformationsSync().map { BackupTransformation(it.id, it.createdAt) },
     )
   }
 
@@ -86,6 +90,9 @@ class RoomBackupDataSource(
       packSize = item.packSize,
       discardedDate = item.discardedDate,
       createdAt = item.createdAt,
+      transformedDate = item.transformedDate,
+      transformationId = item.transformationId,
+      originTransformationId = item.originTransformationId,
     )
 
   override suspend fun importBackup(backup: BackupData) {
@@ -93,6 +100,11 @@ class RoomBackupDataSource(
     database.withTransaction {
       // Clear existing data
       clearAllData()
+
+      val transformationDao = database.transformationDao()
+      data.transformations.forEach { transformation ->
+        transformationDao.insertTransformation(TransformationRoomEntity(transformation.id, transformation.createdAt))
+      }
 
       // Insert categories and items (mapping from old backup format)
       data.categories.forEach { category: BackupCategory ->
@@ -134,6 +146,9 @@ class RoomBackupDataSource(
               packSize = item.packSize,
               discardedDate = item.discardedDate,
               createdAt = item.createdAt,
+              transformedDate = item.transformedDate,
+              transformationId = item.transformationId,
+              originTransformationId = item.originTransformationId,
             )
           itemDao.insertItem(itemEntity)
         }
@@ -153,6 +168,9 @@ class RoomBackupDataSource(
                 packSize = item.packSize,
                 discardedDate = item.discardedDate,
                 createdAt = item.createdAt,
+                transformedDate = item.transformedDate,
+                transformationId = item.transformationId,
+                originTransformationId = item.originTransformationId,
               )
             itemDao.insertItem(itemEntity)
           }
@@ -168,6 +186,7 @@ class RoomBackupDataSource(
     // Delete items first due to foreign key constraint
     itemDao.clearAllItems()
     categoryDao.clearAllCategories()
+    database.transformationDao().clearAllTransformations()
   }
 
   override fun validateBackup(backup: BackupData): Result<Unit> {

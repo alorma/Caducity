@@ -10,6 +10,7 @@ import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
+import com.alorma.caducity.data.datasource.room.model.TransformationRoomEntity
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
 import kotlin.time.Instant
@@ -231,7 +232,7 @@ class BackupTest {
       db.itemDao().insertItem(ItemRoomEntity("i5", "c2", "Legacy", null, 5000))
 
       val exported = backup.exportBackup()
-      expectThat(exported.version).isEqualTo(2)
+      expectThat(exported.version).isEqualTo(BackupData.CURRENT_VERSION)
       expectThat(exported.categories.map { it.id }).containsExactly("c2", "c1")
       expectThat(exported.categories.associate { it.id to it.soonThresholdDays })
         .isEqualTo(mapOf("c1" to 30, "c2" to null))
@@ -279,7 +280,58 @@ class BackupTest {
       expectThat(db.categoryDao().getCategory("c1")?.shape).isEqualTo(CategoryShape.COOKIE)
       expectThat(db.categoryDao().getCategory("c1")?.shape).isNotEqualTo(null)
 
-      expectThat(backup.validateBackup(data.copy(version = 3))).isFailure().isA<IllegalArgumentException>()
+      expectThat(backup.validateBackup(data.copy(version = BackupData.CURRENT_VERSION + 1)))
+        .isFailure()
+        .isA<IllegalArgumentException>()
+    }
+
+  @Test
+  fun `transformations and transformed items survive an export and import round trip`() =
+    runTest {
+      db.categoryDao().insertCategory(CategoryRoomEntity("c1", "Dairy", ""))
+      db.productDao().insertProduct(ProductRoomEntity("p1", "c1", "Chicken", 100))
+      db.productDao().insertProduct(ProductRoomEntity("p2", "c1", "Broth", 200))
+      db.transformationDao().insertTransformation(TransformationRoomEntity("t1", 500))
+      db.itemDao().insertItem(
+        ItemRoomEntity("i1", "c1", "", "p1", 1000, transformedDate = 500, transformationId = "t1"),
+      )
+      db.itemDao().insertItem(
+        ItemRoomEntity("i2", "c1", "", "p2", 2000, createdAt = 500, originTransformationId = "t1"),
+      )
+
+      val exported = backup.exportBackup()
+      expectThat(exported.version).isEqualTo(3)
+      val decoded =
+        json.decodeFromString<BackupData>(json.encodeToString(BackupData.serializer(), exported))
+      val itemsBefore = db.itemDao().getAllItemsSync().sortedBy { it.id }
+
+      backup.clearAllData()
+      expectThat(db.transformationDao().getAllTransformationsSync()).isEmpty()
+      backup.importBackup(decoded)
+
+      val transformations = db.transformationDao().getAllTransformationsSync()
+      expectThat(transformations).containsExactly(TransformationRoomEntity("t1", 500))
+      expectThat(db.itemDao().getAllItemsSync().sortedBy { it.id }).isEqualTo(itemsBefore)
+    }
+
+  @Test
+  fun `a v2 backup without transformation fields still imports`() =
+    runTest {
+      val v2Json =
+        """
+        {"version": 2, "exportDate": 1, "categories": [
+          {"id": "c1", "name": "Dairy", "description": "", "shape": "COOKIE", "icon": "eco", "sortOrder": 0,
+           "products": [{"id": "p1", "categoryId": "c1", "name": "Milk", "createdAt": 5, "items": [
+             {"id": "i1", "identifier": "", "expirationDate": 1000, "createdAt": 7}]}],
+           "standaloneItems": []}]}
+        """.trimIndent()
+      val data = json.decodeFromString<BackupData>(v2Json)
+      expectThat(backup.validateBackup(data)).isSuccess()
+
+      backup.importBackup(data)
+
+      expectThat(db.itemDao().getItem("i1")?.transformedDate).isNull()
+      expectThat(db.transformationDao().getAllTransformationsSync()).isEmpty()
     }
 
   // endregion
