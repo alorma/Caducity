@@ -2,7 +2,7 @@ package com.alorma.caducity.ui.theme.colors
 
 import androidx.compose.ui.graphics.Color
 
-// Tokens de docs/redisseny/03-design-system/tokens.json
+// Tokens del design system del redisseny (historial de git: docs/redisseny/03-design-system/tokens.json)
 
 internal val SurfaceLight = Color(0xFFFBF6EC)
 internal val SurfaceCardLight = Color(0xFFF4ECDD)

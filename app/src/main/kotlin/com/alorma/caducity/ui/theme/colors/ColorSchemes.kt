@@ -5,7 +5,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
-// Mapatge token → rol M3: docs/redisseny/04-especificacio/03-design-system-compose.md
+// Mapatge token → rol M3 (historial de git: docs/redisseny/04-especificacio/03-design-system-compose.md)
 val lightColorScheme: ColorScheme =
   lightColorScheme(
     primary = PrimaryLight,

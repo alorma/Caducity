@@ -16,7 +16,7 @@ Caducity is an Android app that tracks when your groceries expire, so you can us
 - **Daily reminder**: one notification a day, at the time you choose.
 - **Backup and restore**, light/dark theme, dynamic colour, Catalan, Spanish and English.
 
-The redesign plan and its status are in [`docs/redisseny/PLA-MIGRACIO.md`](./docs/redisseny/PLA-MIGRACIO.md).
+What is left to do is in [`docs/backlog.md`](./docs/backlog.md).
 
 ---
 
