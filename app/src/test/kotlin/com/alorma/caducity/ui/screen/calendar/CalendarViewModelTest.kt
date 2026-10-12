@@ -28,8 +28,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -64,11 +64,12 @@ class CalendarViewModelTest {
       override fun nowDate(timeZone: TimeZone): LocalDate = now().date(timeZone)
     }
   private val today = clock.nowDate()
+  private val currentDay = MutableStateFlow(today)
   private val todayProvider =
     object : TodayProvider {
-      override fun today(): LocalDate = today
+      override fun today(): LocalDate = currentDay.value
 
-      override fun observe(): Flow<LocalDate> = flowOf(today)
+      override fun observe(): Flow<LocalDate> = currentDay
     }
 
   private lateinit var db: AppDatabase
@@ -197,6 +198,23 @@ class CalendarViewModelTest {
 
       expectThat(state.rows.map { it.name }).containsExactly("Apple")
       expectThat(state.categoryName).isEqualTo("fruit")
+    }
+
+  @Test
+  fun `the grid follows the day change at midnight`() =
+    runTest {
+      category("dairy")
+      add("Milk", days = 0)
+      val vm = viewModel()
+      val before = vm.ready()
+      expectThat(before.today).isEqualTo(today)
+      expectThat(before.statusesByDate.getValue(today)).containsExactly(ExpiryStatus.SOON)
+
+      currentDay.value = today.plus(1, DateTimeUnit.DAY)
+
+      val after = vm.ready { it.today != today }
+      expectThat(after.today).isEqualTo(today.plus(1, DateTimeUnit.DAY))
+      expectThat(after.statusesByDate.getValue(today)).containsExactly(ExpiryStatus.EXPIRED)
     }
 
   @Test
