@@ -158,7 +158,8 @@
   <string name="transform_freeze">Congela</string>
   <string name="transform_freeze_chip">Congela · %d</string>
   <string name="transform_freeze_in_freezer">Congela · %1$d en el congelador</string>
-  <string name="transform_footer">Los ingredientes desaparecen de la despensa al guardar.</string>
+  <string name="transform_footer_title">No es un recetario:</string>
+  <string name="transform_footer">solo apunta lo que has gastado y lo que ha salido. Los ingredientes desaparecen de la despensa al guardar.</string>
   <string name="transform_result_unnamed">Resultado nuevo</string>
   <string name="transform_section_result">Resultado</string>
   <string name="transform_section_results_count">Resultado · %d</string>
