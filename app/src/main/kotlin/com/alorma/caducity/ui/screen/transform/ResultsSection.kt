@@ -2,12 +2,12 @@ package com.alorma.caducity.ui.screen.transform
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -32,11 +32,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathMeasure
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -80,11 +88,17 @@ class ResultActions(
 )
 
 private val ResultCardHeight = 92.dp
-private val HangingLineHeight = 11.dp
+private val HangingLineHeight = 14.dp
+private val PeakHalfWidth = 7.dp
+private val PeakHeight = 9.dp
+
+/** Share of the whole stroke that the peak takes, so its second side is drawn as the first one is. */
+private const val PeakShare = 0.08f
 
 /** Air around the lines that join the rows: between the ingredients and the node, and between the node and the results. */
 internal val SectionSpacing = 52.dp
 private const val ExpandMillis = 300
+private const val DrawMillis = 350
 
 /** M3 emphasized decelerate: what the expansion of a card uses. */
 private val EmphasizedEasing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
@@ -111,8 +125,9 @@ fun ResultsSection(
     val index = state.results.indexOfFirst { it.id == state.expandedResultId }
     if (index < 0) return@LaunchedEffect
     listState.animateScrollToItem(index)
-    // The cards around it are still changing size while the first scroll runs: align once they have settled.
-    delay(ExpandMillis.toLong())
+    // The cards around it are still changing size while the first scroll runs (the card itself waits for the drop
+    // to be undrawn first): align once they have settled.
+    delay((DrawMillis + ExpandMillis).toLong())
     listState.animateScrollToItem(index)
   }
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(SectionSpacing)) {
@@ -168,13 +183,24 @@ private fun ResultItem(
   val next = state.results.getOrNull(index + 1)
   val previousLabel = stringResource(R.string.transform_result_previous)
   val nextLabel = stringResource(R.string.transform_result_next)
+  // What is on screen follows [selected]: on the way shut at once; on the way open only once the drop has been
+  // undrawn (it reports it), or at once when there is no drop.
+  var showForm by remember { mutableStateOf(selected) }
+  val hasDrop = state.results.size > 1
+  LaunchedEffect(selected) {
+    if (!selected) {
+      showForm = false
+    } else if (!hasDrop || showForm) {
+      showForm = true
+    }
+  }
   val width by animateDpAsState(
-    targetValue = if (selected) formWidth else RowCardWidth,
+    targetValue = if (showForm) formWidth else RowCardWidth,
     animationSpec = tween(ExpandMillis, easing = EmphasizedEasing),
     label = "resultWidth",
   )
   // A folded result that still lacks something is outlined, so it is not mistaken for a finished one.
-  val incomplete = !selected && !state.isValid(result)
+  val incomplete = !showForm && !state.isValid(result)
   val invalidLabel = stringResource(R.string.transform_result_invalid)
   Column(horizontalAlignment = Alignment.CenterHorizontally) {
     Surface(
@@ -182,7 +208,7 @@ private fun ResultItem(
       color = CaducityTheme.colorScheme.surfaceContainer,
       border =
         when {
-          selected -> BorderStroke(2.dp, CaducityTheme.colorScheme.primary)
+          showForm -> BorderStroke(2.dp, CaducityTheme.colorScheme.primary)
           incomplete -> BorderStroke(1.5.dp, CaducityTheme.colorScheme.error)
           else -> null
         },
@@ -212,7 +238,7 @@ private fun ResultItem(
               )
           },
     ) {
-      Crossfade(targetState = selected, animationSpec = tween(ExpandMillis / 2), label = "resultContent") { open ->
+      Crossfade(targetState = showForm, animationSpec = tween(ExpandMillis / 2), label = "resultContent") { open ->
         if (open) {
           ResultForm(state = state, result = result, actions = actions)
         } else {
@@ -220,7 +246,13 @@ private fun ResultItem(
         }
       }
     }
-    if (!selected && state.results.size > 1) HangingRemove(onRemove = { actions.onRemove(result.id) })
+    if (!showForm && hasDrop) {
+      HangingRemove(
+        visible = !selected,
+        onHidden = { showForm = true },
+        onRemove = { actions.onRemove(result.id) },
+      )
+    }
   }
 }
 
@@ -228,17 +260,36 @@ private val DropWidth = 40.dp
 private val DropHeight = 52.dp
 private val DropStroke = 1.5.dp
 
-/** A drop with its tip up: the end of the line that hangs from the card, with the round body below. */
+/** From the tip (top centre of [box]) round the drop and back to the tip: the tip up, the round body below. */
+private fun Path.dropFromTip(box: Rect) {
+  val radius = box.width / 2f
+  val centreY = box.bottom - radius
+  val height = centreY - box.top
+  cubicTo(
+    box.center.x + radius * 0.15f,
+    box.top + height * 0.35f,
+    box.right,
+    box.top + height * 0.55f,
+    box.right,
+    centreY,
+  )
+  arcTo(Rect(box.left, box.bottom - box.width, box.right, box.bottom), 0f, 180f, false)
+  cubicTo(
+    box.left,
+    box.top + height * 0.55f,
+    box.center.x - radius * 0.15f,
+    box.top + height * 0.35f,
+    box.center.x,
+    box.top,
+  )
+  close()
+}
+
 private val DropShape =
   GenericShape { size, _ ->
-    val width = size.width
-    val radius = width / 2f
-    val centreY = size.height - radius
-    moveTo(radius, 0f)
-    cubicTo(radius + radius * 0.15f, centreY * 0.35f, width, centreY * 0.55f, width, centreY)
-    arcTo(Rect(0f, size.height - width, width, size.height), 0f, 180f, false)
-    cubicTo(0f, centreY * 0.55f, radius - radius * 0.15f, centreY * 0.35f, radius, 0f)
-    close()
+    val box = Rect(0f, 0f, size.width, size.height)
+    moveTo(box.center.x, box.top)
+    dropFromTip(box)
   }
 
 /**
@@ -246,18 +297,85 @@ private val DropShape =
  * The whole drop is the button, with a reddish ripple.
  */
 @Composable
-private fun HangingRemove(onRemove: () -> Unit) {
+private fun HangingRemove(
+  visible: Boolean,
+  /** Called when it has been undrawn after [visible] went false: the card can expand now. */
+  onHidden: () -> Unit,
+  onRemove: () -> Unit,
+) {
   val outline = CaducityTheme.colorScheme.outline
   val error = CaducityTheme.colorScheme.error
-  Column(horizontalAlignment = Alignment.CenterHorizontally) {
-    Box(modifier = Modifier.width(DropStroke).height(HangingLineHeight).background(outline))
+  // Drawn once the card has settled after folding; undrawn before the card expands.
+  val progress = remember { Animatable(0f) }
+  LaunchedEffect(visible) {
+    if (visible) delay(ExpandMillis.toLong())
+    progress.animateTo(if (visible) 1f else 0f, tween(DrawMillis, easing = LinearEasing))
+    if (!visible) onHidden()
+  }
+  // The space is always reserved, so nothing around it moves while the card is still changing size.
+  // The line and the drop are one stroke, so the tip joins the line without a seam.
+  Box(
+    modifier =
+      Modifier
+        .size(width = DropWidth, height = HangingLineHeight + DropHeight)
+        .drawBehind {
+          val stroke = DropStroke.toPx()
+          val box = Rect(stroke / 2, HangingLineHeight.toPx(), size.width - stroke / 2, size.height - stroke / 2)
+          val centre = box.center.x
+          val peakWidth = PeakHalfWidth.toPx()
+          val peakHeight = PeakHeight.toPx()
+          // The stroke starts at the card with a peak (the drop's tip upside down), then a short line, then the drop.
+          val main =
+            Path().apply {
+              moveTo(centre + peakWidth, 0f)
+              cubicTo(
+                centre + peakWidth,
+                peakHeight * 0.45f,
+                centre + peakWidth * 0.15f,
+                peakHeight * 0.65f,
+                centre,
+                peakHeight,
+              )
+              lineTo(centre, box.top)
+              dropFromTip(box)
+            }
+          val otherSide =
+            Path().apply {
+              moveTo(centre - peakWidth, 0f)
+              cubicTo(
+                centre - peakWidth,
+                peakHeight * 0.45f,
+                centre - peakWidth * 0.15f,
+                peakHeight * 0.65f,
+                centre,
+                peakHeight,
+              )
+            }
+          val style = Stroke(width = stroke, join = StrokeJoin.Round)
+          val drawn = Path()
+          val measure = PathMeasure().apply { setPath(main, false) }
+          measure.getSegment(0f, measure.length * progress.value, drawn, true)
+          drawPath(drawn, outline, style = style)
+          // The second side of the peak is short: it is drawn within the first part of the progress.
+          val sideDrawn = Path()
+          val sideMeasure = PathMeasure().apply { setPath(otherSide, false) }
+          sideMeasure.getSegment(
+            0f,
+            sideMeasure.length * (progress.value / PeakShare).coerceAtMost(1f),
+            sideDrawn,
+            true,
+          )
+          drawPath(sideDrawn, outline, style = style)
+        },
+    contentAlignment = Alignment.BottomCenter,
+  ) {
     Box(
       modifier =
         Modifier
           .size(width = DropWidth, height = DropHeight)
-          .border(DropStroke, outline, DropShape)
           .clip(DropShape)
           .clickable(
+            enabled = progress.value >= 1f,
             interactionSource = remember { MutableInteractionSource() },
             indication = ripple(color = error),
             role = Role.Button,
@@ -270,7 +388,7 @@ private fun HangingRemove(onRemove: () -> Unit) {
         contentDescription = stringResource(R.string.transform_result_delete),
         tint = CaducityTheme.colorScheme.onSurfaceVariant,
         // The centre of the round body, which is half the width above the bottom.
-        modifier = Modifier.padding(bottom = DropWidth / 2 - 10.dp).size(20.dp),
+        modifier = Modifier.padding(bottom = DropWidth / 2 - 10.dp).size(20.dp).alpha(progress.value),
       )
     }
   }
