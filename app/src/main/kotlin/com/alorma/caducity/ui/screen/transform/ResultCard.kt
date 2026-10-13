@@ -25,7 +25,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
@@ -41,6 +46,7 @@ import com.alorma.caducity.base.ui.icons.symbols.CalendarMonth
 import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
 import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
+import com.alorma.caducity.base.ui.icons.symbols.Widgets
 import com.alorma.caducity.domain.usecase.TransformItemsUseCase
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.imageVector
@@ -106,11 +112,26 @@ fun ResultCard(
               modifier = Modifier.size(20.dp),
             )
           }
+        } else {
+          ResultChip(onClick = { pickingCategory = !pickingCategory }, empty = true) {
+            Icon(Symbols.Outlined.Widgets, contentDescription = null, modifier = Modifier.size(20.dp))
+            Text(
+              stringResource(R.string.transform_category_empty),
+              style = CaducityTheme.typography.labelLarge,
+              maxLines = 1,
+            )
+          }
         }
-        ResultChip(onClick = { actions.onPickDate(id) }) {
+        val expiration = state.expirationOf(result)
+        ResultChip(onClick = { actions.onPickDate(id) }, empty = expiration == null) {
           Icon(Symbols.Outlined.CalendarMonth, contentDescription = null, modifier = Modifier.size(20.dp))
           Text(
-            text = formatDate(state.expirationOf(result), LocalLocale.current.platformLocale),
+            text =
+              if (expiration != null) {
+                formatDate(expiration, LocalLocale.current.platformLocale)
+              } else {
+                stringResource(R.string.transform_date_empty)
+              },
             style = CaducityTheme.typography.labelLarge,
             maxLines = 1,
           )
@@ -137,6 +158,12 @@ fun ResultCard(
       if (result.expirationOverride == null && first != null) {
         Text(
           text = stringResource(R.string.transform_date_hint, first.name),
+          style = CaducityTheme.typography.bodySmall,
+          color = CaducityTheme.colorScheme.onSurfaceVariant,
+        )
+      } else if (state.ingredients.isEmpty() && (category == null || state.expirationOf(result) == null)) {
+        Text(
+          text = stringResource(R.string.transform_free_hint),
           style = CaducityTheme.typography.bodySmall,
           color = CaducityTheme.colorScheme.onSurfaceVariant,
         )
@@ -224,16 +251,42 @@ private fun CounterRow(
 private fun ResultChip(
   onClick: () -> Unit,
   selected: Boolean = false,
+  /** A value still to be chosen: transparent, dashed outline. */
+  empty: Boolean = false,
   content: @Composable () -> Unit,
 ) {
   val scheme = CaducityTheme.colorScheme
+  val dash = scheme.outline
   Surface(
     onClick = onClick,
     shape = ChipShape,
-    color = if (selected) scheme.primaryContainer else scheme.surfaceContainerHigh,
-    contentColor = if (selected) scheme.onPrimaryContainer else scheme.onSurface,
+    color =
+      when {
+        empty -> Color.Transparent
+        selected -> scheme.primaryContainer
+        else -> scheme.surfaceContainerHigh
+      },
+    contentColor =
+      when {
+        empty -> scheme.onSurfaceVariant
+        selected -> scheme.onPrimaryContainer
+        else -> scheme.onSurface
+      },
     border = if (selected) BorderStroke(2.dp, scheme.primary) else null,
-    modifier = Modifier.height(44.dp),
+    modifier =
+      Modifier.height(44.dp).then(
+        if (empty) {
+          Modifier.drawBehind {
+            drawRoundRect(
+              color = dash,
+              cornerRadius = CornerRadius(22.dp.toPx()),
+              style = Stroke(width = 1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 6f))),
+            )
+          }
+        } else {
+          Modifier
+        },
+      ),
   ) {
     Row(
       modifier = Modifier.padding(start = 6.dp, end = 14.dp),

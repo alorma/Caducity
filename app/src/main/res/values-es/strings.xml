@@ -147,6 +147,11 @@
   <string name="transform_done_one_ingredient">1 ingrediente transformado en %1$d productos</string>
   <string name="transform_done_one_product">%1$d ingredientes transformados en 1 producto</string>
   <string name="transform_done_one_one">1 ingrediente transformado en 1 producto</string>
+  <string name="transform_added">%1$d productos añadidos</string>
+  <string name="transform_added_one">1 producto añadido</string>
+  <string name="transform_category_empty">Categoría</string>
+  <string name="transform_date_empty">Caducidad</string>
+  <string name="transform_free_hint">Sin ingredientes, la categoría y la fecha las eliges tú.</string>
   <string name="transform_section_result">Resultado</string>
   <string name="transform_result_name">Nombre</string>
   <string name="transform_result_name_hint">¿Qué estás cocinando?</string>

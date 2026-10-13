@@ -203,6 +203,9 @@ private fun resultMeta(
   categoryName: String?,
 ): String {
   val units = pluralStringResource(R.plurals.transform_result_units, result.servings, result.servings)
-  val date = formatDate(state.expirationOf(result), LocalLocale.current.platformLocale)
-  return listOfNotNull(units, categoryName, stringResource(R.string.transform_result_expires, date)).joinToString(" · ")
+  val date =
+    state.expirationOf(result)?.let {
+      stringResource(R.string.transform_result_expires, formatDate(it, LocalLocale.current.platformLocale))
+    }
+  return listOfNotNull(units, categoryName, date).joinToString(" · ")
 }

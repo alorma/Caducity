@@ -43,6 +43,8 @@ data class TransformState(
   val categories: List<Category> = emptyList(),
   val expandedResultId: Int = 0,
   val saving: Boolean = false,
+  /** Free entry: opened without ingredients, so they are optional and category and date are chosen by hand. */
+  val freeEntry: Boolean = false,
 ) {
   private val spentWithOwner: List<Pair<IngredientUi, ActiveItem>>
     get() = ingredients.flatMap { ingredient -> ingredient.spent.map { ingredient to it } }
@@ -70,12 +72,21 @@ data class TransformState(
     listOf(result.categoryOverride, result.historyCategoryId, defaultCategoryId)
       .firstOrNull { id -> id != null && categories.any { it.id == id } }
 
-  fun expirationOf(result: ResultUi): LocalDate = result.expirationOverride ?: defaultExpiration
+  /** Null while there are no ingredients to take a default from and the user has not picked one. */
+  fun expirationOf(result: ResultUi): LocalDate? =
+    result.expirationOverride ?: defaultExpiration.takeIf { ingredients.isNotEmpty() }
+
+  /** A result that is entirely frozen has no date, so it does not need one. */
+  private fun hasRequiredDate(result: ResultUi): Boolean =
+    expirationOf(result) != null || result.frozenCount == result.servings
+
+  /** The date to save: a fully frozen result without one starts today. */
+  fun expirationToSave(result: ResultUi): LocalDate = expirationOf(result) ?: today
 
   val canSave: Boolean
     get() =
       !saving &&
-        ingredients.isNotEmpty() &&
+        (ingredients.isNotEmpty() || freeEntry) &&
         results.isNotEmpty() &&
-        results.all { it.name.isNotBlank() && categoryOf(it) != null }
+        results.all { it.name.isNotBlank() && categoryOf(it) != null && hasRequiredDate(it) }
 }
