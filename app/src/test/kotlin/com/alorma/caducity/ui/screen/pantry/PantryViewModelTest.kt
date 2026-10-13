@@ -8,6 +8,7 @@ import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.config.time.date
+import com.alorma.caducity.data.datasource.RoomItemDataSource
 import com.alorma.caducity.data.datasource.RoomPantryDataSource
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
@@ -16,9 +17,14 @@ import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
+import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
+import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
+import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.ObservePantryUseCase
+import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
@@ -117,11 +123,17 @@ class PantryViewModelTest {
   ) = addProduct.add(name, categoryId, inDays(days), quantity, false).getOrThrow()
 
   private fun viewModel(): PantryViewModel {
-    val items =
-      ObserveItemsUseCase(pantry, AppExpirationThresholdsImpl(SoonThresholdPreferences(MapSettings())), todayProvider)
+    val thresholds = AppExpirationThresholdsImpl(SoonThresholdPreferences(MapSettings()))
+    val items = ObserveItemsUseCase(pantry, thresholds, todayProvider)
+    val itemSource = RoomItemDataSource(db.itemDao(), clock, ItemRoomMapper(clock, thresholds))
     return PantryViewModel(
       observePantry = ObservePantryUseCase(items, pantry, todayProvider),
       eventTracker = EventTracker(emptyList()),
+      consumeItem = ConsumeItemUseCase(itemSource, pantry, clock),
+      freezeItem = FreezeItemUseCase(itemSource, pantry, clock),
+      discardItems = DiscardItemsUseCase(pantry, clock),
+      restoreItems = RestoreItemsUseCase(pantry),
+      snackbars = GlobalSnackbarEvents(),
     ).also { created += it }
   }
 

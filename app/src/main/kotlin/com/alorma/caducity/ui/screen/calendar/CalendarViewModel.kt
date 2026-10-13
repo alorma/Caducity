@@ -1,16 +1,26 @@
 package com.alorma.caducity.ui.screen.calendar
 
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.R
 import com.alorma.caducity.config.calendar.FirstDayOfWeekPreferences
 import com.alorma.caducity.config.time.TodayProvider
-import com.alorma.caducity.domain.model.unitPositions
+import com.alorma.caducity.domain.model.ProductRowDetail
+import com.alorma.caducity.domain.model.ProductRowModel
+import com.alorma.caducity.domain.model.toProductRow
+import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
+import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
+import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveCalendarUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
-import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
+import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.feature.tracking.CalendarDaySelectAction
 import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.feature.tracking.ItemActionAction
 import com.alorma.caducity.feature.tracking.NavigateToItemActionsFromCalendarAction
 import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
+import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,20 +29,24 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.daysUntil
 
-/** Month view: the grid with a dot per unit, and the units of the selected day. */
+/** Month view: the grid with a dot per unit, and the products of the selected day. */
 @OptIn(ExperimentalCoroutinesApi::class)
 class CalendarViewModel(
   private val args: CalendarArgs,
   private val observeCalendar: ObserveCalendarUseCase,
-  observeItems: ObserveItemsUseCase,
   observeCategories: ObserveCategoriesUseCase,
   firstDayOfWeekPreferences: FirstDayOfWeekPreferences,
   private val todayProvider: TodayProvider,
   private val eventTracker: EventTracker,
+  private val consumeItem: ConsumeItemUseCase,
+  private val freezeItem: FreezeItemUseCase,
+  private val discardItems: DiscardItemsUseCase,
+  private val restoreItems: RestoreItemsUseCase,
+  private val snackbars: GlobalSnackbarEvents,
 ) : BaseViewModel<CalendarNavigation, CalendarNavigationSideEffect, Unit>() {
   private val initialSelected = args.date ?: todayProvider.today()
   private val monthStart = MutableStateFlow(initialSelected.firstOfMonth())
@@ -57,11 +71,9 @@ class CalendarViewModel(
       combine(
         // The neighbour months are loaded too, so the pager shows their dots while it is being dragged.
         observeCalendar.observe(month.previous().first..month.next().last, args.categoryId),
-        observeItems.observe(),
         observeCategories.observe(),
-      ) { byDate, items, categories ->
+      ) { byDate, categories ->
         val categoriesById = categories.associateBy { it.id }
-        val positions = items.unitPositions()
         CalendarState.Ready(
           month = month,
           today = params.today,
@@ -69,17 +81,20 @@ class CalendarViewModel(
           categoryName = args.categoryId?.let { categoriesById[it]?.name },
           statusesByDate = byDate.mapValues { (_, units) -> units.map { it.status }.sortedBy { it.ordinal } },
           rows =
-            byDate[params.selected].orEmpty().mapNotNull { entry ->
-              val category = categoriesById[entry.categoryId] ?: return@mapNotNull null
-              CalendarRow(
-                itemId = entry.itemId,
-                name = entry.name,
-                category = category,
-                position = positions.getValue(entry.itemId),
-                status = entry.status,
-                daysLeft = params.today.daysUntil(entry.expiration),
-              )
-            },
+            byDate[params.selected]
+              .orEmpty()
+              .filter { categoriesById.containsKey(it.categoryId) }
+              .groupBy { it.groupKey }
+              .values
+              .map { units ->
+                // The icon only tells the categories apart when the calendar is not filtered by one.
+                val category = categoriesById.getValue(units.first().categoryId)
+                units.toProductRow(
+                  category = category.takeIf { args.categoryId == null },
+                  detail = ProductRowDetail.WithDays,
+                  today = params.today,
+                )
+              },
         ) as CalendarState
       }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), CalendarState.Loading)
@@ -97,6 +112,55 @@ class CalendarViewModel(
   fun onDayClick(date: LocalDate) {
     eventTracker.trackAction(CalendarDaySelectAction())
     selected.value = date
+  }
+
+  // The round buttons of a row act on **one** unit: the one that expires first (like Home).
+
+  fun onConsume(row: ProductRowModel) {
+    actOnNearest(row, "consume_calendar", R.string.item_actions_snackbar_consumed, AppFeedbackType.Success) {
+      consumeItem.consume(it)
+    }
+  }
+
+  fun onFreeze(row: ProductRowModel) {
+    actOnNearest(row, "freeze_calendar", R.string.item_actions_snackbar_frozen, AppFeedbackType.Success) {
+      freezeItem.freeze(it)
+    }
+  }
+
+  fun onDiscard(row: ProductRowModel) {
+    actOnNearest(row, "discard_calendar", R.string.status_snackbar_discarded, AppFeedbackType.Info) {
+      discardItems.discard(it)
+    }
+  }
+
+  /** Performs [perform] on the nearest unit of [row] and, if it worked, shows the snackbar whose «Desfés» undoes it. */
+  private fun actOnNearest(
+    row: ProductRowModel,
+    trackingName: String,
+    message: Int,
+    type: AppFeedbackType,
+    perform: suspend (List<String>) -> Result<*>,
+  ) {
+    eventTracker.trackAction(ItemActionAction(trackingName))
+    val ids = listOf(row.nearestItemId)
+    viewModelScope.launch {
+      val snapshots = restoreItems.snapshots(ids)
+      perform(ids)
+        .onSuccess {
+          snackbars.show(
+            GlobalSnackbar(
+              message = message,
+              messageArgs = listOf(row.name),
+              actionLabel = R.string.add_undo,
+              type = type,
+              onAction = { restoreItems.restoreSnapshots(snapshots) },
+            ),
+          )
+        }.onFailure {
+          snackbars.show(GlobalSnackbar(R.string.item_actions_error, type = AppFeedbackType.Error))
+        }
+    }
   }
 
   /** The pager settled on the month starting at [first]; it selects today if it is in that month, otherwise its first day. */

@@ -76,11 +76,15 @@ val appModule =
       CalendarViewModel(
         args = params.get(),
         observeCalendar = get(),
-        observeItems = get(),
         observeCategories = get(),
         firstDayOfWeekPreferences = get(),
         todayProvider = get(),
         eventTracker = get(),
+        consumeItem = get(),
+        freezeItem = get(),
+        discardItems = get(),
+        restoreItems = get(),
+        snackbars = get(),
       )
     }
 

@@ -1,24 +1,13 @@
 package com.alorma.caducity.ui.screen.calendar
 
-import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
-import com.alorma.caducity.domain.model.UnitPosition
+import com.alorma.caducity.domain.model.ProductRowModel
 import kotlinx.datetime.LocalDate
 
 /** Arguments of the `Calendar` route. */
 data class CalendarArgs(
   val categoryId: String? = null,
   val date: LocalDate? = null,
-)
-
-data class CalendarRow(
-  val itemId: String,
-  val name: String,
-  val category: Category,
-  val position: UnitPosition,
-  val status: ExpiryStatus,
-  /** Days until the unit expires; negative when it already has. */
-  val daysLeft: Int,
 )
 
 sealed interface CalendarState {
@@ -32,8 +21,8 @@ sealed interface CalendarState {
     val categoryName: String?,
     /** Statuses of the units of each day (past days included, so expired ones show up). */
     val statusesByDate: Map<LocalDate, List<ExpiryStatus>>,
-    /** Units of the [selected] day. */
-    val rows: List<CalendarRow>,
+    /** Products of the [selected] day, one row each; the category icon only when the calendar is not filtered. */
+    val rows: List<ProductRowModel>,
   ) : CalendarState
 }
 

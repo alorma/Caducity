@@ -63,16 +63,13 @@ import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.ExpiryStatus
-import com.alorma.caducity.domain.model.UnitPosition
+import com.alorma.caducity.domain.model.ProductRowDetail
+import com.alorma.caducity.domain.model.ProductRowModel
 import com.alorma.caducity.feature.tracking.CalendarScreen as CalendarScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
-import com.alorma.caducity.ui.components.category.CategoryIcons
-import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
-import com.alorma.caducity.ui.components.connected.ConnectedRow
+import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
-import com.alorma.caducity.ui.components.status.StatusPill
-import com.alorma.caducity.ui.components.status.statusPillText
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -122,6 +119,9 @@ fun CalendarScreen(
           onMonthShown = viewModel::onMonthShown,
           onDayClick = viewModel::onDayClick,
           onRowClick = { viewModel.navigate(CalendarNavigation.ItemActions(it)) },
+          onConsume = viewModel::onConsume,
+          onFreeze = viewModel::onFreeze,
+          onDiscard = viewModel::onDiscard,
         )
     }
   }
@@ -134,6 +134,9 @@ internal fun CalendarContent(
   onMonthShown: (LocalDate) -> Unit,
   onDayClick: (LocalDate) -> Unit,
   onRowClick: (String) -> Unit,
+  onConsume: (ProductRowModel) -> Unit,
+  onFreeze: (ProductRowModel) -> Unit,
+  onDiscard: (ProductRowModel) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   // Page MonthPages is the month the screen opened on; the pager reaches MonthPages months either way.
@@ -180,8 +183,16 @@ internal fun CalendarContent(
           )
         }
       }
-      itemsIndexed(state.rows, key = { _, row -> row.itemId }) { index, row ->
-        CalendarRowItem(row = row, index = index, count = state.rows.size, onClick = { onRowClick(row.itemId) })
+      itemsIndexed(state.rows, key = { _, row -> row.key }) { index, row ->
+        ProductRow(
+          model = row,
+          index = index,
+          count = state.rows.size,
+          onClick = { onRowClick(row.nearestItemId) },
+          onConsume = { onConsume(row) },
+          onFreeze = { onFreeze(row) },
+          onDiscard = { onDiscard(row) },
+        )
       }
       item(key = "bottom-inset") {
         Spacer(Modifier.windowInsetsPadding(WindowInsets.navigationBars))
@@ -409,7 +420,8 @@ private fun DayTitle(
     if (state.rows.isEmpty()) {
       whenText
     } else {
-      "$whenText · ${pluralStringResource(R.plurals.home_product_count, state.rows.size, state.rows.size)}"
+      val units = state.rows.sumOf { it.unitCount }
+      "$whenText · ${pluralStringResource(R.plurals.home_product_count, units, units)}"
     }
   Row(
     modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp),
@@ -427,44 +439,6 @@ private fun DayTitle(
       color = CaducityTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier.padding(bottom = 2.dp),
     )
-  }
-}
-
-@Composable
-private fun CalendarRowItem(
-  row: CalendarRow,
-  index: Int,
-  count: Int,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  val meta =
-    if (row.position.count > 1) {
-      stringResource(R.string.calendar_row_meta, row.category.name, row.position.index, row.position.count)
-    } else {
-      row.category.name
-    }
-  ConnectedRow(
-    index = index,
-    count = count,
-    onClick = onClick,
-    modifier = modifier.height(64.dp),
-    contentPadding = PaddingValues(start = 12.dp, end = 12.dp),
-  ) {
-    CategoryShapeIcon(shape = row.category.shape, icon = CategoryIcons.vectorOf(row.category.icon), size = 44.dp)
-    Spacer(Modifier.width(14.dp))
-    Column(modifier = Modifier.weight(1f)) {
-      Text(row.name, style = CaducityTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
-      Text(
-        meta,
-        style = CaducityTheme.typography.bodySmall,
-        color = CaducityTheme.colorScheme.onSurfaceVariant,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-      )
-    }
-    Spacer(Modifier.width(8.dp))
-    StatusPill(status = row.status, label = statusPillText(row.status, row.daysLeft))
   }
 }
 
@@ -503,6 +477,21 @@ private fun LocalDate.dayMonthText(locale: Locale = Locale.getDefault()): String
 private val previewToday = LocalDate(2026, 10, 11)
 private val previewCategory = Category("dairy", "Làctics", "", CategoryShape.COOKIE, CategoryIcon("water_full"))
 
+private fun previewRow(
+  name: String,
+  status: ExpiryStatus,
+  days: Int,
+  units: Int,
+) = ProductRowModel(
+  key = name,
+  name = name,
+  itemIds = List(units) { "$name-$it" },
+  status = status,
+  remainingDays = days,
+  category = previewCategory,
+  detail = ProductRowDetail.WithDays,
+)
+
 @PreviewLightDark
 @Composable
 private fun CalendarPreview() {
@@ -525,14 +514,17 @@ private fun CalendarPreview() {
               ),
             rows =
               listOf(
-                CalendarRow("1", "Formatge cheddar", previewCategory, UnitPosition(1, 3), ExpiryStatus.FRESH, 10),
-                CalendarRow("2", "Salsa pesto", previewCategory, UnitPosition(1, 1), ExpiryStatus.FRESH, 10),
+                previewRow("Formatge cheddar", ExpiryStatus.FRESH, 10, units = 3),
+                previewRow("Salsa pesto", ExpiryStatus.FRESH, 10, units = 1),
               ),
           ),
         onBack = {},
         onMonthShown = {},
         onDayClick = {},
         onRowClick = {},
+        onConsume = {},
+        onFreeze = {},
+        onDiscard = {},
       )
     }
   }

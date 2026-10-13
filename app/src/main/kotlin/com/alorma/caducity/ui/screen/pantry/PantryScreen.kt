@@ -19,10 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -40,9 +37,12 @@ import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.PantryCategory
 import com.alorma.caducity.domain.model.PantryData
+import com.alorma.caducity.domain.model.ProductRowDetail
+import com.alorma.caducity.domain.model.ProductRowModel
+import com.alorma.caducity.domain.model.toProductRow
 import com.alorma.caducity.feature.tracking.PantryScreen as PantryScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
-import com.alorma.caducity.ui.components.product.ProductGroupRow
+import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.navigation.LocalFloatingBarPadding
@@ -91,6 +91,9 @@ fun PantryScreen(
           onQueryChange = viewModel::onQueryChange,
           onNavigate = viewModel::navigate,
           onOpenItemActions = onOpenItemActions,
+          onConsume = viewModel::onConsume,
+          onFreeze = viewModel::onFreeze,
+          onDiscard = viewModel::onDiscard,
         )
     }
   }
@@ -103,10 +106,12 @@ internal fun PantryContent(
   onQueryChange: (String) -> Unit,
   onNavigate: (PantryNavigation) -> Unit,
   onOpenItemActions: (String) -> Unit,
+  onConsume: (ProductRowModel) -> Unit,
+  onFreeze: (ProductRowModel) -> Unit,
+  onDiscard: (ProductRowModel) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val data = state.data
-  var expanded by rememberSaveable { mutableStateOf(emptySet<String>()) }
   val columns = 2
 
   Column(modifier = modifier.fillMaxSize()) {
@@ -125,16 +130,7 @@ internal fun PantryContent(
       verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
       if (state.isSearching) {
-        searchResults(state, expanded, { key ->
-          expanded =
-            if (key in
-              expanded
-            ) {
-              expanded - key
-            } else {
-              expanded + key
-            }
-        }, onOpenItemActions)
+        searchResults(state, onOpenItemActions, onConsume, onFreeze, onDiscard)
       } else {
         val cells: List<PantryCategory?> = data.categories + null
         items(cells.chunked(columns), key = { row -> row.first()?.category?.id ?: "new-category" }) { row ->
@@ -175,9 +171,10 @@ private fun <T> LazyListScope.items(
 
 private fun LazyListScope.searchResults(
   state: PantryState.Ready,
-  expanded: Set<String>,
-  onToggle: (String) -> Unit,
   onOpenItemActions: (String) -> Unit,
+  onConsume: (ProductRowModel) -> Unit,
+  onFreeze: (ProductRowModel) -> Unit,
+  onDiscard: (ProductRowModel) -> Unit,
 ) {
   if (state.results.isEmpty()) {
     item(key = "no-results") {
@@ -191,15 +188,20 @@ private fun LazyListScope.searchResults(
     return
   }
   itemsIndexed(state.results, key = { _, result -> "result-${result.group.key}" }) { index, result ->
-    ProductGroupRow(
-      group = result.group,
-      today = state.data.today,
+    val row =
+      result.group.units.toProductRow(
+        category = result.category,
+        detail = ProductRowDetail.WithDays,
+        today = state.data.today,
+      )
+    ProductRow(
+      model = row,
       index = index,
       count = state.results.size,
-      expanded = result.group.key in expanded,
-      onToggleExpanded = { onToggle(result.group.key) },
-      onUnitClick = onOpenItemActions,
-      categoryName = result.category.name,
+      onClick = { onOpenItemActions(row.nearestItemId) },
+      onConsume = { onConsume(row) },
+      onFreeze = { onFreeze(row) },
+      onDiscard = { onDiscard(row) },
     )
   }
 }
@@ -283,6 +285,9 @@ internal fun PantryPreviewContent() {
     onQueryChange = {},
     onNavigate = {},
     onOpenItemActions = {},
+    onConsume = {},
+    onFreeze = {},
+    onDiscard = {},
   )
 }
 

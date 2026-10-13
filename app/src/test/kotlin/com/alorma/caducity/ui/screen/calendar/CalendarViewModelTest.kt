@@ -9,6 +9,7 @@ import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.config.time.date
+import com.alorma.caducity.data.datasource.RoomItemDataSource
 import com.alorma.caducity.data.datasource.RoomPantryDataSource
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
@@ -18,10 +19,15 @@ import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
+import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
+import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
+import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveCalendarUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
+import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
@@ -76,6 +82,7 @@ class CalendarViewModelTest {
   private lateinit var pantry: RoomPantryDataSource
   private lateinit var addProduct: AddProductUseCase
   private lateinit var items: ObserveItemsUseCase
+  private lateinit var itemSource: RoomItemDataSource
   private val firstDay = FirstDayOfWeekPreferences(MapSettings())
   private val created = mutableListOf<CalendarViewModel>()
 
@@ -100,6 +107,7 @@ class CalendarViewModelTest {
       )
     addProduct = AddProductUseCase(pantry, clock)
     items = ObserveItemsUseCase(pantry, thresholds, todayProvider)
+    itemSource = RoomItemDataSource(db.itemDao(), clock, itemMapper)
   }
 
   @After
@@ -127,11 +135,15 @@ class CalendarViewModelTest {
     CalendarViewModel(
       args = args,
       observeCalendar = ObserveCalendarUseCase(items),
-      observeItems = items,
       observeCategories = ObserveCategoriesUseCase(pantry),
       firstDayOfWeekPreferences = firstDay,
       todayProvider = todayProvider,
       eventTracker = EventTracker(emptyList()),
+      consumeItem = ConsumeItemUseCase(itemSource, pantry, clock),
+      freezeItem = FreezeItemUseCase(itemSource, pantry, clock),
+      discardItems = DiscardItemsUseCase(pantry, clock),
+      restoreItems = RestoreItemsUseCase(pantry),
+      snackbars = GlobalSnackbarEvents(),
     ).also { created += it }
 
   private suspend fun CalendarViewModel.ready(predicate: (CalendarState.Ready) -> Boolean = { true }) =
@@ -151,13 +163,25 @@ class CalendarViewModelTest {
 
       expectThat(state.selected).isEqualTo(today)
       expectThat(state.month.first).isEqualTo(LocalDate(2026, 10, 1))
-      expectThat(state.rows.map { it.name }).containsExactly("Milk", "Milk")
-      expectThat(state.rows.map { it.position.index }).containsExactly(1, 2)
-      expectThat(
-        state.rows
-          .first()
-          .position.count,
-      ).isEqualTo(2)
+      // Two units of the same product on the day make one row; the calendar is not filtered, so it shows the icon.
+      expectThat(state.rows.map { it.name }).containsExactly("Milk")
+      expectThat(state.rows.single().unitCount).isEqualTo(2)
+      val category = state.rows.single().category
+      expectThat(category?.id).isEqualTo("dairy")
+    }
+
+  @Test
+  fun `consuming a row consumes its nearest unit only`() =
+    runTest {
+      category("dairy")
+      add("Milk", days = 0, quantity = 2)
+      val vm = viewModel()
+      val before = vm.ready { it.rows.isNotEmpty() }.rows.single()
+
+      vm.onConsume(before)
+
+      val after = vm.ready { it.rows.single().unitCount == 1 }.rows.single()
+      expectThat(after.itemIds).containsExactly(before.itemIds.last())
     }
 
   @Test
@@ -198,6 +222,8 @@ class CalendarViewModelTest {
 
       expectThat(state.rows.map { it.name }).containsExactly("Apple")
       expectThat(state.categoryName).isEqualTo("fruit")
+      // Filtered by one category: the rows carry no category icon.
+      expectThat(state.rows.single().category).isEqualTo(null)
     }
 
   @Test
@@ -276,8 +302,7 @@ class CalendarViewModelTest {
       month.statusesByDate.forEach { (date, statuses) ->
         vm.onDayClick(date)
         val day = vm.ready { it.selected == date }
-        expectThat(day.rows.size).isEqualTo(statuses.size)
-        expectThat(day.rows.map { it.status }.sortedBy { it.ordinal }).isEqualTo(statuses)
+        expectThat(day.rows.sumOf { it.unitCount }).isEqualTo(statuses.size)
       }
       expectThat(month.statusesByDate.getValue(today)).hasSize(2)
     }
