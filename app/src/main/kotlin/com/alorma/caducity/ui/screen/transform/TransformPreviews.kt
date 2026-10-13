@@ -86,7 +86,7 @@ private fun TransformPreviewContent(state: TransformState) {
 
 @PreviewDynamicLightDark
 @Composable
-private fun TransformEmptyPreview() {
+internal fun TransformEmptyPreview() {
   TransformPreviewContent(
     TransformState(today = today, ingredients = listOf(chicken), categories = categories),
   )
@@ -94,7 +94,7 @@ private fun TransformEmptyPreview() {
 
 @PreviewDynamicLightDark
 @Composable
-private fun TransformSimplePreview() {
+internal fun TransformSimplePreview() {
   TransformPreviewContent(
     TransformState(
       today = today,
@@ -107,7 +107,7 @@ private fun TransformSimplePreview() {
 
 @PreviewDynamicLightDark
 @Composable
-private fun TransformMultiplePreview() {
+internal fun TransformMultiplePreview() {
   TransformPreviewContent(
     TransformState(
       today = today,
@@ -126,13 +126,13 @@ private fun TransformMultiplePreview() {
 
 @PreviewDynamicLightDark
 @Composable
-private fun TransformFreeEntryPreview() {
+internal fun TransformFreeEntryPreview() {
   TransformPreviewContent(TransformState(today = today, categories = categories, freeEntry = true))
 }
 
 @PreviewDynamicLightDark
 @Composable
-private fun TransformFreeEntryFilledPreview() {
+internal fun TransformFreeEntryFilledPreview() {
   TransformPreviewContent(
     TransformState(
       today = today,

@@ -65,7 +65,7 @@ private fun PickerPreviewContent(
 
 @PreviewDynamicLightDark
 @Composable
-private fun IngredientPickerSelectionPreview() {
+internal fun IngredientPickerSelectionPreview() {
   PickerPreviewContent(
     IngredientPickerState(groups = groups, categories = categories, selectedKeys = setOf("Whole chicken", "Carrots")),
   )
@@ -73,7 +73,7 @@ private fun IngredientPickerSelectionPreview() {
 
 @PreviewDynamicLightDark
 @Composable
-private fun IngredientPickerNothingSelectedPreview() {
+internal fun IngredientPickerNothingSelectedPreview() {
   PickerPreviewContent(
     IngredientPickerState(groups = groups, categories = categories, categoryFilters = setOf("produce")),
   )
@@ -81,13 +81,13 @@ private fun IngredientPickerNothingSelectedPreview() {
 
 @PreviewDynamicLightDark
 @Composable
-private fun IngredientPickerNoResultsPreview() {
+internal fun IngredientPickerNoResultsPreview() {
   PickerPreviewContent(IngredientPickerState(groups = groups, categories = categories, query = "zzz"))
 }
 
 @PreviewDynamicLightDark
 @Composable
-private fun IngredientPickerStatusMenuPreview() {
+internal fun IngredientPickerStatusMenuPreview() {
   PickerPreviewContent(
     IngredientPickerState(groups = groups, categories = categories, statusFilters = setOf(ExpiryStatus.SOON)),
     openMenu = PickerMenu.Status,
@@ -96,7 +96,7 @@ private fun IngredientPickerStatusMenuPreview() {
 
 @PreviewDynamicLightDark
 @Composable
-private fun IngredientPickerCategoryMenuPreview() {
+internal fun IngredientPickerCategoryMenuPreview() {
   PickerPreviewContent(
     IngredientPickerState(groups = groups, categories = categories, categoryFilters = setOf("meat", "produce")),
     openMenu = PickerMenu.Category,
