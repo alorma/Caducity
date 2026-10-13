@@ -98,6 +98,9 @@
   <string name="nav_pantry">Rebost</string>
   <string name="nav_settings">Ajustos</string>
   <string name="action_add_product">Afegeix un producte</string>
+  <string name="action_more_actions">Més accions</string>
+  <string name="state_expanded">Desplegat</string>
+  <string name="state_collapsed">Plegat</string>
   <string name="add_date_placeholder">dd/mm/aa</string>
   <string name="add_date_pick">Tria la data</string>
   <string name="add_date_help_expired">ja ha caducat</string>
@@ -269,7 +272,7 @@
   <string name="item_actions_pick_date">Tria una data</string>
   <string name="item_actions_edit">Edita</string>
   <string name="item_actions_move">Mou a una altra categoria</string>
-  <string name="item_actions_transform">Transforma</string>
+  <string name="item_actions_transform">Transforma aquest producte</string>
   <string name="item_actions_move_title">Mou a…</string>
   <string name="item_actions_delete">Esborra</string>
   <string name="item_actions_delete_title">Esborrar %1$s?</string>

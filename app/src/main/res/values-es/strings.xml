@@ -98,6 +98,9 @@
   <string name="nav_pantry">Despensa</string>
   <string name="nav_settings">Ajustes</string>
   <string name="action_add_product">Añadir un producto</string>
+  <string name="action_more_actions">Más acciones</string>
+  <string name="state_expanded">Desplegado</string>
+  <string name="state_collapsed">Plegado</string>
   <string name="add_date_placeholder">dd/mm/aa</string>
   <string name="add_date_pick">Elige la fecha</string>
   <string name="add_date_help_expired">ya ha caducado</string>
@@ -269,7 +272,7 @@
   <string name="item_actions_pick_date">Elige una fecha</string>
   <string name="item_actions_edit">Edita</string>
   <string name="item_actions_move">Mover a otra categoría</string>
-  <string name="item_actions_transform">Transforma</string>
+  <string name="item_actions_transform">Transforma este producto</string>
   <string name="item_actions_move_title">Mover a…</string>
   <string name="item_actions_delete">Borra</string>
   <string name="item_actions_delete_title">¿Borrar %1$s?</string>

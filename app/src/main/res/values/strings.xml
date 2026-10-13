@@ -97,6 +97,9 @@
   <string name="nav_pantry">Pantry</string>
   <string name="nav_settings">Settings</string>
   <string name="action_add_product">Add a product</string>
+  <string name="action_more_actions">More actions</string>
+  <string name="state_expanded">Expanded</string>
+  <string name="state_collapsed">Collapsed</string>
   <string name="add_date_placeholder">dd/mm/yy</string>
   <string name="add_date_pick">Pick a date</string>
   <string name="add_date_help_expired">already expired</string>
@@ -259,7 +262,7 @@
   <string name="item_actions_pick_date">Pick a date</string>
   <string name="item_actions_edit">Edit</string>
   <string name="item_actions_move">Move to another category</string>
-  <string name="item_actions_transform">Transform</string>
+  <string name="item_actions_transform">Transform this product</string>
   <string name="item_actions_move_title">Move to…</string>
   <string name="item_actions_delete">Delete</string>
   <string name="item_actions_delete_title">Delete %1$s?</string>
