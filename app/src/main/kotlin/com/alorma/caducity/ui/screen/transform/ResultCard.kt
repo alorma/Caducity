@@ -48,6 +48,7 @@ import com.alorma.caducity.base.ui.icons.symbols.AcUnit
 import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.CalendarMonth
 import com.alorma.caducity.base.ui.icons.symbols.Check
+import com.alorma.caducity.base.ui.icons.symbols.Delete
 import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
 import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
@@ -78,7 +79,7 @@ fun ResultForm(
   val id = result.id
   val focusRequester = remember { FocusRequester() }
   val focusManager = LocalFocusManager.current
-  // Only a result that was just added (or the first one of the free entry) takes the focus; an existing one does not.
+  // Only a result that was just added takes the focus; the screen never opens with the keyboard.
   LaunchedEffect(Unit) { if (result.name.isEmpty() && state.focusResultId == id) focusRequester.requestFocus() }
   var pickingCategory by rememberSaveable(id) { mutableStateOf(false) }
   val category = state.categories.firstOrNull { it.id == state.categoryOf(result) }
@@ -175,13 +176,39 @@ fun ResultForm(
       servings = result.servings,
       onChange = { actions.onFrozenCountChange(id, it) },
     )
-    DoneButton(
-      onClick = {
-        focusManager.clearFocus()
-        actions.onDone()
-      },
-      modifier = Modifier.align(Alignment.End),
-    )
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      if (state.results.size > 1) {
+        val removeLabel = stringResource(R.string.transform_result_delete)
+        Surface(
+          onClick = {
+            focusManager.clearFocus()
+            actions.onRemove(id)
+          },
+          shape = CaducityShapes.full,
+          color = Color.Transparent,
+          contentColor = CaducityTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.minimumInteractiveComponentSize(),
+        ) {
+          Icon(
+            Symbols.Outlined.Delete,
+            contentDescription = removeLabel,
+            modifier = Modifier.padding(8.dp).size(24.dp),
+          )
+        }
+      } else {
+        Box {}
+      }
+      DoneButton(
+        onClick = {
+          focusManager.clearFocus()
+          actions.onDone()
+        },
+      )
+    }
   }
 }
 
