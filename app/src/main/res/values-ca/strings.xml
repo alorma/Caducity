@@ -165,6 +165,7 @@
   <string name="transform_result_unnamed">Resultat nou</string>
   <string name="transform_section_results_count">Resultat · %d</string>
   <string name="transform_result_done">Fet</string>
+  <string name="transform_result_delete">Esborra el resultat</string>
   <string name="transform_result_previous">Resultat anterior</string>
   <string name="transform_result_next">Resultat següent</string>
   <string name="transform_result_invalid">Cal un nom, categoria o data</string>
