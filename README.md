@@ -9,7 +9,7 @@ Caducity is an Android app that tracks when your groceries expire, so you can us
 ## Features
 
 - **Home**: what expires soon, grouped by day, with a 7-day strip and a banner for what already expired.
-- **Add**: name, category and expiry date in a few taps, with batch mode, quantity and name suggestions.
+- **Add**: name, category and expiry date in a few taps, with quantity and name suggestions.
 - **Pantry and categories**: browse by category, filter by status or by day, and search.
 - **Status lists**: Expired, Soon, Fresh and Frozen, with bulk actions and undo.
 - **Calendar**: month view of what expires each day.

@@ -21,9 +21,6 @@ import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
-import com.alorma.caducity.domain.usecase.RemoveBatchEntryUseCase
-import com.alorma.caducity.domain.usecase.RestoreBatchUseCase
-import com.alorma.caducity.domain.usecase.UndoAddItemsUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.screen.category.quick.CategoryCreatedEvents
@@ -54,7 +51,6 @@ import org.robolectric.annotation.Config
 import strikt.api.expectThat
 import strikt.assertions.containsExactly
 import strikt.assertions.hasSize
-import strikt.assertions.isA
 import strikt.assertions.isEmpty
 import strikt.assertions.isEqualTo
 import strikt.assertions.isFalse
@@ -129,12 +125,9 @@ class AddViewModelTest {
     args = AddArgs(categoryId = initialCategoryId, itemId = itemId),
     todayProvider = todayProvider,
     addItemBatch = addBatch,
-    undoAddItems = UndoAddItemsUseCase(pantry),
     getNameSuggestions = GetNameSuggestionsUseCase(pantry),
     getActiveItem = GetActiveItemUseCase(pantry),
     updateItem = UpdateItemUseCase(itemDataSource, pantry, clock),
-    removeBatchEntry = RemoveBatchEntryUseCase(pantry),
-    restoreBatch = RestoreBatchUseCase(pantry),
     observeCategories = ObserveCategoriesUseCase(pantry),
     categoryCreated = createdEvents,
     eventTracker = EventTracker(emptyList()),
@@ -315,104 +308,14 @@ class AddViewModelTest {
     }
 
   @Test
-  fun `tapping save with missing fields rejects`() =
+  fun `tapping save with missing fields rejects and saves nothing`() =
     runTest {
       val vm = viewModel()
       vm.sideEffects.test {
         vm.onSave()
         expectThat(awaitItem()).isEqualTo(AddSideEffect.Reject)
-        vm.onSaveAndAnother()
-        expectThat(awaitItem()).isEqualTo(AddSideEffect.Reject)
       }
-    }
-
-  @Test
-  fun `save and another keeps category and date, clears the name and enters batch mode`() =
-    runTest {
-      category("dairy")
-      val vm = viewModel()
-      vm.await { it.categories.isNotEmpty() }
-      vm.fill()
-      vm.onQuantityChange(2)
-
-      vm.sideEffects.test {
-        vm.onSaveAndAnother()
-        expectThat(awaitItem()).isEqualTo(AddSideEffect.Confirm)
-        expectThat(awaitItem()).isA<AddSideEffect.ShowSaved>()
-      }
-
-      val state = vm.state.value
-      expectThat(state.name).isEqualTo("")
-      expectThat(state.categoryId).isEqualTo("dairy")
-      expectThat(state.date).isEqualTo(inDays(5))
-      expectThat(state.quantity).isEqualTo(1)
-      expectThat(state.isBatchMode).isTrue()
-      expectThat(state.added).hasSize(1)
-      expectThat(state.isDone).isTrue()
-      expectThat(items()).hasSize(2)
-    }
-
-  @Test
-  fun `done in batch mode closes without saving anything else`() =
-    runTest {
-      category("dairy")
-      val vm = viewModel()
-      vm.await { it.categories.isNotEmpty() }
-      vm.fill()
-      vm.sideEffects.test {
-        vm.onSaveAndAnother()
-        awaitItem()
-        awaitItem()
-      }
-
-      vm.navigationSideEffects.test {
-        vm.onSave()
-        expectThat(awaitItem()).isEqualTo(AddNavigationSideEffect.Close)
-      }
-      expectThat(items()).hasSize(1)
-    }
-
-  @Test
-  fun `typing a known name in batch mode takes its category and keeps the date`() =
-    runTest {
-      category("dairy")
-      category("fruit", sortOrder = 1)
-      addBatch.add("Apple", "fruit", inDays(20), 1, false)
-      val vm = viewModel()
-      vm.await { it.categories.size == 2 }
-      vm.fill()
-      vm.sideEffects.test {
-        vm.onSaveAndAnother()
-        awaitItem()
-        awaitItem()
-      }
-
-      vm.onNameChange("Apple")
-      vm.await { it.categoryId == "fruit" }
-
-      expectThat(vm.state.value.date).isEqualTo(inDays(5))
-    }
-
-  @Test
-  fun `undo removes the batch items and the entry`() =
-    runTest {
-      category("dairy")
-      val vm = viewModel()
-      vm.await { it.categories.isNotEmpty() }
-      vm.fill()
-      vm.onQuantityChange(3)
-      vm.sideEffects.test {
-        vm.onSaveAndAnother()
-        awaitItem()
-        val saved = awaitItem()
-        expectThat(saved).isA<AddSideEffect.ShowSaved>()
-        vm.onUndo((saved as AddSideEffect.ShowSaved).entry)
-      }
-
-      vm.await { it.added.isEmpty() }
       expectThat(items()).isEmpty()
-      expectThat(products()).isEmpty()
-      expectThat(vm.state.value.isBatchMode).isFalse()
     }
 
   @Test
@@ -436,7 +339,7 @@ class AddViewModelTest {
       val batch = addBatch.add("Milk", "dairy", inDays(5), 2, false).getOrThrow()
       val itemId = batch.itemIds.first()
       val vm = viewModel(itemId = itemId)
-      vm.await { it.editing != null && it.date != null }
+      vm.await { it.isEditing && it.date != null }
 
       expectThat(vm.state.value.name).isEqualTo("Milk")
       expectThat(vm.state.value.categoryId).isEqualTo("dairy")
@@ -458,54 +361,20 @@ class AddViewModelTest {
     }
 
   @Test
-  fun `editing a batch chip updates the entry and restores the form`() =
+  fun `closing while editing a unit leaves the screen without saving`() =
     runTest {
       category("dairy")
-      val vm = viewModel()
-      vm.await { it.categories.isNotEmpty() }
-      vm.fill(name = "Milk")
-      vm.sideEffects.test {
-        vm.onSaveAndAnother()
-        awaitItem()
-        awaitItem()
+      val batch = addBatch.add("Milk", "dairy", inDays(5), 1, false).getOrThrow()
+      val vm = viewModel(itemId = batch.itemIds.single())
+      vm.await { it.isEditing && it.date != null }
+      vm.onNameChange("Oat milk")
+
+      vm.navigationSideEffects.test {
+        vm.navigate(AddNavigation.Close)
+        expectThat(awaitItem()).isEqualTo(AddNavigationSideEffect.Close)
       }
-      val entry =
-        vm.state.value.added
-          .single()
 
-      vm.onEditEntry(entry)
-      vm.await { it.editing != null && it.name == "Milk" }
-      vm.onNameChange("Whole milk")
-      vm.onSave()
-
-      val state = vm.await { it.editing == null && it.added.single().name == "Whole milk" }
-      expectThat(state.name).isEqualTo("")
-      expectThat(state.categoryId).isEqualTo("dairy")
-      expectThat(state.isBatchMode).isTrue()
-    }
-
-  @Test
-  fun `closing while editing a batch chip cancels the edit instead of leaving`() =
-    runTest {
-      category("dairy")
-      val vm = viewModel()
-      vm.await { it.categories.isNotEmpty() }
-      vm.fill(name = "Milk")
-      vm.sideEffects.test {
-        vm.onSaveAndAnother()
-        awaitItem()
-        awaitItem()
-      }
-      vm.onEditEntry(
-        vm.state.value.added
-          .single(),
-      )
-      vm.await { it.editing != null }
-
-      vm.navigate(AddNavigation.Close)
-
-      expectThat(vm.state.value.editing).isNull()
-      expectThat(vm.state.value.name).isEqualTo("")
+      expectThat(products().map { it.name }).containsExactly("Milk")
     }
 
   @Test
@@ -520,180 +389,5 @@ class AddViewModelTest {
 
       val state = vm.await { it.categoryId == "fresh" }
       expectThat(state.categories.map { it.id }).containsExactly("dairy", "fresh")
-    }
-
-  @Test
-  fun `editing a batch chip can change the quantity up and down`() =
-    runTest {
-      category("dairy")
-      val vm = viewModel()
-      vm.await { it.categories.isNotEmpty() }
-      vm.fill(name = "Milk")
-      vm.onQuantityChange(2)
-      vm.sideEffects.test {
-        vm.onSaveAndAnother()
-        awaitItem()
-        awaitItem()
-      }
-      vm.onEditEntry(
-        vm.state.value.added
-          .single(),
-      )
-      vm.await { it.editing != null && it.quantity == 2 }
-
-      vm.onQuantityChange(4)
-      vm.onSave()
-      vm.await { it.editing == null && it.added.single().quantity == 4 }
-      expectThat(items()).hasSize(4)
-
-      vm.onEditEntry(
-        vm.state.value.added
-          .single(),
-      )
-      vm.await { it.editing != null }
-      vm.onQuantityChange(1)
-      vm.onSave()
-      vm.await { it.editing == null && it.added.single().quantity == 1 }
-      expectThat(items()).hasSize(1)
-    }
-
-  private suspend fun AddViewModel.saveAnother(
-    name: String,
-    days: Int = 5,
-    quantity: Int = 1,
-  ) {
-    fill(name = name, days = days)
-    onQuantityChange(quantity)
-    sideEffects.test {
-      onSaveAndAnother()
-      awaitItem()
-      awaitItem()
-    }
-  }
-
-  @Test
-  fun `the batch lists the most recent first and the counter counts entries, not units`() =
-    runTest {
-      category("dairy")
-      val vm = viewModel()
-      vm.await { it.categories.isNotEmpty() }
-
-      vm.saveAnother("Milk", quantity = 3)
-      vm.saveAnother("Yogurt")
-      vm.saveAnother("Cheese", quantity = 2)
-
-      expectThat(
-        vm.state.value.added
-          .map { it.name },
-      ).containsExactly("Cheese", "Yogurt", "Milk")
-      expectThat(vm.state.value.added).hasSize(3)
-      expectThat(items()).hasSize(6)
-    }
-
-  @Test
-  fun `removing an entry deletes its units and offers an undo`() =
-    runTest {
-      category("dairy")
-      val vm = viewModel()
-      vm.await { it.categories.isNotEmpty() }
-      vm.saveAnother("Milk", quantity = 3)
-      vm.saveAnother("Yogurt")
-      val milk =
-        vm.state.value.added
-          .first { it.name == "Milk" }
-
-      vm.sideEffects.test {
-        vm.onRemoveEntry(milk)
-        val effect = awaitItem()
-        expectThat(effect).isA<AddSideEffect.ShowRemoved>()
-      }
-
-      expectThat(
-        vm.state.value.added
-          .map { it.name },
-      ).containsExactly("Yogurt")
-      expectThat(items()).hasSize(1)
-      expectThat(products().map { it.name }).containsExactly("Yogurt")
-    }
-
-  @Test
-  fun `undoing a removal restores the same ids, dates and position`() =
-    runTest {
-      category("dairy")
-      val vm = viewModel()
-      vm.await { it.categories.isNotEmpty() }
-      vm.saveAnother("Milk", days = 4, quantity = 2)
-      vm.saveAnother("Yogurt")
-      vm.saveAnother("Cheese")
-      val before = items().sortedBy { it.id }
-      val yogurt =
-        vm.state.value.added
-          .first { it.name == "Yogurt" }
-      val positionBefore =
-        vm.state.value.added
-          .indexOf(yogurt)
-
-      val milk =
-        vm.state.value.added
-          .first { it.name == "Milk" }
-      vm.sideEffects.test {
-        vm.onRemoveEntry(milk)
-        val removed = awaitItem() as AddSideEffect.ShowRemoved
-        vm.onUndoRemove(removed.entry, removed.snapshot, removed.index)
-      }
-      vm.await { it.added.size == 3 }
-
-      expectThat(items().sortedBy { it.id }).isEqualTo(before)
-      expectThat(
-        vm.state.value.added
-          .map { it.name },
-      ).containsExactly("Cheese", "Yogurt", "Milk")
-      expectThat(
-        vm.state.value.added
-          .indexOf(yogurt),
-      ).isEqualTo(positionBefore)
-      expectThat(products().map { it.name }.sorted()).containsExactly("Cheese", "Milk", "Yogurt")
-    }
-
-  @Test
-  fun `removing every entry leaves the batch empty and the screen back to normal`() =
-    runTest {
-      category("dairy")
-      val vm = viewModel()
-      vm.await { it.categories.isNotEmpty() }
-      vm.saveAnother("Milk")
-      vm.saveAnother("Yogurt")
-
-      vm.state.value.added.forEach { entry ->
-        vm.sideEffects.test {
-          vm.onRemoveEntry(entry)
-          awaitItem()
-        }
-      }
-
-      expectThat(vm.state.value.added).isEmpty()
-      expectThat(vm.state.value.isBatchMode).isFalse()
-      expectThat(items()).isEmpty()
-    }
-
-  @Test
-  fun `a product that already existed is kept when its batch entry is removed`() =
-    runTest {
-      category("dairy")
-      addBatch.add("Milk", "dairy", inDays(9), 1, false)
-      val vm = viewModel()
-      vm.await { it.categories.isNotEmpty() }
-      vm.saveAnother("Milk")
-
-      vm.sideEffects.test {
-        vm.onRemoveEntry(
-          vm.state.value.added
-            .single(),
-        )
-        awaitItem()
-      }
-
-      expectThat(products().map { it.name }).containsExactly("Milk")
-      expectThat(items()).hasSize(1)
     }
 }

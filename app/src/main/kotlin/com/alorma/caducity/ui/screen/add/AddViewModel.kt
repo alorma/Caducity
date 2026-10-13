@@ -2,17 +2,12 @@ package com.alorma.caducity.ui.screen.add
 
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.time.TodayProvider
-import com.alorma.caducity.domain.model.AddedBatch
-import com.alorma.caducity.domain.model.BatchSnapshot
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.AddItemBatchUseCase
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
-import com.alorma.caducity.domain.usecase.RemoveBatchEntryUseCase
-import com.alorma.caducity.domain.usecase.RestoreBatchUseCase
-import com.alorma.caducity.domain.usecase.UndoAddItemsUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
 import com.alorma.caducity.feature.tracking.AddCloseAction
 import com.alorma.caducity.feature.tracking.AddQuickCategoryAction
@@ -35,12 +30,9 @@ class AddViewModel(
   args: AddArgs,
   private val todayProvider: TodayProvider,
   private val addItemBatch: AddItemBatchUseCase,
-  private val undoAddItems: UndoAddItemsUseCase,
   private val getNameSuggestions: GetNameSuggestionsUseCase,
   private val getActiveItem: GetActiveItemUseCase,
   private val updateItem: UpdateItemUseCase,
-  private val removeBatchEntry: RemoveBatchEntryUseCase,
-  private val restoreBatch: RestoreBatchUseCase,
   observeCategories: ObserveCategoriesUseCase,
   categoryCreated: CategoryCreatedEvents,
   private val eventTracker: EventTracker,
@@ -52,14 +44,11 @@ class AddViewModel(
   private var categoryPinned = args.categoryId != null
   private var suggestionJob: Job? = null
 
-  /** The form as it was before editing a unit picked from «En aquesta tanda». */
-  private var draft: AddState? = null
-
   /** A category just created in the sheet that the categories flow has not delivered yet. */
   private var pendingCategoryId: String? = null
 
   init {
-    args.itemId?.let { startEdit(it, entry = null) }
+    args.itemId?.let { startEdit(it) }
     viewModelScope.launch {
       observeCategories.observe().collect { categories ->
         _state.update { current ->
@@ -78,11 +67,7 @@ class AddViewModel(
   override fun navigate(navigation: AddNavigation) {
     when (navigation) {
       AddNavigation.Close -> {
-        if (_state.value.editing?.entry != null) {
-          cancelEdit()
-          return
-        }
-        eventTracker.trackAction(AddCloseAction(batch = _state.value.isBatchMode))
+        eventTracker.trackAction(AddCloseAction())
         emitNavigationSideEffect(AddNavigationSideEffect.Close)
       }
 
@@ -169,102 +154,8 @@ class AddViewModel(
     _state.update { it.copy(frozen = frozen) }
   }
 
-  /** "Desa": saves and closes; in batch mode with the name empty it is "Fet". */
-  fun onSave() = save(another = false)
-
-  /** "Desa i un altre": saves, clears the name and keeps category and date. */
-  fun onSaveAndAnother() = save(another = true)
-
-  /** «Treu de la tanda»: deletes the entry's units without asking; the snackbar offers «Desfés». */
-  fun onRemoveEntry(entry: AddedEntry) {
-    if (_state.value.isEditing) return
-    viewModelScope.launch {
-      val index = _state.value.added.indexOf(entry)
-      if (index < 0) return@launch
-      removeBatchEntry
-        .remove(entry.batch)
-        .onSuccess { snapshot ->
-          _state.update { it.copy(added = it.added - entry) }
-          emitSideEffect(AddSideEffect.ShowRemoved(entry, snapshot, index))
-        }.onFailure { emitSideEffect(AddSideEffect.ShowSaveFailed) }
-    }
-  }
-
-  /** «Desfés» of «Treu de la tanda»: the units come back with the same ids and dates, in the same place. */
-  fun onUndoRemove(
-    entry: AddedEntry,
-    snapshot: BatchSnapshot,
-    index: Int,
-  ) {
-    viewModelScope.launch {
-      restoreBatch
-        .restore(snapshot)
-        .onSuccess {
-          _state.update { current ->
-            val position = index.coerceIn(0, current.added.size)
-            current.copy(added = current.added.toMutableList().apply { add(position, entry) })
-          }
-        }.onFailure { emitSideEffect(AddSideEffect.ShowSaveFailed) }
-    }
-  }
-
-  /** The snackbar "Desfés" of the entry [entry]. */
-  fun onUndo(entry: AddedEntry) {
-    viewModelScope.launch {
-      undoAddItems.undo(entry.batch).onSuccess {
-        _state.update { current -> current.copy(added = current.added - entry) }
-      }
-    }
-  }
-
-  /** Tapping a chip of the batch edits its first unit; the rest of the form is restored afterwards. */
-  fun onEditEntry(entry: AddedEntry) {
-    val itemId = entry.batch.itemIds.firstOrNull() ?: return
-    startEdit(itemId, entry)
-  }
-
-  private fun startEdit(
-    itemId: String,
-    entry: AddedEntry?,
-  ) {
-    viewModelScope.launch {
-      val item = getActiveItem.get(itemId)
-      if (item == null) {
-        emitSideEffect(AddSideEffect.ShowSaveFailed)
-        if (entry == null) emitNavigationSideEffect(AddNavigationSideEffect.Close)
-        return@launch
-      }
-      suggestionJob?.cancel()
-      if (_state.value.editing == null && entry != null) draft = _state.value
-      categoryPinned = true
-      val date =
-        item.remainingDays
-          ?.takeIf { item.frozen }
-          ?.let { _state.value.today.plus(DatePeriod(days = it)) }
-          ?: item.expiration
-      _state.update {
-        it.copy(
-          name = item.name,
-          suggestion = null,
-          isNewProduct = false,
-          categoryId = item.categoryId,
-          frozen = item.frozen,
-          quantity = entry?.quantity ?: 1,
-          editing = EditTarget(itemId, entry),
-        )
-      }
-      setDate(date)
-    }
-  }
-
-  private fun cancelEdit() {
-    val restored = draft ?: return
-    draft = null
-    categoryPinned = false
-    _state.update { restored.copy(added = it.added, categories = it.categories, editing = null) }
-  }
-
-  private fun saveEdit(edit: EditTarget) {
+  /** "Desa": saves and closes. While editing a unit it updates that unit instead. */
+  fun onSave() {
     val current = _state.value
     if (!current.canSave) {
       emitSideEffect(AddSideEffect.Reject)
@@ -278,31 +169,28 @@ class AddViewModel(
     val date = current.date ?: return
     val categoryId = current.categoryId ?: return
     val name = current.name.trim()
-
-    val quantity = current.quantity
+    val editItemId = current.editItemId
 
     _state.update { it.copy(saving = true) }
     viewModelScope.launch {
-      applyEdit(edit, name, categoryId, date, quantity)
-        .onSuccess { updatedEntry ->
+      val saved: Result<Unit> =
+        if (editItemId != null) {
+          updateItem.update(editItemId, name, categoryId, date).map { Unit }
+        } else {
+          addItemBatch
+            .add(
+              name = name,
+              categoryId = categoryId,
+              date = date,
+              quantity = current.quantity,
+              frozen = current.frozen,
+            ).map { Unit }
+        }
+      saved
+        .onSuccess {
           emitSideEffect(AddSideEffect.Confirm)
-          val entry = edit.entry
-          if (entry == null || updatedEntry == null) {
-            _state.update { it.copy(saving = false) }
-            navigate(AddNavigation.Close)
-          } else {
-            val base = draft
-            draft = null
-            categoryPinned = false
-            _state.update { cur ->
-              (base ?: cur.copy(name = "")).copy(
-                added = cur.added.map { if (it == entry) updatedEntry else it },
-                categories = cur.categories,
-                editing = null,
-                saving = false,
-              )
-            }
-          }
+          _state.update { it.copy(saving = false) }
+          navigate(AddNavigation.Close)
         }.onFailure { error ->
           _state.update { it.copy(saving = false) }
           val pastFrozen = error is PantryError.PastDateWhenFrozen
@@ -311,50 +199,33 @@ class AddViewModel(
     }
   }
 
-  /**
-   * Edits one unit (route) or, for a batch chip, every unit of the entry plus its quantity: extra units are
-   * added with the same data and surplus ones removed. Returns the updated entry for a chip edit, null otherwise.
-   */
-  private suspend fun applyEdit(
-    edit: EditTarget,
-    name: String,
-    categoryId: String,
-    date: LocalDate,
-    quantity: Int,
-  ): Result<AddedEntry?> {
-    val entry = edit.entry
-    if (entry == null) {
-      return updateItem.update(edit.itemId, name, categoryId, date).map { null }
+  private fun startEdit(itemId: String) {
+    viewModelScope.launch {
+      val item = getActiveItem.get(itemId)
+      if (item == null) {
+        emitSideEffect(AddSideEffect.ShowSaveFailed)
+        emitNavigationSideEffect(AddNavigationSideEffect.Close)
+        return@launch
+      }
+      suggestionJob?.cancel()
+      categoryPinned = true
+      val date =
+        item.remainingDays
+          ?.takeIf { item.frozen }
+          ?.let { _state.value.today.plus(DatePeriod(days = it)) }
+          ?: item.expiration
+      _state.update {
+        it.copy(
+          name = item.name,
+          suggestion = null,
+          isNewProduct = false,
+          categoryId = item.categoryId,
+          frozen = item.frozen,
+          editItemId = itemId,
+        )
+      }
+      setDate(date)
     }
-    var ids = entry.batch.itemIds
-    for (id in ids) {
-      updateItem.update(id, name, categoryId, date).onFailure { return Result.failure(it) }
-    }
-    var productId = entry.batch.productId
-    val difference = quantity - ids.size
-    if (difference > 0) {
-      val added =
-        addItemBatch
-          .add(name = name, categoryId = categoryId, date = date, quantity = difference, frozen = false)
-          .getOrElse { return Result.failure(it) }
-      productId = added.productId
-      ids = ids + added.itemIds
-    } else if (difference < 0) {
-      val surplus = ids.takeLast(-difference)
-      undoAddItems
-        .undo(AddedBatch(productId = productId, itemIds = surplus, productCreated = false))
-        .onFailure { return Result.failure(it) }
-      ids = ids.dropLast(-difference)
-    }
-    return Result.success(
-      entry.copy(
-        batch = AddedBatch(productId = productId, itemIds = ids, productCreated = entry.batch.productCreated),
-        name = name,
-        categoryId = categoryId,
-        date = date,
-        quantity = ids.size,
-      ),
-    )
   }
 
   private fun setDate(date: LocalDate) {
@@ -364,62 +235,5 @@ class AddViewModel(
 
   private fun setDigits(digits: String) {
     _state.update { it.copy(dateDigits = digits, date = ExpiryDateParser.parse(digits)) }
-  }
-
-  private fun save(another: Boolean) {
-    val current = _state.value
-    current.editing?.let { edit ->
-      if (another) emitSideEffect(AddSideEffect.Reject) else saveEdit(edit)
-      return
-    }
-    if (current.isDone && !another) {
-      emitSideEffect(AddSideEffect.Confirm)
-      navigate(AddNavigation.Close)
-      return
-    }
-    if (!current.canSave || (another && current.isDone)) {
-      emitSideEffect(AddSideEffect.Reject)
-      return
-    }
-    if (current.frozenWithPastDate) {
-      emitSideEffect(AddSideEffect.ShowFrozenPastDate)
-      emitSideEffect(AddSideEffect.Reject)
-      return
-    }
-    val date = current.date ?: return
-    val categoryId = current.categoryId ?: return
-    val name = current.name.trim()
-
-    _state.update { it.copy(saving = true) }
-    viewModelScope.launch {
-      addItemBatch
-        .add(name = name, categoryId = categoryId, date = date, quantity = current.quantity, frozen = current.frozen)
-        .onSuccess { batch ->
-          val entry =
-            AddedEntry(batch = batch, name = name, categoryId = categoryId, date = date, quantity = current.quantity)
-          emitSideEffect(AddSideEffect.Confirm)
-          if (another) {
-            categoryPinned = false
-            _state.update {
-              it.copy(
-                name = "",
-                suggestion = null,
-                isNewProduct = false,
-                quantity = 1,
-                frozen = false,
-                added = listOf(entry) + it.added,
-                saving = false,
-              )
-            }
-            emitSideEffect(AddSideEffect.ShowSaved(entry))
-          } else {
-            _state.update { it.copy(saving = false) }
-            navigate(AddNavigation.Close)
-          }
-        }.onFailure {
-          _state.update { it.copy(saving = false) }
-          emitSideEffect(AddSideEffect.ShowSaveFailed)
-        }
-    }
   }
 }

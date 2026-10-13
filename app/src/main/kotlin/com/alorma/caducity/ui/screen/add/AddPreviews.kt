@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.domain.model.AddedBatch
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
@@ -22,8 +21,6 @@ private val dairy = Category("dairy", "Dairy", "", CategoryShape.COOKIE, Categor
 private val produce = Category("produce", "Produce", "", CategoryShape.CLOVER8, CategoryIcon("nutrition"), 1)
 private val bakery = Category("bakery", "Bakery", "", CategoryShape.PUFFY, CategoryIcon("bakery_dining"), 2)
 private val categories = listOf(dairy, produce, bakery)
-
-private val entry = AddedEntry(AddedBatch("p", listOf("i"), true), "Cheddar", "dairy", LocalDate(2026, 10, 21), 1)
 
 @PreviewDynamicLightDark
 @Composable
@@ -57,29 +54,22 @@ private fun AddFormPreview() {
 
 @PreviewDynamicLightDark
 @Composable
-private fun AddBatchPreview() {
+private fun AddBottomBarPreview() {
   PreviewTheme {
     Surface {
-      val state =
-        AddState(
-          today = today,
-          categories = categories,
-          categoryId = "dairy",
-          date = LocalDate(2026, 10, 21),
-          added = listOf(entry),
-        )
       Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        BatchSavedRow(entries = state.added, categories = categories, onEdit = {}, onRemove = {})
-        BatchSummary(
-          category = dairy,
-          date = state.date,
-          today = today,
-          onChangeCategory = {},
-          onChangeDate = {},
-          showCategory = true,
-          showDate = true,
+        AddBottomBar(
+          state =
+            AddState(
+              today = today,
+              name = "Whole milk",
+              categories = categories,
+              categoryId = "dairy",
+              date = LocalDate(2026, 10, 21),
+            ),
+          onSave = {},
         )
-        AddBottomBar(state = state, onSaveAndAnother = {}, onSave = {})
+        AddBottomBar(state = AddState(today = today, name = "Whole milk"), onSave = {})
       }
     }
   }

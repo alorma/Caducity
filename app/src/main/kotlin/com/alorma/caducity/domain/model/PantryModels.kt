@@ -3,36 +3,11 @@ package com.alorma.caducity.domain.model
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 
-/** Result of adding units of a product: used to undo the add. */
+/** Result of adding units of a product. */
 data class AddedBatch(
   val productId: String,
   val itemIds: List<String>,
   val productCreated: Boolean,
-)
-
-/** A product deleted together with its last units, kept to bring it back with the same id. */
-data class RemovedProduct(
-  val id: String,
-  val categoryId: String,
-  val name: String,
-  val createdAt: Long,
-)
-
-/** A unit deleted from a batch, with everything needed to restore it with the same id and dates. */
-data class RemovedItem(
-  val id: String,
-  val categoryId: String,
-  val productId: String?,
-  val expirationMillis: Long,
-  val pausedDate: Long?,
-  val remainingDays: Int?,
-  val createdAt: Long?,
-)
-
-/** What [com.alorma.caducity.domain.PantryDataSource.removeBatch] deleted. */
-data class BatchSnapshot(
-  val items: List<RemovedItem>,
-  val products: List<RemovedProduct>,
 )
 
 /** Usage stats of a product (any item, including consumed and discarded). */

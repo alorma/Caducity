@@ -59,7 +59,6 @@ class PantryUseCasesTest {
   private lateinit var pantry: RoomPantryDataSource
 
   private lateinit var addBatch: AddItemBatchUseCase
-  private lateinit var undoAdd: UndoAddItemsUseCase
   private lateinit var discard: DiscardItemsUseCase
   private lateinit var restore: RestoreItemsUseCase
   private lateinit var updateItem: UpdateItemUseCase
@@ -91,7 +90,6 @@ class PantryUseCasesTest {
         appClock = clock,
       )
     addBatch = AddItemBatchUseCase(pantry, clock)
-    undoAdd = UndoAddItemsUseCase(pantry)
     discard = DiscardItemsUseCase(pantry, clock)
     restore = RestoreItemsUseCase(pantry)
     updateItem = UpdateItemUseCase(itemDataSource, pantry, clock)
@@ -160,29 +158,6 @@ class PantryUseCasesTest {
       addBatch.add("Milk", "c1", inDays(1), 1, false)
       addBatch.add("Milk", "c2", inDays(1), 1, false)
       expectThat(products()).hasSize(2)
-    }
-
-  @Test
-  fun `undo removes the N items and the product it created`() =
-    runTest {
-      category("c1")
-      val batch = addBatch.add("Milk", "c1", inDays(5), 4, false).getOrThrow()
-      undoAdd.undo(batch).getOrThrow()
-
-      expectThat(items()).isEmpty()
-      expectThat(products()).isEmpty()
-    }
-
-  @Test
-  fun `undo keeps a product that already existed or has other items`() =
-    runTest {
-      category("c1")
-      val first = addBatch.add("Milk", "c1", inDays(5), 1, false).getOrThrow()
-      val second = addBatch.add("Milk", "c1", inDays(6), 2, false).getOrThrow()
-      undoAdd.undo(second).getOrThrow()
-
-      expectThat(items().map { it.id }).isEqualTo(first.itemIds)
-      expectThat(products()).hasSize(1)
     }
 
   @Test

@@ -17,11 +17,8 @@ import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.ObservePantryUseCase
 import com.alorma.caducity.domain.usecase.ObserveWeekStripUseCase
 import com.alorma.caducity.domain.usecase.PopulateFakeDataUseCase
-import com.alorma.caducity.domain.usecase.RemoveBatchEntryUseCase
-import com.alorma.caducity.domain.usecase.RestoreBatchUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.domain.usecase.SeedCategoriesUseCase
-import com.alorma.caducity.domain.usecase.UndoAddItemsUseCase
 import com.alorma.caducity.domain.usecase.UpdateCategoryUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
 import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
@@ -37,7 +34,6 @@ val domainModule =
 
     // Redesign use cases
     factoryOf(::AddItemBatchUseCase)
-    factoryOf(::UndoAddItemsUseCase)
     factoryOf(::DiscardItemsUseCase)
     factoryOf(::RestoreItemsUseCase)
     factoryOf(::UpdateItemUseCase)
@@ -45,8 +41,6 @@ val domainModule =
     factoryOf(::GetNameSuggestionsUseCase)
     factoryOf(::ObserveCategoriesUseCase)
     factoryOf(::GetActiveItemUseCase)
-    factoryOf(::RemoveBatchEntryUseCase)
-    factoryOf(::RestoreBatchUseCase)
     factoryOf(::UpdateCategoryUseCase)
     factoryOf(::CategoryThresholdsUseCase)
     factoryOf(::SeedCategoriesUseCase)

@@ -116,10 +116,6 @@
   <string name="add_quick_1_month">+1 month</string>
   <string name="add_title">Add</string>
   <string name="add_close">Close</string>
-  <plurals name="add_saved_count">
-    <item quantity="one">✓ Saved</item>
-    <item quantity="other">✓ %1$d saved</item>
-  </plurals>
   <string name="add_name_label">Name</string>
   <string name="add_name_hint">What are you adding?</string>
   <string name="add_name_clear">Clear name</string>
@@ -132,16 +128,13 @@
   <string name="add_quantity_decrease">One less</string>
   <string name="add_quantity_increase">One more</string>
   <string name="add_frozen">Frozen</string>
-  <string name="add_save_and_another">Save and add another</string>
   <string name="add_save">Save</string>
-  <string name="add_done">Done</string>
   <string name="add_missing_name">the name</string>
   <string name="add_missing_category">the category</string>
   <string name="add_missing_date">the date</string>
   <string name="add_missing_and">%1$s and %2$s</string>
   <string name="add_missing_one">Missing %1$s to save</string>
   <string name="add_missing_many">Missing %1$s to save</string>
-  <string name="add_saved_snackbar">%1$s saved</string>
   <string name="add_undo">Undo</string>
   <string name="transform_done">%1$d ingredients turned into %2$d products</string>
   <string name="transform_done_one_ingredient">1 ingredient turned into %1$d products</string>
@@ -211,16 +204,6 @@
   <string name="add_frozen_past_date">A frozen product cannot have a past date</string>
   <string name="add_picker_ok">OK</string>
   <string name="add_picker_cancel">Cancel</string>
-  <string name="add_name_hint_batch">What else did you buy?</string>
-  <string name="add_batch_label">Saved in this batch</string>
-  <string name="add_batch_change">Change</string>
-  <string name="add_batch_note">Kept from the previous product. If you type a name you already know, they are filled with its own.</string>
-  <string name="add_batch_today">today</string>
-  <string name="add_batch_tomorrow">tomorrow</string>
-  <plurals name="add_batch_in_days">
-    <item quantity="one">in %1$d day</item>
-    <item quantity="other">in %1$d days</item>
-  </plurals>
   <string name="add_edit_title">Edit</string>
   <string name="quick_category_title">New category</string>
   <string name="category_form_name">Name</string>
@@ -231,14 +214,6 @@
   <string name="quick_category_create">Create and use it</string>
   <string name="quick_category_error_duplicate">You already have a category with that name</string>
   <string name="quick_category_error_failed">Could not create the category</string>
-  <string name="add_removed_snackbar">%1$s removed</string>
-  <string name="add_batch_edit">Edit %1$s</string>
-  <string name="add_batch_remove">Remove %1$s from the batch</string>
-  <string name="add_batch_list_description">Products saved in this batch, newest first</string>
-  <plurals name="add_batch_units_date">
-    <item quantity="one">%1$d unit · %2$s</item>
-    <item quantity="other">%1$d units · %2$s</item>
-  </plurals>
   <string name="item_actions_unit_of">Unit %1$d of %2$d · expires %3$s</string>
   <string name="item_actions_unit_of_frozen">Unit %1$d of %2$d · frozen</string>
   <string name="item_actions_expires">Expires %1$s</string>

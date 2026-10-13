@@ -151,12 +151,10 @@ class ItemDeletedAction(
   )
 
 // Add Screen Actions
-class AddCloseAction(
-  batch: Boolean,
-) : NavigationAction(
+class AddCloseAction :
+  NavigationAction(
     actionName = "close_add",
     origin = "add",
-    parameters = mapOf("source" to if (batch) "done" else "close"),
   )
 
 // Transform Screen Actions

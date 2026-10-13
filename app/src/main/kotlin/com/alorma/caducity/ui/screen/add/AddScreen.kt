@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.add
 
-import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,14 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -24,18 +21,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -47,12 +39,10 @@ import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomS
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
-import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarResult
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -77,10 +67,7 @@ fun AddScreen(
   val bottomSheetState = rememberAppBottomSheetState()
   val datePickerState = rememberDatePickerState()
   val focusRequester = remember { FocusRequester() }
-  var editCategory by rememberSaveable { mutableStateOf(false) }
-  var editDate by rememberSaveable { mutableStateOf(false) }
   val haptics = LocalHapticFeedback.current
-  val context = LocalContext.current
 
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
@@ -94,7 +81,6 @@ fun AddScreen(
 
   SideEffectHandler(
     viewModel = viewModel,
-    context = context,
     dialogState = dialogState,
     snackbarState = snackbarState,
     datePickerState = datePickerState,
@@ -107,7 +93,7 @@ fun AddScreen(
     snackbarState = snackbarState,
     bottomSheetState = bottomSheetState,
     topBar = {
-      AddTopBar(editing = state.isEditing, savedCount = state.added.size, onClose = {
+      AddTopBar(editing = state.isEditing, onClose = {
         viewModel.navigate(AddNavigation.Close)
       })
     },
@@ -116,7 +102,6 @@ fun AddScreen(
       ResponsiveCenteredContainer(fillHeight = false) {
         AddBottomBar(
           state = state,
-          onSaveAndAnother = viewModel::onSaveAndAnother,
           onSave = viewModel::onSave,
           modifier =
             Modifier
@@ -138,39 +123,14 @@ fun AddScreen(
             .padding(horizontal = ScreenGutter),
         verticalArrangement = Arrangement.spacedBy(20.dp),
       ) {
-        if (state.added.isNotEmpty()) {
-          BatchSavedRow(
-            entries = state.added,
-            categories = state.categories,
-            onEdit = viewModel::onEditEntry,
-            onRemove = viewModel::onRemoveEntry,
-          )
-        }
         NameSection(state = state, viewModel = viewModel, focusRequester = focusRequester)
-        val showCategoryChips = !state.isBatchMode || editCategory
-        val showDateField = !state.isBatchMode || editDate
-        if (state.isBatchMode) {
-          BatchSummary(
-            category = state.categories.firstOrNull { it.id == state.categoryId },
-            date = state.date,
-            today = state.today,
-            onChangeCategory = { editCategory = true },
-            onChangeDate = { editDate = true },
-            showCategory = !editCategory,
-            showDate = !editDate,
-          )
-        }
-        if (showCategoryChips) {
-          CategorySection(state = state, onSelect = {
-            viewModel.onCategorySelect(it)
-            editCategory = false
-          }, onNew = { viewModel.navigate(AddNavigation.QuickCategory) })
-        }
-        if (showDateField) DateSection(state = state, viewModel = viewModel)
-        // A single unit (from the route) has no quantity; a batch chip edits the whole entry.
-        if (state.editing?.let { it.entry == null } != true) {
+        CategorySection(state = state, onSelect = viewModel::onCategorySelect, onNew = {
+          viewModel.navigate(AddNavigation.QuickCategory)
+        })
+        DateSection(state = state, viewModel = viewModel)
+        // Editing a unit has no quantity nor frozen toggle: only its name, category and date can change.
+        if (!state.isEditing) {
           QuantityFrozenRow(
-            showFrozen = !state.isEditing,
             quantity = state.quantity,
             frozen = state.frozen,
             onQuantityChange = viewModel::onQuantityChange,
@@ -186,7 +146,6 @@ fun AddScreen(
 @Composable
 private fun AddTopBar(
   editing: Boolean,
-  savedCount: Int,
   onClose: () -> Unit,
 ) {
   ResponsiveCenteredContainer(fillHeight = false) {
@@ -200,22 +159,6 @@ private fun AddTopBar(
       navigationIcon = {
         IconButton(onClick = onClose) {
           Icon(Symbols.Outlined.Close, contentDescription = stringResource(R.string.add_close))
-        }
-      },
-      actions = {
-        if (savedCount > 0 && !editing) {
-          Surface(
-            shape = CaducityShapes.full,
-            color = CaducityTheme.colors.fresh.container,
-            contentColor = CaducityTheme.colors.fresh.onContainer,
-            modifier = Modifier.padding(end = 12.dp),
-          ) {
-            Text(
-              text = pluralStringResource(R.plurals.add_saved_count, savedCount, savedCount),
-              style = CaducityTheme.typography.labelLarge,
-              modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            )
-          }
         }
       },
       colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
@@ -236,7 +179,6 @@ private fun NameSection(
       onNameChange = viewModel::onNameChange,
       onClear = viewModel::onClearName,
       focusRequester = focusRequester,
-      batchMode = state.isBatchMode,
     )
     val suggestion = state.suggestion
     when {
@@ -297,7 +239,6 @@ private fun DateSection(
 @Composable
 private fun SideEffectHandler(
   viewModel: AddViewModel,
-  context: Context,
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
   datePickerState: DatePickerState,
@@ -308,30 +249,6 @@ private fun SideEffectHandler(
       when (effect) {
         AddSideEffect.Confirm -> onHaptic(HapticFeedbackType.Confirm)
         AddSideEffect.Reject -> onHaptic(HapticFeedbackType.Reject)
-
-        is AddSideEffect.ShowSaved ->
-          launch {
-            val result =
-              snackbarState.showSnackbar(
-                message = context.getString(R.string.add_saved_snackbar, effect.entry.name),
-                actionLabel = context.getString(R.string.add_undo),
-                type = AppFeedbackType.Success,
-              )
-            if (result == AppSnackbarResult.ActionPerformed) viewModel.onUndo(effect.entry)
-          }
-
-        is AddSideEffect.ShowRemoved ->
-          launch {
-            val result =
-              snackbarState.showSnackbar(
-                message = context.getString(R.string.add_removed_snackbar, effect.entry.name),
-                actionLabel = context.getString(R.string.add_undo),
-                type = AppFeedbackType.Info,
-              )
-            if (result == AppSnackbarResult.ActionPerformed) {
-              viewModel.onUndoRemove(effect.entry, effect.snapshot, effect.index)
-            }
-          }
 
         AddSideEffect.ShowSaveFailed ->
           launch {
