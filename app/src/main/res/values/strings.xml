@@ -369,17 +369,9 @@
     <item quantity="one">%d selected</item>
     <item quantity="other">%d selected</item>
   </plurals>
-  <string name="status_date_today">Today · %1$s</string>
-  <string name="status_date_tomorrow">Tomorrow · %1$s</string>
-  <string name="status_date_in_days">In %1$d days · %2$s</string>
   <string name="product_row_in_days">In %1$d days</string>
-  <string name="status_date_ago_one">1 day ago · %1$s</string>
-  <string name="status_date_ago_days">%1$d days ago · %2$s</string>
-  <string name="status_date_frozen">Frozen on %1$s</string>
-  <string name="status_action_reschedule">Change the date of %1$s</string>
   <string name="status_action_discard">Throw out %1$s</string>
   <string name="status_action_freeze">Freeze %1$s</string>
-  <string name="status_action_unfreeze">Thaw %1$s</string>
   <string name="status_bulk_discard">Throw out (%1$d)</string>
   <string name="status_bulk_reschedule">Change date (%1$d)</string>
   <string name="status_bulk_consume">Consumed (%1$d)</string>
@@ -397,15 +389,12 @@
   <string name="status_snackbar_discarded">%1$s thrown out</string>
   <string name="status_snackbar_discarded_many">%d products thrown out</string>
   <string name="status_snackbar_rescheduled_many">Date changed for %d products</string>
-  <string name="status_snackbar_unfrozen">%1$s thawed</string>
   <plurals name="status_discard_title">
     <item quantity="one">Throw out %d product?</item>
     <item quantity="other">Throw out %d products?</item>
   </plurals>
   <string name="status_discard_body">They\'ll be marked as thrown out. You can undo it right after.</string>
   <string name="status_discard_confirm">Throw out</string>
-  <string name="status_dates_unfreeze_title">What\'s the expiration date now?</string>
-  <string name="status_dates_as_before">As before · %1$s</string>
   <string name="status_dates_tomorrow">Tomorrow</string>
   <string name="status_dates_in_3d">In 3 days</string>
   <string name="status_dates_in_1w">In 1 week</string>

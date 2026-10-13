@@ -25,7 +25,6 @@ import com.alorma.caducity.domain.usecase.ObserveItemsByStatusUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
-import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.russhwolf.settings.MapSettings
@@ -139,7 +138,6 @@ class StatusListViewModelTest {
       observeByStatus = ObserveItemsByStatusUseCase(items, pantry, todayProvider),
       consumeItem = ConsumeItemUseCase(itemDataSource, pantry, clock),
       freezeItem = FreezeItemUseCase(itemDataSource, pantry, clock),
-      unfreezeItem = UnfreezeItemUseCase(itemDataSource, pantry, clock),
       rescheduleItem = RescheduleItemUseCase(itemDataSource, pantry),
       discardItems = DiscardItemsUseCase(pantry, clock),
       restoreItems = RestoreItemsUseCase(pantry),
@@ -329,10 +327,7 @@ class StatusListViewModelTest {
       vm.onToggleSelecting()
       rows.forEach { vm.onToggleRow(it.key) }
       vm.ready { it.selectedKeys.size == 2 }
-      vm.onDateChosen(
-        DateTarget(rows.flatMap { it.itemIds }, rows.map { it.name }, unfreeze = false, proposed = null),
-        inDays(4),
-      )
+      vm.onDateChosen(DateTarget(rows.flatMap { it.itemIds }, rows.map { it.name }), inDays(4))
       nextSnackbar()
 
       expectThat(vm.ready { it.isEmpty }.isEmpty).isTrue()
@@ -346,28 +341,21 @@ class StatusListViewModelTest {
     }
 
   @Test
-  fun `unfreeze with a date takes the unit out of Congelats and undo freezes it again`() =
+  fun `frozen units frozen the same day share a row and the nearest one leads`() =
     runTest {
       category("dairy")
       add("Peas", days = 20, frozen = true)
-      val vm = viewModel(ExpiryStatus.FROZEN)
+      add("Peas", days = 5, frozen = true)
       val row =
-        vm
+        viewModel(ExpiryStatus.FROZEN)
           .ready()
           .sections
           .single()
           .rows
           .single()
 
-      vm.onDateChosen(
-        DateTarget(listOf(row.nearest.itemId), listOf(row.name), unfreeze = true, proposed = inDays(20)),
-        inDays(6),
-      )
-      val snackbar = nextSnackbar()
-      expectThat(vm.ready { it.isEmpty }.isEmpty).isTrue()
-
-      snackbar.onAction!!.invoke()
-      expectThat(vm.ready { !it.isEmpty }.totalCount).isEqualTo(1)
+      expectThat(row.entries.map { it.expiration }).isEqualTo(listOf(inDays(5), inDays(20)))
+      expectThat(row.nearest.expiration).isEqualTo(inDays(5))
     }
 
   @Test

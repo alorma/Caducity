@@ -5,13 +5,13 @@ import com.alorma.caducity.R
 import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.StatusListData
+import com.alorma.caducity.domain.model.sortedNearestFirst
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsByStatusUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
-import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemActionAction
 import com.alorma.caducity.feature.tracking.NavigateToAddFromStatusListAction
@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
 /**
- * One list for the four statuses (Caducats, Aviat, Frescos, Congelats). The buttons of a row act on
+ * One list for the four statuses (Caducats, Aviat, Frescos, Congelats). The round buttons of a row act on
  * **one** unit (the closest to expire); the bulk actions of the selection act on every unit of the rows.
  */
 class StatusListViewModel(
@@ -38,7 +38,6 @@ class StatusListViewModel(
   observeByStatus: ObserveItemsByStatusUseCase,
   private val consumeItem: ConsumeItemUseCase,
   private val freezeItem: FreezeItemUseCase,
-  private val unfreezeItem: UnfreezeItemUseCase,
   private val rescheduleItem: RescheduleItemUseCase,
   private val discardItems: DiscardItemsUseCase,
   private val restoreItems: RestoreItemsUseCase,
@@ -58,7 +57,6 @@ class StatusListViewModel(
       val keys = sections.flatMap { s -> s.rows.map { it.key } }.toSet()
       StatusListState.Ready(
         status = status,
-        today = data.today,
         totalCount = data.totalCount,
         sections = sections,
         selecting = isSelecting,
@@ -98,32 +96,13 @@ class StatusListViewModel(
 
   // endregion
 
-  // region One unit (the row's buttons)
+  // region One unit (the row's round buttons)
 
   fun onConsume(row: StatusRow) = consume(listOf(row.nearest.itemId), row.name)
 
   fun onFreeze(row: StatusRow) = freeze(listOf(row.nearest.itemId), row.name)
 
   fun onDiscard(row: StatusRow) = discard(listOf(row.nearest.itemId), row.name)
-
-  fun onRescheduleClick(row: StatusRow) {
-    emitSideEffect(
-      StatusListSideEffect.ShowQuickDates(
-        DateTarget(listOf(row.nearest.itemId), listOf(row.name), unfreeze = false, proposed = null),
-      ),
-    )
-  }
-
-  fun onUnfreezeClick(row: StatusRow) {
-    viewModelScope.launch {
-      val proposed = unfreezeItem.proposedDate(row.nearest.itemId)
-      emitSideEffect(
-        StatusListSideEffect.ShowQuickDates(
-          DateTarget(listOf(row.nearest.itemId), listOf(row.name), unfreeze = true, proposed = proposed),
-        ),
-      )
-    }
-  }
 
   // endregion
 
@@ -137,7 +116,7 @@ class StatusListViewModel(
     withSelection { rows ->
       emitSideEffect(
         StatusListSideEffect.ShowQuickDates(
-          DateTarget(rows.flatMap { it.itemIds }, rows.map { it.name }, unfreeze = false, proposed = null),
+          DateTarget(rows.flatMap { it.itemIds }, rows.map { it.name }),
         ),
       )
     }
@@ -165,51 +144,36 @@ class StatusListViewModel(
 
   // endregion
 
-  /** The quick-dates sheet (or the picker) gave a date: reschedules, or thaws with that date. */
+  /** The quick-dates sheet (or the picker) gave a date: the selected units are rescheduled to it. */
   fun onDateChosen(
     target: DateTarget,
     date: LocalDate,
   ) {
     val ids = target.itemIds
     val name = target.names.singleOrNull().takeIf { ids.size == 1 }
-    eventTracker.trackAction(ItemActionAction(if (target.unfreeze) "unfreeze_status" else "reschedule_status"))
+    eventTracker.trackAction(ItemActionAction("reschedule_status"))
     undoable(
       ids = ids,
       snackbar = { undo ->
-        when {
-          target.unfreeze ->
-            GlobalSnackbar(
-              message = R.string.status_snackbar_unfrozen,
-              messageArgs = listOf(name.orEmpty()),
-              actionLabel = R.string.add_undo,
-              type = AppFeedbackType.Success,
-              onAction = undo,
-            )
-          name != null ->
-            GlobalSnackbar(
-              message = R.string.item_actions_snackbar_rescheduled,
-              messageArgs = listOf(name),
-              actionLabel = R.string.add_undo,
-              type = AppFeedbackType.Success,
-              onAction = undo,
-            )
-          else ->
-            GlobalSnackbar(
-              message = R.string.status_snackbar_rescheduled_many,
-              messageArgs = listOf(ids.size),
-              actionLabel = R.string.add_undo,
-              type = AppFeedbackType.Success,
-              onAction = undo,
-            )
+        if (name != null) {
+          GlobalSnackbar(
+            message = R.string.item_actions_snackbar_rescheduled,
+            messageArgs = listOf(name),
+            actionLabel = R.string.add_undo,
+            type = AppFeedbackType.Success,
+            onAction = undo,
+          )
+        } else {
+          GlobalSnackbar(
+            message = R.string.status_snackbar_rescheduled_many,
+            messageArgs = listOf(ids.size),
+            actionLabel = R.string.add_undo,
+            type = AppFeedbackType.Success,
+            onAction = undo,
+          )
         }
       },
-    ) {
-      if (target.unfreeze) {
-        unfreezeItem.unfreezeOn(ids.single(), date)
-      } else {
-        rescheduleItem.reschedule(ids, date)
-      }
-    }
+    ) { rescheduleItem.reschedule(ids, date) }
   }
 
   private fun consume(
@@ -340,7 +304,7 @@ class StatusListViewModel(
               category = group.category,
               expiration = first.expiration,
               frozenSince = first.frozenSince?.date(),
-              entries = units,
+              entries = units.sortedNearestFirst(),
             )
           }
       StatusSection(category = group.category, rows = rows)

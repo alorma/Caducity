@@ -389,17 +389,9 @@
     <item quantity="many">%d seleccionados</item>
     <item quantity="other">%d seleccionados</item>
   </plurals>
-  <string name="status_date_today">Hoy · %1$s</string>
-  <string name="status_date_tomorrow">Mañana · %1$s</string>
-  <string name="status_date_in_days">En %1$d días · %2$s</string>
   <string name="product_row_in_days">En %1$d días</string>
-  <string name="status_date_ago_one">Hace 1 día · %1$s</string>
-  <string name="status_date_ago_days">Hace %1$d días · %2$s</string>
-  <string name="status_date_frozen">Congelado el %1$s</string>
-  <string name="status_action_reschedule">Cambia la fecha de %1$s</string>
   <string name="status_action_discard">Tira %1$s</string>
   <string name="status_action_freeze">Congela %1$s</string>
-  <string name="status_action_unfreeze">Descongela %1$s</string>
   <string name="status_bulk_discard">Tirar (%1$d)</string>
   <string name="status_bulk_reschedule">Cambiar la fecha (%1$d)</string>
   <string name="status_bulk_consume">Consumido (%1$d)</string>
@@ -417,7 +409,6 @@
   <string name="status_snackbar_discarded">%1$s tirado</string>
   <string name="status_snackbar_discarded_many">%d productos tirados</string>
   <string name="status_snackbar_rescheduled_many">Fecha cambiada en %d productos</string>
-  <string name="status_snackbar_unfrozen">%1$s descongelado</string>
   <plurals name="status_discard_title">
     <item quantity="one">¿Tirar %d producto?</item>
     <item quantity="many">¿Tirar %d productos?</item>
@@ -425,8 +416,6 @@
   </plurals>
   <string name="status_discard_body">Se marcarán como tirados. Podrás deshacerlo justo después.</string>
   <string name="status_discard_confirm">Tirar</string>
-  <string name="status_dates_unfreeze_title">¿Qué fecha de caducidad tiene ahora?</string>
-  <string name="status_dates_as_before">Como antes · %1$s</string>
   <string name="status_dates_tomorrow">Mañana</string>
   <string name="status_dates_in_3d">En 3 días</string>
   <string name="status_dates_in_1w">En 1 semana</string>

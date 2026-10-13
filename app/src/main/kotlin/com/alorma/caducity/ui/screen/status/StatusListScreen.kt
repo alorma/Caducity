@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.status
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,14 +18,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,15 +34,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -62,9 +54,10 @@ import com.alorma.caducity.base.ui.icons.symbols.Delete
 import com.alorma.caducity.base.ui.icons.symbols.DeleteSweep
 import com.alorma.caducity.base.ui.icons.symbols.EventRepeat
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
-import com.alorma.caducity.base.ui.icons.symbols.WaterDrop
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.ProductRowDetail
+import com.alorma.caducity.domain.model.ProductRowModel
 import com.alorma.caducity.feature.tracking.StatusListScreen as StatusListScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.category.CategoryIcons
@@ -72,20 +65,16 @@ import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.chips.QuickDateChips
 import com.alorma.caducity.ui.components.chips.QuickDateOption
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
-import com.alorma.caducity.ui.components.connected.ConnectedRow
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
-import com.alorma.caducity.ui.components.product.shortDateText
+import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.theme.CaducityTheme
-import com.alorma.caducity.ui.theme.colors.colors
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import kotlin.time.Instant
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -93,9 +82,7 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
-import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -217,7 +204,7 @@ private fun SideEffectHandler(
             onDate = { date -> viewModel.onDateChosen(effect.target, date) },
             onPickDate = {
               scope.launch {
-                datePickerState.setSelection(effect.target.proposed ?: todayProvider.today().plus(1, DateTimeUnit.DAY))
+                datePickerState.setSelection(todayProvider.today().plus(1, DateTimeUnit.DAY))
                 val result =
                   dialogState.showDatePickerDialog(
                     datePickerState = datePickerState,
@@ -245,7 +232,7 @@ private fun DatePickerState.setSelection(date: LocalDate) {
   selectedDateMillis = date.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
 }
 
-/** Quick dates for «Canvia la data» and «Descongela»: a few offsets from today plus the calendar. */
+/** Quick dates for «Canvia la data» of the selected rows: a few offsets from today plus the calendar. */
 private fun AppBottomSheetState.QuickDatesSheet(
   coroutineScope: CoroutineScope,
   target: DateTarget,
@@ -259,16 +246,12 @@ private fun AppBottomSheetState.QuickDatesSheet(
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
       Text(
-        text =
-          stringResource(
-            if (target.unfreeze) R.string.status_dates_unfreeze_title else R.string.item_actions_change_date,
-          ),
+        text = stringResource(R.string.item_actions_change_date),
         style = CaducityTheme.typography.titleLarge,
         modifier = Modifier.semantics { heading() },
       )
       val options =
         buildList {
-          target.proposed?.let { add(stringResource(R.string.status_dates_as_before, it.shortDateText()) to it) }
           add(stringResource(R.string.status_dates_tomorrow) to today.plus(1, DateTimeUnit.DAY))
           add(stringResource(R.string.status_dates_in_3d) to today.plus(3, DateTimeUnit.DAY))
           add(stringResource(R.string.status_dates_in_1w) to today.plus(7, DateTimeUnit.DAY))
@@ -321,11 +304,10 @@ private fun StatusListContent(
           }
           items(section.rows, key = { it.key }) { row ->
             val index = section.rows.indexOf(row)
-            StatusRowItem(
-              row = row,
+            ProductRow(
+              model = row.toProductRow(),
               index = index,
               count = section.rows.size,
-              ready = ready,
               onClick = {
                 if (ready.selecting) {
                   viewModel.onToggleRow(row.key)
@@ -333,7 +315,10 @@ private fun StatusListContent(
                   viewModel.navigate(StatusListNavigation.ItemActions(row.nearest.itemId))
                 }
               },
-              viewModel = viewModel,
+              onConsume = { viewModel.onConsume(row) },
+              onFreeze = { viewModel.onFreeze(row) },
+              onDiscard = { viewModel.onDiscard(row) },
+              selected = if (ready.selecting) row.key in ready.selectedKeys else null,
             )
           }
         }
@@ -417,148 +402,17 @@ private fun SectionHeader(
   }
 }
 
-@Composable
-private fun StatusRowItem(
-  row: StatusRow,
-  index: Int,
-  count: Int,
-  ready: StatusListState.Ready,
-  onClick: () -> Unit,
-  viewModel: StatusListViewModel,
-) {
-  val colors = ready.status.colors()
-  val quantity = row.unitCount.takeIf { it > 1 }?.let { pluralStringResource(R.plurals.home_unit_count, it, it) }
-  ConnectedRow(
-    index = index,
-    count = count,
-    onClick = onClick,
-    modifier = Modifier.heightIn(min = 64.dp),
-    contentPadding = PaddingValues(start = 16.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
-  ) {
-    if (ready.selecting) {
-      Checkbox(
-        checked = row.key in ready.selectedKeys,
-        onCheckedChange = null,
-        modifier = Modifier.padding(end = 12.dp),
-      )
-    }
-    Column(modifier = Modifier.weight(1f)) {
-      Text(
-        text = if (quantity != null) "${row.name} · $quantity" else row.name,
-        style = CaducityTheme.typography.titleSmall,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-      )
-      Text(
-        text = rowDateText(ready.status, row, ready.today),
-        style = CaducityTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-        color = colors.onContainer,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-      )
-    }
-    if (!ready.selecting) {
-      Spacer(Modifier.width(8.dp))
-      RowButtons(ready.status, row, viewModel)
-    }
-  }
-}
-
-@Composable
-private fun RowButtons(
-  status: ExpiryStatus,
-  row: StatusRow,
-  viewModel: StatusListViewModel,
-) {
-  val frozenColor = CaducityTheme.colors.frozen.strong
-  val freshColor = CaducityTheme.colors.fresh.strong
-  val expiredColor = CaducityTheme.colors.expired.strong
-  Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-    when (status) {
-      ExpiryStatus.EXPIRED -> {
-        RoundButton(
-          Symbols.Outlined.EventRepeat,
-          stringResource(R.string.status_action_reschedule, row.name),
-          tint = freshColor,
-          onClick = { viewModel.onRescheduleClick(row) },
-        )
-        RoundButton(
-          Symbols.Outlined.Delete,
-          stringResource(R.string.status_action_discard, row.name),
-          tint = expiredColor,
-          onClick = { viewModel.onDiscard(row) },
-        )
-      }
-      ExpiryStatus.SOON, ExpiryStatus.FRESH -> {
-        RoundButton(
-          Symbols.Outlined.Check,
-          stringResource(R.string.home_mark_consumed, row.name),
-          tint = freshColor,
-          onClick = { viewModel.onConsume(row) },
-        )
-        RoundButton(
-          Symbols.Outlined.AcUnit,
-          stringResource(R.string.status_action_freeze, row.name),
-          tint = frozenColor,
-          onClick = { viewModel.onFreeze(row) },
-        )
-      }
-      ExpiryStatus.FROZEN -> {
-        RoundButton(
-          Symbols.Outlined.Check,
-          stringResource(R.string.home_mark_consumed, row.name),
-          tint = freshColor,
-          onClick = { viewModel.onConsume(row) },
-        )
-        RoundButton(
-          Symbols.Outlined.WaterDrop,
-          stringResource(R.string.status_action_unfreeze, row.name),
-          tint = frozenColor,
-          onClick = { viewModel.onUnfreezeClick(row) },
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun RoundButton(
-  icon: ImageVector,
-  contentDescription: String,
-  onClick: () -> Unit,
-  tint: Color? = null,
-) {
-  IconButton(
-    onClick = onClick,
-    modifier = Modifier.size(44.dp).clip(CircleShape).background(CaducityTheme.colorScheme.surface),
-  ) {
-    Icon(icon, contentDescription = contentDescription, tint = tint ?: CaducityTheme.colorScheme.onSurface)
-  }
-}
-
-private fun LocalDate.dayMonthText(locale: Locale = Locale.getDefault()): String =
-  DateTimeFormatter.ofPattern("d MMM", locale).format(toJavaLocalDate())
-
-/** «Fa 1 dia · ds. 10 oct», «Avui · dg. 11 oct», «D'aquí 22 dies · dl. 2 nov» or «Congelat el 2 oct». */
-@Composable
-private fun rowDateText(
-  status: ExpiryStatus,
-  row: StatusRow,
-  today: LocalDate,
-): String {
-  if (status == ExpiryStatus.FROZEN) {
-    return stringResource(R.string.status_date_frozen, (row.frozenSince ?: row.expiration).dayMonthText())
-  }
-  val days = today.daysUntil(row.expiration)
-  val date = row.expiration.shortDateText()
-  return when {
-    days == 0 -> stringResource(R.string.status_date_today, date)
-    days == 1 -> stringResource(R.string.status_date_tomorrow, date)
-    days > 1 -> stringResource(R.string.status_date_in_days, days, date)
-    days == -1 -> stringResource(R.string.status_date_ago_one, date)
-    else -> stringResource(R.string.status_date_ago_days, -days, date)
-  }
-}
+/** The row as the shared [ProductRow] shows it: no category icon (the list is already grouped by it). */
+private fun StatusRow.toProductRow(): ProductRowModel =
+  ProductRowModel(
+    key = key,
+    name = name,
+    itemIds = itemIds,
+    status = nearest.status,
+    remainingDays = nearest.remainingDays,
+    category = null,
+    detail = ProductRowDetail.WithDays,
+  )
 
 @Composable
 private fun SelectionBar(

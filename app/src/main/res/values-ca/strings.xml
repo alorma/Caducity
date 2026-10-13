@@ -389,17 +389,9 @@
     <item quantity="many">%d seleccionats</item>
     <item quantity="other">%d seleccionats</item>
   </plurals>
-  <string name="status_date_today">Avui · %1$s</string>
-  <string name="status_date_tomorrow">Demà · %1$s</string>
-  <string name="status_date_in_days">D\'aquí %1$d dies · %2$s</string>
   <string name="product_row_in_days">D\'aquí %1$d dies</string>
-  <string name="status_date_ago_one">Fa 1 dia · %1$s</string>
-  <string name="status_date_ago_days">Fa %1$d dies · %2$s</string>
-  <string name="status_date_frozen">Congelat el %1$s</string>
-  <string name="status_action_reschedule">Canvia la data de %1$s</string>
   <string name="status_action_discard">Llença %1$s</string>
   <string name="status_action_freeze">Congela %1$s</string>
-  <string name="status_action_unfreeze">Descongela %1$s</string>
   <string name="status_bulk_discard">Llença (%1$d)</string>
   <string name="status_bulk_reschedule">Canvia la data (%1$d)</string>
   <string name="status_bulk_consume">Consumit (%1$d)</string>
@@ -417,7 +409,6 @@
   <string name="status_snackbar_discarded">%1$s llençat</string>
   <string name="status_snackbar_discarded_many">%d productes llençats</string>
   <string name="status_snackbar_rescheduled_many">Data canviada a %d productes</string>
-  <string name="status_snackbar_unfrozen">%1$s descongelat</string>
   <plurals name="status_discard_title">
     <item quantity="one">Llençar %d producte?</item>
     <item quantity="many">Llençar %d productes?</item>
@@ -425,8 +416,6 @@
   </plurals>
   <string name="status_discard_body">Es marcaran com a llençats. Ho podràs desfer just després.</string>
   <string name="status_discard_confirm">Llença</string>
-  <string name="status_dates_unfreeze_title">Quina data de caducitat té ara?</string>
-  <string name="status_dates_as_before">Com abans · %1$s</string>
   <string name="status_dates_tomorrow">Demà</string>
   <string name="status_dates_in_3d">D\'aquí 3 dies</string>
   <string name="status_dates_in_1w">D\'aquí 1 setmana</string>

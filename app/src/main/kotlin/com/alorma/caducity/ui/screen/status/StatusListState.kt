@@ -14,7 +14,7 @@ data class StatusRow(
   val category: Category,
   val expiration: LocalDate,
   val frozenSince: LocalDate?,
-  /** Closest to expire first: the row's buttons act on [nearest]. */
+  /** Closest to expire first (see `sortedNearestFirst`): the row's round buttons act on [nearest]. */
   val entries: List<PantryEntry>,
 ) {
   val nearest: PantryEntry get() = entries.first()
@@ -36,7 +36,6 @@ sealed interface StatusListState {
   @Immutable
   data class Ready(
     val status: ExpiryStatus,
-    val today: LocalDate,
     val totalCount: Int,
     val sections: List<StatusSection>,
     val selecting: Boolean,
@@ -49,15 +48,11 @@ sealed interface StatusListState {
   }
 }
 
-/** What a date picked in the quick-dates sheet is for. */
+/** What a date picked in the quick-dates sheet is for: the units of the selected rows (bulk reschedule). */
 @Immutable
 data class DateTarget(
   val itemIds: List<String>,
   val names: List<String>,
-  /** Thawing: the date is the new expiration of a frozen unit. */
-  val unfreeze: Boolean,
-  /** Date proposed when thawing (today + the days that were left). */
-  val proposed: LocalDate?,
 )
 
 sealed interface StatusListNavigation {
