@@ -201,7 +201,7 @@ jobs:
           path: |
             */build/reports/screenshotTest/
             */build/outputs/screenshotTest-results/
-          retention-days: 14
+          retention-days: 3
 
       - name: Fail on screenshot differences
         if: steps.validate.outcome == 'failure' && steps.update.outputs.updated != 'true'
