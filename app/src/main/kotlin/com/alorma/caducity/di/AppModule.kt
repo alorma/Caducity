@@ -3,6 +3,7 @@ package com.alorma.caducity.di
 import com.alorma.caducity.config.ConfigQualifier
 import com.alorma.caducity.config.calendar.FirstDayOfWeekPreferences
 import com.alorma.caducity.config.configModule
+import com.alorma.caducity.config.remoteconfig.RemoteConfig
 import com.alorma.caducity.config.time.RelativeTimeFormatter
 import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.data.datasource.RoomBackupDataSource
@@ -46,6 +47,7 @@ import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
 import com.alorma.caducity.ui.screen.settings.margins.CategoryMarginsViewModel
 import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsViewModel
 import com.alorma.caducity.ui.screen.status.StatusListViewModel
+import com.alorma.caducity.ui.screen.transform.TransformFeature
 import com.alorma.caducity.ui.screen.transform.TransformViewModel
 import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerResults
 import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerViewModel
@@ -87,6 +89,7 @@ val appModule =
 
     // Home
     singleOf(::WidgetTipFlag)
+    singleOf(::TransformFeature) bind RemoteConfig::class
     viewModelOf(::HomeViewModel)
 
     // Pantry
