@@ -260,7 +260,7 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 4b — Filtres desplegables del selector | Validada |
 | 5 — Entrades i flux final | Validada |
 | 6 — Qualitat | Validada (queda la prova v3 → v4 abans de publicar) |
-| 7 — Pantalla en files | Tasques 1-7 fetes, pendents resolts i mode pager descartat; pendent d'aprovació de Bernat |
+| 7 — Pantalla en files | Validada |
 | 8 — Onboarding, novetat i «No és un receptari» | Pendent (tasques a aprovar) |
 
 Només es passa a «Validada» quan Bernat l'aprova (`.claude/rules/phased-work.md`).
