@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.R
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.model.ActiveItem
+import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.IngredientSpend
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.TransformResult
@@ -11,6 +12,7 @@ import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
+import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.TransformItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.NavigateToIngredientPickerAction
@@ -25,6 +27,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -35,6 +38,7 @@ class TransformViewModel(
   private val args: TransformArgs,
   todayProvider: TodayProvider,
   private val getActiveItem: GetActiveItemUseCase,
+  private val observeItems: ObserveItemsUseCase,
   private val getNameSuggestions: GetNameSuggestionsUseCase,
   private val transformItems: TransformItemsUseCase,
   observeCategories: ObserveCategoriesUseCase,
@@ -62,7 +66,7 @@ class TransformViewModel(
     viewModelScope.launch {
       val active = getActiveItem.all().associateBy { it.itemId }
       val picked = args.itemIds.mapNotNull { active[it] }
-      val ingredients = picked.toIngredients(active.values.toList())
+      val ingredients = picked.toIngredients(active.values.toList(), unitStatuses())
       initialIngredients = ingredients.signature()
       _state.update { it.copy(ingredients = ingredients) }
     }
@@ -94,7 +98,7 @@ class TransformViewModel(
     viewModelScope.launch {
       val active = getActiveItem.all()
       val byId = active.associateBy { it.itemId }
-      val picked = itemIds.mapNotNull { byId[it] }.toIngredients(active)
+      val picked = itemIds.mapNotNull { byId[it] }.toIngredients(active, unitStatuses())
       if (picked.isEmpty()) return@launch
       _state.update { current ->
         val pickedKeys = picked.map { it.key }.toSet()
@@ -323,7 +327,13 @@ class TransformViewModel(
   }
 
   /** Units of the same product become one ingredient: the picked ones are spent, the rest of the product is available. */
-  private fun List<ActiveItem>.toIngredients(active: List<ActiveItem>): List<IngredientUi> =
+  private suspend fun unitStatuses(): Map<String, ExpiryStatus> =
+    observeItems.observe().first().associate { it.itemId to it.status }
+
+  private fun List<ActiveItem>.toIngredients(
+    active: List<ActiveItem>,
+    statuses: Map<String, ExpiryStatus>,
+  ): List<IngredientUi> =
     groupBy { it.productId ?: it.itemId }.map { (key, picked) ->
       val units = (active.filter { (it.productId ?: it.itemId) == key }).sortedBy { it.expiration }
       IngredientUi(
@@ -333,6 +343,7 @@ class TransformViewModel(
         units = units,
         count = picked.size,
         preferredIds = picked.map { it.itemId }.toSet(),
+        unitStatus = statuses,
       )
     }
 

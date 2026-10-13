@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.transform
 
 import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.NameSuggestion
 import com.alorma.caducity.domain.model.defaultResultExpiration
 import kotlinx.datetime.LocalDate
@@ -20,10 +21,16 @@ data class IngredientUi(
   val count: Int,
   /** Units the user selected explicitly; they are spent before the rest of the product. */
   val preferredIds: Set<String> = emptySet(),
+  /** Status of each unit, with the margins of its category, so the card is coloured like the rest of the app. */
+  val unitStatus: Map<String, ExpiryStatus> = emptyMap(),
 ) {
   val available: Int get() = units.size
   val spent: List<ActiveItem>
     get() = units.sortedBy { it.itemId !in preferredIds }.take(count)
+
+  /** Status of the unit that is spent first: the one that sets the colour of the card and of its line. */
+  val status: ExpiryStatus?
+    get() = spent.firstOrNull()?.let { unitStatus[it.itemId] }
 }
 
 /** A product the transformation creates. Category and date follow the ingredients until the user overrides them. */

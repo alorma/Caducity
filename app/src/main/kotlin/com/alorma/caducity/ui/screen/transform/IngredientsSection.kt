@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.transform
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -66,6 +68,7 @@ import com.alorma.caducity.ui.components.category.imageVector
 import com.alorma.caducity.ui.screen.add.ScreenGutter
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.colors.colors
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlinx.coroutines.flow.filter
@@ -115,6 +118,9 @@ fun IngredientsSection(
     val visible = ingredients.drop(closedRows)
     val listState = rememberLazyListState()
     SideEffect { links?.ingredientsState = listState }
+    // The colour of the status of each card, also for the line that leaves it.
+    val statusColors = visible.map { it.status?.colors()?.strong ?: CaducityTheme.colorScheme.primary }
+    SideEffect { links?.ingredientColors = statusColors }
     // TODO(transforma-open-1): the stepper only folds when the user taps outside or scrolls; maybe also after a few seconds.
     var editingKey by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(listState) {
@@ -133,6 +139,7 @@ fun IngredientsSection(
       itemsIndexed(visible, key = { _, it -> it.key }) { index, ingredient ->
         IngredientCard(
           ingredient = ingredient,
+          statusColor = statusColors[index],
           category = categories.firstOrNull { it.id == ingredient.categoryId },
           editing = editingKey == ingredient.key,
           onEditingChange = { editingKey = if (it) ingredient.key else null },
@@ -239,6 +246,7 @@ private fun AddIngredientRow(
 @Composable
 private fun IngredientCard(
   ingredient: IngredientUi,
+  statusColor: Color,
   category: Category?,
   editing: Boolean,
   onEditingChange: (Boolean) -> Unit,
@@ -249,6 +257,12 @@ private fun IngredientCard(
   Surface(
     shape = RowCardShape,
     color = CaducityTheme.colorScheme.surfaceContainer,
+    // The card colour at the top, turning into the colour of its status at the bottom: the side the line leaves from.
+    border =
+      BorderStroke(
+        1.5.dp,
+        Brush.verticalGradient(listOf(CaducityTheme.colorScheme.surfaceContainer, statusColor)),
+      ),
     modifier = modifier.size(width = RowCardWidth, height = IngredientCardHeight),
   ) {
     Box {
