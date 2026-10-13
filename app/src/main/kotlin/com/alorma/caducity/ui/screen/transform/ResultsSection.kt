@@ -28,6 +28,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -102,9 +105,19 @@ fun ResultsSection(
     rememberLazyListState(
       initialFirstVisibleItemIndex = state.results.indexOfFirst { it.id == state.expandedResultId }.coerceAtLeast(0),
     )
+  // What the row shows follows the selection with one step in between: a folded card is first brought to the centre
+  // and only then expands. Folding follows at once.
+  var shownId by remember { mutableIntStateOf(state.expandedResultId) }
   LaunchedEffect(state.expandedResultId, state.results.size) {
-    val index = state.results.indexOfFirst { it.id == state.expandedResultId }
+    val target = state.expandedResultId
+    if (target == NONE_EXPANDED) {
+      shownId = NONE_EXPANDED
+      return@LaunchedEffect
+    }
+    val index = state.results.indexOfFirst { it.id == target }
     if (index < 0) return@LaunchedEffect
+    if (shownId == NONE_EXPANDED) listState.animateScrollToItem(index)
+    shownId = target
     listState.animateScrollToItem(index)
     // The cards around it are still changing size while the first scroll runs: align once they have settled.
     delay(ExpandMillis.toLong())
@@ -125,7 +138,7 @@ fun ResultsSection(
       // card in the middle, so the first and the last can be scrolled to the centre (and a lone result starts there).
       val sidePadding by animateDpAsState(
         targetValue =
-          if (state.expandedResultId == NONE_EXPANDED) {
+          if (shownId == NONE_EXPANDED) {
             ((maxWidth - RowCardWidth) / 2).coerceAtLeast(ScreenGutter)
           } else {
             ScreenGutter
@@ -149,7 +162,7 @@ fun ResultsSection(
             state = state,
             result = result,
             index = index,
-            selected = result.id == state.expandedResultId,
+            selected = result.id == shownId,
             formWidth = formWidth,
             actions = actions,
           )
@@ -190,7 +203,14 @@ private fun ResultItem(
             1.5.dp,
             Brush.verticalGradient(listOf(CaducityTheme.colorScheme.error, CaducityTheme.colorScheme.surfaceContainer)),
           )
-        else -> null
+        // Otherwise the colour of the card turning into the one of the line that arrives at it.
+        else ->
+          BorderStroke(
+            1.5.dp,
+            Brush.verticalGradient(
+              listOf(CaducityTheme.colorScheme.surfaceContainer, CaducityTheme.colorScheme.outline),
+            ),
+          )
       },
     modifier =
       Modifier
