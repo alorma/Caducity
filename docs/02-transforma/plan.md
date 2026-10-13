@@ -205,6 +205,15 @@ Validada amb tests de ViewModel, tests de captura clar/fosc i l'emulador (no el 
 - [x] «Fet» no plega un resultat incomplet i fa un shake: `f5a2742`.
 - Experiment descartat: gota amb línia penjant per esborrar (disseny maco, animacions no convencien). Es pot recuperar de `f927424`; es va desfer a `19ec17d`.
 
+**Redisseny rebut (2026-10-13, zip `caducity-canvi-transforma-files`):** `spec-files.md`, les captures `TransformaCarr{Buit,Molts,Plegat}`, `OBTransforma` i `NovetatTransforma` i els `.dc.html` ja són els nous. Tasques aprovades per Bernat, a fer en aquest ordre, un commit cadascuna:
+1. [x] Docs (aquest commit).
+2. [ ] Sense estat «invàlid»: «Fet» desactivat mentre el resultat obert sigui incomplet (amb shake si es toca), tocar un altre resultat no fa res, treure la vora vermella. «Fet» exigeix nom, categoria i data (criteri actual; el zip només diu nom i categoria, Bernat no ho ha decidit).
+3. [ ] Ingredients: vora plena de 2 dp i línia de 2 dp amb el color de l'estat (tokens de l'app, contrast ≥ 3:1).
+4. [ ] Resultats: línia i vora tan `#8F8266` de 2 dp amb `alpha = max(0,3, 1 − |x − centre| / 260 dp)`; la vora segueix la mateixa alfa. Les línies d'ingredients segueixen amb el seu fade actual.
+5. [ ] Esborrar: `×` a la targeta plegada i paperera al formulari, també amb un sol resultat (buida el formulari), amb snackbar «Resultat esborrat · Desfés» que restaura el resultat i la selecció. Bernat manté paperera i `×`.
+6. [ ] Node: galeta de 8 lòbuls de 56 dp (ara 64), icona `soup_kitchen` de ~28 dp (ara 32), que sobresurt 8 dp.
+7. [ ] Detalls de les captures: vora verda de 2 dp amb un sol resultat, «Desa» sol quan és desactivat, capçalera «Resultat» sense recompte a l'accés lliure.
+
 Pendent d'aquests ajustos:
 - «Ingredients · opcional» a l'accés lliure: Bernat pregunta si hauria d'haver-hi com a mínim un ingredient. Ve del pla (l'accés lliure serveix per apuntar un producte sense ingredients); decidir si es manté.
 - En confirmar el selector entra la unitat més propera del producte, no la de l'estat filtrat.

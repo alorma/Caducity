@@ -24,7 +24,7 @@ Pantalla a pantalla completa; **tot el contingut fa scroll vertical**, amb la ba
 
 ## Targeta de resultat (148 × 92 dp, radi 20)
 - Forma de la categoria (28 dp) + nom (14 sp, 1 línia), meta «12 u. · Plats prep.» i, si en congela, una pastilla `FROZEN` «8 congelats».
-- **Plegada** (no seleccionada): targeta de 148 × 92 dp. Si és invàlida (vegeu «Validació») mostra un punt d'error.
+- **Plegada** (no seleccionada): targeta de 148 × 92 dp. Sempre és vàlida: un resultat incomplet no es pot plegar (vegeu «Vores i colors (estat)…»).
 - **Expandida** (seleccionada): vegeu «Formulari del resultat»; un resultat nou entra expandit i la fila fa `animateScrollToItem` perquè quedi centrat.
 - Nom buit: «Nou resultat».
 
@@ -42,7 +42,7 @@ Amb **un sol resultat** expandit no es mostra la fila (només el formulari); en 
 
 ## Validació i «Desa»
 - El text és «Desa · M productes» (M = nombre de resultats, el mateix que usa el snackbar). Amb 0 ingredients el snackbar continua sent «M productes afegits · Desfés».
-- Si l'usuari toca «Desa» desactivat no passa res; però cada resultat invàlid mostra el punt d'error a la targeta i, en desar amb un d'invàlid possible (p. ex. des de la lectura d'accessibilitat), se selecciona el primer invàlid i se li fa scroll.
+- Si l'usuari toca «Desa» desactivat no passa res. El «Desa» només s'activa quan tots els resultats són vàlids i cap n'està obert incomplet.
 
 ## Molts elements (`TransformaCarrMolts`, `TransformaCarrPlegat`)
 - Les files **no creixen en vertical**: l'alçada de la pantalla és la mateixa amb 2 que amb 20 elements.
@@ -55,7 +55,7 @@ Cada fila és una col·lecció (`collectionInfo`); cada targeta és un botó amb
 
 ## Esquema de línies (FASE FINAL · OPCIONAL)
 Entre les dues files hi ha un petit esquema dibuixat que lliga visualment «aquests ingredients → aquest resultat»:
-- Un **node** circular de 40 dp (`#EFD8C0`, icona `skillet`) al centre, dins de la fila de la capçalera «Resultat» (centrat entre l'etiqueta i el botó «+ Afegeix»).
+- Un **node** de 56 dp amb forma de galeta ondulada (8 lòbuls, la mateixa família de formes que les icones de les targetes; `#EFD8C0`, icona `soup_kitchen` de cullerot amb vapor, verd `primary`, ~28 dp) al centre, dins de la fila de la capçalera «Resultat» (centrat entre l'etiqueta i el botó «+ Afegeix»).
 - De cada **ingredient visible** surt una línia fina (1,5 dp, traç arrodonit, color sorra) que baixa i conflueix al node.
 - Amb un resultat **expandit**: del node surt **una sola línia vertical verda** (`primary`, 2,5 dp) fins a la vora superior de la targeta expandida. Com que sempre queda **centrada**, la línia és sempre vertical i no cal calcular posicions.
 - Amb **tots plegats**: del node surt una línia fina color sorra cap a cada **targeta de resultat visible** (centre visible; màxim 2-3), igual que als ingredients.
@@ -120,3 +120,30 @@ Regles de visualització (proposta; `TODO` clar si cal canviar-les):
 - Accessible: focus a la capçalera, el botó «Ara no» té la mateixa mida tàctil que el primari, anunci del títol; respecta el tema (clar/fosc).
 - No són dibuixades les versions fosc/paletes de les dues pantalles noves: usa els tokens habituals.
 - Obert: si es vol un subtítol a l'entrada del menú «Transforma» («Apunta què has cuinat»).
+
+
+## Vores i colors (estat) i línies que s'esvaeixen
+Aquest apartat **té prioritat** sobre els colors de línia/vora que s'hagin descrit abans en aquest document (línia tan única, vores sense color).
+**Vora de la targeta d'ingredient (2 dp, sobre el farciment `#F7EEDA`), segons l'estat:**
+- Caduca aviat (en marge d'«Aviat»): ambre `#D9A021`.
+- Congelat: blau `#4F95AD`. A la targeta, el subtítol diu «congelat».
+- Resta (amb marge): verd `#7E9F4A`.
+Usa els tokens de color d'estat de l'app, no aquests hex literals. Verifica que cada vora tingui contrast ≥ 3:1 contra el fons `#FFFAEE` (la groga i la verda són les justes; si no arriben, enfosqueix-les per a la vora).
+**Línies ingredient → node:** cada línia (2 dp) té el color de la vora de la seva targeta, així es veu quin ingredient entra al node.
+**Línies node → resultat i vora de la targeta de resultat:** to tan `#8F8266` (2 dp) amb **opacitat decreixent segons la distància horitzontal al centre de la pantalla**: `alpha = max(0.3, 1 − |x − centre| / 260 dp)`. La vora de la targeta de resultat segueix la mateixa alpha que la seva línia, de manera que el que és més lluny es veu més apagat. La línia vertical verda cap al formulari expandit no s'esvaeix mai.
+**No existeix l'estat «resultat invàlid».** Un resultat incomplet no es pot plegar: el botó **«Fet» queda desactivat** (tonal apagat, `#F0E2CB` / text `#8F8266`, `enabled = false` i `disabled` a l'accessibilitat) mentre falti el nom o la categoria, i no s'hi pot passar a un altre resultat mentre sigui així (tocar-ne un altre, o la vora fina d'un veí, **no fa res**; opcionalment mostra el camp que falta amb l'error del camp habitual). Així, totes les targetes plegades són sempre vàlides i les seves vores/línies mai no són vermelles. El «Desa» queda desactivat mentre hi hagi un resultat obert incomplet. Captura `TransformaCarrBuit` (Fet apagat).
+Les targetes seleccionades (expandides) mantenen la vora verda `primary` de 2 dp.
+
+**Node (actualitzat):** el node és una galeta ondulada de 56 dp amb la icona `soup_kitchen` (substitueix el cercle de 40 dp amb `skillet` descrit més amunt). Sobresurt uns 8 dp per sobre de la fila de la capçalera «Resultat» i tapa l'extrem de les línies. Mateix node al diagrama de l'onboarding i de la modal de novetat.
+
+
+## Esborrar un resultat
+Es pot esborrar un resultat de dues maneres (mateixa acció):
+- **Targeta plegada**: icona `close` a dalt a la dreta, igual que la dels ingredients (àrea tàctil ≥ 48 dp encara que la icona en faci 18; descripció «Esborra el resultat <nom>»).
+- **Formulari expandit**: botó d'icona `delete` (40 dp visibles, ≥ 48 dp d'àrea) a baix a l'esquerra, a la mateixa fila que «Fet» (que va a la dreta). Captures `TransformaCarrMolts` i `TransformaCarrBuit`.
+Comportament (proposta; `TODO` si cal canviar-ho):
+1. **Sense diàleg de confirmació**; en lloc d'això, *snackbar* «Resultat esborrat» amb acció **«Desfés»** (restaura el resultat i la seva posició/selecció).
+2. Si n'hi ha més d'un: en esborrar el que està obert, passen a l'estat **plegat** (tots els que queden són vàlids, vegeu més amunt) i la fila fa scroll al veí següent (o l'anterior si era l'últim). Si només en queda un, s'obre el seu formulari directament (sense fila, com sempre amb un sol resultat).
+3. Si és el **resultat únic**: no desapareix la secció; el formulari es **buida** (nom, caducitat, categoria, «Congela'n» als valors per defecte) i el «Fet» queda desactivat. Un cop buit, el «Desa» queda desactivat.
+4. Les línies i el node es recalculen; l'esborrat s'anima (la targeta es contreu i les veïnes s'hi acosten, `animateItem`; amb «reduir animacions», canvi directe). Anunci d'accessibilitat: «Resultat esborrat. N resultats».
+5. L'esborrat només treu el resultat de la tanda; no toca l'estoc ni els ingredients.
