@@ -21,6 +21,7 @@ import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerResults
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -263,6 +264,10 @@ class TransformViewModel(
               onAction = { transformItems.undo(batch) },
             ),
           )
+          for (row in 1..current.ingredients.size.coerceAtMost(MaxCascadedRows)) {
+            delay(CascadeStepMillis)
+            _state.update { it.copy(closedRows = row) }
+          }
           _state.update { it.copy(saving = false) }
           navigate(TransformNavigation.Close)
         }.onFailure { error ->
@@ -319,5 +324,9 @@ class TransformViewModel(
 
   private companion object {
     const val NONE_EXPANDED = -1
+
+    /** The ingredient rows fold away one by one (80 ms apart) before the screen closes; capped so a long list stays quick. */
+    const val CascadeStepMillis = 80L
+    const val MaxCascadedRows = 6
   }
 }

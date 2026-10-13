@@ -43,6 +43,8 @@ data class TransformState(
   val categories: List<Category> = emptyList(),
   val expandedResultId: Int = 0,
   val saving: Boolean = false,
+  /** Ingredient rows already folded away by the closing cascade that follows a successful save. */
+  val closedRows: Int = 0,
   /** Free entry: opened without ingredients, so they are optional and category and date are chosen by hand. */
   val freeEntry: Boolean = false,
 ) {

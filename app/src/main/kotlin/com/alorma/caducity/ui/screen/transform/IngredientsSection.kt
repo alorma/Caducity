@@ -1,5 +1,8 @@
 package com.alorma.caducity.ui.screen.transform
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -56,6 +59,8 @@ fun IngredientsSection(
   modifier: Modifier = Modifier,
   /** Free entry: ingredients are optional and, with none, the section shows an empty state. */
   optional: Boolean = false,
+  /** Rows below this index are folded away: the cascade that closes the screen after saving. */
+  closedRows: Int = 0,
 ) {
   val count = ingredients.size + 1
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing)) {
@@ -73,14 +78,19 @@ fun IngredientsSection(
       return@Column
     }
     ingredients.forEachIndexed { index, ingredient ->
-      IngredientRow(
-        ingredient = ingredient,
-        category = categories.firstOrNull { it.id == ingredient.categoryId },
-        index = index,
-        count = count,
-        onCountChange = { onCountChange(ingredient.key, it) },
-        onRemove = { onRemove(ingredient.key) },
-      )
+      AnimatedVisibility(
+        visible = index >= closedRows,
+        exit = shrinkVertically() + fadeOut(),
+      ) {
+        IngredientRow(
+          ingredient = ingredient,
+          category = categories.firstOrNull { it.id == ingredient.categoryId },
+          index = index,
+          count = count,
+          onCountChange = { onCountChange(ingredient.key, it) },
+          onRemove = { onRemove(ingredient.key) },
+        )
+      }
     }
     AddIngredientRow(index = ingredients.size, count = count, onClick = onAdd)
   }

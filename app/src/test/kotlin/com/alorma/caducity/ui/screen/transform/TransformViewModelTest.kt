@@ -483,6 +483,7 @@ class TransformViewModelTest {
         vm.onSave()
         expectThat(awaitItem()).isA<TransformNavigationSideEffect.Close>()
       }
+      expectThat(vm.state.value.closedRows).isEqualTo(1)
 
       val active = pantry.observeActiveItems().first()
       expectThat(active.filter { it.name == "Broth" }).hasSize(4)

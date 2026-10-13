@@ -121,6 +121,7 @@ fun TransformScreen(
           onRemove = viewModel::onRemoveIngredient,
           onAdd = { viewModel.navigate(TransformNavigation.IngredientPicker) },
           optional = state.freeEntry,
+          closedRows = state.closedRows,
         )
         ResultsSection(state = state, actions = actions)
         Text(
