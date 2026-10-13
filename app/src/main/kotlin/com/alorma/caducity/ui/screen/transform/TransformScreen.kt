@@ -1,8 +1,13 @@
 package com.alorma.caducity.ui.screen.transform
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -20,8 +25,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
@@ -97,41 +105,80 @@ fun TransformScreen(
     dialogState = dialogState,
     snackbarState = snackbarState,
     bottomSheetState = bottomSheetState,
-    topBar = {
-      TransformTopBar(
-        canSave = state.canSave,
-        onClose = viewModel::onCloseRequest,
-        onSave = viewModel::onSave,
-      )
-    },
+    topBar = { TransformTopBar(onClose = viewModel::onCloseRequest) },
   ) { insets ->
     ResponsiveCenteredContainer {
-      Column(
-        modifier =
-          Modifier
-            .fillMaxSize()
-            .padding(insets)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-      ) {
-        IngredientsSection(
-          ingredients = state.ingredients,
-          categories = state.categories,
-          onCountChange = viewModel::onIngredientCountChange,
-          onRemove = viewModel::onRemoveIngredient,
-          onAdd = { viewModel.navigate(TransformNavigation.IngredientPicker) },
-          optional = state.freeEntry,
-          closedRows = state.closedRows,
+      Box(modifier = Modifier.fillMaxSize().padding(insets)) {
+        Column(
+          modifier =
+            Modifier
+              .fillMaxSize()
+              .verticalScroll(rememberScrollState())
+              // Room for the fixed «Desa» bar, so the last thing on screen is never behind it.
+              .padding(bottom = SaveBarClearance),
+          verticalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
+          IngredientsSection(
+            ingredients = state.ingredients,
+            categories = state.categories,
+            onCountChange = viewModel::onIngredientCountChange,
+            onRemove = viewModel::onRemoveIngredient,
+            onAdd = { viewModel.navigate(TransformNavigation.IngredientPicker) },
+            optional = state.freeEntry,
+            closedRows = state.closedRows,
+          )
+          ResultsSection(state = state, actions = actions)
+          if (state.ingredients.isNotEmpty()) {
+            Text(
+              text = stringResource(R.string.transform_footer),
+              style = CaducityTheme.typography.bodySmall,
+              color = CaducityTheme.colorScheme.onSurfaceVariant,
+              modifier = Modifier.padding(horizontal = ScreenGutter + 4.dp, vertical = 8.dp),
+            )
+          }
+        }
+        TransformSaveBar(
+          canSave = state.canSave,
+          count = state.results.size,
+          onSave = viewModel::onSave,
+          modifier = Modifier.align(Alignment.BottomCenter),
         )
-        ResultsSection(state = state, actions = actions)
+      }
+    }
+  }
+}
+
+/** How much room the scrolling content leaves at the bottom for [TransformSaveBar]. */
+internal val SaveBarClearance = 104.dp
+
+/** «Desa · M productes»: fixed at the bottom, over the keyboard, with a fade so the content goes under it softly. */
+@Composable
+internal fun TransformSaveBar(
+  canSave: Boolean,
+  count: Int,
+  onSave: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Box(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .imePadding()
+        .background(Brush.verticalGradient(listOf(Color.Transparent, CaducityTheme.colorScheme.background)))
+        .padding(start = ScreenGutter, end = ScreenGutter, top = 24.dp, bottom = 12.dp),
+  ) {
+    Surface(
+      onClick = onSave,
+      enabled = canSave,
+      shape = CaducityShapes.full,
+      color = if (canSave) CaducityTheme.colorScheme.primary else CaducityTheme.colorScheme.surfaceContainerHigh,
+      contentColor = if (canSave) CaducityTheme.colorScheme.onPrimary else CaducityTheme.colorScheme.outline,
+      modifier = Modifier.fillMaxWidth().height(56.dp),
+    ) {
+      Box(contentAlignment = Alignment.Center) {
         Text(
-          text =
-            stringResource(
-              if (state.ingredients.isEmpty()) R.string.transform_footer_free else R.string.transform_footer,
-            ),
-          style = CaducityTheme.typography.bodySmall,
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
-          modifier = Modifier.padding(horizontal = ScreenGutter + 4.dp, vertical = 8.dp),
+          text = pluralStringResource(R.plurals.transform_save_count, count, count),
+          style = CaducityTheme.typography.titleMedium,
         )
       }
     }
@@ -140,33 +187,13 @@ fun TransformScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TransformTopBar(
-  canSave: Boolean,
-  onClose: () -> Unit,
-  onSave: () -> Unit,
-) {
+private fun TransformTopBar(onClose: () -> Unit) {
   ResponsiveCenteredContainer(fillHeight = false) {
     TopAppBar(
       title = { Text(text = stringResource(R.string.transform_title), style = CaducityTheme.typography.titleLarge) },
       navigationIcon = {
         IconButton(onClick = onClose) {
           Icon(Symbols.Outlined.Close, contentDescription = stringResource(R.string.add_close))
-        }
-      },
-      actions = {
-        Surface(
-          onClick = onSave,
-          enabled = canSave,
-          shape = CaducityShapes.full,
-          color = if (canSave) CaducityTheme.colorScheme.primary else CaducityTheme.colorScheme.surfaceContainerHigh,
-          contentColor = if (canSave) CaducityTheme.colorScheme.onPrimary else CaducityTheme.colorScheme.outline,
-          modifier = Modifier.padding(end = 12.dp),
-        ) {
-          Text(
-            text = stringResource(R.string.transform_save),
-            style = CaducityTheme.typography.labelLarge,
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
-          )
         }
       },
       colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),

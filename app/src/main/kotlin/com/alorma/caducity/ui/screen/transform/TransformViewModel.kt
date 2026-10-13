@@ -243,7 +243,13 @@ class TransformViewModel(
 
   fun onSave() {
     val current = _state.value
-    if (!current.canSave) return
+    if (!current.canSave) {
+      // Saving is blocked only by a result that lacks something (e.g. from an accessibility action): open the first one.
+      if (!current.saving && (current.ingredients.isNotEmpty() || current.freeEntry)) {
+        current.results.firstOrNull { !current.isValid(it) }?.let { onSelectResult(it.id) }
+      }
+      return
+    }
     val spends =
       current.ingredients.map {
         IngredientSpend(
