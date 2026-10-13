@@ -193,6 +193,9 @@
   <string name="transform_empty_body">Afegeix els ingredients del rebost que has gastat. Si no els tens apuntats, pots saltar-te aquest pas.</string>
   <string name="transform_footer_free">Desa s\'activa quan hi ha nom, categoria i data.</string>
   <string name="transform_add_ingredient">Afegeix ingredient</string>
+  <string name="transform_add">Afegeix</string>
+  <string name="transform_section_ingredients_count">Ingredients · %d</string>
+  <string name="transform_ingredient_units_edit">Canvia la quantitat, %1$d de %2$d</string>
   <string name="transform_ingredient_units">%1$d de %2$d</string>
   <string name="transform_ingredient_remove">Treu %1$s</string>
   <string name="transform_discard_title">Descartar els canvis?</string>

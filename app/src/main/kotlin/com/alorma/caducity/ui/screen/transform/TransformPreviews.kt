@@ -69,7 +69,7 @@ private val noActions =
 private fun TransformPreviewContent(state: TransformState) {
   PreviewTheme {
     Surface {
-      Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+      Column(modifier = Modifier.padding(vertical = 20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
         IngredientsSection(
           ingredients = state.ingredients,
           categories = state.categories,
@@ -78,7 +78,7 @@ private fun TransformPreviewContent(state: TransformState) {
           onAdd = {},
           optional = state.freeEntry,
         )
-        ResultsSection(state = state, actions = noActions)
+        ResultsSection(state = state, actions = noActions, modifier = Modifier.padding(horizontal = 20.dp))
       }
     }
   }
@@ -148,6 +148,26 @@ internal fun TransformFreeEntryFilledPreview() {
             expirationOverride = LocalDate(2026, 10, 16),
           ),
         ),
+    ),
+  )
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun TransformManyIngredientsPreview() {
+  TransformPreviewContent(
+    TransformState(
+      today = today,
+      ingredients =
+        listOf(
+          ingredient("cheese", "Cheddar cheese", produce, units = 15, count = 1, firstDay = 14),
+          ingredient("milk", "Whole milk", produce, units = 15, count = 1, firstDay = 14),
+          chicken,
+          vegetables,
+          ingredient("eggs", "Eggs", produce, units = 12, count = 6, firstDay = 18),
+        ),
+      categories = categories,
+      results = listOf(ResultUi(id = 0, name = "Croquettes", servings = 12, frozenCount = 8)),
     ),
   )
 }

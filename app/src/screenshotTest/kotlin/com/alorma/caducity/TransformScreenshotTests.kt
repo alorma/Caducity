@@ -6,6 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.alorma.caducity.ui.screen.transform.TransformEmptyPreview
 import com.alorma.caducity.ui.screen.transform.TransformFreeEntryFilledPreview
 import com.alorma.caducity.ui.screen.transform.TransformFreeEntryPreview
+import com.alorma.caducity.ui.screen.transform.TransformManyIngredientsPreview
 import com.alorma.caducity.ui.screen.transform.TransformMultiplePreview
 import com.alorma.caducity.ui.screen.transform.TransformSimplePreview
 import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerNoResultsPreview
@@ -40,6 +41,14 @@ class TransformScreenshotTests {
   @Composable
   fun transformMultiple() {
     TransformMultiplePreview()
+  }
+
+  @PreviewTest
+  @Preview(name = "Light", locale = "en", widthDp = Width, heightDp = Height)
+  @Preview(name = "Dark", locale = "en", widthDp = Width, heightDp = Height, uiMode = Night)
+  @Composable
+  fun transformManyIngredients() {
+    TransformManyIngredientsPreview()
   }
 
   @PreviewTest
