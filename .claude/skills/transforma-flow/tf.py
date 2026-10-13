@@ -234,7 +234,8 @@ def reset_app(lang):
     tap(S.get("ob_category_ready_meals"))
     tap(regex=S.regex("ob_categories_continue"))
     tap(S.get("ob_not_now"))
-    tap(S.get("ob_continue"))
+    tap(S.get("ob_continue"))  # Transforma step
+    tap(S.get("ob_continue"))  # privacy
     chk = wait(S.get("ob_disclaimer_check"))[0]
     tap_xy(100, chk.cy)
     time.sleep(0.5)
@@ -242,10 +243,8 @@ def reset_app(lang):
     wait(desc_label("action_add_product"))
     adb("shell", "am", "force-stop", PKG)
     patch = (
-        "run-as %s sed -i -e '/theme_mode/d' -e '/debug_remote_config/d' -e "
-        "'s|</map>|    <string name=\"theme_mode\">LIGHT</string>\\n"
-        "    <boolean name=\"debug_remote_config_transform_enabled\" value=\"true\" />\\n"
-        "    <boolean name=\"debug_remote_config_override_transform_enabled\" value=\"true\" />\\n</map>|' %s"
+        "run-as %s sed -i -e '/theme_mode/d' -e "
+        "'s|</map>|    <string name=\"theme_mode\">LIGHT</string>\\n</map>|' %s"
     ) % (PKG, PREFS)
     adb("shell", patch)
     adb("shell", "monkey", "-p", PKG, "-c", "android.intent.category.LAUNCHER", "1", check=False)

@@ -42,10 +42,10 @@ fun AppShell(
   showNavigation: Boolean,
   onTabSelected: (TopLevelRoute) -> Unit,
   onAddClick: () -> Unit,
+  onTransformClick: () -> Unit,
   onSettingsClick: () -> Unit,
   snackbarEvents: GlobalSnackbarEvents,
   modifier: Modifier = Modifier,
-  onTransformClick: (() -> Unit)? = null,
   content: @Composable () -> Unit,
 ) {
   val snackbarState = rememberAppSnackbarState()

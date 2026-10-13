@@ -57,9 +57,9 @@ fun FloatingNavBar(
   currentTab: TopLevelRoute,
   onTabSelected: (TopLevelRoute) -> Unit,
   onAddClick: () -> Unit,
+  onTransformClick: () -> Unit,
   onSettingsClick: () -> Unit,
   modifier: Modifier = Modifier,
-  onTransformClick: (() -> Unit)? = null,
 ) {
   Row(
     modifier = modifier.fillMaxWidth(),
@@ -88,11 +88,7 @@ fun FloatingNavBar(
         onClick = onSettingsClick,
       )
     }
-    if (onTransformClick != null) {
-      SplitAddButton(onAddClick = onAddClick, onTransformClick = onTransformClick)
-    } else {
-      AddButton(onClick = onAddClick)
-    }
+    SplitAddButton(onAddClick = onAddClick, onTransformClick = onTransformClick)
   }
 }
 

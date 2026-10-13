@@ -116,7 +116,7 @@ The app implements Google's consent mode for Firebase Analytics to respect user 
 
 **Consent Flow**:
 1. On app startup in `MainActivity.onCreate()`, default consent (all denied) is applied
-2. During onboarding (the privacy step: 3 of 4, or 4 of 5 when `transform_enabled` adds the informative Transforma step between Alerts and Privacy; `OnboardingState.steps` / `stepCount` decide), user sees the consent screen with analytics toggle (off by default)
+2. During onboarding (the privacy step, 4 of 5, after the informative Transforma step; `OnboardingState.steps` / `stepCount` decide), user sees the consent screen with analytics toggle (off by default)
 3. User's choice is persisted via SharedPreferences
 4. ConsentManager applies settings to Firebase Analytics using `setConsent()` API
 5. Consent flag is disabled after onboarding completion

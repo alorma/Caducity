@@ -62,7 +62,7 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.coroutines.delay
 
-/** Informative step about Transforma: shown only with `transform_enabled`, free, stores nothing. */
+/** Informative step about Transforma: free, stores nothing. */
 @Composable
 fun TransformStep(
   stepNumber: Int?,
