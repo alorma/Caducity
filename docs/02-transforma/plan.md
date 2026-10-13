@@ -214,7 +214,7 @@ Validada amb tests de ViewModel, tests de captura clar/fosc i l'emulador (no el 
 7. [x] Detalls de les captures: vora verda de 2 dp amb un sol resultat, «Desa» sol quan és desactivat, capçalera «Resultat» sense recompte a l'accés lliure. Fet: `41cd756` («Resultat» sense recompte només amb un resultat a l'accés lliure).
 
 Pendent d'aquests ajustos:
-- «Ingredients · opcional» a l'accés lliure: Bernat pregunta si hauria d'haver-hi com a mínim un ingredient. Ve del pla (l'accés lliure serveix per apuntar un producte sense ingredients); decidir si es manté.
+- ~~«Ingredients · opcional» a l'accés lliure~~: decidit per Bernat, **cal almenys un ingredient** (per apuntar un producte sol ja hi ha la resta de l'app). La capçalera diu «Ingredients» sense «opcional», «Desa» exigeix un ingredient com a mínim, i s'han tret el missatge «M productes afegits» i el text d'ajuda sense ingredients (`8cee5ee`). El cas d'ús del domini encara accepta 0 ingredients (fase 2b); la pantalla ja no el fa servir.
 - ~~En confirmar el selector entra la unitat més propera del producte, no la de l'estat filtrat~~: resolt, entra la més propera dins l'estat filtrat (`c988b41`).
 - Provar al dispositiu de treball: centrat previ a l'expansió, colors blau/verd/vermell dels ingredients, ripple vermell i el scroll en viu amb les línies.
 
@@ -260,7 +260,7 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 4b — Filtres desplegables del selector | Validada |
 | 5 — Entrades i flux final | Validada |
 | 6 — Qualitat | Validada (queda la prova v3 → v4 abans de publicar) |
-| 7 — Pantalla en files | Tasques 1-7 fetes i pendents resolts; queda decidir «Ingredients · opcional» i l'aprovació (mode pager descartat) |
+| 7 — Pantalla en files | Tasques 1-7 fetes, pendents resolts i mode pager descartat; pendent d'aprovació de Bernat |
 | 8 — Onboarding, novetat i «No és un receptari» | Pendent (tasques a aprovar) |
 
 Només es passa a «Validada» quan Bernat l'aprova (`.claude/rules/phased-work.md`).
