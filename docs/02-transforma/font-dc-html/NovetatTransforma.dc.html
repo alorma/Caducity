@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Novetat · Transforma · Inici · Què caduca</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Figtree:wght@400..700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E6B3B}a:hover{color:#10300F}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'opsz' 24;display:inline-block}
+.msf{font-variation-settings:'FILL' 1,'wght' 400,'opsz' 24}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFAEE; font-family: 'Figtree', sans-serif; color: #2B2418">
+  <div style="padding: 28px 20px 140px; display: flex; flex-direction: column; gap: 20px">
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px">
+      <div>
+        <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #6A5D45">Diumenge, 11 d'octubre</div>
+        <h1 style="margin: 6px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 44px; font-weight: 800; font-stretch: 80%; line-height: 1; letter-spacing: -0.5px">Què caduca</h1>
+      </div>
+      <div style="display: flex; gap: 8px; flex: none">
+        <a href="CalMes.dc.html" aria-label="Calendari" style="width: 48px; height: 48px; border-radius: 24px; background: #F0E2CB; color: #2B2418; display: flex; align-items: center; justify-content: center; text-decoration: none"><span class="ms" style="font-size: 24px">calendar_month</span></a>
+        <button aria-label="Cerca" style="width: 48px; height: 48px; flex: none; border: none; border-radius: 24px; background: #F0E2CB; color: #2B2418; display: flex; align-items: center; justify-content: center; cursor: pointer"><span class="ms" style="font-size: 24px">search</span></button>
+      </div>
+    </div>
+
+    <div role="tablist" aria-label="Pròxims 7 dies" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin: -4px -4px 0">
+      <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+        <button role="tab" aria-selected="false" aria-label="{{d.label}}" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0 8px; border: none; border-radius: 18px; background: {{d.bg}}; color: #2B2418; font-family: 'Figtree', sans-serif; cursor: pointer">
+          <span style="font-size: 12px; font-weight: 600; color: #6A5D45">{{d.wd}}</span>
+          <span style="width: 34px; height: 34px; box-sizing: border-box; border-radius: 17px; border: {{d.ring}}; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 800">{{d.n}}</span>
+          <span style="display: flex; gap: 3px; height: 6px">
+            <sc-for list="{{d.dots}}" as="c" hint-placeholder-count="1">
+              <span style="width: 6px; height: 6px; border-radius: 3px; background: {{c}}"></span>
+            </sc-for>
+          </span>
+        </button>
+      </sc-for>
+    </div>
+
+    <a href="Caducats.dc.html" style="display: flex; align-items: center; gap: 14px; padding: 12px 14px 12px 12px; border-radius: 24px; background: #F7D8CC; color: #7A2414; text-decoration: none">
+      <div style="position: relative; width: 48px; height: 48px; flex: none; display: flex; align-items: center; justify-content: center">
+        <svg viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{burst}}" fill="#B23F2A"></path></svg>
+        <span class="ms msf" style="position: relative; font-size: 24px; color: #FFFFFF">delete_history</span>
+      </div>
+      <div style="flex: 1; min-width: 0">
+        <div style="font-size: 17px; font-weight: 700">7 productes caducats</div>
+        <div style="font-size: 13px; margin-top: 2px">El més antic, fa 5 dies</div>
+      </div>
+      <span style="display: flex; align-items: center; gap: 2px; font-size: 14px; font-weight: 700">Revisa<span class="ms" style="font-size: 20px">chevron_right</span></span>
+    </a>
+
+    <div style="display: flex; gap: 3px">
+      <a href="EstatAviat.dc.html" style="flex: 1; padding: 12px 14px; border-radius: 20px 8px 8px 20px; background: #F8E2AE; color: #5C3F00; text-decoration: none">
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 800; font-stretch: 80%; line-height: 1">9</div>
+        <div style="font-size: 13px; font-weight: 600; margin-top: 4px">Aviat</div>
+      </a>
+      <a href="EstatFrescos.dc.html" style="flex: 1; padding: 12px 14px; border-radius: 8px; background: #DCE8C4; color: #2F4515; text-decoration: none">
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 800; font-stretch: 80%; line-height: 1">42</div>
+        <div style="font-size: 13px; font-weight: 600; margin-top: 4px">Frescos</div>
+      </a>
+      <a href="EstatCongelats.dc.html" style="flex: 1; padding: 12px 14px; border-radius: 8px 20px 20px 8px; background: #D3E5EA; color: #163F4C; text-decoration: none">
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 800; font-stretch: 80%; line-height: 1">3</div>
+        <div style="font-size: 13px; font-weight: 600; margin-top: 4px">Congelats</div>
+      </a>
+    </div>
+
+    <sc-for list="{{sections}}" as="sec" hint-placeholder-count="3">
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; align-items: baseline; gap: 8px; padding: 0 4px">
+          <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 700; font-stretch: 85%">{{sec.title}}</h2>
+          <span style="font-size: 13px; color: #6A5D45">{{sec.sub}}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <sc-for list="{{sec.rows}}" as="r" hint-placeholder-count="2">
+            <div style="display: flex; align-items: center; gap: 14px; min-height: 68px; box-sizing: border-box; padding: 10px 10px 10px 12px; background: #F7EEDA; border-radius: {{r.rad}}">
+              <div style="position: relative; width: 44px; height: 44px; flex: none; display: flex; align-items: center; justify-content: center">
+                <svg viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{r.shape}}" fill="#EFD8C0"></path></svg>
+                <span class="ms" style="position: relative; font-size: 22px; color: #2E6B3B">{{r.icon}}</span>
+              </div>
+              <div style="flex: 1; min-width: 0">
+                <div style="font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</div>
+                <div style="font-size: 13px; color: #6A5D45; margin-top: 2px">{{r.meta}}</div>
+              </div>
+              <button aria-label="Marca com a consumit" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #2E6B3B; display: flex; align-items: center; justify-content: center; cursor: pointer"><span class="ms" style="font-size: 22px">check</span></button>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="position: absolute; left: 20px; right: 20px; bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px">
+    <nav aria-label="Navegació principal" style="display: flex; align-items: center; gap: 4px; padding: 6px; border-radius: 32px; background: #DCE9C6; box-shadow: 0 6px 20px rgba(41,36,28,0.18)">
+      <a href="Main.dc.html" style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 18px 0 14px; border-radius: 24px; background: #2E6B3B; color: #FFFFFF; text-decoration: none; font-size: 15px; font-weight: 700"><span class="ms msf" style="font-size: 22px">hourglass_bottom</span>Aviat</a>
+      <a href="Rebost.dc.html" aria-label="Rebost" style="width: 48px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #10300F; text-decoration: none"><span class="ms" style="font-size: 24px">kitchen</span></a>
+      <a href="Ajustos.dc.html" aria-label="Ajustos" style="width: 48px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #10300F; text-decoration: none"><span class="ms" style="font-size: 24px">settings</span></a>
+    </nav>
+    <div role="group" aria-label="Afegeix" style="display: flex; gap: 2px; flex: none; border-radius: 20px; box-shadow: 0 6px 20px rgba(41,36,28,0.18)"><a href="Afegir.dc.html" aria-label="Afegeix un producte" style="width: 64px; height: 64px; border-radius: 20px 6px 6px 20px; background: #2E6B3B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none"><span class="ms" style="font-size: 30px">add</span></a><button aria-label="Més accions" aria-haspopup="menu" aria-expanded="false" style="width: 40px; height: 64px; border: none; padding: 0; border-radius: 6px 20px 20px 6px; background: #2E6B3B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer"><span class="ms" style="font-size: 26px">keyboard_arrow_up</span></button></div>
+  </div>
+  <div style="position: absolute; inset: 0; background: rgba(41,36,28,0.45)"></div>
+  <div role="dialog" aria-modal="true" aria-label="Novetat: Transforma" style="position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 20px 24px; border-radius: 28px 28px 0 0; background: #FFFAEE; box-shadow: 0 -8px 28px rgba(41,36,28,0.22); display: flex; flex-direction: column; gap: 14px">
+    <div style="align-self: center; width: 32px; height: 4px; border-radius: 2px; background: #C9B992"></div>
+    <div style="display: flex; align-items: center; gap: 12px"><div style="width: 48px; height: 48px; flex: none; border-radius: 24px; background: #EFD8C0; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 26px;color:#2E6B3B">skillet</span></div><div><div style="display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px 3px 6px; border-radius: 10px; background: #DCE9C6; color: #10300F; font-size: 11px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase"><span class="ms" style="font-size: 14px">auto_awesome</span>Novetat</div><h2 style="margin: 4px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 28px; font-weight: 800; font-stretch: 80%; line-height: 1">Transforma</h2></div></div>
+    <p style="margin: 0; font-size: 15px; line-height: 1.45; color: #4A3F2A">Has cuinat amb coses del rebost? Apunta-ho: els ingredients en surten i el plat que n'ha sortit hi entra, amb la seva data.</p>
+    <div aria-hidden="true" style="display: flex; justify-content: center; padding: 12px 0; border-radius: 24px; background: #F7EEDA"><div style="display: flex; flex-direction: column; align-items: center; width: 318px">
+<div style="display: flex; gap: 10px"><div style="display: flex; align-items: center; gap: 8px; width: 140px; height: 44px; box-sizing: border-box; padding: 0 10px 0 8px; border-radius: 16px; background: #FFFAEE"><div style="width: 28px; height: 28px; flex: none; border-radius: 14px; background: #EFD8C0; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 16px;color:#2E6B3B">nutrition</span></div><span style="font-size: 13px; font-weight: 600; white-space: nowrap">Pollastre sencer</span></div><div style="display: flex; align-items: center; gap: 8px; width: 140px; height: 44px; box-sizing: border-box; padding: 0 10px 0 8px; border-radius: 16px; background: #FFFAEE"><div style="width: 28px; height: 28px; flex: none; border-radius: 14px; background: #EFD8C0; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 16px;color:#2E6B3B">eco</span></div><span style="font-size: 13px; font-weight: 600; white-space: nowrap">Verdures</span></div></div>
+<svg width="318" height="30" viewBox="0 0 318 30" style="display:block"><path d="M79.0 0 C79.0 18 159.0 10 159.0 30" stroke="#B9A77F" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M239.0 0 C239.0 18 159.0 10 159.0 30" stroke="#B9A77F" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+<div style="width: 44px; height: 44px; border-radius: 22px; background: #EFD8C0; box-shadow: 0 0 0 4px #F7EEDA; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 24px;color:#2E6B3B">skillet</span></div>
+<svg width="4" height="22" viewBox="0 0 4 22" style="display:block"><path d="M2 0 V22" stroke="#2E6B3B" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>
+<div style="display: flex; align-items: center; gap: 10px; width: 232px; height: 56px; box-sizing: border-box; padding: 0 12px 0 10px; border-radius: 18px; background: #DCE9C6; box-shadow: inset 0 0 0 2px #2E6B3B"><div style="width: 32px; height: 32px; flex: none; border-radius: 16px; background: #EFD8C0; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 18px;color:#2E6B3B">soup_kitchen</span></div><div><div style="font-size: 15px; font-weight: 700">Caldo</div><div style="font-size: 12px; color: #4A3F2A">4 racions · 2 congelats</div></div></div>
+</div></div>
+    <div style="display: flex; gap: 12px; padding: 12px 14px; border-radius: 20px; background: #F0E2CB; box-shadow: inset 0 0 0 1.5px #8F8266">
+<div style="position: relative; width: 40px; height: 40px; flex: none; border-radius: 20px; background: #FFFAEE; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px;color:#6A5D45">menu_book</span><svg width="40" height="40" viewBox="0 0 40 40" style="position: absolute; inset: 0"><path d="M9 9 L31 31" stroke="#B3261E" stroke-width="3" stroke-linecap="round"/></svg></div>
+<div><div style="font-size: 16px; font-weight: 800">No és un receptari</div><div style="font-size: 13.5px; line-height: 1.4; color: #4A3F2A; margin-top: 2px">No hi ha receptes ni suggeriments de què cuinar. Transforma només apunta què has gastat i què n'ha sortit.</div></div></div>
+    <div style="display: flex; align-items: center; gap: 12px; padding: 0 4px; font-size: 13.5px; color: #6A5D45"><div style="display: flex; gap: 2px; flex: none"><div style="width: 34px; height: 34px; border-radius: 12px 4px 4px 12px; background: #2E6B3B; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 20px">add</span></div><div style="width: 24px; height: 34px; border-radius: 4px 12px 12px 4px; background: #2E6B3B; color: #FFFFFF; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 18px">keyboard_arrow_down</span></div></div><span>La trobaràs sempre al botó <b style="color:#2B2418">+</b>, a la part <b style="color:#2B2418">⌄</b>.</span></div>
+    <div style="display: flex; flex-direction: column; gap: 4px"><div style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 56px; border-radius: 28px; background: #2E6B3B; color: #FFFFFF; font-size: 16px; font-weight: 700"><span class="ms" style="font-size: 22px">skillet</span>Prova Transforma</div><div style="display: flex; align-items: center; justify-content: center; height: 48px; color: #6A5D45; font-size: 15px; font-weight: 700">Ara no</div></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  blob(n, a, rot) {
+    rot = rot || 0;
+    var p = [];
+    for (var i = 0; i < 120; i++) {
+      var t = i / 120 * Math.PI * 2;
+      var r = 50 - a + a * Math.cos(n * (t + rot));
+      p.push((50 + r * Math.cos(t)).toFixed(1) + " " + (50 + r * Math.sin(t)).toFixed(1));
+    }
+    return "M" + p.join("L") + "Z";
+  }
+  rad(i, n) {
+    if (n === 1) return "24px";
+    if (i === 0) return "24px 24px 6px 6px";
+    if (i === n - 1) return "6px 6px 24px 24px";
+    return "6px";
+  }
+  renderVals() {
+    var S = {
+      cookie: this.blob(9, 3, 0), flower: this.blob(6, 6, 0), clover: this.blob(4, 8, Math.PI / 4),
+      sunny: this.blob(8, 4, 0), soft: this.blob(4, 2.5, Math.PI / 4), burst: this.blob(12, 3, 0)
+    };
+    var C = {
+      lac: { cat: "Làctics", icon: "water_full", shape: S.cookie },
+      fru: { cat: "Fruita i verdura", icon: "nutrition", shape: S.flower },
+      car: { cat: "Carn i peix", icon: "set_meal", shape: S.clover },
+      reb: { cat: "Rebost", icon: "grocery", shape: S.sunny },
+      fle: { cat: "Fleca", icon: "bakery_dining", shape: S.soft }
+    };
+    var self = this;
+    var raw = [
+      { title: "Avui", sub: "2 productes", rows: [["Llet sencera", "lac", "1 brick"], ["Espinacs", "fru", "1 bossa"]] },
+      { title: "Demà", sub: "dilluns 12 · 3 productes", rows: [["Pernil dolç", "car", "150 g"], ["Maduixes", "fru", "1 safata"], ["Mozzarella", "lac", "1 unitat"]] },
+      { title: "Dimarts 13", sub: "2 productes", rows: [["Iogurt natural", "lac", "2 unitats"]] },
+      { title: "Dimecres 14", sub: "2 productes", rows: [["Hummus", "reb", "1 pot"], ["Pa de motlle", "fle", "1 paquet"]] }
+    ];
+    var sections = raw.map(function (s) {
+      return {
+        title: s.title, sub: s.sub,
+        rows: s.rows.map(function (r, i) {
+          var c = C[r[1]];
+          return { name: r[0], meta: c.cat + " · " + r[2], icon: c.icon, shape: c.shape, rad: self.rad(i, s.rows.length) };
+        })
+      };
+    });
+    var A = "#D9A23A", F = "#7E9B4C";
+    var week = [
+      ["dg", 11, [A, A], "Avui, 2 productes"], ["dl", 12, [A, A, A], "Demà, 3 productes"],
+      ["dt", 13, [A, A], "Dimarts 13, 2 productes"], ["dc", 14, [A, A], "Dimecres 14, 2 productes"],
+      ["dj", 15, [F], "Dijous 15, 1 producte"], ["dv", 16, [], "Divendres 16, res"], ["ds", 17, [F], "Dissabte 17, 1 producte"]
+    ];
+    var days = week.map(function (d, i) {
+      return {
+        wd: d[0], n: d[1], dots: d[2], label: d[3],
+        bg: i === 0 ? "#F7EEDA" : "transparent",
+        ring: i === 0 ? "2px solid #2B2418" : "2px solid transparent"
+      };
+    });
+    return { sections: sections, burst: S.burst, days: days };
+  }
+}
+</script>
+</body>
+</html>
