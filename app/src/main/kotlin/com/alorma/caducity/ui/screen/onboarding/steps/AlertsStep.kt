@@ -208,7 +208,7 @@ private fun SampleNotification(time: LocalTime) {
           Modifier
             .size(40.dp)
             .clip(CircleShape)
-            .background(colorResource(R.color.ic_launcher_background)),
+            .background(colorResource(R.color.ic_icon_rebost_background)),
         contentAlignment = Alignment.Center,
       ) {
         Image(
