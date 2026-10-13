@@ -30,6 +30,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.pluralStringResource
@@ -120,9 +121,21 @@ fun ResultsSection(
     }
     BoxWithConstraints {
       val formWidth = maxWidth - ScreenGutter * 2
+      // With a form open it fills the row between the gutters. Folded, the padding on both sides is what puts one
+      // card in the middle, so the first and the last can be scrolled to the centre (and a lone result starts there).
+      val sidePadding by animateDpAsState(
+        targetValue =
+          if (state.expandedResultId == NONE_EXPANDED) {
+            ((maxWidth - RowCardWidth) / 2).coerceAtLeast(ScreenGutter)
+          } else {
+            ScreenGutter
+          },
+        animationSpec = tween(ExpandMillis, easing = EmphasizedEasing),
+        label = "resultsSidePadding",
+      )
       LazyRow(
         state = listState,
-        contentPadding = PaddingValues(horizontal = ScreenGutter),
+        contentPadding = PaddingValues(horizontal = sidePadding),
         horizontalArrangement = Arrangement.spacedBy(RowCardSpacing),
         modifier =
           Modifier
@@ -162,11 +175,6 @@ private fun ResultItem(
   val next = state.results.getOrNull(index + 1)
   val previousLabel = stringResource(R.string.transform_result_previous)
   val nextLabel = stringResource(R.string.transform_result_next)
-  val width by animateDpAsState(
-    targetValue = if (selected) formWidth else RowCardWidth,
-    animationSpec = tween(ExpandMillis, easing = EmphasizedEasing),
-    label = "resultWidth",
-  )
   // A folded result that still lacks something is outlined, so it is not mistaken for a finished one.
   val incomplete = !selected && !state.isValid(result)
   val invalidLabel = stringResource(R.string.transform_result_invalid)
@@ -186,8 +194,14 @@ private fun ResultItem(
       },
     modifier =
       Modifier
-        .width(width)
+        // Width and height are animated together by the one modifier, so the card never turns tall and narrow.
         .animateContentSize(tween(ExpandMillis, easing = EmphasizedEasing))
+        .width(if (selected) formWidth else RowCardWidth)
+        // Folded, the card is its final height from the first frame (the form is still fading out inside it), so the
+        // size animation goes from the form to the small card in one go instead of waiting for the form to leave.
+        .then(if (selected) Modifier else Modifier.height(ResultCardHeight))
+        // The ripple and the hit area follow the shape of the card.
+        .clip(RowCardShape)
         .clickable(enabled = !selected, role = Role.Button) { actions.onSelect(result.id) }
         .semantics {
           this.selected = selected
