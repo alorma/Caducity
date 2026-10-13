@@ -164,6 +164,28 @@ class TransformItemsUseCaseTest {
     }
 
   @Test
+  fun `a unit the user selected is spent before the one that expires first`() =
+    runTest {
+      val late = units("Chicken", 9)
+      val soon = units("Chicken", 2)
+
+      transform
+        .transform(
+          listOf(IngredientSpend(late + soon, 1, preferredItemIds = late.toSet())),
+          listOf(result(servings = 1)),
+        ).getOrThrow()
+
+      expectThat(db.itemDao().getItem(late.single()))
+        .isNotNull()
+        .get { transformedDate }
+        .isNotNull()
+      expectThat(db.itemDao().getItem(soon.single()))
+        .isNotNull()
+        .get { transformedDate }
+        .isNull()
+    }
+
+  @Test
   fun `frozen servings come out frozen`() =
     runTest {
       val chicken = units("Chicken", 2)
