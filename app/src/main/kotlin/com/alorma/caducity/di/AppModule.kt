@@ -50,6 +50,7 @@ import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsViewModel
 import com.alorma.caducity.ui.screen.status.StatusListViewModel
 import com.alorma.caducity.ui.screen.transform.TransformFeature
 import com.alorma.caducity.ui.screen.transform.TransformViewModel
+import com.alorma.caducity.ui.screen.transform.intro.TransformIntroFlag
 import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerResults
 import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerViewModel
 import com.alorma.caducity.ui.theme.di.themeModule
@@ -103,6 +104,7 @@ val appModule =
     // Onboarding
     singleOf(::OnboardingFlag)
     singleOf(::LegacyOnboardingFlag)
+    singleOf(::TransformIntroFlag)
     viewModelOf(::OnboardingViewModel)
 
     factory {

@@ -26,6 +26,8 @@ import com.alorma.caducity.feature.consent.ConsentPreferences
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.screen.transform.TransformFeature
+import com.alorma.caducity.ui.screen.transform.intro.TransformIntroFlag
+import com.alorma.caducity.ui.screen.transform.intro.shouldShowTransformIntro
 import com.alorma.fireandforget.multiplatform.settings.SettingsFireAndForgetRunner
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
@@ -95,6 +97,7 @@ class OnboardingViewModelTest {
   private val runner = SettingsFireAndForgetRunner(settings)
   private val onboardingFlag = OnboardingFlag(runner)
   private val legacyOnboardingFlag = LegacyOnboardingFlag(runner)
+  private val transformIntroFlag = TransformIntroFlag(runner)
   private val consentFlag = ConsentFlag(runner)
   private val consentManager = mock<ConsentManager>()
   private val disclaimer = DisclaimerPreferences(settings)
@@ -156,6 +159,7 @@ class OnboardingViewModelTest {
       appClock = clock,
       eventTracker = EventTracker(emptyList()),
       transformFeature = TransformFeature(transformRunner),
+      transformIntroFlag = transformIntroFlag,
     )
 
   private fun OnboardingViewModel.goTo(step: OnboardingStep) {
@@ -395,9 +399,39 @@ class OnboardingViewModelTest {
       expectThat(pantry.getCategories()).isEmpty()
       expectThat(scheduler.calls).isEmpty()
       expectThat(thresholds.current()).isEqualTo(7)
+      // An update: the Transforma modal is still pending for them.
+      expectThat(transformIntroFlag.isEnabled()).isTrue()
       verify(consentManager, never()).setConsentPreferences(ConsentPreferences.ANALYTICS_ONLY)
       reaccept.viewModelScope.cancel()
     }
+
+  @Test
+  fun `finishing the onboarding spends the Transforma modal, even with transform disabled`() =
+    runTest {
+      expectThat(transformIntroFlag.isEnabled()).isTrue()
+      vm.goTo(OnboardingStep.Disclaimer)
+      vm.onDisclaimerCheckedChange(true)
+      vm.acceptAndAwait()
+      expectThat(transformIntroFlag.isEnabled()).isFalse()
+    }
+
+  @Test
+  fun `the Transforma modal only shows when everything lines up`() {
+    fun show(
+      featureEnabled: Boolean = true,
+      introPending: Boolean = true,
+      onboardingShowing: Boolean = false,
+      openedFromOutside: Boolean = false,
+      overlayOpen: Boolean = false,
+    ) = shouldShowTransformIntro(featureEnabled, introPending, onboardingShowing, openedFromOutside, overlayOpen)
+
+    expectThat(show()).isTrue()
+    expectThat(show(featureEnabled = false)).isFalse()
+    expectThat(show(introPending = false)).isFalse()
+    expectThat(show(onboardingShowing = true)).isFalse()
+    expectThat(show(openedFromOutside = true)).isFalse()
+    expectThat(show(overlayOpen = true)).isFalse()
+  }
 
   @Test
   fun `an existing user who already accepted the current notice does not need the notice again`() {

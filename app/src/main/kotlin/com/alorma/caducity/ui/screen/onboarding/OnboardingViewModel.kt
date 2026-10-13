@@ -19,6 +19,7 @@ import com.alorma.caducity.feature.tracking.CompleteOnboardingAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.screen.transform.TransformFeature
+import com.alorma.caducity.ui.screen.transform.intro.TransformIntroFlag
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -47,6 +48,7 @@ class OnboardingViewModel(
   private val appClock: AppClock,
   private val eventTracker: EventTracker,
   transformFeature: TransformFeature,
+  private val transformIntroFlag: TransformIntroFlag,
 ) : BaseViewModel<OnboardingNavigation, OnboardingNavigationSideEffect, OnboardingSideEffect>() {
   private val _state =
     MutableStateFlow(
@@ -128,6 +130,8 @@ class OnboardingViewModel(
         if (!current.reacceptOnly) {
           consentFlag.disable()
           onboardingFlag.disable()
+          // Whoever goes through the onboarding is not an update: the Transforma modal is not for them.
+          transformIntroFlag.disable()
         }
         navigate(OnboardingNavigation.CompleteOnboarding)
       } catch (e: CancellationException) {
