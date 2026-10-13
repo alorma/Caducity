@@ -1,8 +1,18 @@
 # Pla: revisió de coherència (13 d'octubre)
 
 Especificació: [`spec.md`](spec.md) (té prioritat sobre les anteriors quan es contradiuen). Captures: `captures/` (35 pantalles, només mòbil); fonts: `font-dc-html/`.
-El prompt del paquet demana copiar-ho a `docs/redisseny/`, que ja no existeix: segueix el patró dels paquets anteriors (`docs/0N-<nom>/`).
 Flux: `.claude/rules/phased-work.md` (una fase per sessió, tasques aprovades, un commit per tasca validada). Validació al dispositiu de treball (adb wifi), mai a l'emulador; captures en clar i en fosc al final de cada fase.
+Compilació i comprovacions (Bernat, 14 d'octubre): **no passar build, tests ni `ktlintCheck` per cada canvi petit.** Primer es fan tots els canvis de la tasca i es valida **una sola vegada al final** (`./gradlew ktlintCheck testDebugUnitTest assembleDebug`); després, un commit per tasca. Si hi ha agents delegats (Haiku), se'ls ho diu explícitament.
+Agents i subagents (Bernat, 14 d'octubre): la feina mecànica (treure codi, renoms, docs) es delega a agents amb model **Haiku**; el disseny, les decisions i la revisió es queden a la sessió principal. Condicions que se'ls passen sempre al prompt:
+- Llegeixen `CLAUDE.md` i la tasca del pla; fan **només** la seva tasca, res fora d'abast.
+- Editen amb `Edit`/`Write`, mai scripts Python/sed/perl (`rm` només per esborrar fitxers).
+- Validen **una sola vegada al final** (`./gradlew ktlintCheck testDebugUnitTest assembleDebug`, JDK 21); si falla un test intermitent no relacionat, el reexecuten i ho diuen.
+- Commit únic per tasca, només si valida, amb `git add` de fitxers concrets (mirar `git status` abans i no incloure canvis d'altres tasques ni del pla), missatge curt en anglès i la línia `Co-Authored-By`. Mai push.
+- No instal·len res al dispositiu ni toquen les seves dades; la validació al dispositiu la fa Bernat.
+- Si la validació falla i no ho poden arreglar, no fan commit i expliquen l'error.
+- Informen en poques línies: fitxers tocats, validació, hash. Sense decidir res obert: ho pregunten.
+- Els agents que toquen build, `git` o els mateixos fitxers van **en sèrie**; en paral·lel només tasques sense fitxers ni Gradle compartits (p. ex. docs).
+- La sessió principal comprova `git log` i `git status` després de cada agent.
 
 ## Punt de partida (codi actual) i diferències amb l'especificació
 
