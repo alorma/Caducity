@@ -305,7 +305,8 @@ def tap_row(name):
 
 def picker_add(names):
     """From the Transform screen: «Afegeix ingredient» → picker → select [names] → add."""
-    tap(S.get("transform_add_ingredient"))
+    # Without ingredients the dashed «Afegeix ingredient» row is there; with some, the «+ Afegeix» of their header.
+    tap(S.get("transform_add_ingredient") if find(label=S.get("transform_add_ingredient")) else S.get("transform_add"))
     wait(S.get("transform_picker_search"))
     for name in names:
         tap_xy(540, 366)  # search field
@@ -322,7 +323,7 @@ def picker_add(names):
             adb("shell", "input", "keyevent", "67")  # delete
         hide_kb()
     tap(regex=S.regex("transform_picker_add"))
-    wait(S.get("transform_save"))
+    wait(regex=S.regex("transform_save_count"))
     time.sleep(0.8)
 
 
@@ -337,7 +338,7 @@ def open_transform(mode, names):
         open_fresh_list()
         tap_row(names[0])
         tap(S.get("item_actions_transform"))
-        wait(S.get("transform_save"))
+        wait(regex=S.regex("transform_save_count"))
         if len(names) > 1:
             picker_add(names[1:])
     elif mode == "multi":
@@ -346,38 +347,43 @@ def open_transform(mode, names):
         for name in names:
             tap_row(name)
         tap(S.get("transform_bar_transform"), last=True)
-        wait(S.get("transform_save"))
+        wait(regex=S.regex("transform_save_count"))
     time.sleep(0.8)
 
 
 def set_counts(targets):
-    """targets: {ingredient name: units to spend}. Steppers only exist for products with several units."""
-    nodes = dump()
-    steppers = [n for n in nodes if re.search(S.regex("transform_ingredient_units"), n.text)]
-    for st in steppers:
-        owner = max((n for n in nodes if n.text in targets and n.cy < st.cy), key=lambda n: n.cy, default=None)
-        if owner is None:
-            continue
-        cur = int(re.match(r"\d+", st.text).group())
-        want = targets[owner.text]
-        if cur == want:
-            continue
-        label = S.get("quantity_more") if want > cur else S.get("quantity_less")
-        btn = [n for n in nodes if n.desc == label and abs(n.cy - st.cy) < 60][0]
-        for _ in range(abs(want - cur)):
-            tap_xy(btn.cx, btn.cy)
-            time.sleep(0.25)
+    """targets: {ingredient name: units to spend}. Only products with several units have a chip («1 de 25 ⇅»):
+    tapping it turns it into the stepper."""
+    for name, want in targets.items():
+        nodes = dump()
+        chips = [n for n in nodes if re.search(S.regex("transform_ingredient_units_edit"), n.desc)]
+        owners = [n for n in nodes if n.text == name]
+        for chip in chips:
+            owner = max((n for n in owners if n.cy < chip.cy and abs(n.cx - chip.cx) < 220), key=lambda n: n.cy, default=None)
+            if owner is None:
+                continue
+            cur = int(re.findall(r"\d+", chip.desc)[0])
+            if cur == want:
+                break
+            tap_xy(chip.cx, chip.cy)
+            time.sleep(0.5)
+            nodes = dump()
+            label = S.get("quantity_more") if want > cur else S.get("quantity_less")
+            btn = min((n for n in nodes if n.desc == label and abs(n.cy - chip.cy) < 60), key=lambda n: abs(n.cx - chip.cx))
+            for _ in range(abs(want - cur)):
+                tap_xy(btn.cx, btn.cy)
+                time.sleep(0.25)
+            break
     time.sleep(0.4)
 
 
 def fill_result(spec, first):
     if not first:
-        n = scroll_to(S.get("transform_add_result"))
-        tap_xy(n.cx, n.cy)
+        tap(S.get("transform_add"), last=True)  # the «+ Afegeix» of the results header, always the last one
         time.sleep(1.0)
     typed(spec["name"])
     hide_kb()
-    scroll_to(S.get("transform_add_result"))
+    scroll_to(S.get("transform_result_done"))
     nodes = dump()
     more = sorted([n for n in nodes if n.desc == S.get("quantity_more")], key=lambda n: n.cy)
     serv, frz = more[-2], more[-1]
@@ -402,7 +408,7 @@ def fill_result(spec, first):
 
 def save_transform(tag):
     shot(f"{OUT_TAG}-{tag}-before-save")
-    tap(S.get("transform_save"), nth=0)
+    tap(regex=S.regex("transform_save_count"), nth=0)
     pats = "|".join(S.regex(k) for k in ("transform_done", "transform_done_one_ingredient", "transform_done_one_product", "transform_done_one_one"))
     hit = wait(regex=pats, timeout=10)[0]
     shot(f"{OUT_TAG}-{tag}-after-save")

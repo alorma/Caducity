@@ -179,6 +179,23 @@ Especificació: [`spec-files.md`](spec-files.md) (substitueix el disseny de la p
 7. **Opcional, només si s'aprova:** esquema de línies i node central entre les files. Es fa al final; si és massa complicat, no es fa.
 8. **Opcional, només si s'aprova després de la 7:** mode «pager», on el scroll lateral contrau i expandeix les targetes seguint el dit (apartat «Extra opcional» de `spec-files.md`). Per defecte no es fa.
 
+- [x] Tasca 1 (docs i pla): `92bf21b`
+- [x] Tasca 2 (ingredients en fila): `ed11bda`
+- [x] Tasca 3 (resultats en fila i «Fet»): `05da323`
+- [x] Tasca 4 (formulari expandit dins la fila, «Congela'n»): `a395d84`
+- [x] Tasca 5 («Desa · M productes» fix, fora de la barra superior): `6e77ffe`
+- [x] Tasca 6 (accessibilitat: `collectionInfo`, estat seleccionat, accions «Resultat anterior / següent», 48 dp): `e4ef855`
+- [x] Tasca 7 (línies i node): `a200511`
+- [ ] Tasca 8 (mode pager): no feta, opcional. Cal decidir si es fa en una sessió pròpia.
+
+Validada amb tests de ViewModel, tests de captura clar/fosc i l'emulador (no el Pixel 8a). TalkBack no s'ha provat (només revisió de codi). El scroll horitzontal en viu amb les línies tampoc.
+
+**Pendent de la fase:**
+- Treure un resultat: l'spec no té cap ×. `onRemoveResult` segueix al ViewModel però la UI no el crida. Cal decidir on va.
+- La skill `/transforma-flow` s'ha adaptat a la UI nova (`tf.py`) però no s'ha executat.
+- Els botons del stepper d'ingredient fan 40×48 dp, no 48×48 (no hi cap en 148 dp).
+- Textos que ja no es fan servir (`transform_empty_*`, `transform_footer_free`...): netejar-los si es vol.
+
 Obert de la fase (deixar com a constants/`TODO`, no resoldre): plegat automàtic del xip de quantitat; `snap` a la fila; límit per fila (50 si cal); vora de les veïnes tocable i posició «3 de 6»; en el mode pager, si el gest bloqueja l'edició o només tanca el teclat.
 
 ## Obert (no resoldre sense decidir; deixar com a constants/`TODO`)
@@ -205,6 +222,6 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 4b — Filtres desplegables del selector | Validada |
 | 5 — Entrades i flux final | Validada |
 | 6 — Qualitat | Validada (queda la prova v3 → v4 abans de publicar) |
-| 7 — Pantalla en files | Pendent |
+| 7 — Pantalla en files | Tasques 1-7 fetes, pendent d'aprovació (la 8 és opcional i no s'ha fet) |
 
 Només es passa a «Validada» quan Bernat l'aprova (`.claude/rules/phased-work.md`).
