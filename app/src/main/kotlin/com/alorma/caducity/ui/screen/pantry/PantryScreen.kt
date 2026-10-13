@@ -256,30 +256,34 @@ private fun previewCategory(
 @PreviewLightDark
 @Composable
 private fun PantryPreview() {
-  PreviewTheme {
-    PantryContent(
-      state =
-        PantryState.Ready(
-          data =
-            PantryData(
-              today = previewToday,
-              totalUnits = 61,
-              categories =
-                listOf(
-                  previewCategory("dairy", "Làctics", CategoryShape.COOKIE, "water_full", 14, 1),
-                  previewCategory("produce", "Fruita i verdura", CategoryShape.CLOVER8, "nutrition", 20, 0),
-                  previewCategory("meat", "Carn i peix", CategoryShape.CLOVER, "set_meal", 9, 3),
-                ),
-            ),
-          query = "",
-          results = emptyList(),
-        ),
-      focusRequester = remember { FocusRequester() },
-      onQueryChange = {},
-      onNavigate = {},
-      onOpenItemActions = {},
-    )
-  }
+  PreviewTheme { PantryPreviewContent() }
+}
+
+/** Rebost amb dades d'exemple, sense tema (el posa qui el crida). */
+@Composable
+internal fun PantryPreviewContent() {
+  PantryContent(
+    state =
+      PantryState.Ready(
+        data =
+          PantryData(
+            today = previewToday,
+            totalUnits = 61,
+            categories =
+              listOf(
+                previewCategory("dairy", "Làctics", CategoryShape.COOKIE, "water_full", 14, 1),
+                previewCategory("produce", "Fruita i verdura", CategoryShape.CLOVER8, "nutrition", 20, 0),
+                previewCategory("meat", "Carn i peix", CategoryShape.CLOVER, "set_meal", 9, 3),
+              ),
+          ),
+        query = "",
+        results = emptyList(),
+      ),
+    focusRequester = remember { FocusRequester() },
+    onQueryChange = {},
+    onNavigate = {},
+    onOpenItemActions = {},
+  )
 }
 
 // endregion
