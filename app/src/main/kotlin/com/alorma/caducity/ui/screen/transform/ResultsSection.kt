@@ -26,10 +26,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CollectionInfo
@@ -69,6 +71,9 @@ class ResultActions(
 )
 
 private val ResultCardHeight = 92.dp
+
+/** Air around the lines that join the rows: between the ingredients and the node, and between the node and the results. */
+internal val SectionSpacing = 52.dp
 private const val ExpandMillis = 300
 
 /** M3 emphasized decelerate: what the expansion of a card uses. */
@@ -84,6 +89,8 @@ fun ResultsSection(
   state: TransformState,
   actions: ResultActions,
   modifier: Modifier = Modifier,
+  /** Where the row is, for the lines that join the ingredients to it. */
+  links: RowLinks? = null,
 ) {
   // Starts with the selected card in place, so the form is already centred the first time it shows.
   val listState =
@@ -98,11 +105,15 @@ fun ResultsSection(
     delay(ExpandMillis.toLong())
     listState.animateScrollToItem(index)
   }
-  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
+  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(SectionSpacing)) {
     RowSectionHeader(
       title = stringResource(R.string.transform_section_results_count, state.results.size),
       onAdd = actions.onAdd,
+      center = { RowLinksNode(links) },
     )
+    SideEffect {
+      links?.resultsState = listState
+    }
     BoxWithConstraints {
       val formWidth = maxWidth - ScreenGutter * 2
       LazyRow(
@@ -110,9 +121,11 @@ fun ResultsSection(
         contentPadding = PaddingValues(horizontal = ScreenGutter),
         horizontalArrangement = Arrangement.spacedBy(RowCardSpacing),
         modifier =
-          Modifier.semantics {
-            collectionInfo = CollectionInfo(rowCount = 1, columnCount = state.results.size)
-          },
+          Modifier
+            .onGloballyPositioned { links?.resultsRow = it }
+            .semantics {
+              collectionInfo = CollectionInfo(rowCount = 1, columnCount = state.results.size)
+            },
       ) {
         itemsIndexed(state.results, key = { _, result -> result.id }) { index, result ->
           ResultItem(

@@ -68,6 +68,7 @@ fun TransformScreen(
   val snackbarState = rememberAppSnackbarState()
   val bottomSheetState = rememberAppBottomSheetState()
   val datePickerState = rememberDatePickerState()
+  val links = remember { RowLinks() }
   val actions =
     remember(viewModel) {
       ResultActions(
@@ -115,8 +116,9 @@ fun TransformScreen(
               .fillMaxSize()
               .verticalScroll(rememberScrollState())
               // Room for the fixed «Desa» bar, so the last thing on screen is never behind it.
-              .padding(bottom = SaveBarClearance),
-          verticalArrangement = Arrangement.spacedBy(20.dp),
+              .padding(bottom = SaveBarClearance)
+              .rowLinks(links, expanded = state.results.any { it.id == state.expandedResultId }),
+          verticalArrangement = Arrangement.spacedBy(SectionSpacing),
         ) {
           IngredientsSection(
             ingredients = state.ingredients,
@@ -126,8 +128,9 @@ fun TransformScreen(
             onAdd = { viewModel.navigate(TransformNavigation.IngredientPicker) },
             optional = state.freeEntry,
             closedRows = state.closedRows,
+            links = links,
           )
-          ResultsSection(state = state, actions = actions)
+          ResultsSection(state = state, actions = actions, links = links)
           if (state.ingredients.isNotEmpty()) {
             Text(
               text = stringResource(R.string.transform_footer),
