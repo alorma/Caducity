@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -274,7 +275,7 @@ private fun ResultChip(
       },
     border = if (selected) BorderStroke(2.dp, scheme.primary) else null,
     modifier =
-      Modifier.height(44.dp).then(
+      Modifier.minimumInteractiveComponentSize().height(44.dp).then(
         if (empty) {
           Modifier.drawBehind {
             drawRoundRect(
