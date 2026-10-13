@@ -109,5 +109,5 @@ data class TransformState(
     get() = results.none { it.name.isBlank() }
 
   val canSave: Boolean
-    get() = !saving && (ingredients.isNotEmpty() || freeEntry) && results.isNotEmpty() && results.all(::isValid)
+    get() = !saving && ingredients.isNotEmpty() && results.isNotEmpty() && results.all(::isValid)
 }

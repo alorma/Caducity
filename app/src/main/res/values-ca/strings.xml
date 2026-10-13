@@ -150,11 +150,8 @@
   <string name="transform_done_one_ingredient">1 ingredient transformat en %1$d productes</string>
   <string name="transform_done_one_product">%1$d ingredients transformats en 1 producte</string>
   <string name="transform_done_one_one">1 ingredient transformat en 1 producte</string>
-  <string name="transform_added">%1$d productes afegits</string>
-  <string name="transform_added_one">1 producte afegit</string>
   <string name="transform_category_empty">Categoria</string>
   <string name="transform_date_empty">Caducitat</string>
-  <string name="transform_free_hint">Sense ingredients, la categoria i la data les tries tu.</string>
   <string name="transform_result_name_hint">Què estàs cuinant?</string>
   <string name="transform_servings">Racions</string>
   <string name="transform_date_hint">Data de l\'ingredient que caduca primer (%s).</string>
@@ -192,7 +189,7 @@
   <string name="transform_bar_reschedule">Data</string>
   <string name="transform_bar_transform">Transforma</string>
   <string name="transform_bar_transform_description">Transforma %1$d unitats</string>
-  <string name="transform_section_ingredients_optional">Ingredients · opcional</string>
+  <string name="transform_section_ingredients">Ingredients</string>
   <string name="transform_add_ingredient">Afegeix ingredient</string>
   <string name="transform_add">Afegeix</string>
   <string name="transform_section_ingredients_count">Ingredients · %d</string>

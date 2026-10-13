@@ -271,7 +271,7 @@ class TransformViewModel(
     val current = _state.value
     if (!current.canSave) {
       // Saving is blocked only by a result that lacks something (e.g. from an accessibility action): open the first one.
-      if (!current.saving && (current.ingredients.isNotEmpty() || current.freeEntry)) {
+      if (!current.saving && current.ingredients.isNotEmpty()) {
         current.results.firstOrNull { !current.isValid(it) }?.let { onSelectResult(it.id) }
       }
       return
@@ -331,9 +331,6 @@ class TransformViewModel(
     products: Int,
   ): Pair<Int, List<Any>> =
     when {
-      // Free entry: nothing was transformed, the products were just added.
-      ingredients == 0 && products == 1 -> R.string.transform_added_one to emptyList()
-      ingredients == 0 -> R.string.transform_added to listOf(products)
       ingredients == 1 && products == 1 -> R.string.transform_done_one_one to emptyList()
       ingredients == 1 -> R.string.transform_done_one_ingredient to listOf(products)
       products == 1 -> R.string.transform_done_one_product to listOf(ingredients)

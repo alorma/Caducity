@@ -147,11 +147,8 @@
   <string name="transform_done_one_ingredient">1 ingredient turned into %1$d products</string>
   <string name="transform_done_one_product">%1$d ingredients turned into 1 product</string>
   <string name="transform_done_one_one">1 ingredient turned into 1 product</string>
-  <string name="transform_added">%1$d products added</string>
-  <string name="transform_added_one">1 product added</string>
   <string name="transform_category_empty">Category</string>
   <string name="transform_date_empty">Expiry</string>
-  <string name="transform_free_hint">Without ingredients, you choose the category and the date.</string>
   <string name="transform_result_name_hint">What are you cooking?</string>
   <string name="transform_servings">Servings</string>
   <string name="transform_date_hint">Date of the ingredient that expires first (%s).</string>
@@ -187,7 +184,7 @@
   <string name="transform_bar_reschedule">Date</string>
   <string name="transform_bar_transform">Transform</string>
   <string name="transform_bar_transform_description">Transform %1$d units</string>
-  <string name="transform_section_ingredients_optional">Ingredients · optional</string>
+  <string name="transform_section_ingredients">Ingredients</string>
   <string name="transform_add_ingredient">Add ingredient</string>
   <string name="transform_add">Add</string>
   <string name="transform_section_ingredients_count">Ingredients · %d</string>

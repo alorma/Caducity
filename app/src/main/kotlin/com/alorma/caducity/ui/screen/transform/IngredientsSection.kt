@@ -92,7 +92,7 @@ fun IngredientsSection(
   onRemove: (key: String) -> Unit,
   onAdd: () -> Unit,
   modifier: Modifier = Modifier,
-  /** Free entry: ingredients are optional and, with none, the section shows a single dashed «Afegeix» row. */
+  /** Opened without ingredients: the section shows a single dashed «Afegeix» row until there is one. */
   optional: Boolean = false,
   /** Cards below this index are folded away: the cascade that closes the screen after saving. */
   closedRows: Int = 0,
@@ -104,7 +104,7 @@ fun IngredientsSection(
     RowSectionHeader(
       title =
         if (empty) {
-          stringResource(R.string.transform_section_ingredients_optional)
+          stringResource(R.string.transform_section_ingredients)
         } else {
           stringResource(R.string.transform_section_ingredients_count, ingredients.size)
         },
