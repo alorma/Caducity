@@ -223,7 +223,7 @@ private fun SideEffectHandler(
                 content = { Text(stringResource(R.string.transform_discard_message)) },
                 positiveButton = { Text(stringResource(R.string.transform_discard_confirm)) },
                 negativeButton = { Text(stringResource(R.string.transform_discard_keep)) },
-                type = AppFeedbackType.Error,
+                type = AppFeedbackType.Info,
               )
             if (result == DialogResult.Positive) viewModel.onDiscardConfirmed()
           }
