@@ -56,7 +56,7 @@ class TopLevelBackStack(
     val stack = stacks.getValue(currentTab)
     return when {
       stack.size > 1 -> {
-        stack.removeLast()
+        stack.removeAt(stack.lastIndex)
         true
       }
       currentTab != Home -> {

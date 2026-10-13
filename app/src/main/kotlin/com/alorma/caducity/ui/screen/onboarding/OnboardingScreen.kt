@@ -1,7 +1,6 @@
 package com.alorma.caducity.ui.screen.onboarding
 
 import android.Manifest
-import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,9 +28,9 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.feature.notification.hasNotificationPermission
 import com.alorma.caducity.feature.tracking.OnboardingScreen as OnboardingScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
@@ -76,9 +75,7 @@ fun OnboardingScreen(
     rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
       if (granted) viewModel.onRemindersGranted() else viewModel.onRemindersDeclined()
     }
-  val hasPermission =
-    ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
-      PackageManager.PERMISSION_GRANTED
+  val hasPermission = context.hasNotificationPermission()
 
   BackHandler(enabled = state.canGoBack) { viewModel.onBack() }
 

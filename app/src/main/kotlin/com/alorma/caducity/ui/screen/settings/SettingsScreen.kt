@@ -3,8 +3,8 @@ package com.alorma.caducity.ui.screen.settings
 import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,7 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Backup
@@ -50,6 +49,7 @@ import com.alorma.caducity.base.ui.icons.symbols.Tune
 import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.feature.debug.DebugModeProvider
+import com.alorma.caducity.feature.notification.hasNotificationPermission
 import com.alorma.caducity.feature.tracking.SettingsScreen as SettingsScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
@@ -112,9 +112,7 @@ fun SettingsScreen(
       if (granted) viewModel.onReminderToggle(true) else viewModel.onNotificationsDenied()
     }
   // The user can revoke the permission from the system settings: then the reminder is shown (and works) as off.
-  val hasPermission =
-    ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) ==
-      PackageManager.PERMISSION_GRANTED
+  val hasPermission = context.hasNotificationPermission()
 
   AppScaffold(
     modifier = modifier,
@@ -403,7 +401,12 @@ private fun currentLanguageName(context: Context): String {
 }
 
 private fun Context.openLanguageSettings() {
-  startActivity(
-    Intent(Settings.ACTION_APP_LOCALE_SETTINGS).setData(Uri.fromParts("package", packageName, null)),
-  )
+  // Per-app language settings only exist from Android 13; before that the app follows the system language.
+  val intent =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      Intent(Settings.ACTION_APP_LOCALE_SETTINGS).setData(Uri.fromParts("package", packageName, null))
+    } else {
+      Intent(Settings.ACTION_LOCALE_SETTINGS)
+    }
+  startActivity(intent)
 }
