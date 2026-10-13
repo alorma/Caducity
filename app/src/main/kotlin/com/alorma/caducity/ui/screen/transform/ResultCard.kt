@@ -44,6 +44,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.AcUnit
 import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.CalendarMonth
+import com.alorma.caducity.base.ui.icons.symbols.Check
 import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
 import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
@@ -55,6 +56,7 @@ import com.alorma.caducity.ui.screen.add.AddOverline
 import com.alorma.caducity.ui.screen.add.NameField
 import com.alorma.caducity.ui.screen.add.StepButton
 import com.alorma.caducity.ui.screen.add.SuggestionRow
+import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 
 private val CardShape = RoundedCornerShape(24.dp)
@@ -174,6 +176,31 @@ fun ResultCard(
         servings = result.servings,
         onChange = { actions.onFrozenCountChange(id, it) },
       )
+      DoneButton(onClick = actions.onDone, modifier = Modifier.align(Alignment.End))
+    }
+  }
+}
+
+/** «Fet»: folds the form back into its small card. It validates nothing. */
+@Composable
+private fun DoneButton(
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Surface(
+    onClick = onClick,
+    shape = CaducityShapes.full,
+    color = CaducityTheme.colorScheme.primaryContainer,
+    contentColor = CaducityTheme.colorScheme.onPrimaryContainer,
+    modifier = modifier.minimumInteractiveComponentSize().height(40.dp),
+  ) {
+    Row(
+      modifier = Modifier.padding(horizontal = 18.dp),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Icon(Symbols.Outlined.Check, contentDescription = null, modifier = Modifier.size(20.dp))
+      Text(stringResource(R.string.transform_result_done), style = CaducityTheme.typography.labelLarge)
     }
   }
 }

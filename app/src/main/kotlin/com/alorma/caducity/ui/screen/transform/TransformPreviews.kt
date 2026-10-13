@@ -54,7 +54,8 @@ private val vegetables = ingredient("veg", "Soup vegetables", produce, units = 2
 
 private val noActions =
   ResultActions(
-    onToggle = {},
+    onSelect = {},
+    onDone = {},
     onRemove = {},
     onAdd = {},
     onNameChange = { _, _ -> },
@@ -78,7 +79,7 @@ private fun TransformPreviewContent(state: TransformState) {
           onAdd = {},
           optional = state.freeEntry,
         )
-        ResultsSection(state = state, actions = noActions, modifier = Modifier.padding(horizontal = 20.dp))
+        ResultsSection(state = state, actions = noActions)
       }
     }
   }
@@ -168,6 +169,26 @@ internal fun TransformManyIngredientsPreview() {
         ),
       categories = categories,
       results = listOf(ResultUi(id = 0, name = "Croquettes", servings = 12, frozenCount = 8)),
+    ),
+  )
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun TransformFoldedPreview() {
+  TransformPreviewContent(
+    TransformState(
+      today = today,
+      ingredients = listOf(chicken, vegetables),
+      categories = categories,
+      results =
+        listOf(
+          ResultUi(id = 0, name = "Broth", servings = 4, frozenCount = 2),
+          ResultUi(id = 1, name = "Sofrito", servings = 2, categoryOverride = "produce", frozenCount = 1),
+          ResultUi(id = 2, name = "Croquettes", servings = 12, frozenCount = 8),
+          ResultUi(id = 3),
+        ),
+      expandedResultId = NONE_EXPANDED,
     ),
   )
 }

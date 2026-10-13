@@ -39,6 +39,9 @@ data class ResultUi(
   val suggestion: NameSuggestion? = null,
 )
 
+/** `expandedResultId` when every result is folded into a small card. */
+internal const val NONE_EXPANDED = -1
+
 data class TransformState(
   val today: LocalDate,
   val ingredients: List<IngredientUi> = emptyList(),
@@ -88,10 +91,10 @@ data class TransformState(
   /** The date to save: a fully frozen result without one starts today. */
   fun expirationToSave(result: ResultUi): LocalDate = expirationOf(result) ?: today
 
+  /** What a result needs to be saved: a name, a category and a date (unless it is entirely frozen). */
+  fun isValid(result: ResultUi): Boolean =
+    result.name.isNotBlank() && categoryOf(result) != null && hasRequiredDate(result)
+
   val canSave: Boolean
-    get() =
-      !saving &&
-        (ingredients.isNotEmpty() || freeEntry) &&
-        results.isNotEmpty() &&
-        results.all { it.name.isNotBlank() && categoryOf(it) != null && hasRequiredDate(it) }
+    get() = !saving && (ingredients.isNotEmpty() || freeEntry) && results.isNotEmpty() && results.all(::isValid)
 }

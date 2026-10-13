@@ -323,6 +323,39 @@ class TransformViewModelTest {
     }
 
   @Test
+  fun `done folds every result and selecting one expands only that one`() =
+    runTest {
+      val vm = ready(add("Chicken", days = 3).itemIds)
+      vm.onAddResult()
+      expectThat(vm.state.value.expandedResultId).isEqualTo(1)
+
+      vm.onDone()
+      expectThat(vm.state.value.expandedResultId).isEqualTo(NONE_EXPANDED)
+      expectThat(vm.state.value.results).hasSize(2)
+
+      vm.onSelectResult(0)
+      expectThat(vm.state.value.expandedResultId).isEqualTo(0)
+      vm.onSelectResult(1)
+      expectThat(vm.state.value.expandedResultId).isEqualTo(1)
+    }
+
+  @Test
+  fun `a result is valid with a name, a category and a date`() =
+    runTest {
+      val vm = ready(add("Chicken", days = 3).itemIds)
+      val empty =
+        vm.state.value.results
+          .single()
+      expectThat(vm.state.value.isValid(empty)).isFalse()
+
+      vm.onNameChange(0, "Broth")
+      val named =
+        vm.state.value.results
+          .single()
+      expectThat(vm.state.value.isValid(named)).isTrue()
+    }
+
+  @Test
   fun `closing asks only when there are changes`() =
     runTest {
       val vm = ready(add("Chicken", days = 3).itemIds)
