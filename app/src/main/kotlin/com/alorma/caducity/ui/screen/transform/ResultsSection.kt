@@ -6,6 +6,7 @@ import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,10 +21,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -51,7 +53,6 @@ import androidx.compose.ui.unit.sp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Close
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
-import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.imageVector
 import com.alorma.caducity.ui.screen.add.ScreenGutter
@@ -74,6 +75,7 @@ class ResultActions(
 )
 
 private val ResultCardHeight = 92.dp
+private val HangingLineHeight = 14.dp
 
 /** Air around the lines that join the rows: between the ingredients and the node, and between the node and the results. */
 internal val SectionSpacing = 52.dp
@@ -169,99 +171,91 @@ private fun ResultItem(
   // A folded result that still lacks something is outlined, so it is not mistaken for a finished one.
   val incomplete = !selected && !state.isValid(result)
   val invalidLabel = stringResource(R.string.transform_result_invalid)
-  Surface(
-    shape = RowCardShape,
-    color = CaducityTheme.colorScheme.surfaceContainer,
-    border =
-      when {
-        selected -> BorderStroke(2.dp, CaducityTheme.colorScheme.primary)
-        incomplete -> BorderStroke(1.5.dp, CaducityTheme.colorScheme.error)
-        else -> null
-      },
-    modifier =
-      Modifier
-        .width(width)
-        .animateContentSize(tween(ExpandMillis, easing = EmphasizedEasing))
-        .clickable(enabled = !selected, role = Role.Button) { actions.onSelect(result.id) }
-        .semantics {
-          this.selected = selected
-          if (incomplete) stateDescription = invalidLabel
-          collectionItemInfo = CollectionItemInfo(rowIndex = 0, rowSpan = 1, columnIndex = index, columnSpan = 1)
-          customActions =
-            listOfNotNull(
-              previous?.let {
-                CustomAccessibilityAction(previousLabel) {
-                  actions.onSelect(it.id)
-                  true
-                }
-              },
-              next?.let {
-                CustomAccessibilityAction(nextLabel) {
-                  actions.onSelect(it.id)
-                  true
-                }
-              },
-            )
+  Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Surface(
+      shape = RowCardShape,
+      color = CaducityTheme.colorScheme.surfaceContainer,
+      border =
+        when {
+          selected -> BorderStroke(2.dp, CaducityTheme.colorScheme.primary)
+          incomplete -> BorderStroke(1.5.dp, CaducityTheme.colorScheme.error)
+          else -> null
         },
-  ) {
-    Crossfade(targetState = selected, animationSpec = tween(ExpandMillis / 2), label = "resultContent") { open ->
-      if (open) {
-        ResultForm(state = state, result = result, actions = actions)
-      } else {
-        ResultSummary(
-          state = state,
-          result = result,
-          onRemove = if (state.results.size > 1) ({ actions.onRemove(result.id) }) else null,
-        )
+      modifier =
+        Modifier
+          .width(width)
+          .animateContentSize(tween(ExpandMillis, easing = EmphasizedEasing))
+          .clickable(enabled = !selected, role = Role.Button) { actions.onSelect(result.id) }
+          .semantics {
+            this.selected = selected
+            if (incomplete) stateDescription = invalidLabel
+            collectionItemInfo = CollectionItemInfo(rowIndex = 0, rowSpan = 1, columnIndex = index, columnSpan = 1)
+            customActions =
+              listOfNotNull(
+                previous?.let {
+                  CustomAccessibilityAction(previousLabel) {
+                    actions.onSelect(it.id)
+                    true
+                  }
+                },
+                next?.let {
+                  CustomAccessibilityAction(nextLabel) {
+                    actions.onSelect(it.id)
+                    true
+                  }
+                },
+              )
+          },
+    ) {
+      Crossfade(targetState = selected, animationSpec = tween(ExpandMillis / 2), label = "resultContent") { open ->
+        if (open) {
+          ResultForm(state = state, result = result, actions = actions)
+        } else {
+          ResultSummary(state = state, result = result)
+        }
       }
+    }
+    if (!selected && state.results.size > 1) HangingRemove(onRemove = { actions.onRemove(result.id) })
+  }
+}
+
+/** A short line that hangs from a folded card and ends in a round «×»: the card's way to be removed. */
+@Composable
+private fun HangingRemove(onRemove: () -> Unit) {
+  Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Box(
+      modifier =
+        Modifier
+          .width(1.5.dp)
+          .height(HangingLineHeight)
+          .background(CaducityTheme.colorScheme.outline),
+    )
+    Surface(
+      onClick = onRemove,
+      shape = CircleShape,
+      color = CaducityTheme.colorScheme.surfaceContainerHigh,
+      contentColor = CaducityTheme.colorScheme.onSurfaceVariant,
+      modifier = Modifier.minimumInteractiveComponentSize(),
+    ) {
+      Icon(
+        Symbols.Outlined.Close,
+        contentDescription = stringResource(R.string.transform_result_delete),
+        modifier = Modifier.padding(6.dp).size(20.dp),
+      )
     }
   }
 }
 
-/** A folded result: shape, name, «12 units · Category», the frozen pill and a dot when it still lacks something. */
+/** A folded result: shape, name, «12 units · Category» and the frozen pill. */
 @Composable
 private fun ResultSummary(
   state: TransformState,
   result: ResultUi,
-  /** Null when it is the only result: it cannot be removed. */
-  onRemove: (() -> Unit)?,
 ) {
   val category = state.categories.firstOrNull { it.id == state.categoryOf(result) }
   val name = result.name.ifBlank { stringResource(R.string.transform_result_unnamed) }
-  Box {
-    ResultSummaryContent(
-      state = state,
-      result = result,
-      category = category,
-      name = name,
-      reserveClose =
-        onRemove != null,
-    )
-    if (onRemove != null) {
-      IconButton(onClick = onRemove, modifier = Modifier.align(Alignment.TopEnd)) {
-        Icon(
-          Symbols.Outlined.Close,
-          contentDescription = stringResource(R.string.transform_result_delete),
-          modifier = Modifier.size(20.dp),
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun ResultSummaryContent(
-  state: TransformState,
-  result: ResultUi,
-  category: Category?,
-  name: String,
-  reserveClose: Boolean,
-) {
   Column(
-    modifier =
-      Modifier
-        .height(ResultCardHeight)
-        .padding(start = 10.dp, top = 10.dp, bottom = 10.dp, end = if (reserveClose) 36.dp else 10.dp),
+    modifier = Modifier.height(ResultCardHeight).padding(10.dp),
     verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
