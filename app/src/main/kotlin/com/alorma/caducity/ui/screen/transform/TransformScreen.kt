@@ -120,10 +120,14 @@ fun TransformScreen(
           onCountChange = viewModel::onIngredientCountChange,
           onRemove = viewModel::onRemoveIngredient,
           onAdd = { viewModel.navigate(TransformNavigation.IngredientPicker) },
+          optional = state.freeEntry,
         )
         ResultsSection(state = state, actions = actions)
         Text(
-          text = stringResource(R.string.transform_footer),
+          text =
+            stringResource(
+              if (state.ingredients.isEmpty()) R.string.transform_footer_free else R.string.transform_footer,
+            ),
           style = CaducityTheme.typography.bodySmall,
           color = CaducityTheme.colorScheme.onSurfaceVariant,
           modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),

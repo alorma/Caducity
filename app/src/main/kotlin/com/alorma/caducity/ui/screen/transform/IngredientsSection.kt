@@ -28,14 +28,17 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.Close
+import com.alorma.caducity.base.ui.icons.symbols.SoupKitchen
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.imageVector
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
 import com.alorma.caducity.ui.components.connected.ConnectedRow
 import com.alorma.caducity.ui.components.shape.connectedShape
 import com.alorma.caducity.ui.screen.add.StepButton
+import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -51,15 +54,24 @@ fun IngredientsSection(
   onRemove: (key: String) -> Unit,
   onAdd: () -> Unit,
   modifier: Modifier = Modifier,
+  /** Free entry: ingredients are optional and, with none, the section shows an empty state. */
+  optional: Boolean = false,
 ) {
   val count = ingredients.size + 1
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing)) {
     Text(
-      text = stringResource(R.string.transform_section_ingredients),
+      text =
+        stringResource(
+          if (optional) R.string.transform_section_ingredients_optional else R.string.transform_section_ingredients,
+        ),
       style = CaducityTheme.typography.labelLarge,
       color = CaducityTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier.padding(start = 4.dp, bottom = 6.dp),
     )
+    if (ingredients.isEmpty() && optional) {
+      EmptyIngredients(onAdd = onAdd)
+      return@Column
+    }
     ingredients.forEachIndexed { index, ingredient ->
       IngredientRow(
         ingredient = ingredient,
@@ -71,6 +83,52 @@ fun IngredientsSection(
       )
     }
     AddIngredientRow(index = ingredients.size, count = count, onClick = onAdd)
+  }
+}
+
+/** «Què has cuinat?»: nothing added yet, and that is fine. */
+@Composable
+private fun EmptyIngredients(onAdd: () -> Unit) {
+  Surface(
+    shape = CaducityTheme.shapes.extraLarge,
+    color = CaducityTheme.colorScheme.surfaceContainer,
+    modifier = Modifier.fillMaxWidth(),
+  ) {
+    Column(
+      modifier = Modifier.padding(horizontal = 24.dp, vertical = 20.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      CategoryShapeIcon(shape = CategoryShape.COOKIE, icon = Symbols.Outlined.SoupKitchen, size = 56.dp)
+      Text(
+        text = stringResource(R.string.transform_empty_title),
+        style = CaducityTheme.typography.titleLarge,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.padding(top = 8.dp),
+      )
+      Text(
+        text = stringResource(R.string.transform_empty_body),
+        style = CaducityTheme.typography.bodyMedium,
+        color = CaducityTheme.colorScheme.onSurfaceVariant,
+        textAlign = TextAlign.Center,
+      )
+      Surface(
+        onClick = onAdd,
+        shape = CaducityShapes.full,
+        color = CaducityTheme.colorScheme.secondaryContainer,
+        contentColor = CaducityTheme.colorScheme.onSecondaryContainer,
+        modifier = Modifier.padding(top = 8.dp),
+      ) {
+        Row(
+          modifier = Modifier.heightIn(min = 48.dp).padding(horizontal = 20.dp),
+          horizontalArrangement = Arrangement.spacedBy(10.dp),
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+          Text(stringResource(R.string.transform_add_ingredient), style = CaducityTheme.typography.labelLarge)
+        }
+      }
+    }
   }
 }
 
