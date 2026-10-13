@@ -32,13 +32,95 @@
     <activity
       android:name=".MainActivity"
       android:exported="true"
-      android:launchMode="singleTop">
+      android:launchMode="singleTop" />
+
+    <!--
+      App icon per color palette. Exactly one alias is enabled (Rebost by default);
+      AppIconManager swaps them when the palette changes. They carry the LAUNCHER filter.
+    -->
+    <activity-alias
+      android:name=".IconRebost"
+      android:enabled="true"
+      android:exported="true"
+      android:icon="@drawable/ic_icon_rebost"
+      android:roundIcon="@drawable/ic_icon_rebost"
+      android:targetActivity=".MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
-    </activity>
+    </activity-alias>
+
+    <activity-alias
+      android:name=".IconNevera"
+      android:enabled="false"
+      android:exported="true"
+      android:icon="@drawable/ic_icon_nevera"
+      android:roundIcon="@drawable/ic_icon_nevera"
+      android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity-alias>
+
+    <activity-alias
+      android:name=".IconHort"
+      android:enabled="false"
+      android:exported="true"
+      android:icon="@drawable/ic_icon_hort"
+      android:roundIcon="@drawable/ic_icon_hort"
+      android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity-alias>
+
+    <activity-alias
+      android:name=".IconFleca"
+      android:enabled="false"
+      android:exported="true"
+      android:icon="@drawable/ic_icon_fleca"
+      android:roundIcon="@drawable/ic_icon_fleca"
+      android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity-alias>
+
+    <activity-alias
+      android:name=".IconBessa"
+      android:enabled="false"
+      android:exported="true"
+      android:icon="@drawable/ic_icon_bessa"
+      android:roundIcon="@drawable/ic_icon_bessa"
+      android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity-alias>
+
+    <activity-alias
+      android:name=".IconCamp"
+      android:enabled="false"
+      android:exported="true"
+      android:icon="@drawable/ic_icon_camp"
+      android:roundIcon="@drawable/ic_icon_camp"
+      android:targetActivity=".MainActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity-alias>
 
     <!-- Disable default WorkManager initialization when using Koin integration -->
     <provider

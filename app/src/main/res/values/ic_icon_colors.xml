@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Icona de l'app per paleta (clar): fons · galeta · fulla. Fosc a values-night. -->
+<resources>
+    <color name="ic_icon_rebost_background">#E8B95A</color>
+    <color name="ic_icon_rebost_cookie">#2E6B3B</color>
+    <color name="ic_icon_rebost_leaf">#FFFAEE</color>
+
+    <color name="ic_icon_nevera_background">#D9E2F5</color>
+    <color name="ic_icon_nevera_cookie">#3E5C94</color>
+    <color name="ic_icon_nevera_leaf">#F4F6FB</color>
+
+    <color name="ic_icon_hort_background">#D3EE9A</color>
+    <color name="ic_icon_hort_cookie">#2E7D1F</color>
+    <color name="ic_icon_hort_leaf">#F6FAEC</color>
+
+    <color name="ic_icon_fleca_background">#F6DAB5</color>
+    <color name="ic_icon_fleca_cookie">#8A4B12</color>
+    <color name="ic_icon_fleca_leaf">#FFF4EA</color>
+
+    <color name="ic_icon_bessa_background">#F5D5E4</color>
+    <color name="ic_icon_bessa_cookie">#8A2E5C</color>
+    <color name="ic_icon_bessa_leaf">#FFF5F8</color>
+
+    <color name="ic_icon_camp_background">#F7E58A</color>
+    <color name="ic_icon_camp_cookie">#6F5A00</color>
+    <color name="ic_icon_camp_leaf">#FFFBE6</color>
+</resources>

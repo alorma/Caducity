@@ -116,7 +116,7 @@ private fun AppIcon() {
           scaleY = scale.value
           alpha = ((scale.value - 0.4f) / 0.3f).coerceIn(0f, 1f)
         }.clip(CircleShape)
-        .background(colorResource(R.color.ic_launcher_background)),
+        .background(colorResource(R.color.ic_icon_rebost_background)),
     contentAlignment = Alignment.Center,
   ) {
     // The adaptive-icon foreground is drawn on a 108 dp canvas with a safe zone: it is enlarged to fill the circle.
