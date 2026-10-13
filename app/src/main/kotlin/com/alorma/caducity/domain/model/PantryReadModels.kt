@@ -33,16 +33,11 @@ data class ProductGroup(
   val nearest: PantryEntry get() = units.first()
 }
 
-private val UNIT_ORDER =
-  compareBy<PantryEntry> { it.expiration }
-    .thenBy { it.createdAt }
-    .thenBy { it.itemId }
-
-/** Groups entries by product and sorts each group's units by (date, createdAt, id), stable «Unitat N». */
+/** Groups entries by product and sorts each group's units by (date, createdAt, id), nearest first. */
 fun List<PantryEntry>.toProductGroups(): List<ProductGroup> =
   groupBy { it.groupKey }
     .map { (key, units) ->
-      val sorted = units.sortedWith(UNIT_ORDER)
+      val sorted = units.sortedNearestFirst()
       ProductGroup(
         key = key,
         productId = sorted.first().productId,

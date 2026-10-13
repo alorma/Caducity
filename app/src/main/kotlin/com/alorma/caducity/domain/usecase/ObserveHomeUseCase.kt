@@ -7,6 +7,7 @@ import com.alorma.caducity.domain.model.HomeData
 import com.alorma.caducity.domain.model.HomeDaySection
 import com.alorma.caducity.domain.model.HomeRow
 import com.alorma.caducity.domain.model.PantryEntry
+import com.alorma.caducity.domain.model.nearestFirst
 import com.alorma.caducity.domain.model.normalizeForSearch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -59,14 +60,13 @@ class ObserveHomeUseCase(
     units: List<PantryEntry>,
     category: com.alorma.caducity.domain.model.Category,
   ): HomeRow {
-    val sorted = units.sortedWith(compareBy({ it.createdAt }, { it.itemId }))
-    val first = sorted.first()
+    val nearest = units.nearestFirst()
     return HomeRow(
-      key = first.groupKey,
-      name = first.name,
+      key = nearest.groupKey,
+      name = nearest.name,
       category = category,
       unitCount = units.size,
-      nearestItemId = first.itemId,
+      nearestItemId = nearest.itemId,
     )
   }
 }
