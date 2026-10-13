@@ -151,7 +151,6 @@ Validada al dispositiu de treball amb el xip Categoria (filtre instantani i reco
 - [x] Tasca 2 (full d'Accions): `6dbb995`
 - [x] Tasca 3 (botó dividit): `f1a7f55`
 - [x] Tasca 4 (cascada en desar): `f6f9696`
-- Skill `/transforma-flow` per provar el flux des de zero (entrades `menu`, `one`, `multi`): `31c999c`
 
 Validada al Pixel amb el flag apagat (res de Transforma) i encès. La skill només s'ha executat completa per l'entrada `menu`; `one` i `multi` queden per provar.
 
@@ -160,11 +159,10 @@ Validada al Pixel amb el flag apagat (res de Transforma) i encès. La skill nom�
 ## Fase 6 — Qualitat
 
 - [x] Bug de la fase 5 (es gasta la unitat seleccionada, amb test): `18eaea4`
-- [x] Tests de ViewModel: ja existien (`save needs a name and an ingredient`, `count is limited to the units left and at least one`); el flux sencer amb desfés el cobreixen `TransformItemsUseCaseTest` i la skill `/transforma-flow`. No hi ha `androidTest`.
+- [x] Tests de ViewModel: ja existien (`save needs a name and an ingredient`, `count is limited to the units left and at least one`); el flux sencer amb desfés el cobreix `TransformItemsUseCaseTest`. No hi ha `androidTest`.
 - [x] Tests de captura clar/fosc de Transforma (5 estats) i del selector (3 estats): `4154eff`. Fora: els menús desplegables del selector (el popup surt buit) i el botó dividit (no té preview).
 - [x] TalkBack: selectors, regions `Polite` i descripcions ja eren correctes; zones tàctils de 44 → 48 dp (`StepButton`, `ResultChip`): `0b1426a`. Només revisió de codi, sense TalkBack real.
 - [ ] Prova d'actualització des de la release anterior (v3 → v4) abans de publicar.
-- [ ] La skill `/transforma-flow` amb `one` i `multi` no s'ha pogut completar (el Pixel era en una altra app); Bernat la farà servir quan vulgui.
 
 ## Fase 7 — Pantalla en files (només UI)
 
@@ -173,7 +171,7 @@ Especificació: [`spec-files.md`](spec-files.md) (substitueix el disseny de la p
 1. Docs: spec, captures i fonts a `docs/02-transforma/`, i aquesta fase al pla.
 2. Targetes d'ingredient (148×118 dp) en `LazyRow`, capçalera «Ingredients · N» amb «+ Afegeix», xip «1 de 25 ⇅» que es converteix en stepper i fila discontínua «+ Afegeix ingredient» a l'accés lliure. Validació: previews, tests de captura i `ktlintCheck`.
 3. Targetes de resultat (148×92 dp) en fila, estat «cap expandit» al ViewModel i botó «Fet». Validació: tests de ViewModel i previews.
-4. Expansió de la targeta seleccionada en formulari dins la fila (animada, `animateScrollToItem`; amb un sol resultat, només el formulari) i xip «Congela'n» desplegable. Validació: previews, dispositiu de treball i `/transforma-flow`.
+4. Expansió de la targeta seleccionada en formulari dins la fila (animada, `animateScrollToItem`; amb un sol resultat, només el formulari) i xip «Congela'n» desplegable. Validació: previews i dispositiu de treball.
 5. Barra «Desa · M productes» fixa a baix, sense «Desa» a la barra superior; en desar amb un resultat invàlid se selecciona el primer. Validació: tests i dispositiu de treball amb teclat.
 6. Accessibilitat (`collectionInfo`, estat seleccionat, accions «Resultat anterior / següent», àrees ≥ 48 dp), textos a `values`, `values-ca` i `values-es`, previews i captures clar/fosc, tests de ViewModel.
 7. **Opcional, només si s'aprova:** esquema de línies i node central entre les files. Es fa al final; si és massa complicat, no es fa.
@@ -191,9 +189,7 @@ Especificació: [`spec-files.md`](spec-files.md) (substitueix el disseny de la p
 Validada amb tests de ViewModel, tests de captura clar/fosc i l'emulador (no el dispositiu de treball). TalkBack no s'ha provat (només revisió de codi). El scroll horitzontal en viu amb les línies tampoc.
 
 **Pendent de la fase:**
-- Treure un resultat: l'spec no té cap ×. `onRemoveResult` segueix al ViewModel però la UI no el crida. Cal decidir on va.
-- La skill `/transforma-flow` s'ha adaptat a la UI nova (`tf.py`) però no s'ha executat.
-- Els botons del stepper d'ingredient fan 40×48 dp, no 48×48 (no hi cap en 148 dp).
+- Treure un resultat: l'spec no té cap ×. `onRemoveResult` segueix al ViewModel però la UI no el crida. Cal decidir on va.- Els botons del stepper d'ingredient fan 40×48 dp, no 48×48 (no hi cap en 148 dp).
 - Textos que ja no es fan servir (`transform_empty_*`, `transform_footer_free`...): netejar-los si es vol.
 
 Obert de la fase (deixar com a constants/`TODO`, no resoldre): plegat automàtic del xip de quantitat; `snap` a la fila; límit per fila (50 si cal); vora de les veïnes tocable i posició «3 de 6»; en el mode pager, si el gest bloqueja l'edició o només tanca el teclat.

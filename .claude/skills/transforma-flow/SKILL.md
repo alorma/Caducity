@@ -2,6 +2,7 @@
 name: transforma-flow
 description: Run the Transforma end-to-end flow on the connected Android device from a clean install (reset, seed products, three transformations) through the «⌄» menu, one ingredient, or a multi-selection. Use to smoke-test Transforma after changing it.
 argument-hint: "[menu|one|multi|all] [ca|es|en]"
+disable-model-invocation: true
 ---
 
 # Transforma flow
