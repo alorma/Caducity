@@ -372,6 +372,7 @@
   <string name="status_date_today">Today · %1$s</string>
   <string name="status_date_tomorrow">Tomorrow · %1$s</string>
   <string name="status_date_in_days">In %1$d days · %2$s</string>
+  <string name="product_row_in_days">In %1$d days</string>
   <string name="status_date_ago_one">1 day ago · %1$s</string>
   <string name="status_date_ago_days">%1$d days ago · %2$s</string>
   <string name="status_date_frozen">Frozen on %1$s</string>

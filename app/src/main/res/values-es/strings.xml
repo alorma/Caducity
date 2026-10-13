@@ -392,6 +392,7 @@
   <string name="status_date_today">Hoy · %1$s</string>
   <string name="status_date_tomorrow">Mañana · %1$s</string>
   <string name="status_date_in_days">En %1$d días · %2$s</string>
+  <string name="product_row_in_days">En %1$d días</string>
   <string name="status_date_ago_one">Hace 1 día · %1$s</string>
   <string name="status_date_ago_days">Hace %1$d días · %2$s</string>
   <string name="status_date_frozen">Congelado el %1$s</string>

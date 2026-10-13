@@ -49,6 +49,7 @@ Agents i subagents (Bernat, 14 d'octubre): la feina mecànica (treure codi, reno
 - **D6 · «Llença»**: totes les accions sobre productes són «Llença» = `discardedDate` amb Desfés (fora l'esborrat definitiu de producte). Per a categories el verb és «eliminar» («Eliminar categoria»); el text exacte, a la revisió final de textos.
 - **D7 · Selecció**: **no hi ha pulsació llarga ni selecció nova.** Tocar la barra del producte (no els botons rodons) obre la modal. A Transforma s'hi entra per la modal, la targeta del final de l'Inici i el «Selecciona» que ja tenen les llistes d'estat. La pista de l'onboarding i de la novetat perd «o mantén premut un producte».
 - **D8 · Llista de l'Inici**: entra al paquet (fase 7). Amb «0 Aviat» la targeta «Has cuinat?» **també surt** (si hi ha algun producte vigent), tot i que `IniciSenseAviat` no la mostra.
+- **D10 · Calendari de mes** (Bernat, 14 d'octubre): la línia 2 porta el color d'estat (`2 unitats · D'aquí 2 dies`, mode `WithDays`), no el gris de l'Inici que diu l'especificació §3. És l'única desviació; la resta de la fila és igual.
 - **D9 · Textos**: la revisió final de textos (noms, castellà infinitiu/imperatiu, «Transforma/Transformar») la fa disseny; nosaltres hi posem el millor que puguem i preparem la llista (fase 8).
 
 ## Ordre

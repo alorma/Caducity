@@ -392,6 +392,7 @@
   <string name="status_date_today">Avui · %1$s</string>
   <string name="status_date_tomorrow">Demà · %1$s</string>
   <string name="status_date_in_days">D\'aquí %1$d dies · %2$s</string>
+  <string name="product_row_in_days">D\'aquí %1$d dies</string>
   <string name="status_date_ago_one">Fa 1 dia · %1$s</string>
   <string name="status_date_ago_days">Fa %1$d dies · %2$s</string>
   <string name="status_date_frozen">Congelat el %1$s</string>
