@@ -74,6 +74,8 @@ fun ResultForm(
   state: TransformState,
   result: ResultUi,
   actions: ResultActions,
+  /** «Fet» was pressed while the result still lacks something: the card shakes instead of folding. */
+  onDoneBlocked: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val id = result.id
@@ -205,14 +207,14 @@ fun ResultForm(
       DoneButton(
         onClick = {
           focusManager.clearFocus()
-          actions.onDone()
+          if (state.isValid(result)) actions.onDone() else onDoneBlocked()
         },
       )
     }
   }
 }
 
-/** «Fet»: folds the form back into its small card. It validates nothing. */
+/** «Fet»: folds the form back into its small card, once the result has everything it needs. */
 @Composable
 private fun DoneButton(
   onClick: () -> Unit,
