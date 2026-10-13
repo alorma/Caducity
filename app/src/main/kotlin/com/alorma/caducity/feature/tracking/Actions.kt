@@ -160,6 +160,17 @@ class AddCloseAction(
   )
 
 // Transform Screen Actions
+
+/** [origin]: "status_list", "item_actions" or "shell"; [source]: "selection", "item_actions" or "split_menu". */
+class NavigateToTransformAction(
+  origin: String,
+  source: String,
+) : NavigationAction(
+    actionName = "transform",
+    origin = origin,
+    parameters = mapOf("source" to source),
+  )
+
 class TransformCloseAction :
   NavigationAction(
     actionName = "close_transform",
