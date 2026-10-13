@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.transform.picker
 
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.ui.base.BaseViewModel
@@ -43,11 +44,11 @@ class IngredientPickerViewModel(
 
   fun onQueryChange(query: String) = _state.update { it.copy(query = query) }
 
-  fun onStatusFilterSelect(filter: PickerStatusFilter) = _state.update { it.copy(statusFilter = filter) }
+  fun onStatusFilterToggle(status: ExpiryStatus) =
+    _state.update { it.copy(statusFilters = it.statusFilters.toggled(status)) }
 
-  /** Tapping the active category chip clears it. */
-  fun onCategoryFilterSelect(categoryId: String) =
-    _state.update { it.copy(categoryFilter = if (it.categoryFilter == categoryId) null else categoryId) }
+  fun onCategoryFilterToggle(categoryId: String) =
+    _state.update { it.copy(categoryFilters = it.categoryFilters.toggled(categoryId)) }
 
   fun onToggle(key: String) =
     _state.update {
@@ -55,3 +56,5 @@ class IngredientPickerViewModel(
       it.copy(selectedKeys = selected)
     }
 }
+
+private fun <T> Set<T>.toggled(value: T): Set<T> = if (value in this) this - value else this + value

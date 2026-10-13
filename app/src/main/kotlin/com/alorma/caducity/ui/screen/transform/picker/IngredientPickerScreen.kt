@@ -1,9 +1,14 @@
 package com.alorma.caducity.ui.screen.transform.picker
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -12,11 +17,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -29,8 +40,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -41,13 +56,13 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.Close
+import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
+import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
 import com.alorma.caducity.base.ui.icons.symbols.Search
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.ProductGroup
-import com.alorma.caducity.ui.components.chips.FilterChipOption
-import com.alorma.caducity.ui.components.chips.FilterChips
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -56,6 +71,7 @@ import com.alorma.caducity.ui.components.status.StatusPill
 import com.alorma.caducity.ui.screen.add.ScreenGutter
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.colors.colors
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -64,8 +80,8 @@ class IngredientPickerActions(
   val onClose: () -> Unit,
   val onConfirm: () -> Unit,
   val onQueryChange: (String) -> Unit,
-  val onStatusFilterSelect: (PickerStatusFilter) -> Unit,
-  val onCategoryFilterSelect: (String) -> Unit,
+  val onStatusFilterToggle: (ExpiryStatus) -> Unit,
+  val onCategoryFilterToggle: (String) -> Unit,
   val onToggle: (String) -> Unit,
 )
 
@@ -82,8 +98,8 @@ fun IngredientPickerScreen(
       onClose = { viewModel.navigate(IngredientPickerNavigation.Close) },
       onConfirm = { viewModel.navigate(IngredientPickerNavigation.Confirm) },
       onQueryChange = viewModel::onQueryChange,
-      onStatusFilterSelect = viewModel::onStatusFilterSelect,
-      onCategoryFilterSelect = viewModel::onCategoryFilterSelect,
+      onStatusFilterToggle = viewModel::onStatusFilterToggle,
+      onCategoryFilterToggle = viewModel::onCategoryFilterToggle,
       onToggle = viewModel::onToggle,
     )
 
@@ -103,6 +119,7 @@ internal fun IngredientPickerContent(
   state: IngredientPickerState,
   actions: IngredientPickerActions,
   modifier: Modifier = Modifier,
+  openMenu: PickerMenu? = null,
 ) {
   AppScaffold(
     modifier = modifier,
@@ -117,12 +134,7 @@ internal fun IngredientPickerContent(
         verticalArrangement = Arrangement.spacedBy(12.dp),
       ) {
         SearchField(query = state.query, onQueryChange = actions.onQueryChange)
-        StatusChips(selected = state.statusFilter, onSelect = actions.onStatusFilterSelect)
-        CategoryChips(
-          categories = state.categories,
-          selectedId = state.categoryFilter,
-          onSelect = actions.onCategoryFilterSelect,
-        )
+        FilterChipsRow(state = state, actions = actions, openMenu = openMenu)
         PickerList(state = state, onToggle = actions.onToggle)
       }
     }
@@ -181,44 +193,125 @@ private fun SearchField(
   )
 }
 
+/** Which dropdown starts open; only previews set it. */
+enum class PickerMenu { Status, Category }
+
 @Composable
-private fun StatusChips(
-  selected: PickerStatusFilter,
-  onSelect: (PickerStatusFilter) -> Unit,
+private fun FilterChipsRow(
+  state: IngredientPickerState,
+  actions: IngredientPickerActions,
+  openMenu: PickerMenu?,
 ) {
-  val options =
-    PickerStatusFilter.entries.map { filter ->
-      FilterChipOption(label = filter.label(), status = filter.status)
+  if (!state.showStatusFilter && !state.showCategoryFilter) return
+  Row(
+    modifier = Modifier.horizontalScroll(rememberScrollState()),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    if (state.showStatusFilter) {
+      DropdownFilterChip(
+        label = stringResource(R.string.transform_picker_filter_status),
+        selectedCount = state.statusFilters.size,
+        initiallyExpanded = openMenu == PickerMenu.Status,
+      ) {
+        state.availableStatuses.forEach { status ->
+          FilterMenuItem(
+            label = status.label(),
+            checked = status in state.statusFilters,
+            onToggle = { actions.onStatusFilterToggle(status) },
+            leading = { StatusDot(status) },
+          )
+        }
+      }
     }
-  FilterChips(
-    options = options,
-    selectedIndex = selected.ordinal,
-    onSelect = { onSelect(PickerStatusFilter.entries[it]) },
-  )
-}
-
-@Composable
-private fun CategoryChips(
-  categories: List<Category>,
-  selectedId: String?,
-  onSelect: (String) -> Unit,
-) {
-  if (categories.isEmpty()) return
-  FilterChips(
-    options = categories.map { FilterChipOption(label = it.name) },
-    selectedIndex = categories.indexOfFirst { it.id == selectedId }.takeIf { it >= 0 },
-    onSelect = { onSelect(categories[it].id) },
-  )
-}
-
-@Composable
-private fun PickerStatusFilter.label(): String =
-  when (this) {
-    PickerStatusFilter.All -> stringResource(R.string.transform_picker_filter_all)
-    PickerStatusFilter.Soon -> stringResource(R.string.status_title_soon)
-    PickerStatusFilter.Fresh -> stringResource(R.string.status_title_fresh)
-    PickerStatusFilter.Frozen -> stringResource(R.string.status_title_frozen)
+    if (state.showCategoryFilter) {
+      DropdownFilterChip(
+        label = stringResource(R.string.transform_picker_filter_category),
+        selectedCount = state.categoryFilters.size,
+        initiallyExpanded = openMenu == PickerMenu.Category,
+      ) {
+        state.availableCategories.forEach { category ->
+          FilterMenuItem(
+            label = category.name,
+            checked = category.id in state.categoryFilters,
+            onToggle = { actions.onCategoryFilterToggle(category.id) },
+          )
+        }
+      }
+    }
   }
+}
+
+@Composable
+private fun DropdownFilterChip(
+  label: String,
+  selectedCount: Int,
+  initiallyExpanded: Boolean,
+  menu: @Composable ColumnScope.() -> Unit,
+) {
+  var expanded by remember { mutableStateOf(initiallyExpanded) }
+  val scheme = CaducityTheme.colorScheme
+  val selected = selectedCount > 0
+  Box {
+    FilterChip(
+      selected = selected,
+      onClick = { expanded = true },
+      shape = CaducityShapes.chip,
+      border =
+        FilterChipDefaults.filterChipBorder(
+          enabled = true,
+          selected = selected,
+          borderColor = scheme.outlineVariant,
+          selectedBorderColor = Color.Transparent,
+        ),
+      colors =
+        FilterChipDefaults.filterChipColors(
+          containerColor = Color.Transparent,
+          labelColor = scheme.onSurface,
+          selectedContainerColor = scheme.primaryContainer,
+          selectedLabelColor = scheme.onPrimaryContainer,
+          selectedTrailingIconColor = scheme.onPrimaryContainer,
+        ),
+      label = {
+        Text(
+          text = if (selected) stringResource(R.string.transform_picker_filter_count, label, selectedCount) else label,
+          style = CaducityTheme.typography.labelLarge,
+        )
+      },
+      trailingIcon = {
+        Icon(
+          imageVector = if (expanded) Symbols.Outlined.ExpandLess else Symbols.Outlined.ExpandMore,
+          contentDescription = null,
+          modifier = Modifier.size(18.dp),
+        )
+      },
+    )
+    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }, content = menu)
+  }
+}
+
+@Composable
+private fun FilterMenuItem(
+  label: String,
+  checked: Boolean,
+  onToggle: () -> Unit,
+  leading: (@Composable () -> Unit)? = null,
+) {
+  DropdownMenuItem(
+    text = {
+      Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        leading?.invoke()
+        Text(label, style = CaducityTheme.typography.bodyLarge)
+      }
+    },
+    onClick = onToggle,
+    leadingIcon = { Checkbox(checked = checked, onCheckedChange = null) },
+  )
+}
+
+@Composable
+private fun StatusDot(status: ExpiryStatus) {
+  Spacer(Modifier.size(8.dp).clip(CircleShape).background(status.colors().strong))
+}
 
 @Composable
 private fun PickerList(
