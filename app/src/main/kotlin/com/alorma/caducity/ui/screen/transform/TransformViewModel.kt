@@ -152,14 +152,9 @@ class TransformViewModel(
       val results = current.results.filterNot { it.id == id }
       current.copy(
         results = results,
+        // The one left is always open; otherwise the open one stays, or the first takes over if it was removed.
         expandedResultId =
-          if (current.expandedResultId ==
-            id
-          ) {
-            results.first().id
-          } else {
-            current.expandedResultId
-          },
+          if (results.size == 1 || current.expandedResultId == id) results.first().id else current.expandedResultId,
       )
     }
   }
