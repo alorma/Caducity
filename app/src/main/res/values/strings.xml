@@ -163,6 +163,7 @@
   <string name="transform_section_results_count">Result · %d</string>
   <string name="transform_result_done">Done</string>
   <string name="transform_result_delete">Delete result</string>
+  <string name="transform_result_removed">Result deleted</string>
   <string name="transform_result_previous">Previous result</string>
   <string name="transform_result_next">Next result</string>
   <string name="transform_result_invalid">Needs a name, category or date</string>

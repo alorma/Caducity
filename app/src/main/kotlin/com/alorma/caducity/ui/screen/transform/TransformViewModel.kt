@@ -152,6 +152,10 @@ class TransformViewModel(
   fun onRemoveResult(id: Int) {
     if (_state.value.results.size <= 1) return
     suggestionJobs.remove(id)?.cancel()
+    val before = _state.value
+    val index = before.results.indexOfFirst { it.id == id }
+    if (index < 0) return
+    removedResult = RemovedResult(before.results[index], index, before.expandedResultId)
     _state.update { current ->
       val results = current.results.filterNot { it.id == id }
       current.copy(
@@ -161,7 +165,26 @@ class TransformViewModel(
           if (results.size == 1 || current.expandedResultId == id) results.first().id else current.expandedResultId,
       )
     }
+    emitSideEffect(TransformSideEffect.ShowResultRemoved)
   }
+
+  /** «Desfés» on the snackbar of a removed result: it comes back where it was, and the selection with it. */
+  fun onUndoRemoveResult() {
+    val removed = removedResult ?: return
+    removedResult = null
+    _state.update { current ->
+      val results = current.results.toMutableList().apply { add(removed.index.coerceAtMost(size), removed.result) }
+      current.copy(results = results, expandedResultId = removed.expandedResultId)
+    }
+  }
+
+  private class RemovedResult(
+    val result: ResultUi,
+    val index: Int,
+    val expandedResultId: Int,
+  )
+
+  private var removedResult: RemovedResult? = null
 
   /** Expands [id]; the one that was open folds, so at most one is expanded. Does nothing while the open one lacks something. */
   fun onSelectResult(id: Int) {

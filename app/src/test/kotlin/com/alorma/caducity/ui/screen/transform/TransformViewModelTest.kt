@@ -388,6 +388,34 @@ class TransformViewModelTest {
     }
 
   @Test
+  fun `undoing a removal brings the result and the selection back, and the last result cannot be removed`() =
+    runTest {
+      val vm = ready(add("Chicken", days = 3).itemIds)
+      vm.onNameChange(0, "Broth")
+      vm.onAddResult()
+      vm.onNameChange(1, "Stew")
+      vm.onSelectResult(0)
+      expectThat(vm.state.value.expandedResultId).isEqualTo(0)
+
+      vm.onRemoveResult(0)
+      expectThat(
+        vm.state.value.results
+          .map { it.id },
+      ).isEqualTo(listOf(1))
+
+      vm.onUndoRemoveResult()
+      expectThat(
+        vm.state.value.results
+          .map { it.name },
+      ).isEqualTo(listOf("Broth", "Stew"))
+      expectThat(vm.state.value.expandedResultId).isEqualTo(0)
+
+      vm.onRemoveResult(1)
+      vm.onRemoveResult(0)
+      expectThat(vm.state.value.results).hasSize(1)
+    }
+
+  @Test
   fun `selecting another result does nothing while the open one lacks something`() =
     runTest {
       val vm = ready(add("Chicken", days = 3).itemIds)

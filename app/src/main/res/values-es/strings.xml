@@ -166,6 +166,7 @@
   <string name="transform_section_results_count">Resultado · %d</string>
   <string name="transform_result_done">Hecho</string>
   <string name="transform_result_delete">Borrar el resultado</string>
+  <string name="transform_result_removed">Resultado borrado</string>
   <string name="transform_result_previous">Resultado anterior</string>
   <string name="transform_result_next">Resultado siguiente</string>
   <string name="transform_result_invalid">Falta un nombre, categoría o fecha</string>

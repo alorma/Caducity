@@ -40,6 +40,7 @@ import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomS
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarResult
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
@@ -226,6 +227,17 @@ private fun SideEffectHandler(
                 type = AppFeedbackType.Info,
               )
             if (result == DialogResult.Positive) viewModel.onDiscardConfirmed()
+          }
+
+        TransformSideEffect.ShowResultRemoved ->
+          launch {
+            val result =
+              snackbarState.showSnackbar(
+                message = R.string.transform_result_removed,
+                actionLabel = R.string.add_undo,
+                type = AppFeedbackType.Info,
+              )
+            if (result == AppSnackbarResult.ActionPerformed) viewModel.onUndoRemoveResult()
           }
 
         TransformSideEffect.ShowSaveFailed ->
