@@ -110,8 +110,7 @@ fun TransformScreen(
           Modifier
             .fillMaxSize()
             .padding(insets)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = ScreenGutter),
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(20.dp),
       ) {
         IngredientsSection(
@@ -123,7 +122,7 @@ fun TransformScreen(
           optional = state.freeEntry,
           closedRows = state.closedRows,
         )
-        ResultsSection(state = state, actions = actions)
+        ResultsSection(state = state, actions = actions, modifier = Modifier.padding(horizontal = ScreenGutter))
         Text(
           text =
             stringResource(
@@ -131,7 +130,7 @@ fun TransformScreen(
             ),
           style = CaducityTheme.typography.bodySmall,
           color = CaducityTheme.colorScheme.onSurfaceVariant,
-          modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
+          modifier = Modifier.padding(horizontal = ScreenGutter + 4.dp, vertical = 8.dp),
         )
       }
     }

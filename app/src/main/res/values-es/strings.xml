@@ -193,6 +193,9 @@
   <string name="transform_empty_body">Añade los ingredientes de la despensa que has gastado. Si no los tienes apuntados, puedes saltarte este paso.</string>
   <string name="transform_footer_free">Guardar se activa cuando hay nombre, categoría y fecha.</string>
   <string name="transform_add_ingredient">Añadir ingrediente</string>
+  <string name="transform_add">Añadir</string>
+  <string name="transform_section_ingredients_count">Ingredientes · %d</string>
+  <string name="transform_ingredient_units_edit">Cambia la cantidad, %1$d de %2$d</string>
   <string name="transform_ingredient_units">%1$d de %2$d</string>
   <string name="transform_ingredient_remove">Quitar %1$s</string>
   <string name="transform_discard_title">¿Descartar los cambios?</string>

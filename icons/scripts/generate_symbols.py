@@ -16,7 +16,7 @@ PKG = "com.alorma.caducity.base.ui.icons.symbols"
 ICONS = [
     # navegació
     "hourglass_bottom", "kitchen", "settings", "add", "arrow_back", "chevron_left", "chevron_right",
-    "expand_more", "expand_less", "close", "search", "more_vert", "calendar_month",
+    "expand_more", "expand_less", "unfold_more", "close", "search", "more_vert", "calendar_month",
     # estat / accions
     "check", "check_circle", "ac_unit", "event_repeat", "delete", "edit", "drive_file_move",
     "undo", "warning", "error", "info", "schedule", "today", "notifications", "backup", "shield",
