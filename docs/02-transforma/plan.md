@@ -141,6 +141,17 @@ Canvi de disseny (zip `caducity-canvi-transforma`, nova `TransformaIngredient.pn
 4. En desar: files d'ingredients es tanquen en cascada (80 ms), torna a l'origen (la selecció es tanca), snackbar «N ingredients transformats en M productes · Desfés» (sense ingredients: «M productes afegits · Desfés»).
 5. Tracking a `feature/tracking/Actions.kt` (`nav_transform`, `source = selection|split_menu|item_actions`; sense dades d'usuari).
 
+- [x] Tasca 5 (acció `nav_transform`): `2039946`
+- [x] Tasca 1 (barra de selecció, Caducats i Congelats també; Categoria no té selecció): `6126d63`
+- [x] Tasca 2 (full d'Accions): `6dbb995`
+- [x] Tasca 3 (botó dividit): `f1a7f55`
+- [x] Tasca 4 (cascada en desar): `f6f9696`
+- Skill `/transforma-flow` per provar el flux des de zero (entrades `menu`, `one`, `multi`): `31c999c`
+
+Validada al Pixel amb el flag apagat (res de Transforma) i encès. La skill només s'ha executat completa per l'entrada `menu`; `one` i `multi` queden per provar.
+
+**Pendent (trobat en provar):** en seleccionar una fila o unitat concreta, Transforma gasta les unitats del producte per ordre de caducitat, no la seleccionada (una cuixa congelada va ser consumida en lloc de la fresca; «1 de 25» amb la llet). Es resol a la fase 6 o abans, si Bernat ho vol.
+
 ## Fase 6 — Qualitat
 
 - Test d'UI: Desa desactivat sense nom; `1 de 2` limitat a les unitats que queden; flux sencer amb desfés.
@@ -171,7 +182,7 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 2b — Accés lliure al cas d'ús | Validada |
 | 3b — Pantalla en accés lliure | Validada |
 | 4b — Filtres desplegables del selector | Pendent |
-| 5 — Entrades i flux final | Pendent (després de 2b i 3b) |
+| 5 — Entrades i flux final | Validada |
 | 6 — Qualitat | Pendent |
 
 Només es passa a «Validada» quan Bernat l'aprova (`.claude/rules/phased-work.md`).
