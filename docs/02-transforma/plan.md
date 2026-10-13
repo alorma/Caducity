@@ -189,8 +189,26 @@ Especificació: [`spec-files.md`](spec-files.md) (substitueix el disseny de la p
 Validada amb tests de ViewModel, tests de captura clar/fosc i l'emulador (no el dispositiu de treball). TalkBack no s'ha provat (només revisió de codi). El scroll horitzontal en viu amb les línies tampoc.
 
 **Pendent de la fase:**
-- Treure un resultat: l'spec no té cap ×. `onRemoveResult` segueix al ViewModel però la UI no el crida. Cal decidir on va.- Els botons del stepper d'ingredient fan 40×48 dp, no 48×48 (no hi cap en 148 dp).
+- ~~Treure un resultat~~: resolt (vegeu els ajustos de sota).
+- Els botons del stepper d'ingredient fan 40×48 dp, no 48×48 (no hi cap en 148 dp).
 - Textos que ja no es fan servir (`transform_empty_*`, `transform_footer_free`...): netejar-los si es vol.
+
+**Ajustos de la fase 7 (2026-10-13, provats a l'emulador, no al dispositiu de treball):**
+- [x] Resultats: sense teclat en obrir (només el resultat acabat d'afegir el pren), «+ Afegeix» ocult mentre hi ha un resultat sense nom (`canAddResult`): `ced594e`.
+- [x] Esborrar un resultat: paperera al formulari obert i `×` a la cantonada de la targeta plegada, només amb més d'un resultat; en quedar-ne un, queda obert i centrat; la targeta plegada incompleta té la vora en degradat de vermell a color de targeta: `727b768`, `484e323`, `fe0596d`, `c93fef7`, `c21aa6c`.
+- [x] Diàleg de descartar neutre (`Info`): `b3ceaec`.
+- [x] Línies: fade segons la distància al centre, línia també cap a targetes parcialment visibles; node de 64 dp amb forma clover 8: `95ae2f7`, `4a190f1`, `c0224b1`.
+- [x] Plegat de la targeta sense l'efecte llarg i estret, ripple retallat a la forma, resultats plegats que arriben al centre (padding simètric): `c7120ae`.
+- [x] Ingredients: vora (degradat de color de targeta a color d'estat) i línia del color de l'estat de la unitat que es gasta primer, amb els marges de la categoria (`ObserveItemsUseCase`): `e41ff13`. Només s'ha vist el groc a l'emulador.
+- [x] Resultat seleccionat: primer es centra la targeta plegada i després s'expandeix; targeta completa amb vora de color de targeta a outline: `85ad915`. **El centrat previ no s'ha vist a l'emulador.**
+- [x] Selector: el filtre d'estat deixa només les unitats d'aquest estat: `7ddc09e`.
+- [x] «Fet» no plega un resultat incomplet i fa un shake: `f5a2742`.
+- Experiment descartat: gota amb línia penjant per esborrar (disseny maco, animacions no convencien). Es pot recuperar de `f927424`; es va desfer a `19ec17d`.
+
+Pendent d'aquests ajustos:
+- «Ingredients · opcional» a l'accés lliure: Bernat pregunta si hauria d'haver-hi com a mínim un ingredient. Ve del pla (l'accés lliure serveix per apuntar un producte sense ingredients); decidir si es manté.
+- En confirmar el selector entra la unitat més propera del producte, no la de l'estat filtrat.
+- Provar al dispositiu de treball: centrat previ a l'expansió, colors blau/verd/vermell dels ingredients, ripple vermell i el scroll en viu amb les línies.
 
 Obert de la fase (deixar com a constants/`TODO`, no resoldre): plegat automàtic del xip de quantitat; `snap` a la fila; límit per fila (50 si cal); vora de les veïnes tocable i posició «3 de 6»; en el mode pager, si el gest bloqueja l'edició o només tanca el teclat.
 
