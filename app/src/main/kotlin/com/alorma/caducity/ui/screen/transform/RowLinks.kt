@@ -32,7 +32,10 @@ import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.ui.theme.CaducityTheme
 
 /** The most lines that leave from (or arrive at) one of the two rows: only the cards whose centre is in view. */
-private const val MaxLinesPerRow = 3
+private const val MaxLinesPerRow = 5
+
+/** How fast a line fades while its card moves away from the middle: 1.5 keeps the middle third at full opacity. */
+private const val FadeGain = 1.5f
 
 private val NodeSize = 40.dp
 
@@ -120,8 +123,8 @@ private fun DrawScope.drawRowLinks(
   val ingredientsState = links.ingredientsState
   val entry = links.entry?.takeIf { it.isAttached }
   if (ingredients != null && ingredientsState != null) {
-    visibleCentres(ingredients, ingredientsState, root).forEach { from ->
-      drawCurve(from, nodeTop, sand, thin)
+    visibleCentres(ingredients, ingredientsState, root).forEach { (from, fade) ->
+      drawCurve(from, nodeTop, sand.copy(alpha = fade), thin)
     }
   } else if (entry != null) {
     val from = root.localPositionOf(entry, Offset(entry.size.width / 2f, entry.size.height.toFloat()))
@@ -149,31 +152,36 @@ private fun DrawScope.drawRowLinks(
   }
   val resultsState = links.resultsState
   if (foldedAlpha > 0f && resultsState != null) {
-    visibleCentres(results, resultsState, root, atBottom = false).forEach { to ->
-      drawCurve(nodeBottom, to, sand.copy(alpha = foldedAlpha), thin)
+    visibleCentres(results, resultsState, root, atBottom = false).forEach { (to, fade) ->
+      drawCurve(nodeBottom, to, sand.copy(alpha = foldedAlpha * fade), thin)
     }
   }
 }
 
 /**
  * Points on the bottom (or top) edge of [row] under the centre of each card whose centre is in view, closest to the
- * middle first and at most [MaxLinesPerRow]. Read from the list state, so they follow the scroll.
+ * middle first and at most [MaxLinesPerRow]. Read from the list state, so they follow the scroll. Each comes with
+ * its opacity: full around the middle and fading out the closer the card is to leaving the screen.
  */
 private fun visibleCentres(
   row: LayoutCoordinates,
   state: LazyListState,
   root: LayoutCoordinates,
   atBottom: Boolean = true,
-): List<Offset> {
+): List<Pair<Offset, Float>> {
   val info = state.layoutInfo
   val width = row.size.width
+  val half = width / 2f
   val y = if (atBottom) row.size.height.toFloat() else 0f
   return info.visibleItemsInfo
     .map { item -> item.offset + item.size / 2f + info.beforeContentPadding }
     .filter { x -> x in 0f..width.toFloat() }
-    .sortedBy { x -> kotlin.math.abs(x - width / 2f) }
+    .sortedBy { x -> kotlin.math.abs(x - half) }
     .take(MaxLinesPerRow)
-    .map { x -> root.localPositionOf(row, Offset(x, y)) }
+    .map { x ->
+      val away = kotlin.math.abs(x - half) / half
+      root.localPositionOf(row, Offset(x, y)) to ((1f - away) * FadeGain).coerceIn(0f, 1f)
+    }
 }
 
 /** A line that leaves [from] straight down and joins [to] straight down too, like a stream. */
