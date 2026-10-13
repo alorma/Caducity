@@ -1,7 +1,8 @@
 # Pla: Transforma (ingredients → elaboracions)
 
 Especificació: [`spec.md`](spec.md). Captures: `captures/Transforma{Seleccio,Caldo,Pollastre,Ingredient,Buit}`, `EntradaMenu`, `EntradaAccions`, `Main` (botó dividit en repòs).
-**Canvi de disseny (2026-10-13):** nou **accés lliure** (`TransformaBuit`, vegeu «Accés lliure» a l'especificació: sense ingredients, nom + categoria + data obligatoris) i captures actualitzades. Afecta les fases 2 i 3 ja validades (vegeu «Fase 2b» i «Fase 3b») i la 5. Validació sempre al Pixel 8a, mai a l'emulador.
+**Canvi de disseny (2026-10-13):** nou **accés lliure** (`TransformaBuit`, vegeu «Accés lliure» a l'especificació: sense ingredients, nom + categoria + data obligatoris) i captures actualitzades. Afecta les fases 2 i 3 ja validades (vegeu «Fase 2b» i «Fase 3b») i la 5.
+**Canvi de disseny (2026-10-13, 2n):** filtres del selector d'ingredients com a dos xips desplegables de selecció múltiple (`TransformaIngredient` actualitzada); afecta la fase 4 ja validada (vegeu «Fase 4b»). La resta del paquet (accés lliure, botó dividit, sense pulsació llarga) ja hi era; `Rebost.png` del zip no s'ha copiat (no és a la llista del paquet). Validació sempre al Pixel 8a, mai a l'emulador.
 **Ordre: segona de les dues**, després de [diverses unitats](../01-diverses-unitats/plan.md). Independent a nivell de codi, però comparteix el patró de «Desfés» amb snapshots.
 
 ## Punt de partida i diferències amb l'especificació
@@ -119,6 +120,17 @@ Validada al Pixel 8a: obre buit, Desa desactivat, activat en triar categoria i d
 
 Validada a l'emulador (el Pixel no era a l'adb): preselecció, recompte del botó i fusió a Transforma. El botó queda desactivat amb 0 seleccionats. Els filtres només estan validats amb tests; previews clar/fosc i captures, a la fase 6.
 
+## Fase 4b — Filtres desplegables del selector
+
+Canvi de disseny (zip `caducity-canvi-transforma`, nova `TransformaIngredient.png`): els filtres del selector deixen de ser xips d'un sol valor (`FilterChips`) i passen a **dos xips desplegables, Estat i Categoria, de selecció múltiple**. Substitueix les tasques de filtres de la fase 4.
+1. `IngredientPickerState`: `statusFilter: PickerStatusFilter` → `statusFilters: Set<ExpiryStatus>` (Aviat · Fresc · Congelat; sense l'opció «Tots», buit = tot) i `categoryFilter: String?` → `categoryFilters: Set<String>`. `filterPickerGroups` filtra per pertinença; un producte passa l'estat si alguna unitat el té.
+2. ViewModel: `onStatusFilterToggle` / `onCategoryFilterToggle` (alternen), sense «aplica/esborra».
+3. UI: dos xips amb `DropdownMenu` + `DropdownMenuItem` + `Checkbox` (estat amb el punt de color; categoria amb el nom). Toc → menú; el llistat es filtra a l'instant. Amb selecció, xip `primary-container` i recompte («Estat · 2»); fletxa ⌃/⌄ segons obert. **El xip Estat no es mostra si només hi ha un estat** entre els productes llistats; **el de Categoria, si només hi ha una categoria.**
+4. Textos nous (etiquetes Estat i Categoria, recompte) a `values`, `values-ca`, `values-es`; treure `transform_picker_filter_all` si queda sense ús.
+5. Tests: filtres de selecció múltiple (estat, categoria, combinats, buit = tot); xip ocult amb un sol estat/categoria. Previews clar/fosc amb el menú obert.
+
+**Sortida:** el selector filtra amb els dos desplegables, com a `TransformaIngredient`.
+
 ## Fase 5 — Entrades i flux final
 
 **Flag:** totes les entrades noves (barra de selecció, full d'Accions, botó dividit «+ ⌄») s'han de mostrar només si `TransformFeature` (`transform_enabled`, Remote Config, apagat per defecte) és actiu. Ja protegeix l'entrada de Depuració. L'activació per als usuaris és una decisió a part.
@@ -158,6 +170,7 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 4 — Selector d'ingredients | Validada |
 | 2b — Accés lliure al cas d'ús | Validada |
 | 3b — Pantalla en accés lliure | Validada |
+| 4b — Filtres desplegables del selector | Pendent |
 | 5 — Entrades i flux final | Pendent (després de 2b i 3b) |
 | 6 — Qualitat | Pendent |
 
