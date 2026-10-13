@@ -358,6 +358,19 @@ class TransformViewModelTest {
     }
 
   @Test
+  fun `saving with an invalid result opens the first one that lacks something`() =
+    runTest {
+      val vm = ready(add("Chicken", days = 3).itemIds)
+      vm.onNameChange(0, "Broth")
+      vm.onAddResult()
+      vm.onDone()
+      expectThat(vm.state.value.canSave).isFalse()
+
+      vm.onSave()
+      expectThat(vm.state.value.expandedResultId).isEqualTo(1)
+    }
+
+  @Test
   fun `closing asks only when there are changes`() =
     runTest {
       val vm = ready(add("Chicken", days = 3).itemIds)

@@ -167,6 +167,10 @@
   <string name="transform_result_done">Hecho</string>
   <string name="transform_result_invalid">Falta un nombre, categoría o fecha</string>
   <string name="transform_result_remove">Quitar %1$s</string>
+  <plurals name="transform_save_count">
+    <item quantity="one">Guardar · %d producto</item>
+    <item quantity="other">Guardar · %d productos</item>
+  </plurals>
   <string name="transform_result_expires">caduca %1$s</string>
   <plurals name="transform_result_units">
     <item quantity="one">%d unidad</item>
@@ -185,12 +189,10 @@
   <string name="transform_bar_reschedule">Fecha</string>
   <string name="transform_bar_transform">Transforma</string>
   <string name="transform_bar_transform_description">Transforma %1$d unidades</string>
-  <string name="transform_save">Guardar</string>
   <string name="transform_section_ingredients">Ingredientes</string>
   <string name="transform_section_ingredients_optional">Ingredientes · opcional</string>
   <string name="transform_empty_title">¿Qué has cocinado?</string>
   <string name="transform_empty_body">Añade los ingredientes de la despensa que has gastado. Si no los tienes apuntados, puedes saltarte este paso.</string>
-  <string name="transform_footer_free">Guardar se activa cuando hay nombre, categoría y fecha.</string>
   <string name="transform_add_ingredient">Añadir ingrediente</string>
   <string name="transform_add">Añadir</string>
   <string name="transform_section_ingredients_count">Ingredientes · %d</string>

@@ -1,10 +1,12 @@
 package com.alorma.caducity.ui.screen.transform
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.domain.model.ActiveItem
@@ -70,16 +72,24 @@ private val noActions =
 private fun TransformPreviewContent(state: TransformState) {
   PreviewTheme {
     Surface {
-      Column(modifier = Modifier.padding(vertical = 20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        IngredientsSection(
-          ingredients = state.ingredients,
-          categories = state.categories,
-          onCountChange = { _, _ -> },
-          onRemove = {},
-          onAdd = {},
-          optional = state.freeEntry,
+      Box {
+        Column(modifier = Modifier.padding(vertical = 20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+          IngredientsSection(
+            ingredients = state.ingredients,
+            categories = state.categories,
+            onCountChange = { _, _ -> },
+            onRemove = {},
+            onAdd = {},
+            optional = state.freeEntry,
+          )
+          ResultsSection(state = state, actions = noActions)
+        }
+        TransformSaveBar(
+          canSave = state.canSave,
+          count = state.results.size,
+          onSave = {},
+          modifier = Modifier.align(Alignment.BottomCenter),
         )
-        ResultsSection(state = state, actions = noActions)
       }
     }
   }
