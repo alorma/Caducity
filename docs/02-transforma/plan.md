@@ -188,6 +188,6 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 3b — Pantalla en accés lliure | Validada |
 | 4b — Filtres desplegables del selector | Validada |
 | 5 — Entrades i flux final | Validada |
-| 6 — Qualitat | Feta, pendent d'aprovació (queda la prova v3 → v4) |
+| 6 — Qualitat | Validada (queda la prova v3 → v4 abans de publicar) |
 
 Només es passa a «Validada» quan Bernat l'aprova (`.claude/rules/phased-work.md`).
