@@ -57,7 +57,7 @@ Les cartes d'estat (`ExpiredLight`…) i el vermell destructiu **no es toquen** 
 
 **Sortida:** es pot triar la paleta a Ajustos, s'aplica a l'instant amb fos i es recorda.
 
-- [ ] Tasques 1-7
+- [x] Tasques 1-7 (490cdbd)
 
 ## Fase 4 — Contrast i previews
 
