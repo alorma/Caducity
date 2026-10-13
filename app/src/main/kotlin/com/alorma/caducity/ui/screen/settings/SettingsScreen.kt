@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
@@ -70,6 +71,7 @@ import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.theme.ColorPalette
 import com.alorma.caducity.ui.theme.ThemeMode
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import java.util.Locale
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
@@ -151,7 +153,7 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SettingsContent(
+internal fun SettingsContent(
   state: SettingsState,
   reminderOn: Boolean,
   isDebug: Boolean,
@@ -398,4 +400,33 @@ private fun Context.openLanguageSettings() {
       Intent(Settings.ACTION_LOCALE_SETTINGS)
     }
   startActivity(intent)
+}
+
+@PreviewLightDark
+@Composable
+private fun SettingsPreview() {
+  PreviewTheme { SettingsPreviewContent() }
+}
+
+/** Ajustos amb dades d'exemple, sense tema (el posa qui el crida). */
+@Composable
+internal fun SettingsPreviewContent(selectedPalette: ColorPalette = ColorPalette.REBOST) {
+  SettingsContent(
+    state =
+      SettingsState(
+        reminderEnabled = true,
+        colorPalette = selectedPalette,
+        categoryMargins = listOf(CategoryMarginSummary("Fruita i verdura", 3), CategoryMarginSummary("Làctics", 3)),
+      ),
+    reminderOn = true,
+    isDebug = false,
+    localizedDateFormatter = LocalizedDateFormatter(),
+    onReminderToggle = {},
+    onReminderTimeClick = {},
+    onSoonThresholdChange = {},
+    onThemeModeChange = {},
+    onColorPaletteChange = {},
+    onWeekStartClick = {},
+    onNavigate = {},
+  )
 }

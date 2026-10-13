@@ -311,9 +311,13 @@ private val sampleData =
 @PreviewLightDark
 @Composable
 private fun HomePreview() {
-  PreviewTheme {
-    HomeContent(HomeState.Ready(sampleData, WeekStripData(today, emptyMap()), widgetTipVisible = false), {}, {}, {})
-  }
+  PreviewTheme { HomePreviewContent() }
+}
+
+/** Inici amb dades d'exemple, sense tema (el posa qui el crida: previews i captures per paleta). */
+@Composable
+internal fun HomePreviewContent() {
+  HomeContent(HomeState.Ready(sampleData, WeekStripData(today, emptyMap()), widgetTipVisible = false), {}, {}, {})
 }
 
 @PreviewLightDark
