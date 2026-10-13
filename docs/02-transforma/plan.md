@@ -154,15 +154,16 @@ Validada al Pixel 8a amb el xip Categoria (filtre instantani i recompte). El xip
 
 Validada al Pixel amb el flag apagat (res de Transforma) i encès. La skill només s'ha executat completa per l'entrada `menu`; `one` i `multi` queden per provar.
 
-**Pendent (trobat en provar):** en seleccionar una fila o unitat concreta, Transforma gasta les unitats del producte per ordre de caducitat, no la seleccionada (una cuixa congelada va ser consumida en lloc de la fresca; «1 de 25» amb la llet). Es resol a la fase 6 o abans, si Bernat ho vol.
+**Resolt a la fase 6:** les unitats seleccionades es gasten primer (`IngredientSpend.preferredItemIds`), abans que les que caduquen primer: `18eaea4`.
 
 ## Fase 6 — Qualitat
 
-- Test d'UI: Desa desactivat sense nom; `1 de 2` limitat a les unitats que queden; flux sencer amb desfés.
-- Tests de captura clar/fosc de les pantalles (etiqueta `update-screenshots`).
-- TalkBack: selectors amb «Una menys/Una més» i regió `Polite`; zones ≥ 48 dp.
-- ktlint + `./gradlew test`.
-- Prova d'actualització des de la release anterior (v3 → v4) abans de publicar.
+- [x] Bug de la fase 5 (es gasta la unitat seleccionada, amb test): `18eaea4`
+- [x] Tests de ViewModel: ja existien (`save needs a name and an ingredient`, `count is limited to the units left and at least one`); el flux sencer amb desfés el cobreixen `TransformItemsUseCaseTest` i la skill `/transforma-flow`. No hi ha `androidTest`.
+- [x] Tests de captura clar/fosc de Transforma (5 estats) i del selector (3 estats): `4154eff`. Fora: els menús desplegables del selector (el popup surt buit) i el botó dividit (no té preview).
+- [x] TalkBack: selectors, regions `Polite` i descripcions ja eren correctes; zones tàctils de 44 → 48 dp (`StepButton`, `ResultChip`): `0b1426a`. Només revisió de codi, sense TalkBack real.
+- [ ] Prova d'actualització des de la release anterior (v3 → v4) abans de publicar.
+- [ ] La skill `/transforma-flow` amb `one` i `multi` no s'ha pogut completar (el Pixel era en una altra app); Bernat la farà servir quan vulgui.
 
 ## Obert (no resoldre sense decidir; deixar com a constants/`TODO`)
 
@@ -187,6 +188,6 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 3b — Pantalla en accés lliure | Validada |
 | 4b — Filtres desplegables del selector | Validada |
 | 5 — Entrades i flux final | Validada |
-| 6 — Qualitat | Pendent |
+| 6 — Qualitat | Feta, pendent d'aprovació (queda la prova v3 → v4) |
 
 Només es passa a «Validada» quan Bernat l'aprova (`.claude/rules/phased-work.md`).
