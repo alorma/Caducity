@@ -22,6 +22,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,6 +51,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.symbols.Close
+import com.alorma.caducity.base.ui.icons.symbols.Symbols
+import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.imageVector
 import com.alorma.caducity.ui.screen.add.ScreenGutter
@@ -196,7 +201,11 @@ private fun ResultItem(
       if (open) {
         ResultForm(state = state, result = result, actions = actions)
       } else {
-        ResultSummary(state = state, result = result)
+        ResultSummary(
+          state = state,
+          result = result,
+          onRemove = if (state.results.size > 1) ({ actions.onRemove(result.id) }) else null,
+        )
       }
     }
   }
@@ -207,11 +216,45 @@ private fun ResultItem(
 private fun ResultSummary(
   state: TransformState,
   result: ResultUi,
+  /** Null when it is the only result: it cannot be removed. */
+  onRemove: (() -> Unit)?,
 ) {
   val category = state.categories.firstOrNull { it.id == state.categoryOf(result) }
   val name = result.name.ifBlank { stringResource(R.string.transform_result_unnamed) }
+  Box {
+    ResultSummaryContent(
+      state = state,
+      result = result,
+      category = category,
+      name = name,
+      reserveClose =
+        onRemove != null,
+    )
+    if (onRemove != null) {
+      IconButton(onClick = onRemove, modifier = Modifier.align(Alignment.TopEnd)) {
+        Icon(
+          Symbols.Outlined.Close,
+          contentDescription = stringResource(R.string.transform_result_delete),
+          modifier = Modifier.size(20.dp),
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun ResultSummaryContent(
+  state: TransformState,
+  result: ResultUi,
+  category: Category?,
+  name: String,
+  reserveClose: Boolean,
+) {
   Column(
-    modifier = Modifier.height(ResultCardHeight).padding(10.dp),
+    modifier =
+      Modifier
+        .height(ResultCardHeight)
+        .padding(start = 10.dp, top = 10.dp, bottom = 10.dp, end = if (reserveClose) 36.dp else 10.dp),
     verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
