@@ -6,16 +6,9 @@ The plans, specs and design files of the three packages that followed the redesi
 
 ## Features
 
-- **Consume and freeze several units** (spec in `01-diverses-unitats`, not started): the ✓/❄ tap acts on one unit and a snackbar offers «Més…» and «Desfés»; long press opens the quantity dialog straight away. Needs `ConsumeUnitsUseCase`/`FreezeUnitsUseCase` (take the ids of the row's units and `n`, soonest first), the existing `QuantitySelectorDialog` generalised per variant, and `multi_*` strings. The undo restores the union of the snapshots.
-- **Home with no «soon» items** (spec in `03-inici-sense-aviat`, not started): instead of «No caduca res aviat» show the next expiries (first 3 days with products, at most 8 rows, fresh only, «+N més» when a day is cut) and a text button «Veure el rebost». Today `HomeItem.NothingSoon` is still the old message.
-- **Widget (Glance)**: shows the soon and expired counts and the next two items, with each category's own «soon» margin. `glance-appwidget` + `glance-material3`; `updateAll()` after every write and from the daily worker; **Add** button opens `add?source=widget`, the body opens Home; empty state. Risks: R8 with Glance, midnight refresh, widget sizes. Tests: `WidgetStateMapperTest`. It must follow the chosen color palette (`ThemePreferences.colorPalette`; Dynamic: the system color). Same for a Wear OS Tile if one ever exists.
-- **Static shortcuts**: Add product, What expires, Expired (`StatusList(EXPIRED)`). Test: `ShortcutIntentTest`.
-- **`WidgetTipCard` on Home**: depends on the widget. Turn it on when the widget ships (`HomeViewModel`, `// TEMP(fase 12)`).
-- **Tablet and large screens**: today the phone layout is centered with a max width (600 dp; Pantry up to ~840 dp). A real design is needed first: `ListDetailPaneScaffold` with Pantry | Category and Home | month calendar.
 - **Fingerprint for actions, free for reading** (configurable): biometric prompt before actions that change data (consume, freeze, reschedule, edit, move, delete); browsing stays open. A setting turns it on or off.
 - **Haptics**: haptic feedback on key interactions (for example consume, freeze, delete, confirmations).
 - **Product cost**: optional price on a product, entered per unit or as a total split across the N units created. Lets the app show how much is spent on food and how much is thrown away (expired or discarded items).
-- **In-app review**: ask for a Play Store review with the Play In-App Review API (`com.google.android.play:review`), at a good moment (for example after a few items consumed), never on first launch or after an error. Google limits how often the prompt shows, so it may not appear every time.
 
 ## Transforma loose ends
 
@@ -25,7 +18,6 @@ Transforma is on for everyone (the `transform_enabled` flag is gone). What is le
 - **Frozen result without a date**: which `remainingDays` to store when thawing; proposal: the same value as «Add frozen» (`TODO(transforma-open-4)`).
 - **Stats of transformed items**: the data is stored (`transformedDate`, `transformationId`), there is no screen.
 - **Row details**: whether the quantity chip folds by itself after a few seconds, `snap` on the rows, a limit per row (50?), and whether the neighbour card's edge is tappable and shows «3 of 6».
-- **Subtitle on the «Transforma» entry of the «+ ⌃» menu** («Apunta què has cuinat»).
 - **Screenshot tests** for the onboarding step and the novelty modal: `Reveal` starts transparent, so a capture needs a no-animation mode first. The modal holds back for deep links, widgets and notifications, and while another screen is on top; a dialog or selection open over Home is only covered by «Home with nothing on top».
 - **Release notes** for the version that ships Transforma (`.claude/rules/release-notes.md`): the update test and the user-visible bullets are still to decide.
 
@@ -42,6 +34,17 @@ Transforma is on for everyone (the `transform_enabled` flag is gone). What is le
 
 - **`// TEMP` leftovers**: adapters for old screens that may be dead now (`StatusBadge`, `ExpirationDefaults`, `ItemRoomMapper`, `UnfreezeItemUseCase`, `ExpirationThresholds`). Check with `git grep` and remove the ones with no consumer.
 - **Quantity limit on Add**: 20 per entry is a hypothesis (P22), never confirmed.
+
+## Fora d'abast de moment
+
+Aquests punts estan fora del paquet de revisió de coherència: el codi s'ha tret i es tornaran a implementar quan calgui (el codi anterior és a l'historial de git). El pla i les decisions són a [`04-revisio-coherencia/plan.md`](04-revisio-coherencia/plan.md).
+
+- **Valoració a Google Play**: demanar una ressenya amb l'API In-App Review (`com.google.android.play:review`), en un bon moment (per exemple després d'unes quantes unitats consumides), mai a la primera obertura ni després d'un error. Google limita cada quant es mostra, així que pot no sortir cada vegada. Cal decidir el moment i les normes abans de tornar-la.
+- **Widget (Glance)**: mostra els comptadors d'«Aviat» i de caducats i els dos primers productes, amb el marge global d'«Aviat». `glance-appwidget` + `glance-material3`; `updateAll()` després de cada escriptura i des del worker diari; botó **Afegeix** (obre `add?source=widget`) i el cos obre l'Inici; estat buit. Riscos: R8 amb Glance, refresc a mitjanit, mides del widget. Ha de seguir la paleta de colors escollida (`ThemePreferences.colorPalette`; Dinàmic: el color del sistema). Tests: `WidgetStateMapperTest`.
+- **Consell del widget**: la targeta «Posa el widget…» de l'Inici buit (`WidgetTipCard`, `WidgetTipFlag`). Depèn del widget: es torna a activar quan aquest surti.
+- **Dreceres de la pantalla d'inici**: Afegeix producte, Què caduca i Caducats (`StatusList(EXPIRED)`). Test: `ShortcutIntentTest`.
+- **Tauleta, plegable (mode llibre) i Wear OS**: avui el disseny és el de mòbil centrat a 600 dp (Pantry fins a uns 840 dp). Un mode tauleta real necessita disseny previ: `ListDetailPaneScaffold` amb Pantry | Categoria i Inici | calendari de mes. Wear OS només si arriba a existir un Tile.
+- **Mode tanda («Desa i un altre»)**: afegir diversos productes seguits sense tancar la pantalla d'Afegeix. Ara només hi ha un «Desa» que tanca.
 
 ## Out of scope for now
 
