@@ -23,7 +23,6 @@ import com.alorma.caducity.feature.appicon.appIconModule
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.feature.consent.consentModule
-import com.alorma.caducity.feature.review.reviewModule
 import com.alorma.caducity.feature.tracking.trackingModule
 import com.alorma.caducity.ui.components.actions.ItemActionsSheetViewModel
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
@@ -70,7 +69,6 @@ val appModule =
     includes(fireAndForgetModule)
     includes(consentModule)
     includes(appIconModule)
-    includes(reviewModule)
     includes(trackingModule)
 
     singleOf(::FirstDayOfWeekPreferences)

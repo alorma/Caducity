@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -60,8 +59,6 @@ import com.alorma.caducity.base.ui.icons.symbols.TouchApp
 import com.alorma.caducity.domain.model.CategorySection
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.ProductGroup
-import com.alorma.caducity.feature.review.InAppReviewManager
-import com.alorma.caducity.feature.review.ShowAppReviewFlag
 import com.alorma.caducity.feature.tracking.CategoryScreen as CategoryScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.category.CategoryIcons
@@ -89,10 +86,8 @@ import com.alorma.caducity.ui.screen.home.weekdayDayText
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
-import com.alorma.caducity.ui.utils.findActivity
 import kotlinx.coroutines.launch
 import kotlinx.datetime.daysUntil
-import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -111,10 +106,6 @@ fun CategoryScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarState()
-  val activity = LocalContext.current.findActivity()
-  val inAppReviewManager: InAppReviewManager = koinInject()
-  val showAppReviewFlag: ShowAppReviewFlag = koinInject()
-  val scope = androidx.compose.runtime.rememberCoroutineScope()
 
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
@@ -123,12 +114,7 @@ fun CategoryScreen(
         CategoryNavigationSideEffect.OpenCalendar -> onOpenCalendar()
         CategoryNavigationSideEffect.OpenEditor -> onOpenEditor()
         is CategoryNavigationSideEffect.OpenItemActions -> onOpenItemActions(effect.itemId)
-        CategoryNavigationSideEffect.Close -> {
-          if (showAppReviewFlag.isEnabled() && activity != null) {
-            scope.launch { inAppReviewManager.requestReview(activity) }
-          }
-          onBack()
-        }
+        CategoryNavigationSideEffect.Close -> onBack()
       }
     }
   }
