@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Surface
@@ -33,9 +33,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
+import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -109,10 +114,11 @@ fun ResultsSection(
             collectionInfo = CollectionInfo(rowCount = 1, columnCount = state.results.size)
           },
       ) {
-        items(state.results, key = { it.id }) { result ->
+        itemsIndexed(state.results, key = { _, result -> result.id }) { index, result ->
           ResultItem(
             state = state,
             result = result,
+            index = index,
             selected = result.id == state.expandedResultId,
             formWidth = formWidth,
             actions = actions,
@@ -128,10 +134,17 @@ fun ResultsSection(
 private fun ResultItem(
   state: TransformState,
   result: ResultUi,
+  index: Int,
   selected: Boolean,
   formWidth: Dp,
   actions: ResultActions,
 ) {
+  // The thin edge of a neighbour is too small to aim at (and gestures are not the only way): screen readers and
+  // switch access move between results with these two actions.
+  val previous = state.results.getOrNull(index - 1)
+  val next = state.results.getOrNull(index + 1)
+  val previousLabel = stringResource(R.string.transform_result_previous)
+  val nextLabel = stringResource(R.string.transform_result_next)
   val width by animateDpAsState(
     targetValue = if (selected) formWidth else RowCardWidth,
     animationSpec = tween(ExpandMillis, easing = EmphasizedEasing),
@@ -145,7 +158,26 @@ private fun ResultItem(
       Modifier
         .width(width)
         .animateContentSize(tween(ExpandMillis, easing = EmphasizedEasing))
-        .clickable(enabled = !selected, role = Role.Button) { actions.onSelect(result.id) },
+        .clickable(enabled = !selected, role = Role.Button) { actions.onSelect(result.id) }
+        .semantics {
+          this.selected = selected
+          collectionItemInfo = CollectionItemInfo(rowIndex = 0, rowSpan = 1, columnIndex = index, columnSpan = 1)
+          customActions =
+            listOfNotNull(
+              previous?.let {
+                CustomAccessibilityAction(previousLabel) {
+                  actions.onSelect(it.id)
+                  true
+                }
+              },
+              next?.let {
+                CustomAccessibilityAction(nextLabel) {
+                  actions.onSelect(it.id)
+                  true
+                }
+              },
+            )
+        },
   ) {
     Crossfade(targetState = selected, animationSpec = tween(ExpandMillis / 2), label = "resultContent") { open ->
       if (open) {

@@ -165,6 +165,8 @@
   <string name="transform_result_unnamed">Resultado nuevo</string>
   <string name="transform_section_results_count">Resultado · %d</string>
   <string name="transform_result_done">Hecho</string>
+  <string name="transform_result_previous">Resultado anterior</string>
+  <string name="transform_result_next">Resultado siguiente</string>
   <string name="transform_result_invalid">Falta un nombre, categoría o fecha</string>
   <string name="transform_result_remove">Quitar %1$s</string>
   <plurals name="transform_save_count">

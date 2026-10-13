@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.transform
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,9 +31,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -42,8 +42,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -122,7 +124,7 @@ fun IngredientsSection(
           .pointerInput(Unit) { detectTapGestures { editingKey = null } }
           .semantics { collectionInfo = CollectionInfo(rowCount = 1, columnCount = visible.size) },
     ) {
-      items(visible, key = { it.key }) { ingredient ->
+      itemsIndexed(visible, key = { _, it -> it.key }) { index, ingredient ->
         IngredientCard(
           ingredient = ingredient,
           category = categories.firstOrNull { it.id == ingredient.categoryId },
@@ -130,7 +132,10 @@ fun IngredientsSection(
           onEditingChange = { editingKey = if (it) ingredient.key else null },
           onCountChange = { onCountChange(ingredient.key, it) },
           onRemove = { onRemove(ingredient.key) },
-          modifier = Modifier.animateItem(),
+          modifier =
+            Modifier.animateItem().semantics {
+              collectionItemInfo = CollectionItemInfo(rowIndex = 0, rowSpan = 1, columnIndex = index, columnSpan = 1)
+            },
         )
       }
     }
@@ -225,26 +230,30 @@ private fun IngredientCard(
     modifier = modifier.size(width = RowCardWidth, height = IngredientCardHeight),
   ) {
     Box {
-      Column(modifier = Modifier.fillMaxSize().padding(12.dp)) {
+      // No bottom padding: the quantity chip lives in a 48 dp slot, so its touch area is 48 dp tall.
+      Column(modifier = Modifier.fillMaxSize().padding(start = 12.dp, end = 12.dp, top = 8.dp)) {
         if (category != null) {
           CategoryShapeIcon(shape = category.shape, icon = category.icon.imageVector, size = 28.dp)
         } else {
           Spacer(Modifier.size(28.dp))
         }
-        Spacer(Modifier.size(6.dp))
-        Text(
-          text = ingredient.name,
-          style = CaducityTheme.typography.titleSmall,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-        )
-        Text(
-          text = ingredientMeta(ingredient),
-          style = CaducityTheme.typography.bodySmall.copy(fontSize = 11.sp),
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-        )
+        Spacer(Modifier.size(2.dp))
+        // Name and date are read as one: «Cheddar cheese, expires Wed 14 Oct».
+        Column(modifier = Modifier.semantics(mergeDescendants = true) {}) {
+          Text(
+            text = ingredient.name,
+            style = CaducityTheme.typography.titleSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+          )
+          Text(
+            text = ingredientMeta(ingredient),
+            style = CaducityTheme.typography.bodySmall.copy(fontSize = 11.sp),
+            color = CaducityTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+          )
+        }
         Spacer(Modifier.weight(1f))
         // Only products with more than one unit have an amount to change.
         if (ingredient.available > 1) {
@@ -282,7 +291,7 @@ private fun UnitsChip(
     onClick = onClick,
     shape = CaducityShapes.full,
     color = CaducityTheme.colorScheme.surfaceContainerHigh,
-    modifier = Modifier.height(32.dp).semantics { contentDescription = description },
+    modifier = Modifier.minimumInteractiveComponentSize().height(32.dp).semantics { contentDescription = description },
   ) {
     Row(
       modifier = Modifier.padding(horizontal = 12.dp),
@@ -306,14 +315,22 @@ private fun UnitsStepper(
   available: Int,
   onChange: (Int) -> Unit,
 ) {
+  val pill = CaducityTheme.colorScheme.surface
+  // A 48 dp tall row (touch area) with the 32 dp pill drawn in its middle.
   Row(
     modifier =
       Modifier
         .fillMaxWidth()
-        .height(
-          32.dp,
-        ).clip(CaducityShapes.full)
-        .background(CaducityTheme.colorScheme.surface),
+        .height(48.dp)
+        .drawBehind {
+          val pillHeight = 32.dp.toPx()
+          drawRoundRect(
+            color = pill,
+            topLeft = Offset(0f, (size.height - pillHeight) / 2),
+            size = Size(size.width, pillHeight),
+            cornerRadius = CornerRadius(pillHeight / 2),
+          )
+        },
     verticalAlignment = Alignment.CenterVertically,
   ) {
     StepperButton(
@@ -325,7 +342,7 @@ private fun UnitsStepper(
     }
     Text(
       text = stringResource(R.string.transform_ingredient_units, count, available),
-      style = CaducityTheme.typography.labelLarge,
+      style = CaducityTheme.typography.labelMedium,
       textAlign = TextAlign.Center,
       maxLines = 1,
       modifier = Modifier.weight(1f).semantics { liveRegion = LiveRegionMode.Polite },
@@ -353,7 +370,7 @@ private fun StepperButton(
     shape = CircleShape,
     color = Color.Transparent,
     contentColor = if (enabled) CaducityTheme.colorScheme.onSurface else CaducityTheme.colorScheme.outline,
-    modifier = Modifier.size(32.dp).semantics { contentDescription = label },
+    modifier = Modifier.size(width = 40.dp, height = 48.dp).semantics { contentDescription = label },
   ) {
     Box(contentAlignment = Alignment.Center) { content() }
   }
