@@ -9,7 +9,7 @@ Paquet **independent** de [diverses unitats](../01-diverses-unitats/plan.md) i d
 |---|---|---|
 | `AppSettings.colorPalette` (DataStore) | No hi ha DataStore: `ThemePreferencesImpl` usa `multiplatform-settings` (`Settings`), claus `theme_mode` i `use_dynamic_colors` | Afegir `color_palette` a `ThemePreferencesImpl`; no introduir DataStore |
 | Interruptor «Color dinàmic» | `StyledSettingsSwitchCard` a `SettingsScreen`, `SettingsState.dynamicColors`, `SettingsViewModel.onDynamicColorsChange`, textos `settings_dynamic_*` | Es substitueix per la targeta «Colors»; s'eliminen tots quatre |
-| Migració: dinàmic activat → `DYNAMIC` | `use_dynamic_colors` per defecte `false` | Valor antic `true` → `DYNAMIC` (només si API ≥ 31); si no → `REBOST` |
+| Migració: dinàmic activat → `DYNAMIC` | `use_dynamic_colors` per defecte `false` | Valor antic `true` → `DYNAMIC`; si no (`false` o sense valor) → `REBOST`. Un `DYNAMIC` desat es llegeix sempre com `DYNAMIC` |
 | `CaducityColors` amb els 12 tokens | `CaducityColors` ja existeix però només té `surfaceShape` + els 4 estats; els altres tokens són constants a `Color.kt` i dos `ColorScheme` fixos a `ColorSchemes.kt` | Separar: `StateColors` (estats, ja és el que fa `CaducityColors` avui) i una paleta per variant que produeix el `ColorScheme` + `surfaceShape` |
 | Rebost = oliva actual | Els valors actuals (`#FBF6EC`, primari `#4D5A1E`…) no són els del Rebost italià (`#FFFAEE`, `#2E6B3B`…) | El Rebost nou **substitueix** els valors de `Color.kt` (canvi visual de la paleta per defecte, ja previst a l'especificació) |
 | Widget (Glance), Tile de Wear | No existeixen (són al [backlog](../backlog.md)) | No es fan aquí. Es deixa anotat: quan s'implementin, han de llegir la paleta (fase 5) |
@@ -25,8 +25,8 @@ Les cartes d'estat (`ExpiredLight`…) i el vermell destructiu **no es toquen** 
 
 1. `enum class ColorPalette { DYNAMIC, REBOST, NEVERA, HORT, FLECA, BESSA, CAMP }` (a `ui/theme/`), amb `fromName(String?)` tolerant (valor desconegut → `REBOST`).
 2. `ThemePreferences`: `colorPalette: MutableState<ColorPalette>`, `loadColorPalette()`, `setColorPalette(...)`. Treure `useDynamicColors`/`setDynamicColorsEnabled` (i `ThemePreferencesNoOp`).
-3. Migració dins `ThemePreferencesImpl`: si no existeix `color_palette`, llegir `use_dynamic_colors`: `true` → `DYNAMIC` (si el dispositiu no suporta dinàmic, `REBOST`), altrament `REBOST`; escriure `color_palette` i esborrar la clau antiga. Un `DYNAMIC` desat en un dispositiu API < 31 es llegeix com `REBOST` (sense esborrar-lo).
-4. Tests: `ThemePreferencesMigrationTest` (sense valor → `REBOST`; `use_dynamic_colors=true` → `DYNAMIC`; `false` → `REBOST`; valor de paleta desconegut → `REBOST`; idempotent en una segona càrrega; API < 31 no deixa `DYNAMIC`).
+3. Migració dins `ThemePreferencesImpl`: si no existeix `color_palette`, llegir `use_dynamic_colors`: `true` → `DYNAMIC`, altrament `REBOST`; escriure `color_palette` i esborrar la clau antiga. El setting mai es reescriu en llegir: `DYNAMIC` continua sent `DYNAMIC`.
+4. Tests: `ThemePreferencesMigrationTest` (sense valor → `REBOST`; `use_dynamic_colors=true` → `DYNAMIC`; `false` → `REBOST`; valor de paleta desconegut → `REBOST`; un `DYNAMIC` desat es llegeix com `DYNAMIC`; idempotent en una segona càrrega).
 
 **Sortida:** la paleta triada es desa i es migra sense pèrdua; l'app encara es veu igual.
 
@@ -37,7 +37,7 @@ Les cartes d'estat (`ExpiredLight`…) i el vermell destructiu **no es toquen** 
 1. Un fitxer per família de tokens: `ColorPaletteColors` (12 tokens, taules de l'especificació, clar i fosc) per a les 6 paletes, a `ui/theme/colors/palettes/` (un objecte per paleta). `Color.kt` deixa només els tokens d'estat i el scrim.
 2. `fun ColorPalette.scheme(darkTheme): ColorScheme` + `surfaceShape` (reutilitzant el mapatge token → rol M3 actual de `ColorSchemes.kt`, sense canviar els rols d'estat, `tertiary`, `error`).
 3. `StateColors` independent de la paleta (el que ara és `CaducityColors` sense `surfaceShape`). `LocalCaducityColors` continua exposant estats + `surfaceShape` de la paleta activa.
-4. `AppThemeContent`: `colorPalette` + `darkTheme`; `DYNAMIC` → `dynamicColorScheme` (només 12 tokens, ja és així). Fos de colors a ~300 ms (`animateColorAsState`, *effects*) en canviar de paleta, no en canviar de tema a l'inici.
+4. `AppThemeContent`: `colorPalette` + `darkTheme`; `DYNAMIC` → `dynamicColorScheme` (només 12 tokens, ja és així); si `!supportsDynamicColors()`, pinta Rebost sense tocar el setting. Fos de colors a ~300 ms (`animateColorAsState`, *effects*) en canviar de paleta, no en canviar de tema a l'inici.
 5. Adaptar `InternalTheme`/`LocalSettingsTileColors` i les barres del sistema.
 6. Tests: cada paleta × clar/fosc dóna un `ColorScheme` complet; els tokens d'estat són idèntics a totes (`StateColors` no depèn de la paleta); `DYNAMIC` no toca estats ni `error`.
 
@@ -86,7 +86,7 @@ Les cartes d'estat (`ExpiredLight`…) i el vermell destructiu **no es toquen** 
 2. **Hort**: el contenidor llima s'assembla al verd de «Frescos». Es vigila a la fase 4.
 3. Accent de tomàquet al Rebost: descartat pel vermell de «Caducat».
 4. Color personalitzat (propi): fora d'abast.
-5. *Nou:* en dispositius API < 31 un `DYNAMIC` migrat o restaurat d'una còpia de seguretat es llegeix com `REBOST`. Si el backup inclou preferències, confirmar-ho.
+5. *Decidit:* Dinàmic continua sent la primera opció del selector (a API ≥ 31) i es llegeix sempre com `DYNAMIC`; per defecte, `REBOST`. Només a la fase 2, per no fallar a API < 31 (p. ex. un setting restaurat d'un altre dispositiu), el tema pinta amb Rebost sense reescriure el setting.
 
 ## Nota de versions
 
