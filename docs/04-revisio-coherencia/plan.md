@@ -147,7 +147,7 @@ Visibles per a l'usuari: fases 0 (un sol «Desa», fora la tanda), 1 (packs com 
 
 | Fase | Estat |
 | --- | --- |
-| 0 — Fora d'abast | Pendent |
+| 0 — Fora d'abast | Validada (14 d'octubre): `ffabb36` valoració, `458df5c` widget, `0472842` tanda, `55e1a77` helpers, `0d8dd93` backlog, `ebf8ba7` + `0752b2f` renom a `AddProductUseCase` |
 | 1 — Migració v5 | Pendent (cal aprovació de la migració) |
 | 2 — Fila única | Pendent |
 | 3 — Modal d'accions | Pendent |
