@@ -1,3 +1,4 @@
-Versión 1.0.1:
-• Hasta ahora solo podías disfrutar del helado de vainilla. Ahora también puedes darte un capricho con Snow Cone, Snow Cone v2, Tiramisú y Upside Down Cake
-• En claro: Caducity ahora funciona desde Android 12
+Versión 1.0.2:
+• Elige los colores en Ajustes: seis paletas (Despensa, Nevera, Huerto, Panadería, Bayas y Campo) o los colores de tu fondo de pantalla
+• El icono de la app sigue la paleta que elijas
+• La Despensa, la paleta por defecto, estrena colores

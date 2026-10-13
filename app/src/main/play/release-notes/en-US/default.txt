@@ -1,3 +1,4 @@
-Version 1.0.1:
-• Until now you could only enjoy vanilla ice cream. Now you can also treat yourself to Snow Cone, Snow Cone v2, Tiramisu and Upside Down Cake
-• In plain words: Caducity now works on Android 12 and newer
+Version 1.0.2:
+• Pick your colors in Settings: six palettes (Pantry, Fridge, Garden, Bakery, Berry and Field), or your wallpaper's colors
+• The app icon follows the palette you choose
+• Pantry, the default palette, has new colors

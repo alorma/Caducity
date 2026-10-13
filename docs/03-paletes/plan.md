@@ -82,8 +82,8 @@ Les cartes d'estat (`ExpiredLight`…) i el vermell destructiu **no es toquen** 
 
 ## Obert (de l'especificació, no es resolen sense Bernat)
 
-1. **Camp** té un groc proper al d'«Aviat». Es vigila a la fase 4.
-2. **Hort**: el contenidor llima s'assembla al verd de «Frescos». Es vigila a la fase 4.
+1. **Camp** té un groc proper al d'«Aviat». *Revisat amb captures: Bernat ho veu bé, no es canvia.*
+2. **Hort**: el contenidor llima s'assembla al verd de «Frescos». *Revisat amb captures: Bernat ho veu bé, no es canvia.*
 3. Accent de tomàquet al Rebost: descartat pel vermell de «Caducat».
 4. Color personalitzat (propi): fora d'abast.
 5. *Decidit:* Dinàmic continua sent la primera opció del selector (a API ≥ 31) i es llegeix sempre com `DYNAMIC`; per defecte, `REBOST`. Només a la fase 2, per no fallar a API < 31 (p. ex. un setting restaurat d'un altre dispositiu), el tema pinta amb Rebost sense reescriure el setting.
