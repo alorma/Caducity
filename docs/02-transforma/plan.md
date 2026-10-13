@@ -131,6 +131,10 @@ Canvi de disseny (zip `caducity-canvi-transforma`, nova `TransformaIngredient.pn
 
 **Sortida:** el selector filtra amb els dos desplegables, com a `TransformaIngredient`.
 
+- [x] Tasques 1-4 (estat, ViewModel, xips desplegables, textos, previews i tests; un sol commit perquè la UI no compila sense l'estat): `72ea903`
+
+Validada al Pixel 8a amb el xip Categoria (filtre instantani i recompte). El xip Estat s'amaga amb les dades de prova (tot fresc); només validat amb tests.
+
 ## Fase 5 — Entrades i flux final
 
 **Flag:** totes les entrades noves (barra de selecció, full d'Accions, botó dividit «+ ⌄») s'han de mostrar només si `TransformFeature` (`transform_enabled`, Remote Config, apagat per defecte) és actiu. Ja protegeix l'entrada de Depuració. L'activació per als usuaris és una decisió a part.
@@ -181,7 +185,7 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 4 — Selector d'ingredients | Validada |
 | 2b — Accés lliure al cas d'ús | Validada |
 | 3b — Pantalla en accés lliure | Validada |
-| 4b — Filtres desplegables del selector | Pendent |
+| 4b — Filtres desplegables del selector | Validada |
 | 5 — Entrades i flux final | Validada |
 | 6 — Qualitat | Pendent |
 
