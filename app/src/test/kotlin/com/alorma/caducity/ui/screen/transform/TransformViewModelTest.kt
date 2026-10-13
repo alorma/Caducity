@@ -388,6 +388,22 @@ class TransformViewModelTest {
     }
 
   @Test
+  fun `selecting another result does nothing while the open one lacks something`() =
+    runTest {
+      val vm = ready(add("Chicken", days = 3).itemIds)
+      vm.onNameChange(0, "Broth")
+      vm.onAddResult()
+      expectThat(vm.state.value.expandedResultId).isEqualTo(1)
+
+      vm.onSelectResult(0)
+      expectThat(vm.state.value.expandedResultId).isEqualTo(1)
+
+      vm.onNameChange(1, "Stew")
+      vm.onSelectResult(0)
+      expectThat(vm.state.value.expandedResultId).isEqualTo(0)
+    }
+
+  @Test
   fun `a result is valid with a name, a category and a date`() =
     runTest {
       val vm = ready(add("Chicken", days = 3).itemIds)

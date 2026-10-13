@@ -53,7 +53,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -196,10 +195,7 @@ private fun ResultItem(
   val next = state.results.getOrNull(index + 1)
   val previousLabel = stringResource(R.string.transform_result_previous)
   val nextLabel = stringResource(R.string.transform_result_next)
-  // A folded result that still lacks something is outlined, so it is not mistaken for a finished one.
-  val incomplete = !selected && !state.isValid(result)
-  val invalidLabel = stringResource(R.string.transform_result_invalid)
-  // «Fet» on a result that lacks something: a short sideways shake says no without a dialog.
+  // «Fet» on a result that lacks something: the whole card shakes sideways, which says no without a dialog.
   val shake = remember { Animatable(0f) }
   val shakeScope = rememberCoroutineScope()
   val shakeReach = with(LocalDensity.current) { ShakeReach.toPx() }
@@ -225,12 +221,6 @@ private fun ResultItem(
     border =
       when {
         selected -> BorderStroke(2.dp, CaducityTheme.colorScheme.primary)
-        // Red at the top, fading into the colour of the card at the bottom.
-        incomplete ->
-          BorderStroke(
-            1.5.dp,
-            Brush.verticalGradient(listOf(CaducityTheme.colorScheme.error, CaducityTheme.colorScheme.surfaceContainer)),
-          )
         // Otherwise the colour of the card turning into the one of the line that arrives at it.
         else ->
           BorderStroke(
@@ -254,7 +244,6 @@ private fun ResultItem(
         .clickable(enabled = !selected, role = Role.Button) { actions.onSelect(result.id) }
         .semantics {
           this.selected = selected
-          if (incomplete) stateDescription = invalidLabel
           collectionItemInfo = CollectionItemInfo(rowIndex = 0, rowSpan = 1, columnIndex = index, columnSpan = 1)
           customActions =
             listOfNotNull(
