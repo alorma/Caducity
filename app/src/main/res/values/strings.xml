@@ -311,8 +311,6 @@
   <string name="home_empty_title">The pantry is empty</string>
   <string name="home_empty_body">Start with today\'s shopping: add what you just put in the fridge.</string>
   <string name="home_empty_cta">Add the first product</string>
-  <string name="home_widget_tip">Put the widget on your home screen to add without opening the app.</string>
-  <string name="home_widget_tip_dismiss">Dismiss the tip</string>
   <string name="item_pack_of">pack of %d</string>
   <string name="week_strip_day_none">%1$s, nothing</string>
   <plurals name="week_strip_day_count">

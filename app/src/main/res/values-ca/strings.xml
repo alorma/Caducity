@@ -325,8 +325,6 @@
   <string name="home_empty_title">El rebost és buit</string>
   <string name="home_empty_body">Comença per la compra d\'avui: afegeix el que acabes de guardar a la nevera.</string>
   <string name="home_empty_cta">Afegeix el primer producte</string>
-  <string name="home_widget_tip">Posa el widget a la pantalla d\'inici per afegir sense obrir l\'app.</string>
-  <string name="home_widget_tip_dismiss">Descarta el consell</string>
   <string name="item_pack_of">pack de %d</string>
   <string name="week_strip_day_none">%1$s, res</string>
   <plurals name="week_strip_day_count">

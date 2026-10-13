@@ -325,8 +325,6 @@
   <string name="home_empty_title">La despensa está vacía</string>
   <string name="home_empty_body">Empieza por la compra de hoy: añade lo que acabas de guardar en la nevera.</string>
   <string name="home_empty_cta">Añade el primer producto</string>
-  <string name="home_widget_tip">Pon el widget en la pantalla de inicio para añadir sin abrir la app.</string>
-  <string name="home_widget_tip_dismiss">Descarta el consejo</string>
   <string name="item_pack_of">pack de %d</string>
   <string name="week_strip_day_none">%1$s, nada</string>
   <plurals name="week_strip_day_count">

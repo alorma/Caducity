@@ -11,7 +11,6 @@ sealed interface HomeState {
   data class Ready(
     val data: HomeData,
     val weekStrip: WeekStripData,
-    val widgetTipVisible: Boolean,
   ) : HomeState
 }
 

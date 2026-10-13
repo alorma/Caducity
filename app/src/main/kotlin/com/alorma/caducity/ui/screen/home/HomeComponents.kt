@@ -44,7 +44,6 @@ import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.CalendarMonth
 import com.alorma.caducity.base.ui.icons.symbols.Check
 import com.alorma.caducity.base.ui.icons.symbols.ChevronRight
-import com.alorma.caducity.base.ui.icons.symbols.Close
 import com.alorma.caducity.base.ui.icons.symbols.DeleteHistory
 import com.alorma.caducity.base.ui.icons.symbols.Event
 import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
@@ -52,7 +51,6 @@ import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
 import com.alorma.caducity.base.ui.icons.symbols.Info
 import com.alorma.caducity.base.ui.icons.symbols.Search
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
-import com.alorma.caducity.base.ui.icons.symbols.Widgets
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.HomeDaySection
 import com.alorma.caducity.domain.model.HomeLater
@@ -392,34 +390,6 @@ private fun EmptyShapes(modifier: Modifier = Modifier) {
         .clip(CategoryShape.CLOVER.toComposeShape())
         .background(colors.surfaceShape),
     )
-  }
-}
-
-@Composable
-internal fun WidgetTipCard(
-  onDismiss: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  Surface(
-    modifier = modifier.fillMaxWidth(),
-    shape = CaducityShapes.group,
-    color = CaducityTheme.colorScheme.surfaceContainer,
-  ) {
-    Row(
-      modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 4.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-      Icon(Symbols.Outlined.Widgets, contentDescription = null, tint = CaducityTheme.colorScheme.primary)
-      Text(
-        stringResource(R.string.home_widget_tip),
-        style = CaducityTheme.typography.bodyMedium,
-        modifier = Modifier.weight(1f),
-      )
-      IconButton(onClick = onDismiss) {
-        Icon(Symbols.Outlined.Close, contentDescription = stringResource(R.string.home_widget_tip_dismiss))
-      }
-    }
   }
 }
 

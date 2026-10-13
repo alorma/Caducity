@@ -26,7 +26,6 @@ import com.alorma.caducity.domain.usecase.ObserveWeekStripUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
-import com.alorma.fireandforget.multiplatform.settings.SettingsFireAndForgetRunner
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
@@ -141,7 +140,6 @@ class HomeViewModelTest {
       consumeItem = ConsumeItemUseCase(itemDataSource, pantry, clock),
       restoreItems = RestoreItemsUseCase(pantry),
       snackbars = snackbars,
-      widgetTipFlag = WidgetTipFlag(SettingsFireAndForgetRunner(MapSettings())),
       eventTracker = EventTracker(emptyList()),
     ).also { created += it }
   }
@@ -293,13 +291,5 @@ class HomeViewModelTest {
 
       expectThat(vm.navigationSideEffects.take(3).toList())
         .containsExactly(statuses.map { HomeNavigationSideEffect.OpenStatusList(it) })
-    }
-
-  @Test
-  fun `the widget tip stays hidden while there is no widget`() =
-    runTest {
-      category("dairy")
-
-      expectThat(viewModel().ready().widgetTipVisible).isFalse()
     }
 }

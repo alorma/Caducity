@@ -19,7 +19,6 @@ import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -32,15 +31,11 @@ class HomeViewModel(
   private val consumeItem: ConsumeItemUseCase,
   private val restoreItems: RestoreItemsUseCase,
   private val snackbars: GlobalSnackbarEvents,
-  private val widgetTipFlag: WidgetTipFlag,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<HomeNavigation, HomeNavigationSideEffect, Unit>() {
-  // TEMP(fase 12): there is no widget yet, so its tip is never offered.
-  private val widgetTipDismissed = MutableStateFlow(!WIDGET_AVAILABLE || !widgetTipFlag.isEnabled())
-
   val state: StateFlow<HomeState> =
-    combine(observeHome.observe(), observeWeekStrip.observe(), widgetTipDismissed) { data, weekStrip, dismissed ->
-      HomeState.Ready(data = data, weekStrip = weekStrip, widgetTipVisible = !dismissed) as HomeState
+    combine(observeHome.observe(), observeWeekStrip.observe()) { data, weekStrip ->
+      HomeState.Ready(data = data, weekStrip = weekStrip) as HomeState
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeState.Loading)
 
   override fun navigate(navigation: HomeNavigation) {
@@ -94,14 +89,5 @@ class HomeViewModel(
           snackbars.show(GlobalSnackbar(R.string.item_actions_error, type = AppFeedbackType.Error))
         }
     }
-  }
-
-  fun onDismissWidgetTip() {
-    widgetTipFlag.disable()
-    widgetTipDismissed.value = true
-  }
-
-  private companion object {
-    const val WIDGET_AVAILABLE = false
   }
 }

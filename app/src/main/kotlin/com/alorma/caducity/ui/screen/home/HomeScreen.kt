@@ -75,7 +75,6 @@ fun HomeScreen(
           state = current,
           onNavigate = viewModel::navigate,
           onConsume = viewModel::onConsume,
-          onDismissWidgetTip = viewModel::onDismissWidgetTip,
         )
     }
   }
@@ -134,17 +133,12 @@ private sealed interface HomeItem {
   data object Empty : HomeItem {
     override val key = "empty"
   }
-
-  data object WidgetTip : HomeItem {
-    override val key = "widget-tip"
-  }
 }
 
 private fun HomeState.Ready.items(laterExpanded: Boolean): List<HomeItem> =
   buildList {
     if (data.isPantryEmpty) {
       add(HomeItem.Empty)
-      if (widgetTipVisible) add(HomeItem.WidgetTip)
       return@buildList
     }
     if (data.expiredCount > 0) add(HomeItem.Banner)
@@ -169,7 +163,6 @@ internal fun HomeContent(
   state: HomeState.Ready,
   onNavigate: (HomeNavigation) -> Unit,
   onConsume: (HomeRow) -> Unit,
-  onDismissWidgetTip: () -> Unit,
   modifier: Modifier = Modifier,
   listState: LazyListState = rememberLazyListState(),
 ) {
@@ -265,7 +258,6 @@ internal fun HomeContent(
           HomeItem.LaterHelp -> data.later?.let { LaterHelp(it, Modifier.padding(top = 8.dp)) }
           HomeItem.NothingSoon -> NothingSoon(onSeePantry = { onNavigate(HomeNavigation.Pantry("nothing_soon")) })
           HomeItem.Empty -> HomeEmptyState(onAdd = { onNavigate(HomeNavigation.AddFirst) })
-          HomeItem.WidgetTip -> WidgetTipCard(onDismiss = onDismissWidgetTip, modifier = Modifier.padding(top = 40.dp))
         }
       }
     }
@@ -317,7 +309,7 @@ private fun HomePreview() {
 /** Inici amb dades d'exemple, sense tema (el posa qui el crida: previews i captures per paleta). */
 @Composable
 internal fun HomePreviewContent() {
-  HomeContent(HomeState.Ready(sampleData, WeekStripData(today, emptyMap()), widgetTipVisible = false), {}, {}, {})
+  HomeContent(HomeState.Ready(sampleData, WeekStripData(today, emptyMap())), {}, {})
 }
 
 @PreviewLightDark
@@ -328,9 +320,7 @@ private fun HomeNothingSoonPreview() {
       HomeState.Ready(
         sampleData.copy(expiredCount = 0, sections = emptyList()),
         WeekStripData(today, emptyMap()),
-        widgetTipVisible = false,
       ),
-      {},
       {},
       {},
     )
@@ -345,9 +335,7 @@ private fun HomeEmptyPreview() {
       HomeState.Ready(
         HomeData(today, 0, null, 0, 0, 0, emptyList(), null, isPantryEmpty = true),
         WeekStripData(today, emptyMap()),
-        widgetTipVisible = true,
       ),
-      {},
       {},
       {},
     )
