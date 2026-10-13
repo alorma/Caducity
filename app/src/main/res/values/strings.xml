@@ -168,12 +168,10 @@
   <string name="transform_result_previous">Previous result</string>
   <string name="transform_result_next">Next result</string>
   <string name="transform_result_invalid">Needs a name, category or date</string>
-  <string name="transform_result_remove">Remove %1$s</string>
   <plurals name="transform_save_count">
     <item quantity="one">Save · %d product</item>
     <item quantity="other">Save · %d products</item>
   </plurals>
-  <string name="transform_result_expires">expires %1$s</string>
   <plurals name="transform_result_units">
     <item quantity="one">%d unit</item>
     <item quantity="other">%d units</item>
@@ -189,10 +187,7 @@
   <string name="transform_bar_reschedule">Date</string>
   <string name="transform_bar_transform">Transform</string>
   <string name="transform_bar_transform_description">Transform %1$d units</string>
-  <string name="transform_section_ingredients">Ingredients</string>
   <string name="transform_section_ingredients_optional">Ingredients · optional</string>
-  <string name="transform_empty_title">What did you cook?</string>
-  <string name="transform_empty_body">Add the pantry ingredients you used. If you did not note them down, you can skip this step.</string>
   <string name="transform_add_ingredient">Add ingredient</string>
   <string name="transform_add">Add</string>
   <string name="transform_section_ingredients_count">Ingredients · %d</string>
