@@ -17,7 +17,6 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
 import com.alorma.caducity.config.preferences.DisclaimerPreferences
-import com.alorma.caducity.config.remoteconfig.rememberRemoteConfig
 import com.alorma.caducity.config.version.AppVersionProvider
 import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
@@ -75,7 +74,6 @@ import com.alorma.caducity.ui.screen.settings.margins.CategoryMarginsScreen
 import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsScreen
 import com.alorma.caducity.ui.screen.status.StatusListScreen
 import com.alorma.caducity.ui.screen.transform.TransformArgs
-import com.alorma.caducity.ui.screen.transform.TransformFeature
 import com.alorma.caducity.ui.screen.transform.TransformScreen
 import com.alorma.caducity.ui.screen.transform.intro.TransformIntroFlag
 import com.alorma.caducity.ui.screen.transform.intro.TransformIntroSheet
@@ -124,12 +122,10 @@ fun App(
     val uriHandler = LocalUriHandler.current
     val visibleScreen =
       navigation.backStack.last { it !is ItemActions && it !is QuickCategory && it !is TransformIntro }
-    val transformEnabled = rememberRemoteConfig<TransformFeature>().isEnabled()
 
     var introPending by retain { mutableStateOf(transformIntroFlag.isEnabled()) }
     val showTransformIntro =
       shouldShowTransformIntro(
-        featureEnabled = transformEnabled,
         introPending = introPending,
         onboardingShowing = navigation.backStack.any { it is Onboarding },
         openedFromOutside = openedFromOutside,
@@ -163,15 +159,10 @@ fun App(
         eventTracker.trackAction(NavigateToAddAction())
         navigation.navigate(Add(source = "fab"))
       },
-      onTransformClick =
-        if (transformEnabled) {
-          {
-            eventTracker.trackAction(NavigateToTransformAction(origin = "shell", source = "split_menu"))
-            navigation.navigate(Transform())
-          }
-        } else {
-          null
-        },
+      onTransformClick = {
+        eventTracker.trackAction(NavigateToTransformAction(origin = "shell", source = "split_menu"))
+        navigation.navigate(Transform())
+      },
     ) {
       NavDisplay(
         modifier = Modifier,

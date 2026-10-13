@@ -55,24 +55,9 @@ import com.alorma.caducity.base.ui.icons.symbols.Symbols
 private val Outer = 20.dp
 private val Inner = 6.dp
 
-/** The «+» FAB on its own: opens «Afegeix producte». */
-@Composable
-fun AddButton(onClick: () -> Unit) {
-  FloatingActionButton(
-    onClick = onClick,
-    modifier = Modifier.size(64.dp),
-    shape = RoundedCornerShape(Outer),
-    containerColor = MaterialTheme.colorScheme.primary,
-    contentColor = MaterialTheme.colorScheme.onPrimary,
-    elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp),
-  ) {
-    AddIcon()
-  }
-}
-
 /**
- * «+ ⌄»: the «+» part still adds a product, the «⌄» part (40×64) opens a menu of more actions. For now the
- * menu only has Transforma; it is meant to grow. Shown only when [AddButton] would hide a feature behind a flag.
+ * «+ ⌄»: the «+» part adds a product, the «⌄» part (40×64) opens a menu of more actions. For now the menu only
+ * has Transforma; it is meant to grow.
  */
 @Composable
 fun SplitAddButton(

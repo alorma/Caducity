@@ -52,7 +52,6 @@ import com.alorma.caducity.base.ui.icons.symbols.Delete
 import com.alorma.caducity.base.ui.icons.symbols.DriveFileMove
 import com.alorma.caducity.base.ui.icons.symbols.Edit
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
-import com.alorma.caducity.config.remoteconfig.rememberRemoteConfig
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.ui.components.bottomsheet.QuantityDialogData
 import com.alorma.caducity.ui.components.bottomsheet.QuantitySelectorResult
@@ -70,7 +69,6 @@ import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.status.StatusPill
 import com.alorma.caducity.ui.components.status.statusPillText
-import com.alorma.caducity.ui.screen.transform.TransformFeature
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import java.time.format.DateTimeFormatter
@@ -99,7 +97,6 @@ fun ItemActionsSheet(
   val dialogState = rememberAppDialogState()
   val datePickerState = rememberDatePickerState()
   val haptics = LocalHapticFeedback.current
-  val transformEnabled = rememberRemoteConfig<TransformFeature>().isEnabled()
 
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
@@ -128,7 +125,7 @@ fun ItemActionsSheet(
             onBack = viewModel::onMoveBack,
           )
         } else {
-          ActionsContent(state = current, viewModel = viewModel, transformEnabled = transformEnabled)
+          ActionsContent(state = current, viewModel = viewModel)
         }
     }
     AppDialogHost(dialogState)
@@ -139,7 +136,6 @@ fun ItemActionsSheet(
 private fun ActionsContent(
   state: ItemActionsSheetState.Ready,
   viewModel: ItemActionsSheetViewModel,
-  transformEnabled: Boolean,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -157,7 +153,7 @@ private fun ActionsContent(
     SecondaryActions(
       onEdit = { viewModel.navigate(ItemActionsSheetNavigation.Edit) },
       onMove = viewModel::onMoveClick,
-      onTransform = if (transformEnabled) ({ viewModel.navigate(ItemActionsSheetNavigation.Transform) }) else null,
+      onTransform = { viewModel.navigate(ItemActionsSheetNavigation.Transform) },
       onDelete = viewModel::onDelete,
     )
   }
@@ -336,26 +332,24 @@ private fun ChangeDate(
 private fun SecondaryActions(
   onEdit: () -> Unit,
   onMove: () -> Unit,
-  onTransform: (() -> Unit)?,
+  onTransform: () -> Unit,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val expired = CaducityTheme.colors.expired.strong
-  val count = if (onTransform != null) 4 else 3
+  val count = 4
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing)) {
     ActionRow(0, count, Symbols.Outlined.Edit, stringResource(R.string.item_actions_edit), onClick = onEdit)
     ActionRow(1, count, Symbols.Outlined.DriveFileMove, stringResource(R.string.item_actions_move), onClick = onMove)
-    if (onTransform != null) {
-      ActionRow(
-        2,
-        count,
-        AppIcons.Cooking,
-        stringResource(R.string.item_actions_transform),
-        containerColor = CaducityTheme.colorScheme.primaryContainer,
-        contentColor = CaducityTheme.colorScheme.onPrimaryContainer,
-        onClick = onTransform,
-      )
-    }
+    ActionRow(
+      2,
+      count,
+      AppIcons.Cooking,
+      stringResource(R.string.item_actions_transform),
+      containerColor = CaducityTheme.colorScheme.primaryContainer,
+      contentColor = CaducityTheme.colorScheme.onPrimaryContainer,
+      onClick = onTransform,
+    )
     ActionRow(
       count - 1,
       count,

@@ -28,8 +28,8 @@ names come from `NAMES` in `tf.py` (no accents: `adb input text` cannot type the
 
 ## What it does, per entry
 
-1. `pm clear` the `.dev` app, set the app locale, go through onboarding, then force Light theme and the
-   `transform_enabled` debug override in the preferences file.
+1. `pm clear` the `.dev` app, set the app locale, go through onboarding, then force the Light
+   theme in the preferences file.
 2. Seed 6 products: whole chicken, stock vegetables, onions ×3, milk ×2, yogurts ×4, eggs ×6.
 3. Transformations:
    1. chicken → breasts ×2 (frozen), wings ×4, thighs ×2 (1 frozen), carcass ×1

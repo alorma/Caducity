@@ -18,7 +18,6 @@ import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.tracking.CompleteOnboardingAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.base.BaseViewModel
-import com.alorma.caducity.ui.screen.transform.TransformFeature
 import com.alorma.caducity.ui.screen.transform.intro.TransformIntroFlag
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalTime
 
 /**
- * Onboarding: welcome → categories → alerts → (Transforma, only with `transform_enabled`) → privacy → legal notice. Nothing is stored until the notice is accepted,
+ * Onboarding: welcome → categories → alerts → (Transforma) → privacy → legal notice. Nothing is stored until the notice is accepted,
  * so a process death mid-way just restarts the flow. Users who already finished the old onboarding only see the
  * notice (re-acceptance) and nothing else is touched. Users who used the app before 1.0.0 get a short informative
  * version (welcome, privacy, notice): their categories, margin and reminder are kept, only the consent is asked again.
@@ -47,7 +46,6 @@ class OnboardingViewModel(
   private val stringProvider: StringProvider,
   private val appClock: AppClock,
   private val eventTracker: EventTracker,
-  transformFeature: TransformFeature,
   private val transformIntroFlag: TransformIntroFlag,
 ) : BaseViewModel<OnboardingNavigation, OnboardingNavigationSideEffect, OnboardingSideEffect>() {
   private val _state =
@@ -60,7 +58,7 @@ class OnboardingViewModel(
           analyticsEnabled = consentManager.getConsentPreferences().analyticsStorage == ConsentStatus.GRANTED,
         )
       } else {
-        OnboardingState(transformStep = transformFeature.isEnabled())
+        OnboardingState()
       },
     )
   val state: StateFlow<OnboardingState> = _state.asStateFlow()

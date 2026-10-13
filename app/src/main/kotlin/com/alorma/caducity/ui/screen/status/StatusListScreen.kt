@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -66,7 +65,6 @@ import com.alorma.caducity.base.ui.icons.symbols.EventRepeat
 import com.alorma.caducity.base.ui.icons.symbols.Notifications
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.WaterDrop
-import com.alorma.caducity.config.remoteconfig.rememberRemoteConfig
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.feature.tracking.StatusListScreen as StatusListScreenEvent
@@ -87,8 +85,6 @@ import com.alorma.caducity.ui.components.product.shortDateText
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.threshold.thresholdLabel
-import com.alorma.caducity.ui.screen.transform.TransformFeature
-import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
 import java.time.format.DateTimeFormatter
@@ -138,7 +134,6 @@ fun StatusListScreen(
   }
   SideEffectHandler(viewModel, dialogState, bottomSheetState, scope)
 
-  val transformEnabled = rememberRemoteConfig<TransformFeature>().isEnabled()
   val ready = state as? StatusListState.Ready
   headerState.enabled = ready?.selecting != true
   AppScaffold(
@@ -166,7 +161,6 @@ fun StatusListScreen(
           onFreeze = viewModel::onBulkFreeze,
           onDiscard = viewModel::onBulkDiscardClick,
           onReschedule = viewModel::onBulkRescheduleClick,
-          transformEnabled = transformEnabled,
           onTransform = { viewModel.navigate(StatusListNavigation.TransformSelection) },
         )
       }
@@ -611,7 +605,6 @@ private fun SelectionBar(
   onFreeze: () -> Unit,
   onDiscard: () -> Unit,
   onReschedule: () -> Unit,
-  transformEnabled: Boolean,
   onTransform: () -> Unit,
 ) {
   val units = ready.selectedUnitCount
@@ -633,63 +626,8 @@ private fun SelectionBar(
         style = CaducityTheme.typography.labelLarge,
         color = CaducityTheme.colorScheme.onSurfaceVariant,
       )
-      if (transformEnabled) {
-        TransformSelectionActions(ready, onConsume, onFreeze, onDiscard, onReschedule, onTransform)
-        return@Column
-      }
-      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        when (ready.status) {
-          ExpiryStatus.EXPIRED -> {
-            BarButton(
-              stringResource(R.string.status_bulk_discard, units),
-              enabled,
-              onDiscard,
-              Modifier.weight(1f),
-              danger = true,
-            )
-            BarButton(
-              stringResource(R.string.status_bulk_reschedule, units),
-              enabled,
-              onReschedule,
-              Modifier.weight(1f),
-            )
-          }
-          ExpiryStatus.SOON, ExpiryStatus.FRESH -> {
-            BarButton(stringResource(R.string.status_bulk_consume, units), enabled, onConsume, Modifier.weight(1f))
-            BarButton(stringResource(R.string.status_bulk_freeze, units), enabled, onFreeze, Modifier.weight(1f))
-          }
-          ExpiryStatus.FROZEN ->
-            BarButton(stringResource(R.string.status_bulk_consume, units), enabled, onConsume, Modifier.weight(1f))
-        }
-      }
+      TransformSelectionActions(ready, onConsume, onFreeze, onDiscard, onReschedule, onTransform)
     }
-  }
-}
-
-@Composable
-private fun BarButton(
-  text: String,
-  enabled: Boolean,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  danger: Boolean = false,
-) {
-  Button(
-    onClick = onClick,
-    enabled = enabled,
-    shape = CaducityShapes.chip,
-    colors =
-      if (danger) {
-        ButtonDefaults.buttonColors(
-          containerColor = CaducityTheme.colors.expired.strong,
-          contentColor = CaducityTheme.colorScheme.surface,
-        )
-      } else {
-        ButtonDefaults.buttonColors()
-      },
-    modifier = modifier.height(48.dp),
-  ) {
-    Text(text, maxLines = 1, overflow = TextOverflow.Ellipsis)
   }
 }
 
