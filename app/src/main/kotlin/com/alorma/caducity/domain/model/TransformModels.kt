@@ -24,7 +24,8 @@ data class TransformResult(
 
 /** What a transformation did, enough to undo it: new items/products and the previous state of the ingredients. */
 data class TransformedBatch(
-  val transformationId: String,
+  /** Null when there were no ingredients: the results are plain new products and no transformation exists. */
+  val transformationId: String?,
   val resultItemIds: List<String>,
   val createdProductIds: List<String>,
   val ingredientSnapshots: List<ItemSnapshot>,

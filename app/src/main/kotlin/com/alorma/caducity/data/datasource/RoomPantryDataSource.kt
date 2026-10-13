@@ -234,8 +234,14 @@ class RoomPantryDataSource(
     database.withTransaction {
       val now = at.toEpochMilliseconds()
       val today = at.date()
-      val transformationId = UUID.randomUUID().toString()
-      database.transformationDao().insertTransformation(TransformationRoomEntity(transformationId, now))
+      val transformationId =
+        if (ingredients.isEmpty()) {
+          null
+        } else {
+          UUID.randomUUID().toString().also {
+            database.transformationDao().insertTransformation(TransformationRoomEntity(it, now))
+          }
+        }
 
       val ingredientIds = ingredients.flatMap { it.itemIds }.distinct()
       val ingredientSnapshots = snapshots(ingredientIds)
@@ -287,7 +293,7 @@ class RoomPantryDataSource(
       itemDao.deleteItems(batch.resultItemIds)
       batch.createdProductIds.forEach { productDao.deleteProductIfUnused(it) }
       restoreSnapshots(batch.ingredientSnapshots)
-      database.transformationDao().deleteTransformation(batch.transformationId)
+      batch.transformationId?.let { database.transformationDao().deleteTransformation(it) }
     }
   }
 

@@ -66,6 +66,9 @@ Decisió oberta 4 aplicada: un resultat congelat guarda els dies fins a la seva 
 
 **Sortida:** cas d'ús verd també sense ingredients.
 
+- [x] Tasques 1, 2 i 4 (`transform` sense ingredients, `TransformedBatch.transformationId` nul·lable, 3 tests nous): `f0c90d7`
+- Tasca 3: el tipus ja exigeix categoria i data a `TransformResult`; l'obligatorietat sense ingredients la fa complir la UI (fase 3b). Un resultat tot congelat sense data haurà de passar una data qualsevol (per al `remainingDays`); decidir-ho a 3b.
+
 ## Fase 3 — Pantalla Transforma (sense entrades)
 
 1. Ruta a pantalla completa a `Routes.kt` / `AppShell.kt`, amb `TransformViewModel` (`BaseViewModel<TransformNavigation, TransformNavigationSideEffect, TransformSideEffect>`) i `TransformState`.

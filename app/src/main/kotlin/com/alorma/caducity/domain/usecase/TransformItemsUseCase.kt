@@ -19,7 +19,8 @@ class TransformItemsUseCase(
     ingredients: List<IngredientSpend>,
     results: List<TransformResult>,
   ): Result<TransformedBatch> {
-    if (ingredients.isEmpty() || results.isEmpty()) return Result.failure(PantryError.ItemNotFound)
+    // Without ingredients (free entry) the results are plain new products.
+    if (results.isEmpty()) return Result.failure(PantryError.ItemNotFound)
     val today = appClock.nowDate()
     results.forEach { result ->
       if (result.name.isBlank()) return Result.failure(PantryError.BlankName)
