@@ -23,6 +23,9 @@ fun ColorPalette.tokens(darkTheme: Boolean): PaletteTokens =
     ColorPalette.CAMP -> if (darkTheme) CampPalette.dark else CampPalette.light
   }
 
+/** Color d'accent fora de Compose (notificacions): el `primary` en clar. `DYNAMIC` cau al Rebost. */
+fun ColorPalette.accent(): Color = tokens(darkTheme = false).primary
+
 /** `ColorScheme` de la paleta; els rols d'estat (`tertiary`, `error`) són els mateixos a totes. */
 fun ColorPalette.scheme(darkTheme: Boolean): ColorScheme =
   tokens(darkTheme).toColorScheme(darkTheme, inversePrimary = tokens(!darkTheme).primary)

@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.theme
 import androidx.compose.ui.graphics.Color
 import com.alorma.caducity.ui.theme.colors.DarkStateColors
 import com.alorma.caducity.ui.theme.colors.LightStateColors
+import com.alorma.caducity.ui.theme.colors.accent
 import com.alorma.caducity.ui.theme.colors.scheme
 import com.alorma.caducity.ui.theme.colors.tokens
 import org.junit.Assert.assertEquals
@@ -61,5 +62,12 @@ class ColorPaletteSchemeTest {
   @Test
   fun `light and dark differ`() {
     for (palette in fixed) assertNotEquals(palette.scheme(false).surface, palette.scheme(true).surface)
+  }
+
+  @Test
+  fun `notification accent follows the palette`() {
+    assertEquals(fixed.size, fixed.map { it.accent() }.toSet().size)
+    assertEquals(ColorPalette.NEVERA.tokens(false).primary, ColorPalette.NEVERA.accent())
+    assertEquals(ColorPalette.REBOST.accent(), ColorPalette.DYNAMIC.accent())
   }
 }
