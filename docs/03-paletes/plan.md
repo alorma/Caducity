@@ -43,7 +43,7 @@ Les cartes d'estat (`ExpiredLight`…) i el vermell destructiu **no es toquen** 
 
 **Sortida:** canviar `ColorPalette` des de les preferències (debug) repinta l'app amb la paleta, estats intactes.
 
-- [x] Tasques 1-6 (HASH)
+- [x] Tasques 1-6 (495967e)
 
 ## Fase 3 — Targeta «Colors» a Ajustos
 
