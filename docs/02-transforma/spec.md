@@ -8,7 +8,7 @@ Un o més ingredients del rebost es converteixen en **una o més elaboracions no
 ## Punts d'entrada
 1. **Barra de selecció** (Caducats, Aviat, Frescos, Congelats, Categoria): en seleccionar productes, la barra inferior mostra **Consumit · Congela · Transforma** (grup de botons connectat, 68 dp, icona sobre el text; Transforma és el principal, `primary`). Es pot seleccionar d'unes seccions i d'altres, i diverses unitats d'un mateix producte. Captura `TransformaSeleccio`.
 2. **Botó dividit «+ ⌄» de la barra inferior** (a totes les pantalles que tenen el «+»): el botó d'acció és ara un *split button* de M3 Expressive. Part principal **«+»** (64×64, radis 20/6, igual que abans: obre «Afegeix producte») i part secundària **«⌄»** (40×64, radis 6/20, separades 2 dp, mateix color) que obre un **menú de més accions** sobre el botó (scrim 45 %, la fletxa passa de ⌃ a ⌄ i la part secundària s'enfosqueix). De moment només conté **Transforma** (píndola `primary-container`, 60 dp, icona `skillet`, alineada a la dreta), però el menú està pensat per **créixer** (escàner, afegir en tanda…). Cap gest ocult. Captura `EntradaMenu`. Ha de ser accessible: dos botons independents, el secundari amb `aria-haspopup=menu`/`expanded`, etiqueta «Més accions».
-3. **Full d'Accions d'un producte**: fila «Transforma» (`primary-container`) entre «Mou a una altra categoria» i «Esborra». Obre Transforma amb aquest producte ja afegit com a ingredient (per defecte **1 unitat**; si en té més, el selector `− 1 de N +` permet canviar-ho). Captura `EntradaAccions`.
+3. **Full d'Accions d'un producte**: fila «Transforma aquest producte» (`primary-container`) entre «Mou a una altra categoria» i «Esborra». Obre Transforma amb aquest producte ja afegit com a ingredient (per defecte **1 unitat**; si en té més, el selector `− 1 de N +` permet canviar-ho). Captura `EntradaAccions`.
 
 ## Pantalla «Transforma» (ruta a pantalla completa, no diàleg)
 Barra superior: `×` (tanca; si hi ha canvis, confirma el descart) · títol «Transforma» · botó **Desa** (`primary`; desactivat sense nom, o sense ingredients quan no és accés lliure).
@@ -91,7 +91,7 @@ Entrada des del menú del botó dividit «⌄» (o qualsevol ruta sense ingredie
 | `transform_picker_add` | Afegeix %d ingredients |
 | `transform_done` | %1$d ingredients transformats en %2$d productes |
 | `transform_menu_add` | Afegeix producte |
-| `item_actions_transform` | Transforma |
+| `item_actions_transform` | Transforma aquest producte |
 | `transform_discard_title` | Descartar els canvis? |
 
 ## Obert

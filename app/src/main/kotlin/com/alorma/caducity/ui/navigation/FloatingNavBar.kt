@@ -11,10 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
@@ -33,7 +30,6 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
-import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.HourglassBottom
 import com.alorma.caducity.base.ui.icons.symbols.Kitchen
 import com.alorma.caducity.base.ui.icons.symbols.Settings
@@ -63,6 +59,7 @@ fun FloatingNavBar(
   onAddClick: () -> Unit,
   onSettingsClick: () -> Unit,
   modifier: Modifier = Modifier,
+  onTransformClick: (() -> Unit)? = null,
 ) {
   Row(
     modifier = modifier.fillMaxWidth(),
@@ -91,25 +88,11 @@ fun FloatingNavBar(
         onClick = onSettingsClick,
       )
     }
-    AddButton(onClick = onAddClick)
-  }
-}
-
-@Composable
-private fun AddButton(onClick: () -> Unit) {
-  FloatingActionButton(
-    onClick = onClick,
-    modifier = Modifier.size(64.dp),
-    shape = RoundedCornerShape(20.dp),
-    containerColor = MaterialTheme.colorScheme.primary,
-    contentColor = MaterialTheme.colorScheme.onPrimary,
-    elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp),
-  ) {
-    Icon(
-      imageVector = Symbols.Outlined.Add,
-      contentDescription = stringResource(R.string.action_add_product),
-      modifier = Modifier.size(28.dp),
-    )
+    if (onTransformClick != null) {
+      SplitAddButton(onAddClick = onAddClick, onTransformClick = onTransformClick)
+    } else {
+      AddButton(onClick = onAddClick)
+    }
   }
 }
 

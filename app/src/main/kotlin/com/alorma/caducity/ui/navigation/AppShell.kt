@@ -45,6 +45,7 @@ fun AppShell(
   onSettingsClick: () -> Unit,
   snackbarEvents: GlobalSnackbarEvents,
   modifier: Modifier = Modifier,
+  onTransformClick: (() -> Unit)? = null,
   content: @Composable () -> Unit,
 ) {
   val snackbarState = rememberAppSnackbarState()
@@ -77,6 +78,7 @@ fun AppShell(
             onTabSelected = onTabSelected,
             onAddClick = onAddClick,
             onSettingsClick = onSettingsClick,
+            onTransformClick = onTransformClick,
             modifier = Modifier.padding(horizontal = 20.dp),
           )
         }
