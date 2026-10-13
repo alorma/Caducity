@@ -142,6 +142,12 @@ private fun DebugSettingsContent(
                 shapes = ListItemDefaults.shapes(),
                 onClick = { uiState.onOpenTransform() },
               )
+              StyledSettingsCard(
+                title = "Open Transforma (free entry)",
+                subtitle = "Without ingredients",
+                shapes = ListItemDefaults.shapes(),
+                onClick = { uiState.onOpenTransformFree() },
+              )
             }
           }
         }
@@ -228,6 +234,7 @@ fun DebugSettingsScreenPreview() {
             adPersonalizationEnabled = true,
             onPopulateFakeData = {},
             onOpenTransform = {},
+            onOpenTransformFree = {},
             onTriggerNotificationCheck = {},
             onToggleAdStorage = {},
             onToggleAdUserData = {},

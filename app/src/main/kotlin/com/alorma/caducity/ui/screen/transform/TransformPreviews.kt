@@ -76,6 +76,7 @@ private fun TransformPreviewContent(state: TransformState) {
           onCountChange = { _, _ -> },
           onRemove = {},
           onAdd = {},
+          optional = state.freeEntry,
         )
         ResultsSection(state = state, actions = noActions)
       }
@@ -119,6 +120,34 @@ private fun TransformMultiplePreview() {
           ResultUi(id = 2),
         ),
       expandedResultId = 1,
+    ),
+  )
+}
+
+@PreviewDynamicLightDark
+@Composable
+private fun TransformFreeEntryPreview() {
+  TransformPreviewContent(TransformState(today = today, categories = categories, freeEntry = true))
+}
+
+@PreviewDynamicLightDark
+@Composable
+private fun TransformFreeEntryFilledPreview() {
+  TransformPreviewContent(
+    TransformState(
+      today = today,
+      categories = categories,
+      freeEntry = true,
+      results =
+        listOf(
+          ResultUi(
+            id = 0,
+            name = "Lasagna",
+            servings = 4,
+            categoryOverride = "meat",
+            expirationOverride = LocalDate(2026, 10, 16),
+          ),
+        ),
     ),
   )
 }

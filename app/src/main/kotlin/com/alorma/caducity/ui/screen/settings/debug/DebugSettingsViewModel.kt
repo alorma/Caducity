@@ -29,6 +29,7 @@ class DebugSettingsViewModel(
       DebugSettingsUiState(
         onPopulateFakeData = ::onPopulateFakeData,
         onOpenTransform = ::onOpenTransform,
+        onOpenTransformFree = ::onOpenTransformFree,
         onTriggerNotificationCheck = ::onTriggerNotificationCheck,
         onToggleAdStorage = ::onToggleAdStorage,
         onToggleAdUserData = ::onToggleAdUserData,
@@ -77,6 +78,11 @@ class DebugSettingsViewModel(
           .map { it.itemId }
       emitSideEffect(if (ids.isEmpty()) DebugSettingsSideEffect.Error else DebugSettingsSideEffect.OpenTransform(ids))
     }
+  }
+
+  /** Opens Transforma in free entry (no ingredients), like the long press on the + will. */
+  fun onOpenTransformFree() {
+    emitSideEffect(DebugSettingsSideEffect.OpenTransform(emptyList()))
   }
 
   private fun loadConsentPreferences() {
@@ -134,6 +140,7 @@ data class DebugSettingsUiState(
   val adPersonalizationEnabled: Boolean = false,
   val onPopulateFakeData: () -> Unit,
   val onOpenTransform: () -> Unit,
+  val onOpenTransformFree: () -> Unit,
   val onTriggerNotificationCheck: () -> Unit,
   val onToggleAdStorage: (Boolean) -> Unit,
   val onToggleAdUserData: (Boolean) -> Unit,
