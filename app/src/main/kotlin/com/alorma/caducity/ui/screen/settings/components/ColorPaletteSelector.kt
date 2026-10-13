@@ -1,7 +1,7 @@
 package com.alorma.caducity.ui.screen.settings.components
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,14 +13,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.ListItemShapes
+import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.graphics.shapes.Morph
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Check
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
@@ -45,8 +47,6 @@ import com.alorma.compose.settings.ui.core.LocalSettingsTileColors
 
 private const val COLUMNS = 3
 private val SwatchSize = 56.dp
-private val CircleRadius = 28.dp
-private val SelectedRadius = 18.dp
 
 @get:StringRes
 private val ColorPalette.nameRes: Int
@@ -139,7 +139,8 @@ private fun ColorPaletteSwatch(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val radius by animateDpAsState(if (selected) SelectedRadius else CircleRadius, label = "swatchRadius")
+  val progress by animateFloatAsState(if (selected) 1f else 0f, label = "swatchMorph")
+  val morph = remember { Morph(MaterialShapes.Circle, MaterialShapes.Clover8Leaf) }
   val name = stringResource(palette.nameRes)
 
   Column(
@@ -154,7 +155,7 @@ private fun ColorPaletteSwatch(
       modifier =
         Modifier
           .size(SwatchSize)
-          .clip(RoundedCornerShape(radius)),
+          .clip(MorphShape(morph, progress)),
       contentAlignment = Alignment.Center,
     ) {
       if (palette == ColorPalette.DYNAMIC) {
