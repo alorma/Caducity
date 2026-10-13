@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -48,9 +47,7 @@ class AndroidExpirationNotificationHelper(
     ContextCompat.getDrawable(context, R.drawable.ic_launcher_foreground)?.toBitmap()
   }
 
-  private fun checkNotificationPermission(): Boolean =
-    context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
-      PackageManager.PERMISSION_GRANTED
+  private fun checkNotificationPermission(): Boolean = context.hasNotificationPermission()
 
   private fun readNotificationTime(): LocalTime {
     val secondsFromMidnight =
