@@ -31,6 +31,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Close
@@ -133,8 +137,15 @@ fun TransformScreen(
           )
           ResultsSection(state = state, actions = actions, links = links)
           if (state.ingredients.isNotEmpty()) {
+            val footerTitle = stringResource(R.string.transform_footer_title)
+            val footer = stringResource(R.string.transform_footer)
             Text(
-              text = stringResource(R.string.transform_footer),
+              text =
+                buildAnnotatedString {
+                  withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(footerTitle) }
+                  append(" ")
+                  append(footer)
+                },
               style = CaducityTheme.typography.bodySmall,
               color = CaducityTheme.colorScheme.onSurfaceVariant,
               modifier = Modifier.padding(horizontal = ScreenGutter + 4.dp, vertical = 8.dp),
