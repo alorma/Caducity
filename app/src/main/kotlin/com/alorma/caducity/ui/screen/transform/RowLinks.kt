@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -29,6 +28,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.icons.symbols.SoupKitchen
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
+import com.alorma.caducity.domain.model.CategoryShape
+import com.alorma.caducity.ui.components.category.toComposeShape
 import com.alorma.caducity.ui.theme.CaducityTheme
 
 /** The most lines that leave from (or arrive at) one of the two rows: only the cards whose centre is in view. */
@@ -37,7 +38,7 @@ private const val MaxLinesPerRow = 5
 /** How fast a line fades while its card moves away from the middle: 1.5 keeps the middle third at full opacity. */
 private const val FadeGain = 1.5f
 
-private val NodeSize = 40.dp
+private val NodeSize = 64.dp
 
 /**
  * Where the pieces of the scheme between the two rows are, so a line can join them: the ingredient cards, the node
@@ -89,7 +90,7 @@ internal fun RowLinksNode(
     modifier =
       modifier
         .size(NodeSize)
-        .clip(CircleShape)
+        .clip(CategoryShape.CLOVER8.toComposeShape())
         .background(CaducityTheme.colorScheme.surfaceContainerHigh)
         .onGloballyPositioned { links?.node = it },
     contentAlignment = Alignment.Center,
@@ -98,7 +99,7 @@ internal fun RowLinksNode(
       Symbols.Outlined.SoupKitchen,
       contentDescription = null,
       tint = CaducityTheme.colorScheme.primary,
-      modifier = Modifier.size(22.dp),
+      modifier = Modifier.size(32.dp),
     )
   }
 }
