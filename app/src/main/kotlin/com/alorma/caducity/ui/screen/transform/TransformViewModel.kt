@@ -140,6 +140,7 @@ class TransformViewModel(
   }
 
   fun onAddResult() {
+    if (!_state.value.canAddResult) return
     val id = nextResultId++
     _state.update { it.copy(results = it.results + ResultUi(id = id), expandedResultId = id, focusResultId = id) }
   }
