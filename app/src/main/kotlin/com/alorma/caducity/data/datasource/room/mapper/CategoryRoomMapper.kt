@@ -29,7 +29,7 @@ class CategoryRoomMapper(
       shape = entity.shape,
       icon = entity.icon,
       sortOrder = entity.sortOrder,
-      soonThresholdDays = entity.soonThresholdDays,
+      usualDurationDays = entity.usualDurationDays,
     )
 
   /**
@@ -43,7 +43,7 @@ class CategoryRoomMapper(
       shape = model.shape,
       icon = model.icon,
       sortOrder = model.sortOrder,
-      soonThresholdDays = model.soonThresholdDays,
+      usualDurationDays = model.usualDurationDays,
     )
 
   /**

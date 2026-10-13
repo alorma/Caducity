@@ -28,10 +28,5 @@ interface ItemDataSource {
     newExpirationDateMillis: Long,
   )
 
-  suspend fun updatePackSize(
-    itemId: String,
-    newPackSize: Int,
-  )
-
   fun getAllItems(): Flow<List<Item>>
 }

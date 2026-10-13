@@ -13,8 +13,6 @@ sealed interface ItemActionsSheetState {
     /** Position of this unit among its product's units (1-based) and how many there are. */
     val unitIndex: Int,
     val unitCount: Int,
-    /** Legacy pack size (`> 1`), shown as «pack de N». */
-    val pack: Int?,
     val expiration: LocalDate,
     val status: ExpiryStatus,
     /** Days until [expiration]; negative when expired. */
@@ -57,14 +55,6 @@ sealed interface ItemActionsSheetSideEffect {
 
   data class ShowDeleteConfirm(
     val name: String,
-  ) : ItemActionsSheetSideEffect
-
-  data class ShowQuantitySelector(
-    val max: Int,
-    val name: String,
-    val category: Category,
-    val expiration: LocalDate,
-    val daysLeft: Int,
   ) : ItemActionsSheetSideEffect
 }
 

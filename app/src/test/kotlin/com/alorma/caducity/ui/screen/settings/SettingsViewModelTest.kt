@@ -33,6 +33,7 @@ import strikt.api.expectThat
 import strikt.assertions.containsExactly
 import strikt.assertions.isEmpty
 import strikt.assertions.isEqualTo
+import strikt.assertions.isNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
@@ -62,9 +63,9 @@ class SettingsViewModelTest {
   private val categories =
     MutableStateFlow(
       listOf(
-        Category("c1", "Rebost", "", soonThresholdDays = 30),
-        Category("c2", "Làctics", "", soonThresholdDays = null),
-        Category("c3", "Fleca", "", soonThresholdDays = 2),
+        Category("c1", "Rebost", "", usualDurationDays = 30),
+        Category("c2", "Làctics", "", usualDurationDays = null),
+        Category("c3", "Fleca", "", usualDurationDays = 2),
       ),
     )
   private val themePreferences = ThemePreferencesImpl(MapSettings())
@@ -125,18 +126,18 @@ class SettingsViewModelTest {
     }
 
   @Test
-  fun `the category margins are listed shortest first and follow the default when they have none`() =
+  fun `the usual durations are listed shortest first, categories without one last`() =
     runTest {
       val margins = vm.state.first { it.categoryMargins.isNotEmpty() }.categoryMargins
       expectThat(margins).containsExactly(
         CategoryMarginSummary("Fleca", 2),
-        CategoryMarginSummary("Làctics", 3),
         CategoryMarginSummary("Rebost", 30),
+        CategoryMarginSummary("Làctics", null),
       )
 
       vm.onSoonThresholdChange(7)
       val updated = vm.state.first { it.soonThresholdDays == 7 }.categoryMargins
-      expectThat(updated.first { it.name == "Làctics" }.days).isEqualTo(7)
+      expectThat(updated.first { it.name == "Làctics" }.days).isNull()
       expectThat(updated.first { it.name == "Rebost" }.days).isEqualTo(30)
     }
 

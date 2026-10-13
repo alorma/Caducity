@@ -2,14 +2,14 @@ package com.alorma.caducity.domain.usecase
 
 import com.alorma.caducity.domain.PantryDataSource
 import com.alorma.caducity.domain.model.PantryError
-import com.alorma.caducity.domain.model.SuggestedThresholds
+import com.alorma.caducity.domain.model.SuggestedDurations
 import kotlinx.coroutines.CancellationException
 
-/** Edits the "soon" margin of categories from the «Marge per categoria» screen. */
-class CategoryThresholdsUseCase(
+/** Edits the usual duration of categories from the «Marge per categoria» screen. */
+class CategoryDurationsUseCase(
   private val pantryDataSource: PantryDataSource,
 ) {
-  /** Sets the margin of one category; `null` makes it follow the global default. */
+  /** Sets the usual duration of one category; `null` clears it. */
   suspend fun set(
     categoryId: String,
     days: Int?,
@@ -18,14 +18,14 @@ class CategoryThresholdsUseCase(
       val category =
         pantryDataSource.getCategories().firstOrNull { it.id == categoryId }
           ?: throw PantryError.CategoryNotFound
-      pantryDataSource.updateCategory(category.copy(soonThresholdDays = days))
+      pantryDataSource.updateCategory(category.copy(usualDurationDays = days))
     }
 
-  /** Suggested categories get their suggested margin; the others go back to the global default. */
+  /** Suggested categories get their suggested duration; the others are cleared. */
   suspend fun restoreSuggested(): Result<Unit> =
     attempt {
       pantryDataSource.getCategories().forEach { category ->
-        pantryDataSource.updateCategory(category.copy(soonThresholdDays = SuggestedThresholds.forName(category.name)))
+        pantryDataSource.updateCategory(category.copy(usualDurationDays = SuggestedDurations.forName(category.name)))
       }
     }
 

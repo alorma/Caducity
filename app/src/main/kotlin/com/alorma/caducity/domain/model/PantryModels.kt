@@ -55,7 +55,5 @@ data class ActiveItem(
   /** When the unit was put in the freezer; null if it is not frozen. */
   val frozenSince: Instant?,
   val remainingDays: Int?,
-  /** Only legacy items can be packs (`> 1`); they count as one unit. */
-  val packSize: Int?,
   val createdAt: Instant?,
 )

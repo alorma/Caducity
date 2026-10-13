@@ -15,8 +15,8 @@ class UpdateCategoryUseCase(
     name: String,
     shape: CategoryShape,
     icon: CategoryIcon,
-    /** `null` follows the global default (it clears a margin of its own). */
-    soonThresholdDays: Int?,
+    /** `null` clears the usual duration. */
+    usualDurationDays: Int?,
     /** `null` keeps the stored description. */
     description: String? = null,
   ): Result<Unit> {
@@ -38,7 +38,7 @@ class UpdateCategoryUseCase(
           name = trimmed,
           shape = shape,
           icon = icon,
-          soonThresholdDays = soonThresholdDays,
+          usualDurationDays = usualDurationDays,
           description = description?.trim() ?: current.description,
         ),
       )

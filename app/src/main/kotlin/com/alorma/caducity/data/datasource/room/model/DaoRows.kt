@@ -24,6 +24,5 @@ data class ActiveItemRow(
   val expirationDate: Long,
   val pausedDate: Long?,
   val remainingDays: Int?,
-  val packSize: Int?,
   val createdAt: Long?,
 )

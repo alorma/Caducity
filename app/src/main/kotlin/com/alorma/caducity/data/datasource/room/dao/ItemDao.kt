@@ -24,7 +24,7 @@ interface ItemDao {
   @Query(
     "SELECT i.id AS itemId, i.categoryId AS categoryId, i.productId AS productId, " +
       "COALESCE(p.name, i.identifier) AS name, i.expirationDate AS expirationDate, i.pausedDate AS pausedDate, " +
-      "i.remainingDays AS remainingDays, i.packSize AS packSize, i.createdAt AS createdAt " +
+      "i.remainingDays AS remainingDays, i.createdAt AS createdAt " +
       "FROM items i LEFT JOIN products p ON p.id = i.productId " +
       "WHERE i.consumedDate IS NULL AND i.discardedDate IS NULL AND i.transformedDate IS NULL",
   )

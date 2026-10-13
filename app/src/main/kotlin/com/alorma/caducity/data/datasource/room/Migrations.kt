@@ -3,6 +3,9 @@ package com.alorma.caducity.data.datasource.room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.alorma.caducity.domain.model.CategoryDefaults
+import com.alorma.caducity.domain.model.CategoryIcon
+import com.alorma.caducity.domain.model.CategoryShape
+import com.alorma.caducity.domain.model.SuggestedDurations
 import com.alorma.caducity.domain.model.normalizeForSearch
 import java.util.UUID
 
@@ -106,3 +109,109 @@ val MIGRATION_2_3 =
       }
     }
   }
+
+/**
+ * v4 → v5: `categories.soonThresholdDays` becomes `usualDurationDays` and `items.packSize` is gone.
+ * - A category keeps the margin it had configured as its usual duration; without one, a category that still looks like a
+ *   default one (name, shape and icon) gets the suggested duration; any other gets null.
+ * - Every live pack of N becomes N single items (same product, dates and state); consumed/discarded/transformed
+ *   packs stay as one item of history.
+ * Both tables are rebuilt (create new, copy, drop, rename) since the columns are dropped.
+ */
+val MIGRATION_4_5 =
+  object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+      expandPacks(db)
+      rebuildTables(db)
+      createItemIndices(db)
+    }
+
+    private fun expandPacks(db: SupportSQLiteDatabase) {
+      class Pack(
+        val id: String,
+        val size: Int,
+      )
+
+      val packs = mutableListOf<Pack>()
+      db
+        .query(
+          "SELECT id, packSize FROM items WHERE packSize > 1 " +
+            "AND consumedDate IS NULL AND discardedDate IS NULL AND transformedDate IS NULL ORDER BY rowid",
+        ).use { cursor ->
+          while (cursor.moveToNext()) packs += Pack(cursor.getString(0), cursor.getInt(1))
+        }
+      packs.forEach { pack ->
+        repeat(pack.size - 1) {
+          db.execSQL(
+            "INSERT INTO items (id, categoryId, identifier, productId, expirationDate, pausedDate, remainingDays, " +
+              "createdAt, originTransformationId) " +
+              "SELECT ?, categoryId, identifier, productId, expirationDate, pausedDate, remainingDays, " +
+              "createdAt, originTransformationId FROM items WHERE id = ?",
+            arrayOf<Any>(UUID.randomUUID().toString(), pack.id),
+          )
+        }
+      }
+    }
+
+    private fun rebuildTables(db: SupportSQLiteDatabase) {
+      db.execSQL(
+        "CREATE TABLE IF NOT EXISTS `categories_new` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, " +
+          "`description` TEXT NOT NULL, `shape` TEXT NOT NULL DEFAULT 'COOKIE', `icon` TEXT NOT NULL DEFAULT 'eco', " +
+          "`sortOrder` INTEGER NOT NULL DEFAULT 0, `usualDurationDays` INTEGER, PRIMARY KEY(`id`))",
+      )
+      db.execSQL(
+        "INSERT INTO categories_new (id, name, description, shape, icon, sortOrder, usualDurationDays) " +
+          "SELECT id, name, description, shape, icon, sortOrder, soonThresholdDays FROM categories",
+      )
+
+      class Unconfigured(
+        val id: String,
+        val name: String,
+        val shape: String,
+        val icon: String,
+      )
+
+      val unconfigured = mutableListOf<Unconfigured>()
+      db.query("SELECT id, name, shape, icon FROM categories WHERE soonThresholdDays IS NULL").use { cursor ->
+        while (cursor.moveToNext()) {
+          unconfigured +=
+            Unconfigured(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3))
+        }
+      }
+      unconfigured.forEach { category ->
+        val shape = CategoryShape.entries.firstOrNull { it.name == category.shape } ?: return@forEach
+        val days = SuggestedDurations.forDefaultCategory(category.name, shape, CategoryIcon(category.icon))
+        if (days != null) {
+          db.execSQL(
+            "UPDATE categories_new SET usualDurationDays = ? WHERE id = ?",
+            arrayOf<Any>(days, category.id),
+          )
+        }
+      }
+
+      db.execSQL("CREATE TABLE IF NOT EXISTS `items_new` ${ITEMS_V5_COLUMNS}")
+      db.execSQL(
+        "INSERT INTO items_new (id, categoryId, identifier, productId, expirationDate, pausedDate, remainingDays, " +
+          "consumedDate, discardedDate, createdAt, transformedDate, transformationId, originTransformationId) " +
+          "SELECT id, categoryId, identifier, productId, expirationDate, pausedDate, remainingDays, " +
+          "consumedDate, discardedDate, createdAt, transformedDate, transformationId, originTransformationId FROM items",
+      )
+      db.execSQL("DROP TABLE items")
+      db.execSQL("DROP TABLE categories")
+      db.execSQL("ALTER TABLE categories_new RENAME TO categories")
+    }
+
+    private fun createItemIndices(db: SupportSQLiteDatabase) {
+      db.execSQL("ALTER TABLE items_new RENAME TO items")
+      db.execSQL("CREATE INDEX IF NOT EXISTS `index_items_categoryId` ON `items` (`categoryId`)")
+      db.execSQL("CREATE INDEX IF NOT EXISTS `index_items_productId` ON `items` (`productId`)")
+    }
+  }
+
+private const val ITEMS_V5_COLUMNS =
+  "(`id` TEXT NOT NULL, `categoryId` TEXT NOT NULL, `identifier` TEXT NOT NULL, `productId` TEXT, " +
+    "`expirationDate` INTEGER NOT NULL, `pausedDate` INTEGER, `remainingDays` INTEGER, `consumedDate` INTEGER, " +
+    "`discardedDate` INTEGER, `createdAt` INTEGER, `transformedDate` INTEGER, `transformationId` TEXT, " +
+    "`originTransformationId` TEXT, PRIMARY KEY(`id`), " +
+    "FOREIGN KEY(`categoryId`) REFERENCES `categories`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
+    "FOREIGN KEY(`productId`) REFERENCES `products`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )"

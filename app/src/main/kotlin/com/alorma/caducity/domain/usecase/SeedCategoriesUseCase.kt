@@ -26,7 +26,7 @@ class SeedCategoriesUseCase(
               shape = seed.shape,
               icon = seed.icon,
               sortOrder = index,
-              soonThresholdDays = seed.soonThresholdDays,
+              usualDurationDays = seed.usualDurationDays,
             )
           }
         pantryDataSource.createCategories(categories)

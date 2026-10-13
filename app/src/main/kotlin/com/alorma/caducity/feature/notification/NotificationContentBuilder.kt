@@ -23,19 +23,20 @@ object NotificationContentBuilder {
   const val MAX_HIGHLIGHTS = 3
 
   /**
-   * `null` when there is nothing to say. Only units that enter `SOON` today (first day inside their
-   * own margin) or expire today/tomorrow count, so long margins do not repeat for weeks.
+   * `null` when there is nothing to say. Only units that enter `SOON` today (first day inside the
+   * global [soonDays] margin) or expire today/tomorrow count, so long margins do not repeat for weeks.
    */
   fun build(
     entries: List<PantryEntry>,
     today: LocalDate,
+    soonDays: Int,
   ): ReminderContent? {
     val soon =
       entries
         .filter { it.status == ExpiryStatus.SOON }
         .filter {
           val daysLeft = today.daysUntil(it.expiration)
-          daysLeft == it.soonDays || daysLeft <= 1
+          daysLeft == soonDays || daysLeft <= 1
         }.sortedWith(compareBy<PantryEntry> { it.expiration }.thenBy { it.name.normalizeForSearch() })
     if (soon.isEmpty()) return null
 

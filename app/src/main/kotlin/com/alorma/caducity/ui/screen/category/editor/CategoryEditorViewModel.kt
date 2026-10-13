@@ -10,7 +10,6 @@ import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
-import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.UpdateCategoryUseCase
 import com.alorma.caducity.feature.tracking.CategoryDeletedAction
 import com.alorma.caducity.feature.tracking.CategoryEditorCloseAction
@@ -31,7 +30,6 @@ class CategoryEditorViewModel(
   private val createCategory: CreateCategoryUseCase,
   private val updateCategory: UpdateCategoryUseCase,
   private val deleteCategory: DeleteCategoryUseCase,
-  private val expirationThresholds: ExpirationThresholds,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<CategoryEditorNavigation, CategoryEditorNavigationSideEffect, CategoryEditorSideEffect>() {
   private val _state = MutableStateFlow(CategoryEditorState(categoryId = categoryId))
@@ -47,15 +45,13 @@ class CategoryEditorViewModel(
     viewModelScope.launch {
       categories = pantryDataSource.getCategories()
       val current = categories.firstOrNull { it.id == categoryId }
-      val defaultDays = expirationThresholds.soonThresholdDays.first()
       _state.update {
         if (current == null) {
-          it.copy(loading = false, defaultSoonDays = defaultDays)
+          it.copy(loading = false)
         } else {
           it.copy(
             loading = false,
-            defaultSoonDays = defaultDays,
-            soonDays = current.soonThresholdDays,
+            usualDurationDays = current.usualDurationDays,
             name = current.name,
             description = current.description,
             shape = current.shape,
@@ -102,9 +98,9 @@ class CategoryEditorViewModel(
     _state.update { it.copy(icon = icon) }
   }
 
-  /** Touching the slider gives the category a margin of its own. */
-  fun onSoonDaysChange(days: Int) {
-    _state.update { it.copy(soonDays = days) }
+  /** Touching the slider sets the category's usual duration. */
+  fun onUsualDurationChange(days: Int) {
+    _state.update { it.copy(usualDurationDays = days) }
   }
 
   fun onSave() {
@@ -120,7 +116,7 @@ class CategoryEditorViewModel(
               description = current.description.trim(),
               shape = current.shape,
               icon = current.icon,
-              soonThresholdDays = current.soonDays,
+              usualDurationDays = current.usualDurationDays,
             ).map { id -> CategoryEditorNavigationSideEffect.Created(id) }
         } else {
           updateCategory
@@ -129,7 +125,7 @@ class CategoryEditorViewModel(
               name = current.name,
               shape = current.shape,
               icon = current.icon,
-              soonThresholdDays = current.soonDays,
+              usualDurationDays = current.usualDurationDays,
               description = current.description,
             ).map { CategoryEditorNavigationSideEffect.Close }
         }

@@ -76,7 +76,6 @@ class CalendarViewModel(
                 name = entry.name,
                 category = category,
                 position = positions.getValue(entry.itemId),
-                pack = entry.legacyPack,
                 status = entry.status,
                 daysLeft = params.today.daysUntil(entry.expiration),
               )

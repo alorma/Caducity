@@ -2,7 +2,7 @@ package com.alorma.caducity.domain.model
 
 import kotlin.math.abs
 
-/** The 8 stops offered for a category's "soon" margin; the value is always stored in days. */
+/** The 8 stops offered for a category's usual duration; the value is always stored in days. */
 object ThresholdStops {
   val days: List<Int> = listOf(1, 2, 3, 7, 14, 30, 60, 90)
 
@@ -14,18 +14,18 @@ object ThresholdStops {
   fun nearestIndex(value: Int): Int = days.indices.minBy { abs(days[it] - value) }
 }
 
-/** Margins suggested for the onboarding categories and for «Torna als valors suggerits». */
-object SuggestedThresholds {
+/** Usual durations suggested for the onboarding categories and for «Torna als valors suggerits». */
+object SuggestedDurations {
   fun of(category: SuggestedCategory): Int =
     when (category) {
-      SuggestedCategory.MEAT_FISH -> 2
-      SuggestedCategory.BAKERY -> 2
-      SuggestedCategory.DAIRY -> 3
-      SuggestedCategory.PRODUCE -> 3
-      SuggestedCategory.COLD_CUTS -> 3
-      SuggestedCategory.READY_MEALS -> 2
-      SuggestedCategory.DRINKS -> 7
-      SuggestedCategory.PANTRY -> 30
+      SuggestedCategory.MEAT_FISH -> 3
+      SuggestedCategory.BAKERY -> 3
+      SuggestedCategory.READY_MEALS -> 3
+      SuggestedCategory.DAIRY -> 7
+      SuggestedCategory.PRODUCE -> 7
+      SuggestedCategory.COLD_CUTS -> 7
+      SuggestedCategory.DRINKS -> 30
+      SuggestedCategory.PANTRY -> 90
     }
 
   private val KEYWORDS: List<Pair<List<String>, SuggestedCategory>> =
@@ -40,9 +40,24 @@ object SuggestedThresholds {
       listOf("ready", "prepared", "preparado", "preparat", "cocinado") to SuggestedCategory.READY_MEALS,
     )
 
-  /** Suggested margin for a category recognised by its name; null for user-made categories. */
-  fun forName(name: String): Int? {
+  private fun suggestedFor(name: String): SuggestedCategory? {
     val normalized = name.normalizeForSearch()
-    return KEYWORDS.firstOrNull { (words, _) -> words.any { normalized.contains(it) } }?.second?.let(::of)
+    return KEYWORDS.firstOrNull { (words, _) -> words.any { normalized.contains(it) } }?.second
   }
+
+  /** Suggested duration for a category recognised by its name; null for user-made categories. */
+  fun forName(name: String): Int? = suggestedFor(name)?.let(::of)
+
+  /**
+   * Duration for a category that still looks like a default one: its name matches a suggested category
+   * and it keeps that category's shape and icon. Null for user-made or edited categories (v4 → v5 migration).
+   */
+  fun forDefaultCategory(
+    name: String,
+    shape: CategoryShape,
+    icon: CategoryIcon,
+  ): Int? =
+    suggestedFor(name)
+      ?.takeIf { it.shape == shape && it.icon == icon }
+      ?.let(::of)
 }

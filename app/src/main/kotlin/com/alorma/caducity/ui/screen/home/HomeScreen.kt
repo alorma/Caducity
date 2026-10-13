@@ -27,7 +27,6 @@ import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.HomeData
 import com.alorma.caducity.domain.model.HomeDaySection
-import com.alorma.caducity.domain.model.HomeLaterRow
 import com.alorma.caducity.domain.model.HomeRow
 import com.alorma.caducity.domain.usecase.WeekStripData
 import com.alorma.caducity.feature.tracking.HomeScreen as HomeScreenEvent
@@ -106,26 +105,6 @@ private sealed interface HomeItem {
     override val key = "row-${section.date}-${row.key}"
   }
 
-  data object LaterHeader : HomeItem {
-    override val key = "later-header"
-  }
-
-  data object LaterCard : HomeItem {
-    override val key = "later-card"
-  }
-
-  data class LaterRow(
-    val row: HomeLaterRow,
-    val index: Int,
-    val count: Int,
-  ) : HomeItem {
-    override val key = "later-${row.date}-${row.row.key}"
-  }
-
-  data object LaterHelp : HomeItem {
-    override val key = "later-help"
-  }
-
   data object NothingSoon : HomeItem {
     override val key = "nothing-soon"
   }
@@ -135,7 +114,7 @@ private sealed interface HomeItem {
   }
 }
 
-private fun HomeState.Ready.items(laterExpanded: Boolean): List<HomeItem> =
+private fun HomeState.Ready.items(): List<HomeItem> =
   buildList {
     if (data.isPantryEmpty) {
       add(HomeItem.Empty)
@@ -148,14 +127,6 @@ private fun HomeState.Ready.items(laterExpanded: Boolean): List<HomeItem> =
       add(HomeItem.SectionHeader(section))
       section.rows.forEachIndexed { index, row -> add(HomeItem.Row(section, row, index)) }
     }
-    data.later?.let { later ->
-      add(HomeItem.LaterHeader)
-      add(HomeItem.LaterCard)
-      if (laterExpanded) {
-        later.rows.forEachIndexed { index, row -> add(HomeItem.LaterRow(row, index, later.rows.size)) }
-      }
-      add(HomeItem.LaterHelp)
-    }
   }
 
 @Composable
@@ -167,8 +138,7 @@ internal fun HomeContent(
   listState: LazyListState = rememberLazyListState(),
 ) {
   val data = state.data
-  var laterExpanded by rememberSaveable { mutableStateOf(false) }
-  val items = state.items(laterExpanded)
+  val items = state.items()
   val scope = rememberCoroutineScope()
   var selectedDay by rememberSaveable(stateSaver = LocalDateSaver) { mutableStateOf<LocalDate?>(null) }
 
@@ -243,19 +213,6 @@ internal fun HomeContent(
               onClick = { onNavigate(HomeNavigation.ItemActions(item.row.nearestItemId)) },
               onConsume = { onConsume(item.row) },
             )
-          HomeItem.LaterHeader -> data.later?.let { LaterHeader(it, Modifier.padding(top = 16.dp, bottom = 6.dp)) }
-          HomeItem.LaterCard ->
-            data.later?.let { LaterCollapsedCard(it, laterExpanded, onToggle = { laterExpanded = !laterExpanded }) }
-          is HomeItem.LaterRow ->
-            HomeItemRow(
-              row = item.row.row,
-              index = item.index,
-              count = item.count,
-              onClick = { onNavigate(HomeNavigation.ItemActions(item.row.row.nearestItemId)) },
-              onConsume = { onConsume(item.row.row) },
-              meta = item.row.date.weekdayShortDateText(),
-            )
-          HomeItem.LaterHelp -> data.later?.let { LaterHelp(it, Modifier.padding(top = 8.dp)) }
           HomeItem.NothingSoon -> NothingSoon(onSeePantry = { onNavigate(HomeNavigation.Pantry("nothing_soon")) })
           HomeItem.Empty -> HomeEmptyState(onAdd = { onNavigate(HomeNavigation.AddFirst) })
         }
@@ -281,7 +238,7 @@ private fun row(
   name: String,
   category: Category,
   units: Int = 1,
-) = HomeRow(name, name, category, units, name, null)
+) = HomeRow(name, name, category, units, name)
 
 private val sampleData =
   HomeData(
@@ -296,7 +253,6 @@ private val sampleData =
         HomeDaySection(today, listOf(row("Llet sencera", dairy), row("Espinacs", produce))),
         HomeDaySection(LocalDate(2026, 10, 12), listOf(row("Iogurt", dairy, units = 3), row("Maduixes", produce))),
       ),
-    later = null,
     isPantryEmpty = false,
   )
 
@@ -333,7 +289,7 @@ private fun HomeEmptyPreview() {
   PreviewTheme {
     HomeContent(
       HomeState.Ready(
-        HomeData(today, 0, null, 0, 0, 0, emptyList(), null, isPantryEmpty = true),
+        HomeData(today, 0, null, 0, 0, 0, emptyList(), isPantryEmpty = true),
         WeekStripData(today, emptyMap()),
       ),
       {},

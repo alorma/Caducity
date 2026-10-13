@@ -33,7 +33,6 @@ data class ItemRoomEntity(
   val pausedDate: Long? = null, // When frozen - null means not frozen
   val remainingDays: Int? = null, // Days remaining when frozen
   val consumedDate: Long? = null, // When consumed - null means not consumed
-  val packSize: Int? = null, // Pack size - null means single item, >1 means pack
   val discardedDate: Long? = null, // When discarded - null means not discarded
   val createdAt: Long? = null, // When created - null for rows created before v3
   val transformedDate: Long? = null, // When used as a transform ingredient - null means not transformed

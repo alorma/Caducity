@@ -7,7 +7,6 @@ import com.alorma.caducity.data.backup.BackupData
 import com.alorma.caducity.data.backup.BackupProduct
 import com.alorma.caducity.data.backup.BackupProductItem
 import com.alorma.caducity.data.backup.BackupTransformation
-import com.alorma.caducity.data.backup.upgradeToV2
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.dao.CategoryDao
 import com.alorma.caducity.data.datasource.room.dao.ItemDao
@@ -17,7 +16,6 @@ import com.alorma.caducity.data.datasource.room.model.ItemRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import com.alorma.caducity.data.datasource.room.model.TransformationRoomEntity
 import com.alorma.caducity.domain.backup.BackupDataSource
-import com.alorma.caducity.domain.model.CategoryDefaults
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
 
@@ -60,7 +58,7 @@ class RoomBackupDataSource(
           shape = category.shape.name,
           icon = category.icon.id,
           sortOrder = category.sortOrder,
-          soonThresholdDays = category.soonThresholdDays,
+          usualDurationDays = category.usualDurationDays,
           products = productsByCategory,
           standaloneItems =
             items
@@ -87,7 +85,6 @@ class RoomBackupDataSource(
       pausedDate = item.pausedDate,
       remainingDays = item.remainingDays,
       consumedDate = item.consumedDate,
-      packSize = item.packSize,
       discardedDate = item.discardedDate,
       createdAt = item.createdAt,
       transformedDate = item.transformedDate,
@@ -96,28 +93,25 @@ class RoomBackupDataSource(
     )
 
   override suspend fun importBackup(backup: BackupData) {
-    val data = backup.upgradeToV2()
     database.withTransaction {
       // Clear existing data
       clearAllData()
 
       val transformationDao = database.transformationDao()
-      data.transformations.forEach { transformation ->
+      backup.transformations.forEach { transformation ->
         transformationDao.insertTransformation(TransformationRoomEntity(transformation.id, transformation.createdAt))
       }
 
-      // Insert categories and items (mapping from old backup format)
-      data.categories.forEach { category: BackupCategory ->
-        val defaults = CategoryDefaults.forName(category.name, category.sortOrder ?: 0)
+      backup.categories.forEach { category: BackupCategory ->
         val categoryEntity =
           CategoryRoomEntity(
             id = category.id,
             name = category.name,
             description = category.description,
-            shape = category.shape?.let(::shapeOrDefault) ?: defaults.shape,
-            icon = category.icon?.let { CategoryIcon(it) } ?: defaults.icon,
-            sortOrder = category.sortOrder ?: 0,
-            soonThresholdDays = category.soonThresholdDays,
+            shape = shapeOrDefault(category.shape),
+            icon = CategoryIcon(category.icon),
+            sortOrder = category.sortOrder,
+            usualDurationDays = category.usualDurationDays,
           )
         categoryDao.insertCategory(categoryEntity)
 
@@ -143,7 +137,6 @@ class RoomBackupDataSource(
               pausedDate = item.pausedDate,
               remainingDays = item.remainingDays,
               consumedDate = item.consumedDate,
-              packSize = item.packSize,
               discardedDate = item.discardedDate,
               createdAt = item.createdAt,
               transformedDate = item.transformedDate,
@@ -165,7 +158,6 @@ class RoomBackupDataSource(
                 pausedDate = item.pausedDate,
                 remainingDays = item.remainingDays,
                 consumedDate = item.consumedDate,
-                packSize = item.packSize,
                 discardedDate = item.discardedDate,
                 createdAt = item.createdAt,
                 transformedDate = item.transformedDate,
@@ -192,10 +184,10 @@ class RoomBackupDataSource(
   override fun validateBackup(backup: BackupData): Result<Unit> {
     return try {
       // Check version compatibility
-      if (backup.version > BackupData.CURRENT_VERSION) {
+      if (backup.version != BackupData.CURRENT_VERSION) {
         return Result.failure(
           IllegalArgumentException(
-            "Backup version ${backup.version} is not supported. Current version: ${BackupData.CURRENT_VERSION}",
+            "Backup version ${backup.version} is not supported. Only version ${BackupData.CURRENT_VERSION} can be imported",
           ),
         )
       }

@@ -8,14 +8,15 @@ import kotlinx.datetime.LocalTime
 
 data class CategoryMarginSummary(
   val name: String,
-  val days: Int,
+  /** Stored usual duration in days; `null` when the category has none. */
+  val days: Int?,
 )
 
 data class SettingsState(
   val reminderEnabled: Boolean = false,
   val reminderTime: LocalTime = NotificationConfigDataSource.DEFAULT_TIME,
   val soonThresholdDays: Int = 3,
-  /** Every category with the margin that applies to it, shortest first. */
+  /** Every category with its usual duration, shortest first (no duration last). */
   val categoryMargins: List<CategoryMarginSummary> = emptyList(),
   val themeMode: ThemeMode = ThemeMode.SYSTEM,
   val colorPalette: ColorPalette = ColorPalette.REBOST,

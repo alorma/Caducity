@@ -223,7 +223,6 @@
   <string name="item_actions_unit_of_frozen">Unidad %1$d de %2$d · congelado</string>
   <string name="item_actions_expires">Caduca %1$s</string>
   <string name="item_actions_frozen_meta">Congelado</string>
-  <string name="item_actions_pack">Pack de %1$d · caduca %2$s</string>
   <string name="item_pill_today">Hoy</string>
   <string name="item_pill_yesterday">Ayer</string>
   <string name="item_pill_tomorrow">Mañana</string>
@@ -297,7 +296,6 @@
   <string name="home_empty_title">La despensa está vacía</string>
   <string name="home_empty_body">Empieza por la compra de hoy: añade lo que acabas de guardar en la nevera.</string>
   <string name="home_empty_cta">Añade el primer producto</string>
-  <string name="item_pack_of">pack de %d</string>
   <string name="week_strip_day_none">%1$s, nada</string>
   <plurals name="week_strip_day_count">
     <item quantity="one">%1$s, %2$d producto</item>
@@ -532,19 +530,6 @@
   <string name="ob_category_drinks">Bebidas</string>
   <string name="ob_category_cold_cuts">Embutidos</string>
   <string name="ob_category_ready_meals">Platos preparados</string>
-  <!-- Quantity dialog (legacy packs) -->
-  <string name="quantity_overline">Pack de %1$d · %2$s</string>
-  <string name="quantity_question">¿Cuántas unidades has consumido?</string>
-  <string name="quantity_of">de %d</string>
-  <string name="quantity_all">Todos (%d)</string>
-  <string name="quantity_confirm">Consumir %d</string>
-  <string name="quantity_confirm_all">Consumir los %d</string>
-  <string name="quantity_less">Una menos</string>
-  <string name="quantity_more">Una más</string>
-  <string name="quantity_expired">ya ha caducado</string>
-  <string name="quantity_expires_today">caduca hoy</string>
-  <string name="quantity_expires_tomorrow">caduca mañana</string>
-  <string name="quantity_expires_on">caduca %1$s</string>
   <string name="settings_soon_default">«Pronto» por defecto</string>
   <string name="settings_soon_default_sub">Para las categorías sin margen propio</string>
   <string name="settings_category_margins">Margen por categoría</string>
@@ -563,17 +548,7 @@
   <string name="category_editor_margin">Avísame antes</string>
   <string name="category_editor_margin_help">Desliza o toca un punto. «%1$s» pasará a «Pronto» %2$s antes de caducar.</string>
   <string name="category_editor_margin_this_category">Esta categoría</string>
-  <string name="home_later_title">Más adelante</string>
-  <string name="home_later_names_two">%1$s y %2$s</string>
-  <string name="home_later_names_more">%1$s, %2$s y %3$d más</string>
-  <string name="home_later_range">Del %1$s al %2$s</string>
-  <string name="home_later_on">El %s</string>
-  <string name="home_later_expand">Mostrar los productos</string>
-  <string name="home_later_collapse">Ocultar los productos</string>
-  <string name="home_later_help_one">Ya están «Pronto» por el margen de su categoría (%1$s, %2$s).</string>
-  <string name="home_later_help_many">Ya están «Pronto» por el margen de su categoría.</string>
   <string name="status_help_soon_margin">Según el margen de cada categoría. Úsalos primero.</string>
-  <string name="status_notify_pill">Avisa %s antes</string>
   <string name="ob_alerts_default_help">Cada categoría ya tiene su margen. Este es para las que crees tú.</string>
   <string name="threshold_unit_days">días</string>
   <string name="threshold_unit_weeks">semanas</string>

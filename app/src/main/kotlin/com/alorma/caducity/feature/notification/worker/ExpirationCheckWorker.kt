@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.NotificationConfigDataSource
+import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.feature.notification.ExpirationNotificationHelper
 import com.alorma.caducity.feature.notification.NotificationContentBuilder
@@ -21,6 +22,7 @@ class ExpirationCheckWorker(
   context: Context,
   params: WorkerParameters,
   private val observeItems: ObserveItemsUseCase,
+  private val expirationThresholds: ExpirationThresholds,
   private val todayProvider: TodayProvider,
   private val notificationConfig: NotificationConfigDataSource,
   private val notificationHelper: ExpirationNotificationHelper,
@@ -33,7 +35,12 @@ class ExpirationCheckWorker(
   override suspend fun doWork(): Result =
     try {
       if (notificationConfig.isNotificationsEnabled()) {
-        val content = NotificationContentBuilder.build(observeItems.observe().first(), todayProvider.today())
+        val content =
+          NotificationContentBuilder.build(
+            entries = observeItems.observe().first(),
+            today = todayProvider.today(),
+            soonDays = expirationThresholds.soonThresholdDays.first(),
+          )
         Timber.tag(TAG).d("Daily reminder: ${content?.count ?: 0} units about to expire")
         content?.let(notificationHelper::showDailyReminder)
       }

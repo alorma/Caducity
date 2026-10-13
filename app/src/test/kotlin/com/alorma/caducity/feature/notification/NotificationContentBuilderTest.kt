@@ -18,7 +18,6 @@ class NotificationContentBuilderTest {
     days: Int,
     status: ExpiryStatus = ExpiryStatus.SOON,
     id: String = "$name-$days",
-    soonDays: Int = 3,
   ) = PantryEntry(
     itemId = id,
     productId = name,
@@ -28,9 +27,7 @@ class NotificationContentBuilderTest {
     status = status,
     frozenSince = null,
     remainingDays = null,
-    packSize = null,
     createdAt = null,
-    soonDays = soonDays,
   )
 
   @Test
@@ -41,8 +38,8 @@ class NotificationContentBuilderTest {
         entry("Arròs", 40, ExpiryStatus.FRESH),
         entry("Peix", 1, ExpiryStatus.FROZEN),
       )
-    expectThat(NotificationContentBuilder.build(entries, today)).isNull()
-    expectThat(NotificationContentBuilder.build(emptyList(), today)).isNull()
+    expectThat(NotificationContentBuilder.build(entries, today, soonDays = 3)).isNull()
+    expectThat(NotificationContentBuilder.build(emptyList(), today, soonDays = 3)).isNull()
   }
 
   @Test
@@ -56,7 +53,7 @@ class NotificationContentBuilderTest {
         entry("Arròs", 40, ExpiryStatus.FRESH),
         entry("Vell", -1, ExpiryStatus.EXPIRED),
       )
-    val content = NotificationContentBuilder.build(entries, today)
+    val content = NotificationContentBuilder.build(entries, today, soonDays = 3)
     expectThat(content).isNotNull()
     expectThat(content!!.count).isEqualTo(3)
     expectThat(content.highlights).containsExactly(
@@ -69,28 +66,40 @@ class NotificationContentBuilderTest {
   @Test
   fun `units of the same product count but are named once`() {
     val entries = listOf(entry("Llet", 1, id = "a"), entry("llet", 1, id = "b"), entry("Pa", 3))
-    val content = NotificationContentBuilder.build(entries, today)!!
+    val content = NotificationContentBuilder.build(entries, today, soonDays = 3)!!
     expectThat(content.count).isEqualTo(3)
     expectThat(content.highlights).containsExactly(ReminderHighlight("Llet", 1), ReminderHighlight("Pa", 3))
   }
 
   @Test
-  fun `a unit with a long margin is only reported the day it becomes soon`() {
-    val pasta = entry("Pasta", days = 30, soonDays = 30)
-    val inside = entry("Cigrons", days = 20, soonDays = 30)
-    expectThat(NotificationContentBuilder.build(listOf(inside), today)).isNull()
-    expectThat(NotificationContentBuilder.build(listOf(pasta), today)).isNotNull().get { count }.isEqualTo(1)
+  fun `a unit is only reported the day it enters the global soon margin`() {
+    expectThat(NotificationContentBuilder.build(listOf(entry("Cigrons", days = 20)), today, soonDays = 30)).isNull()
+    expectThat(NotificationContentBuilder.build(listOf(entry("Pasta", days = 30)), today, soonDays = 30))
+      .isNotNull()
+      .get { count }
+      .isEqualTo(1)
+  }
+
+  @Test
+  fun `a longer global margin reports the units that enter it`() {
+    val entries = listOf(entry("Iogurt", days = 7), entry("Formatge", days = 3))
+    expectThat(NotificationContentBuilder.build(entries, today, soonDays = 3)).isNotNull().get { count }.isEqualTo(1)
+    expectThat(NotificationContentBuilder.build(entries, today, soonDays = 7)).isNotNull().get { count }.isEqualTo(1)
+    expectThat(NotificationContentBuilder.build(entries, today, soonDays = 7))
+      .isNotNull()
+      .get { highlights.map { it.name } }
+      .containsExactly("Iogurt")
   }
 
   @Test
   fun `units that expire today or tomorrow are always reported`() {
     val entries =
       listOf(
-        entry("Arròs", days = 0, soonDays = 30),
-        entry("Llet", days = 1, soonDays = 14),
-        entry("Pasta", days = 2, soonDays = 30),
+        entry("Arròs", days = 0),
+        entry("Llet", days = 1),
+        entry("Pasta", days = 2),
       )
-    val content = NotificationContentBuilder.build(entries, today)
+    val content = NotificationContentBuilder.build(entries, today, soonDays = 14)
     expectThat(content).isNotNull().get { count }.isEqualTo(2)
     expectThat(content).isNotNull().get { highlights.map { it.name } }.containsExactly("Arròs", "Llet")
   }
@@ -98,6 +107,6 @@ class NotificationContentBuilderTest {
   @Test
   fun `the default margin still reports on the first day inside it`() {
     val entries = listOf(entry("Iogurt", days = 3), entry("Formatge", days = 2))
-    expectThat(NotificationContentBuilder.build(entries, today)).isNotNull().get { count }.isEqualTo(1)
+    expectThat(NotificationContentBuilder.build(entries, today, soonDays = 3)).isNotNull().get { count }.isEqualTo(1)
   }
 }

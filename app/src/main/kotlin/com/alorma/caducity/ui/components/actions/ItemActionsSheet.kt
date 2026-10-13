@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.components.actions
 
-import android.content.res.Resources
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,7 +34,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLocale
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -53,9 +51,6 @@ import com.alorma.caducity.base.ui.icons.symbols.DriveFileMove
 import com.alorma.caducity.base.ui.icons.symbols.Edit
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.Category
-import com.alorma.caducity.ui.components.bottomsheet.QuantityDialogData
-import com.alorma.caducity.ui.components.bottomsheet.QuantitySelectorResult
-import com.alorma.caducity.ui.components.bottomsheet.showQuantitySelectorDialog
 import com.alorma.caducity.ui.components.category.CategoryIcons
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.chips.QuickDateChips
@@ -196,7 +191,6 @@ private fun Header(
 private fun metaText(state: ItemActionsSheetState.Ready): String {
   val date = formatDate(state.expiration)
   return when {
-    state.pack != null -> stringResource(R.string.item_actions_pack, state.pack, date)
     state.frozen && state.unitCount > 1 ->
       stringResource(R.string.item_actions_unit_of_frozen, state.unitIndex, state.unitCount)
     state.frozen -> stringResource(R.string.item_actions_frozen_meta)
@@ -204,20 +198,6 @@ private fun metaText(state: ItemActionsSheetState.Ready): String {
     else -> stringResource(R.string.item_actions_expires, date)
   }
 }
-
-/** «caduca demà», «caduca dc. 21 oct» or «ja ha caducat», lowercase, for the quantity dialog. */
-private fun quantityExpiresText(
-  resources: Resources,
-  locale: Locale,
-  daysLeft: Int,
-  date: LocalDate,
-): String =
-  when {
-    daysLeft < 0 -> resources.getString(R.string.quantity_expired)
-    daysLeft == 0 -> resources.getString(R.string.quantity_expires_today)
-    daysLeft == 1 -> resources.getString(R.string.quantity_expires_tomorrow)
-    else -> resources.getString(R.string.quantity_expires_on, formatDate(date, locale))
-  }
 
 /** «dc. 21 oct», localized. */
 @Composable
@@ -449,8 +429,6 @@ private fun SideEffectHandler(
   val cancelLabel = stringResource(R.string.add_picker_cancel)
   val deleteLabel = stringResource(R.string.item_actions_delete)
   val cancelAction = stringResource(R.string.item_actions_cancel)
-  val resources = LocalResources.current
-  val locale = LocalLocale.current.platformLocale
   val deleteBody = stringResource(R.string.item_actions_delete_body)
   LaunchedEffect(viewModel) {
     viewModel.sideEffects.collect { effect ->
@@ -484,21 +462,6 @@ private fun SideEffectHandler(
                 type = AppFeedbackType.Error,
               )
             if (result == DialogResult.Positive) viewModel.onDeleteConfirmed()
-          }
-
-        is ItemActionsSheetSideEffect.ShowQuantitySelector ->
-          launch {
-            val result =
-              dialogState.showQuantitySelectorDialog(
-                QuantityDialogData(
-                  name = effect.name,
-                  shape = effect.category.shape,
-                  icon = CategoryIcons.vectorOf(effect.category.icon),
-                  expires = quantityExpiresText(resources, locale, effect.daysLeft, effect.expiration),
-                  max = effect.max,
-                ),
-              )
-            if (result is QuantitySelectorResult.Selected) viewModel.onQuantitySelected(result.quantity)
           }
       }
     }

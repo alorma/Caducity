@@ -26,8 +26,8 @@ data class CategoryConfig(
   /** When null, shape/icon are derived from the name like for migrated categories. */
   val shape: CategoryShape? = null,
   val icon: CategoryIcon? = null,
-  /** Own "soon" margin in days; null follows the global default. */
-  val soonThresholdDays: Int? = null,
+  /** Usual duration of this kind of food in days; null means none. */
+  val usualDurationDays: Int? = null,
 )
 
 /**
@@ -49,8 +49,6 @@ data class ItemConfig(
   val shouldConsume: Boolean = false,
   /** Used as an ingredient of a Transforma: must disappear from every live view. */
   val shouldTransform: Boolean = false,
-  /** Legacy pack (`> 1`) to exercise the partial-consume dialog; new items are always independent units. */
-  val packSize: Int? = null,
 )
 
 /**

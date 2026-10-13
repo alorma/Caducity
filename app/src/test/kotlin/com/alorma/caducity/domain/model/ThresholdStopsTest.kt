@@ -36,35 +36,44 @@ class ThresholdStopsTest {
   }
 
   @Test
-  fun `suggested margins follow the spec table`() {
+  fun `suggested durations follow the spec table`() {
     val expected =
       mapOf(
-        SuggestedCategory.MEAT_FISH to 2,
-        SuggestedCategory.BAKERY to 2,
-        SuggestedCategory.DAIRY to 3,
-        SuggestedCategory.PRODUCE to 3,
-        SuggestedCategory.COLD_CUTS to 3,
-        SuggestedCategory.READY_MEALS to 2,
-        SuggestedCategory.DRINKS to 7,
-        SuggestedCategory.PANTRY to 30,
+        SuggestedCategory.MEAT_FISH to 3,
+        SuggestedCategory.BAKERY to 3,
+        SuggestedCategory.READY_MEALS to 3,
+        SuggestedCategory.DAIRY to 7,
+        SuggestedCategory.PRODUCE to 7,
+        SuggestedCategory.COLD_CUTS to 7,
+        SuggestedCategory.DRINKS to 30,
+        SuggestedCategory.PANTRY to 90,
       )
-    expectThat(SuggestedCategory.entries.associateWith(SuggestedThresholds::of)).isEqualTo(expected)
+    expectThat(SuggestedCategory.entries.associateWith(SuggestedDurations::of)).isEqualTo(expected)
     SuggestedCategory.entries.forEach {
-      expectThat(SuggestedThresholds.of(it) in ThresholdStops.days).isEqualTo(true)
+      expectThat(SuggestedDurations.of(it) in ThresholdStops.days).isEqualTo(true)
     }
   }
 
   @Test
-  fun `suggested margin is found by category name in ca en es`() {
-    expectThat(SuggestedThresholds.forName("Làctics")).isEqualTo(3)
-    expectThat(SuggestedThresholds.forName("Fruita i verdura")).isEqualTo(3)
-    expectThat(SuggestedThresholds.forName("Carn i peix")).isEqualTo(2)
-    expectThat(SuggestedThresholds.forName("Despensa")).isEqualTo(30)
-    expectThat(SuggestedThresholds.forName("Pan y bollería")).isNull()
-    expectThat(SuggestedThresholds.forName("Fleca")).isEqualTo(2)
-    expectThat(SuggestedThresholds.forName("Bebidas")).isEqualTo(7)
-    expectThat(SuggestedThresholds.forName("Embotits")).isEqualTo(3)
-    expectThat(SuggestedThresholds.forName("Plats preparats")).isEqualTo(2)
-    expectThat(SuggestedThresholds.forName("Snacks")).isNull()
+  fun `suggested duration is found by category name in ca en es`() {
+    expectThat(SuggestedDurations.forName("Làctics")).isEqualTo(7)
+    expectThat(SuggestedDurations.forName("Fruita i verdura")).isEqualTo(7)
+    expectThat(SuggestedDurations.forName("Carn i peix")).isEqualTo(3)
+    expectThat(SuggestedDurations.forName("Despensa")).isEqualTo(90)
+    expectThat(SuggestedDurations.forName("Pan y bollería")).isNull()
+    expectThat(SuggestedDurations.forName("Fleca")).isEqualTo(3)
+    expectThat(SuggestedDurations.forName("Bebidas")).isEqualTo(30)
+    expectThat(SuggestedDurations.forName("Embotits")).isEqualTo(7)
+    expectThat(SuggestedDurations.forName("Plats preparats")).isEqualTo(3)
+    expectThat(SuggestedDurations.forName("Snacks")).isNull()
+  }
+
+  @Test
+  fun `default category keeps its duration only while it keeps the suggested shape and icon`() {
+    val dairy = SuggestedCategory.DAIRY
+    expectThat(SuggestedDurations.forDefaultCategory("Làctics", dairy.shape, dairy.icon)).isEqualTo(7)
+    expectThat(SuggestedDurations.forDefaultCategory("Làctics", dairy.shape, CategoryIcon("eco"))).isNull()
+    expectThat(SuggestedDurations.forDefaultCategory("Làctics", CategoryShape.SUNNY, dairy.icon)).isNull()
+    expectThat(SuggestedDurations.forDefaultCategory("Snacks", dairy.shape, dairy.icon)).isNull()
   }
 }

@@ -223,7 +223,6 @@
   <string name="item_actions_unit_of_frozen">Unitat %1$d de %2$d · congelat</string>
   <string name="item_actions_expires">Caduca %1$s</string>
   <string name="item_actions_frozen_meta">Congelat</string>
-  <string name="item_actions_pack">Pack de %1$d · caduca %2$s</string>
   <string name="item_pill_today">Avui</string>
   <string name="item_pill_yesterday">Ahir</string>
   <string name="item_pill_tomorrow">Demà</string>
@@ -297,7 +296,6 @@
   <string name="home_empty_title">El rebost és buit</string>
   <string name="home_empty_body">Comença per la compra d\'avui: afegeix el que acabes de guardar a la nevera.</string>
   <string name="home_empty_cta">Afegeix el primer producte</string>
-  <string name="item_pack_of">pack de %d</string>
   <string name="week_strip_day_none">%1$s, res</string>
   <plurals name="week_strip_day_count">
     <item quantity="one">%1$s, %2$d producte</item>
@@ -532,19 +530,6 @@
   <string name="ob_category_drinks">Begudes</string>
   <string name="ob_category_cold_cuts">Embotits</string>
   <string name="ob_category_ready_meals">Plats preparats</string>
-  <!-- Quantity dialog (legacy packs) -->
-  <string name="quantity_overline">Pack de %1$d · %2$s</string>
-  <string name="quantity_question">Quantes unitats has consumit?</string>
-  <string name="quantity_of">de %d</string>
-  <string name="quantity_all">Tots (%d)</string>
-  <string name="quantity_confirm">Consumeix %d</string>
-  <string name="quantity_confirm_all">Consumeix els %d</string>
-  <string name="quantity_less">Una menys</string>
-  <string name="quantity_more">Una més</string>
-  <string name="quantity_expired">ja ha caducat</string>
-  <string name="quantity_expires_today">caduca avui</string>
-  <string name="quantity_expires_tomorrow">caduca demà</string>
-  <string name="quantity_expires_on">caduca %1$s</string>
   <string name="settings_soon_default">«Aviat» per defecte</string>
   <string name="settings_soon_default_sub">Per a les categories sense marge propi</string>
   <string name="settings_category_margins">Marge per categoria</string>
@@ -563,17 +548,7 @@
   <string name="category_editor_margin">Avisa\'m abans</string>
   <string name="category_editor_margin_help">Llisca o toca un punt. «%1$s» passarà a «Aviat» %2$s abans de caducar.</string>
   <string name="category_editor_margin_this_category">Aquesta categoria</string>
-  <string name="home_later_title">Més endavant</string>
-  <string name="home_later_names_two">%1$s i %2$s</string>
-  <string name="home_later_names_more">%1$s, %2$s i %3$d més</string>
-  <string name="home_later_range">Del %1$s al %2$s</string>
-  <string name="home_later_on">El %s</string>
-  <string name="home_later_expand">Mostra els productes</string>
-  <string name="home_later_collapse">Amaga els productes</string>
-  <string name="home_later_help_one">Ja són «Aviat» pel marge de la seva categoria (%1$s, %2$s).</string>
-  <string name="home_later_help_many">Ja són «Aviat» pel marge de la seva categoria.</string>
   <string name="status_help_soon_margin">Segons el marge de cada categoria. Fes-los servir primer.</string>
-  <string name="status_notify_pill">Avisa %s abans</string>
   <string name="ob_alerts_default_help">Cada categoria ja porta el seu marge. Aquest és per a les que creïs tu.</string>
   <string name="threshold_unit_days">dies</string>
   <string name="threshold_unit_weeks">setmanes</string>

@@ -439,12 +439,11 @@ private fun CalendarRowItem(
   modifier: Modifier = Modifier,
 ) {
   val meta =
-    row.pack?.let { "${row.category.name} · ${stringResource(R.string.item_pack_of, it)}" }
-      ?: if (row.position.count > 1) {
-        stringResource(R.string.calendar_row_meta, row.category.name, row.position.index, row.position.count)
-      } else {
-        row.category.name
-      }
+    if (row.position.count > 1) {
+      stringResource(R.string.calendar_row_meta, row.category.name, row.position.index, row.position.count)
+    } else {
+      row.category.name
+    }
   ConnectedRow(
     index = index,
     count = count,
@@ -526,8 +525,8 @@ private fun CalendarPreview() {
               ),
             rows =
               listOf(
-                CalendarRow("1", "Formatge cheddar", previewCategory, UnitPosition(1, 3), null, ExpiryStatus.FRESH, 10),
-                CalendarRow("2", "Salsa pesto", previewCategory, UnitPosition(1, 1), null, ExpiryStatus.FRESH, 10),
+                CalendarRow("1", "Formatge cheddar", previewCategory, UnitPosition(1, 3), ExpiryStatus.FRESH, 10),
+                CalendarRow("2", "Salsa pesto", previewCategory, UnitPosition(1, 1), ExpiryStatus.FRESH, 10),
               ),
           ),
         onBack = {},

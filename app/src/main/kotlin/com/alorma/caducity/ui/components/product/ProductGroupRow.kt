@@ -67,9 +67,10 @@ fun ProductGroupRow(
   val nearest = group.nearest
   val nearestDate = nearest.expiration.shortDateText()
   val quantity =
-    when {
-      group.isSingle -> nearest.legacyPack?.let { stringResource(R.string.item_pack_of, it) }
-      else -> pluralStringResource(R.plurals.home_unit_count, group.unitCount, group.unitCount)
+    if (group.isSingle) {
+      null
+    } else {
+      pluralStringResource(R.plurals.home_unit_count, group.unitCount, group.unitCount)
     }
   val meta =
     listOfNotNull(
@@ -148,11 +149,7 @@ private fun UnitRow(
     )
     Spacer(Modifier.width(12.dp))
     Text(
-      text =
-        listOfNotNull(
-          stringResource(R.string.category_unit_n, number),
-          unit.legacyPack?.let { stringResource(R.string.item_pack_of, it) },
-        ).joinToString(" · "),
+      text = stringResource(R.string.category_unit_n, number),
       style = CaducityTheme.typography.bodyMedium,
       modifier = Modifier.weight(1f),
     )

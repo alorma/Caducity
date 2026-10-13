@@ -50,7 +50,7 @@ class PopulateFakeDataUseCase(
             shape = categoryConfig.shape ?: defaults.shape,
             icon = categoryConfig.icon ?: defaults.icon,
             sortOrder = index,
-            soonThresholdDays = categoryConfig.soonThresholdDays,
+            usualDurationDays = categoryConfig.usualDurationDays,
           )
 
         // Create category first (empty)
@@ -68,7 +68,6 @@ class PopulateFakeDataUseCase(
           shouldFreeze: Boolean,
           remainingDaysWhenFrozen: Int,
           shouldConsume: Boolean,
-          packSize: Int? = null,
           shouldTransform: Boolean = false,
         ): String? {
           val newItem =
@@ -76,7 +75,6 @@ class PopulateFakeDataUseCase(
               identifier = "",
               productId = productIdFor(productName),
               expirationDate = expirationDate,
-              packSize = packSize,
             )
           val itemId = itemDataSource.addItem(category.id, newItem)
           when {
@@ -96,7 +94,6 @@ class PopulateFakeDataUseCase(
                 item.shouldFreeze,
                 item.remainingDaysWhenFrozen,
                 item.shouldConsume,
-                item.packSize,
                 item.shouldTransform,
               )
             }

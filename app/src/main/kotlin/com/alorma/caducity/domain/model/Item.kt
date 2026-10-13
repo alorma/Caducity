@@ -11,7 +11,6 @@ data class Item(
   val status: ItemStatus,
   val pausedDate: Instant? = null,
   val remainingDays: Int? = null,
-  val packSize: Int? = null,
   val discardedDate: Instant? = null,
   val createdAt: Instant? = null,
 ) {

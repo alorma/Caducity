@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -62,7 +61,6 @@ import com.alorma.caducity.base.ui.icons.symbols.Checklist
 import com.alorma.caducity.base.ui.icons.symbols.Delete
 import com.alorma.caducity.base.ui.icons.symbols.DeleteSweep
 import com.alorma.caducity.base.ui.icons.symbols.EventRepeat
-import com.alorma.caducity.base.ui.icons.symbols.Notifications
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.WaterDrop
 import com.alorma.caducity.config.time.TodayProvider
@@ -84,7 +82,6 @@ import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.product.shortDateText
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
 import java.time.format.DateTimeFormatter
@@ -320,7 +317,7 @@ private fun StatusListContent(
       ) {
         ready.sections.forEach { section ->
           item(key = "header-${section.category.id}") {
-            SectionHeader(section, ready.status, Modifier.padding(top = 16.dp, bottom = 8.dp))
+            SectionHeader(section, Modifier.padding(top = 16.dp, bottom = 8.dp))
           }
           items(section.rows, key = { it.key }) { row ->
             val index = section.rows.indexOf(row)
@@ -391,7 +388,6 @@ private fun helpText(ready: StatusListState.Ready): String =
 @Composable
 private fun SectionHeader(
   section: StatusSection,
-  status: ExpiryStatus,
   modifier: Modifier = Modifier,
 ) {
   Row(
@@ -418,38 +414,6 @@ private fun SectionHeader(
         color = CaducityTheme.colorScheme.onSurfaceVariant,
       )
     }
-    val soonDays = section.soonDays
-    if (status == ExpiryStatus.SOON && soonDays != null) {
-      NotifyPill(thresholdLabel(soonDays))
-    }
-  }
-}
-
-@Composable
-private fun NotifyPill(label: String) {
-  val soon = CaducityTheme.colors.soon
-  Row(
-    modifier =
-      Modifier
-        .height(28.dp)
-        .clip(RoundedCornerShape(14.dp))
-        .background(soon.container)
-        .padding(horizontal = 10.dp),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(4.dp),
-  ) {
-    Icon(
-      Symbols.Outlined.Notifications,
-      contentDescription = null,
-      tint = soon.onContainer,
-      modifier = Modifier.size(14.dp),
-    )
-    Text(
-      text = stringResource(R.string.status_notify_pill, label),
-      style = CaducityTheme.typography.labelMedium,
-      color = soon.onContainer,
-      maxLines = 1,
-    )
   }
 }
 
@@ -463,9 +427,7 @@ private fun StatusRowItem(
   viewModel: StatusListViewModel,
 ) {
   val colors = ready.status.colors()
-  val quantity =
-    row.legacyPack?.let { stringResource(R.string.item_pack_of, it) }
-      ?: row.unitCount.takeIf { it > 1 }?.let { pluralStringResource(R.plurals.home_unit_count, it, it) }
+  val quantity = row.unitCount.takeIf { it > 1 }?.let { pluralStringResource(R.plurals.home_unit_count, it, it) }
   ConnectedRow(
     index = index,
     count = count,

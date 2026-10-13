@@ -27,7 +27,6 @@ import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
-import com.alorma.caducity.domain.usecase.SplitAndConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.components.actions.ItemActionsSheetNavigationSideEffect
@@ -148,7 +147,6 @@ class ItemActionsSheetViewModelTest {
       observeItems = ObserveItemsUseCase(pantry, thresholds, todayProvider),
       observeCategories = ObserveCategoriesUseCase(pantry),
       consumeItem = consume,
-      splitAndConsume = SplitAndConsumeItemUseCase(itemDataSource, consume),
       freezeItem = FreezeItemUseCase(itemDataSource, pantry, clock),
       unfreezeItem = UnfreezeItemUseCase(itemDataSource, pantry, clock),
       rescheduleItem = RescheduleItemUseCase(itemDataSource, pantry),

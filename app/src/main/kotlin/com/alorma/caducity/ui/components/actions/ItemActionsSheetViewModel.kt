@@ -14,7 +14,6 @@ import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
-import com.alorma.caducity.domain.usecase.SplitAndConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.toExpirationInstant
 import com.alorma.caducity.feature.tracking.EventTracker
@@ -44,7 +43,6 @@ class ItemActionsSheetViewModel(
   observeItems: ObserveItemsUseCase,
   observeCategories: ObserveCategoriesUseCase,
   private val consumeItem: ConsumeItemUseCase,
-  private val splitAndConsume: SplitAndConsumeItemUseCase,
   private val freezeItem: FreezeItemUseCase,
   private val unfreezeItem: UnfreezeItemUseCase,
   private val rescheduleItem: RescheduleItemUseCase,
@@ -73,7 +71,6 @@ class ItemActionsSheetViewModel(
           category = category,
           unitIndex = position.index,
           unitCount = position.count,
-          pack = entry.legacyPack,
           expiration = entry.expiration,
           status = entry.status,
           daysLeft = appClock.nowDate().daysUntil(entry.expiration),
@@ -102,19 +99,6 @@ class ItemActionsSheetViewModel(
   fun onConsume() {
     val ready = ready() ?: return
     eventTracker.trackAction(ItemActionAction("consume"))
-    val pack = ready.pack
-    if (pack != null) {
-      emitSideEffect(
-        ItemActionsSheetSideEffect.ShowQuantitySelector(
-          max = pack,
-          name = ready.name,
-          category = ready.category,
-          expiration = ready.expiration,
-          daysLeft = ready.daysLeft,
-        ),
-      )
-      return
-    }
     viewModelScope.launch {
       consumeItem
         .consume(itemId)
@@ -126,27 +110,6 @@ class ItemActionsSheetViewModel(
               actionLabel = R.string.add_undo,
               type = AppFeedbackType.Success,
               onAction = { restoreItems.restore(listOf(itemId)) },
-            ),
-          )
-        }.onFailure { failed() }
-    }
-  }
-
-  /** Legacy pack: consumes [quantity] of its units (no undo for a partial split). */
-  fun onQuantitySelected(quantity: Int) {
-    val ready = ready() ?: return
-    viewModelScope.launch {
-      splitAndConsume
-        .splitAndConsume(
-          categoryId = ready.category.id,
-          itemId = itemId,
-          quantityToConsume = quantity,
-        ).onSuccess {
-          feedback(
-            GlobalSnackbar(
-              message = R.string.item_actions_snackbar_consumed,
-              messageArgs = listOf(ready.name),
-              type = AppFeedbackType.Success,
             ),
           )
         }.onFailure { failed() }

@@ -60,8 +60,8 @@ class SettingsViewModel(
         soonThresholdDays = threshold,
         categoryMargins =
           categories
-            .map { CategoryMarginSummary(it.name, it.soonThresholdDays ?: threshold) }
-            .sortedWith(compareBy({ it.days }, { it.name.normalizeForSearch() })),
+            .map { CategoryMarginSummary(it.name, it.usualDurationDays) }
+            .sortedWith(compareBy({ it.days ?: Int.MAX_VALUE }, { it.name.normalizeForSearch() })),
         themeMode = themeMode,
         colorPalette = colorPalette,
         firstDayOfWeek = calendar.firstDayOfWeek,

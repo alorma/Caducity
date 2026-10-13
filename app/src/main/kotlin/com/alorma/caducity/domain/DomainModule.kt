@@ -2,7 +2,7 @@ package com.alorma.caducity.domain
 
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
-import com.alorma.caducity.domain.usecase.CategoryThresholdsUseCase
+import com.alorma.caducity.domain.usecase.CategoryDurationsUseCase
 import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
@@ -42,7 +42,7 @@ val domainModule =
     factoryOf(::ObserveCategoriesUseCase)
     factoryOf(::GetActiveItemUseCase)
     factoryOf(::UpdateCategoryUseCase)
-    factoryOf(::CategoryThresholdsUseCase)
+    factoryOf(::CategoryDurationsUseCase)
     factoryOf(::SeedCategoriesUseCase)
     factoryOf(::ObserveCalendarUseCase)
     factoryOf(::ObserveWeekStripUseCase)

@@ -121,7 +121,7 @@ class PantryUseCasesTest {
   // region AddProductUseCase
 
   @Test
-  fun `add creates N independent items with the same date and no pack`() =
+  fun `add creates N independent items with the same date`() =
     runTest {
       category("c1")
       val added = addProduct.add("Milk", "c1", inDays(5), quantity = 3, frozen = false).getOrThrow()
@@ -131,7 +131,6 @@ class PantryUseCasesTest {
       val created = items()
       expectThat(created).hasSize(3)
       expectThat(created.map { it.expirationDate }.distinct()).hasSize(1)
-      expectThat(created.map { it.packSize }.distinct()).isEqualTo(listOf(null))
       expectThat(created.map { it.identifier }.distinct()).isEqualTo(listOf(""))
       expectThat(created.map { it.productId }.distinct()).isEqualTo(listOf(added.productId))
       expectThat(created.all { it.createdAt == clock.now().toEpochMilliseconds() }).isEqualTo(true)
@@ -391,23 +390,23 @@ class PantryUseCasesTest {
     }
 
   @Test
-  fun `a category margin is stored on create and update and can go back to the default`() =
+  fun `a usual duration is stored on create and update and can be cleared`() =
     runTest {
       val id = "c1"
-      db.categoryDao().insertCategory(CategoryRoomEntity(id, "Pantry", "", soonThresholdDays = 30))
-      expectThat(pantry.getCategories().single().soonThresholdDays).isEqualTo(30)
+      db.categoryDao().insertCategory(CategoryRoomEntity(id, "Pantry", "", usualDurationDays = 30))
+      expectThat(pantry.getCategories().single().usualDurationDays).isEqualTo(30)
 
       updateCategory.update(id, "Pantry", CategoryShape.COOKIE, CategoryIcon.DEFAULT, 14).getOrThrow()
-      expectThat(db.categoryDao().getCategory(id)!!.soonThresholdDays).isEqualTo(14)
+      expectThat(db.categoryDao().getCategory(id)!!.usualDurationDays).isEqualTo(14)
 
       updateCategory.update(id, "Pantry", CategoryShape.COOKIE, CategoryIcon.DEFAULT, null).getOrThrow()
-      expectThat(db.categoryDao().getCategory(id)!!.soonThresholdDays).isNull()
+      expectThat(db.categoryDao().getCategory(id)!!.usualDurationDays).isNull()
     }
 
   @Test
-  fun `the margins screen sets one margin and restores the suggested ones`() =
+  fun `the durations screen sets one duration and restores the suggested ones`() =
     runTest {
-      val thresholds = CategoryThresholdsUseCase(pantry)
+      val durations = CategoryDurationsUseCase(pantry)
       val dairy = "dairy"
       val pantryId = "pantry"
       val own = "own"
@@ -415,15 +414,15 @@ class PantryUseCasesTest {
       category(pantryId, "Rebost", 1)
       category(own, "Snacks", 2)
 
-      thresholds.set(dairy, 14).getOrThrow()
-      thresholds.set(own, 60).getOrThrow()
-      expectThat(db.categoryDao().getCategory(dairy)!!.soonThresholdDays).isEqualTo(14)
-      expectThat(thresholds.set("zzz", 3)).isFailure().isA<PantryError.CategoryNotFound>()
+      durations.set(dairy, 14).getOrThrow()
+      durations.set(own, 60).getOrThrow()
+      expectThat(db.categoryDao().getCategory(dairy)!!.usualDurationDays).isEqualTo(14)
+      expectThat(durations.set("zzz", 3)).isFailure().isA<PantryError.CategoryNotFound>()
 
-      thresholds.restoreSuggested().getOrThrow()
-      expectThat(db.categoryDao().getCategory(dairy)!!.soonThresholdDays).isEqualTo(3)
-      expectThat(db.categoryDao().getCategory(pantryId)!!.soonThresholdDays).isEqualTo(30)
-      expectThat(db.categoryDao().getCategory(own)!!.soonThresholdDays).isNull()
+      durations.restoreSuggested().getOrThrow()
+      expectThat(db.categoryDao().getCategory(dairy)!!.usualDurationDays).isEqualTo(7)
+      expectThat(db.categoryDao().getCategory(pantryId)!!.usualDurationDays).isEqualTo(90)
+      expectThat(db.categoryDao().getCategory(own)!!.usualDurationDays).isNull()
     }
 
   @Test

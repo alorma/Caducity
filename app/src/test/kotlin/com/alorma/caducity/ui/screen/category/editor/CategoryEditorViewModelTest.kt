@@ -93,7 +93,7 @@ class CategoryEditorViewModelTest {
 
   private suspend fun viewModel(categoryId: String? = null): CategoryEditorViewModel {
     val vm =
-      CategoryEditorViewModel(categoryId, pantry, create, update, delete, thresholds, EventTracker(emptyList()))
+      CategoryEditorViewModel(categoryId, pantry, create, update, delete, EventTracker(emptyList()))
         .also(created::add)
     // Room runs its queries off the test dispatcher: wait for the editor to load.
     withContext(Dispatchers.Default) { withTimeout(5_000) { vm.state.first { !it.loading } } }
@@ -119,44 +119,44 @@ class CategoryEditorViewModelTest {
     }
 
   @Test
-  fun `the margin slider starts on the default and an untouched one is saved as null`() =
+  fun `the duration slider starts on 7 and an untouched one is saved as null`() =
     runTest {
       val vm = viewModel()
-      expectThat(vm.state.value.shownSoonDays).isEqualTo(3)
-      expectThat(vm.state.value.soonDays).isNull()
+      expectThat(vm.state.value.shownDurationDays).isEqualTo(7)
+      expectThat(vm.state.value.usualDurationDays).isNull()
 
       vm.onNameChange("Begudes")
       vm.onSave()
       real { vm.navigationSideEffects.first() }
-      expectThat(pantry.getCategories().single().soonThresholdDays).isNull()
+      expectThat(pantry.getCategories().single().usualDurationDays).isNull()
     }
 
   @Test
-  fun `a margin picked on the slider is saved and loaded back when editing`() =
+  fun `a duration picked on the slider is saved and loaded back when editing`() =
     runTest {
       val vm = viewModel()
       vm.onNameChange("Rebost")
-      vm.onSoonDaysChange(30)
+      vm.onUsualDurationChange(30)
       vm.onSave()
       real { vm.navigationSideEffects.first() }
       val saved = pantry.getCategories().single()
-      expectThat(saved.soonThresholdDays).isEqualTo(30)
+      expectThat(saved.usualDurationDays).isEqualTo(30)
 
       val edit = viewModel(saved.id)
-      expectThat(edit.state.value.soonDays).isEqualTo(30)
-      expectThat(edit.state.value.shownSoonDays).isEqualTo(30)
+      expectThat(edit.state.value.usualDurationDays).isEqualTo(30)
+      expectThat(edit.state.value.shownDurationDays).isEqualTo(30)
     }
 
   @Test
-  fun `editing a category without its own margin keeps it following the default`() =
+  fun `editing a category without a usual duration keeps it empty`() =
     runTest {
       val id = create.createCategory("Lactics", "").getOrThrow()
       val vm = viewModel(id)
-      expectThat(vm.state.value.soonDays).isNull()
+      expectThat(vm.state.value.usualDurationDays).isNull()
       vm.onNameChange("Lactics i ous")
       vm.onSave()
       real { vm.navigationSideEffects.first() }
-      expectThat(pantry.getCategories().single().soonThresholdDays).isNull()
+      expectThat(pantry.getCategories().single().usualDurationDays).isNull()
     }
 
   @Test

@@ -343,6 +343,6 @@ class StatusListViewModel(
               entries = units,
             )
           }
-      StatusSection(category = group.category, rows = rows, soonDays = group.soonDays)
+      StatusSection(category = group.category, rows = rows)
     }
 }

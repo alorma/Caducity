@@ -33,9 +33,7 @@ class IngredientPickerStateTest {
     status = status,
     frozenSince = null,
     remainingDays = null,
-    packSize = null,
     createdAt = null,
-    soonDays = 3,
   )
 
   private val entries =

@@ -148,7 +148,7 @@ Visibles per a l'usuari: fases 0 (un sol «Desa», fora la tanda), 1 (packs com 
 | Fase | Estat |
 | --- | --- |
 | 0 — Fora d'abast | Validada (14 d'octubre): `ffabb36` valoració, `458df5c` widget, `0472842` tanda, `55e1a77` helpers, `0d8dd93` backlog, `ebf8ba7` + `0752b2f` renom a `AddProductUseCase` |
-| 1 — Migració v5 | Pendent (cal aprovació de la migració) |
+| 1 — Migració v5 | Feta, pendent de validar al dispositiu. Abast ampliat (Bernat, 14 d'octubre): `packSize` i `soonThresholdDays` s'esborren de la BBDD (taules reconstruïdes), `usualDurationDays` hereta el marge configurat; la fase 3.7 (packs) i la 6.1 (Aviat global, «Més endavant») s'han avançat. Backup v4: només s'importa la versió actual, sense codi d'upgrade. Pendent a les fases 6/8: textos i noms «marge» (`CategoryMargins*`, «Marge per categoria», «Avisa'm abans»), `CreateCategoryUseCase` amb un paràmetre sense ús |
 | 2 — Fila única | Pendent |
 | 3 — Modal d'accions | Pendent |
 | 4 — «Llença» i Caducats | Pendent |

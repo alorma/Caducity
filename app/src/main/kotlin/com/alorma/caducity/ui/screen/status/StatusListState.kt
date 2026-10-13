@@ -20,15 +20,12 @@ data class StatusRow(
   val nearest: PantryEntry get() = entries.first()
   val itemIds: List<String> get() = entries.map { it.itemId }
   val unitCount: Int get() = entries.size
-  val legacyPack: Int? get() = if (entries.size == 1) nearest.legacyPack else null
 }
 
 @Immutable
 data class StatusSection(
   val category: Category,
   val rows: List<StatusRow>,
-  /** Effective "soon" margin of the category, for the «Avisa N abans» pill of the Aviat list. */
-  val soonDays: Int? = null,
 ) {
   val unitCount: Int get() = rows.sumOf { it.unitCount }
 }

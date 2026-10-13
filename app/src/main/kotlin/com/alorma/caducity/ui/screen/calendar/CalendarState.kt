@@ -16,7 +16,6 @@ data class CalendarRow(
   val name: String,
   val category: Category,
   val position: UnitPosition,
-  val pack: Int?,
   val status: ExpiryStatus,
   /** Days until the unit expires; negative when it already has. */
   val daysLeft: Int,

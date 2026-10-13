@@ -177,7 +177,7 @@ internal fun SettingsContent(
       val oneWeek = stringResource(R.string.settings_1w)
       val marginsSummary =
         state.categoryMargins
-          .map { "${it.name} ${thresholdLabel(it.days)}" }
+          .mapNotNull { summary -> summary.days?.let { "${summary.name} ${thresholdLabel(it)}" } }
           .joinToString(" · ")
           .ifBlank { null }
       StyledSettingsGroup(title = { Text(stringResource(R.string.settings_section_alerts)) }) {
@@ -416,7 +416,7 @@ internal fun SettingsPreviewContent(selectedPalette: ColorPalette = ColorPalette
       SettingsState(
         reminderEnabled = true,
         colorPalette = selectedPalette,
-        categoryMargins = listOf(CategoryMarginSummary("Fruita i verdura", 3), CategoryMarginSummary("Làctics", 3)),
+        categoryMargins = listOf(CategoryMarginSummary("Fruita i verdura", 7), CategoryMarginSummary("Làctics", 3)),
       ),
     reminderOn = true,
     isDebug = false,

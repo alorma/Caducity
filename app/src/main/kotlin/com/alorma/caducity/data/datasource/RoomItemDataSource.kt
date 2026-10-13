@@ -100,16 +100,6 @@ class RoomItemDataSource(
     }
   }
 
-  override suspend fun updatePackSize(
-    itemId: String,
-    newPackSize: Int,
-  ) {
-    itemDao.getItem(itemId)?.let { item ->
-      val updatedItem = item.copy(packSize = newPackSize)
-      itemDao.updateItem(updatedItem)
-    }
-  }
-
   override fun getAllItems(): Flow<List<Item>> =
     itemDao.getAllItems().map { entities ->
       entities.map { entity -> itemMapper.toModel(entity) }

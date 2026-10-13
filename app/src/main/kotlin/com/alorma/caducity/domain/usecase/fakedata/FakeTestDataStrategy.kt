@@ -28,7 +28,7 @@ class FakeTestDataStrategy(
     CategoryConfig(
       name = "Làctics",
       description = "Llet, formatge, iogurt i altres productes làctics",
-      soonThresholdDays = 3,
+      usualDurationDays = 7,
       products =
         listOf(
           createProductWithAllStatuses("Llet sencera", now),
@@ -41,6 +41,7 @@ class FakeTestDataStrategy(
     CategoryConfig(
       name = "Fruita i verdura",
       description = "Fruita i verdura fresques",
+      usualDurationDays = 7,
       products =
         listOf(
           createProductWithAllStatuses("Pomes", now),
@@ -58,9 +59,6 @@ class FakeTestDataStrategy(
     now: Instant,
   ): ProductConfig {
     val items = mutableListOf<ItemConfig>()
-
-    // One legacy pack of 4 expiring tomorrow, for the quantity dialog
-    items.add(ItemConfig(identifier = "$productName pack", expirationDate = now.plus(1.days), packSize = 4))
 
     // Fresh items (beyond the soonExpiringThreshold)
     repeat(6) { index ->

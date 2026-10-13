@@ -218,7 +218,6 @@
   <string name="item_actions_unit_of_frozen">Unit %1$d of %2$d · frozen</string>
   <string name="item_actions_expires">Expires %1$s</string>
   <string name="item_actions_frozen_meta">Frozen</string>
-  <string name="item_actions_pack">Pack of %1$d · expires %2$s</string>
   <string name="item_pill_today">Today</string>
   <string name="item_pill_yesterday">Yesterday</string>
   <string name="item_pill_tomorrow">Tomorrow</string>
@@ -286,7 +285,6 @@
   <string name="home_empty_title">The pantry is empty</string>
   <string name="home_empty_body">Start with today\'s shopping: add what you just put in the fridge.</string>
   <string name="home_empty_cta">Add the first product</string>
-  <string name="item_pack_of">pack of %d</string>
   <string name="week_strip_day_none">%1$s, nothing</string>
   <plurals name="week_strip_day_count">
     <item quantity="one">%1$s, %2$d product</item>
@@ -510,19 +508,6 @@
   <string name="ob_category_drinks">Drinks</string>
   <string name="ob_category_cold_cuts">Cold cuts</string>
   <string name="ob_category_ready_meals">Ready meals</string>
-  <!-- Quantity dialog (legacy packs) -->
-  <string name="quantity_overline">Pack of %1$d · %2$s</string>
-  <string name="quantity_question">How many units did you consume?</string>
-  <string name="quantity_of">of %d</string>
-  <string name="quantity_all">All (%d)</string>
-  <string name="quantity_confirm">Consume %d</string>
-  <string name="quantity_confirm_all">Consume all %d</string>
-  <string name="quantity_less">One less</string>
-  <string name="quantity_more">One more</string>
-  <string name="quantity_expired">already expired</string>
-  <string name="quantity_expires_today">expires today</string>
-  <string name="quantity_expires_tomorrow">expires tomorrow</string>
-  <string name="quantity_expires_on">expires %1$s</string>
   <string name="settings_soon_default">“Soon” by default</string>
   <string name="settings_soon_default_sub">For categories without their own margin</string>
   <string name="settings_category_margins">Margin per category</string>
@@ -541,17 +526,7 @@
   <string name="category_editor_margin">Warn me before</string>
   <string name="category_editor_margin_help">Slide or tap a dot. “%1$s” will turn “Soon” %2$s before it expires.</string>
   <string name="category_editor_margin_this_category">This category</string>
-  <string name="home_later_title">Later</string>
-  <string name="home_later_names_two">%1$s and %2$s</string>
-  <string name="home_later_names_more">%1$s, %2$s and %3$d more</string>
-  <string name="home_later_range">From %1$s to %2$s</string>
-  <string name="home_later_on">On %s</string>
-  <string name="home_later_expand">Show products</string>
-  <string name="home_later_collapse">Hide products</string>
-  <string name="home_later_help_one">Already “Soon” because of their category\'s margin (%1$s, %2$s).</string>
-  <string name="home_later_help_many">Already “Soon” because of their category\'s margin.</string>
   <string name="status_help_soon_margin">Based on each category\'s margin. Use them first.</string>
-  <string name="status_notify_pill">Warns %s before</string>
   <string name="ob_alerts_default_help">Every category already has its own margin. This one is for the ones you create.</string>
   <string name="threshold_unit_days">days</string>
   <string name="threshold_unit_weeks">weeks</string>

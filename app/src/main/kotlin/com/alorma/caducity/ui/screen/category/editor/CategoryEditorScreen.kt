@@ -123,7 +123,7 @@ fun CategoryEditorScreen(
         onDescriptionChange = viewModel::onDescriptionChange,
         onShapeChange = viewModel::onShapeChange,
         onIconChange = viewModel::onIconChange,
-        onSoonDaysChange = viewModel::onSoonDaysChange,
+        onUsualDurationChange = viewModel::onUsualDurationChange,
         onDelete = viewModel::onDeleteClick,
       )
     }
@@ -137,7 +137,7 @@ private fun CategoryEditorContent(
   onDescriptionChange: (String) -> Unit,
   onShapeChange: (CategoryShape) -> Unit,
   onIconChange: (CategoryIcon) -> Unit,
-  onSoonDaysChange: (Int) -> Unit,
+  onUsualDurationChange: (Int) -> Unit,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -211,13 +211,13 @@ private fun CategoryEditorContent(
           modifier = Modifier.padding(16.dp),
           verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-          ThresholdSlider(days = state.shownSoonDays, onDaysChange = onSoonDaysChange)
+          ThresholdSlider(days = state.shownDurationDays, onDaysChange = onUsualDurationChange)
           Text(
             text =
               stringResource(
                 R.string.category_editor_margin_help,
                 state.name.trim().ifBlank { stringResource(R.string.category_editor_margin_this_category) },
-                thresholdLabel(state.shownSoonDays),
+                thresholdLabel(state.shownDurationDays),
               ),
             style = CaducityTheme.typography.bodySmall,
             color = CaducityTheme.colorScheme.onSurfaceVariant,

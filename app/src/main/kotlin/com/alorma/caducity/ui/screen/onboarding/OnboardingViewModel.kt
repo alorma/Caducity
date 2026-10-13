@@ -8,7 +8,7 @@ import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.domain.NotificationConfigDataSource
 import com.alorma.caducity.domain.model.SeedCategory
 import com.alorma.caducity.domain.model.SuggestedCategory
-import com.alorma.caducity.domain.model.SuggestedThresholds
+import com.alorma.caducity.domain.model.SuggestedDurations
 import com.alorma.caducity.domain.usecase.SeedCategoriesUseCase
 import com.alorma.caducity.feature.consent.ConsentFlag
 import com.alorma.caducity.feature.consent.ConsentManager
@@ -145,7 +145,7 @@ class OnboardingViewModel(
     val seeds =
       SuggestedCategory.entries
         .filter { it in state.selectedCategories }
-        .map { SeedCategory(stringProvider.getString(it.nameRes), it.shape, it.icon, SuggestedThresholds.of(it)) }
+        .map { SeedCategory(stringProvider.getString(it.nameRes), it.shape, it.icon, SuggestedDurations.of(it)) }
     seedCategories.seed(seeds).getOrThrow()
 
     soonThresholdPreferences.setThresholdDays(state.thresholdDays)

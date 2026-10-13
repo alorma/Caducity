@@ -45,7 +45,6 @@ private fun ingredient(
         frozen = false,
         frozenSince = null,
         remainingDays = null,
-        packSize = null,
         createdAt = null,
       )
     },

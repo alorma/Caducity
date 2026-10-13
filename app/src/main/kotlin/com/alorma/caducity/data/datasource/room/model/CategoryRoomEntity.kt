@@ -18,5 +18,5 @@ data class CategoryRoomEntity(
   val icon: CategoryIcon = CategoryIcon.DEFAULT,
   @ColumnInfo(defaultValue = "0")
   val sortOrder: Int = 0,
-  val soonThresholdDays: Int? = null,
+  val usualDurationDays: Int? = null,
 )

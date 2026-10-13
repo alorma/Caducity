@@ -150,6 +150,9 @@ private fun MarginsList(
   }
 }
 
+/** Slider position while a category has no usual duration. */
+private const val SLIDER_START_DAYS = 7
+
 @Composable
 private fun MarginRow(
   row: CategoryMarginRow,
@@ -161,7 +164,7 @@ private fun MarginRow(
   modifier: Modifier = Modifier,
 ) {
   val colors = CaducityTheme.colorScheme
-  val label = thresholdLabel(row.effectiveDays)
+  val label = row.usualDays?.let { thresholdLabel(it) }
   Surface(
     onClick = onClick,
     shape = connectedShape(index, count),
@@ -186,7 +189,7 @@ private fun MarginRow(
           )
           Text(
             text =
-              if (row.ownDays == null) {
+              if (label == null) {
                 stringResource(R.string.margins_row_default)
               } else {
                 stringResource(R.string.margins_row_notify, label)
@@ -195,26 +198,28 @@ private fun MarginRow(
             color = colors.onSurfaceVariant,
           )
         }
-        Surface(
-          shape = RoundedCornerShape(14.dp),
-          color = if (expanded) colors.primary else colors.surface,
-          contentColor = if (expanded) colors.onPrimary else colors.onSurface,
-        ) {
-          Text(
-            text = label,
-            style = CaducityTheme.typography.labelLarge,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
-          )
+        if (label != null) {
+          Surface(
+            shape = RoundedCornerShape(14.dp),
+            color = if (expanded) colors.primary else colors.surface,
+            contentColor = if (expanded) colors.onPrimary else colors.onSurface,
+          ) {
+            Text(
+              text = label,
+              style = CaducityTheme.typography.labelLarge,
+              modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
+            )
+          }
         }
       }
       if (expanded) {
         ThresholdSlider(
-          days = row.effectiveDays,
+          days = row.usualDays ?: SLIDER_START_DAYS,
           onDaysChange = onDaysChange,
           modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
         )
         val suggested = row.suggestedDays
-        if (suggested != null && suggested != row.effectiveDays) {
+        if (suggested != null && suggested != row.usualDays) {
           Row(
             modifier = Modifier.padding(top = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
