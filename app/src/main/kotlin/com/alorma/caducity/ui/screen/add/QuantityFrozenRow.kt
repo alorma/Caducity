@@ -45,15 +45,17 @@ fun QuantityFrozenRow(
     Surface(
       shape = connectedButtonShape(0, if (showFrozen) 2 else 1),
       color = CaducityTheme.colorScheme.surfaceContainerHigh,
-      modifier = Modifier.weight(if (showFrozen) 1.4f else 1f).height(64.dp),
+      modifier = Modifier.weight(if (showFrozen) 2f else 1f).height(64.dp),
     ) {
       Row(
-        modifier = Modifier.padding(start = 16.dp, end = 8.dp),
+        modifier = Modifier.padding(start = 12.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
           text = stringResource(R.string.add_quantity),
           style = CaducityTheme.typography.labelLarge,
+          maxLines = 1,
+          softWrap = false,
           modifier = Modifier.weight(1f),
         )
         StepButton(
@@ -67,7 +69,7 @@ fun QuantityFrozenRow(
           text = quantity.toString(),
           style = CaducityTheme.typography.titleMedium,
           textAlign = TextAlign.Center,
-          modifier = Modifier.width(32.dp),
+          modifier = Modifier.width(24.dp),
         )
         StepButton(
           enabled = quantity < AddItemBatchUseCase.MAX_QUANTITY,
@@ -89,7 +91,7 @@ fun QuantityFrozenRow(
       modifier = Modifier.weight(1f).height(64.dp),
     ) {
       Row(
-        modifier = Modifier.padding(horizontal = 12.dp),
+        modifier = Modifier.padding(horizontal = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
       ) {
