@@ -176,11 +176,11 @@ private fun ResultItem(
     border =
       when {
         selected -> BorderStroke(2.dp, CaducityTheme.colorScheme.primary)
-        // Red at the top, fading into the usual outline colour at the bottom.
+        // Red at the top, fading into the colour of the card at the bottom.
         incomplete ->
           BorderStroke(
             1.5.dp,
-            Brush.verticalGradient(listOf(CaducityTheme.colorScheme.error, CaducityTheme.colorScheme.outline)),
+            Brush.verticalGradient(listOf(CaducityTheme.colorScheme.error, CaducityTheme.colorScheme.surfaceContainer)),
           )
         else -> null
       },
