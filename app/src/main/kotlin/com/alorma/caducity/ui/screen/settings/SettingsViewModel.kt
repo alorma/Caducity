@@ -11,6 +11,7 @@ import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.NavigateFromSettingsAction
 import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.theme.ColorPalette
 import com.alorma.caducity.ui.theme.ThemeMode
 import com.alorma.caducity.ui.theme.ThemePreferences
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,7 +51,7 @@ class SettingsViewModel(
         days to categories
       },
       snapshotFlow { themePreferences.themeMode.value },
-      snapshotFlow { themePreferences.useDynamicColors.value },
+      snapshotFlow { themePreferences.colorPalette.value == ColorPalette.DYNAMIC },
       firstDayOfWeekPreferences.state,
     ) { reminder, (threshold, categories), themeMode, dynamicColors, calendar ->
       SettingsState(
@@ -141,7 +142,7 @@ class SettingsViewModel(
   }
 
   fun onDynamicColorsChange(enabled: Boolean) {
-    themePreferences.setDynamicColorsEnabled(enabled)
+    themePreferences.setColorPalette(if (enabled) ColorPalette.DYNAMIC else ColorPalette.REBOST)
   }
 
   fun onWeekStartClick() {

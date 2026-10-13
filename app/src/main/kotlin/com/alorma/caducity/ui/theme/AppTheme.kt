@@ -70,7 +70,7 @@ fun AppThemeContent(
     }
 
   val colorScheme =
-    if (themePreferences.useDynamicColors.value) {
+    if (themePreferences.colorPalette.value == ColorPalette.DYNAMIC) {
       dynamicColorScheme(darkTheme)
     } else {
       if (darkTheme) {
