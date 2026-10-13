@@ -1,7 +1,7 @@
 # Pla: icona de l'app per paleta
 
 Especificació: [`spec.md`](spec.md). Captura: `captures/IconaPaletes.png` (les 6 paletes, clar i fosc). Font de disseny: `font-dc-html/IconaPaletes.dc.html`.
-Depèn de [paletes](../03-paletes/plan.md) (ja fet: `ColorPalette`, `ThemePreferences.colorPalette`).
+Depèn de les paletes de color (ja fet: `ColorPalette`, `ThemePreferences.colorPalette`).
 
 ## Punt de partida i diferències amb l'especificació
 
