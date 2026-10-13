@@ -1,23 +1,23 @@
 # Transforma (cuinar: ingredients → elaboracions)
 
-Captures: `TransformaSeleccio.png`, `TransformaCaldo.png`, `TransformaPollastre.png`, `TransformaIngredient.png`, `EntradaMenu.png`, `EntradaAccions.png`. Fonts: els `.dc.html` homònims.
+Captures: `TransformaSeleccio.png`, `TransformaCaldo.png`, `TransformaPollastre.png`, `TransformaIngredient.png`, `TransformaBuit.png`, `EntradaMenu.png`, `EntradaAccions.png`. Fonts: els `.dc.html` homònims.
 
 ## Idea
 Un o més ingredients del rebost es converteixen en **una o més elaboracions noves** (2 preparats de verdures + 1 pollastre → 4 racions de caldo; 1 pollastre → pits, ales, cuixes i carcassa). Els ingredients **desapareixen del rebost**; les elaboracions hi **entren com a productes nous**. Ha de ser ràpid: nom + quantitat + (opcional) congelar, i desar.
 
 ## Punts d'entrada
 1. **Barra de selecció** (Caducats, Aviat, Frescos, Congelats, Categoria): en seleccionar productes, la barra inferior mostra **Consumit · Congela · Transforma** (grup de botons connectat, 68 dp, icona sobre el text; Transforma és el principal, `primary`). Es pot seleccionar d'unes seccions i d'altres, i diverses unitats d'un mateix producte. Captura `TransformaSeleccio`.
-2. **Pulsació llarga al «+» de l'Inici**: menú amb **Transforma** i **Afegeix producte** (píndoles `primary-container`, el «+» passa a «×», scrim 45 %). El toc normal al «+» continua obrint «Afegeix producte». Captura `EntradaMenu`. *(Gest ocult: no és l'entrada principal.)*
+2. **Pulsació llarga al «+» de l'Inici**: menú amb **Transforma** i **Afegeix producte** (píndoles `primary-container`, el «+» passa a «×», scrim 45 %). El toc normal al «+» continua obrint «Afegeix producte». Captura `EntradaMenu`. *(Gest ocult: no és l'entrada principal.)* **Obre Transforma en accés lliure** (sense dades inicials; vegeu «Accés lliure»).
 3. **Full d'Accions d'un producte**: fila «Transforma amb aquest» (`primary-container`) entre «Mou a una altra categoria» i «Esborra». Obre Transforma amb aquest producte ja afegit com a ingredient (per defecte **1 unitat**; si en té més, el selector `− 1 de N +` permet canviar-ho). Captura `EntradaAccions`.
 
 ## Pantalla «Transforma» (ruta a pantalla completa, no diàleg)
-Barra superior: `×` (tanca; si hi ha canvis, confirma el descart) · títol «Transforma» · botó **Desa** (`primary`; desactivat sense nom ni ingredients).
+Barra superior: `×` (tanca; si hi ha canvis, confirma el descart) · títol «Transforma» · botó **Desa** (`primary`; desactivat sense nom, o sense ingredients quan no és accés lliure).
 
 ### Ingredients
 Llista connectada (radis 24 exterior / 6 interior). Cada fila: forma de la categoria 44 dp, nom, meta «Caduca dl. 26 oct» i **×** per treure'l.
 - Si l'ingredient té **diverses unitats** disponibles, la fila mostra un selector `− 1 de 2 +` (mínim 1, màxim les unitats que queden). Cada unitat és un ítem independent: es gasten les que marqui el selector, començant per les que caduquen primer.
 - Última fila, tonal: **«Afegeix ingredient»** → pantalla d'ingredients (vegeu avall).
-- Mínim 1 ingredient. Treure l'últim → es tanca amb confirmació.
+- Amb entrada des d'una selecció o d'Accions: mínim 1 ingredient; treure l'últim → es tanca amb confirmació. A l'**accés lliure** els ingredients són **opcionals** (vegeu «Accés lliure»).
 
 ### Resultat (una targeta per elaboració)
 Cas simple (un resultat; `TransformaCaldo`): targeta `surface-card` amb
@@ -33,6 +33,14 @@ Nota al peu: «Els ingredients desapareixen del rebost en desar.»
 
 ### Afegeix ingredients (`TransformaIngredient`)
 Pantalla a pantalla completa (no diàleg): cerca «Cerca al rebost», xips d'estat (Tots · Aviat · Fresc · **Congelat**) i de categoria (desplaçables), i llista de productes amb casella, meta (categoria · unitats/pes) i **pastilla d'estat** (Aviat/Fresc/Congelat). **Inclou ítems congelats.** Es poden marcar productes ja afegits (apareixen seleccionats). Botó inferior ample «Afegeix N ingredients». Els **caducats** no es llisten aquí (vegeu «Obert» 2).
+
+## Accés lliure (`TransformaBuit`)
+Entrada des de la pulsació llarga al «+» (o qualsevol ruta sense ingredients prèvia). La pantalla s'obre **sense dades**: cap ingredient, un únic resultat buit amb el camp Nom autoenfocat.
+- **Ingredients opcionals** (mínim 0). La secció mostra l'estat buit «Cap ingredient. Afegeix-ne si en vols gastar del rebost» amb la fila «Afegeix ingredient» (la mateixa pantalla d'ingredients). Serveix per registrar una elaboració que no ve de res que tinguis apuntat (un tupper de casa, un menjar que t'han portat).
+- Sense ingredients, la data de caducitat **no té valor per defecte**: **nom, categoria i data** són obligatoris (la categoria no s'agafa de cap ingredient; si hi ha historial del nom, se suggereix). **Desa** queda desactivat fins que hi són. Si s'hi afegeix un ingredient, es torna al comportament normal (data per defecte = la de l'ingredient que caduca primer).
+- Els resultats congelats continuen sense data de caducitat; per tant, si se'n congelen tots, la data deixa de ser obligatòria.
+- En desar sense ingredients no es crea cap `TransformationEntity` d'ingredients: els resultats són productes nous normals i el snackbar és «M productes afegits · Desfés» (sense «transformats»).
+- Treure l'últim ingredient no tanca la pantalla en aquest mode.
 
 ## En desar
 1. Es crea cada elaboració com a producte nou (+ ítems) a la categoria triada, amb `createdAt = ara`.
