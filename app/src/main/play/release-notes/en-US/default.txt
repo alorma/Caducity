@@ -1,4 +1,5 @@
 Version 1.0.2:
+• New Transform: note what you cooked. Pick the ingredients you used and add the result, with its servings and date. Find it next to the + button
 • Pick your colors in Settings: six palettes (Pantry, Fridge, Garden, Bakery, Berry and Field), or your wallpaper's colors
 • The app icon follows the palette you choose
 • Pantry, the default palette, has new colors
