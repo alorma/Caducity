@@ -540,6 +540,10 @@
   <string name="ob_transform_not_recipe_title">No es un recetario</string>
   <string name="ob_transform_not_recipe_body">No hay recetas ni sugerencias de qué cocinar. Transformar solo apunta lo que has gastado y lo que ha salido.</string>
   <string name="ob_transform_hint">Siempre está en el botón + de abajo, en la parte {chevron}.</string>
+  <string name="transform_intro_badge">NOVEDAD</string>
+  <string name="transform_intro_body">¿Has cocinado con cosas de la despensa? Apúntalo: los ingredientes salen y el plato que ha salido entra, con su fecha.</string>
+  <string name="transform_intro_hint">La encontrarás siempre en el botón +, en la parte {chevron}.</string>
+  <string name="transform_intro_try">Probar Transformar</string>
   <string name="ob_continue">Continuar</string>
   <string name="ob_disclaimer_title">Antes de empezar</string>
   <string name="ob_disclaimer_heading">Aviso importante</string>

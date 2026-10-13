@@ -91,6 +91,10 @@ data class ItemActions(
 @Serializable
 data object QuickCategory : AppRoute
 
+/** Shown as a bottom sheet over Home, once, to whoever updates the app: «Novetat Transforma». */
+@Serializable
+data object TransformIntro : AppRoute
+
 @Serializable
 data object Onboarding : AppRoute
 

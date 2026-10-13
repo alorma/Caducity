@@ -515,6 +515,10 @@
   <string name="ob_transform_not_recipe_title">Not a recipe book</string>
   <string name="ob_transform_not_recipe_body">No recipes or ideas for what to cook. Transform only notes what you used and what came out.</string>
   <string name="ob_transform_hint">It is always in the + button at the bottom, on the {chevron} part.</string>
+  <string name="transform_intro_badge">NEW</string>
+  <string name="transform_intro_body">Cooked with things from the pantry? Note it down: the ingredients go out and the dish that came out goes in, with its date.</string>
+  <string name="transform_intro_hint">You will always find it in the + button, on the {chevron} part.</string>
+  <string name="transform_intro_try">Try Transform</string>
   <string name="ob_continue">Continue</string>
   <string name="ob_disclaimer_title">Before we start</string>
   <string name="ob_disclaimer_heading">Important notice</string>
