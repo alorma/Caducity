@@ -177,6 +177,12 @@
     <item quantity="other">%d congelats</item>
   </plurals>
   <string name="transform_title">Transforma</string>
+  <string name="transform_bar_consume">Consumit</string>
+  <string name="transform_bar_freeze">Congela</string>
+  <string name="transform_bar_discard">Llença</string>
+  <string name="transform_bar_reschedule">Data</string>
+  <string name="transform_bar_transform">Transforma</string>
+  <string name="transform_bar_transform_description">Transforma %1$d unitats</string>
   <string name="transform_save">Desa</string>
   <string name="transform_section_ingredients">Ingredients</string>
   <string name="transform_section_ingredients_optional">Ingredients · opcional</string>

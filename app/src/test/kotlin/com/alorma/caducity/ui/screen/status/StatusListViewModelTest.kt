@@ -282,6 +282,37 @@ class StatusListViewModelTest {
     }
 
   @Test
+  fun `transform sends every unit of the selected rows and closes the selection`() =
+    runTest {
+      category("dairy")
+      val milk = add("Milk", days = 2, quantity = 2)
+      val eggs = add("Eggs", days = 1)
+      add("Cheese", days = 2)
+      val vm = viewModel(ExpiryStatus.SOON)
+      val rows =
+        vm
+          .ready()
+          .sections
+          .single()
+          .rows
+
+      vm.onToggleSelecting()
+      vm.onToggleRow(rows.first { it.name == "Milk" }.key)
+      vm.onToggleRow(rows.first { it.name == "Eggs" }.key)
+      vm.ready { it.selectedKeys.size == 2 }
+      vm.navigate(StatusListNavigation.TransformSelection)
+
+      val effect = withContext(Dispatchers.Default) { withTimeout(5_000) { vm.navigationSideEffects.first() } }
+      expectThat(effect).isA<StatusListNavigationSideEffect.OpenTransform>().get { itemIds.toSet() }.isEqualTo(
+        (
+          milk +
+            eggs
+        ).toSet(),
+      )
+      expectThat(vm.ready { !it.selecting }.selectedKeys).isEmpty()
+    }
+
+  @Test
   fun `bulk reschedule gives the same date to every selected unit`() =
     runTest {
       category("dairy")

@@ -177,6 +177,12 @@
     <item quantity="other">%d congelados</item>
   </plurals>
   <string name="transform_title">Transforma</string>
+  <string name="transform_bar_consume">Consumido</string>
+  <string name="transform_bar_freeze">Congelar</string>
+  <string name="transform_bar_discard">Tirar</string>
+  <string name="transform_bar_reschedule">Fecha</string>
+  <string name="transform_bar_transform">Transforma</string>
+  <string name="transform_bar_transform_description">Transforma %1$d unidades</string>
   <string name="transform_save">Guardar</string>
   <string name="transform_section_ingredients">Ingredientes</string>
   <string name="transform_section_ingredients_optional">Ingredientes · opcional</string>
