@@ -48,15 +48,18 @@ private val noActions =
     onClose = {},
     onConfirm = {},
     onQueryChange = {},
-    onStatusFilterSelect = {},
-    onCategoryFilterSelect = {},
+    onStatusFilterToggle = {},
+    onCategoryFilterToggle = {},
     onToggle = {},
   )
 
 @Composable
-private fun PickerPreviewContent(state: IngredientPickerState) {
+private fun PickerPreviewContent(
+  state: IngredientPickerState,
+  openMenu: PickerMenu? = null,
+) {
   PreviewTheme {
-    IngredientPickerContent(state = state, actions = noActions)
+    IngredientPickerContent(state = state, actions = noActions, openMenu = openMenu)
   }
 }
 
@@ -71,11 +74,31 @@ private fun IngredientPickerSelectionPreview() {
 @PreviewDynamicLightDark
 @Composable
 private fun IngredientPickerNothingSelectedPreview() {
-  PickerPreviewContent(IngredientPickerState(groups = groups, categories = categories, categoryFilter = "produce"))
+  PickerPreviewContent(
+    IngredientPickerState(groups = groups, categories = categories, categoryFilters = setOf("produce")),
+  )
 }
 
 @PreviewDynamicLightDark
 @Composable
 private fun IngredientPickerNoResultsPreview() {
   PickerPreviewContent(IngredientPickerState(groups = groups, categories = categories, query = "zzz"))
+}
+
+@PreviewDynamicLightDark
+@Composable
+private fun IngredientPickerStatusMenuPreview() {
+  PickerPreviewContent(
+    IngredientPickerState(groups = groups, categories = categories, statusFilters = setOf(ExpiryStatus.SOON)),
+    openMenu = PickerMenu.Status,
+  )
+}
+
+@PreviewDynamicLightDark
+@Composable
+private fun IngredientPickerCategoryMenuPreview() {
+  PickerPreviewContent(
+    IngredientPickerState(groups = groups, categories = categories, categoryFilters = setOf("meat", "produce")),
+    openMenu = PickerMenu.Category,
+  )
 }

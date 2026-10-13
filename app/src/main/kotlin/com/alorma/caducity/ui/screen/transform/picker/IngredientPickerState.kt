@@ -12,29 +12,35 @@ data class IngredientPickerArgs(
   val selectedItemIds: List<String> = emptyList(),
 )
 
-/** Status chips of the picker. Expired units are never listed (TODO(transforma-open-2)). */
-enum class PickerStatusFilter(
-  val status: ExpiryStatus?,
-) {
-  All(null),
-  Soon(ExpiryStatus.SOON),
-  Fresh(ExpiryStatus.FRESH),
-  Frozen(ExpiryStatus.FROZEN),
-}
+/** Statuses the picker can filter by. Expired units are never listed (TODO(transforma-open-2)). */
+val PickerStatuses = listOf(ExpiryStatus.SOON, ExpiryStatus.FRESH, ExpiryStatus.FROZEN)
 
 data class IngredientPickerState(
   val groups: List<ProductGroup> = emptyList(),
   val categories: List<Category> = emptyList(),
   val query: String = "",
-  val statusFilter: PickerStatusFilter = PickerStatusFilter.All,
-  val categoryFilter: String? = null,
+  /** Empty means no filter. */
+  val statusFilters: Set<ExpiryStatus> = emptySet(),
+  val categoryFilters: Set<String> = emptySet(),
   /** Keys of the selected products; they stay selected while a filter hides them. */
   val selectedKeys: Set<String> = emptySet(),
 ) {
   val visibleGroups: List<ProductGroup>
-    get() = groups.filterPickerGroups(query, statusFilter, categoryFilter)
+    get() = groups.filterPickerGroups(query, statusFilters, categoryFilters)
 
   val selectedCount: Int get() = selectedKeys.size
+
+  /** Statuses present among the listed products, in display order. */
+  val availableStatuses: List<ExpiryStatus>
+    get() = PickerStatuses.filter { status -> groups.any { group -> group.units.any { it.status == status } } }
+
+  /** Categories with listed products. */
+  val availableCategories: List<Category>
+    get() = categories.filter { category -> groups.any { it.categoryId == category.id } }
+
+  val showStatusFilter: Boolean get() = availableStatuses.size > 1
+
+  val showCategoryFilter: Boolean get() = availableCategories.size > 1
 }
 
 /** Products with at least one live unit; expired units are left out, and a product with only those disappears. */
@@ -44,14 +50,14 @@ fun List<PantryEntry>.toPickerGroups(): List<ProductGroup> =
 
 fun List<ProductGroup>.filterPickerGroups(
   query: String,
-  statusFilter: PickerStatusFilter,
-  categoryId: String?,
+  statusFilters: Set<ExpiryStatus>,
+  categoryIds: Set<String>,
 ): List<ProductGroup> {
   val typed = query.trim().normalizeForSearch()
   return filter { group ->
-    (categoryId == null || group.categoryId == categoryId) &&
+    (categoryIds.isEmpty() || group.categoryId in categoryIds) &&
       (typed.isEmpty() || group.name.normalizeForSearch().contains(typed)) &&
-      (statusFilter.status == null || group.units.any { it.status == statusFilter.status })
+      (statusFilters.isEmpty() || group.units.any { it.status in statusFilters })
   }
 }
 

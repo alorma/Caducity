@@ -1,5 +1,8 @@
 package com.alorma.caducity.ui.screen.transform.picker
 
+import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.CategoryIcon
+import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.PantryEntry
 import kotlinx.datetime.LocalDate
@@ -7,8 +10,11 @@ import org.junit.Test
 import strikt.api.expectThat
 import strikt.assertions.containsExactly
 import strikt.assertions.containsExactlyInAnyOrder
+import strikt.assertions.hasSize
 import strikt.assertions.isEmpty
 import strikt.assertions.isEqualTo
+import strikt.assertions.isFalse
+import strikt.assertions.isTrue
 
 class IngredientPickerStateTest {
   private fun entry(
@@ -43,12 +49,17 @@ class IngredientPickerStateTest {
       entry("milk", "Llet", ExpiryStatus.FRESH, categoryId = "dairy", day = 30),
     )
 
+  private val categories =
+    listOf("meat", "veg", "dairy", "empty").mapIndexed { index, id ->
+      Category(id, id, "", CategoryShape.COOKIE, CategoryIcon("set_meal"), index)
+    }
+
   private val groups = entries.toPickerGroups()
 
   private fun names(
     query: String = "",
-    status: PickerStatusFilter = PickerStatusFilter.All,
-    category: String? = null,
+    status: Set<ExpiryStatus> = emptySet(),
+    category: Set<String> = emptySet(),
   ) = groups.filterPickerGroups(query, status, category).map { it.name }
 
   @Test
@@ -66,17 +77,33 @@ class IngredientPickerStateTest {
   }
 
   @Test
-  fun `status filter keeps products with a unit in that status`() {
-    expectThat(names(status = PickerStatusFilter.Soon)).containsExactlyInAnyOrder("Pernil dolç", "Pastanagues")
-    expectThat(names(status = PickerStatusFilter.Frozen)).containsExactly("Pollastre sencer")
-    expectThat(names(status = PickerStatusFilter.Fresh)).containsExactlyInAnyOrder("Pastanagues", "Llet")
+  fun `status filter keeps products with a unit in any chosen status`() {
+    expectThat(names(status = setOf(ExpiryStatus.SOON))).containsExactlyInAnyOrder("Pernil dolç", "Pastanagues")
+    expectThat(names(status = setOf(ExpiryStatus.FROZEN))).containsExactly("Pollastre sencer")
+    expectThat(names(status = setOf(ExpiryStatus.FROZEN, ExpiryStatus.FRESH)))
+      .containsExactlyInAnyOrder("Pollastre sencer", "Pastanagues", "Llet")
+    expectThat(names()).hasSize(4)
   }
 
   @Test
   fun `category filter and the other filters combine`() {
-    expectThat(names(category = "veg")).containsExactly("Pastanagues")
-    expectThat(names(category = "meat", status = PickerStatusFilter.Soon)).containsExactly("Pernil dolç")
-    expectThat(names(category = "veg", query = "pern")).isEmpty()
+    expectThat(names(category = setOf("veg"))).containsExactly("Pastanagues")
+    expectThat(names(category = setOf("veg", "dairy"))).containsExactlyInAnyOrder("Pastanagues", "Llet")
+    expectThat(names(category = setOf("meat"), status = setOf(ExpiryStatus.SOON))).containsExactly("Pernil dolç")
+    expectThat(names(category = setOf("veg"), query = "pern")).isEmpty()
+  }
+
+  @Test
+  fun `filter chips only show with more than one option`() {
+    val state = IngredientPickerState(groups = groups, categories = categories)
+    expectThat(state.showStatusFilter).isTrue()
+    expectThat(state.showCategoryFilter).isTrue()
+    expectThat(state.availableCategories.map { it.id }).containsExactly("meat", "veg", "dairy")
+
+    val frozenOnly =
+      IngredientPickerState(groups = groups.filter { it.name == "Pollastre sencer" }, categories = categories)
+    expectThat(frozenOnly.showStatusFilter).isFalse()
+    expectThat(frozenOnly.showCategoryFilter).isFalse()
   }
 
   @Test
