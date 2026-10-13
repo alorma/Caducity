@@ -131,8 +131,14 @@ fun ResultsSection(
     listState.animateScrollToItem(index)
   }
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(SectionSpacing)) {
+    // A lone result of the free entry is just «Resultat»: «Resultat · 1» says nothing.
     RowSectionHeader(
-      title = stringResource(R.string.transform_section_results_count, state.results.size),
+      title =
+        if (state.freeEntry && state.results.size == 1) {
+          stringResource(R.string.transform_section_result)
+        } else {
+          stringResource(R.string.transform_section_results_count, state.results.size)
+        },
       onAdd = if (state.canAddResult) actions.onAdd else null,
       center = { RowLinksNode(links) },
     )

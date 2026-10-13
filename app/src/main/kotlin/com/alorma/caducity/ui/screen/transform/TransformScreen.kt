@@ -181,7 +181,13 @@ internal fun TransformSaveBar(
     ) {
       Box(contentAlignment = Alignment.Center) {
         Text(
-          text = pluralStringResource(R.plurals.transform_save_count, count, count),
+          // Disabled, it only says «Desa»: the count of products comes once there is something to save.
+          text =
+            if (canSave) {
+              pluralStringResource(R.plurals.transform_save_count, count, count)
+            } else {
+              stringResource(R.string.add_save)
+            },
           style = CaducityTheme.typography.titleMedium,
         )
       }
