@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.ListItemShapes
@@ -112,10 +113,13 @@ fun ColorPaletteSelector(
       }
       Column(
         modifier = Modifier.selectableGroup(),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
       ) {
         palettes.chunked(COLUMNS).forEach { row ->
-          Row(modifier = Modifier.fillMaxWidth()) {
+          Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+          ) {
             row.forEach { palette ->
               ColorPaletteSwatch(
                 palette = palette,
@@ -146,8 +150,10 @@ private fun ColorPaletteSwatch(
   Column(
     modifier =
       modifier
+        .clip(RoundedCornerShape(24.dp))
         .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
-        .semantics { contentDescription = name },
+        .semantics { contentDescription = name }
+        .padding(horizontal = 8.dp, vertical = 10.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(6.dp),
   ) {
