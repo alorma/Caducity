@@ -24,7 +24,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.AcUnit
 import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
-import com.alorma.caducity.domain.usecase.AddItemUseCase
+import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.ui.components.button.ConnectedButtonSpacing
 import com.alorma.caducity.ui.components.button.connectedButtonShape
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -72,7 +72,7 @@ fun QuantityFrozenRow(
           modifier = Modifier.width(24.dp),
         )
         StepButton(
-          enabled = quantity < AddItemUseCase.MAX_QUANTITY,
+          enabled = quantity < AddProductUseCase.MAX_QUANTITY,
           onClick = { onQuantityChange(quantity + 1) },
           label = stringResource(R.string.add_quantity_increase),
         ) {

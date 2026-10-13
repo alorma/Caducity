@@ -8,8 +8,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 
-/** Adds [quantity] independent items (same date) to the product named [name], creating it if needed. */
-class AddItemUseCase(
+/** Adds a product named [name] to [categoryId] (creating it if needed) with [quantity] independent items (units) expiring on [date]; frozen items start paused. */
+class AddProductUseCase(
   private val pantryDataSource: PantryDataSource,
   private val appClock: AppClock,
 ) {

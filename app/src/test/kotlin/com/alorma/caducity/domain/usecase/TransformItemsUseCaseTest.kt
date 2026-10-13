@@ -52,7 +52,7 @@ class TransformItemsUseCaseTest {
   private lateinit var db: AppDatabase
   private lateinit var pantry: RoomPantryDataSource
   private lateinit var transform: TransformItemsUseCase
-  private lateinit var addItem: AddItemUseCase
+  private lateinit var addProduct: AddProductUseCase
 
   @Before
   fun setUp() {
@@ -72,7 +72,7 @@ class TransformItemsUseCaseTest {
         appClock = clock,
       )
     transform = TransformItemsUseCase(pantry, clock)
-    addItem = AddItemUseCase(pantry, clock)
+    addProduct = AddProductUseCase(pantry, clock)
   }
 
   @After
@@ -92,7 +92,7 @@ class TransformItemsUseCaseTest {
     quantity: Int = 1,
   ): List<String> {
     ensureCategory()
-    return addItem.add(name, "c1", inDays(days), quantity, frozen = false).getOrThrow().itemIds
+    return addProduct.add(name, "c1", inDays(days), quantity, frozen = false).getOrThrow().itemIds
   }
 
   private fun result(

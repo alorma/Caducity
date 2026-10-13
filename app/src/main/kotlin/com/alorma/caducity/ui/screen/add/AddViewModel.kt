@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.normalizeForSearch
-import com.alorma.caducity.domain.usecase.AddItemUseCase
+import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
@@ -29,7 +29,7 @@ import kotlinx.datetime.plus
 class AddViewModel(
   args: AddArgs,
   private val todayProvider: TodayProvider,
-  private val addItem: AddItemUseCase,
+  private val addProduct: AddProductUseCase,
   private val getNameSuggestions: GetNameSuggestionsUseCase,
   private val getActiveItem: GetActiveItemUseCase,
   private val updateItem: UpdateItemUseCase,
@@ -147,7 +147,7 @@ class AddViewModel(
   fun onDatePicked(date: LocalDate) = setDate(date)
 
   fun onQuantityChange(quantity: Int) {
-    _state.update { it.copy(quantity = quantity.coerceIn(1, AddItemUseCase.MAX_QUANTITY)) }
+    _state.update { it.copy(quantity = quantity.coerceIn(1, AddProductUseCase.MAX_QUANTITY)) }
   }
 
   fun onFrozenChange(frozen: Boolean) {
@@ -177,7 +177,7 @@ class AddViewModel(
         if (editItemId != null) {
           updateItem.update(editItemId, name, categoryId, date).map { Unit }
         } else {
-          addItem
+          addProduct
             .add(
               name = name,
               categoryId = categoryId,

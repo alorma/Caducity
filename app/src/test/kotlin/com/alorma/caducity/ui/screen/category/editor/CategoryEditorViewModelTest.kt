@@ -14,7 +14,7 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.domain.model.CategoryShape
-import com.alorma.caducity.domain.usecase.AddItemUseCase
+import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
@@ -200,7 +200,7 @@ class CategoryEditorViewModelTest {
   fun `deleting asks first with the number of units and then removes the category`() =
     runTest {
       val id = create.createCategory("Lactics", "").getOrThrow()
-      AddItemUseCase(pantry, clock).add("Llet", id, LocalDate(2026, 10, 14), 2, false).getOrThrow()
+      AddProductUseCase(pantry, clock).add("Llet", id, LocalDate(2026, 10, 14), 2, false).getOrThrow()
       val vm = viewModel(id)
 
       vm.onDeleteClick()

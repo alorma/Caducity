@@ -16,7 +16,7 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
-import com.alorma.caducity.domain.usecase.AddItemUseCase
+import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
@@ -80,7 +80,7 @@ class AddViewModelTest {
   private lateinit var pantry: RoomPantryDataSource
   private lateinit var itemDataSource: RoomItemDataSource
   private val createdEvents = CategoryCreatedEvents()
-  private lateinit var addItem: AddItemUseCase
+  private lateinit var addProduct: AddProductUseCase
 
   @Before
   fun setUp() {
@@ -101,7 +101,7 @@ class AddViewModelTest {
         categoryMapper = CategoryRoomMapper(ProductRoomMapper(), itemMapper),
         appClock = clock,
       )
-    addItem = AddItemUseCase(pantry, clock)
+    addProduct = AddProductUseCase(pantry, clock)
   }
 
   @After
@@ -124,7 +124,7 @@ class AddViewModelTest {
   ) = AddViewModel(
     args = AddArgs(categoryId = initialCategoryId, itemId = itemId),
     todayProvider = todayProvider,
-    addItem = addItem,
+    addProduct = addProduct,
     getNameSuggestions = GetNameSuggestionsUseCase(pantry),
     getActiveItem = GetActiveItemUseCase(pantry),
     updateItem = UpdateItemUseCase(itemDataSource, pantry, clock),
@@ -196,7 +196,7 @@ class AddViewModelTest {
     runTest {
       category("dairy")
       category("fruit", sortOrder = 1)
-      addItem.add("Cheddar cheese", "dairy", inDays(10), 1, false)
+      addProduct.add("Cheddar cheese", "dairy", inDays(10), 1, false)
       val vm = viewModel(initialCategoryId = "fruit")
       vm.await { it.categories.size == 2 }
 
@@ -216,7 +216,7 @@ class AddViewModelTest {
   fun `unknown name is a new product and known exact name fills the category`() =
     runTest {
       category("dairy")
-      addItem.add("Milk", "dairy", inDays(3), 1, false)
+      addProduct.add("Milk", "dairy", inDays(3), 1, false)
       val vm = viewModel()
       vm.await { it.categories.isNotEmpty() }
 
@@ -234,7 +234,7 @@ class AddViewModelTest {
     runTest {
       category("dairy")
       category("fruit", sortOrder = 1)
-      addItem.add("Milk", "dairy", inDays(3), 1, false)
+      addProduct.add("Milk", "dairy", inDays(3), 1, false)
       val vm = viewModel()
       vm.await { it.categories.size == 2 }
 
@@ -270,7 +270,7 @@ class AddViewModelTest {
       vm.onQuantityChange(0)
       expectThat(vm.state.value.quantity).isEqualTo(1)
       vm.onQuantityChange(500)
-      expectThat(vm.state.value.quantity).isEqualTo(AddItemUseCase.MAX_QUANTITY)
+      expectThat(vm.state.value.quantity).isEqualTo(AddProductUseCase.MAX_QUANTITY)
     }
 
   @Test
@@ -336,8 +336,8 @@ class AddViewModelTest {
     runTest {
       category("dairy")
       category("fruit", sortOrder = 1)
-      val batch = addItem.add("Milk", "dairy", inDays(5), 2, false).getOrThrow()
-      val itemId = batch.itemIds.first()
+      val added = addProduct.add("Milk", "dairy", inDays(5), 2, false).getOrThrow()
+      val itemId = added.itemIds.first()
       val vm = viewModel(itemId = itemId)
       vm.await { it.isEditing && it.date != null }
 
@@ -364,8 +364,8 @@ class AddViewModelTest {
   fun `closing while editing a unit leaves the screen without saving`() =
     runTest {
       category("dairy")
-      val batch = addItem.add("Milk", "dairy", inDays(5), 1, false).getOrThrow()
-      val vm = viewModel(itemId = batch.itemIds.single())
+      val added = addProduct.add("Milk", "dairy", inDays(5), 1, false).getOrThrow()
+      val vm = viewModel(itemId = added.itemIds.single())
       vm.await { it.isEditing && it.date != null }
       vm.onNameChange("Oat milk")
 

@@ -59,7 +59,7 @@ class ObserveUseCasesTest {
 
   private lateinit var db: AppDatabase
   private lateinit var pantry: RoomPantryDataSource
-  private lateinit var addItem: AddItemUseCase
+  private lateinit var addProduct: AddProductUseCase
   private lateinit var discard: DiscardItemsUseCase
   private lateinit var consume: ConsumeItemUseCase
   private lateinit var items: ObserveItemsUseCase
@@ -98,7 +98,7 @@ class ObserveUseCasesTest {
 
         override fun observe(): Flow<LocalDate> = todayFlow
       }
-    addItem = AddItemUseCase(pantry, clock)
+    addProduct = AddProductUseCase(pantry, clock)
     discard = DiscardItemsUseCase(pantry, clock)
     consume = ConsumeItemUseCase(RoomItemDataSource(db.itemDao(), clock, itemMapper), pantry, clock)
     items = ObserveItemsUseCase(pantry, thresholds, todayProvider)
@@ -130,7 +130,7 @@ class ObserveUseCasesTest {
     days: Int,
     quantity: Int = 1,
     frozen: Boolean = false,
-  ) = addItem.add(name, categoryId, inDays(days), quantity, frozen).getOrThrow()
+  ) = addProduct.add(name, categoryId, inDays(days), quantity, frozen).getOrThrow()
 
   // region Items
 
@@ -335,7 +335,7 @@ class ObserveUseCasesTest {
   fun `home row names the closest unit for the check button and excludes expired from sections`() =
     runTest {
       category("c1")
-      val batch = add("Milk", "c1", 1, quantity = 2)
+      val added = add("Milk", "c1", 1, quantity = 2)
       add("Gone", "c1", -1)
 
       val data = home.observe().first()
@@ -344,7 +344,7 @@ class ObserveUseCasesTest {
           .single()
           .rows
           .single()
-      expectThat(batch.itemIds.contains(row.nearestItemId)).isTrue()
+      expectThat(added.itemIds.contains(row.nearestItemId)).isTrue()
       expectThat(data.sections.flatMap { it.rows }.map { it.name }).containsExactly("Milk")
     }
 

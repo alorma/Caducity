@@ -16,7 +16,7 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
-import com.alorma.caducity.domain.usecase.AddItemUseCase
+import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
@@ -81,7 +81,7 @@ class TransformViewModelTest {
 
   private lateinit var db: AppDatabase
   private lateinit var pantry: RoomPantryDataSource
-  private lateinit var addItem: AddItemUseCase
+  private lateinit var addProduct: AddProductUseCase
   private val created = mutableListOf<TransformViewModel>()
   private val snackbars = GlobalSnackbarEvents()
   private val pickerResults = IngredientPickerResults()
@@ -104,7 +104,7 @@ class TransformViewModelTest {
         categoryMapper = CategoryRoomMapper(ProductRoomMapper(), itemMapper),
         appClock = clock,
       )
-    addItem = AddItemUseCase(pantry, clock)
+    addProduct = AddProductUseCase(pantry, clock)
   }
 
   @After
@@ -131,7 +131,7 @@ class TransformViewModelTest {
     category: String = "meat",
   ): com.alorma.caducity.domain.model.AddedItems {
     ensureCategories()
-    return addItem
+    return addProduct
       .add(
         name = name,
         categoryId = category,
@@ -173,8 +173,8 @@ class TransformViewModelTest {
   @Test
   fun `units of one product become one ingredient with the picked count`() =
     runTest {
-      val batch = add("Chicken", days = 3, quantity = 3)
-      val vm = viewModel(batch.itemIds.take(2))
+      val added = add("Chicken", days = 3, quantity = 3)
+      val vm = viewModel(added.itemIds.take(2))
       val state = vm.await { it.ingredients.isNotEmpty() }
 
       expectThat(state.ingredients).hasSize(1)
@@ -185,8 +185,8 @@ class TransformViewModelTest {
   @Test
   fun `count is limited to the units left and at least one`() =
     runTest {
-      val batch = add("Chicken", days = 3, quantity = 2)
-      val vm = ready(batch.itemIds.take(1))
+      val added = add("Chicken", days = 3, quantity = 2)
+      val vm = ready(added.itemIds.take(1))
       val key =
         vm.state.value.ingredients
           .single()
@@ -251,15 +251,15 @@ class TransformViewModelTest {
   @Test
   fun `opening the picker hands over the units already used`() =
     runTest {
-      val batch = add("Chicken", days = 6, quantity = 2)
-      val vm = ready(batch.itemIds.take(1))
+      val added = add("Chicken", days = 6, quantity = 2)
+      val vm = ready(added.itemIds.take(1))
 
       vm.navigationSideEffects.test {
         vm.navigate(TransformNavigation.IngredientPicker)
         val effect = awaitItem()
         expectThat(effect).isA<TransformNavigationSideEffect.OpenIngredientPicker>()
         expectThat((effect as TransformNavigationSideEffect.OpenIngredientPicker).selectedItemIds)
-          .containsExactlyInAnyOrder(batch.itemIds)
+          .containsExactlyInAnyOrder(added.itemIds)
         cancelAndIgnoreRemainingEvents()
       }
     }

@@ -58,7 +58,7 @@ class PantryUseCasesTest {
   private lateinit var itemDataSource: RoomItemDataSource
   private lateinit var pantry: RoomPantryDataSource
 
-  private lateinit var addItem: AddItemUseCase
+  private lateinit var addProduct: AddProductUseCase
   private lateinit var discard: DiscardItemsUseCase
   private lateinit var restore: RestoreItemsUseCase
   private lateinit var updateItem: UpdateItemUseCase
@@ -89,7 +89,7 @@ class PantryUseCasesTest {
         categoryMapper = CategoryRoomMapper(ProductRoomMapper(), itemMapper),
         appClock = clock,
       )
-    addItem = AddItemUseCase(pantry, clock)
+    addProduct = AddProductUseCase(pantry, clock)
     discard = DiscardItemsUseCase(pantry, clock)
     restore = RestoreItemsUseCase(pantry)
     updateItem = UpdateItemUseCase(itemDataSource, pantry, clock)
@@ -118,22 +118,22 @@ class PantryUseCasesTest {
 
   private suspend fun products() = db.productDao().getAllProductsSync()
 
-  // region AddItemUseCase
+  // region AddProductUseCase
 
   @Test
   fun `add creates N independent items with the same date and no pack`() =
     runTest {
       category("c1")
-      val batch = addItem.add("Milk", "c1", inDays(5), quantity = 3, frozen = false).getOrThrow()
+      val added = addProduct.add("Milk", "c1", inDays(5), quantity = 3, frozen = false).getOrThrow()
 
-      expectThat(batch.itemIds).hasSize(3)
-      expectThat(batch.productCreated).isEqualTo(true)
+      expectThat(added.itemIds).hasSize(3)
+      expectThat(added.productCreated).isEqualTo(true)
       val created = items()
       expectThat(created).hasSize(3)
       expectThat(created.map { it.expirationDate }.distinct()).hasSize(1)
       expectThat(created.map { it.packSize }.distinct()).isEqualTo(listOf(null))
       expectThat(created.map { it.identifier }.distinct()).isEqualTo(listOf(""))
-      expectThat(created.map { it.productId }.distinct()).isEqualTo(listOf(batch.productId))
+      expectThat(created.map { it.productId }.distinct()).isEqualTo(listOf(added.productId))
       expectThat(created.all { it.createdAt == clock.now().toEpochMilliseconds() }).isEqualTo(true)
     }
 
@@ -141,8 +141,8 @@ class PantryUseCasesTest {
   fun `add finds the existing product ignoring case, accents and spaces`() =
     runTest {
       category("c1")
-      val first = addItem.add("Café  Molt", "c1", inDays(1), 1, false).getOrThrow()
-      val second = addItem.add("  cafe molt ", "c1", inDays(2), 1, false).getOrThrow()
+      val first = addProduct.add("Café  Molt", "c1", inDays(1), 1, false).getOrThrow()
+      val second = addProduct.add("  cafe molt ", "c1", inDays(2), 1, false).getOrThrow()
 
       expectThat(second.productId).isEqualTo(first.productId)
       expectThat(second.productCreated).isEqualTo(false)
@@ -155,8 +155,8 @@ class PantryUseCasesTest {
     runTest {
       category("c1")
       category("c2")
-      addItem.add("Milk", "c1", inDays(1), 1, false)
-      addItem.add("Milk", "c2", inDays(1), 1, false)
+      addProduct.add("Milk", "c1", inDays(1), 1, false)
+      addProduct.add("Milk", "c2", inDays(1), 1, false)
       expectThat(products()).hasSize(2)
     }
 
@@ -164,13 +164,13 @@ class PantryUseCasesTest {
   fun `add validates name and quantity range`() =
     runTest {
       category("c1")
-      expectThat(addItem.add(" ", "c1", inDays(1), 1, false)).isFailure().isA<PantryError.BlankName>()
-      expectThat(addItem.add("Milk", "c1", inDays(1), 0, false)).isFailure().isA<PantryError.InvalidQuantity>()
-      expectThat(addItem.add("Milk", "c1", inDays(1), AddItemUseCase.MAX_QUANTITY + 1, false))
+      expectThat(addProduct.add(" ", "c1", inDays(1), 1, false)).isFailure().isA<PantryError.BlankName>()
+      expectThat(addProduct.add("Milk", "c1", inDays(1), 0, false)).isFailure().isA<PantryError.InvalidQuantity>()
+      expectThat(addProduct.add("Milk", "c1", inDays(1), AddProductUseCase.MAX_QUANTITY + 1, false))
         .isFailure()
         .isA<PantryError.InvalidQuantity>()
-      expectThat(addItem.add("Milk", "c1", inDays(1), AddItemUseCase.MAX_QUANTITY, false)).isSuccess()
-      expectThat(items()).hasSize(AddItemUseCase.MAX_QUANTITY)
+      expectThat(addProduct.add("Milk", "c1", inDays(1), AddProductUseCase.MAX_QUANTITY, false)).isSuccess()
+      expectThat(items()).hasSize(AddProductUseCase.MAX_QUANTITY)
     }
 
   @Test
@@ -178,11 +178,11 @@ class PantryUseCasesTest {
     runTest {
       category("c1")
       expectThat(
-        addItem.add("Peas", "c1", inDays(-1), 1, frozen = true),
+        addProduct.add("Peas", "c1", inDays(-1), 1, frozen = true),
       ).isFailure().isA<PantryError.PastDateWhenFrozen>()
       expectThat(items()).isEmpty()
 
-      addItem.add("Peas", "c1", inDays(30), 2, frozen = true).getOrThrow()
+      addProduct.add("Peas", "c1", inDays(30), 2, frozen = true).getOrThrow()
       expectThat(items().map { it.remainingDays }).isEqualTo(listOf(30, 30))
       expectThat(items().all { it.pausedDate != null }).isEqualTo(true)
     }
@@ -191,7 +191,7 @@ class PantryUseCasesTest {
   fun `a past date is allowed when not frozen`() =
     runTest {
       category("c1")
-      expectThat(addItem.add("Milk", "c1", inDays(-3), 1, frozen = false)).isSuccess()
+      expectThat(addProduct.add("Milk", "c1", inDays(-3), 1, frozen = false)).isSuccess()
     }
 
   // endregion
@@ -203,7 +203,7 @@ class PantryUseCasesTest {
     runTest {
       category("c1")
       val id =
-        addItem
+        addProduct
           .add("Peas", "c1", inDays(30), 1, frozen = true)
           .getOrThrow()
           .itemIds
@@ -224,7 +224,7 @@ class PantryUseCasesTest {
     runTest {
       category("c1")
       val id =
-        addItem
+        addProduct
           .add("Milk", "c1", inDays(-5), 1, frozen = false)
           .getOrThrow()
           .itemIds
@@ -250,7 +250,7 @@ class PantryUseCasesTest {
   fun `update renames into a new product keeping the old one`() =
     runTest {
       category("c1")
-      val ids = addItem.add("Milk", "c1", inDays(2), 2, false).getOrThrow().itemIds
+      val ids = addProduct.add("Milk", "c1", inDays(2), 2, false).getOrThrow().itemIds
 
       updateItem.update(ids[0], "Oat drink", "c1", inDays(10)).getOrThrow()
 
@@ -266,8 +266,8 @@ class PantryUseCasesTest {
   fun `update joins an existing product with a matching name and keeps the old one even if empty`() =
     runTest {
       category("c1")
-      val milk = addItem.add("Milk", "c1", inDays(2), 1, false).getOrThrow()
-      val yogurt = addItem.add("Yogurt", "c1", inDays(2), 1, false).getOrThrow()
+      val milk = addProduct.add("Milk", "c1", inDays(2), 1, false).getOrThrow()
+      val yogurt = addProduct.add("Yogurt", "c1", inDays(2), 1, false).getOrThrow()
 
       updateItem.update(milk.itemIds.single(), "yogurt", "c1", inDays(2)).getOrThrow()
 
@@ -280,7 +280,7 @@ class PantryUseCasesTest {
     runTest {
       category("c1")
       val id =
-        addItem
+        addProduct
           .add("Peas", "c1", inDays(30), 1, frozen = true)
           .getOrThrow()
           .itemIds
@@ -307,8 +307,8 @@ class PantryUseCasesTest {
     runTest {
       category("c1")
       category("c2")
-      val ids = addItem.add("Milk", "c1", inDays(2), 2, false).getOrThrow().itemIds
-      val existing = addItem.add("MILK", "c2", inDays(9), 1, false).getOrThrow()
+      val ids = addProduct.add("Milk", "c1", inDays(2), 2, false).getOrThrow().itemIds
+      val existing = addProduct.add("MILK", "c2", inDays(9), 1, false).getOrThrow()
 
       moveItem.move(ids[0], "c2").getOrThrow()
       expectThat(db.itemDao().getItem(ids[0])?.categoryId).isEqualTo("c2")
@@ -342,11 +342,11 @@ class PantryUseCasesTest {
   fun `suggestions match without accents or case, prefix first, then usage, max 3`() =
     runTest {
       category("c1")
-      addItem.add("Iogurt natural", "c1", inDays(1), 1, false)
-      repeat(3) { addItem.add("Bio iogurt", "c1", inDays(1), 1, false) }
-      addItem.add("Iogurt grec", "c1", inDays(1), 2, false)
-      addItem.add("Llet", "c1", inDays(1), 1, false)
-      addItem.add("Iogurt de fruites", "c1", inDays(1), 1, false)
+      addProduct.add("Iogurt natural", "c1", inDays(1), 1, false)
+      repeat(3) { addProduct.add("Bio iogurt", "c1", inDays(1), 1, false) }
+      addProduct.add("Iogurt grec", "c1", inDays(1), 2, false)
+      addProduct.add("Llet", "c1", inDays(1), 1, false)
+      addProduct.add("Iogurt de fruites", "c1", inDays(1), 1, false)
 
       val result = suggestions.suggest("IÒGURT").map { it.name }
       // Prefix matches first ("Iogurt grec" has 2 uses; ties break by name), then the contains match, max 3.
@@ -360,9 +360,9 @@ class PantryUseCasesTest {
   fun `suggestions count consumed and discarded items as usage`() =
     runTest {
       category("c1")
-      val a = addItem.add("Pasta", "c1", inDays(1), 1, false).getOrThrow()
-      val b = addItem.add("Pizza", "c1", inDays(1), 1, false).getOrThrow()
-      repeat(2) { addItem.add("Pizza", "c1", inDays(1), 1, false) }
+      val a = addProduct.add("Pasta", "c1", inDays(1), 1, false).getOrThrow()
+      val b = addProduct.add("Pizza", "c1", inDays(1), 1, false).getOrThrow()
+      repeat(2) { addProduct.add("Pizza", "c1", inDays(1), 1, false) }
       discard.discard(b.itemIds)
       consume.consume(a.itemIds.single())
 
@@ -378,7 +378,7 @@ class PantryUseCasesTest {
   fun `updating a category keeps its items and products`() =
     runTest {
       category("c1", "Dairy")
-      addItem.add("Milk", "c1", inDays(2), 3, false)
+      addProduct.add("Milk", "c1", inDays(2), 3, false)
 
       updateCategory.update("c1", "Lácteos", CategoryShape.PUFFY, CategoryIcon("nutrition"), null).getOrThrow()
 
@@ -476,7 +476,7 @@ class PantryUseCasesTest {
     runTest {
       category("c1")
       val id =
-        addItem
+        addProduct
           .add("Peas", "c1", inDays(30), 1, frozen = true)
           .getOrThrow()
           .itemIds
@@ -500,7 +500,7 @@ class PantryUseCasesTest {
     vararg days: Int,
     frozen: Boolean = false,
   ) = days.map {
-    addItem
+    addProduct
       .add("P$it", "c1", inDays(it), 1, frozen)
       .getOrThrow()
       .itemIds
