@@ -58,6 +58,7 @@ import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.ProductRowDetail
 import com.alorma.caducity.domain.model.ProductRowModel
+import com.alorma.caducity.domain.model.toProductRow
 import com.alorma.caducity.feature.tracking.StatusListScreen as StatusListScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.category.CategoryIcons
@@ -286,6 +287,7 @@ private fun StatusListContent(
   topPadding: Dp,
   modifier: Modifier = Modifier,
 ) {
+  val today = koinInject<TodayProvider>().today()
   Column(modifier = modifier.fillMaxSize()) {
     if (ready.isEmpty) {
       Box(modifier = Modifier.fillMaxSize().padding(top = topPadding)) {
@@ -305,7 +307,7 @@ private fun StatusListContent(
           items(section.rows, key = { it.key }) { row ->
             val index = section.rows.indexOf(row)
             ProductRow(
-              model = row.toProductRow(),
+              model = row.toRowModel(today),
               index = index,
               count = section.rows.size,
               onClick = {
@@ -403,16 +405,8 @@ private fun SectionHeader(
 }
 
 /** The row as the shared [ProductRow] shows it: no category icon (the list is already grouped by it). */
-private fun StatusRow.toProductRow(): ProductRowModel =
-  ProductRowModel(
-    key = key,
-    name = name,
-    itemIds = itemIds,
-    status = nearest.status,
-    remainingDays = nearest.remainingDays,
-    category = null,
-    detail = ProductRowDetail.WithDays,
-  )
+private fun StatusRow.toRowModel(today: LocalDate): ProductRowModel =
+  entries.toProductRow(category = null, detail = ProductRowDetail.WithDays, today = today)
 
 @Composable
 private fun SelectionBar(

@@ -1,5 +1,8 @@
 package com.alorma.caducity.domain.model
 
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.daysUntil
+
 /** What the second line of a product row says after the quantity: only what the screen does not already say. */
 sealed interface ProductRowDetail {
   /** Lists grouped by day (Home, calendar): «1 unitat · Làctics», in plain grey. */
@@ -48,6 +51,7 @@ fun List<PantryEntry>.nearestFirst(): PantryEntry = minWith(NEAREST_FIRST)
 fun List<PantryEntry>.toProductRow(
   category: Category?,
   detail: ProductRowDetail,
+  today: LocalDate,
 ): ProductRowModel {
   val sorted = sortedNearestFirst()
   val nearest = sorted.first()
@@ -56,7 +60,8 @@ fun List<PantryEntry>.toProductRow(
     name = nearest.name,
     itemIds = sorted.map { it.itemId },
     status = nearest.status,
-    remainingDays = nearest.remainingDays,
+    // PantryEntry.remainingDays is the time frozen units have left, not the days to the date.
+    remainingDays = if (nearest.status == ExpiryStatus.FROZEN) null else today.daysUntil(nearest.expiration),
     category = category,
     detail = detail,
   )

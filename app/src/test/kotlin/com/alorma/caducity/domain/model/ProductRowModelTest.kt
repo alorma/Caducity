@@ -39,6 +39,17 @@ class ProductRowModelTest {
   }
 
   @Test
+  fun `days come from the date, not from the frozen remaining days, and frozen has none`() {
+    val today = LocalDate(2026, 10, 14)
+    // remainingDays of a PantryEntry is only meaningful for frozen units: a non-frozen one has none here.
+    val soon = listOf(unit("a", day = 16).copy(remainingDays = null, status = ExpiryStatus.SOON))
+    val frozen = listOf(unit("b", day = 16, status = ExpiryStatus.FROZEN))
+
+    expectThat(soon.toProductRow(null, ProductRowDetail.WithDays, today).remainingDays).isEqualTo(2)
+    expectThat(frozen.toProductRow(null, ProductRowDetail.WithDays, today).remainingDays).isEqualTo(null)
+  }
+
+  @Test
   fun `row orders the unit ids and takes state and days from the nearest unit`() {
     val units =
       listOf(
@@ -46,7 +57,7 @@ class ProductRowModelTest {
         unit("early", day = 15, status = ExpiryStatus.SOON),
       )
 
-    val row = units.toProductRow(category = null, detail = ProductRowDetail.WithDays)
+    val row = units.toProductRow(category = null, detail = ProductRowDetail.WithDays, today = LocalDate(2026, 10, 14))
 
     expectThat(row.itemIds).isEqualTo(listOf("early", "late"))
     expectThat(row.nearestItemId).isEqualTo("early")
