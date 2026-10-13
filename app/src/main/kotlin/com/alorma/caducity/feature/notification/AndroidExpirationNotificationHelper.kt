@@ -8,9 +8,12 @@ import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
@@ -20,6 +23,10 @@ import com.alorma.caducity.R
 import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.domain.NotificationConfigDataSource
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
+import com.alorma.caducity.ui.theme.ColorPalette
+import com.alorma.caducity.ui.theme.ThemePreferences
+import com.alorma.caducity.ui.theme.colors.accent
+import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,6 +41,7 @@ class AndroidExpirationNotificationHelper(
   private val settings: Settings,
   private val workScheduler: ExpirationWorkScheduler,
   private val stringProvider: StringProvider,
+  private val themePreferences: ThemePreferences,
 ) : ExpirationNotificationHelper {
   private val notifications: MutableState<Boolean> =
     mutableStateOf(
@@ -124,6 +132,7 @@ class AndroidExpirationNotificationHelper(
       NotificationCompat
         .Builder(context, NotificationChannelManager.CHANNEL_ID_DAILY_REMINDER)
         .setSmallIcon(R.drawable.ic_notification)
+        .setColor(accentColor().toArgb())
         .also { b -> largeIconBitmap?.let { b.setLargeIcon(it) } }
         .setContentTitle(stringProvider.getQuantityString(R.plurals.notification_title, content.count, content.count))
         .setContentText(body)
@@ -134,6 +143,16 @@ class AndroidExpirationNotificationHelper(
         .build()
 
     notificationManager?.notify(NOTIFICATION_ID, notification)
+  }
+
+  /** `primary` (clar) de la paleta triada; Dinàmic: el color del sistema, fora de Compose. */
+  private fun accentColor(): Color {
+    val palette = themePreferences.colorPalette.value
+    return if (palette == ColorPalette.DYNAMIC && supportsDynamicColors()) {
+      dynamicLightColorScheme(context).primary
+    } else {
+      palette.accent()
+    }
   }
 
   private fun buildBody(content: ReminderContent): String =
