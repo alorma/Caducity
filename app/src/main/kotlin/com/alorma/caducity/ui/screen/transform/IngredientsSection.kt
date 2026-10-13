@@ -37,7 +37,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -119,7 +118,9 @@ fun IngredientsSection(
     val listState = rememberLazyListState()
     SideEffect { links?.ingredientsState = listState }
     // The colour of the status of each card, also for the line that leaves it.
-    val statusColors = visible.map { it.status?.colors()?.strong ?: CaducityTheme.colorScheme.primary }
+    val background = CaducityTheme.colorScheme.background
+    val statusColors =
+      visible.map { (it.status?.colors()?.strong ?: CaducityTheme.colorScheme.primary).withLineContrast(background) }
     SideEffect { links?.ingredientColors = statusColors }
     // TODO(transforma-open-1): the stepper only folds when the user taps outside or scrolls; maybe also after a few seconds.
     var editingKey by rememberSaveable { mutableStateOf<String?>(null) }
@@ -257,12 +258,8 @@ private fun IngredientCard(
   Surface(
     shape = RowCardShape,
     color = CaducityTheme.colorScheme.surfaceContainer,
-    // The card colour at the top, turning into the colour of its status at the bottom: the side the line leaves from.
-    border =
-      BorderStroke(
-        1.5.dp,
-        Brush.verticalGradient(listOf(CaducityTheme.colorScheme.surfaceContainer, statusColor)),
-      ),
+    // A full border in the colour of its status, the same as the line that leaves the card.
+    border = BorderStroke(2.dp, statusColor),
     modifier = modifier.size(width = RowCardWidth, height = IngredientCardHeight),
   ) {
     Box {

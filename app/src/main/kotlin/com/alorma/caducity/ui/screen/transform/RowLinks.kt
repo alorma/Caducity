@@ -120,7 +120,7 @@ private fun DrawScope.drawRowLinks(
   val center = root.localPositionOf(node, Offset(node.size.width / 2f, half))
   val nodeTop = Offset(center.x, center.y - half)
   val nodeBottom = Offset(center.x, center.y + half)
-  val thin = Stroke(width = 1.5.dp.toPx(), cap = StrokeCap.Round)
+  val thin = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round)
 
   // Ingredients → node.
   val ingredients = links.ingredientsRow?.takeIf { it.isAttached }
