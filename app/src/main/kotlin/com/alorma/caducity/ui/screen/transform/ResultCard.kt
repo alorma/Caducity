@@ -75,8 +75,6 @@ fun ResultForm(
   state: TransformState,
   result: ResultUi,
   actions: ResultActions,
-  /** «Fet» was pressed while the result still lacks something: the card shakes instead of folding. */
-  onDoneBlocked: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val id = result.id
@@ -205,25 +203,21 @@ fun ResultForm(
       } else {
         Box {}
       }
-      val valid = state.isValid(result)
       DoneButton(
-        valid = valid,
+        enabled = state.isValid(result),
         onClick = {
           focusManager.clearFocus()
-          if (valid) actions.onDone() else onDoneBlocked()
+          actions.onDone()
         },
       )
     }
   }
 }
 
-/**
- * «Fet»: folds the form back into its small card, once the result has everything it needs. Until then it looks
- * disabled but still takes the tap, so the card can shake.
- */
+/** «Fet»: folds the form back into its small card; disabled until the result has everything it needs. */
 @Composable
 private fun DoneButton(
-  valid: Boolean,
+  enabled: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -231,14 +225,15 @@ private fun DoneButton(
   val invalidLabel = stringResource(R.string.transform_result_invalid)
   Surface(
     onClick = onClick,
+    enabled = enabled,
     shape = CaducityShapes.full,
-    color = if (valid) scheme.primaryContainer else scheme.onSurface.copy(alpha = 0.12f),
-    contentColor = if (valid) scheme.onPrimaryContainer else scheme.onSurface.copy(alpha = 0.38f),
+    color = if (enabled) scheme.primaryContainer else scheme.onSurface.copy(alpha = 0.12f),
+    contentColor = if (enabled) scheme.onPrimaryContainer else scheme.onSurface.copy(alpha = 0.38f),
     modifier =
       modifier
         .minimumInteractiveComponentSize()
         .height(40.dp)
-        .semantics { if (!valid) stateDescription = invalidLabel },
+        .semantics { if (!enabled) stateDescription = invalidLabel },
   ) {
     Row(
       modifier = Modifier.padding(horizontal = 18.dp),
