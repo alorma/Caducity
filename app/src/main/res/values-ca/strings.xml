@@ -163,6 +163,7 @@
   <string name="transform_freeze_in_freezer">Congela\'n · %1$d al congelador</string>
   <string name="transform_footer">Els ingredients desapareixen del rebost en desar.</string>
   <string name="transform_result_unnamed">Resultat nou</string>
+  <string name="transform_section_result">Resultat</string>
   <string name="transform_section_results_count">Resultat · %d</string>
   <string name="transform_result_done">Fet</string>
   <string name="transform_result_delete">Esborra el resultat</string>
