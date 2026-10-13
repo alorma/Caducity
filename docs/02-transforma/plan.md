@@ -57,7 +57,7 @@ Validada amb l'app `.dev` al Pixel 8a: v3 → v4 amb 61 ítems, 5 categories i 2
 
 Decisió oberta 4 aplicada: un resultat congelat guarda els dies fins a la seva data (`TODO(transforma-open-4)`); es rebutja amb data passada.
 
-## Fase 2b — Accés lliure al cas d'ús (nova, pendent)
+## Fase 2b — Accés lliure al cas d'ús
 
 1. `TransformItemsUseCase.transform` accepta **0 ingredients** (ara falla amb `ItemNotFound`); falla només si no hi ha resultats.
 2. `PantryDataSource.transform` sense ingredients: **no crea `Transformation`**; els resultats són productes nous normals (sense `originTransformationId`). El desfés elimina només els resultats.
@@ -89,7 +89,7 @@ Decisió oberta 4 aplicada: un resultat congelat guarda els dies fins a la seva 
 
 Validada amb l'app `.dev` al Pixel 8a: desa de veritat i «Desfés» restaura els ingredients. «Afegeix ingredient» no fa res fins a la fase 4. Decisió oberta 2 aplicada: un ingredient caducat dona data per defecte «avui» (`TODO(transforma-open-2)`).
 
-## Fase 3b — Pantalla en accés lliure (nova, pendent)
+## Fase 3b — Pantalla en accés lliure
 
 Ruta `Transform` amb `itemIds` buit = accés lliure.
 1. Secció «Ingredients · opcional» amb estat buit («Què has cuinat?», icona de cassola, «Afegeix ingredient») segons `TransformaBuit`; textos nous a `values`, `values-ca`, `values-es`.
