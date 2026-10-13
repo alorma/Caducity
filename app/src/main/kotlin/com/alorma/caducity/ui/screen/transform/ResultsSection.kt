@@ -40,11 +40,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PathMeasure
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -88,12 +91,6 @@ class ResultActions(
 )
 
 private val ResultCardHeight = 92.dp
-private val HangingLineHeight = 14.dp
-private val PeakHalfWidth = 7.dp
-private val PeakHeight = 9.dp
-
-/** Share of the whole stroke that the peak takes, so its second side is drawn as the first one is. */
-private const val PeakShare = 0.08f
 
 /** Air around the lines that join the rows: between the ingredients and the node, and between the node and the results. */
 internal val SectionSpacing = 52.dp
@@ -257,40 +254,53 @@ private fun ResultItem(
 }
 
 private val DropWidth = 40.dp
-private val DropHeight = 52.dp
-private val DropStroke = 1.5.dp
+private val TailHeight = 66.dp
+private val TailStroke = 1.5.dp
 
-/** From the tip (top centre of [box]) round the drop and back to the tip: the tip up, the round body below. */
-private fun Path.dropFromTip(box: Rect) {
-  val radius = box.width / 2f
-  val centreY = box.bottom - radius
-  val height = centreY - box.top
-  cubicTo(
-    box.center.x + radius * 0.15f,
-    box.top + height * 0.35f,
-    box.right,
-    box.top + height * 0.55f,
-    box.right,
-    centreY,
-  )
-  arcTo(Rect(box.left, box.bottom - box.width, box.right, box.bottom), 0f, 180f, false)
-  cubicTo(
-    box.left,
-    box.top + height * 0.55f,
-    box.center.x - radius * 0.15f,
-    box.top + height * 0.35f,
-    box.center.x,
-    box.top,
-  )
-  close()
-}
+/** How far the tail goes up into the card, to cover the card's own border where the neck opens into it. */
+private val TailOverlap = 2.dp
 
-private val DropShape =
-  GenericShape { size, _ ->
-    val box = Rect(0f, 0f, size.width, size.height)
-    moveTo(box.center.x, box.top)
-    dropFromTip(box)
+/**
+ * The outline that hangs from the bottom edge of a folded card (y = 0 is that edge) and continues the card's shape:
+ * the edge bends down into a narrow neck that widens into a round drop. With [withFillet] it starts and ends on the
+ * card's edge; without it, only the neck and the drop (the tappable part). [coverCard] closes the path over the card
+ * border so it can be filled. Every measure is a share of [width], so the shape and the drawing always agree.
+ */
+private fun tailPath(
+  width: Float,
+  height: Float,
+  withFillet: Boolean,
+  coverCard: Boolean = false,
+  overlap: Float = 0f,
+): Path =
+  Path().apply {
+    val centre = width / 2f
+    val neck = width * 0.0625f
+    val neckHeight = width * 0.25f
+    val fillet = width * 0.3f
+    val radius = width / 2f
+    val centreY = height - radius
+    val reach = (centreY - neckHeight) * 0.25f
+    if (withFillet) {
+      moveTo(centre - fillet, 0f)
+      cubicTo(centre - fillet * 0.45f, 0f, centre - neck, neckHeight * 0.45f, centre - neck, neckHeight)
+    } else {
+      moveTo(centre - neck, neckHeight)
+    }
+    cubicTo(centre - neck, neckHeight + reach, 0f, centreY - radius * 0.7f, 0f, centreY)
+    arcTo(Rect(0f, height - width, width, height), 180f, -180f, false)
+    cubicTo(width, centreY - radius * 0.7f, centre + neck, neckHeight + reach, centre + neck, neckHeight)
+    if (withFillet) {
+      cubicTo(centre + neck, neckHeight * 0.45f, centre + fillet * 0.45f, 0f, centre + fillet, 0f)
+      if (coverCard) {
+        lineTo(centre + fillet, -overlap)
+        lineTo(centre - fillet, -overlap)
+      }
+    }
+    if (coverCard || !withFillet) close()
   }
+
+private val DropShape = GenericShape { size, _ -> addPath(tailPath(size.width, size.height, withFillet = false)) }
 
 /**
  * A short line that hangs from a folded card and ends in a drop with a «×» inside: the card's way to be removed.
@@ -303,9 +313,9 @@ private fun HangingRemove(
   onHidden: () -> Unit,
   onRemove: () -> Unit,
 ) {
-  val outline = CaducityTheme.colorScheme.outline
   val error = CaducityTheme.colorScheme.error
-  // Drawn once the card has settled after folding; undrawn before the card expands.
+  val cardColor = CaducityTheme.colorScheme.surfaceContainer
+  // It grows out of the card once the card has settled after folding, and shrinks back before the card expands.
   val progress = remember { Animatable(0f) }
   LaunchedEffect(visible) {
     if (visible) delay(ExpandMillis.toLong())
@@ -313,66 +323,35 @@ private fun HangingRemove(
     if (!visible) onHidden()
   }
   // The space is always reserved, so nothing around it moves while the card is still changing size.
-  // The line and the drop are one stroke, so the tip joins the line without a seam.
   Box(
     modifier =
       Modifier
-        .size(width = DropWidth, height = HangingLineHeight + DropHeight)
+        .size(width = DropWidth, height = TailHeight)
         .drawBehind {
-          val stroke = DropStroke.toPx()
-          val box = Rect(stroke / 2, HangingLineHeight.toPx(), size.width - stroke / 2, size.height - stroke / 2)
-          val centre = box.center.x
-          val peakWidth = PeakHalfWidth.toPx()
-          val peakHeight = PeakHeight.toPx()
-          // The stroke starts at the card with a peak (the drop's tip upside down), then a short line, then the drop.
-          val main =
-            Path().apply {
-              moveTo(centre + peakWidth, 0f)
-              cubicTo(
-                centre + peakWidth,
-                peakHeight * 0.45f,
-                centre + peakWidth * 0.15f,
-                peakHeight * 0.65f,
-                centre,
-                peakHeight,
-              )
-              lineTo(centre, box.top)
-              dropFromTip(box)
+          val stroke = TailStroke.toPx()
+          val path =
+            tailPath(
+              width = size.width - stroke,
+              height = size.height - stroke / 2,
+              withFillet = true,
+              coverCard = true,
+              overlap = TailOverlap.toPx(),
+            )
+          // The card's border is drawn inside its edge: start on its centre line so the two strokes meet without a step.
+          translate(left = stroke / 2, top = -stroke / 2) {
+            scale(scaleX = 1f, scaleY = progress.value, pivot = Offset(size.width / 2, 0f)) {
+              drawPath(path, cardColor)
+              val open = tailPath(width = size.width - stroke, height = size.height - stroke / 2, withFillet = true)
+              drawPath(open, error, style = Stroke(width = stroke, cap = StrokeCap.Round, join = StrokeJoin.Round))
             }
-          val otherSide =
-            Path().apply {
-              moveTo(centre - peakWidth, 0f)
-              cubicTo(
-                centre - peakWidth,
-                peakHeight * 0.45f,
-                centre - peakWidth * 0.15f,
-                peakHeight * 0.65f,
-                centre,
-                peakHeight,
-              )
-            }
-          val style = Stroke(width = stroke, join = StrokeJoin.Round)
-          val drawn = Path()
-          val measure = PathMeasure().apply { setPath(main, false) }
-          measure.getSegment(0f, measure.length * progress.value, drawn, true)
-          drawPath(drawn, outline, style = style)
-          // The second side of the peak is short: it is drawn within the first part of the progress.
-          val sideDrawn = Path()
-          val sideMeasure = PathMeasure().apply { setPath(otherSide, false) }
-          sideMeasure.getSegment(
-            0f,
-            sideMeasure.length * (progress.value / PeakShare).coerceAtMost(1f),
-            sideDrawn,
-            true,
-          )
-          drawPath(sideDrawn, outline, style = style)
+          }
         },
     contentAlignment = Alignment.BottomCenter,
   ) {
     Box(
       modifier =
         Modifier
-          .size(width = DropWidth, height = DropHeight)
+          .size(width = DropWidth, height = TailHeight)
           .clip(DropShape)
           .clickable(
             enabled = progress.value >= 1f,
@@ -386,7 +365,7 @@ private fun HangingRemove(
       Icon(
         Symbols.Outlined.Close,
         contentDescription = stringResource(R.string.transform_result_delete),
-        tint = CaducityTheme.colorScheme.onSurfaceVariant,
+        tint = error,
         // The centre of the round body, which is half the width above the bottom.
         modifier = Modifier.padding(bottom = DropWidth / 2 - 10.dp).size(20.dp).alpha(progress.value),
       )
