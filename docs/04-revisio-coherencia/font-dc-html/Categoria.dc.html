@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Categoria · Làctics</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Figtree:wght@400..700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E6B3B}a:hover{color:#10300F}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'opsz' 24;display:inline-block}
+.msf{font-variation-settings:'FILL' 1,'wght' 400,'opsz' 24}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFAEE; font-family: 'Figtree', sans-serif; color: #2B2418">
+  <div style="padding: 16px 20px 120px; display: flex; flex-direction: column; gap: 18px">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin: 0 -8px">
+      <a href="Rebost.dc.html" aria-label="Torna" style="width: 48px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #2B2418; text-decoration: none"><span class="ms" style="font-size: 24px">arrow_back</span></a>
+      <div style="display: flex">
+        <a href="CalMes.dc.html" aria-label="Calendari de Làctics" style="width: 48px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #2B2418; text-decoration: none"><span class="ms" style="font-size: 24px">calendar_month</span></a>
+        <button aria-label="Més opcions" style="width: 48px; height: 48px; border: none; border-radius: 24px; background: transparent; color: #2B2418; display: flex; align-items: center; justify-content: center; cursor: pointer"><span class="ms" style="font-size: 24px">more_vert</span></button>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 16px">
+      <div style="position: relative; width: 80px; height: 80px; flex: none; display: flex; align-items: center; justify-content: center">
+        <svg viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{cookie}}" fill="#EFD8C0"></path></svg>
+        <span class="ms" style="position: relative; font-size: 36px; color: #2E6B3B">water_full</span>
+      </div>
+      <div>
+        <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 40px; font-weight: 800; font-stretch: 80%; line-height: 1.05">Làctics</h1>
+        <div style="font-size: 14px; color: #6A5D45; margin-top: 4px">14 productes · propera, avui</div>
+      </div>
+    </div>
+
+    <div role="tablist" aria-label="Pròxims 7 dies a Làctics" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin: -4px -4px 0">
+      <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+        <button role="tab" aria-selected="false" aria-label="{{d.label}}" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 0 8px; border: none; border-radius: 18px; background: {{d.bg}}; color: #2B2418; font-family: 'Figtree', sans-serif; cursor: pointer">
+          <span style="font-size: 12px; font-weight: 600; color: #6A5D45">{{d.wd}}</span>
+          <span style="width: 34px; height: 34px; box-sizing: border-box; border-radius: 17px; border: {{d.ring}}; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 800">{{d.n}}</span>
+          <span style="display: flex; gap: 3px; height: 6px">
+            <sc-for list="{{d.dots}}" as="c" hint-placeholder-count="1">
+              <span style="width: 6px; height: 6px; border-radius: 3px; background: {{c}}"></span>
+            </sc-for>
+          </span>
+        </button>
+      </sc-for>
+    </div>
+
+    <div role="group" aria-label="Filtra per estat" style="display: flex; gap: 8px; overflow: hidden; margin-right: -20px">
+      <button style="flex: none; display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px 0 10px; border: none; border-radius: 12px; background: #2E6B3B; color: #FFFFFF; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 700"><span class="ms" style="font-size: 18px">check</span>Tots 14</button>
+      <button style="flex: none; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid #E0D2B2; border-radius: 12px; background: transparent; color: #2B2418; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600"><span style="width: 8px; height: 8px; border-radius: 4px; background: #B23F2A"></span>Caducat 1</button>
+      <button style="flex: none; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid #E0D2B2; border-radius: 12px; background: transparent; color: #2B2418; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600"><span style="width: 8px; height: 8px; border-radius: 4px; background: #D9A23A"></span>Aviat 4</button>
+      <button style="flex: none; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid #E0D2B2; border-radius: 12px; background: transparent; color: #2B2418; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600"><span style="width: 8px; height: 8px; border-radius: 4px; background: #7E9B4C"></span>Fresc 8</button>
+      <button style="flex: none; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid #E0D2B2; border-radius: 12px; background: transparent; color: #2B2418; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600"><span style="width: 8px; height: 8px; border-radius: 4px; background: #4F8FA3"></span>Congelat 1</button>
+    </div>
+
+    <sc-for list="{{sections}}" as="sec" hint-placeholder-count="3">
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; align-items: center; gap: 8px; padding: 0 4px">
+          <span style="width: 10px; height: 10px; border-radius: 5px; background: {{sec.dot}}"></span>
+          <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 700; font-stretch: 85%">{{sec.title}}</h2>
+          <span style="font-size: 13px; color: #6A5D45">{{sec.count}}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <sc-for list="{{sec.rows}}" as="r" hint-placeholder-count="2">
+            <sc-if value="{{r.main}}" hint-placeholder-val="{{ true }}">
+              <a href="Accions.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 64px; box-sizing: border-box; padding: 8px 6px 8px 16px; background: #F7EEDA; border-radius: {{r.rad}}; color: #2B2418; text-decoration: none">
+                <div style="flex: 1; min-width: 0">
+                  <div style="font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</div>
+                  <div style="font-size: 13px; color: {{r.metaFg}}; margin-top: 2px; font-weight: {{r.metaW}}">{{r.meta}}</div>
+                </div>
+                <sc-if value="{{r.cons}}" hint-placeholder-val="{{ true }}"><button aria-label="Marca com a consumit" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #2E6B3B; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">check</span></button><button aria-label="Congela" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #3F7F92; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">ac_unit</span></button></sc-if><sc-if value="{{r.exp}}" hint-placeholder-val="{{ false }}"><button aria-label="Llença" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #B23F2A; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">delete</span></button></sc-if><sc-if value="{{r.frz}}" hint-placeholder-val="{{ false }}"><button aria-label="Marca com a consumit" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #2E6B3B; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">check</span></button></sc-if>
+                
+              </a>
+            </sc-if>
+            
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <a href="Afegir.dc.html" aria-label="Afegeix a Làctics" style="position: absolute; right: 20px; bottom: 24px; width: 64px; height: 64px; border-radius: 20px; background: #2E6B3B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 20px rgba(41,36,28,0.18)"><span class="ms" style="font-size: 30px">add</span></a>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  blob(n, a, rot) {
+    rot = rot || 0;
+    var p = [];
+    for (var i = 0; i < 120; i++) {
+      var t = i / 120 * Math.PI * 2;
+      var r = 50 - a + a * Math.cos(n * (t + rot));
+      p.push((50 + r * Math.cos(t)).toFixed(1) + " " + (50 + r * Math.sin(t)).toFixed(1));
+    }
+    return "M" + p.join("L") + "Z";
+  }
+  rad(i, n) {
+    if (n === 1) return "24px";
+    if (i === 0) return "24px 24px 6px 6px";
+    if (i === n - 1) return "6px 6px 24px 24px";
+    return "6px";
+  }
+  renderVals() {
+    var self = this;
+    var P = {
+      exp: ["#F7D8CC", "#7A2414"], soon: ["#F8E2AE", "#5C3F00"], fresh: ["#DCE8C4", "#2F4515"], frz: ["#D3E5EA", "#163F4C"]
+    };
+    var raw = [
+      { title: "Caducat", count: "1", dot: "#B23F2A", st: "exp", rows: [
+        { name: "Iogurt grec", meta: "1 unitat · Fa 2 dies", when: "Fa 2 dies" }] },
+      { title: "Aviat", count: "4", dot: "#D9A23A", st: "soon", rows: [
+        { name: "Llet sencera", meta: "1 unitat · Avui", when: "Avui" },
+        { name: "Mozzarella", meta: "1 unitat · Demà", when: "Demà" },
+        { name: "Iogurt natural", meta: "2 unitats · D'aquí 2 dies", when: "2 dies" }] },
+      { title: "Fresc", count: "8", dot: "#7E9B4C", st: "fresh", rows: [
+        { name: "Formatge cheddar", meta: "3 unitats · D'aquí 10 dies", when: "10 dies" },
+        { name: "Mantega", meta: "1 unitat · D'aquí 22 dies", when: "22 dies" },
+        { name: "Kéfir", meta: "1 unitat · D'aquí 24 dies", when: "24 dies" }] },
+      { title: "Congelat", count: "1", dot: "#4F8FA3", st: "frz", rows: [
+        { name: "Parmesà ratllat", meta: "1 unitat · Congelat el 28 set", when: "Congelat" }] }
+    ];
+    var sections = raw.map(function (s) {
+      return {
+        title: s.title, count: s.count, dot: s.dot,
+        rows: s.rows.map(function (r, i) {
+          return {
+            name: r.name, meta: r.meta || "", when: r.when,
+            main: !r.unit, unit: !!r.unit, group: !!r.group,
+            pillBg: P[s.st][0], pillFg: P[s.st][1],
+            cons: s.st === "soon" || s.st === "fresh", exp: s.st === "exp", frz: s.st === "frz",
+            metaFg: P[s.st][1], metaW: 600,
+            rad: self.rad(i, s.rows.length)
+          };
+        })
+      };
+    });
+    var A = "#D9A23A";
+    var week = [
+      ["dg", 11, [A], "Avui, 1 producte"], ["dl", 12, [A], "Demà, 1 producte"],
+      ["dt", 13, [A, A], "Dimarts 13, 2 unitats"], ["dc", 14, [], "Dimecres 14, res"],
+      ["dj", 15, [], "Dijous 15, res"], ["dv", 16, [], "Divendres 16, res"], ["ds", 17, [], "Dissabte 17, res"]
+    ];
+    var days = week.map(function (d, i) {
+      return {
+        wd: d[0], n: d[1], dots: d[2], label: d[3],
+        bg: i === 0 ? "#F7EEDA" : "transparent",
+        ring: i === 0 ? "2px solid #2B2418" : "2px solid transparent"
+      };
+    });
+    return { sections: sections, cookie: this.blob(9, 3, 0), days: days };
+  }
+}
+</script>
+</body>
+</html>

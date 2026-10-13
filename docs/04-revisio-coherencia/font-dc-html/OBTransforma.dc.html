@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Onboarding · Transforma</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Figtree:wght@400..700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E6B3B}a:hover{color:#10300F}
+@keyframes rise{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes drop{0%{transform:translateY(-140px);opacity:0}60%{transform:translateY(6px);opacity:1}100%{transform:none;opacity:1}}
+.grow{transform-origin:left center;animation:grow 600ms cubic-bezier(.2,.9,.3,1) 100ms both}
+.rise{animation:rise 520ms cubic-bezier(.2,.9,.3,1) both}
+.drop{animation:drop 900ms cubic-bezier(.3,1.3,.5,1) 350ms both}
+.d1{animation-delay:120ms}.d2{animation-delay:240ms}.d3{animation-delay:360ms}.d4{animation-delay:480ms}
+@media (prefers-reduced-motion: reduce){.grow,.rise,.drop{animation:none}}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'opsz' 24;display:inline-block}
+.msf{font-variation-settings:'FILL' 1,'wght' 400,'opsz' 24}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFAEE; font-family: 'Figtree', sans-serif; color: #2B2418">
+  <div style="padding: 24px 20px 0; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #6A5D45">Pas 3 de 5</div>
+      <div role="progressbar" aria-valuemin="1" aria-valuemax="5" aria-valuenow="3" aria-label="Progrés" style="display: flex; gap: 4px">
+        <span style="flex: 1; height: 6px; border-radius: 3px; background: #2E6B3B"></span>
+        <span style="flex: 1; height: 6px; border-radius: 3px; background: #2E6B3B"></span>
+        <span class="grow" style="flex: 1; height: 6px; border-radius: 3px; background: #2E6B3B"></span>
+        <span style="flex: 1; height: 6px; border-radius: 3px; background: #E0D2B2"></span>
+        <span style="flex: 1; height: 6px; border-radius: 3px; background: #E0D2B2"></span>
+        </div>
+    </div>
+    <div class="rise d1">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 36px; font-weight: 800; font-stretch: 80%; line-height: 1">Has cuinat? Apunta-ho</h1>
+      <p style="margin: 10px 0 0; font-size: 15px; line-height: 1.45; color: #6A5D45">Transforma treu del rebost els ingredients que has gastat i hi afegeix el que n'ha sortit, amb la seva data.</p>
+    </div>
+    <div class="rise d2" aria-hidden="true" style="display: flex; justify-content: center; padding: 14px 0; border-radius: 24px; background: #F7EEDA"><div style="display: flex; flex-direction: column; align-items: center; width: 318px">
+<div style="display: flex; gap: 10px"><div style="display: flex; align-items: center; gap: 8px; width: 140px; height: 44px; box-sizing: border-box; padding: 0 10px 0 8px; border-radius: 16px; background: #FFFAEE"><div style="width: 28px; height: 28px; flex: none; border-radius: 14px; background: #EFD8C0; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 16px;color:#2E6B3B">nutrition</span></div><span style="font-size: 13px; font-weight: 600; white-space: nowrap">Pollastre sencer</span></div><div style="display: flex; align-items: center; gap: 8px; width: 140px; height: 44px; box-sizing: border-box; padding: 0 10px 0 8px; border-radius: 16px; background: #FFFAEE"><div style="width: 28px; height: 28px; flex: none; border-radius: 14px; background: #EFD8C0; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 16px;color:#2E6B3B">eco</span></div><span style="font-size: 13px; font-weight: 600; white-space: nowrap">Verdures</span></div></div>
+<svg width="318" height="30" viewBox="0 0 318 30" style="display:block"><path d="M79.0 0 C79.0 18 159.0 10 159.0 30" stroke="#B9A77F" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M239.0 0 C239.0 18 159.0 10 159.0 30" stroke="#B9A77F" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+<div style="position: relative; width: 52px; height: 52px; flex: none; display: flex; align-items: center; justify-content: center"><svg width="52" height="52" viewBox="0 0 52 52" style="position:absolute;inset:0"><polygon points="52.0,26.0 51.5,27.8 50.3,29.4 48.6,30.8 47.0,32.0 45.7,33.2 45.1,34.5 45.0,36.1 45.3,38.1 45.6,40.2 45.5,42.3 44.7,44.0 43.2,45.2 41.3,45.6 39.1,45.5 37.1,45.1 35.3,45.0 33.8,45.3 32.6,46.3 31.4,47.8 30.1,49.5 28.6,51.0 26.9,51.9 25.1,51.9 23.4,51.0 21.9,49.5 20.6,47.8 19.4,46.3 18.2,45.3 16.7,45.0 15.0,45.1 12.9,45.5 10.7,45.6 8.8,45.2 7.3,44.0 6.5,42.3 6.4,40.2 6.7,38.1 7.0,36.1 6.9,34.5 6.3,33.2 5.0,32.0 3.4,30.8 1.7,29.4 0.5,27.8 0.0,26.0 0.5,24.2 1.7,22.6 3.4,21.2 5.0,20.0 6.3,18.8 6.9,17.5 7.0,15.9 6.7,13.9 6.4,11.8 6.5,9.7 7.3,8.0 8.8,6.8 10.7,6.4 12.9,6.5 14.9,6.9 16.7,7.0 18.2,6.7 19.4,5.7 20.6,4.2 21.9,2.5 23.4,1.0 25.1,0.1 26.9,0.1 28.6,1.0 30.1,2.5 31.4,4.2 32.6,5.7 33.8,6.7 35.3,7.0 37.1,6.9 39.1,6.5 41.3,6.4 43.2,6.8 44.7,8.0 45.5,9.7 45.6,11.8 45.3,13.9 45.0,15.9 45.1,17.5 45.7,18.8 47.0,20.0 48.6,21.2 50.3,22.6 51.5,24.2 52.0,26.0" fill="#EFD8C0" stroke="#F7EEDA" stroke-width="4" paint-order="stroke" stroke-linejoin="round"/></svg><span class="ms" style="position:relative;font-size: 26px;color:#2E6B3B">soup_kitchen</span></div>
+<svg width="4" height="22" viewBox="0 0 4 22" style="display:block"><path d="M2 0 V22" stroke="#2E6B3B" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>
+<div style="display: flex; align-items: center; gap: 10px; width: 232px; height: 56px; box-sizing: border-box; padding: 0 12px 0 10px; border-radius: 18px; background: #DCE9C6; box-shadow: inset 0 0 0 2px #2E6B3B"><div style="width: 32px; height: 32px; flex: none; border-radius: 16px; background: #EFD8C0; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 18px;color:#2E6B3B">soup_kitchen</span></div><div><div style="font-size: 15px; font-weight: 700">Caldo</div><div style="font-size: 12px; color: #4A3F2A">4 racions · 2 congelats</div></div></div>
+</div></div>
+    <div class="rise d3"><div style="display: flex; gap: 12px; padding: 14px 16px; border-radius: 20px; background: #F0E2CB; box-shadow: inset 0 0 0 1.5px #8F8266">
+<div style="position: relative; width: 40px; height: 40px; flex: none; border-radius: 20px; background: #FFFAEE; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px;color:#6A5D45">menu_book</span><svg width="40" height="40" viewBox="0 0 40 40" style="position: absolute; inset: 0"><path d="M9 9 L31 31" stroke="#B3261E" stroke-width="3" stroke-linecap="round"/></svg></div>
+<div><div style="font-size: 16px; font-weight: 800">No és un receptari</div><div style="font-size: 13.5px; line-height: 1.4; color: #4A3F2A; margin-top: 2px">No hi ha receptes ni suggeriments de què cuinar. Transforma només apunta què has gastat i què n'ha sortit.</div></div></div></div>
+    <div class="rise d4" style="display: flex; align-items: center; gap: 12px; padding: 0 4px; font-size: 14px; color: #6A5D45"><div style="width: 34px; height: 34px; flex: none; border-radius: 17px; background: #DCE9C6; color: #10300F; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 20px">soup_kitchen</span></div><span>La tens al final de la llista d'<b style="color:#2B2418">Aviat</b>, o mantén premut un producte.</span></div>
+  </div>
+  <div style="position: absolute; left: 20px; right: 20px; bottom: 24px; display: flex; align-items: center; justify-content: space-between">
+    <a href="OB3Avisos.dc.html" style="display: flex; align-items: center; height: 48px; padding: 0 16px; margin-left: -16px; color: #2E6B3B; text-decoration: none; font-size: 16px; font-weight: 700">Enrere</a>
+    <a href="OB4Privadesa.dc.html" style="display: flex; align-items: center; gap: 8px; height: 60px; padding: 0 28px; border-radius: 30px; background: #2E6B3B; color: #FFFFFF; text-decoration: none; font-size: 17px; font-weight: 700">Continua<span class="ms" style="font-size: 22px">arrow_forward</span></a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

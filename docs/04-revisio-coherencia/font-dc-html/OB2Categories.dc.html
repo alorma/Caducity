@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Onboarding · Categories</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Figtree:wght@400..700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E6B3B}a:hover{color:#10300F}
+@keyframes rise{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes drop{0%{transform:translateY(-140px);opacity:0}60%{transform:translateY(6px);opacity:1}100%{transform:none;opacity:1}}
+.grow{transform-origin:left center;animation:grow 600ms cubic-bezier(.2,.9,.3,1) 100ms both}
+.rise{animation:rise 520ms cubic-bezier(.2,.9,.3,1) both}
+.drop{animation:drop 900ms cubic-bezier(.3,1.3,.5,1) 350ms both}
+.d1{animation-delay:120ms}.d2{animation-delay:240ms}.d3{animation-delay:360ms}.d4{animation-delay:480ms}
+@media (prefers-reduced-motion: reduce){.grow,.rise,.drop{animation:none}}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'opsz' 24;display:inline-block}
+.msf{font-variation-settings:'FILL' 1,'wght' 400,'opsz' 24}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFAEE; font-family: 'Figtree', sans-serif; color: #2B2418">
+  <div style="padding: 24px 20px 0; display: flex; flex-direction: column; gap: 20px">
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #6A5D45">Pas 1 de 5</div>
+      <div role="progressbar" aria-valuemin="1" aria-valuemax="5" aria-valuenow="1" aria-label="Progrés" style="display: flex; gap: 4px">
+        <span class="grow" style="flex: 1; height: 6px; border-radius: 3px; background: #2E6B3B"></span>
+        <span style="flex: 1; height: 6px; border-radius: 3px; background: #E0D2B2"></span>
+        <span style="flex: 1; height: 6px; border-radius: 3px; background: #E0D2B2"></span>
+        <span style="flex: 1; height: 6px; border-radius: 3px; background: #E0D2B2"></span>
+        <span style="flex: 1; height: 6px; border-radius: 3px; background: #E0D2B2"></span>
+        </div>
+    </div>
+    <div class="rise d1">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 36px; font-weight: 800; font-stretch: 80%; line-height: 1">Què guardes a casa?</h1>
+      <p style="margin: 10px 0 0; font-size: 15px; line-height: 1.45; color: #6A5D45">Tria les categories amb què vols començar. Les pots canviar quan vulguis des de Rebost.</p>
+    </div>
+
+    <div role="group" aria-label="Categories suggerides" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+      <sc-for list="{{cats}}" as="c" hint-placeholder-count="8">
+        <button class="rise" role="checkbox" aria-checked="{{c.on}}" style="animation-delay: {{c.delay}}; position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; height: 104px; box-sizing: border-box; padding: 12px 14px; border: {{c.border}}; border-radius: 24px; background: {{c.bg}}; color: #2B2418; font-family: 'Figtree', sans-serif; text-align: left; cursor: pointer">
+          <span style="position: relative; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center">
+            <svg viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{c.shape}}" fill="{{c.fill}}"></path></svg>
+            <span class="ms" style="position: relative; font-size: 22px; color: {{c.ic}}">{{c.icon}}</span>
+          </span>
+          <span style="font-size: 15px; font-weight: 700; line-height: 1.2">{{c.name}}</span>
+          <span class="ms msf" style="position: absolute; right: 12px; top: 12px; font-size: 24px; color: {{c.check}}">{{c.mark}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 20px; right: 20px; bottom: 24px; display: flex; align-items: center; justify-content: space-between">
+    <a href="OB1Benvinguda.dc.html" style="display: flex; align-items: center; height: 48px; padding: 0 16px; margin-left: -16px; color: #2E6B3B; text-decoration: none; font-size: 16px; font-weight: 700">Enrere</a>
+    <a href="OB3Avisos.dc.html" style="display: flex; align-items: center; gap: 8px; height: 60px; padding: 0 28px; border-radius: 30px; background: #2E6B3B; color: #FFFFFF; text-decoration: none; font-size: 17px; font-weight: 700">Continua amb 5</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  blob(n, a, rot) {
+    rot = rot || 0;
+    var p = [];
+    for (var i = 0; i < 120; i++) {
+      var t = i / 120 * Math.PI * 2;
+      var r = 50 - a + a * Math.cos(n * (t + rot));
+      p.push((50 + r * Math.cos(t)).toFixed(1) + " " + (50 + r * Math.sin(t)).toFixed(1));
+    }
+    return "M" + p.join("L") + "Z";
+  }
+  renderVals() {
+    var raw = [
+      ["Làctics", "water_full", this.blob(9, 3, 0), true],
+      ["Fruita i verdura", "nutrition", this.blob(6, 6, 0), true],
+      ["Carn i peix", "set_meal", this.blob(4, 8, Math.PI / 4), true],
+      ["Rebost", "grocery", this.blob(8, 4, 0), true],
+      ["Fleca", "bakery_dining", this.blob(4, 2.5, Math.PI / 4), true],
+      ["Begudes", "local_drink", this.blob(12, 3, 0), false],
+      ["Embotits", "kebab_dining", this.blob(9, 3, 0.2), false],
+      ["Plats preparats", "soup_kitchen", this.blob(6, 6, 0.3), false]
+    ];
+    return {
+      cats: raw.map(function (c, i) {
+        var on = c[3];
+        return {
+          delay: (300 + i * 70) + "ms", name: c[0], icon: c[1], shape: c[2], on: on ? "true" : "false",
+          bg: on ? "#DCE9C6" : "#F7EEDA", border: on ? "2px solid #2E6B3B" : "2px solid transparent",
+          fill: on ? "#2E6B3B" : "#EFD8C0", ic: on ? "#FFFFFF" : "#2E6B3B",
+          mark: on ? "check_circle" : "radio_button_unchecked", check: on ? "#2E6B3B" : "#8F8266"
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>
