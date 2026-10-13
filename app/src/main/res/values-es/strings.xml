@@ -269,6 +269,7 @@
   <string name="item_actions_pick_date">Elige una fecha</string>
   <string name="item_actions_edit">Edita</string>
   <string name="item_actions_move">Mover a otra categoría</string>
+  <string name="item_actions_transform">Transforma</string>
   <string name="item_actions_move_title">Mover a…</string>
   <string name="item_actions_delete">Borra</string>
   <string name="item_actions_delete_title">¿Borrar %1$s?</string>

@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -30,13 +31,15 @@ fun ConnectedRow(
   modifier: Modifier = Modifier,
   onClick: (() -> Unit)? = null,
   contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+  containerColor: Color = CaducityTheme.colorScheme.surfaceContainer,
+  contentColor: Color = CaducityTheme.colorScheme.onSurface,
   content: @Composable RowScope.() -> Unit,
 ) {
   Surface(
     modifier = modifier,
     shape = connectedShape(index, count),
-    color = CaducityTheme.colorScheme.surfaceContainer,
-    contentColor = CaducityTheme.colorScheme.onSurface,
+    color = containerColor,
+    contentColor = contentColor,
   ) {
     Row(
       modifier =

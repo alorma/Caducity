@@ -20,6 +20,7 @@ import com.alorma.caducity.domain.usecase.toExpirationInstant
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemActionAction
 import com.alorma.caducity.feature.tracking.NavigateToEditItemAction
+import com.alorma.caducity.feature.tracking.NavigateToTransformAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
@@ -89,6 +90,11 @@ class ItemActionsSheetViewModel(
         eventTracker.trackAction(NavigateToEditItemAction())
         closing = true
         emitNavigationSideEffect(ItemActionsSheetNavigationSideEffect.Edit(itemId))
+      }
+      ItemActionsSheetNavigation.Transform -> {
+        eventTracker.trackAction(NavigateToTransformAction(origin = "item_actions", source = "item_actions"))
+        closing = true
+        emitNavigationSideEffect(ItemActionsSheetNavigationSideEffect.Transform(itemId))
       }
     }
   }

@@ -259,6 +259,7 @@
   <string name="item_actions_pick_date">Pick a date</string>
   <string name="item_actions_edit">Edit</string>
   <string name="item_actions_move">Move to another category</string>
+  <string name="item_actions_transform">Transform</string>
   <string name="item_actions_move_title">Move to…</string>
   <string name="item_actions_delete">Delete</string>
   <string name="item_actions_delete_title">Delete %1$s?</string>
