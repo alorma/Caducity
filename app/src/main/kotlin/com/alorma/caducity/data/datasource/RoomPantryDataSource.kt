@@ -13,7 +13,7 @@ import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import com.alorma.caducity.data.datasource.room.model.TransformationRoomEntity
 import com.alorma.caducity.domain.PantryDataSource
 import com.alorma.caducity.domain.model.ActiveItem
-import com.alorma.caducity.domain.model.AddedBatch
+import com.alorma.caducity.domain.model.AddedItems
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ItemSnapshot
 import com.alorma.caducity.domain.model.PantryError
@@ -36,13 +36,13 @@ class RoomPantryDataSource(
   private val categoryMapper: CategoryRoomMapper,
   private val appClock: AppClock,
 ) : PantryDataSource {
-  override suspend fun addBatch(
+  override suspend fun addItems(
     categoryId: String,
     productName: String,
     expiration: Instant,
     quantity: Int,
     frozenRemainingDays: Int?,
-  ): AddedBatch =
+  ): AddedItems =
     database.withTransaction {
       val (product, created) = findOrCreateProduct(categoryId, productName)
       val now = appClock.now().toEpochMilliseconds()
@@ -61,7 +61,7 @@ class RoomPantryDataSource(
           ),
         )
       }
-      AddedBatch(productId = product.id, itemIds = ids, productCreated = created)
+      AddedItems(productId = product.id, itemIds = ids, productCreated = created)
     }
 
   override suspend fun updateItem(

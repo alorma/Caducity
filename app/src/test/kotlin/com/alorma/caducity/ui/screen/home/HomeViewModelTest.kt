@@ -16,7 +16,7 @@ import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.model.ExpiryStatus
-import com.alorma.caducity.domain.usecase.AddItemBatchUseCase
+import com.alorma.caducity.domain.usecase.AddItemUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveCalendarUseCase
@@ -82,7 +82,7 @@ class HomeViewModelTest {
   private lateinit var db: AppDatabase
   private lateinit var pantry: RoomPantryDataSource
   private lateinit var itemDataSource: RoomItemDataSource
-  private lateinit var addBatch: AddItemBatchUseCase
+  private lateinit var addItem: AddItemUseCase
   private lateinit var thresholdPreferences: SoonThresholdPreferences
   private val snackbars = GlobalSnackbarEvents()
   private val created = mutableListOf<HomeViewModel>()
@@ -107,7 +107,7 @@ class HomeViewModelTest {
         categoryMapper = CategoryRoomMapper(ProductRoomMapper(), itemMapper),
         appClock = clock,
       )
-    addBatch = AddItemBatchUseCase(pantry, clock)
+    addItem = AddItemUseCase(pantry, clock)
   }
 
   @After
@@ -129,7 +129,7 @@ class HomeViewModelTest {
     days: Int,
     quantity: Int = 1,
     frozen: Boolean = false,
-  ): List<String> = addBatch.add(name, "dairy", inDays(days), quantity, frozen).getOrThrow().itemIds
+  ): List<String> = addItem.add(name, "dairy", inDays(days), quantity, frozen).getOrThrow().itemIds
 
   private fun viewModel(): HomeViewModel {
     val thresholds = AppExpirationThresholdsImpl(thresholdPreferences)

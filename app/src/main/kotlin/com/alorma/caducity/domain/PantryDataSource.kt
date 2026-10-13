@@ -1,7 +1,7 @@
 package com.alorma.caducity.domain
 
 import com.alorma.caducity.domain.model.ActiveItem
-import com.alorma.caducity.domain.model.AddedBatch
+import com.alorma.caducity.domain.model.AddedItems
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ItemSnapshot
 import com.alorma.caducity.domain.model.ProductUsage
@@ -17,13 +17,13 @@ interface PantryDataSource {
    * Finds or creates the product named [productName] in [categoryId] and inserts [quantity] independent
    * items with the same expiration. When [frozenRemainingDays] is set the items are created frozen.
    */
-  suspend fun addBatch(
+  suspend fun addItems(
     categoryId: String,
     productName: String,
     expiration: Instant,
     quantity: Int,
     frozenRemainingDays: Int?,
-  ): AddedBatch
+  ): AddedItems
 
   /** Edits a single unit; [frozenRemainingDays] is applied only when the unit is frozen. */
   suspend fun updateItem(

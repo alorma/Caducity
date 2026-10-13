@@ -59,7 +59,7 @@ class ObserveUseCasesTest {
 
   private lateinit var db: AppDatabase
   private lateinit var pantry: RoomPantryDataSource
-  private lateinit var addBatch: AddItemBatchUseCase
+  private lateinit var addItem: AddItemUseCase
   private lateinit var discard: DiscardItemsUseCase
   private lateinit var consume: ConsumeItemUseCase
   private lateinit var items: ObserveItemsUseCase
@@ -98,7 +98,7 @@ class ObserveUseCasesTest {
 
         override fun observe(): Flow<LocalDate> = todayFlow
       }
-    addBatch = AddItemBatchUseCase(pantry, clock)
+    addItem = AddItemUseCase(pantry, clock)
     discard = DiscardItemsUseCase(pantry, clock)
     consume = ConsumeItemUseCase(RoomItemDataSource(db.itemDao(), clock, itemMapper), pantry, clock)
     items = ObserveItemsUseCase(pantry, thresholds, todayProvider)
@@ -130,7 +130,7 @@ class ObserveUseCasesTest {
     days: Int,
     quantity: Int = 1,
     frozen: Boolean = false,
-  ) = addBatch.add(name, categoryId, inDays(days), quantity, frozen).getOrThrow()
+  ) = addItem.add(name, categoryId, inDays(days), quantity, frozen).getOrThrow()
 
   // region Items
 

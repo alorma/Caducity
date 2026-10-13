@@ -179,7 +179,7 @@ val appModule =
       AddViewModel(
         args = params.get(),
         todayProvider = get(),
-        addItemBatch = get(),
+        addItem = get(),
         getNameSuggestions = get(),
         getActiveItem = get(),
         updateItem = get(),

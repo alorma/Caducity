@@ -4,7 +4,7 @@ import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 
 /** Result of adding units of a product. */
-data class AddedBatch(
+data class AddedItems(
   val productId: String,
   val itemIds: List<String>,
   val productCreated: Boolean,

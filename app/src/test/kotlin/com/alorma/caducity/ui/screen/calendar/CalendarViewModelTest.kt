@@ -16,7 +16,7 @@ import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.model.ExpiryStatus
-import com.alorma.caducity.domain.usecase.AddItemBatchUseCase
+import com.alorma.caducity.domain.usecase.AddItemUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.ObserveCalendarUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
@@ -74,7 +74,7 @@ class CalendarViewModelTest {
 
   private lateinit var db: AppDatabase
   private lateinit var pantry: RoomPantryDataSource
-  private lateinit var addBatch: AddItemBatchUseCase
+  private lateinit var addItem: AddItemUseCase
   private lateinit var items: ObserveItemsUseCase
   private val firstDay = FirstDayOfWeekPreferences(MapSettings())
   private val created = mutableListOf<CalendarViewModel>()
@@ -98,7 +98,7 @@ class CalendarViewModelTest {
         categoryMapper = CategoryRoomMapper(ProductRoomMapper(), itemMapper),
         appClock = clock,
       )
-    addBatch = AddItemBatchUseCase(pantry, clock)
+    addItem = AddItemUseCase(pantry, clock)
     items = ObserveItemsUseCase(pantry, thresholds, todayProvider)
   }
 
@@ -121,7 +121,7 @@ class CalendarViewModelTest {
     days: Int,
     categoryId: String = "dairy",
     quantity: Int = 1,
-  ) = addBatch.add(name, categoryId, inDays(days), quantity, false).getOrThrow()
+  ) = addItem.add(name, categoryId, inDays(days), quantity, false).getOrThrow()
 
   private fun viewModel(args: CalendarArgs = CalendarArgs()) =
     CalendarViewModel(

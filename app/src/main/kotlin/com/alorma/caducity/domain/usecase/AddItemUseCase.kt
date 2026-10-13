@@ -2,14 +2,14 @@ package com.alorma.caducity.domain.usecase
 
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.PantryDataSource
-import com.alorma.caducity.domain.model.AddedBatch
+import com.alorma.caducity.domain.model.AddedItems
 import com.alorma.caducity.domain.model.PantryError
 import kotlinx.coroutines.CancellationException
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 
 /** Adds [quantity] independent items (same date) to the product named [name], creating it if needed. */
-class AddItemBatchUseCase(
+class AddItemUseCase(
   private val pantryDataSource: PantryDataSource,
   private val appClock: AppClock,
 ) {
@@ -19,7 +19,7 @@ class AddItemBatchUseCase(
     date: LocalDate,
     quantity: Int,
     frozen: Boolean,
-  ): Result<AddedBatch> {
+  ): Result<AddedItems> {
     if (name.isBlank()) return Result.failure(PantryError.BlankName)
     if (quantity !in 1..MAX_QUANTITY) return Result.failure(PantryError.InvalidQuantity(quantity))
 
@@ -29,7 +29,7 @@ class AddItemBatchUseCase(
 
     return try {
       Result.success(
-        pantryDataSource.addBatch(
+        pantryDataSource.addItems(
           categoryId = categoryId,
           productName = name,
           expiration = date.toExpirationInstant(),

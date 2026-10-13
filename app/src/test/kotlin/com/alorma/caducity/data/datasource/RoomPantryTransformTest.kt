@@ -161,7 +161,7 @@ class RoomPantryTransformTest {
   fun `a result reuses the product that already exists in the category`() =
     runTest {
       ingredient("a", 2)
-      val first = pantry.addBatch("c1", "Broth", inDays(1).toInstant(), 1, null)
+      val first = pantry.addItems("c1", "Broth", inDays(1).toInstant(), 1, null)
 
       val batch =
         pantry.transform(
