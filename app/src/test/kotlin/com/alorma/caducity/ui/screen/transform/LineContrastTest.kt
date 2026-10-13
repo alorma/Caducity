@@ -11,6 +11,13 @@ class LineContrastTest {
   private val ink = Color(0xFF1C1B16)
 
   @Test
+  fun `a result line fades with the distance to the middle and never below 0,3`() {
+    expectThat(resultAlpha(distance = 0f, reach = 260f)).isEqualTo(1f)
+    expectThat(resultAlpha(distance = -130f, reach = 260f)).isEqualTo(0.5f)
+    expectThat(resultAlpha(distance = 400f, reach = 260f)).isEqualTo(0.3f)
+  }
+
+  @Test
   fun `a colour with enough contrast is left alone`() {
     val expired = Color(0xFFB23F2A)
     expectThat(expired.withLineContrast(paper)).isEqualTo(expired)
