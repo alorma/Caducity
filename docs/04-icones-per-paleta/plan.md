@@ -20,10 +20,10 @@ No hi ha cap opció a Ajustos per triar la icona (spec: no implementar-la).
 ## Tasques
 
 1. - [x] **Docs**: copiar captures, font i especificació; aquest pla.
-2. - [ ] **Recursos**: colors per paleta (clar/fosc), 6 `adaptive-icon` + símbol vectorial per paleta, monocroma compartida, variant `debug` amb la franja. Validació: `assembleDebug`/`assembleRelease` + render de les 6 icones en clar i fosc.
-3. - [ ] **Manifest**: 6 `activity-alias` (`.IconRebost`…`.IconCamp`), només Rebost habilitat. Validació: test que cada alias existeix.
-4. - [ ] **`AppIconManager`**: paleta → alias habilitat (només un), `DONT_KILL_APP`, es reaplica a l'arrencada si no coincideix; Dinàmic → Rebost. Validació: test unitari.
-5. - [ ] **Connexió**: `SettingsViewModel.onColorPaletteChange` i inici de `MainActivity`. Validació: tests + prova al mòbil amb captures del llançador (2 paletes, clar i fosc).
+2. - [x] **Recursos** (64f22a4): colors per paleta (clar/fosc), 6 `adaptive-icon` + símbol vectorial per paleta, monocroma compartida, variant `debug` amb la franja. Validació: `assembleDebug`/`assembleRelease` + render de les 6 icones en clar i fosc.
+3. - [x] **Manifest** (64f22a4): 6 `activity-alias` (`.IconRebost`…`.IconCamp`), només Rebost habilitat. Validació: test que cada alias existeix.
+4. - [x] **`AppIconManager`** (26f55b9): paleta → alias habilitat (només un), `DONT_KILL_APP`, es reaplica a l'arrencada si no coincideix; Dinàmic → Rebost. Validació: test unitari.
+5. - [x] **Connexió** (26f55b9): s'aplica a `MainActivity.onCreate` i `onStop` (en passar a segon pla, no en triar la paleta, perquè alguns llançadors tanquen l'app en canviar d'alies); `SettingsViewModel` no canvia. Validació: tests + prova al mòbil amb captures del llançador (2 paletes, clar i fosc).
 
 ## Obert (no es resolen sense Bernat)
 
