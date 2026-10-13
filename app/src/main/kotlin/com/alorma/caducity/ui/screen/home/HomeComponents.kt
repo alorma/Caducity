@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -42,18 +40,13 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.CalendarMonth
-import com.alorma.caducity.base.ui.icons.symbols.Check
 import com.alorma.caducity.base.ui.icons.symbols.ChevronRight
 import com.alorma.caducity.base.ui.icons.symbols.DeleteHistory
 import com.alorma.caducity.base.ui.icons.symbols.Search
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.HomeDaySection
-import com.alorma.caducity.domain.model.HomeRow
-import com.alorma.caducity.ui.components.category.CategoryIcons
-import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.toComposeShape
-import com.alorma.caducity.ui.components.connected.ConnectedRow
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -248,46 +241,6 @@ internal fun DaySectionHeader(
       color = CaducityTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier.padding(bottom = 2.dp),
     )
-  }
-}
-
-@Composable
-internal fun HomeItemRow(
-  row: HomeRow,
-  index: Int,
-  count: Int,
-  onClick: () -> Unit,
-  onConsume: () -> Unit,
-  modifier: Modifier = Modifier,
-  /** Extra detail after the quantity (the date in «Més endavant»). */
-  meta: String? = null,
-) {
-  val quantity = pluralStringResource(R.plurals.home_unit_count, row.unitCount, row.unitCount)
-  ConnectedRow(
-    index = index,
-    count = count,
-    onClick = onClick,
-    modifier = modifier.height(68.dp),
-    contentPadding = PaddingValues(start = 12.dp, end = 12.dp),
-  ) {
-    CategoryShapeIcon(shape = row.category.shape, icon = CategoryIcons.vectorOf(row.category.icon), size = 44.dp)
-    Spacer(Modifier.width(14.dp))
-    Column(modifier = Modifier.weight(1f)) {
-      Text(row.name, style = CaducityTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
-      Text(
-        listOfNotNull(row.category.name, quantity, meta).joinToString(" · "),
-        style = CaducityTheme.typography.bodySmall,
-        color = CaducityTheme.colorScheme.onSurfaceVariant,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-      )
-    }
-    IconButton(
-      onClick = onConsume,
-      modifier = Modifier.size(44.dp).clip(CircleShape).background(CaducityTheme.colorScheme.surface),
-    ) {
-      Icon(Symbols.Outlined.Check, contentDescription = stringResource(R.string.home_mark_consumed, row.name))
-    }
   }
 }
 

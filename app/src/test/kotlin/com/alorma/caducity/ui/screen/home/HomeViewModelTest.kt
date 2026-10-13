@@ -19,6 +19,7 @@ import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
+import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveCalendarUseCase
 import com.alorma.caducity.domain.usecase.ObserveHomeUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
@@ -138,6 +139,7 @@ class HomeViewModelTest {
       observeHome = ObserveHomeUseCase(items, pantry, todayProvider),
       observeWeekStrip = ObserveWeekStripUseCase(ObserveCalendarUseCase(items), todayProvider),
       consumeItem = ConsumeItemUseCase(itemDataSource, pantry, clock),
+      freezeItem = FreezeItemUseCase(itemDataSource, pantry, clock),
       restoreItems = RestoreItemsUseCase(pantry),
       snackbars = snackbars,
       eventTracker = EventTracker(emptyList()),
@@ -262,6 +264,31 @@ class HomeViewModelTest {
 
       snackbar.onAction!!.invoke()
       expectThat(db.itemDao().getAllItemsSync().count { it.consumedDate != null }).isEqualTo(0)
+    }
+
+  @Test
+  fun `freeze freezes only the closest unit of the row and undo brings it back unfrozen`() =
+    runTest {
+      category("dairy")
+      add("Milk", days = 1, quantity = 3)
+      val vm = viewModel()
+      val row =
+        vm
+          .ready()
+          .data.sections
+          .single()
+          .rows
+          .single()
+
+      vm.onFreeze(row)
+      val snackbar = withContext(Dispatchers.Default) { withTimeout(5_000) { snackbars.events.first() } }
+
+      val frozen = db.itemDao().getAllItemsSync().filter { it.pausedDate != null }
+      expectThat(frozen.map { it.id }).containsExactly(row.nearestItemId)
+      expectThat(snackbar.messageArgs).containsExactly("Milk")
+
+      snackbar.onAction!!.invoke()
+      expectThat(db.itemDao().getAllItemsSync().count { it.pausedDate != null }).isEqualTo(0)
     }
 
   @Test

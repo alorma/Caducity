@@ -57,11 +57,14 @@ data class HomeRow(
   val key: String,
   val name: String,
   val category: Category,
-  /** Units of this product that expire on the section's day. */
-  val unitCount: Int,
-  /** The unit that the ✓ button consumes: the closest one. */
-  val nearestItemId: String,
-)
+  /** Units of this product that expire on the section's day, nearest first (see [sortedNearestFirst]). */
+  val itemIds: List<String>,
+) {
+  val unitCount: Int get() = itemIds.size
+
+  /** The unit that the ✓ and ❄ buttons act on: the closest one. */
+  val nearestItemId: String get() = itemIds.first()
+}
 
 data class HomeDaySection(
   val date: LocalDate,

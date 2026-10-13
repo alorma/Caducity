@@ -28,15 +28,19 @@ import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.HomeData
 import com.alorma.caducity.domain.model.HomeDaySection
 import com.alorma.caducity.domain.model.HomeRow
+import com.alorma.caducity.domain.model.ProductRowDetail
+import com.alorma.caducity.domain.model.ProductRowModel
 import com.alorma.caducity.domain.usecase.WeekStripData
 import com.alorma.caducity.feature.tracking.HomeScreen as HomeScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
+import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.weekstrip.WeekStrip
 import com.alorma.caducity.ui.navigation.LocalFloatingBarPadding
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.daysUntil
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -74,6 +78,7 @@ fun HomeScreen(
           state = current,
           onNavigate = viewModel::navigate,
           onConsume = viewModel::onConsume,
+          onFreeze = viewModel::onFreeze,
         )
     }
   }
@@ -134,6 +139,7 @@ internal fun HomeContent(
   state: HomeState.Ready,
   onNavigate: (HomeNavigation) -> Unit,
   onConsume: (HomeRow) -> Unit,
+  onFreeze: (HomeRow) -> Unit,
   modifier: Modifier = Modifier,
   listState: LazyListState = rememberLazyListState(),
 ) {
@@ -206,12 +212,13 @@ internal fun HomeContent(
               modifier = Modifier.padding(top = 16.dp, bottom = 6.dp),
             )
           is HomeItem.Row ->
-            HomeItemRow(
-              row = item.row,
+            ProductRow(
+              model = item.row.toProductRow(item.section, data.today),
               index = item.index,
               count = item.section.rows.size,
               onClick = { onNavigate(HomeNavigation.ItemActions(item.row.nearestItemId)) },
               onConsume = { onConsume(item.row) },
+              onFreeze = { onFreeze(item.row) },
             )
           HomeItem.NothingSoon -> NothingSoon(onSeePantry = { onNavigate(HomeNavigation.Pantry("nothing_soon")) })
           HomeItem.Empty -> HomeEmptyState(onAdd = { onNavigate(HomeNavigation.AddFirst) })
@@ -220,6 +227,21 @@ internal fun HomeContent(
     }
   }
 }
+
+/** Every row of the list is «soon» (the section's day): the days left are the distance from today to that day. */
+private fun HomeRow.toProductRow(
+  section: HomeDaySection,
+  today: LocalDate,
+): ProductRowModel =
+  ProductRowModel(
+    key = key,
+    name = name,
+    itemIds = itemIds,
+    status = ExpiryStatus.SOON,
+    remainingDays = today.daysUntil(section.date),
+    category = category,
+    detail = ProductRowDetail.InCategory(category.name),
+  )
 
 private val ConnectedGap = 2.dp
 
@@ -238,7 +260,7 @@ private fun row(
   name: String,
   category: Category,
   units: Int = 1,
-) = HomeRow(name, name, category, units, name)
+) = HomeRow(name, name, category, List(units) { "$name-$it" })
 
 private val sampleData =
   HomeData(
@@ -265,7 +287,7 @@ private fun HomePreview() {
 /** Inici amb dades d'exemple, sense tema (el posa qui el crida: previews i captures per paleta). */
 @Composable
 internal fun HomePreviewContent() {
-  HomeContent(HomeState.Ready(sampleData, WeekStripData(today, emptyMap())), {}, {})
+  HomeContent(HomeState.Ready(sampleData, WeekStripData(today, emptyMap())), {}, {}, {})
 }
 
 @PreviewLightDark
@@ -277,6 +299,7 @@ private fun HomeNothingSoonPreview() {
         sampleData.copy(expiredCount = 0, sections = emptyList()),
         WeekStripData(today, emptyMap()),
       ),
+      {},
       {},
       {},
     )
@@ -292,6 +315,7 @@ private fun HomeEmptyPreview() {
         HomeData(today, 0, null, 0, 0, 0, emptyList(), isPantryEmpty = true),
         WeekStripData(today, emptyMap()),
       ),
+      {},
       {},
       {},
     )

@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.HomeRow
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
+import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveHomeUseCase
 import com.alorma.caducity.domain.usecase.ObserveWeekStripUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
@@ -29,6 +30,7 @@ class HomeViewModel(
   observeHome: ObserveHomeUseCase,
   observeWeekStrip: ObserveWeekStripUseCase,
   private val consumeItem: ConsumeItemUseCase,
+  private val freezeItem: FreezeItemUseCase,
   private val restoreItems: RestoreItemsUseCase,
   private val snackbars: GlobalSnackbarEvents,
   private val eventTracker: EventTracker,
@@ -83,6 +85,29 @@ class HomeViewModel(
               actionLabel = R.string.add_undo,
               type = AppFeedbackType.Success,
               onAction = { restoreItems.restore(listOf(row.nearestItemId)) },
+            ),
+          )
+        }.onFailure {
+          snackbars.show(GlobalSnackbar(R.string.item_actions_error, type = AppFeedbackType.Error))
+        }
+    }
+  }
+
+  /** ❄ freezes **one** unit (the closest to expire) of the row, with undo. */
+  fun onFreeze(row: HomeRow) {
+    eventTracker.trackAction(ItemActionAction("freeze_home"))
+    viewModelScope.launch {
+      val snapshots = restoreItems.snapshots(listOf(row.nearestItemId))
+      freezeItem
+        .freeze(listOf(row.nearestItemId))
+        .onSuccess {
+          snackbars.show(
+            GlobalSnackbar(
+              message = R.string.item_actions_snackbar_frozen,
+              messageArgs = listOf(row.name),
+              actionLabel = R.string.add_undo,
+              type = AppFeedbackType.Success,
+              onAction = { restoreItems.restoreSnapshots(snapshots) },
             ),
           )
         }.onFailure {
