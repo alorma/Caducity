@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -115,7 +116,7 @@ internal fun StepButton(
     shape = CaducityTheme.shapes.small,
     color = CaducityTheme.colorScheme.surface,
     contentColor = if (enabled) CaducityTheme.colorScheme.onSurface else CaducityTheme.colorScheme.outline,
-    modifier = Modifier.size(44.dp).semantics { contentDescription = label },
+    modifier = Modifier.minimumInteractiveComponentSize().size(44.dp).semantics { contentDescription = label },
   ) {
     Box(contentAlignment = Alignment.Center) { content() }
   }
