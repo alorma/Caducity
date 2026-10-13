@@ -7,7 +7,9 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -21,17 +23,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -75,7 +80,7 @@ class ResultActions(
 )
 
 private val ResultCardHeight = 92.dp
-private val HangingLineHeight = 14.dp
+private val HangingLineHeight = 11.dp
 
 /** Air around the lines that join the rows: between the ingredients and the node, and between the node and the results. */
 internal val SectionSpacing = 52.dp
@@ -219,28 +224,53 @@ private fun ResultItem(
   }
 }
 
-/** A short line that hangs from a folded card and ends in a round «×»: the card's way to be removed. */
+private val DropWidth = 40.dp
+private val DropHeight = 52.dp
+private val DropStroke = 1.5.dp
+
+/** A drop with its tip up: the end of the line that hangs from the card, with the round body below. */
+private val DropShape =
+  GenericShape { size, _ ->
+    val width = size.width
+    val radius = width / 2f
+    val centreY = size.height - radius
+    moveTo(radius, 0f)
+    cubicTo(radius + radius * 0.15f, centreY * 0.35f, width, centreY * 0.55f, width, centreY)
+    arcTo(Rect(0f, size.height - width, width, size.height), 0f, 180f, false)
+    cubicTo(0f, centreY * 0.55f, radius - radius * 0.15f, centreY * 0.35f, radius, 0f)
+    close()
+  }
+
+/**
+ * A short line that hangs from a folded card and ends in a drop with a «×» inside: the card's way to be removed.
+ * The whole drop is the button, with a reddish ripple.
+ */
 @Composable
 private fun HangingRemove(onRemove: () -> Unit) {
+  val outline = CaducityTheme.colorScheme.outline
+  val error = CaducityTheme.colorScheme.error
   Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Box(modifier = Modifier.width(DropStroke).height(HangingLineHeight).background(outline))
     Box(
       modifier =
         Modifier
-          .width(1.5.dp)
-          .height(HangingLineHeight)
-          .background(CaducityTheme.colorScheme.outline),
-    )
-    Surface(
-      onClick = onRemove,
-      shape = CircleShape,
-      color = CaducityTheme.colorScheme.surfaceContainerHigh,
-      contentColor = CaducityTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier.minimumInteractiveComponentSize(),
+          .size(width = DropWidth, height = DropHeight)
+          .border(DropStroke, outline, DropShape)
+          .clip(DropShape)
+          .clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = ripple(color = error),
+            role = Role.Button,
+            onClick = onRemove,
+          ),
+      contentAlignment = Alignment.BottomCenter,
     ) {
       Icon(
         Symbols.Outlined.Close,
         contentDescription = stringResource(R.string.transform_result_delete),
-        modifier = Modifier.padding(6.dp).size(20.dp),
+        tint = CaducityTheme.colorScheme.onSurfaceVariant,
+        // The centre of the round body, which is half the width above the bottom.
+        modifier = Modifier.padding(bottom = DropWidth / 2 - 10.dp).size(20.dp),
       )
     }
   }
