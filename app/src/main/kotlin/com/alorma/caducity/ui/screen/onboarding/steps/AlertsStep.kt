@@ -212,7 +212,7 @@ private fun SampleNotification(time: LocalTime) {
         contentAlignment = Alignment.Center,
       ) {
         Image(
-          painter = painterResource(R.drawable.ic_launcher_foreground),
+          painter = painterResource(R.drawable.ic_icon_rebost_symbol),
           contentDescription = null,
           modifier = Modifier.requiredSize(58.dp),
         )

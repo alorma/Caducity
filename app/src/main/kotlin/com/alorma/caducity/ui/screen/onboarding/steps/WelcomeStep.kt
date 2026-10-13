@@ -121,7 +121,7 @@ private fun AppIcon() {
   ) {
     // The adaptive-icon foreground is drawn on a 108 dp canvas with a safe zone: it is enlarged to fill the circle.
     Image(
-      painter = painterResource(R.drawable.ic_launcher_foreground),
+      painter = painterResource(R.drawable.ic_icon_rebost_symbol),
       contentDescription = null,
       modifier = Modifier.requiredSize(138.dp),
     )
