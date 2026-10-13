@@ -531,6 +531,15 @@
   <string name="ob_privacy_analytics">Estadístiques d\'ús anònimes</string>
   <string name="ob_privacy_analytics_sub">Quines pantalles fas servir, mai què guardes. Ens ajuda a millorar l\'app.</string>
   <string name="ob_privacy_default_off">Desactivat per defecte. Ho pots canviar a Ajustos › Privadesa.</string>
+  <string name="ob_transform_title">Has cuinat? Apunta-ho</string>
+  <string name="ob_transform_body">Transforma treu del rebost els ingredients que has gastat i hi afegeix el que n\'ha sortit, amb la seva data.</string>
+  <string name="ob_transform_sample_chicken">Pollastre sencer</string>
+  <string name="ob_transform_sample_vegetables">Verdures</string>
+  <string name="ob_transform_sample_result">Caldo</string>
+  <string name="ob_transform_sample_result_meta">4 racions · 2 congelats</string>
+  <string name="ob_transform_not_recipe_title">No és un receptari</string>
+  <string name="ob_transform_not_recipe_body">No hi ha receptes ni suggeriments de què cuinar. Transforma només apunta què has gastat i què n\'ha sortit.</string>
+  <string name="ob_transform_hint">Sempre és al botó + de baix, a la part {chevron}.</string>
   <string name="ob_continue">Continua</string>
   <string name="ob_disclaimer_title">Abans de començar</string>
   <string name="ob_disclaimer_heading">Avís important</string>

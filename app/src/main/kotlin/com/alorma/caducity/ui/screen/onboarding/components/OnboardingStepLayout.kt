@@ -42,19 +42,20 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.components.motion.Reveal
 import com.alorma.caducity.ui.components.motion.rememberReducedMotion
-import com.alorma.caducity.ui.screen.onboarding.OnboardingState
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.OverlineTextStyle
 
 /**
- * Common frame of the steps 1–4: «Pas N de 4» + segmented progress, title and text on top, the step content in the
- * middle (scrolls) and the actions pinned to the bottom. [stepNumber] is null for the legal notice shown alone.
+ * Common frame of the numbered steps: «Pas N de [stepCount]» + segmented progress, title and text on top, the step
+ * content in the middle (scrolls) and the actions pinned to the bottom. [stepNumber] is null for the legal notice
+ * shown alone.
  */
 @Composable
 fun OnboardingStepLayout(
   stepNumber: Int?,
   title: String,
   modifier: Modifier = Modifier,
+  stepCount: Int = 4,
   body: String? = null,
   actions: @Composable ColumnScope.() -> Unit,
   content: @Composable ColumnScope.() -> Unit,
@@ -75,12 +76,12 @@ fun OnboardingStepLayout(
       Spacer(Modifier.height(24.dp))
       if (stepNumber != null) {
         Text(
-          text = stringResource(R.string.ob_step, stepNumber, OnboardingState.STEP_COUNT).uppercase(),
+          text = stringResource(R.string.ob_step, stepNumber, stepCount).uppercase(),
           style = OverlineTextStyle,
           color = CaducityTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(10.dp))
-        OnboardingProgressBar(stepNumber = stepNumber)
+        OnboardingProgressBar(stepNumber = stepNumber, stepCount = stepCount)
         Spacer(Modifier.height(28.dp))
       }
       Reveal(delayMillis = 120, durationMillis = 520) {
@@ -112,11 +113,12 @@ fun OnboardingStepLayout(
   }
 }
 
-/** Four segments of 6 dp: done ones `primary`, pending `outline-variant`; the current one fills from the left. */
+/** [stepCount] segments of 6 dp: done ones `primary`, pending `outline-variant`; the current one fills from the left. */
 @Composable
 fun OnboardingProgressBar(
   stepNumber: Int,
   modifier: Modifier = Modifier,
+  stepCount: Int = 4,
 ) {
   val reduced = rememberReducedMotion()
   val current = remember(stepNumber) { Animatable(if (reduced) 1f else 0f) }
@@ -131,13 +133,13 @@ fun OnboardingProgressBar(
           progressBarRangeInfo =
             ProgressBarRangeInfo(
               stepNumber.toFloat(),
-              0f..OnboardingState.STEP_COUNT.toFloat(),
-              OnboardingState.STEP_COUNT - 1,
+              0f..stepCount.toFloat(),
+              stepCount - 1,
             )
         },
     horizontalArrangement = Arrangement.spacedBy(4.dp),
   ) {
-    repeat(OnboardingState.STEP_COUNT) { index ->
+    repeat(stepCount) { index ->
       val fill =
         when {
           index + 1 < stepNumber -> 1f

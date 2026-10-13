@@ -9,6 +9,9 @@ enum class OnboardingStep {
   Welcome,
   Categories,
   Alerts,
+
+  /** Only while `transform_enabled` is on; informative, nothing is stored. */
+  Transform,
   Privacy,
   Disclaimer,
 }
@@ -19,6 +22,8 @@ data class OnboardingState(
   val reacceptOnly: Boolean = false,
   /** True for users who already used the app before 1.0.0: welcome, privacy and notice only, nothing else is stored. */
   val returning: Boolean = false,
+  /** The «Transforma» step is part of the flow (`transform_enabled` was on when the onboarding started). */
+  val transformStep: Boolean = false,
   val goingForward: Boolean = true,
   val selectedCategories: Set<SuggestedCategory> =
     SuggestedCategory.entries.filter { it.selectedByDefault }.toSet(),
@@ -34,16 +39,15 @@ data class OnboardingState(
       if (returning) {
         listOf(OnboardingStep.Welcome, OnboardingStep.Privacy, OnboardingStep.Disclaimer)
       } else {
-        OnboardingStep.entries
+        OnboardingStep.entries.filter { transformStep || it != OnboardingStep.Transform }
       }
 
-  /** 1..4 for the steps that show «Pas N de 4»; null for the welcome, the re-acceptance and the returning users. */
+  /** Steps that show «Pas N de M»: every one but the welcome (4 of them, 5 with the Transforma step). */
+  val stepCount: Int get() = steps.size - 1
+
+  /** 1..[stepCount] for the steps that show «Pas N de M»; null for the welcome, the re-acceptance and the returning users. */
   val stepNumber: Int?
-    get() = if (reacceptOnly || returning) null else step.ordinal.takeIf { it in 1..STEP_COUNT }
+    get() = if (reacceptOnly || returning) null else steps.indexOf(step).takeIf { it >= 1 }
 
   val canGoBack: Boolean get() = !reacceptOnly && step != OnboardingStep.Welcome
-
-  companion object {
-    const val STEP_COUNT = 4
-  }
 }

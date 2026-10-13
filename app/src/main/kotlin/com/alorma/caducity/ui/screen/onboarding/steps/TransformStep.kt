@@ -1,0 +1,309 @@
+package com.alorma.caducity.ui.screen.onboarding.steps
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.symbols.Add
+import com.alorma.caducity.base.ui.icons.symbols.Eco
+import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
+import com.alorma.caducity.base.ui.icons.symbols.MenuBook
+import com.alorma.caducity.base.ui.icons.symbols.SetMeal
+import com.alorma.caducity.base.ui.icons.symbols.SoupKitchen
+import com.alorma.caducity.base.ui.icons.symbols.Symbols
+import com.alorma.caducity.domain.model.CategoryShape
+import com.alorma.caducity.ui.components.category.CategoryShapeIcon
+import com.alorma.caducity.ui.components.motion.Reveal
+import com.alorma.caducity.ui.screen.onboarding.components.OnboardingBackAndPrimary
+import com.alorma.caducity.ui.screen.onboarding.components.OnboardingStepLayout
+import com.alorma.caducity.ui.screen.transform.RowLinksNode
+import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.preview.PreviewTheme
+
+/** Informative step about Transforma: shown only with `transform_enabled`, free, stores nothing. */
+@Composable
+fun TransformStep(
+  stepNumber: Int?,
+  stepCount: Int,
+  onBack: () -> Unit,
+  onContinue: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  OnboardingStepLayout(
+    modifier = modifier,
+    stepNumber = stepNumber,
+    stepCount = stepCount,
+    title = stringResource(R.string.ob_transform_title),
+    body = stringResource(R.string.ob_transform_body),
+    actions = {
+      OnboardingBackAndPrimary(
+        primaryText = stringResource(R.string.ob_continue),
+        onPrimary = onContinue,
+        onBack = onBack,
+      )
+    },
+  ) {
+    Reveal(delayMillis = 240, modifier = Modifier.fillMaxWidth()) { TransformDiagram() }
+    Spacer(Modifier.height(20.dp))
+    Reveal(delayMillis = 360, modifier = Modifier.fillMaxWidth()) { NotARecipeBookCard() }
+    Spacer(Modifier.height(20.dp))
+    Reveal(delayMillis = 480, modifier = Modifier.fillMaxWidth()) { SplitButtonHint() }
+  }
+}
+
+/** Two sample ingredients → node → the result: the same shape as the Transforma screen. */
+@Composable
+internal fun TransformDiagram(modifier: Modifier = Modifier) {
+  val line = CaducityTheme.colorScheme.outline
+  Surface(
+    shape = RoundedCornerShape(28.dp),
+    color = CaducityTheme.colorScheme.surfaceContainer,
+    modifier = modifier.fillMaxWidth(),
+  ) {
+    Column(
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+        IngredientPill(
+          Symbols.Outlined.SetMeal,
+          stringResource(R.string.ob_transform_sample_chicken),
+          Modifier.weight(1f),
+        )
+        IngredientPill(
+          Symbols.Outlined.Eco,
+          stringResource(R.string.ob_transform_sample_vegetables),
+          Modifier.weight(1f),
+        )
+      }
+      Canvas(Modifier.fillMaxWidth().height(36.dp)) {
+        val stroke = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round)
+        val end = Offset(size.width / 2f, size.height + 4.dp.toPx())
+        listOf(size.width * 0.27f, size.width * 0.73f).forEach { x ->
+          val path =
+            Path().apply {
+              moveTo(x, 0f)
+              cubicTo(x, size.height * 0.7f, end.x, size.height * 0.4f, end.x, end.y)
+            }
+          drawPath(path, line, style = stroke)
+        }
+      }
+      RowLinksNode(links = null)
+      Box(Modifier.width(2.dp).height(20.dp).background(CaducityTheme.colorScheme.primary))
+      Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = CaducityTheme.colorScheme.primaryContainer,
+        border = BorderStroke(2.dp, CaducityTheme.colorScheme.primary),
+        modifier = Modifier.fillMaxWidth(0.8f),
+      ) {
+        Row(
+          modifier = Modifier.padding(12.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+          CategoryShapeIcon(shape = CategoryShape.CLOVER8, icon = Symbols.Outlined.SoupKitchen, size = 44.dp)
+          Column {
+            Text(
+              text = stringResource(R.string.ob_transform_sample_result),
+              style = CaducityTheme.typography.titleMedium,
+              color = CaducityTheme.colorScheme.onPrimaryContainer,
+            )
+            Text(
+              text = stringResource(R.string.ob_transform_sample_result_meta),
+              style = CaducityTheme.typography.bodyMedium,
+              color = CaducityTheme.colorScheme.onPrimaryContainer,
+            )
+          }
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun IngredientPill(
+  icon: ImageVector,
+  name: String,
+  modifier: Modifier = Modifier,
+) {
+  Surface(shape = CircleShape, color = CaducityTheme.colorScheme.background, modifier = modifier) {
+    Row(
+      modifier = Modifier.padding(8.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      CategoryShapeIcon(shape = CategoryShape.CLOVER8, icon = icon, size = 36.dp)
+      Text(
+        text = name,
+        style = CaducityTheme.typography.titleSmall,
+        color = CaducityTheme.colorScheme.onSurface,
+        maxLines = 2,
+        modifier = Modifier.weight(1f),
+      )
+    }
+  }
+}
+
+/** «No és un receptari»: the product rule, said out loud. The book is crossed out in red. */
+@Composable
+internal fun NotARecipeBookCard(modifier: Modifier = Modifier) {
+  val red = CaducityTheme.colorScheme.error
+  Surface(
+    shape = RoundedCornerShape(24.dp),
+    color = CaducityTheme.colorScheme.surfaceContainerHigh,
+    border = BorderStroke(2.dp, CaducityTheme.colorScheme.outline),
+    modifier = modifier.fillMaxWidth(),
+  ) {
+    Row(
+      modifier = Modifier.padding(16.dp),
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      verticalAlignment = Alignment.Top,
+    ) {
+      Surface(shape = CircleShape, color = CaducityTheme.colorScheme.background, modifier = Modifier.size(48.dp)) {
+        Box(
+          modifier =
+            Modifier.drawWithContent {
+              drawContent()
+              val inset = size.width * 0.22f
+              drawLine(
+                color = red,
+                start = Offset(inset, inset),
+                end = Offset(size.width - inset, size.height - inset),
+                strokeWidth = 3.dp.toPx(),
+                cap = StrokeCap.Round,
+              )
+            },
+          contentAlignment = Alignment.Center,
+        ) {
+          Icon(
+            imageVector = Symbols.Outlined.MenuBook,
+            contentDescription = null,
+            tint = CaducityTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(28.dp),
+          )
+        }
+      }
+      Column {
+        Text(
+          text = stringResource(R.string.ob_transform_not_recipe_title),
+          style = CaducityTheme.typography.titleMedium,
+          color = CaducityTheme.colorScheme.onSurface,
+        )
+        Text(
+          text = stringResource(R.string.ob_transform_not_recipe_body),
+          style = CaducityTheme.typography.bodyMedium,
+          color = CaducityTheme.colorScheme.onSurfaceVariant,
+        )
+      }
+    }
+  }
+}
+
+/** The «+ ⌃» button in small, and where Transforma lives. The «{chevron}» marker of the text is the ⌃ icon. */
+@Composable
+private fun SplitButtonHint(modifier: Modifier = Modifier) {
+  val marker = "{chevron}"
+  val hint = stringResource(R.string.ob_transform_hint)
+  val before = hint.substringBefore(marker)
+  val after = hint.substringAfter(marker, missingDelimiterValue = "")
+  val text =
+    buildAnnotatedString {
+      append(before)
+      appendInlineContent("chevron", "⌃")
+      append(after)
+    }
+  val inline =
+    mapOf(
+      "chevron" to
+        InlineTextContent(Placeholder(18.sp, 18.sp, PlaceholderVerticalAlign.Center)) {
+          Icon(Symbols.Outlined.ExpandLess, contentDescription = null, modifier = Modifier.size(18.dp))
+        },
+    )
+  Row(
+    modifier = modifier.fillMaxWidth().padding(horizontal = 4.dp),
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(16.dp),
+  ) {
+    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+      MiniSplitPart(
+        icon = Symbols.Outlined.Add,
+        width = 48.dp,
+        shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp, topEnd = 4.dp, bottomEnd = 4.dp),
+      )
+      MiniSplitPart(
+        icon = Symbols.Outlined.ExpandLess,
+        width = 32.dp,
+        shape = RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp, topEnd = 16.dp, bottomEnd = 16.dp),
+      )
+    }
+    Text(
+      text = text,
+      inlineContent = inline,
+      style = CaducityTheme.typography.bodyMedium,
+      color = CaducityTheme.colorScheme.onSurfaceVariant,
+      modifier = Modifier.weight(1f),
+    )
+  }
+}
+
+@Composable
+private fun MiniSplitPart(
+  icon: ImageVector,
+  width: Dp,
+  shape: RoundedCornerShape,
+) {
+  Surface(
+    shape = shape,
+    color = CaducityTheme.colorScheme.primary,
+    contentColor = CaducityTheme.colorScheme.onPrimary,
+    modifier = Modifier.width(width).height(48.dp),
+  ) {
+    Box(contentAlignment = Alignment.Center) {
+      Icon(icon, contentDescription = null, modifier = Modifier.size(22.dp))
+    }
+  }
+}
+
+@PreviewLightDark
+@Composable
+internal fun TransformStepPreview() {
+  PreviewTheme {
+    Surface(color = CaducityTheme.colorScheme.background) {
+      TransformStep(stepNumber = 3, stepCount = 5, onBack = {}, onContinue = {})
+    }
+  }
+}

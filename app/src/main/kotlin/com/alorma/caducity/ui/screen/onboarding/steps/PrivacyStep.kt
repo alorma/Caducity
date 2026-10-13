@@ -43,10 +43,12 @@ fun PrivacyStep(
   onBack: () -> Unit,
   onContinue: () -> Unit,
   modifier: Modifier = Modifier,
+  stepCount: Int = 4,
 ) {
   OnboardingStepLayout(
     modifier = modifier,
     stepNumber = stepNumber,
+    stepCount = stepCount,
     title = stringResource(R.string.ob_privacy_title),
     body = stringResource(R.string.ob_privacy_body),
     actions = {

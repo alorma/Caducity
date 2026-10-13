@@ -44,6 +44,7 @@ import com.alorma.caducity.ui.screen.onboarding.steps.AlertsStep
 import com.alorma.caducity.ui.screen.onboarding.steps.CategoriesStep
 import com.alorma.caducity.ui.screen.onboarding.steps.DisclaimerStep
 import com.alorma.caducity.ui.screen.onboarding.steps.PrivacyStep
+import com.alorma.caducity.ui.screen.onboarding.steps.TransformStep
 import com.alorma.caducity.ui.screen.onboarding.steps.WelcomeStep
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalTime
@@ -95,6 +96,7 @@ fun OnboardingScreen(
               onToggle = viewModel::onToggleCategory,
               onBack = viewModel::onBack,
               onContinue = viewModel::onContinue,
+              stepCount = state.stepCount,
             )
           OnboardingStep.Alerts ->
             AlertsStep(
@@ -113,10 +115,19 @@ fun OnboardingScreen(
               },
               onNotNow = viewModel::onRemindersDeclined,
               onBack = viewModel::onBack,
+              stepCount = state.stepCount,
+            )
+          OnboardingStep.Transform ->
+            TransformStep(
+              stepNumber = state.stepNumber,
+              stepCount = state.stepCount,
+              onBack = viewModel::onBack,
+              onContinue = viewModel::onContinue,
             )
           OnboardingStep.Privacy ->
             PrivacyStep(
               stepNumber = state.stepNumber,
+              stepCount = state.stepCount,
               analyticsEnabled = state.analyticsEnabled,
               onAnalyticsChange = viewModel::onAnalyticsChange,
               onBack = viewModel::onBack,
@@ -125,6 +136,7 @@ fun OnboardingScreen(
           OnboardingStep.Disclaimer ->
             DisclaimerStep(
               stepNumber = state.stepNumber,
+              stepCount = state.stepCount,
               checked = state.disclaimerChecked,
               onCheckedChange = viewModel::onDisclaimerCheckedChange,
               onBack = if (state.canGoBack) viewModel::onBack else null,
