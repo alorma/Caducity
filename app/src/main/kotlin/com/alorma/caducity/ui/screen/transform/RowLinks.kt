@@ -160,8 +160,8 @@ private fun DrawScope.drawRowLinks(
 }
 
 /**
- * Points on the bottom (or top) edge of [row] under the centre of each card whose centre is in view, closest to the
- * middle first and at most [MaxLinesPerRow]. Read from the list state, so they follow the scroll. Each comes with
+ * Points on the bottom (or top) edge of [row] under the visible part of each card, closest to the middle first and
+ * at most [MaxLinesPerRow]. Read from the list state, so they follow the scroll. Each comes with
  * its opacity: full around the middle and fading out the closer the card is to leaving the screen.
  */
 private fun visibleCentres(
@@ -175,9 +175,12 @@ private fun visibleCentres(
   val half = width / 2f
   val y = if (atBottom) row.size.height.toFloat() else 0f
   return info.visibleItemsInfo
-    .map { item -> item.offset + item.size / 2f + info.beforeContentPadding }
-    .filter { x -> x in 0f..width.toFloat() }
-    .sortedBy { x -> kotlin.math.abs(x - half) }
+    .mapNotNull { item ->
+      // A card that is only partly in view still gets its line, to the middle of the part that shows.
+      val start = (item.offset + info.beforeContentPadding).toFloat().coerceAtLeast(0f)
+      val end = (item.offset + item.size + info.beforeContentPadding).toFloat().coerceAtMost(width.toFloat())
+      if (end > start) (start + end) / 2f else null
+    }.sortedBy { x -> kotlin.math.abs(x - half) }
     .take(MaxLinesPerRow)
     .map { x ->
       val away = kotlin.math.abs(x - half) / half
