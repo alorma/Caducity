@@ -24,6 +24,9 @@ sealed interface TransformSideEffect {
     val currentMillis: Long,
   ) : TransformSideEffect
 
+  /** «Resultat esborrat · Desfés»: the removed result is kept by the ViewModel until the snackbar is gone. */
+  data object ShowResultRemoved : TransformSideEffect
+
   data object ShowSaveFailed : TransformSideEffect
 
   data object ShowFrozenPastDate : TransformSideEffect
