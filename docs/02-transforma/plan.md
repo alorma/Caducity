@@ -1,6 +1,6 @@
 # Pla: Transforma (ingredients → elaboracions)
 
-Especificació: [`spec.md`](spec.md). Captures: `captures/Transforma{Seleccio,Caldo,Pollastre,Ingredient,Buit}`, `EntradaMenu`, `EntradaAccions`.
+Especificació: [`spec.md`](spec.md). Captures: `captures/Transforma{Seleccio,Caldo,Pollastre,Ingredient,Buit}`, `EntradaMenu`, `EntradaAccions`, `Main` (botó dividit en repòs).
 **Canvi de disseny (2026-10-13):** nou **accés lliure** (`TransformaBuit`, vegeu «Accés lliure» a l'especificació: sense ingredients, nom + categoria + data obligatoris) i captures actualitzades. Afecta les fases 2 i 3 ja validades (vegeu «Fase 2b» i «Fase 3b») i la 5. Validació sempre al Pixel 8a, mai a l'emulador.
 **Ordre: segona de les dues**, després de [diverses unitats](../01-diverses-unitats/plan.md). Independent a nivell de codi, però comparteix el patró de «Desfés» amb snapshots.
 
@@ -121,13 +121,13 @@ Validada a l'emulador (el Pixel no era a l'adb): preselecció, recompte del bot�
 
 ## Fase 5 — Entrades i flux final
 
-**Flag:** totes les entrades noves (barra de selecció, full d'Accions, pulsació llarga al «+») s'han de mostrar només si `TransformFeature` (`transform_enabled`, Remote Config, apagat per defecte) és actiu. Ja protegeix l'entrada de Depuració. L'activació per als usuaris és una decisió a part.
+**Flag:** totes les entrades noves (barra de selecció, full d'Accions, botó dividit «+ ⌄») s'han de mostrar només si `TransformFeature` (`transform_enabled`, Remote Config, apagat per defecte) és actiu. Ja protegeix l'entrada de Depuració. L'activació per als usuaris és una decisió a part.
 
 1. **Barra de selecció** (`StatusListScreen`/`StatusListViewModel`, i Categoria si té selecció): grup connectat **Consumit · Congela · Transforma** (`TransformaSeleccio`: icona sobre text, 68 dp, Transforma `primary`, Congela en to gelat), etiqueta amb recompte per a accessibilitat. Substitueix els botons de text actuals (decisió pendent: com queda a Caducats i a Congelats, que no tenen Congela). Seleccions de diverses seccions i de diverses unitats.
 2. **Full d'Accions** (`ItemActionsSheet`): fila «Transforma amb aquest» entre «Mou…» i «Esborra»; obre Transforma amb 1 unitat.
-3. **Pulsació llarga al «+»** (`FloatingNavBar`/Inici): menú Transforma / Afegeix producte, scrim 45 %; el toc normal continua obrint Afegeix. **Transforma obre l'accés lliure** (`Transform(itemIds = [])`, fases 2b i 3b; han d'estar fetes abans).
+3. **Botó dividit «+ ⌄»** (`FloatingNavBar`, a totes les pantalles que tenen el «+»: Inici, Rebost, estats…; captures `Main` i `EntradaMenu`): substitueix el «+» sol, mateixa mida i color. Part «+» (64×64, radis 20/6) continua obrint Afegeix; part «⌄» (40×64, radis 6/20, separades 2 dp) obre un menú de més accions amb scrim 45 %, fletxa ⌃→⌄ i part secundària enfosquida. De moment només conté **Transforma** (píndola `primary-container`, 60 dp, icona `skillet`), pensat per créixer. Accessibilitat: dos botons independents, el secundari «Més accions» amb estat expandit. **Transforma obre l'accés lliure** (`Transform(itemIds = [])`). **Sense gest de pulsació llarga.** **Amb el flag apagat, el «⌄» no existeix i el «+» queda exactament com ara** (verificar-ho amb flag apagat i encès).
 4. En desar: files d'ingredients es tanquen en cascada (80 ms), torna a l'origen (la selecció es tanca), snackbar «N ingredients transformats en M productes · Desfés» (sense ingredients: «M productes afegits · Desfés»).
-5. Tracking a `feature/tracking/Actions.kt` (`nav_transform`, `source = selection|long_press_fab|item_actions`; sense dades d'usuari).
+5. Tracking a `feature/tracking/Actions.kt` (`nav_transform`, `source = selection|split_menu|item_actions`; sense dades d'usuari).
 
 ## Fase 6 — Qualitat
 
@@ -139,7 +139,7 @@ Validada a l'emulador (el Pixel no era a l'adb): preselecció, recompte del bot�
 
 ## Obert (no resoldre sense decidir; deixar com a constants/`TODO`)
 
-1. Entrada des del «+»: pulsació llarga (proposat) o pista única «Mantén premut + per cuinar».
+1. ~~Entrada des del «+»~~: resolt, botó dividit «+ ⌄» (sense pulsació llarga).
 2. Transformar ítems **caducats**: proposat sí, amb data per defecte «avui» (mentrestant, no llistats al selector).
 3. Estadístiques de «transformats»: només dades; no hi ha pantalla (verificar si n'hi ha cap a l'app).
 4. Resultat congelat sense data: quin `remainingDays` guardar (el model actual el necessita al descongelar). Proposta: el mateix valor que el camí d'Afegeix congelat.
