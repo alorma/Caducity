@@ -6,7 +6,6 @@ import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -32,7 +30,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -46,6 +43,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -102,7 +100,7 @@ fun ResultsSection(
     rememberLazyListState(
       initialFirstVisibleItemIndex = state.results.indexOfFirst { it.id == state.expandedResultId }.coerceAtLeast(0),
     )
-  LaunchedEffect(state.expandedResultId) {
+  LaunchedEffect(state.expandedResultId, state.results.size) {
     val index = state.results.indexOfFirst { it.id == state.expandedResultId }
     if (index < 0) return@LaunchedEffect
     listState.animateScrollToItem(index)
@@ -168,10 +166,18 @@ private fun ResultItem(
     animationSpec = tween(ExpandMillis, easing = EmphasizedEasing),
     label = "resultWidth",
   )
+  // A folded result that still lacks something is outlined, so it is not mistaken for a finished one.
+  val incomplete = !selected && !state.isValid(result)
+  val invalidLabel = stringResource(R.string.transform_result_invalid)
   Surface(
     shape = RowCardShape,
     color = CaducityTheme.colorScheme.surfaceContainer,
-    border = if (selected) BorderStroke(2.dp, CaducityTheme.colorScheme.primary) else null,
+    border =
+      when {
+        selected -> BorderStroke(2.dp, CaducityTheme.colorScheme.primary)
+        incomplete -> BorderStroke(1.5.dp, CaducityTheme.colorScheme.error)
+        else -> null
+      },
     modifier =
       Modifier
         .width(width)
@@ -179,6 +185,7 @@ private fun ResultItem(
         .clickable(enabled = !selected, role = Role.Button) { actions.onSelect(result.id) }
         .semantics {
           this.selected = selected
+          if (incomplete) stateDescription = invalidLabel
           collectionItemInfo = CollectionItemInfo(rowIndex = 0, rowSpan = 1, columnIndex = index, columnSpan = 1)
           customActions =
             listOfNotNull(
@@ -268,7 +275,6 @@ private fun ResultSummaryContent(
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier.weight(1f),
       )
-      if (!state.isValid(result)) InvalidDot()
     }
     Text(
       text = resultMeta(result, category?.name),
@@ -279,19 +285,6 @@ private fun ResultSummaryContent(
     )
     if (result.frozenCount > 0) FrozenChip(result.frozenCount)
   }
-}
-
-@Composable
-private fun InvalidDot() {
-  val label = stringResource(R.string.transform_result_invalid)
-  Box(
-    modifier =
-      Modifier
-        .size(8.dp)
-        .clip(CircleShape)
-        .background(CaducityTheme.colorScheme.error)
-        .semantics { contentDescription = label },
-  )
 }
 
 @Composable

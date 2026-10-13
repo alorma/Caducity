@@ -324,6 +324,21 @@ class TransformViewModelTest {
     }
 
   @Test
+  fun `the last result left is open after removing the others`() =
+    runTest {
+      val vm = ready(add("Chicken", days = 3).itemIds)
+      vm.onNameChange(0, "Broth")
+      vm.onAddResult()
+      vm.onNameChange(1, "Soup")
+      vm.onDone()
+      expectThat(vm.state.value.expandedResultId).isEqualTo(NONE_EXPANDED)
+
+      vm.onRemoveResult(0)
+      expectThat(vm.state.value.results).hasSize(1)
+      expectThat(vm.state.value.expandedResultId).isEqualTo(1)
+    }
+
+  @Test
   fun `a result cannot be added while one is blank`() =
     runTest {
       val vm = ready(add("Chicken", days = 3).itemIds)
