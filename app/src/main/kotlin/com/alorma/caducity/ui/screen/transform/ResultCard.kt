@@ -41,6 +41,7 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
@@ -204,28 +205,40 @@ fun ResultForm(
       } else {
         Box {}
       }
+      val valid = state.isValid(result)
       DoneButton(
+        valid = valid,
         onClick = {
           focusManager.clearFocus()
-          if (state.isValid(result)) actions.onDone() else onDoneBlocked()
+          if (valid) actions.onDone() else onDoneBlocked()
         },
       )
     }
   }
 }
 
-/** «Fet»: folds the form back into its small card, once the result has everything it needs. */
+/**
+ * «Fet»: folds the form back into its small card, once the result has everything it needs. Until then it looks
+ * disabled but still takes the tap, so the card can shake.
+ */
 @Composable
 private fun DoneButton(
+  valid: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val scheme = CaducityTheme.colorScheme
+  val invalidLabel = stringResource(R.string.transform_result_invalid)
   Surface(
     onClick = onClick,
     shape = CaducityShapes.full,
-    color = CaducityTheme.colorScheme.primaryContainer,
-    contentColor = CaducityTheme.colorScheme.onPrimaryContainer,
-    modifier = modifier.minimumInteractiveComponentSize().height(40.dp),
+    color = if (valid) scheme.primaryContainer else scheme.onSurface.copy(alpha = 0.12f),
+    contentColor = if (valid) scheme.onPrimaryContainer else scheme.onSurface.copy(alpha = 0.38f),
+    modifier =
+      modifier
+        .minimumInteractiveComponentSize()
+        .height(40.dp)
+        .semantics { if (!valid) stateDescription = invalidLabel },
   ) {
     Row(
       modifier = Modifier.padding(horizontal = 18.dp),

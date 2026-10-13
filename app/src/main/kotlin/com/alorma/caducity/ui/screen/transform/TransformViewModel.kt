@@ -163,9 +163,12 @@ class TransformViewModel(
     }
   }
 
-  /** Expands [id]; the one that was open folds, so at most one is expanded. */
+  /** Expands [id]; the one that was open folds, so at most one is expanded. Does nothing while the open one lacks something. */
   fun onSelectResult(id: Int) {
-    _state.update { it.copy(expandedResultId = id) }
+    _state.update { current ->
+      val open = current.results.firstOrNull { it.id == current.expandedResultId }
+      if (open != null && open.id != id && !current.isValid(open)) current else current.copy(expandedResultId = id)
+    }
   }
 
   /** «Fet»: folds the open result, so all of them are small cards. Validates nothing. */
