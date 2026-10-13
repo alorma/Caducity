@@ -86,6 +86,19 @@ class IngredientPickerStateTest {
   }
 
   @Test
+  fun `status filter leaves only the units in that status, so the row shows their status`() {
+    val fresh = groups.filterPickerGroups("", setOf(ExpiryStatus.FRESH), emptySet()).first { it.name == "Pastanagues" }
+    expectThat(fresh.units.map { it.itemId }).containsExactly("carrot1")
+    expectThat(fresh.nearest.status).isEqualTo(ExpiryStatus.FRESH)
+
+    val soon = groups.filterPickerGroups("", setOf(ExpiryStatus.SOON), emptySet()).first { it.name == "Pastanagues" }
+    expectThat(soon.units.map { it.itemId }).containsExactly("carrot2")
+
+    val all = groups.first { it.name == "Pastanagues" }
+    expectThat(all.units).hasSize(2)
+  }
+
+  @Test
   fun `category filter and the other filters combine`() {
     expectThat(names(category = setOf("veg"))).containsExactly("Pastanagues")
     expectThat(names(category = setOf("veg", "dairy"))).containsExactlyInAnyOrder("Pastanagues", "Llet")

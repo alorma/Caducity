@@ -54,10 +54,21 @@ fun List<ProductGroup>.filterPickerGroups(
   categoryIds: Set<String>,
 ): List<ProductGroup> {
   val typed = query.trim().normalizeForSearch()
-  return filter { group ->
-    (categoryIds.isEmpty() || group.categoryId in categoryIds) &&
-      (typed.isEmpty() || group.name.normalizeForSearch().contains(typed)) &&
-      (statusFilters.isEmpty() || group.units.any { it.status in statusFilters })
+  return mapNotNull { group ->
+    val matchesProduct =
+      (categoryIds.isEmpty() || group.categoryId in categoryIds) &&
+        (typed.isEmpty() || group.name.normalizeForSearch().contains(typed))
+    when {
+      !matchesProduct -> null
+      statusFilters.isEmpty() -> group
+      // Only the units in a chosen status stay, so the row shows their count and status, not the product's nearest.
+      else ->
+        group.units.filter { it.status in statusFilters }.takeIf { it.isNotEmpty() }?.let {
+          group.copy(
+            units = it,
+          )
+        }
+    }
   }
 }
 
