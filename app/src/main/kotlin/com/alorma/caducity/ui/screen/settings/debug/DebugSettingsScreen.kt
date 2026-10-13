@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
+import com.alorma.caducity.config.remoteconfig.rememberRemoteConfig
 import com.alorma.caducity.feature.tracking.DebugSettingsScreen as DebugSettingsScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
@@ -29,6 +30,7 @@ import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCheckboxCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
+import com.alorma.caducity.ui.screen.transform.TransformFeature
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
@@ -76,6 +78,7 @@ fun DebugSettingsScreen(
     modifier = modifier,
     uiState = uiState,
     snackbarState = snackbarState,
+    showTransform = rememberRemoteConfig<TransformFeature>().isEnabled(),
     onNavigateToRemoteConfigs = onNavigateToRemoteConfigs,
   )
 }
@@ -84,6 +87,7 @@ fun DebugSettingsScreen(
 private fun DebugSettingsContent(
   uiState: DebugSettingsUiState,
   snackbarState: AppSnackbarState,
+  showTransform: Boolean,
   onNavigateToRemoteConfigs: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -126,17 +130,19 @@ private fun DebugSettingsContent(
           }
         }
 
-        // Transforma Group
-        item {
-          StyledSettingsGroup(
-            title = { Text("Transforma") },
-          ) {
-            StyledSettingsCard(
-              title = "Open Transforma",
-              subtitle = "With the soonest unit of up to three products",
-              shapes = ListItemDefaults.shapes(),
-              onClick = { uiState.onOpenTransform() },
-            )
+        // Transforma Group (behind the transform_enabled remote config)
+        if (showTransform) {
+          item {
+            StyledSettingsGroup(
+              title = { Text("Transforma") },
+            ) {
+              StyledSettingsCard(
+                title = "Open Transforma",
+                subtitle = "With the soonest unit of up to three products",
+                shapes = ListItemDefaults.shapes(),
+                onClick = { uiState.onOpenTransform() },
+              )
+            }
           }
         }
 
@@ -228,6 +234,7 @@ fun DebugSettingsScreenPreview() {
             onToggleAdPersonalization = {},
           ),
         snackbarState = rememberAppSnackbarState(),
+        showTransform = true,
         onNavigateToRemoteConfigs = {},
       )
     }
