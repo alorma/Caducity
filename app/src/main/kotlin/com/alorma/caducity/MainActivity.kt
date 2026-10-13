@@ -10,14 +10,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.os.BundleCompat
+import com.alorma.caducity.feature.appicon.AppIconManager
 import com.alorma.caducity.feature.consent.ConsentManager
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.alorma.caducity.ui.theme.AndroidSystemBarsAppearance
 import com.alorma.caducity.ui.theme.LocalSystemBarsAppearance
+import com.alorma.caducity.ui.theme.ThemePreferences
 import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity() {
   private val consentManager: ConsentManager by inject()
+  private val appIconManager: AppIconManager by inject()
+  private val themePreferences: ThemePreferences by inject()
   private var pendingDeepLink by mutableStateOf<DeepLinkAction?>(null)
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +29,9 @@ class MainActivity : AppCompatActivity() {
 
     // Apply default consent settings as early as possible
     consentManager.applyDefaultConsent()
+
+    // Covers the first run and a restored setting (migration) where alias and palette disagree.
+    appIconManager.apply(themePreferences.colorPalette.value)
 
     enableEdgeToEdge()
 
@@ -41,6 +48,13 @@ class MainActivity : AppCompatActivity() {
         )
       }
     }
+  }
+
+  override fun onStop() {
+    super.onStop()
+    // The launcher icon follows the palette. Swapping it can make some launchers close the app,
+    // so it is done when the app goes to the background (and at startup), not while choosing.
+    appIconManager.apply(themePreferences.colorPalette.value)
   }
 
   override fun onNewIntent(intent: Intent) {
