@@ -328,9 +328,11 @@ class TransformViewModelTest {
       val vm = ready(add("Chicken", days = 3).itemIds)
       vm.onAddResult()
       expectThat(vm.state.value.expandedResultId).isEqualTo(1)
+      expectThat(vm.state.value.focusResultId).isEqualTo(1)
 
       vm.onDone()
       expectThat(vm.state.value.expandedResultId).isEqualTo(NONE_EXPANDED)
+      expectThat(vm.state.value.focusResultId).isNull()
       expectThat(vm.state.value.results).hasSize(2)
 
       vm.onSelectResult(0)

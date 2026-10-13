@@ -155,12 +155,12 @@
   <string name="transform_category_empty">Categoria</string>
   <string name="transform_date_empty">Caducitat</string>
   <string name="transform_free_hint">Sense ingredients, la categoria i la data les tries tu.</string>
-  <string name="transform_result_name">Nom</string>
   <string name="transform_result_name_hint">Què estàs cuinant?</string>
   <string name="transform_servings">Racions</string>
   <string name="transform_date_hint">Data de l\'ingredient que caduca primer (%s).</string>
   <string name="transform_freeze">Congela\'n</string>
-  <string name="transform_freeze_summary">%1$d a la nevera · %2$d al congelador</string>
+  <string name="transform_freeze_chip">Congela\'n · %d</string>
+  <string name="transform_freeze_in_freezer">Congela\'n · %1$d al congelador</string>
   <string name="transform_footer">Els ingredients desapareixen del rebost en desar.</string>
   <string name="transform_result_unnamed">Resultat nou</string>
   <string name="transform_section_results_count">Resultat · %d</string>

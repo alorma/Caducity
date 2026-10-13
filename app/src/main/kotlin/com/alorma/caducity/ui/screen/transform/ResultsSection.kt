@@ -1,14 +1,23 @@
 package com.alorma.caducity.ui.screen.transform
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -17,17 +26,19 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.key
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alorma.caducity.R
@@ -36,6 +47,7 @@ import com.alorma.caducity.ui.components.category.imageVector
 import com.alorma.caducity.ui.screen.add.ScreenGutter
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
+import kotlinx.coroutines.delay
 
 /** What the results section can ask of the screen, one callback per gesture. */
 class ResultActions(
@@ -52,10 +64,15 @@ class ResultActions(
 )
 
 private val ResultCardHeight = 92.dp
+private const val ExpandMillis = 300
+
+/** M3 emphasized decelerate: what the expansion of a card uses. */
+private val EmphasizedEasing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
 
 /**
- * «Resultat · M»: a horizontal row of small cards, one per product. The selected one is the form, shown below the
- * row. With a single result the row is hidden and only the form shows; «Fet» folds it back into its card.
+ * «Resultat · M»: a horizontal row of small cards, one per product. The selected one expands in place, inside the
+ * same row, into the form (the screen width minus the gutters, so the neighbours peek at the edges); «Fet» folds it
+ * back, and then every result is a small card.
  */
 @Composable
 fun ResultsSection(
@@ -63,50 +80,78 @@ fun ResultsSection(
   actions: ResultActions,
   modifier: Modifier = Modifier,
 ) {
-  val expanded = state.results.firstOrNull { it.id == state.expandedResultId }
-  val showRow = state.results.size > 1 || expanded == null
-  val listState = rememberLazyListState()
-  LaunchedEffect(state.expandedResultId, showRow) {
+  // Starts with the selected card in place, so the form is already centred the first time it shows.
+  val listState =
+    rememberLazyListState(
+      initialFirstVisibleItemIndex = state.results.indexOfFirst { it.id == state.expandedResultId }.coerceAtLeast(0),
+    )
+  LaunchedEffect(state.expandedResultId) {
     val index = state.results.indexOfFirst { it.id == state.expandedResultId }
-    if (showRow && index >= 0) listState.animateScrollToItem(index)
+    if (index < 0) return@LaunchedEffect
+    listState.animateScrollToItem(index)
+    // The cards around it are still changing size while the first scroll runs: align once they have settled.
+    delay(ExpandMillis.toLong())
+    listState.animateScrollToItem(index)
   }
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
     RowSectionHeader(
       title = stringResource(R.string.transform_section_results_count, state.results.size),
       onAdd = actions.onAdd,
     )
-    if (showRow) {
+    BoxWithConstraints {
+      val formWidth = maxWidth - ScreenGutter * 2
       LazyRow(
         state = listState,
         contentPadding = PaddingValues(horizontal = ScreenGutter),
         horizontalArrangement = Arrangement.spacedBy(RowCardSpacing),
         modifier =
           Modifier.semantics {
-            collectionInfo =
-              CollectionInfo(
-                rowCount = 1,
-                columnCount = state.results.size,
-              )
+            collectionInfo = CollectionInfo(rowCount = 1, columnCount = state.results.size)
           },
       ) {
         items(state.results, key = { it.id }) { result ->
-          ResultSummaryCard(
+          ResultItem(
             state = state,
             result = result,
             selected = result.id == state.expandedResultId,
-            onClick = { actions.onSelect(result.id) },
+            formWidth = formWidth,
+            actions = actions,
           )
         }
       }
     }
-    if (expanded != null) {
-      key(expanded.id) {
-        ResultCard(
-          state = state,
-          result = expanded,
-          actions = actions,
-          modifier = Modifier.padding(horizontal = ScreenGutter),
-        )
+  }
+}
+
+/** One result in the row: a small card, or the form when it is the selected one. */
+@Composable
+private fun ResultItem(
+  state: TransformState,
+  result: ResultUi,
+  selected: Boolean,
+  formWidth: Dp,
+  actions: ResultActions,
+) {
+  val width by animateDpAsState(
+    targetValue = if (selected) formWidth else RowCardWidth,
+    animationSpec = tween(ExpandMillis, easing = EmphasizedEasing),
+    label = "resultWidth",
+  )
+  Surface(
+    shape = RowCardShape,
+    color = CaducityTheme.colorScheme.surfaceContainer,
+    border = if (selected) BorderStroke(2.dp, CaducityTheme.colorScheme.primary) else null,
+    modifier =
+      Modifier
+        .width(width)
+        .animateContentSize(tween(ExpandMillis, easing = EmphasizedEasing))
+        .clickable(enabled = !selected, role = Role.Button) { actions.onSelect(result.id) },
+  ) {
+    Crossfade(targetState = selected, animationSpec = tween(ExpandMillis / 2), label = "resultContent") { open ->
+      if (open) {
+        ResultForm(state = state, result = result, actions = actions)
+      } else {
+        ResultSummary(state = state, result = result)
       }
     }
   }
@@ -114,44 +159,37 @@ fun ResultsSection(
 
 /** A folded result: shape, name, «12 units · Category», the frozen pill and a dot when it still lacks something. */
 @Composable
-private fun ResultSummaryCard(
+private fun ResultSummary(
   state: TransformState,
   result: ResultUi,
-  selected: Boolean,
-  onClick: () -> Unit,
 ) {
   val category = state.categories.firstOrNull { it.id == state.categoryOf(result) }
   val name = result.name.ifBlank { stringResource(R.string.transform_result_unnamed) }
-  Surface(
-    onClick = onClick,
-    shape = RowCardShape,
-    color = CaducityTheme.colorScheme.surfaceContainer,
-    border = if (selected) BorderStroke(2.dp, CaducityTheme.colorScheme.primary) else null,
-    modifier = Modifier.size(width = RowCardWidth, height = ResultCardHeight),
+  Column(
+    modifier = Modifier.height(ResultCardHeight).padding(10.dp),
+    verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
-    Column(modifier = Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-      Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (category != null) {
-          CategoryShapeIcon(shape = category.shape, icon = category.icon.imageVector, size = 28.dp)
-        }
-        Text(
-          text = name,
-          style = CaducityTheme.typography.titleSmall,
-          maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
-          modifier = Modifier.weight(1f),
-        )
-        if (!state.isValid(result)) InvalidDot()
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      if (category != null) {
+        CategoryShapeIcon(shape = category.shape, icon = category.icon.imageVector, size = 28.dp)
       }
       Text(
-        text = resultMeta(result, category?.name),
-        style = CaducityTheme.typography.bodySmall.copy(fontSize = 11.sp),
-        color = CaducityTheme.colorScheme.onSurfaceVariant,
+        text = name,
+        style = CaducityTheme.typography.titleSmall,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.weight(1f),
       )
-      if (result.frozenCount > 0) FrozenChip(result.frozenCount)
+      if (!state.isValid(result)) InvalidDot()
     }
+    Text(
+      text = resultMeta(result, category?.name),
+      style = CaducityTheme.typography.bodySmall.copy(fontSize = 11.sp),
+      color = CaducityTheme.colorScheme.onSurfaceVariant,
+      maxLines = 1,
+      overflow = TextOverflow.Ellipsis,
+    )
+    if (result.frozenCount > 0) FrozenChip(result.frozenCount)
   }
 }
 
