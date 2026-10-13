@@ -73,7 +73,7 @@ internal fun resultLineAlpha(
   }
 }
 
-private val NodeSize = 64.dp
+private val NodeSize = 56.dp
 
 /**
  * Where the pieces of the scheme between the two rows are, so a line can join them: the ingredient cards, the node
@@ -137,7 +137,7 @@ internal fun RowLinksNode(
       Symbols.Outlined.SoupKitchen,
       contentDescription = null,
       tint = CaducityTheme.colorScheme.primary,
-      modifier = Modifier.size(32.dp),
+      modifier = Modifier.size(28.dp),
     )
   }
 }
