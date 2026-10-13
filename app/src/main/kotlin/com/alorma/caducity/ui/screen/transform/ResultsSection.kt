@@ -30,6 +30,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -175,7 +176,12 @@ private fun ResultItem(
     border =
       when {
         selected -> BorderStroke(2.dp, CaducityTheme.colorScheme.primary)
-        incomplete -> BorderStroke(1.5.dp, CaducityTheme.colorScheme.error)
+        // Red at the top, fading into the usual outline colour at the bottom.
+        incomplete ->
+          BorderStroke(
+            1.5.dp,
+            Brush.verticalGradient(listOf(CaducityTheme.colorScheme.error, CaducityTheme.colorScheme.outline)),
+          )
         else -> null
       },
     modifier =
