@@ -9,8 +9,11 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +28,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.base.ui.icons.symbols.SoupKitchen
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
@@ -37,6 +41,37 @@ private const val MaxLinesPerRow = 5
 
 /** How fast a line fades while its card moves away from the middle: 1.5 keeps the middle third at full opacity. */
 private const val FadeGain = 1.5f
+
+/** Horizontal distance from the centre of the screen at which a result's line and border are at their faintest. */
+private val ResultFadeReach = 260.dp
+
+/** The least opacity of a result's line and border. */
+private const val ResultMinAlpha = 0.3f
+
+/** Opacity of a result's line and border: `max(0.3, 1 − distance / 260 dp)`, [distance] and [reach] in the same unit. */
+internal fun resultAlpha(
+  distance: Float,
+  reach: Float,
+): Float = maxOf(ResultMinAlpha, 1f - kotlin.math.abs(distance) / reach)
+
+/** How visible the line and the border of a result are, from the middle of the part of its card that shows. */
+@Composable
+internal fun resultLineAlpha(
+  state: LazyListState,
+  index: Int,
+): State<Float> {
+  val reach = with(LocalDensity.current) { ResultFadeReach.toPx() }
+  return remember(state, index, reach) {
+    derivedStateOf {
+      val info = state.layoutInfo
+      val item = info.visibleItemsInfo.firstOrNull { it.index == index } ?: return@derivedStateOf ResultMinAlpha
+      val width = info.viewportSize.width.toFloat()
+      val start = (item.offset + info.beforeContentPadding).toFloat().coerceAtLeast(0f)
+      val end = (item.offset + item.size + info.beforeContentPadding).toFloat().coerceAtMost(width)
+      resultAlpha(distance = (start + end) / 2f - width / 2f, reach = reach)
+    }
+  }
+}
 
 private val NodeSize = 64.dp
 
@@ -157,8 +192,10 @@ private fun DrawScope.drawRowLinks(
   }
   val resultsState = links.resultsState
   if (foldedAlpha > 0f && resultsState != null) {
+    val reach = ResultFadeReach.toPx()
     visibleCentres(results, resultsState, root, atBottom = false).forEach { end ->
-      drawCurve(nodeBottom, end.position, sand.copy(alpha = foldedAlpha * end.fade), thin)
+      val alpha = resultAlpha(distance = end.distance, reach = reach)
+      drawCurve(nodeBottom, end.position, sand.copy(alpha = foldedAlpha * alpha), thin)
     }
   }
 }
@@ -191,6 +228,7 @@ private fun visibleCentres(
       LineEnd(
         position = root.localPositionOf(row, Offset(x, y)),
         fade = ((1f - away) * FadeGain).coerceIn(0f, 1f),
+        distance = x - half,
         index = index,
       )
     }
@@ -200,6 +238,8 @@ private fun visibleCentres(
 private class LineEnd(
   val position: Offset,
   val fade: Float,
+  /** Horizontal distance from the middle of the row, in px. */
+  val distance: Float,
   val index: Int,
 )
 

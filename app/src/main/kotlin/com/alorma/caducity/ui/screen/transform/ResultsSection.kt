@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -37,7 +38,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -169,6 +169,7 @@ fun ResultsSection(
             state = state,
             result = result,
             index = index,
+            listState = listState,
             selected = result.id == shownId,
             formWidth = formWidth,
             actions = actions,
@@ -185,6 +186,7 @@ private fun ResultItem(
   state: TransformState,
   result: ResultUi,
   index: Int,
+  listState: LazyListState,
   selected: Boolean,
   formWidth: Dp,
   actions: ResultActions,
@@ -215,21 +217,16 @@ private fun ResultItem(
       )
     }
   }
+  // A folded card has the border of its line, with the same opacity: the further from the middle, the fainter.
+  val lineAlpha by resultLineAlpha(listState, index)
   Surface(
     shape = RowCardShape,
     color = CaducityTheme.colorScheme.surfaceContainer,
     border =
-      when {
-        selected -> BorderStroke(2.dp, CaducityTheme.colorScheme.primary)
-        // Otherwise the colour of the card turning into the one of the line that arrives at it.
-        else ->
-          BorderStroke(
-            1.5.dp,
-            Brush.verticalGradient(
-              listOf(CaducityTheme.colorScheme.surfaceContainer, CaducityTheme.colorScheme.outline),
-            ),
-          )
-      },
+      BorderStroke(
+        2.dp,
+        if (selected) CaducityTheme.colorScheme.primary else CaducityTheme.colorScheme.outline.copy(alpha = lineAlpha),
+      ),
     modifier =
       Modifier
         .graphicsLayer { translationX = shake.value }
