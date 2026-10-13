@@ -150,11 +150,8 @@
   <string name="transform_done_one_ingredient">1 ingrediente transformado en %1$d productos</string>
   <string name="transform_done_one_product">%1$d ingredientes transformados en 1 producto</string>
   <string name="transform_done_one_one">1 ingrediente transformado en 1 producto</string>
-  <string name="transform_added">%1$d productos añadidos</string>
-  <string name="transform_added_one">1 producto añadido</string>
   <string name="transform_category_empty">Categoría</string>
   <string name="transform_date_empty">Caducidad</string>
-  <string name="transform_free_hint">Sin ingredientes, la categoría y la fecha las eliges tú.</string>
   <string name="transform_result_name_hint">¿Qué estás cocinando?</string>
   <string name="transform_servings">Raciones</string>
   <string name="transform_date_hint">Fecha del ingrediente que caduca primero (%s).</string>
@@ -192,7 +189,7 @@
   <string name="transform_bar_reschedule">Fecha</string>
   <string name="transform_bar_transform">Transforma</string>
   <string name="transform_bar_transform_description">Transforma %1$d unidades</string>
-  <string name="transform_section_ingredients_optional">Ingredientes · opcional</string>
+  <string name="transform_section_ingredients">Ingredientes</string>
   <string name="transform_add_ingredient">Añadir ingrediente</string>
   <string name="transform_add">Añadir</string>
   <string name="transform_section_ingredients_count">Ingredientes · %d</string>

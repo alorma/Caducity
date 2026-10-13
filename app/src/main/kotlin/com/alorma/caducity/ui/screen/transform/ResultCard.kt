@@ -138,7 +138,6 @@ fun ResultForm(
         when {
           result.expirationOverride == null && first != null ->
             stringResource(R.string.transform_date_hint, first.name)
-          state.ingredients.isEmpty() -> stringResource(R.string.transform_free_hint)
           else -> null
         }
       ResultChip(onClick = { actions.onPickDate(id) }, empty = expiration == null, description = dateHint) {

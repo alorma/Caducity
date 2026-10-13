@@ -500,18 +500,18 @@ class TransformViewModelTest {
   }
 
   @Test
-  fun `free entry needs name, category and date`() =
+  fun `saving needs at least one ingredient besides name, category and date`() =
     runTest {
       val vm = freeEntry()
       expectThat(vm.state.value.canSave).isFalse()
 
       vm.onNameChange(0, "Tupper")
-      expectThat(vm.state.value.canSave).isFalse()
-
       vm.onCategorySelect(0, "soup")
+      vm.onDatePicked(0, inDays(3))
       expectThat(vm.state.value.canSave).isFalse()
 
-      vm.onDatePicked(0, inDays(3))
+      pickerResults.deliver(add("Chicken", days = 3).itemIds)
+      vm.await { it.ingredients.isNotEmpty() }
       expectThat(vm.state.value.canSave).isTrue()
     }
 
@@ -532,11 +532,15 @@ class TransformViewModelTest {
       vm.onCategorySelect(0, "soup")
       vm.onServingsChange(0, 2)
 
+      val result = {
+        vm.state.value.results
+          .single()
+      }
       vm.onFrozenCountChange(0, 1)
-      expectThat(vm.state.value.canSave).isFalse()
+      expectThat(vm.state.value.isValid(result())).isFalse()
 
       vm.onFrozenCountChange(0, 2)
-      expectThat(vm.state.value.canSave).isTrue()
+      expectThat(vm.state.value.isValid(result())).isTrue()
     }
 
   @Test
@@ -580,32 +584,19 @@ class TransformViewModelTest {
     }
 
   @Test
-  fun `saving a free entry adds the products and says so`() =
+  fun `saving without ingredients does nothing`() =
     runTest {
       val vm = freeEntry()
       vm.onNameChange(0, "Tupper")
       vm.onCategorySelect(0, "soup")
       vm.onDatePicked(0, inDays(3))
-      vm.onServingsChange(0, 2)
-      vm.onAddResult()
-      val second =
-        vm.state.value.results
-          .last()
-          .id
-      vm.onNameChange(second, "Soup")
-      vm.onCategorySelect(second, "soup")
-      vm.onDatePicked(second, inDays(3))
 
       snackbars.events.test {
         vm.onSave()
-        val message = awaitItem()
-        expectThat(message.message).isEqualTo(R.string.transform_added)
-        expectThat(message.messageArgs).isEqualTo(listOf<Any>(2))
+        expectNoEvents()
       }
 
-      val active = pantry.observeActiveItems().first()
-      expectThat(active.filter { it.name == "Tupper" }).hasSize(2)
-      expectThat(active.filter { it.name == "Soup" }).hasSize(1)
+      expectThat(pantry.observeActiveItems().first().filter { it.name == "Tupper" }).isEmpty()
     }
 
   @Test
