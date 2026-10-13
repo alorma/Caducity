@@ -226,11 +226,20 @@ Especificació: [`spec-files.md`](spec-files.md), apartats «No és un receptari
 
 Regla de producte: Transforma **no** és un receptari. Es diu explícitament a tres llocs (onboarding, modal i nota del peu). No s'utilitza mai a la UI, a la Play Store ni a les release notes «recepta», «cuina amb…» o «idees de plats»; es diu «apunta què has cuinat».
 
-Tasques proposades (a aprovar abans de començar):
+Tasques (aprovades per Bernat):
 1. Nota del peu de la pantalla: «**No és un receptari:** només apunta què has gastat i què n'ha sortit. Els ingredients desapareixen del rebost en desar.» (negreta destacada), als tres idiomes.
 2. Onboarding: pas nou «Transforma» (3 de 5, només amb `transform_enabled` actiu; sense el flag, l'onboarding queda com ara, de 4 passos) entre `AlertsStep` i `PrivacyStep`, amb diagrama, targeta «No és un receptari» (icona `menu_book` ratllada) i mini botó dividit; renumerar a «Pas X de 5» i la barra de 5 segments als altres passos, i la navegació («Continua» d'Avisos, «Enrere» de Privadesa). Free, només informa. Actualitzar `CLAUDE.md` (passos de l'onboarding) i els tests de captura.
 3. Modal de novetat (`ModalBottomSheet`) sobre l'Inici, una sola vegada, només per a qui ja havia completat l'onboarding (flag persistent, p. ex. `transformIntroSeen`, marcat també en acabar l'onboarding nou). «Prova Transforma» obre l'accés lliure; «Ara no» i tocar fora la tanquen i la marquen com a vista. No es mostra durant l'onboarding, ni amb enllaç profund, widget o notificació, ni amb diàleg o selecció oberts. Va darrere del flag `transform_enabled` (decidit): amb el flag apagat no es mostra ni es marca com a vista, perquè no es gasti quan s'activi.
 4. Tracking (`feature/tracking/Actions.kt`) de «Prova Transforma» i «Ara no», sense dades d'usuari; tests del flag i de les regles de visualització.
+
+- [x] Tasca 1 (nota del peu «No és un receptari»): `397718f`
+- [x] Tasca 2 (pas «Transforma» de l'onboarding, 3 de 5 amb el flag; `menu_book`, `stepCount` dinàmic): `ef0e97c`
+- [x] Tasca 3 (`TransformIntroFlag` i `shouldShowTransformIntro`; en acabar l'onboarding es marca com a vista): `435f7a5`
+- [x] Tasca 4 (modal com a ruta `TransformIntro` amb full inferior; botó dividit de mida real): `0153df2`
+- [x] Tasca 5 (tracking `nav_transform` amb `source=intro_modal` i `dismiss_transform_intro`, també amb enrere o tocar fora): `0153df2`
+- [x] Ajustos: diagrama animat (ingredients → línies i node → resultat) i nom traduït (Transforma / Transformar / Transform): `019eefc`
+
+Regla de la modal (decidida per Bernat): onboarding → sense modal; actualització (sense onboarding) → modal. Validada a l'emulador: «Ara no» la tanca i no torna, «Prova Transforma» obre l'accés lliure, una instal·lació nova no la veu. No hi ha captures de les pantalles noves (`Reveal` les deixa buides); el deep link es detecta amb `deepLinkAction`, el diàleg o selecció obert amb «no ets a l'Inici».
 
 Obert: subtítol a l'entrada «Transforma» del menú «+ ⌄» («Apunta què has cuinat»); versions fosc/paletes de les dues pantalles noves (no dibuixades: tokens habituals).
 
@@ -261,6 +270,6 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 5 — Entrades i flux final | Validada |
 | 6 — Qualitat | Validada (queda la prova v3 → v4 abans de publicar) |
 | 7 — Pantalla en files | Validada |
-| 8 — Onboarding, novetat i «No és un receptari» | Pendent (tasques a aprovar) |
+| 8 — Onboarding, novetat i «No és un receptari» | Validada |
 
 Només es passa a «Validada» quan Bernat l'aprova (`.claude/rules/phased-work.md`).
