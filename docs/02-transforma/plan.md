@@ -175,7 +175,6 @@ Especificació: [`spec-files.md`](spec-files.md) (substitueix el disseny de la p
 5. Barra «Desa · M productes» fixa a baix, sense «Desa» a la barra superior; en desar amb un resultat invàlid se selecciona el primer. Validació: tests i dispositiu de treball amb teclat.
 6. Accessibilitat (`collectionInfo`, estat seleccionat, accions «Resultat anterior / següent», àrees ≥ 48 dp), textos a `values`, `values-ca` i `values-es`, previews i captures clar/fosc, tests de ViewModel.
 7. **Opcional, només si s'aprova:** esquema de línies i node central entre les files. Es fa al final; si és massa complicat, no es fa.
-8. **Opcional, només si s'aprova després de la 7:** mode «pager», on el scroll lateral contrau i expandeix les targetes seguint el dit (apartat «Extra opcional» de `spec-files.md`). Per defecte no es fa.
 
 - [x] Tasca 1 (docs i pla): `92bf21b`
 - [x] Tasca 2 (ingredients en fila): `ed11bda`
@@ -184,14 +183,14 @@ Especificació: [`spec-files.md`](spec-files.md) (substitueix el disseny de la p
 - [x] Tasca 5 («Desa · M productes» fix, fora de la barra superior): `6e77ffe`
 - [x] Tasca 6 (accessibilitat: `collectionInfo`, estat seleccionat, accions «Resultat anterior / següent», 48 dp): `e4ef855`
 - [x] Tasca 7 (línies i node): `a200511`
-- [ ] Tasca 8 (mode pager): no feta, opcional. Cal decidir si es fa en una sessió pròpia.
 
 Validada amb tests de ViewModel, tests de captura clar/fosc i l'emulador (no el dispositiu de treball). TalkBack no s'ha provat (només revisió de codi). El scroll horitzontal en viu amb les línies tampoc.
 
 **Pendent de la fase:**
 - ~~Treure un resultat~~: resolt (vegeu els ajustos de sota).
-- Els botons del stepper d'ingredient fan 40×48 dp, no 48×48 (no hi cap en 148 dp).
-- Textos que ja no es fan servir (`transform_empty_*`, `transform_footer_free`...): netejar-los si es vol.
+- Els botons del stepper d'ingredient fan 40×48 dp, no 48×48 (no hi cap en 148 dp): acceptat.
+- ~~Textos que ja no es fan servir~~: esborrats (`61fe905`).
+- El mode pager (tasca 8 i el seu apartat a `spec-files.md`) s'ha descartat i eliminat.
 
 **Ajustos de la fase 7 (2026-10-13, provats a l'emulador, no al dispositiu de treball):**
 - [x] Resultats: sense teclat en obrir (només el resultat acabat d'afegir el pren), «+ Afegeix» ocult mentre hi ha un resultat sense nom (`canAddResult`): `ced594e`.
@@ -202,12 +201,12 @@ Validada amb tests de ViewModel, tests de captura clar/fosc i l'emulador (no el 
 - [x] Ingredients: vora (degradat de color de targeta a color d'estat) i línia del color de l'estat de la unitat que es gasta primer, amb els marges de la categoria (`ObserveItemsUseCase`): `e41ff13`. Només s'ha vist el groc a l'emulador.
 - [x] Resultat seleccionat: primer es centra la targeta plegada i després s'expandeix; targeta completa amb vora de color de targeta a outline: `85ad915`. **El centrat previ no s'ha vist a l'emulador.**
 - [x] Selector: el filtre d'estat deixa només les unitats d'aquest estat: `7ddc09e`.
-- [x] «Fet» no plega un resultat incomplet i fa un shake: `f5a2742`.
+- [x] «Fet» no plega un resultat incomplet i fa un shake: `f5a2742` (el shake es treu després: vegeu la tasca 2 del redisseny).
 - Experiment descartat: gota amb línia penjant per esborrar (disseny maco, animacions no convencien). Es pot recuperar de `f927424`; es va desfer a `19ec17d`.
 
 **Redisseny rebut (2026-10-13, zip `caducity-canvi-transforma-files`):** `spec-files.md`, les captures `TransformaCarr{Buit,Molts,Plegat}`, `OBTransforma` i `NovetatTransforma` i els `.dc.html` ja són els nous. Tasques aprovades per Bernat, a fer en aquest ordre, un commit cadascuna:
 1. [x] Docs: `199578f`.
-2. [x] Sense estat «invàlid»: «Fet» desactivat mentre el resultat obert sigui incomplet (amb shake si es toca), tocar un altre resultat no fa res, treure la vora vermella. «Fet» exigeix nom, categoria i data (criteri actual; el zip només diu nom i categoria, Bernat no ho ha decidit). Fet: `932dc7d`.
+2. [x] Sense estat «invàlid»: «Fet» realment desactivat mentre el resultat obert sigui incomplet (sense shake: Bernat el va descartar, `9378e9e`), tocar un altre resultat no fa res, treure la vora vermella. «Fet» exigeix nom, categoria i data (criteri actual; el zip només diu nom i categoria, Bernat no ho ha decidit). Fet: `932dc7d`.
 3. [x] Ingredients: vora plena de 2 dp i línia de 2 dp amb el color de l'estat (tokens de l'app, contrast ≥ 3:1). Fet: `2a6eb24` (el groc `soon` s'enfosqueix fins a 3:1).
 4. [x] Resultats: línia i vora tan `#8F8266` de 2 dp amb `alpha = max(0,3, 1 − |x − centre| / 260 dp)`; la vora segueix la mateixa alfa. Les línies d'ingredients segueixen amb el seu fade actual. Fet: `4747fcf` (color `outline` del tema, no l'hex fix).
 5. [x] Esborrar: `×` a la targeta plegada i paperera al formulari, també amb un sol resultat (buida el formulari), amb snackbar «Resultat esborrat · Desfés» que restaura el resultat i la selecció. Bernat manté paperera i `×`. Fet: `1358e7a`; sempre queda un resultat com a mínim (decidit per Bernat), així que amb un de sol no hi ha paperera ni `×`.
@@ -216,10 +215,10 @@ Validada amb tests de ViewModel, tests de captura clar/fosc i l'emulador (no el 
 
 Pendent d'aquests ajustos:
 - «Ingredients · opcional» a l'accés lliure: Bernat pregunta si hauria d'haver-hi com a mínim un ingredient. Ve del pla (l'accés lliure serveix per apuntar un producte sense ingredients); decidir si es manté.
-- En confirmar el selector entra la unitat més propera del producte, no la de l'estat filtrat.
+- ~~En confirmar el selector entra la unitat més propera del producte, no la de l'estat filtrat~~: resolt, entra la més propera dins l'estat filtrat (`c988b41`).
 - Provar al dispositiu de treball: centrat previ a l'expansió, colors blau/verd/vermell dels ingredients, ripple vermell i el scroll en viu amb les línies.
 
-Obert de la fase (deixar com a constants/`TODO`, no resoldre): plegat automàtic del xip de quantitat; `snap` a la fila; límit per fila (50 si cal); vora de les veïnes tocable i posició «3 de 6»; en el mode pager, si el gest bloqueja l'edició o només tanca el teclat.
+Obert de la fase (deixar com a constants/`TODO`, no resoldre): plegat automàtic del xip de quantitat; `snap` a la fila; límit per fila (50 si cal); vora de les veïnes tocable i posició «3 de 6».
 
 ## Fase 8 — Onboarding, novetat i «No és un receptari»
 
@@ -261,7 +260,7 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 4b — Filtres desplegables del selector | Validada |
 | 5 — Entrades i flux final | Validada |
 | 6 — Qualitat | Validada (queda la prova v3 → v4 abans de publicar) |
-| 7 — Pantalla en files | Tasques 1-7 fetes, pendent d'aprovació (la 8 és opcional i no s'ha fet) |
+| 7 — Pantalla en files | Tasques 1-7 fetes i pendents resolts; queda decidir «Ingredients · opcional» i l'aprovació (mode pager descartat) |
 | 8 — Onboarding, novetat i «No és un receptari» | Pendent (tasques a aprovar) |
 
 Només es passa a «Validada» quan Bernat l'aprova (`.claude/rules/phased-work.md`).

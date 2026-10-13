@@ -79,23 +79,6 @@ Es mantenen els de `16-transforma.md` tret de:
 2. Si cal `snap` a la fila (`rememberSnapFlingBehavior`) o scroll lliure.
 3. Límit màxim d'ingredients/resultats per fila.
 4. Si la vora fina de les veïnes ha de ser tocable o només decorativa (i mostrar la posició «3 de 6»).
-5. (Extra opcional) Si es fa el mode pager, si l'edició s'ha de bloquejar durant el gest o només tancar el teclat.
-
-## Extra opcional · el scroll expandeix i contrau (mode «pager»)
-**Només si la resta està acabada i estable. No s'implementa per defecte i no bloqueja res.** Substitueix el «toca per expandir» per un gest més fluid, estil carrusel «hero» de M3: la fila de resultats es comporta com un pager amb *snap*; en fer scroll horitzontal, la targeta que surt del centre es **contrau** i la que hi entra s'**expandeix**, seguint el dit. La targeta centrada és sempre la seleccionada.
-
-- **Quan s'activa**: només amb un resultat expandit (mode editant). En l'estat **plegat** (després de «Fet») la fila fa scroll lliure, sense expandir res; en tocar una targeta, s'entra al mode pager amb aquella centrada.
-- **Implementació**: `LazyRow` amb `rememberSnapFlingBehavior` (o `HorizontalPager`) i `contentPadding` perquè la centrada quedi a ample de pantalla − 40 dp. L'ample i l'alçada de cada targeta s'interpolen (148×92 ↔ ample×alçada del formulari) segons la distància al centre (`layoutInfo.visibleItemsInfo` o `calculateCurrentOffsetForPage`). **No usar** `HorizontalCenteredHeroCarousel` tal qual: tots els ítems hi tenen la mateixa alçada i el formulari és molt més alt que la targeta plegada; cal una solució pròpia.
-- **Edició només amb la targeta aturada**: mentre es llisca, el contingut del formulari s'esvaeix (o es retalla) i els camps no són editables; en aturar-se, es torna a mostrar i es pot editar.
-- **Teclat**: si hi ha un camp enfocat, el scroll horitzontal queda **bloquejat** o primer tanca el teclat, perquè el contingut no es mogui sota el dit.
-- **Alçada variable**: durant el gest l'alçada de la secció canvia (la nota del peu es mou); la barra «Desa» és fixa i no es mou.
-- **Línies (si es fan)**: la línia verda del node a la targeta continua vertical, perquè la centrada no es mou del centre.
-- **Accessibilitat**: accions «Resultat anterior» / «Resultat següent» (lectors de pantalla i commutadors), i anunci de la posició («Resultat 3 de 6»). El gest no pot ser l'única manera de canviar de resultat: tocar una targeta plegada/vora fina ha de continuar funcionant.
-- **Reduir animacions**: sense interpolació; el canvi és directe i l'expansió s'aplica en aturar-se.
-- **Rendiment**: només es compon i es mesura el formulari de la targeta centrada (les altres mostren només la versió plegada).
-
-Si en veiem la implementació complicada (interpolació de mides dins un `LazyRow`, conflicte amb el teclat), **no es fa**: el disseny base (expandir per toc + «Fet») ja és complet.
-
 
 ## No és un receptari (regla de producte, ha de quedar molt clar)
 Transforma **no** és un apartat de receptes: no hi ha receptes, ni suggeriments de què cuinar, ni cerca, ni passos. Només registra què s'ha gastat i què n'ha sortit (amb la seva data). Es diu explícitament a **tres llocs**:
