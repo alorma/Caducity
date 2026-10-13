@@ -3,7 +3,7 @@
 Especificació: [`spec.md`](spec.md) i [`spec-files.md`](spec-files.md). Captures: `captures/Transforma{Seleccio,Caldo,Pollastre,Ingredient,Buit}`, `EntradaMenu`, `EntradaAccions`, `Main` (botó dividit en repòs).
 **Redisseny de la pantalla en files (2026-10-13):** vegeu la fase 7 i [`spec-files.md`](spec-files.md).
 **Canvi de disseny (2026-10-13):** nou **accés lliure** (`TransformaBuit`, vegeu «Accés lliure» a l'especificació: sense ingredients, nom + categoria + data obligatoris) i captures actualitzades. Afecta les fases 2 i 3 ja validades (vegeu «Fase 2b» i «Fase 3b») i la 5.
-**Canvi de disseny (2026-10-13, 2n):** filtres del selector d'ingredients com a dos xips desplegables de selecció múltiple (`TransformaIngredient` actualitzada); afecta la fase 4 ja validada (vegeu «Fase 4b»). La resta del paquet (accés lliure, botó dividit, sense pulsació llarga) ja hi era; `Rebost.png` del zip no s'ha copiat (no és a la llista del paquet). Validació sempre al Pixel 8a, mai a l'emulador.
+**Canvi de disseny (2026-10-13, 2n):** filtres del selector d'ingredients com a dos xips desplegables de selecció múltiple (`TransformaIngredient` actualitzada); afecta la fase 4 ja validada (vegeu «Fase 4b»). La resta del paquet (accés lliure, botó dividit, sense pulsació llarga) ja hi era; `Rebost.png` del zip no s'ha copiat (no és a la llista del paquet). Validació sempre al dispositiu de treball, mai a l'emulador.
 **Ordre: segona de les dues**, després de [diverses unitats](../01-diverses-unitats/plan.md). Independent a nivell de codi, però comparteix el patró de «Desfés» amb snapshots.
 
 ## Punt de partida i diferències amb l'especificació
@@ -38,7 +38,7 @@ Mètodes ja existents que es reutilitzen: `PantryDataSource.addBatch` (cerca/cre
 - [x] Tasca 6 (backup, format v3): `34dea3f`
 - [x] Dades falses amb ingredients transformats: `010951c`; una sola estratègia de dades falses (sense PlayStore): `51ba87b`
 
-Validada amb l'app `.dev` al Pixel 8a: v3 → v4 amb 61 ítems, 5 categories i 27 productes intactes. Nota: `ItemDataSource.markItemAsTransformed` és provisional (només dades falses); la fase 2 el substitueix per `transform`.
+Validada amb l'app `.dev` al dispositiu de treball: v3 → v4 amb 61 ítems, 5 categories i 27 productes intactes. Nota: `ItemDataSource.markItemAsTransformed` és provisional (només dades falses); la fase 2 el substitueix per `transform`.
 
 ## Fase 2 — Cas d'ús transaccional
 
@@ -89,7 +89,7 @@ Decisió oberta 4 aplicada: un resultat congelat guarda els dies fins a la seva 
 - [x] Tasca 4 (diversos resultats, plegats i expandibles): `334aae6`
 - [x] Tasca 7 i plurals del missatge en desar («1 producte», «1 ingredient»): `ce8a30e`
 
-Validada amb l'app `.dev` al Pixel 8a: desa de veritat i «Desfés» restaura els ingredients. «Afegeix ingredient» no fa res fins a la fase 4. Decisió oberta 2 aplicada: un ingredient caducat dona data per defecte «avui» (`TODO(transforma-open-2)`).
+Validada amb l'app `.dev` al dispositiu de treball: desa de veritat i «Desfés» restaura els ingredients. «Afegeix ingredient» no fa res fins a la fase 4. Decisió oberta 2 aplicada: un ingredient caducat dona data per defecte «avui» (`TODO(transforma-open-2)`).
 
 ## Fase 3b — Pantalla en accés lliure
 
@@ -107,7 +107,7 @@ Ruta `Transform` amb `itemIds` buit = accés lliure.
 - [x] Tasques 1 i 2 (estat buit «Què has cuinat?», «Ingredients · opcional», nota al peu) i entrada de Depuració «Open Transforma (free entry)»: `b36f2be`
 - Pendent: previews clar/fosc de l'estat buit ja escrites (`TransformFreeEntry*Preview`); les captures van a la fase 6.
 
-Validada al Pixel 8a: obre buit, Desa desactivat, activat en triar categoria i data, «1 producte afegit · Desfés».
+Validada al dispositiu de treball: obre buit, Desa desactivat, activat en triar categoria i data, «1 producte afegit · Desfés».
 
 ## Fase 4 — Selector d'ingredients
 
@@ -134,7 +134,7 @@ Canvi de disseny (zip `caducity-canvi-transforma`, nova `TransformaIngredient.pn
 
 - [x] Tasques 1-4 (estat, ViewModel, xips desplegables, textos, previews i tests; un sol commit perquè la UI no compila sense l'estat): `72ea903`
 
-Validada al Pixel 8a amb el xip Categoria (filtre instantani i recompte). El xip Estat s'amaga amb les dades de prova (tot fresc); només validat amb tests.
+Validada al dispositiu de treball amb el xip Categoria (filtre instantani i recompte). El xip Estat s'amaga amb les dades de prova (tot fresc); només validat amb tests.
 
 ## Fase 5 — Entrades i flux final
 
@@ -173,8 +173,8 @@ Especificació: [`spec-files.md`](spec-files.md) (substitueix el disseny de la p
 1. Docs: spec, captures i fonts a `docs/02-transforma/`, i aquesta fase al pla.
 2. Targetes d'ingredient (148×118 dp) en `LazyRow`, capçalera «Ingredients · N» amb «+ Afegeix», xip «1 de 25 ⇅» que es converteix en stepper i fila discontínua «+ Afegeix ingredient» a l'accés lliure. Validació: previews, tests de captura i `ktlintCheck`.
 3. Targetes de resultat (148×92 dp) en fila, estat «cap expandit» al ViewModel i botó «Fet». Validació: tests de ViewModel i previews.
-4. Expansió de la targeta seleccionada en formulari dins la fila (animada, `animateScrollToItem`; amb un sol resultat, només el formulari) i xip «Congela'n» desplegable. Validació: previews, Pixel 8a i `/transforma-flow`.
-5. Barra «Desa · M productes» fixa a baix, sense «Desa» a la barra superior; en desar amb un resultat invàlid se selecciona el primer. Validació: tests i Pixel 8a amb teclat.
+4. Expansió de la targeta seleccionada en formulari dins la fila (animada, `animateScrollToItem`; amb un sol resultat, només el formulari) i xip «Congela'n» desplegable. Validació: previews, dispositiu de treball i `/transforma-flow`.
+5. Barra «Desa · M productes» fixa a baix, sense «Desa» a la barra superior; en desar amb un resultat invàlid se selecciona el primer. Validació: tests i dispositiu de treball amb teclat.
 6. Accessibilitat (`collectionInfo`, estat seleccionat, accions «Resultat anterior / següent», àrees ≥ 48 dp), textos a `values`, `values-ca` i `values-es`, previews i captures clar/fosc, tests de ViewModel.
 7. **Opcional, només si s'aprova:** esquema de línies i node central entre les files. Es fa al final; si és massa complicat, no es fa.
 8. **Opcional, només si s'aprova després de la 7:** mode «pager», on el scroll lateral contrau i expandeix les targetes seguint el dit (apartat «Extra opcional» de `spec-files.md`). Per defecte no es fa.
@@ -188,7 +188,7 @@ Especificació: [`spec-files.md`](spec-files.md) (substitueix el disseny de la p
 - [x] Tasca 7 (línies i node): `a200511`
 - [ ] Tasca 8 (mode pager): no feta, opcional. Cal decidir si es fa en una sessió pròpia.
 
-Validada amb tests de ViewModel, tests de captura clar/fosc i l'emulador (no el Pixel 8a). TalkBack no s'ha provat (només revisió de codi). El scroll horitzontal en viu amb les línies tampoc.
+Validada amb tests de ViewModel, tests de captura clar/fosc i l'emulador (no el dispositiu de treball). TalkBack no s'ha provat (només revisió de codi). El scroll horitzontal en viu amb les línies tampoc.
 
 **Pendent de la fase:**
 - Treure un resultat: l'spec no té cap ×. `onRemoveResult` segueix al ViewModel però la UI no el crida. Cal decidir on va.
