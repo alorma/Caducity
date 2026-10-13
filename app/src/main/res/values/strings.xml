@@ -507,13 +507,13 @@
   <string name="ob_privacy_analytics_sub">Which screens you use, never what you store. It helps us improve the app.</string>
   <string name="ob_privacy_default_off">Off by default. You can change it in Settings › Privacy.</string>
   <string name="ob_transform_title">Cooked something? Note it down</string>
-  <string name="ob_transform_body">Transforma takes the ingredients you used out of the pantry and adds what came out of them, with its date.</string>
+  <string name="ob_transform_body">Transform takes the ingredients you used out of the pantry and adds what came out of them, with its date.</string>
   <string name="ob_transform_sample_chicken">Whole chicken</string>
   <string name="ob_transform_sample_vegetables">Vegetables</string>
   <string name="ob_transform_sample_result">Broth</string>
   <string name="ob_transform_sample_result_meta">4 servings · 2 frozen</string>
   <string name="ob_transform_not_recipe_title">Not a recipe book</string>
-  <string name="ob_transform_not_recipe_body">No recipes or ideas for what to cook. Transforma only notes what you used and what came out.</string>
+  <string name="ob_transform_not_recipe_body">No recipes or ideas for what to cook. Transform only notes what you used and what came out.</string>
   <string name="ob_transform_hint">It is always in the + button at the bottom, on the {chevron} part.</string>
   <string name="ob_continue">Continue</string>
   <string name="ob_disclaimer_title">Before we start</string>
