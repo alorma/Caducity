@@ -52,7 +52,7 @@ jobs:
         with:
           name: unit-test-report
           path: "*/build/reports/tests/testDebugUnitTest"
-          retention-days: 7
+          retention-days: 3
 
       - name: Build debug APK
         run: ./gradlew :app:assembleDebug
@@ -63,7 +63,7 @@ jobs:
           name: caducity-debug
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 3
 
   build-release:
     runs-on: ubuntu-latest

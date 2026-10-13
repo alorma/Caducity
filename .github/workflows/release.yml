@@ -76,6 +76,8 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
       - name: Upload AAB and mapping
+        # Una quota d'emmagatzematge plena no ha de bloquejar la publicació a Play (el mapping de R8 va dins l'AAB)
+        continue-on-error: true
         uses: actions/upload-artifact@v7
         with:
           name: caducity-release-aab-${{ steps.version.outputs.version }}
@@ -83,7 +85,7 @@ jobs:
             app/build/outputs/bundle/release/*.aab
             app/build/outputs/mapping/release/mapping.txt
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 3
 
       # Gradle Play Publisher: puja l'AAB i, de app/src/main/play/release-notes, les notes de cada idioma.
       # El mapping de R8 va dins l'AAB
