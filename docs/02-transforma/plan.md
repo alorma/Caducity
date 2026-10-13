@@ -1,6 +1,6 @@
 # Pla: Transforma (ingredients → elaboracions)
 
-Especificació: [`spec.md`](spec.md). Captures: `captures/Transforma{Seleccio,Caldo,Pollastre,Ingredient,Buit}`, `EntradaMenu`, `EntradaAccions`, `Main` (botó dividit en repòs).
+Especificació: [`spec.md`](spec.md) i [`spec-files.md`](spec-files.md). Captures: `captures/Transforma{Seleccio,Caldo,Pollastre,Ingredient,Buit}`, `EntradaMenu`, `EntradaAccions`, `Main` (botó dividit en repòs).
 **Redisseny de la pantalla en files (2026-10-13):** vegeu la fase 7 i [`spec-files.md`](spec-files.md).
 **Canvi de disseny (2026-10-13):** nou **accés lliure** (`TransformaBuit`, vegeu «Accés lliure» a l'especificació: sense ingredients, nom + categoria + data obligatoris) i captures actualitzades. Afecta les fases 2 i 3 ja validades (vegeu «Fase 2b» i «Fase 3b») i la 5.
 **Canvi de disseny (2026-10-13, 2n):** filtres del selector d'ingredients com a dos xips desplegables de selecció múltiple (`TransformaIngredient` actualitzada); afecta la fase 4 ja validada (vegeu «Fase 4b»). La resta del paquet (accés lliure, botó dividit, sense pulsació llarga) ja hi era; `Rebost.png` del zip no s'ha copiat (no és a la llista del paquet). Validació sempre al Pixel 8a, mai a l'emulador.
@@ -198,6 +198,22 @@ Validada amb tests de ViewModel, tests de captura clar/fosc i l'emulador (no el 
 
 Obert de la fase (deixar com a constants/`TODO`, no resoldre): plegat automàtic del xip de quantitat; `snap` a la fila; límit per fila (50 si cal); vora de les veïnes tocable i posició «3 de 6»; en el mode pager, si el gest bloqueja l'edició o només tanca el teclat.
 
+## Fase 8 — Onboarding, novetat i «No és un receptari»
+
+Especificació: [`spec-files.md`](spec-files.md), apartats «No és un receptari», «Onboarding: nou pas» i «Modal de novetat». Captures: `OBTransforma`, `NovetatTransforma`; `OB2Categories`, `OB3Avisos`, `OB4Privadesa` i `OB5Avis` només canvien el comptador. Les captures `TransformaCarr*` s'han actualitzat (nota del peu nova). **Independent de la UI de la fase 7**, i pot anar abans o en paral·lel. Només UI i textos; no es toca el model.
+
+Regla de producte: Transforma **no** és un receptari. Es diu explícitament a tres llocs (onboarding, modal i nota del peu). No s'utilitza mai a la UI, a la Play Store ni a les release notes «recepta», «cuina amb…» o «idees de plats»; es diu «apunta què has cuinat».
+
+Tasques proposades (a aprovar abans de començar):
+1. Nota del peu de la pantalla: «**No és un receptari:** només apunta què has gastat i què n'ha sortit. Els ingredients desapareixen del rebost en desar.» (negreta destacada), als tres idiomes.
+2. Onboarding: pas nou «Transforma» (3 de 5) entre `AlertsStep` i `PrivacyStep`, amb diagrama, targeta «No és un receptari» (icona `menu_book` ratllada) i mini botó dividit; renumerar a «Pas X de 5» i la barra de 5 segments als altres passos, i la navegació («Continua» d'Avisos, «Enrere» de Privadesa). Free, només informa. Actualitzar `CLAUDE.md` (passos de l'onboarding) i els tests de captura.
+3. Modal de novetat (`ModalBottomSheet`) sobre l'Inici, una sola vegada, només per a qui ja havia completat l'onboarding (flag persistent, p. ex. `transformIntroSeen`, marcat també en acabar l'onboarding nou). «Prova Transforma» obre l'accés lliure; «Ara no» i tocar fora la tanquen i la marquen com a vista. No es mostra durant l'onboarding, ni amb enllaç profund, widget o notificació, ni amb diàleg o selecció oberts. Va darrere del flag `transform_enabled`: **decisió pendent** (una novetat que apunta a una funció apagada no té sentit).
+4. Tracking (`feature/tracking/Actions.kt`) de «Prova Transforma» i «Ara no», sense dades d'usuari; tests del flag i de les regles de visualització.
+
+Obert: subtítol a l'entrada «Transforma» del menú «+ ⌄» («Apunta què has cuinat»); versions fosc/paletes de les dues pantalles noves (no dibuixades: tokens habituals); la modal i el pas depenen del flag `transform_enabled` o no.
+
+Release notes: aquesta fase sí que es veu, però només quan s'activi Transforma; cal decidir-ho llavors.
+
 ## Obert (no resoldre sense decidir; deixar com a constants/`TODO`)
 
 1. ~~Entrada des del «+»~~: resolt, botó dividit «+ ⌄» (sense pulsació llarga).
@@ -223,5 +239,6 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 5 — Entrades i flux final | Validada |
 | 6 — Qualitat | Validada (queda la prova v3 → v4 abans de publicar) |
 | 7 — Pantalla en files | Tasques 1-7 fetes, pendent d'aprovació (la 8 és opcional i no s'ha fet) |
+| 8 — Onboarding, novetat i «No és un receptari» | Pendent (tasques a aprovar) |
 
 Només es passa a «Validada» quan Bernat l'aprova (`.claude/rules/phased-work.md`).

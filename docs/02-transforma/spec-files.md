@@ -70,6 +70,7 @@ En seleccionar un altre resultat (o en tocar «Fet»): l'obert es replega (de l'
 
 ## Textos
 Es mantenen els de `16-transforma.md` tret de:
+- **Nota del peu (única)**: «**No és un receptari:** només apunta què has gastat i què n'ha sortit. Els ingredients desapareixen del rebost en desar.» (la part en negreta, destacada).
 - Nou: «Ingredients · N», «Resultat · M», «+ Afegeix», «Afegeix ingredient» (fila buida), «Nou resultat», «Desa · M productes» i «Congela'n · N».
 - Es treuen: «Toca un resultat per canviar-ne el nom…», «Data de l'ingredient que caduca primer (…)», «N a la nevera · M al congelador» i la targeta gran «Què has cuinat?» de l'estat buit.
 
@@ -94,3 +95,28 @@ Es mantenen els de `16-transforma.md` tret de:
 - **Rendiment**: només es compon i es mesura el formulari de la targeta centrada (les altres mostren només la versió plegada).
 
 Si en veiem la implementació complicada (interpolació de mides dins un `LazyRow`, conflicte amb el teclat), **no es fa**: el disseny base (expandir per toc + «Fet») ja és complet.
+
+
+## No és un receptari (regla de producte, ha de quedar molt clar)
+Transforma **no** és un apartat de receptes: no hi ha receptes, ni suggeriments de què cuinar, ni cerca, ni passos. Només registra què s'ha gastat i què n'ha sortit (amb la seva data). Es diu explícitament a **tres llocs**:
+1. **Onboarding** (pas 3 de 5, nou): títol «Has cuinat? Apunta-ho», diagrama ingredients → node → plat, i una targeta «**No és un receptari**» amb la icona `menu_book` ratllada en vermell. Captura `OBTransforma`.
+2. **Modal de novetat** per a qui actualitza (vegeu avall). Captura `NovetatTransforma`.
+3. **Nota del peu** de la pantalla Transforma (text a «Textos»).
+No utilitzis mai a la UI, a la Play Store ni a les release notes els mots «recepta», «cuina amb…» o «idees de plats» per descriure Transforma; fes servir «apunta què has cuinat».
+
+## Onboarding: nou pas «Transforma» (3 de 5)
+- Nou pas entre «Avisos» i «Privadesa»; els passos passen a **5** (`Pas X de 5` i la barra de progrés de 5 segments a tots): Benvinguda (sense comptador), Categories 1, Avisos 2, **Transforma 3**, Privadesa 4, Avís important 5. Cal reordenar la navegació («Continua» d'Avisos → Transforma; «Enrere» de Privadesa → Transforma).
+- Contingut: subtítol «Transforma treu del rebost els ingredients que has gastat i hi afegeix el que n'ha sortit, amb la seva data.»; diagrama; targeta «No és un receptari» («No hi ha receptes ni suggeriments de què cuinar. Transforma només apunta què has gastat i què n'ha sortit.»); mini botó dividit «+ ⌄» amb «Sempre és al botó + de baix, a la part ⌄.»; botons «Enrere» / «Continua →».
+- És **free** i es pot veure sense cap permís. Només informa: no obre la pantalla Transforma.
+- Fonts: `OBTransforma.dc.html`; la resta d'`OB*` només canvien el comptador.
+
+## Modal de novetat (usuaris que ja tenien l'app i actualitzen)
+Full inferior modal (`ModalBottomSheet`) sobre l'Inici, amb scrim. Capçalera: xip «NOVETAT», títol «Transforma», text «Has cuinat amb coses del rebost? Apunta-ho: els ingredients en surten i el plat que n'ha sortit hi entra, amb la seva data.», diagrama, targeta «No és un receptari», pista «La trobaràs sempre al botó +, a la part ⌄.», CTA primari «Prova Transforma» i secundari «Ara no». Captura `NovetatTransforma`.
+Regles de visualització (proposta; `TODO` clar si cal canviar-les):
+- Es mostra **una sola vegada**, a la primera obertura després d'actualitzar, i **només** si l'usuari ja havia completat l'onboarding (guarda un flag, p. ex. `transformIntroSeen` a DataStore).
+- Instal·lacions noves: veuen el pas de l'onboarding i el flag es marca com a vist en acabar-lo; no veuen la modal.
+- No es mostra durant l'onboarding, ni en arribar per un enllaç profund/widget/notificació (s'ajorna a la següent obertura normal), ni amb diàleg o selecció oberts.
+- «Prova Transforma» obre Transforma en accés lliure (`TransformaCarrBuit`); «Ara no» i tocar fora la tanquen. En els dos casos es marca com a vista. L'entrada del botó dividit «+ ⌄» continua disponible sempre.
+- Accessible: focus a la capçalera, el botó «Ara no» té la mateixa mida tàctil que el primari, anunci del títol; respecta el tema (clar/fosc).
+- No són dibuixades les versions fosc/paletes de les dues pantalles noves: usa els tokens habituals.
+- Obert: si es vol un subtítol a l'entrada del menú «Transforma» («Apunta què has cuinat»).
