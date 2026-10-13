@@ -152,12 +152,12 @@
   <string name="transform_category_empty">Category</string>
   <string name="transform_date_empty">Expiry</string>
   <string name="transform_free_hint">Without ingredients, you choose the category and the date.</string>
-  <string name="transform_result_name">Name</string>
   <string name="transform_result_name_hint">What are you cooking?</string>
   <string name="transform_servings">Servings</string>
   <string name="transform_date_hint">Date of the ingredient that expires first (%s).</string>
   <string name="transform_freeze">Freeze</string>
-  <string name="transform_freeze_summary">%1$d in the fridge · %2$d in the freezer</string>
+  <string name="transform_freeze_chip">Freeze · %d</string>
+  <string name="transform_freeze_in_freezer">Freeze · %1$d in the freezer</string>
   <string name="transform_footer">Ingredients leave the pantry when you save.</string>
   <string name="transform_result_unnamed">New result</string>
   <string name="transform_section_results_count">Result · %d</string>

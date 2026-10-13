@@ -141,7 +141,7 @@ class TransformViewModel(
 
   fun onAddResult() {
     val id = nextResultId++
-    _state.update { it.copy(results = it.results + ResultUi(id = id), expandedResultId = id) }
+    _state.update { it.copy(results = it.results + ResultUi(id = id), expandedResultId = id, focusResultId = id) }
   }
 
   fun onRemoveResult(id: Int) {
@@ -170,7 +170,7 @@ class TransformViewModel(
 
   /** «Fet»: folds the open result, so all of them are small cards. Validates nothing. */
   fun onDone() {
-    _state.update { it.copy(expandedResultId = NONE_EXPANDED) }
+    _state.update { it.copy(expandedResultId = NONE_EXPANDED, focusResultId = null) }
   }
 
   fun onNameChange(

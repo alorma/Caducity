@@ -48,6 +48,8 @@ data class TransformState(
   val results: List<ResultUi> = listOf(ResultUi(id = 0)),
   val categories: List<Category> = emptyList(),
   val expandedResultId: Int = 0,
+  /** The result whose name takes the focus when its form opens empty: the first one, or the one just added. */
+  val focusResultId: Int? = 0,
   val saving: Boolean = false,
   /** Ingredient rows already folded away by the closing cascade that follows a successful save. */
   val closedRows: Int = 0,
