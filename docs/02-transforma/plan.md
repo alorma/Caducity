@@ -101,6 +101,12 @@ Ruta `Transform` amb `itemIds` buit = accés lliure.
 
 **Sortida:** la ruta de Depuració pot obrir Transforma buit i desar sense ingredients.
 
+- [x] Tasques 3, 4, 5 i part de la 2 (`freeEntry` a l'estat, `canSave`, data nul·la sense ingredients, xips buits, text d'ajuda, snackbar «M productes afegits», tests del ViewModel): `92b8927`
+- [x] Tasques 1 i 2 (estat buit «Què has cuinat?», «Ingredients · opcional», nota al peu) i entrada de Depuració «Open Transforma (free entry)»: `b36f2be`
+- Pendent: previews clar/fosc de l'estat buit ja escrites (`TransformFreeEntry*Preview`); les captures van a la fase 6.
+
+Validada al Pixel 8a: obre buit, Desa desactivat, activat en triar categoria i data, «1 producte afegit · Desfés».
+
 ## Fase 4 — Selector d'ingredients
 
 1. `IngredientPickerScreen` a pantalla completa: cerca, xips d'estat (Tots · Aviat · Fresc · Congelat) i de categoria, llista amb casella, meta i pastilla d'estat; inclou congelats; els ja afegits surten marcats; botó «Afegeix N ingredients».
