@@ -150,7 +150,7 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 2 — Cas d'ús transaccional | Validada |
 | 3 — Pantalla Transforma | Validada |
 | 4 — Selector d'ingredients | Validada |
-| 2b — Accés lliure al cas d'ús | Pendent |
+| 2b — Accés lliure al cas d'ús | Validada |
 | 3b — Pantalla en accés lliure | Pendent |
 | 5 — Entrades i flux final | Pendent (després de 2b i 3b) |
 | 6 — Qualitat | Pendent |
