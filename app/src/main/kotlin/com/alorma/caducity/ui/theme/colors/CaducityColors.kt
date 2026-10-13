@@ -11,7 +11,32 @@ data class StatusColors(
   val onContainer: Color,
 )
 
-/** Colors que no caben a `ColorScheme`. Els d'estat són semàntics i no depenen del color dinàmic. */
+/** Colors d'estat: semàntics, iguals a totes les paletes (i al color dinàmic). */
+@Immutable
+data class StateColors(
+  val expired: StatusColors,
+  val soon: StatusColors,
+  val fresh: StatusColors,
+  val frozen: StatusColors,
+)
+
+val LightStateColors =
+  StateColors(
+    expired = StatusColors(ExpiredLight, ExpiredContainerLight, OnExpiredContainerLight),
+    soon = StatusColors(SoonLight, SoonContainerLight, OnSoonContainerLight),
+    fresh = StatusColors(FreshLight, FreshContainerLight, OnFreshContainerLight),
+    frozen = StatusColors(FrozenLight, FrozenContainerLight, OnFrozenContainerLight),
+  )
+
+val DarkStateColors =
+  StateColors(
+    expired = StatusColors(ExpiredDark, ExpiredContainerDark, OnExpiredContainerDark),
+    soon = StatusColors(SoonDark, SoonContainerDark, OnSoonContainerDark),
+    fresh = StatusColors(FreshDark, FreshContainerDark, OnFreshContainerDark),
+    frozen = StatusColors(FrozenDark, FrozenContainerDark, OnFrozenContainerDark),
+  )
+
+/** Colors que no caben a `ColorScheme`: `surfaceShape` de la paleta activa + els estats. */
 @Immutable
 data class CaducityColors(
   val surfaceShape: Color,
@@ -19,22 +44,7 @@ data class CaducityColors(
   val soon: StatusColors,
   val fresh: StatusColors,
   val frozen: StatusColors,
-)
-
-val LightCaducityColors =
-  CaducityColors(
-    surfaceShape = SurfaceShapeLight,
-    expired = StatusColors(ExpiredLight, ExpiredContainerLight, OnExpiredContainerLight),
-    soon = StatusColors(SoonLight, SoonContainerLight, OnSoonContainerLight),
-    fresh = StatusColors(FreshLight, FreshContainerLight, OnFreshContainerLight),
-    frozen = StatusColors(FrozenLight, FrozenContainerLight, OnFrozenContainerLight),
-  )
-
-val DarkCaducityColors =
-  CaducityColors(
-    surfaceShape = SurfaceShapeDark,
-    expired = StatusColors(ExpiredDark, ExpiredContainerDark, OnExpiredContainerDark),
-    soon = StatusColors(SoonDark, SoonContainerDark, OnSoonContainerDark),
-    fresh = StatusColors(FreshDark, FreshContainerDark, OnFreshContainerDark),
-    frozen = StatusColors(FrozenDark, FrozenContainerDark, OnFrozenContainerDark),
-  )
+) {
+  constructor(surfaceShape: Color, states: StateColors) :
+    this(surfaceShape, states.expired, states.soon, states.fresh, states.frozen)
+}
