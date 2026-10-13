@@ -183,13 +183,13 @@
     <item quantity="many">%d congelados</item>
     <item quantity="other">%d congelados</item>
   </plurals>
-  <string name="transform_title">Transforma</string>
+  <string name="transform_title">Transformar</string>
   <string name="transform_bar_consume">Consumido</string>
   <string name="transform_bar_freeze">Congelar</string>
   <string name="transform_bar_discard">Tirar</string>
   <string name="transform_bar_reschedule">Fecha</string>
-  <string name="transform_bar_transform">Transforma</string>
-  <string name="transform_bar_transform_description">Transforma %1$d unidades</string>
+  <string name="transform_bar_transform">Transformar</string>
+  <string name="transform_bar_transform_description">Transformar %1$d unidades</string>
   <string name="transform_section_ingredients">Ingredientes</string>
   <string name="transform_add_ingredient">Añadir ingrediente</string>
   <string name="transform_add">Añadir</string>
@@ -276,7 +276,7 @@
   <string name="item_actions_pick_date">Elige una fecha</string>
   <string name="item_actions_edit">Edita</string>
   <string name="item_actions_move">Mover a otra categoría</string>
-  <string name="item_actions_transform">Transforma este producto</string>
+  <string name="item_actions_transform">Transformar este producto</string>
   <string name="item_actions_move_title">Mover a…</string>
   <string name="item_actions_delete">Borra</string>
   <string name="item_actions_delete_title">¿Borrar %1$s?</string>
@@ -532,13 +532,13 @@
   <string name="ob_privacy_analytics_sub">Qué pantallas usas, nunca qué guardas. Nos ayuda a mejorar la app.</string>
   <string name="ob_privacy_default_off">Desactivado por defecto. Puedes cambiarlo en Ajustes › Privacidad.</string>
   <string name="ob_transform_title">¿Has cocinado? Apúntalo</string>
-  <string name="ob_transform_body">Transforma saca de la despensa los ingredientes que has gastado y añade lo que ha salido, con su fecha.</string>
+  <string name="ob_transform_body">Transformar saca de la despensa los ingredientes que has gastado y añade lo que ha salido, con su fecha.</string>
   <string name="ob_transform_sample_chicken">Pollo entero</string>
   <string name="ob_transform_sample_vegetables">Verduras</string>
   <string name="ob_transform_sample_result">Caldo</string>
   <string name="ob_transform_sample_result_meta">4 raciones · 2 congelados</string>
   <string name="ob_transform_not_recipe_title">No es un recetario</string>
-  <string name="ob_transform_not_recipe_body">No hay recetas ni sugerencias de qué cocinar. Transforma solo apunta lo que has gastado y lo que ha salido.</string>
+  <string name="ob_transform_not_recipe_body">No hay recetas ni sugerencias de qué cocinar. Transformar solo apunta lo que has gastado y lo que ha salido.</string>
   <string name="ob_transform_hint">Siempre está en el botón + de abajo, en la parte {chevron}.</string>
   <string name="ob_continue">Continuar</string>
   <string name="ob_disclaimer_title">Antes de empezar</string>

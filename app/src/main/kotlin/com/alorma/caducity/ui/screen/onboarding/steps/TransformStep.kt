@@ -1,5 +1,8 @@
 package com.alorma.caducity.ui.screen.onboarding.steps
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -21,11 +24,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -48,11 +54,13 @@ import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.motion.Reveal
+import com.alorma.caducity.ui.components.motion.rememberReducedMotion
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingBackAndPrimary
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingStepLayout
 import com.alorma.caducity.ui.screen.transform.RowLinksNode
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import kotlinx.coroutines.delay
 
 /** Informative step about Transforma: shown only with `transform_enabled`, free, stores nothing. */
 @Composable
@@ -79,16 +87,33 @@ fun TransformStep(
   ) {
     Reveal(delayMillis = 240, modifier = Modifier.fillMaxWidth()) { TransformDiagram() }
     Spacer(Modifier.height(20.dp))
-    Reveal(delayMillis = 360, modifier = Modifier.fillMaxWidth()) { NotARecipeBookCard() }
+    Reveal(delayMillis = 2000, modifier = Modifier.fillMaxWidth()) { NotARecipeBookCard() }
     Spacer(Modifier.height(20.dp))
-    Reveal(delayMillis = 480, modifier = Modifier.fillMaxWidth()) { SplitButtonHint() }
+    Reveal(delayMillis = 2200, modifier = Modifier.fillMaxWidth()) { SplitButtonHint() }
   }
 }
 
-/** Two sample ingredients → node → the result: the same shape as the Transforma screen. */
+/**
+ * Two sample ingredients → node → the result: the same shape as the Transforma screen, and it builds itself in that
+ * order: the ingredients appear, the lines draw into the node, and the result drops out of it. [startDelayMillis] is
+ * the wait before the first stage. With the system animations off it shows complete.
+ */
 @Composable
-internal fun TransformDiagram(modifier: Modifier = Modifier) {
+internal fun TransformDiagram(
+  modifier: Modifier = Modifier,
+  startDelayMillis: Int = DiagramStartDelay,
+) {
   val line = CaducityTheme.colorScheme.outline
+  val reduced = rememberReducedMotion()
+  val linesProgress = remember { Animatable(if (reduced) 1f else 0f) }
+  LaunchedEffect(reduced) {
+    if (reduced) {
+      linesProgress.snapTo(1f)
+    } else {
+      delay((startDelayMillis + LinesDelay).toLong())
+      linesProgress.animateTo(1f, tween(LinesDuration, easing = FastOutSlowInEasing))
+    }
+  }
   Surface(
     shape = RoundedCornerShape(28.dp),
     color = CaducityTheme.colorScheme.surfaceContainer,
@@ -99,56 +124,74 @@ internal fun TransformDiagram(modifier: Modifier = Modifier) {
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-        IngredientPill(
-          Symbols.Outlined.SetMeal,
-          stringResource(R.string.ob_transform_sample_chicken),
-          Modifier.weight(1f),
-        )
-        IngredientPill(
-          Symbols.Outlined.Eco,
-          stringResource(R.string.ob_transform_sample_vegetables),
-          Modifier.weight(1f),
-        )
+        Reveal(delayMillis = startDelayMillis, modifier = Modifier.weight(1f)) {
+          IngredientPill(Symbols.Outlined.SetMeal, stringResource(R.string.ob_transform_sample_chicken))
+        }
+        Reveal(delayMillis = startDelayMillis + IngredientStagger, modifier = Modifier.weight(1f)) {
+          IngredientPill(Symbols.Outlined.Eco, stringResource(R.string.ob_transform_sample_vegetables))
+        }
       }
       Canvas(Modifier.fillMaxWidth().height(36.dp)) {
         val stroke = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round)
         val end = Offset(size.width / 2f, size.height + 4.dp.toPx())
+        val measure = PathMeasure()
         listOf(size.width * 0.27f, size.width * 0.73f).forEach { x ->
           val path =
             Path().apply {
               moveTo(x, 0f)
               cubicTo(x, size.height * 0.7f, end.x, size.height * 0.4f, end.x, end.y)
             }
-          drawPath(path, line, style = stroke)
+          measure.setPath(path, forceClosed = false)
+          val drawn = Path()
+          measure.getSegment(0f, measure.length * linesProgress.value, drawn, startWithMoveTo = true)
+          drawPath(drawn, line, style = stroke)
         }
       }
-      RowLinksNode(links = null)
-      Box(Modifier.width(2.dp).height(20.dp).background(CaducityTheme.colorScheme.primary))
-      Surface(
-        shape = RoundedCornerShape(20.dp),
-        color = CaducityTheme.colorScheme.primaryContainer,
-        border = BorderStroke(2.dp, CaducityTheme.colorScheme.primary),
-        modifier = Modifier.fillMaxWidth(0.8f),
-      ) {
-        Row(
-          modifier = Modifier.padding(12.dp),
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-          CategoryShapeIcon(shape = CategoryShape.CLOVER8, icon = Symbols.Outlined.SoupKitchen, size = 44.dp)
-          Column {
-            Text(
-              text = stringResource(R.string.ob_transform_sample_result),
-              style = CaducityTheme.typography.titleMedium,
-              color = CaducityTheme.colorScheme.onPrimaryContainer,
-            )
-            Text(
-              text = stringResource(R.string.ob_transform_sample_result_meta),
-              style = CaducityTheme.typography.bodyMedium,
-              color = CaducityTheme.colorScheme.onPrimaryContainer,
-            )
-          }
+      Reveal(delayMillis = startDelayMillis + NodeDelay, offsetY = 0.dp, bouncy = true) {
+        RowLinksNode(links = null)
+      }
+      Reveal(delayMillis = startDelayMillis + ResultDelay, offsetY = (-16).dp, modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+          Box(Modifier.width(2.dp).height(20.dp).background(CaducityTheme.colorScheme.primary))
+          SampleResultCard()
         }
+      }
+    }
+  }
+}
+
+private const val DiagramStartDelay = 400
+private const val IngredientStagger = 150
+private const val LinesDelay = 600
+private const val LinesDuration = 600
+private const val NodeDelay = 1000
+private const val ResultDelay = 1400
+
+@Composable
+private fun SampleResultCard() {
+  Surface(
+    shape = RoundedCornerShape(20.dp),
+    color = CaducityTheme.colorScheme.primaryContainer,
+    border = BorderStroke(2.dp, CaducityTheme.colorScheme.primary),
+    modifier = Modifier.fillMaxWidth(0.8f),
+  ) {
+    Row(
+      modifier = Modifier.padding(12.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+      CategoryShapeIcon(shape = CategoryShape.CLOVER8, icon = Symbols.Outlined.SoupKitchen, size = 44.dp)
+      Column {
+        Text(
+          text = stringResource(R.string.ob_transform_sample_result),
+          style = CaducityTheme.typography.titleMedium,
+          color = CaducityTheme.colorScheme.onPrimaryContainer,
+        )
+        Text(
+          text = stringResource(R.string.ob_transform_sample_result_meta),
+          style = CaducityTheme.typography.bodyMedium,
+          color = CaducityTheme.colorScheme.onPrimaryContainer,
+        )
       }
     }
   }
@@ -160,7 +203,7 @@ private fun IngredientPill(
   name: String,
   modifier: Modifier = Modifier,
 ) {
-  Surface(shape = CircleShape, color = CaducityTheme.colorScheme.background, modifier = modifier) {
+  Surface(shape = CircleShape, color = CaducityTheme.colorScheme.background, modifier = modifier.fillMaxWidth()) {
     Row(
       modifier = Modifier.padding(8.dp),
       verticalAlignment = Alignment.CenterVertically,
