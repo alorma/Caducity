@@ -313,6 +313,7 @@ class TransformViewModelTest {
   fun `results can be added and removed while one is left`() =
     runTest {
       val vm = ready(add("Chicken", days = 3).itemIds)
+      vm.onNameChange(0, "Broth")
       vm.onAddResult()
       expectThat(vm.state.value.results).hasSize(2)
       expectThat(vm.state.value.expandedResultId).isEqualTo(1)
@@ -323,9 +324,32 @@ class TransformViewModelTest {
     }
 
   @Test
+  fun `a result cannot be added while one is blank`() =
+    runTest {
+      val vm = ready(add("Chicken", days = 3).itemIds)
+      expectThat(vm.state.value.canAddResult).isFalse()
+      vm.onAddResult()
+      expectThat(vm.state.value.results).hasSize(1)
+
+      vm.onNameChange(0, "Broth")
+      expectThat(vm.state.value.canAddResult).isTrue()
+      vm.onAddResult()
+      expectThat(vm.state.value.results).hasSize(2)
+      expectThat(vm.state.value.canAddResult).isFalse()
+    }
+
+  @Test
+  fun `nothing takes the focus when the screen opens`() =
+    runTest {
+      val vm = ready(add("Chicken", days = 3).itemIds)
+      expectThat(vm.state.value.focusResultId).isNull()
+    }
+
+  @Test
   fun `done folds every result and selecting one expands only that one`() =
     runTest {
       val vm = ready(add("Chicken", days = 3).itemIds)
+      vm.onNameChange(0, "Broth")
       vm.onAddResult()
       expectThat(vm.state.value.expandedResultId).isEqualTo(1)
       expectThat(vm.state.value.focusResultId).isEqualTo(1)

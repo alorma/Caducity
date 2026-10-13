@@ -48,8 +48,8 @@ data class TransformState(
   val results: List<ResultUi> = listOf(ResultUi(id = 0)),
   val categories: List<Category> = emptyList(),
   val expandedResultId: Int = 0,
-  /** The result whose name takes the focus when its form opens empty: the first one, or the one just added. */
-  val focusResultId: Int? = 0,
+  /** The result whose name takes the focus when its form opens empty: only the one just added, never on entering. */
+  val focusResultId: Int? = null,
   val saving: Boolean = false,
   /** Ingredient rows already folded away by the closing cascade that follows a successful save. */
   val closedRows: Int = 0,
@@ -96,6 +96,10 @@ data class TransformState(
   /** What a result needs to be saved: a name, a category and a date (unless it is entirely frozen). */
   fun isValid(result: ResultUi): Boolean =
     result.name.isNotBlank() && categoryOf(result) != null && hasRequiredDate(result)
+
+  /** A new result is not allowed while one is still blank. */
+  val canAddResult: Boolean
+    get() = results.none { it.name.isBlank() }
 
   val canSave: Boolean
     get() = !saving && (ingredients.isNotEmpty() || freeEntry) && results.isNotEmpty() && results.all(::isValid)

@@ -108,7 +108,7 @@ fun ResultsSection(
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(SectionSpacing)) {
     RowSectionHeader(
       title = stringResource(R.string.transform_section_results_count, state.results.size),
-      onAdd = actions.onAdd,
+      onAdd = if (state.canAddResult) actions.onAdd else null,
       center = { RowLinksNode(links) },
     )
     SideEffect {
