@@ -1,6 +1,3 @@
-Version 1.0.0:
-• A completely new look, with light and dark themes
-• New calendar: see what expires each day of the month
-• Add products faster, typing the date with the number keyboard
-• Set how many days ahead "expiring soon" starts for each category
-• One daily reminder, at the time you choose
+Version 1.0.1:
+• Until now you could only enjoy vanilla ice cream. Now you can also treat yourself to Snow Cone, Snow Cone v2, Tiramisu and Upside Down Cake
+• In plain words: Caducity now works on Android 12 and newer

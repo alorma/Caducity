@@ -1,6 +1,3 @@
-Versió 1.0.0:
-• Un aspecte completament nou, amb tema clar i fosc
-• Calendari nou: mira què caduca cada dia del mes
-• Afegeix productes més de pressa, escrivint la data amb el teclat numèric
-• Tria amb quants dies d'antelació comença «aviat» a cada categoria
-• Un únic avís diari, a l'hora que triïs
+Versió 1.0.1:
+• Fins ara només podies gaudir de gelat de vainilla. Ara també pots delectar-te amb Snow Cone, Snow Cone v2, Tiramisú i Upside Down Cake
+• En clar: Caducity ara funciona des d'Android 12
