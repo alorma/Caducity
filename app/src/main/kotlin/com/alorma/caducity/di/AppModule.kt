@@ -158,6 +158,7 @@ val appModule =
         args = params.get(),
         todayProvider = get(),
         getActiveItem = get(),
+        observeItems = get(),
         getNameSuggestions = get(),
         transformItems = get(),
         observeCategories = get(),

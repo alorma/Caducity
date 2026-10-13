@@ -50,6 +50,9 @@ class RowLinks {
   internal var ingredientsRow by mutableStateOf<LayoutCoordinates?>(null)
   internal var ingredientsState by mutableStateOf<LazyListState?>(null)
 
+  /** The colour of the line of each ingredient card, in card order: the one of its status. */
+  internal var ingredientColors by mutableStateOf<List<Color>>(emptyList())
+
   /** The dashed «Afegeix ingredient» row of the free entry, which stands in for the ingredients. */
   internal var entry by mutableStateOf<LayoutCoordinates?>(null)
   internal var node by mutableStateOf<LayoutCoordinates?>(null)
@@ -124,8 +127,9 @@ private fun DrawScope.drawRowLinks(
   val ingredientsState = links.ingredientsState
   val entry = links.entry?.takeIf { it.isAttached }
   if (ingredients != null && ingredientsState != null) {
-    visibleCentres(ingredients, ingredientsState, root).forEach { (from, fade) ->
-      drawCurve(from, nodeTop, sand.copy(alpha = fade), thin)
+    visibleCentres(ingredients, ingredientsState, root).forEach { end ->
+      val colour = links.ingredientColors.getOrNull(end.index) ?: sand
+      drawCurve(end.position, nodeTop, colour.copy(alpha = end.fade), thin)
     }
   } else if (entry != null) {
     val from = root.localPositionOf(entry, Offset(entry.size.width / 2f, entry.size.height.toFloat()))
@@ -153,8 +157,8 @@ private fun DrawScope.drawRowLinks(
   }
   val resultsState = links.resultsState
   if (foldedAlpha > 0f && resultsState != null) {
-    visibleCentres(results, resultsState, root, atBottom = false).forEach { (to, fade) ->
-      drawCurve(nodeBottom, to, sand.copy(alpha = foldedAlpha * fade), thin)
+    visibleCentres(results, resultsState, root, atBottom = false).forEach { end ->
+      drawCurve(nodeBottom, end.position, sand.copy(alpha = foldedAlpha * end.fade), thin)
     }
   }
 }
@@ -169,7 +173,7 @@ private fun visibleCentres(
   state: LazyListState,
   root: LayoutCoordinates,
   atBottom: Boolean = true,
-): List<Pair<Offset, Float>> {
+): List<LineEnd> {
   val info = state.layoutInfo
   val width = row.size.width
   val half = width / 2f
@@ -179,14 +183,25 @@ private fun visibleCentres(
       // A card that is only partly in view still gets its line, to the middle of the part that shows.
       val start = (item.offset + info.beforeContentPadding).toFloat().coerceAtLeast(0f)
       val end = (item.offset + item.size + info.beforeContentPadding).toFloat().coerceAtMost(width.toFloat())
-      if (end > start) (start + end) / 2f else null
-    }.sortedBy { x -> kotlin.math.abs(x - half) }
+      if (end > start) item.index to (start + end) / 2f else null
+    }.sortedBy { (_, x) -> kotlin.math.abs(x - half) }
     .take(MaxLinesPerRow)
-    .map { x ->
+    .map { (index, x) ->
       val away = kotlin.math.abs(x - half) / half
-      root.localPositionOf(row, Offset(x, y)) to ((1f - away) * FadeGain).coerceIn(0f, 1f)
+      LineEnd(
+        position = root.localPositionOf(row, Offset(x, y)),
+        fade = ((1f - away) * FadeGain).coerceIn(0f, 1f),
+        index = index,
+      )
     }
 }
+
+/** Where a line meets a card: the point, how visible it is and the index of the card. */
+private class LineEnd(
+  val position: Offset,
+  val fade: Float,
+  val index: Int,
+)
 
 /** A line that leaves [from] straight down and joins [to] straight down too, like a stream. */
 private fun DrawScope.drawCurve(

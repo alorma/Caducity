@@ -21,6 +21,7 @@ import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
+import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.TransformItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
@@ -31,8 +32,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -75,7 +76,7 @@ class TransformViewModelTest {
     object : TodayProvider {
       override fun today(): LocalDate = today
 
-      override fun observe(): Flow<LocalDate> = emptyFlow()
+      override fun observe(): Flow<LocalDate> = flowOf(today)
     }
 
   private lateinit var db: AppDatabase
@@ -145,6 +146,12 @@ class TransformViewModelTest {
       args = TransformArgs(itemIds),
       todayProvider = todayProvider,
       getActiveItem = GetActiveItemUseCase(pantry),
+      observeItems =
+        ObserveItemsUseCase(
+          pantry,
+          AppExpirationThresholdsImpl(SoonThresholdPreferences(MapSettings())),
+          todayProvider,
+        ),
       getNameSuggestions = GetNameSuggestionsUseCase(pantry),
       transformItems = TransformItemsUseCase(pantry, clock),
       observeCategories = ObserveCategoriesUseCase(pantry),
