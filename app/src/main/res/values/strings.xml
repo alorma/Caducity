@@ -172,6 +172,12 @@
     <item quantity="other">%d frozen</item>
   </plurals>
   <string name="transform_title">Transform</string>
+  <string name="transform_bar_consume">Consumed</string>
+  <string name="transform_bar_freeze">Freeze</string>
+  <string name="transform_bar_discard">Throw out</string>
+  <string name="transform_bar_reschedule">Date</string>
+  <string name="transform_bar_transform">Transform</string>
+  <string name="transform_bar_transform_description">Transform %1$d units</string>
   <string name="transform_save">Save</string>
   <string name="transform_section_ingredients">Ingredients</string>
   <string name="transform_section_ingredients_optional">Ingredients · optional</string>

@@ -54,6 +54,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.symbols.AcUnit
 import com.alorma.caducity.base.ui.icons.symbols.CalendarMonth
 import com.alorma.caducity.base.ui.icons.symbols.Check
@@ -64,6 +66,7 @@ import com.alorma.caducity.base.ui.icons.symbols.EventRepeat
 import com.alorma.caducity.base.ui.icons.symbols.Notifications
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.WaterDrop
+import com.alorma.caducity.config.remoteconfig.rememberRemoteConfig
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.feature.tracking.StatusListScreen as StatusListScreenEvent
@@ -84,6 +87,7 @@ import com.alorma.caducity.ui.components.product.shortDateText
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.threshold.thresholdLabel
+import com.alorma.caducity.ui.screen.transform.TransformFeature
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
@@ -110,6 +114,7 @@ fun StatusListScreen(
   onBack: () -> Unit,
   onOpenItemActions: (itemId: String) -> Unit,
   onOpenAdd: () -> Unit,
+  onOpenTransform: (itemIds: List<String>) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: StatusListViewModel = koinViewModel { parametersOf(status) },
 ) {
@@ -127,11 +132,13 @@ fun StatusListScreen(
       when (effect) {
         is StatusListNavigationSideEffect.OpenItemActions -> onOpenItemActions(effect.itemId)
         StatusListNavigationSideEffect.OpenAdd -> onOpenAdd()
+        is StatusListNavigationSideEffect.OpenTransform -> onOpenTransform(effect.itemIds)
       }
     }
   }
   SideEffectHandler(viewModel, dialogState, bottomSheetState, scope)
 
+  val transformEnabled = rememberRemoteConfig<TransformFeature>().isEnabled()
   val ready = state as? StatusListState.Ready
   headerState.enabled = ready?.selecting != true
   AppScaffold(
@@ -159,6 +166,8 @@ fun StatusListScreen(
           onFreeze = viewModel::onBulkFreeze,
           onDiscard = viewModel::onBulkDiscardClick,
           onReschedule = viewModel::onBulkRescheduleClick,
+          transformEnabled = transformEnabled,
+          onTransform = { viewModel.navigate(StatusListNavigation.TransformSelection) },
         )
       }
     },
@@ -602,6 +611,8 @@ private fun SelectionBar(
   onFreeze: () -> Unit,
   onDiscard: () -> Unit,
   onReschedule: () -> Unit,
+  transformEnabled: Boolean,
+  onTransform: () -> Unit,
 ) {
   val units = ready.selectedUnitCount
   val enabled = units > 0
@@ -622,6 +633,10 @@ private fun SelectionBar(
         style = CaducityTheme.typography.labelLarge,
         color = CaducityTheme.colorScheme.onSurfaceVariant,
       )
+      if (transformEnabled) {
+        TransformSelectionActions(ready, onConsume, onFreeze, onDiscard, onReschedule, onTransform)
+        return@Column
+      }
       Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         when (ready.status) {
           ExpiryStatus.EXPIRED -> {
@@ -714,4 +729,72 @@ private fun StatusEmpty(
       }
     }
   }
+}
+
+/** Connected group shown only with Transforma on: Consumit · Congela · Transforma (and the variants of Caducats and Congelats). */
+@Composable
+private fun TransformSelectionActions(
+  ready: StatusListState.Ready,
+  onConsume: () -> Unit,
+  onFreeze: () -> Unit,
+  onDiscard: () -> Unit,
+  onReschedule: () -> Unit,
+  onTransform: () -> Unit,
+) {
+  val units = ready.selectedUnitCount
+  val colors = CaducityTheme.colors
+  val neutral = CaducityTheme.colorScheme.surfaceContainerHighest
+  val onNeutral = CaducityTheme.colorScheme.onSurface
+  val consume =
+    SelectionAction(
+      Symbols.Outlined.Check,
+      stringResource(R.string.transform_bar_consume),
+      stringResource(R.string.status_bulk_consume, units),
+      neutral,
+      onNeutral,
+      onConsume,
+    )
+  val freeze =
+    SelectionAction(
+      Symbols.Outlined.AcUnit,
+      stringResource(R.string.transform_bar_freeze),
+      stringResource(R.string.status_bulk_freeze, units),
+      colors.frozen.container,
+      colors.frozen.onContainer,
+      onFreeze,
+    )
+  val discard =
+    SelectionAction(
+      Symbols.Outlined.Delete,
+      stringResource(R.string.transform_bar_discard),
+      stringResource(R.string.status_bulk_discard, units),
+      colors.expired.container,
+      colors.expired.onContainer,
+      onDiscard,
+    )
+  val reschedule =
+    SelectionAction(
+      Symbols.Outlined.EventRepeat,
+      stringResource(R.string.transform_bar_reschedule),
+      stringResource(R.string.status_bulk_reschedule, units),
+      neutral,
+      onNeutral,
+      onReschedule,
+    )
+  val transform =
+    SelectionAction(
+      AppIcons.Cooking,
+      stringResource(R.string.transform_bar_transform),
+      stringResource(R.string.transform_bar_transform_description, units),
+      CaducityTheme.colorScheme.primary,
+      CaducityTheme.colorScheme.onPrimary,
+      onTransform,
+    )
+  val actions =
+    when (ready.status) {
+      ExpiryStatus.EXPIRED -> listOf(discard, reschedule, transform)
+      ExpiryStatus.SOON, ExpiryStatus.FRESH -> listOf(consume, freeze, transform)
+      ExpiryStatus.FROZEN -> listOf(consume, transform)
+    }
+  SelectionActionGroup(actions = actions, enabled = units > 0)
 }

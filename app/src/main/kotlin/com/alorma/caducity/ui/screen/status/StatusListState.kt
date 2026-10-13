@@ -69,6 +69,9 @@ sealed interface StatusListNavigation {
   ) : StatusListNavigation
 
   data object AddFirst : StatusListNavigation
+
+  /** Turns the units of the selected rows into new products. */
+  data object TransformSelection : StatusListNavigation
 }
 
 sealed interface StatusListNavigationSideEffect {
@@ -77,6 +80,10 @@ sealed interface StatusListNavigationSideEffect {
   ) : StatusListNavigationSideEffect
 
   data object OpenAdd : StatusListNavigationSideEffect
+
+  data class OpenTransform(
+    val itemIds: List<String>,
+  ) : StatusListNavigationSideEffect
 }
 
 sealed interface StatusListSideEffect {

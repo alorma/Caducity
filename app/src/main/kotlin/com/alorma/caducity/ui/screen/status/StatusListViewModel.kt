@@ -16,6 +16,7 @@ import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemActionAction
 import com.alorma.caducity.feature.tracking.NavigateToAddFromStatusListAction
 import com.alorma.caducity.feature.tracking.NavigateToItemActionsFromStatusListAction
+import com.alorma.caducity.feature.tracking.NavigateToTransformAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
@@ -75,6 +76,12 @@ class StatusListViewModel(
         eventTracker.trackAction(NavigateToAddFromStatusListAction(status.name.lowercase()))
         emitNavigationSideEffect(StatusListNavigationSideEffect.OpenAdd)
       }
+      StatusListNavigation.TransformSelection ->
+        withSelection { rows ->
+          eventTracker.trackAction(NavigateToTransformAction(origin = "status_list", source = "selection"))
+          emitNavigationSideEffect(StatusListNavigationSideEffect.OpenTransform(rows.flatMap { it.itemIds }))
+          onToggleSelecting()
+        }
     }
   }
 
