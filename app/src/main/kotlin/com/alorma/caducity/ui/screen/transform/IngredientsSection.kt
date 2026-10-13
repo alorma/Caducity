@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -39,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CollectionInfo
@@ -92,6 +94,8 @@ fun IngredientsSection(
   optional: Boolean = false,
   /** Cards below this index are folded away: the cascade that closes the screen after saving. */
   closedRows: Int = 0,
+  /** Where the cards are, for the lines that join them to the result row. */
+  links: RowLinks? = null,
 ) {
   val empty = ingredients.isEmpty() && optional
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -105,11 +109,12 @@ fun IngredientsSection(
       onAdd = if (empty) null else onAdd,
     )
     if (empty) {
-      AddIngredientRow(onClick = onAdd)
+      AddIngredientRow(onClick = onAdd, modifier = Modifier.onGloballyPositioned { links?.entry = it })
       return@Column
     }
     val visible = ingredients.drop(closedRows)
     val listState = rememberLazyListState()
+    SideEffect { links?.ingredientsState = listState }
     // TODO(transforma-open-1): the stepper only folds when the user taps outside or scrolls; maybe also after a few seconds.
     var editingKey by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(listState) {
@@ -121,6 +126,7 @@ fun IngredientsSection(
       horizontalArrangement = Arrangement.spacedBy(RowCardSpacing),
       modifier =
         Modifier
+          .onGloballyPositioned { links?.ingredientsRow = it }
           .pointerInput(Unit) { detectTapGestures { editingKey = null } }
           .semantics { collectionInfo = CollectionInfo(rowCount = 1, columnCount = visible.size) },
     ) {
@@ -148,9 +154,22 @@ internal fun RowSectionHeader(
   title: String,
   onAdd: (() -> Unit)?,
   modifier: Modifier = Modifier,
+  /** Drawn in the middle of the screen, between the label and the button. */
+  center: (@Composable () -> Unit)? = null,
+) {
+  Box(modifier = modifier.fillMaxWidth().padding(horizontal = ScreenGutter), contentAlignment = Alignment.Center) {
+    HeaderRow(title = title, onAdd = onAdd)
+    center?.invoke()
+  }
+}
+
+@Composable
+private fun HeaderRow(
+  title: String,
+  onAdd: (() -> Unit)?,
 ) {
   Row(
-    modifier = modifier.fillMaxWidth().padding(horizontal = ScreenGutter).padding(start = 4.dp),
+    modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -158,7 +177,7 @@ internal fun RowSectionHeader(
       text = title.uppercase(),
       style = CaducityTheme.typography.labelLarge.copy(fontSize = 12.sp, letterSpacing = 1.2.sp),
       color = CaducityTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier.weight(1f),
+      modifier = Modifier.weight(1f).padding(start = 4.dp),
     )
     if (onAdd != null) {
       Surface(
@@ -183,7 +202,10 @@ internal fun RowSectionHeader(
 
 /** Free entry without ingredients: one dashed row instead of the big card. */
 @Composable
-private fun AddIngredientRow(onClick: () -> Unit) {
+private fun AddIngredientRow(
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   val dash = CaducityTheme.colorScheme.outline
   Surface(
     onClick = onClick,
@@ -191,7 +213,7 @@ private fun AddIngredientRow(onClick: () -> Unit) {
     color = Color.Transparent,
     contentColor = CaducityTheme.colorScheme.onSurfaceVariant,
     modifier =
-      Modifier
+      modifier
         .padding(horizontal = ScreenGutter)
         .fillMaxWidth()
         .height(64.dp)

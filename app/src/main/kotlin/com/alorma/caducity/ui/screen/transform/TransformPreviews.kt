@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -73,7 +74,19 @@ private fun TransformPreviewContent(state: TransformState) {
   PreviewTheme {
     Surface {
       Box {
-        Column(modifier = Modifier.padding(vertical = 20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        val links = remember { RowLinks() }
+        Column(
+          modifier =
+            Modifier.padding(vertical = 20.dp).rowLinks(
+              links,
+              expanded =
+                state.results.any {
+                  it.id ==
+                    state.expandedResultId
+                },
+            ),
+          verticalArrangement = Arrangement.spacedBy(SectionSpacing),
+        ) {
           IngredientsSection(
             ingredients = state.ingredients,
             categories = state.categories,
@@ -81,8 +94,9 @@ private fun TransformPreviewContent(state: TransformState) {
             onRemove = {},
             onAdd = {},
             optional = state.freeEntry,
+            links = links,
           )
-          ResultsSection(state = state, actions = noActions)
+          ResultsSection(state = state, actions = noActions, links = links)
         }
         TransformSaveBar(
           canSave = state.canSave,
