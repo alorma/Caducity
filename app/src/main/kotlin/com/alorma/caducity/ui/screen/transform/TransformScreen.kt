@@ -63,7 +63,8 @@ fun TransformScreen(
   val actions =
     remember(viewModel) {
       ResultActions(
-        onToggle = viewModel::onToggleResult,
+        onSelect = viewModel::onSelectResult,
+        onDone = viewModel::onDone,
         onRemove = viewModel::onRemoveResult,
         onAdd = viewModel::onAddResult,
         onNameChange = viewModel::onNameChange,
@@ -122,7 +123,7 @@ fun TransformScreen(
           optional = state.freeEntry,
           closedRows = state.closedRows,
         )
-        ResultsSection(state = state, actions = actions, modifier = Modifier.padding(horizontal = ScreenGutter))
+        ResultsSection(state = state, actions = actions)
         Text(
           text =
             stringResource(

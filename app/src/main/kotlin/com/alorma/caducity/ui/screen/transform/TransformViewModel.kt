@@ -163,8 +163,14 @@ class TransformViewModel(
     }
   }
 
-  fun onToggleResult(id: Int) {
-    _state.update { it.copy(expandedResultId = if (it.expandedResultId == id) NONE_EXPANDED else id) }
+  /** Expands [id]; the one that was open folds, so at most one is expanded. */
+  fun onSelectResult(id: Int) {
+    _state.update { it.copy(expandedResultId = id) }
+  }
+
+  /** «Fet»: folds the open result, so all of them are small cards. Validates nothing. */
+  fun onDone() {
+    _state.update { it.copy(expandedResultId = NONE_EXPANDED) }
   }
 
   fun onNameChange(
@@ -331,8 +337,6 @@ class TransformViewModel(
   private fun List<IngredientUi>.signature(): List<Pair<String, Int>> = map { it.key to it.count }
 
   private companion object {
-    const val NONE_EXPANDED = -1
-
     /** The ingredient rows fold away one by one (80 ms apart) before the screen closes; capped so a long list stays quick. */
     const val CascadeStepMillis = 80L
     const val MaxCascadedRows = 6
