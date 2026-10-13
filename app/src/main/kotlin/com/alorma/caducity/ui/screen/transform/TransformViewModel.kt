@@ -41,7 +41,8 @@ class TransformViewModel(
   private val eventTracker: EventTracker,
   private val pickerResults: IngredientPickerResults,
 ) : BaseViewModel<TransformNavigation, TransformNavigationSideEffect, TransformSideEffect>() {
-  private val _state = MutableStateFlow(TransformState(today = todayProvider.today()))
+  private val _state =
+    MutableStateFlow(TransformState(today = todayProvider.today(), freeEntry = args.itemIds.isEmpty()))
   val state: StateFlow<TransformState> = _state.asStateFlow()
 
   private var nextResultId = 1
@@ -124,9 +125,10 @@ class TransformViewModel(
     }
   }
 
-  /** Removing the last ingredient leaves nothing to transform: it confirms and closes. */
+  /** Removing the last ingredient leaves nothing to transform: it confirms and closes, except in free entry. */
   fun onRemoveIngredient(key: String) {
-    if (_state.value.ingredients
+    if (!_state.value.freeEntry &&
+      _state.value.ingredients
         .singleOrNull()
         ?.key == key
     ) {
@@ -222,7 +224,7 @@ class TransformViewModel(
     emitSideEffect(
       TransformSideEffect.ShowDatePicker(
         id,
-        current.expirationOf(result).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds(),
+        current.expirationToSave(result).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds(),
       ),
     )
   }
@@ -242,7 +244,7 @@ class TransformViewModel(
           name = it.name.trim(),
           servings = it.servings,
           categoryId = current.categoryOf(it) ?: return,
-          expiration = current.expirationOf(it),
+          expiration = current.expirationToSave(it),
           frozenCount = it.frozenCount,
         )
       }
@@ -279,6 +281,9 @@ class TransformViewModel(
     products: Int,
   ): Pair<Int, List<Any>> =
     when {
+      // Free entry: nothing was transformed, the products were just added.
+      ingredients == 0 && products == 1 -> R.string.transform_added_one to emptyList()
+      ingredients == 0 -> R.string.transform_added to listOf(products)
       ingredients == 1 && products == 1 -> R.string.transform_done_one_one to emptyList()
       ingredients == 1 -> R.string.transform_done_one_ingredient to listOf(products)
       products == 1 -> R.string.transform_done_one_product to listOf(ingredients)

@@ -57,6 +57,7 @@ import strikt.assertions.isA
 import strikt.assertions.isEmpty
 import strikt.assertions.isEqualTo
 import strikt.assertions.isFalse
+import strikt.assertions.isNull
 import strikt.assertions.isTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -351,6 +352,122 @@ class TransformViewModelTest {
         expectThat(awaitItem()).isA<TransformSideEffect.ShowDiscardConfirm>()
       }
       expectThat(vm.state.value.ingredients).hasSize(1)
+    }
+
+  private suspend fun freeEntry(): TransformViewModel {
+    ensureCategories()
+    val vm = viewModel(emptyList())
+    vm.await { it.categories.isNotEmpty() }
+    return vm
+  }
+
+  @Test
+  fun `free entry needs name, category and date`() =
+    runTest {
+      val vm = freeEntry()
+      expectThat(vm.state.value.canSave).isFalse()
+
+      vm.onNameChange(0, "Tupper")
+      expectThat(vm.state.value.canSave).isFalse()
+
+      vm.onCategorySelect(0, "soup")
+      expectThat(vm.state.value.canSave).isFalse()
+
+      vm.onDatePicked(0, inDays(3))
+      expectThat(vm.state.value.canSave).isTrue()
+    }
+
+  @Test
+  fun `free entry does not suggest a date or a category`() =
+    runTest {
+      val vm = freeEntry()
+      val state = vm.state.value
+      expectThat(state.expirationOf(state.results.single())).isNull()
+      expectThat(state.categoryOf(state.results.single())).isNull()
+    }
+
+  @Test
+  fun `a fully frozen result in free entry needs no date`() =
+    runTest {
+      val vm = freeEntry()
+      vm.onNameChange(0, "Tupper")
+      vm.onCategorySelect(0, "soup")
+      vm.onServingsChange(0, 2)
+
+      vm.onFrozenCountChange(0, 1)
+      expectThat(vm.state.value.canSave).isFalse()
+
+      vm.onFrozenCountChange(0, 2)
+      expectThat(vm.state.value.canSave).isTrue()
+    }
+
+  @Test
+  fun `adding an ingredient to a free entry brings back the default date`() =
+    runTest {
+      val chicken = add("Chicken", days = 3)
+      val vm = freeEntry()
+      vm.onNameChange(0, "Broth")
+      vm.onCategorySelect(0, "soup")
+      expectThat(vm.state.value.canSave).isFalse()
+
+      pickerResults.deliver(chicken.itemIds)
+      vm.await { it.ingredients.isNotEmpty() }
+
+      expectThat(vm.state.value.canSave).isTrue()
+      expectThat(
+        vm.state.value.expirationOf(
+          vm.state.value.results
+            .single(),
+        ),
+      ).isEqualTo(inDays(3))
+    }
+
+  @Test
+  fun `removing the last ingredient of a free entry does not close`() =
+    runTest {
+      val chicken = add("Chicken", days = 3)
+      val vm = freeEntry()
+      pickerResults.deliver(chicken.itemIds)
+      vm.await { it.ingredients.isNotEmpty() }
+
+      vm.sideEffects.test {
+        vm.onRemoveIngredient(
+          vm.state.value.ingredients
+            .single()
+            .key,
+        )
+        expectNoEvents()
+      }
+      expectThat(vm.state.value.ingredients).isEmpty()
+    }
+
+  @Test
+  fun `saving a free entry adds the products and says so`() =
+    runTest {
+      val vm = freeEntry()
+      vm.onNameChange(0, "Tupper")
+      vm.onCategorySelect(0, "soup")
+      vm.onDatePicked(0, inDays(3))
+      vm.onServingsChange(0, 2)
+      vm.onAddResult()
+      val second =
+        vm.state.value.results
+          .last()
+          .id
+      vm.onNameChange(second, "Soup")
+      vm.onCategorySelect(second, "soup")
+      vm.onDatePicked(second, inDays(3))
+
+      snackbars.events.test {
+        vm.onSave()
+        val message = awaitItem()
+        expectThat(message.message).isEqualTo(R.string.transform_added)
+        expectThat(message.messageArgs).isEqualTo(listOf<Any>(2))
+      }
+
+      val active = pantry.observeActiveItems().first()
+      expectThat(active.filter { it.name == "Tupper" }).hasSize(2)
+      expectThat(active.filter { it.name == "Soup" }).hasSize(1)
     }
 
   @Test
