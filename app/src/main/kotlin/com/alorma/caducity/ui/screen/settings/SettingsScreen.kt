@@ -63,10 +63,11 @@ import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.screen.settings.components.ColorPaletteSelector
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
-import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
+import com.alorma.caducity.ui.theme.ColorPalette
 import com.alorma.caducity.ui.theme.ThemeMode
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import java.util.Locale
@@ -141,7 +142,7 @@ fun SettingsScreen(
         onReminderTimeClick = viewModel::onReminderTimeClick,
         onSoonThresholdChange = viewModel::onSoonThresholdChange,
         onThemeModeChange = viewModel::onThemeModeChange,
-        onDynamicColorsChange = viewModel::onDynamicColorsChange,
+        onColorPaletteChange = viewModel::onColorPaletteChange,
         onWeekStartClick = viewModel::onWeekStartClick,
         onNavigate = viewModel::navigate,
       )
@@ -159,7 +160,7 @@ private fun SettingsContent(
   onReminderTimeClick: () -> Unit,
   onSoonThresholdChange: (Int) -> Unit,
   onThemeModeChange: (ThemeMode) -> Unit,
-  onDynamicColorsChange: (Boolean) -> Unit,
+  onColorPaletteChange: (ColorPalette) -> Unit,
   onWeekStartClick: () -> Unit,
   onNavigate: (SettingsNavigation) -> Unit,
   modifier: Modifier = Modifier,
@@ -219,7 +220,7 @@ private fun SettingsContent(
     }
 
     item {
-      val dynamicColors = supportsDynamicColors()
+      val palettes = ColorPalette.entries.filter { it != ColorPalette.DYNAMIC || supportsDynamicColors() }
       val themeLight = stringResource(R.string.settings_theme_light)
       val themeDark = stringResource(R.string.settings_theme_dark)
       val themeSystem = stringResource(R.string.settings_theme_system)
@@ -236,30 +237,21 @@ private fun SettingsContent(
             }
           },
           onItemSelected = onThemeModeChange,
-          shapes = ListItemDefaults.segmentedShapes(index = 0, count = if (dynamicColors) 3 else 2),
+          shapes = ListItemDefaults.segmentedShapes(index = 0, count = 4),
         )
-        if (dynamicColors) {
-          StyledSettingsSwitchCard(
-            title = stringResource(R.string.settings_dynamic_colors),
-            subtitle =
-              stringResource(
-                if (state.dynamicColors) R.string.settings_dynamic_color_on else R.string.settings_dynamic_color_off,
-              ),
-            state = state.dynamicColors,
-            onCheckedChange = onDynamicColorsChange,
-            shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
-          )
-        }
+        ColorPaletteSelector(
+          selected = state.colorPalette,
+          palettes = palettes,
+          onSelected = onColorPaletteChange,
+          shapes = ListItemDefaults.segmentedShapes(index = 1, count = 4),
+        )
         StyledSettingsCard(
           title = stringResource(R.string.settings_week_start),
           subtitle = localizedDateFormatter.getDayOfWeekFullName(state.firstDayOfWeek),
           action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
           onClick = onWeekStartClick,
           shapes =
-            ListItemDefaults.segmentedShapes(
-              index = if (dynamicColors) 2 else 1,
-              count = if (dynamicColors) 4 else 3,
-            ),
+            ListItemDefaults.segmentedShapes(index = 2, count = 4),
         )
         val context = LocalContext.current
         StyledSettingsCard(
@@ -269,10 +261,7 @@ private fun SettingsContent(
           action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
           onClick = { context.openLanguageSettings() },
           shapes =
-            ListItemDefaults.segmentedShapes(
-              index = if (dynamicColors) 3 else 2,
-              count = if (dynamicColors) 4 else 3,
-            ),
+            ListItemDefaults.segmentedShapes(index = 3, count = 4),
         )
       }
     }

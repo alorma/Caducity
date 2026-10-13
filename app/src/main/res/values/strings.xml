@@ -20,7 +20,21 @@
   <string name="settings_theme_light">Light</string>
   <string name="settings_theme_dark">Dark</string>
   <string name="settings_theme_system">System</string>
-  <string name="settings_dynamic_colors">Dynamic Colors</string>
+  <string name="settings_colors">Colors</string>
+  <string name="palette_dynamic">Dynamic</string>
+  <string name="palette_dynamic_help">From your wallpaper</string>
+  <string name="palette_rebost">Pantry</string>
+  <string name="palette_rebost_help">basil and mozzarella</string>
+  <string name="palette_nevera">Fridge</string>
+  <string name="palette_nevera_help">cool tones, clean and calm</string>
+  <string name="palette_hort">Garden</string>
+  <string name="palette_hort_help">vivid greens, fresher</string>
+  <string name="palette_fleca">Bakery</string>
+  <string name="palette_fleca_help">toasted bread and caramel</string>
+  <string name="palette_bessa">Berry</string>
+  <string name="palette_bessa_help">forest berries</string>
+  <string name="palette_camp">Field</string>
+  <string name="palette_camp_help">wheat and sunflower</string>
 
   <string name="settings_privacy_screen_title">Privacy</string>
   <string name="settings_privacy_analytics_title">Analytics</string>
@@ -424,8 +438,6 @@
   <string name="settings_1d">1 day</string>
   <string name="settings_3d">3 days</string>
   <string name="settings_1w">1 week</string>
-  <string name="settings_dynamic_color_on">Using your device\'s colors</string>
-  <string name="settings_dynamic_color_off">Off: Caducity palette</string>
   <string name="settings_week_start">Week starts on</string>
   <string name="settings_app_language">App language</string>
   <string name="settings_backup_sub">Export and restore</string>
