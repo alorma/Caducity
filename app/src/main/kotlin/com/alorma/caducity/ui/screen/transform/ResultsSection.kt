@@ -2,8 +2,10 @@ package com.alorma.caducity.ui.screen.transform
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -30,12 +32,15 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CollectionInfo
@@ -63,6 +68,7 @@ import com.alorma.caducity.ui.screen.add.ScreenGutter
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /** What the results section can ask of the screen, one callback per gesture. */
 class ResultActions(
@@ -83,6 +89,8 @@ private val ResultCardHeight = 92.dp
 /** Air around the lines that join the rows: between the ingredients and the node, and between the node and the results. */
 internal val SectionSpacing = 52.dp
 private const val ExpandMillis = 300
+private const val ShakeMillis = 360
+private val ShakeReach = 8.dp
 
 /** M3 emphasized decelerate: what the expansion of a card uses. */
 private val EmphasizedEasing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
@@ -191,6 +199,26 @@ private fun ResultItem(
   // A folded result that still lacks something is outlined, so it is not mistaken for a finished one.
   val incomplete = !selected && !state.isValid(result)
   val invalidLabel = stringResource(R.string.transform_result_invalid)
+  // «Fet» on a result that lacks something: a short sideways shake says no without a dialog.
+  val shake = remember { Animatable(0f) }
+  val shakeScope = rememberCoroutineScope()
+  val shakeReach = with(LocalDensity.current) { ShakeReach.toPx() }
+  val onDoneBlocked: () -> Unit = {
+    shakeScope.launch {
+      shake.animateTo(
+        targetValue = 0f,
+        animationSpec =
+          keyframes {
+            durationMillis = ShakeMillis
+            -shakeReach at ShakeMillis * 15 / 100
+            shakeReach at ShakeMillis * 40 / 100
+            -shakeReach * 0.6f at ShakeMillis * 65 / 100
+            shakeReach * 0.3f at ShakeMillis * 85 / 100
+            0f at ShakeMillis
+          },
+      )
+    }
+  }
   Surface(
     shape = RowCardShape,
     color = CaducityTheme.colorScheme.surfaceContainer,
@@ -214,6 +242,7 @@ private fun ResultItem(
       },
     modifier =
       Modifier
+        .graphicsLayer { translationX = shake.value }
         // Width and height are animated together by the one modifier, so the card never turns tall and narrow.
         .animateContentSize(tween(ExpandMillis, easing = EmphasizedEasing))
         .width(if (selected) formWidth else RowCardWidth)
@@ -246,7 +275,7 @@ private fun ResultItem(
   ) {
     Crossfade(targetState = selected, animationSpec = tween(ExpandMillis / 2), label = "resultContent") { open ->
       if (open) {
-        ResultForm(state = state, result = result, actions = actions)
+        ResultForm(state = state, result = result, actions = actions, onDoneBlocked = onDoneBlocked)
       } else {
         ResultSummary(
           state = state,
