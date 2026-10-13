@@ -40,7 +40,7 @@ class TransformItemsUseCase(
             ingredient.candidateItemIds
               .mapNotNull { active[it] }
               .filter { it.itemId !in spent }
-              .sortedBy { it.expiration }
+              .sortedWith(compareBy({ it.itemId !in ingredient.preferredItemIds }, { it.expiration }))
           if (ingredient.count !in 1..units.size) return Result.failure(PantryError.InvalidQuantity(ingredient.count))
           val ids = units.take(ingredient.count).map { it.itemId }
           spent += ids

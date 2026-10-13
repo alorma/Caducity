@@ -18,9 +18,12 @@ data class IngredientUi(
   val categoryId: String,
   val units: List<ActiveItem>,
   val count: Int,
+  /** Units the user selected explicitly; they are spent before the rest of the product. */
+  val preferredIds: Set<String> = emptySet(),
 ) {
   val available: Int get() = units.size
-  val spent: List<ActiveItem> get() = units.take(count)
+  val spent: List<ActiveItem>
+    get() = units.sortedBy { it.itemId !in preferredIds }.take(count)
 }
 
 /** A product the transformation creates. Category and date follow the ingredients until the user overrides them. */

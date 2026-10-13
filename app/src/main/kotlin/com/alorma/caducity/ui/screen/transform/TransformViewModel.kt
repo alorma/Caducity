@@ -238,7 +238,14 @@ class TransformViewModel(
   fun onSave() {
     val current = _state.value
     if (!current.canSave) return
-    val spends = current.ingredients.map { IngredientSpend(it.units.map { unit -> unit.itemId }, it.count) }
+    val spends =
+      current.ingredients.map {
+        IngredientSpend(
+          candidateItemIds = it.units.map { unit -> unit.itemId },
+          count = it.count,
+          preferredItemIds = it.preferredIds,
+        )
+      }
     val results =
       current.results.map {
         TransformResult(
@@ -317,6 +324,7 @@ class TransformViewModel(
         categoryId = picked.first().categoryId,
         units = units,
         count = picked.size,
+        preferredIds = picked.map { it.itemId }.toSet(),
       )
     }
 
