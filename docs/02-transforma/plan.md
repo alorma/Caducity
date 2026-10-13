@@ -90,6 +90,8 @@ Validada a l'emulador (el Pixel no era a l'adb): preselecció, recompte del bot�
 
 ## Fase 5 — Entrades i flux final
 
+**Flag:** totes les entrades noves (barra de selecció, full d'Accions, pulsació llarga al «+») s'han de mostrar només si `TransformFeature` (`transform_enabled`, Remote Config, apagat per defecte) és actiu. Ja protegeix l'entrada de Depuració. L'activació per als usuaris és una decisió a part.
+
 1. **Barra de selecció** (`StatusListScreen`/`StatusListViewModel`, i Categoria si té selecció): grup connectat **Consumit · Congela · Transforma**, 68 dp, Transforma `primary`, etiqueta amb recompte per a accessibilitat. Seleccions de diverses seccions i de diverses unitats.
 2. **Full d'Accions** (`ItemActionsSheet`): fila «Transforma amb aquest» entre «Mou…» i «Esborra»; obre Transforma amb 1 unitat.
 3. **Pulsació llarga al «+»** (`FloatingNavBar`/Inici): menú Transforma / Afegeix producte, scrim 45 %; el toc normal continua obrint Afegeix.
