@@ -2,12 +2,12 @@
 
 What is left after the «Caducity» redesign (1.0.0). The plan and the design package that came with it were removed from the repo; they are in the git history (`git log -- docs/redisseny`).
 
-The phased plans of the three packages that followed the redesign (multi-unit actions, Transforma, Home without «soon» items) were removed once Transforma shipped; they are in the git history (`git log -- docs/02-transforma/plan.md`). Their specs stay next to the design files in `docs/`.
+The plans, specs and design files of the three packages that followed the redesign (multi-unit actions, Transforma, Home without «soon» items) were removed once Transforma shipped. They are in the git history, at commit `0af1f05` (`git show 0af1f05:docs/<folder>/spec.md`, with the folders `01-diverses-unitats`, `02-transforma` and `03-inici-sense-aviat`).
 
 ## Features
 
-- **Consume and freeze several units** (`docs/01-diverses-unitats/spec.md`, not started): the ✓/❄ tap acts on one unit and a snackbar offers «Més…» and «Desfés»; long press opens the quantity dialog straight away. Needs `ConsumeUnitsUseCase`/`FreezeUnitsUseCase` (take the ids of the row's units and `n`, soonest first), the existing `QuantitySelectorDialog` generalised per variant, and `multi_*` strings. The undo restores the union of the snapshots.
-- **Home with no «soon» items** (`docs/03-inici-sense-aviat/spec.md`, not started): instead of «No caduca res aviat» show the next expiries (first 3 days with products, at most 8 rows, fresh only, «+N més» when a day is cut) and a text button «Veure el rebost». Today `HomeItem.NothingSoon` is still the old message.
+- **Consume and freeze several units** (spec in `01-diverses-unitats`, not started): the ✓/❄ tap acts on one unit and a snackbar offers «Més…» and «Desfés»; long press opens the quantity dialog straight away. Needs `ConsumeUnitsUseCase`/`FreezeUnitsUseCase` (take the ids of the row's units and `n`, soonest first), the existing `QuantitySelectorDialog` generalised per variant, and `multi_*` strings. The undo restores the union of the snapshots.
+- **Home with no «soon» items** (spec in `03-inici-sense-aviat`, not started): instead of «No caduca res aviat» show the next expiries (first 3 days with products, at most 8 rows, fresh only, «+N més» when a day is cut) and a text button «Veure el rebost». Today `HomeItem.NothingSoon` is still the old message.
 - **Widget (Glance)**: shows the soon and expired counts and the next two items, with each category's own «soon» margin. `glance-appwidget` + `glance-material3`; `updateAll()` after every write and from the daily worker; **Add** button opens `add?source=widget`, the body opens Home; empty state. Risks: R8 with Glance, midnight refresh, widget sizes. Tests: `WidgetStateMapperTest`. It must follow the chosen color palette (`ThemePreferences.colorPalette`; Dynamic: the system color). Same for a Wear OS Tile if one ever exists.
 - **Static shortcuts**: Add product, What expires, Expired (`StatusList(EXPIRED)`). Test: `ShortcutIntentTest`.
 - **`WidgetTipCard` on Home**: depends on the widget. Turn it on when the widget ships (`HomeViewModel`, `// TEMP(fase 12)`).
