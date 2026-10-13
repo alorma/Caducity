@@ -22,6 +22,10 @@ What is left after the «Caducity» redesign (1.0.0). The plan and the design pa
 - **Real Play screenshots**: the current ones are design mockups. Google Play expects screenshots of the real app.
 - **Legal text**: the privacy policy and the notice (`privacy_policy.md`, `terms_and_conditions.md`, the onboarding notice, the pages on converses.app) have not been reviewed by a lawyer. If the text changes, bump `DisclaimerPreferences.CURRENT_VERSION` so everyone accepts it again.
 
+## Known bugs
+
+- **Transforma ingredient picker, «Frozen» filter still lists «Soon» products**: a product group that has at least one frozen unit passes the status filter (`filterPickerGroups` uses `any`) and then shows the group's nearest status. Filter the units, or show the status of the matching units.
+
 ## Cleanup
 
 - **`// TEMP` leftovers**: adapters for old screens that may be dead now (`StatusBadge`, `ExpirationDefaults`, `ItemRoomMapper`, `UnfreezeItemUseCase`, `ExpirationThresholds`). Check with `git grep` and remove the ones with no consumer.
