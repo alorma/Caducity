@@ -32,7 +32,7 @@ Cas de diversos resultats (`TransformaPollastre`): cada resultat és una fila **
 Nota al peu: «Els ingredients desapareixen del rebost en desar.»
 
 ### Afegeix ingredients (`TransformaIngredient`)
-Pantalla a pantalla completa (no diàleg): cerca «Cerca al rebost», xips d'estat (Tots · Aviat · Fresc · **Congelat**) i de categoria (desplaçables), i llista de productes amb casella, meta (categoria · unitats/pes) i **pastilla d'estat** (Aviat/Fresc/Congelat). **Inclou ítems congelats.** Es poden marcar productes ja afegits (apareixen seleccionats). Botó inferior ample «Afegeix N ingredients». Els **caducats** no es llisten aquí (vegeu «Obert» 2).
+Pantalla a pantalla completa (no diàleg): cerca «Cerca al rebost», **dos xips desplegables**, **Estat** (Aviat · Fresc · **Congelat**) i **Categoria**, de **selecció múltiple** (toc → menú amb caselles; **el llistat es filtra a l'instant** a mesura que es marca, sense botons Aplica/Esborra; sense cap selecció = tot; **si només hi ha una categoria (o un estat), el xip no es mostra**; amb selecció, el xip passa a `primary-container` i mostra el recompte, «Estat · 2»), i llista de productes amb casella, meta (categoria · unitats/pes) i **pastilla d'estat** (Aviat/Fresc/Congelat). **Inclou ítems congelats.** Es poden marcar productes ja afegits (apareixen seleccionats). Botó inferior ample «Afegeix N ingredients». Els **caducats** no es llisten aquí (vegeu «Obert» 2).
 
 ## Accés lliure (`TransformaBuit`)
 Entrada des del menú del botó dividit «⌄» (o qualsevol ruta sense ingredients prèvia). La pantalla s'obre **sense dades**: cap ingredient, un únic resultat buit amb el camp Nom autoenfocat.
