@@ -203,6 +203,9 @@ dependencies {
   testImplementation(libs.androidx.test.core)
   testImplementation(libs.androidx.room.testing)
   testImplementation(libs.robolectric)
+  testImplementation(platform(libs.androidx.compose.bom))
+  testImplementation(libs.androidx.compose.ui.test.junit4)
+  debugImplementation(libs.androidx.compose.ui.test.manifest)
 
   // Screenshot tests
   screenshotTestImplementation(libs.compose.screenshot.validation)

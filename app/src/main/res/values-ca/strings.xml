@@ -20,7 +20,21 @@
   <string name="settings_theme_light">Clar</string>
   <string name="settings_theme_dark">Fosc</string>
   <string name="settings_theme_system">Sistema</string>
-  <string name="settings_dynamic_colors">Colors dinàmics</string>
+  <string name="settings_colors">Colors</string>
+  <string name="palette_dynamic">Dinàmic</string>
+  <string name="palette_dynamic_help">Del fons de pantalla</string>
+  <string name="palette_rebost">Rebost</string>
+  <string name="palette_rebost_help">alfàbrega i mozzarella</string>
+  <string name="palette_nevera">Nevera</string>
+  <string name="palette_nevera_help">tons freds, net i serè</string>
+  <string name="palette_hort">Hort</string>
+  <string name="palette_hort_help">verds vius, més fresc</string>
+  <string name="palette_fleca">Fleca</string>
+  <string name="palette_fleca_help">pa torrat i caramel</string>
+  <string name="palette_bessa">Bessa</string>
+  <string name="palette_bessa_help">fruits del bosc</string>
+  <string name="palette_camp">Camp</string>
+  <string name="palette_camp_help">blat i gira-sol</string>
 
   <string name="settings_privacy_screen_title">Privacitat</string>
   <string name="settings_privacy_analytics_title">Analítiques</string>
@@ -448,8 +462,6 @@
   <string name="settings_1d">1 dia</string>
   <string name="settings_3d">3 dies</string>
   <string name="settings_1w">1 setmana</string>
-  <string name="settings_dynamic_color_on">Amb els colors del dispositiu</string>
-  <string name="settings_dynamic_color_off">Desactivat: paleta Caducity</string>
   <string name="settings_week_start">La setmana comença</string>
   <string name="settings_app_language">Idioma de l\'aplicació</string>
   <string name="settings_backup_sub">Exporta i restaura</string>

@@ -9,8 +9,9 @@ import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.ui.theme.ColorPalette
 import com.alorma.caducity.ui.theme.ThemeMode
-import com.alorma.caducity.ui.theme.ThemePreferencesNoOp
+import com.alorma.caducity.ui.theme.ThemePreferencesImpl
 import com.russhwolf.settings.MapSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -66,6 +67,7 @@ class SettingsViewModelTest {
         Category("c3", "Fleca", "", soonThresholdDays = 2),
       ),
     )
+  private val themePreferences = ThemePreferencesImpl(MapSettings())
   private lateinit var vm: SettingsViewModel
 
   @Before
@@ -78,7 +80,7 @@ class SettingsViewModelTest {
         scheduler,
         thresholds,
         ObserveCategoriesUseCase(pantry),
-        ThemePreferencesNoOp,
+        themePreferences,
         firstDay,
         EventTracker(emptyList()),
       )
@@ -151,5 +153,14 @@ class SettingsViewModelTest {
     runTest {
       vm.onReminderTimeClick()
       expectThat(vm.sideEffects.first()).isEqualTo(SettingsSideEffect.ShowTimePicker(LocalTime(9, 0)))
+    }
+
+  @Test
+  fun `choosing a palette is stored and reaches the state`() =
+    runTest {
+      expectThat(vm.state.value.colorPalette).isEqualTo(ColorPalette.REBOST)
+      vm.onColorPaletteChange(ColorPalette.NEVERA)
+      expectThat(themePreferences.colorPalette.value).isEqualTo(ColorPalette.NEVERA)
+      expectThat(vm.state.first { it.colorPalette == ColorPalette.NEVERA }.colorPalette).isEqualTo(ColorPalette.NEVERA)
     }
 }

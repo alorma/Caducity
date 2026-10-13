@@ -51,9 +51,9 @@ class SettingsViewModel(
         days to categories
       },
       snapshotFlow { themePreferences.themeMode.value },
-      snapshotFlow { themePreferences.colorPalette.value == ColorPalette.DYNAMIC },
+      snapshotFlow { themePreferences.colorPalette.value },
       firstDayOfWeekPreferences.state,
-    ) { reminder, (threshold, categories), themeMode, dynamicColors, calendar ->
+    ) { reminder, (threshold, categories), themeMode, colorPalette, calendar ->
       SettingsState(
         reminderEnabled = reminder.enabled,
         reminderTime = reminder.time,
@@ -63,7 +63,7 @@ class SettingsViewModel(
             .map { CategoryMarginSummary(it.name, it.soonThresholdDays ?: threshold) }
             .sortedWith(compareBy({ it.days }, { it.name.normalizeForSearch() })),
         themeMode = themeMode,
-        dynamicColors = dynamicColors,
+        colorPalette = colorPalette,
         firstDayOfWeek = calendar.firstDayOfWeek,
       )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SettingsState())
@@ -141,8 +141,8 @@ class SettingsViewModel(
     themePreferences.setThemeModeState(mode)
   }
 
-  fun onDynamicColorsChange(enabled: Boolean) {
-    themePreferences.setColorPalette(if (enabled) ColorPalette.DYNAMIC else ColorPalette.REBOST)
+  fun onColorPaletteChange(palette: ColorPalette) {
+    themePreferences.setColorPalette(palette)
   }
 
   fun onWeekStartClick() {
