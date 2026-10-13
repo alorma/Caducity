@@ -30,7 +30,7 @@ Les cartes d'estat (`ExpiredLight`…) i el vermell destructiu **no es toquen** 
 
 **Sortida:** la paleta triada es desa i es migra sense pèrdua; l'app encara es veu igual.
 
-- [ ] Tasques 1-4
+- [x] Tasques 1-4 (0d331f2)
 
 ## Fase 2 — Paletes i tema
 
@@ -43,7 +43,7 @@ Les cartes d'estat (`ExpiredLight`…) i el vermell destructiu **no es toquen** 
 
 **Sortida:** canviar `ColorPalette` des de les preferències (debug) repinta l'app amb la paleta, estats intactes.
 
-- [ ] Tasques 1-6
+- [x] Tasques 1-6 (HASH)
 
 ## Fase 3 — Targeta «Colors» a Ajustos
 
@@ -68,7 +68,7 @@ Les cartes d'estat (`ExpiredLight`…) i el vermell destructiu **no es toquen** 
 
 **Sortida:** test de contrast verd i captures d'Inici i Ajustos en totes les paletes, clar i fosc, per revisar.
 
-- [ ] Tasques 1-4
+- [x] Tasques 1-4 (0d331f2)
 
 ## Fase 5 — Notificació (i widget/Wear quan existeixin)
 

@@ -26,11 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.alorma.caducity.ui.theme.colors.DarkCaducityColors
-import com.alorma.caducity.ui.theme.colors.LightCaducityColors
-import com.alorma.caducity.ui.theme.colors.darkColorScheme
+import com.alorma.caducity.ui.theme.colors.CaducityColors
+import com.alorma.caducity.ui.theme.colors.DarkStateColors
+import com.alorma.caducity.ui.theme.colors.LightStateColors
+import com.alorma.caducity.ui.theme.colors.animated
 import com.alorma.caducity.ui.theme.colors.dynamicColorScheme
-import com.alorma.caducity.ui.theme.colors.lightColorScheme
+import com.alorma.caducity.ui.theme.colors.scheme
+import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.alorma.compose.settings.ui.core.LocalSettingsTileColors
@@ -69,16 +71,15 @@ fun AppThemeContent(
       ThemeMode.SYSTEM -> systemInDarkTheme
     }
 
-  val colorScheme =
-    if (themePreferences.colorPalette.value == ColorPalette.DYNAMIC) {
+  // DYNAMIC sense suport (p. ex. un setting restaurat d'un altre dispositiu): Rebost, sense tocar el setting.
+  val palette = themePreferences.colorPalette.value
+  val targetScheme =
+    if (palette == ColorPalette.DYNAMIC && supportsDynamicColors()) {
       dynamicColorScheme(darkTheme)
     } else {
-      if (darkTheme) {
-        darkColorScheme
-      } else {
-        lightColorScheme
-      }
+      palette.scheme(darkTheme)
     }
+  val colorScheme = targetScheme.animated()
 
   MaterialExpressiveTheme(
     colorScheme = colorScheme,
@@ -116,7 +117,11 @@ fun InternalTheme(
   CompositionLocalProvider(
     LocalCaducityDims provides dims,
     LocalDarkMode provides darkMode,
-    LocalCaducityColors provides if (darkMode) DarkCaducityColors else LightCaducityColors,
+    LocalCaducityColors provides
+      CaducityColors(
+        surfaceShape = colorScheme.surfaceContainerHighest,
+        states = if (darkMode) DarkStateColors else LightStateColors,
+      ),
   ) {
     val settingsColors =
       ListItemDefaults.colors(

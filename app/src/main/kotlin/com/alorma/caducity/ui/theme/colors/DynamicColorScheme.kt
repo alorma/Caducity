@@ -5,12 +5,13 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.alorma.caducity.ui.theme.ColorPalette
 
 /** Color dinàmic: només substitueix superfícies i `primary*`; la resta del tema (estats, error) no canvia. */
 @Composable
 fun dynamicColorScheme(isDark: Boolean): ColorScheme {
   val context = LocalContext.current
-  val base = if (isDark) darkColorScheme else lightColorScheme
+  val base = ColorPalette.REBOST.scheme(isDark)
   val dynamic = if (isDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
   return base.copy(
     primary = dynamic.primary,
