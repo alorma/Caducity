@@ -68,7 +68,7 @@ Les cartes d'estat (`ExpiredLight`…) i el vermell destructiu **no es toquen** 
 
 **Sortida:** test de contrast verd i captures d'Inici i Ajustos en totes les paletes, clar i fosc, per revisar.
 
-- [x] Tasques 1-4 (0d331f2)
+- [x] Tasques 1-4 (854b632, a725b70; els punts oberts de Camp i Hort es documenten amb captura i queden per a Bernat)
 
 ## Fase 5 — Notificació (i widget/Wear quan existeixin)
 
@@ -78,7 +78,7 @@ Les cartes d'estat (`ExpiredLight`…) i el vermell destructiu **no es toquen** 
 
 **Sortida:** les notificacions segueixen la paleta.
 
-- [ ] Tasques 1-3
+- [x] Tasques 1-3 (e3626a2)
 
 ## Obert (de l'especificació, no es resolen sense Bernat)
 
