@@ -1,6 +1,7 @@
 # Pla: Transforma (ingredients → elaboracions)
 
 Especificació: [`spec.md`](spec.md). Captures: `captures/Transforma{Seleccio,Caldo,Pollastre,Ingredient,Buit}`, `EntradaMenu`, `EntradaAccions`, `Main` (botó dividit en repòs).
+**Redisseny de la pantalla en files (2026-10-13):** vegeu la fase 7 i [`spec-files.md`](spec-files.md).
 **Canvi de disseny (2026-10-13):** nou **accés lliure** (`TransformaBuit`, vegeu «Accés lliure» a l'especificació: sense ingredients, nom + categoria + data obligatoris) i captures actualitzades. Afecta les fases 2 i 3 ja validades (vegeu «Fase 2b» i «Fase 3b») i la 5.
 **Canvi de disseny (2026-10-13, 2n):** filtres del selector d'ingredients com a dos xips desplegables de selecció múltiple (`TransformaIngredient` actualitzada); afecta la fase 4 ja validada (vegeu «Fase 4b»). La resta del paquet (accés lliure, botó dividit, sense pulsació llarga) ja hi era; `Rebost.png` del zip no s'ha copiat (no és a la llista del paquet). Validació sempre al Pixel 8a, mai a l'emulador.
 **Ordre: segona de les dues**, després de [diverses unitats](../01-diverses-unitats/plan.md). Independent a nivell de codi, però comparteix el patró de «Desfés» amb snapshots.
@@ -165,6 +166,21 @@ Validada al Pixel amb el flag apagat (res de Transforma) i encès. La skill nom�
 - [ ] Prova d'actualització des de la release anterior (v3 → v4) abans de publicar.
 - [ ] La skill `/transforma-flow` amb `one` i `multi` no s'ha pogut completar (el Pixel era en una altra app); Bernat la farà servir quan vulgui.
 
+## Fase 7 — Pantalla en files (només UI)
+
+Especificació: [`spec-files.md`](spec-files.md) (substitueix el disseny de la pantalla Transforma de `spec.md`; la lògica no canvia). Captures: `TransformaCarr{Buit,Molts,Plegat}`; `TransformaCaldo`, `TransformaPollastre` i `TransformaBuit` queden obsoletes. **No es toca model, casos d'ús, migracions ni lògica de desar/desfés.**
+
+1. Docs: spec, captures i fonts a `docs/02-transforma/`, i aquesta fase al pla.
+2. Targetes d'ingredient (148×118 dp) en `LazyRow`, capçalera «Ingredients · N» amb «+ Afegeix», xip «1 de 25 ⇅» que es converteix en stepper i fila discontínua «+ Afegeix ingredient» a l'accés lliure. Validació: previews, tests de captura i `ktlintCheck`.
+3. Targetes de resultat (148×92 dp) en fila, estat «cap expandit» al ViewModel i botó «Fet». Validació: tests de ViewModel i previews.
+4. Expansió de la targeta seleccionada en formulari dins la fila (animada, `animateScrollToItem`; amb un sol resultat, només el formulari) i xip «Congela'n» desplegable. Validació: previews, Pixel 8a i `/transforma-flow`.
+5. Barra «Desa · M productes» fixa a baix, sense «Desa» a la barra superior; en desar amb un resultat invàlid se selecciona el primer. Validació: tests i Pixel 8a amb teclat.
+6. Accessibilitat (`collectionInfo`, estat seleccionat, accions «Resultat anterior / següent», àrees ≥ 48 dp), textos a `values`, `values-ca` i `values-es`, previews i captures clar/fosc, tests de ViewModel.
+7. **Opcional, només si s'aprova:** esquema de línies i node central entre les files. Es fa al final; si és massa complicat, no es fa.
+8. **Opcional, només si s'aprova després de la 7:** mode «pager», on el scroll lateral contrau i expandeix les targetes seguint el dit (apartat «Extra opcional» de `spec-files.md`). Per defecte no es fa.
+
+Obert de la fase (deixar com a constants/`TODO`, no resoldre): plegat automàtic del xip de quantitat; `snap` a la fila; límit per fila (50 si cal); vora de les veïnes tocable i posició «3 de 6»; en el mode pager, si el gest bloqueja l'edició o només tanca el teclat.
+
 ## Obert (no resoldre sense decidir; deixar com a constants/`TODO`)
 
 1. ~~Entrada des del «+»~~: resolt, botó dividit «+ ⌄» (sense pulsació llarga).
@@ -189,5 +205,6 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 4b — Filtres desplegables del selector | Validada |
 | 5 — Entrades i flux final | Validada |
 | 6 — Qualitat | Validada (queda la prova v3 → v4 abans de publicar) |
+| 7 — Pantalla en files | Pendent |
 
 Només es passa a «Validada» quan Bernat l'aprova (`.claude/rules/phased-work.md`).
