@@ -31,12 +31,18 @@ sealed interface ItemActionsSheetNavigation {
   data object Close : ItemActionsSheetNavigation
 
   data object Edit : ItemActionsSheetNavigation
+
+  data object Transform : ItemActionsSheetNavigation
 }
 
 sealed interface ItemActionsSheetNavigationSideEffect {
   data object Close : ItemActionsSheetNavigationSideEffect
 
   data class Edit(
+    val itemId: String,
+  ) : ItemActionsSheetNavigationSideEffect
+
+  data class Transform(
     val itemId: String,
   ) : ItemActionsSheetNavigationSideEffect
 }

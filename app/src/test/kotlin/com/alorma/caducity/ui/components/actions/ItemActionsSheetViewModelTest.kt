@@ -219,6 +219,21 @@ class ItemActionsSheetViewModelTest {
     }
 
   @Test
+  fun `transform asks to open Transforma with this unit`() =
+    runTest {
+      category("dairy")
+      val id = add("Milk", days = 5).single()
+      val vm = viewModel(id)
+      keepAlive(vm)
+      vm.ready()
+
+      vm.navigate(ItemActionsSheetNavigation.Transform)
+
+      val effect = withContext(Dispatchers.Default) { withTimeout(5_000) { vm.navigationSideEffects.first() } }
+      expectThat(effect).isEqualTo(ItemActionsSheetNavigationSideEffect.Transform(id))
+    }
+
+  @Test
   fun `consuming an expired unit is allowed`() =
     runTest {
       category("dairy")

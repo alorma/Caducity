@@ -261,6 +261,10 @@ fun App(
                   navigation.pop()
                   navigation.navigate(Add(itemId = itemId, source = "item_actions"))
                 },
+                onTransform = { itemId ->
+                  navigation.pop()
+                  navigation.navigate(Transform(listOf(itemId)))
+                },
               )
             }
             entry<QuickCategory>(metadata = BottomSheetSceneStrategy.bottomSheet()) {

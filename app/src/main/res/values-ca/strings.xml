@@ -269,6 +269,7 @@
   <string name="item_actions_pick_date">Tria una data</string>
   <string name="item_actions_edit">Edita</string>
   <string name="item_actions_move">Mou a una altra categoria</string>
+  <string name="item_actions_transform">Transforma</string>
   <string name="item_actions_move_title">Mou a…</string>
   <string name="item_actions_delete">Esborra</string>
   <string name="item_actions_delete_title">Esborrar %1$s?</string>
