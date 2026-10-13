@@ -80,14 +80,18 @@ class TransformItemsUseCaseTest {
 
   private fun inDays(days: Int) = today.plus(days, DateTimeUnit.DAY)
 
+  private suspend fun ensureCategory() {
+    if (db.categoryDao().getCategoriesOrderedSync().none { it.id == "c1" }) {
+      db.categoryDao().insertCategory(CategoryRoomEntity("c1", "c1", "", sortOrder = 0))
+    }
+  }
+
   private suspend fun units(
     name: String,
     days: Int,
     quantity: Int = 1,
   ): List<String> {
-    if (db.categoryDao().getCategoriesOrderedSync().none { it.id == "c1" }) {
-      db.categoryDao().insertCategory(CategoryRoomEntity("c1", "c1", "", sortOrder = 0))
-    }
+    ensureCategory()
     return addBatch.add(name, "c1", inDays(days), quantity, frozen = false).getOrThrow().itemIds
   }
 
@@ -114,6 +118,37 @@ class TransformItemsUseCaseTest {
       val active = db.itemDao().getAllItemsSync().filter { it.transformedDate == null }
       expectThat(active.map { it.id }).containsExactlyInAnyOrder(batch.resultItemIds)
       expectThat(batch.resultItemIds).hasSize(4)
+    }
+
+  @Test
+  fun `without ingredients the results are plain products and no transformation is created`() =
+    runTest {
+      ensureCategory()
+      val batch = transform.transform(emptyList(), listOf(result(servings = 2))).getOrThrow()
+
+      expectThat(batch.transformationId).isNull()
+      val created = batch.resultItemIds.map { db.itemDao().getItem(it)!! }
+      expectThat(created).hasSize(2)
+      expectThat(created.map { it.originTransformationId }.distinct()).containsExactlyInAnyOrder(listOf(null))
+      expectThat(db.transformationDao().getAllTransformationsSync()).hasSize(0)
+    }
+
+  @Test
+  fun `undo without ingredients removes only the results`() =
+    runTest {
+      ensureCategory()
+      val batch = transform.transform(emptyList(), listOf(result())).getOrThrow()
+
+      expectThat(transform.undo(batch)).isSuccess()
+
+      expectThat(db.itemDao().getAllItemsSync()).hasSize(0)
+      expectThat(db.productDao().getAllProductsSync()).hasSize(0)
+    }
+
+  @Test
+  fun `no results is rejected`() =
+    runTest {
+      expectThat(transform.transform(emptyList(), emptyList())).isFailure()
     }
 
   @Test
