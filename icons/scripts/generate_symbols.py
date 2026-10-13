@@ -27,7 +27,7 @@ ICONS = [
     "eco", "egg", "lunch_dining", "restaurant", "cookie", "local_pizza", "ramen_dining", "kebab_dining",
     "emoji_food_beverage", "wine_bar", "coffee", "cake", "fastfood", "pets", "child_care", "soup_kitchen",
     # onboarding
-    "radio_button_unchecked", "notifications_active", "smartphone", "cloud_upload", "arrow_forward",
+    "radio_button_unchecked", "notifications_active", "smartphone", "cloud_upload", "arrow_forward", "menu_book",
 ]
 
 

@@ -51,10 +51,12 @@ fun CategoriesStep(
   onBack: () -> Unit,
   onContinue: () -> Unit,
   modifier: Modifier = Modifier,
+  stepCount: Int = 4,
 ) {
   OnboardingStepLayout(
     modifier = modifier,
     stepNumber = stepNumber,
+    stepCount = stepCount,
     title = stringResource(R.string.ob_categories_title),
     body = stringResource(R.string.ob_categories_body),
     actions = {

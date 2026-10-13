@@ -45,6 +45,7 @@ fun DisclaimerStep(
   onAccept: () -> Unit,
   modifier: Modifier = Modifier,
   accepting: Boolean = false,
+  stepCount: Int = 4,
 ) {
   val uriHandler = LocalUriHandler.current
   val foodSafetyUrl = stringResource(R.string.url_food_safety)
@@ -52,6 +53,7 @@ fun DisclaimerStep(
   OnboardingStepLayout(
     modifier = modifier,
     stepNumber = stepNumber,
+    stepCount = stepCount,
     title = stringResource(R.string.ob_disclaimer_title),
     actions = {
       OnboardingBackAndPrimary(

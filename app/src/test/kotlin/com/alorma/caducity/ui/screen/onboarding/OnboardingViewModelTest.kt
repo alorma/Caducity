@@ -7,6 +7,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.preferences.DisclaimerPreferences
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
+import com.alorma.caducity.config.remoteconfig.RemoteConfigRunner
 import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.config.time.date
 import com.alorma.caducity.data.datasource.RoomPantryDataSource
@@ -24,6 +25,7 @@ import com.alorma.caducity.feature.consent.ConsentManager
 import com.alorma.caducity.feature.consent.ConsentPreferences
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.ui.screen.transform.TransformFeature
 import com.alorma.fireandforget.multiplatform.settings.SettingsFireAndForgetRunner
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
@@ -99,6 +101,16 @@ class OnboardingViewModelTest {
   private val thresholds = SoonThresholdPreferences(settings)
   private val notificationConfig = SettingsNotificationConfigDataSource(settings)
   private val scheduler = FakeScheduler()
+  private var transformEnabled = false
+  private val transformRunner =
+    object : RemoteConfigRunner() {
+      override suspend fun fetchAndActivate(): Result<Boolean> = Result.success(true)
+
+      override fun getBoolean(
+        key: String,
+        defaultValue: Boolean,
+      ): Boolean = transformEnabled
+    }
 
   private lateinit var db: AppDatabase
   private lateinit var pantry: RoomPantryDataSource
@@ -143,6 +155,7 @@ class OnboardingViewModelTest {
       stringProvider = StringProvider(ApplicationProvider.getApplicationContext()),
       appClock = clock,
       eventTracker = EventTracker(emptyList()),
+      transformFeature = TransformFeature(transformRunner),
     )
 
   private fun OnboardingViewModel.goTo(step: OnboardingStep) {
@@ -163,10 +176,49 @@ class OnboardingViewModelTest {
       vm.onContinue()
       seen += vm.state.value.step to vm.state.value.stepNumber
     }
-    expectThat(seen.map { it.first }).containsExactly(*OnboardingStep.entries.toTypedArray())
+    expectThat(seen.map { it.first })
+      .containsExactly(
+        OnboardingStep.Welcome,
+        OnboardingStep.Categories,
+        OnboardingStep.Alerts,
+        OnboardingStep.Privacy,
+        OnboardingStep.Disclaimer,
+      )
     expectThat(seen.map { it.second }).containsExactly(null, 1, 2, 3, 4)
+    expectThat(vm.state.value.stepCount).isEqualTo(4)
     vm.onContinue()
     expectThat(vm.state.value.step).isEqualTo(OnboardingStep.Disclaimer)
+  }
+
+  @Test
+  fun `with transform enabled the Transforma step goes between alerts and privacy and the steps are five`() {
+    transformEnabled = true
+    val withTransform = newViewModel()
+    try {
+      expectThat(withTransform.state.value.stepCount).isEqualTo(5)
+      val seen = mutableListOf(withTransform.state.value.step to withTransform.state.value.stepNumber)
+      repeat(5) {
+        withTransform.onContinue()
+        seen += withTransform.state.value.step to withTransform.state.value.stepNumber
+      }
+      expectThat(seen.map { it.first }).containsExactly(*OnboardingStep.entries.toTypedArray())
+      expectThat(seen.map { it.second }).containsExactly(null, 1, 2, 3, 4, 5)
+
+      withTransform.onBack()
+      withTransform.onBack()
+      expectThat(withTransform.state.value.step).isEqualTo(OnboardingStep.Transform)
+      withTransform.onBack()
+      expectThat(withTransform.state.value.step).isEqualTo(OnboardingStep.Alerts)
+    } finally {
+      withTransform.viewModelScope.cancel()
+    }
+  }
+
+  @Test
+  fun `the Transforma step is not part of the returning flow`() {
+    val state = OnboardingState(returning = true, transformStep = true)
+    expectThat(state.steps)
+      .containsExactly(OnboardingStep.Welcome, OnboardingStep.Privacy, OnboardingStep.Disclaimer)
   }
 
   @Test

@@ -531,6 +531,15 @@
   <string name="ob_privacy_analytics">Estadísticas de uso anónimas</string>
   <string name="ob_privacy_analytics_sub">Qué pantallas usas, nunca qué guardas. Nos ayuda a mejorar la app.</string>
   <string name="ob_privacy_default_off">Desactivado por defecto. Puedes cambiarlo en Ajustes › Privacidad.</string>
+  <string name="ob_transform_title">¿Has cocinado? Apúntalo</string>
+  <string name="ob_transform_body">Transforma saca de la despensa los ingredientes que has gastado y añade lo que ha salido, con su fecha.</string>
+  <string name="ob_transform_sample_chicken">Pollo entero</string>
+  <string name="ob_transform_sample_vegetables">Verduras</string>
+  <string name="ob_transform_sample_result">Caldo</string>
+  <string name="ob_transform_sample_result_meta">4 raciones · 2 congelados</string>
+  <string name="ob_transform_not_recipe_title">No es un recetario</string>
+  <string name="ob_transform_not_recipe_body">No hay recetas ni sugerencias de qué cocinar. Transforma solo apunta lo que has gastado y lo que ha salido.</string>
+  <string name="ob_transform_hint">Siempre está en el botón + de abajo, en la parte {chevron}.</string>
   <string name="ob_continue">Continuar</string>
   <string name="ob_disclaimer_title">Antes de empezar</string>
   <string name="ob_disclaimer_heading">Aviso importante</string>
