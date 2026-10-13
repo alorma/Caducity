@@ -89,7 +89,9 @@ fun TransformStep(
     Spacer(Modifier.height(20.dp))
     Reveal(delayMillis = 2000, modifier = Modifier.fillMaxWidth()) { NotARecipeBookCard() }
     Spacer(Modifier.height(20.dp))
-    Reveal(delayMillis = 2200, modifier = Modifier.fillMaxWidth()) { SplitButtonHint() }
+    Reveal(delayMillis = 2200, modifier = Modifier.fillMaxWidth()) {
+      SplitButtonHint(hint = stringResource(R.string.ob_transform_hint))
+    }
   }
 }
 
@@ -276,11 +278,13 @@ internal fun NotARecipeBookCard(modifier: Modifier = Modifier) {
   }
 }
 
-/** The «+ ⌃» button in small, and where Transforma lives. The «{chevron}» marker of the text is the ⌃ icon. */
+/** The «+ ⌃» button in small, and where Transforma lives. The «{chevron}» marker of [hint] is the ⌃ icon. */
 @Composable
-private fun SplitButtonHint(modifier: Modifier = Modifier) {
+internal fun SplitButtonHint(
+  hint: String,
+  modifier: Modifier = Modifier,
+) {
   val marker = "{chevron}"
-  val hint = stringResource(R.string.ob_transform_hint)
   val before = hint.substringBefore(marker)
   val after = hint.substringAfter(marker, missingDelimiterValue = "")
   val text =
@@ -302,15 +306,18 @@ private fun SplitButtonHint(modifier: Modifier = Modifier) {
     horizontalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-      MiniSplitPart(
+      // Real size and shape of the «+ ⌃» of the navigation bar (SplitAddButton).
+      SplitPart(
         icon = Symbols.Outlined.Add,
-        width = 48.dp,
-        shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp, topEnd = 4.dp, bottomEnd = 4.dp),
+        iconSize = 28.dp,
+        width = 64.dp,
+        shape = RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp, topEnd = 6.dp, bottomEnd = 6.dp),
       )
-      MiniSplitPart(
+      SplitPart(
         icon = Symbols.Outlined.ExpandLess,
-        width = 32.dp,
-        shape = RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp, topEnd = 16.dp, bottomEnd = 16.dp),
+        iconSize = 24.dp,
+        width = 40.dp,
+        shape = RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp, topEnd = 20.dp, bottomEnd = 20.dp),
       )
     }
     Text(
@@ -324,8 +331,9 @@ private fun SplitButtonHint(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun MiniSplitPart(
+private fun SplitPart(
   icon: ImageVector,
+  iconSize: Dp,
   width: Dp,
   shape: RoundedCornerShape,
 ) {
@@ -333,10 +341,10 @@ private fun MiniSplitPart(
     shape = shape,
     color = CaducityTheme.colorScheme.primary,
     contentColor = CaducityTheme.colorScheme.onPrimary,
-    modifier = Modifier.width(width).height(48.dp),
+    modifier = Modifier.width(width).height(64.dp),
   ) {
     Box(contentAlignment = Alignment.Center) {
-      Icon(icon, contentDescription = null, modifier = Modifier.size(22.dp))
+      Icon(icon, contentDescription = null, modifier = Modifier.size(iconSize))
     }
   }
 }

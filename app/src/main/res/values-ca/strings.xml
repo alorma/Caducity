@@ -540,6 +540,10 @@
   <string name="ob_transform_not_recipe_title">No és un receptari</string>
   <string name="ob_transform_not_recipe_body">No hi ha receptes ni suggeriments de què cuinar. Transforma només apunta què has gastat i què n\'ha sortit.</string>
   <string name="ob_transform_hint">Sempre és al botó + de baix, a la part {chevron}.</string>
+  <string name="transform_intro_badge">NOVETAT</string>
+  <string name="transform_intro_body">Has cuinat amb coses del rebost? Apunta-ho: els ingredients en surten i el plat que n\'ha sortit hi entra, amb la seva data.</string>
+  <string name="transform_intro_hint">La trobaràs sempre al botó +, a la part {chevron}.</string>
+  <string name="transform_intro_try">Prova Transforma</string>
   <string name="ob_continue">Continua</string>
   <string name="ob_disclaimer_title">Abans de començar</string>
   <string name="ob_disclaimer_heading">Avís important</string>

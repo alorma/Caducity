@@ -5,7 +5,10 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -19,6 +22,7 @@ import com.alorma.caducity.config.version.AppVersionProvider
 import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.alorma.caducity.feature.deeplink.toRoute
+import com.alorma.caducity.feature.tracking.DismissTransformIntroAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.NavigateToAddAction
 import com.alorma.caducity.feature.tracking.NavigateToTabAction
@@ -47,6 +51,7 @@ import com.alorma.caducity.ui.navigation.StatusList
 import com.alorma.caducity.ui.navigation.TopLevelBackStack
 import com.alorma.caducity.ui.navigation.TopLevelRoute
 import com.alorma.caducity.ui.navigation.Transform
+import com.alorma.caducity.ui.navigation.TransformIntro
 import com.alorma.caducity.ui.navigation.toStatus
 import com.alorma.caducity.ui.screen.add.AddArgs
 import com.alorma.caducity.ui.screen.add.AddScreen
@@ -72,6 +77,9 @@ import com.alorma.caducity.ui.screen.status.StatusListScreen
 import com.alorma.caducity.ui.screen.transform.TransformArgs
 import com.alorma.caducity.ui.screen.transform.TransformFeature
 import com.alorma.caducity.ui.screen.transform.TransformScreen
+import com.alorma.caducity.ui.screen.transform.intro.TransformIntroFlag
+import com.alorma.caducity.ui.screen.transform.intro.TransformIntroSheet
+import com.alorma.caducity.ui.screen.transform.intro.shouldShowTransformIntro
 import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerArgs
 import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerScreen
 import com.alorma.caducity.ui.theme.AppTheme
@@ -85,6 +93,7 @@ fun App(
   deepLinkAction: DeepLinkAction? = null,
   onDeepLinkHandled: () -> Unit = {},
   onboardingFlag: OnboardingFlag = koinInject(),
+  transformIntroFlag: TransformIntroFlag = koinInject(),
   disclaimerPreferences: DisclaimerPreferences = koinInject(),
   eventTracker: EventTracker = koinInject(),
   snackbarEvents: GlobalSnackbarEvents = koinInject(),
@@ -102,16 +111,39 @@ fun App(
             if (onboardingFlag.isEnabled() || disclaimerPreferences.needsAcceptance()) Onboarding else Home,
         )
       }
+    // The «Novetat Transforma» modal waits for a normal opening: not after a deep link, widget or notification.
+    var openedFromOutside by retain { mutableStateOf(deepLinkAction != null) }
     LaunchedEffect(deepLinkAction) {
       deepLinkAction?.let {
+        openedFromOutside = true
         navigation.openFromOutside(it.toRoute())
         onDeepLinkHandled()
       }
     }
     val activity = LocalActivity.current
     val uriHandler = LocalUriHandler.current
-    val visibleScreen = navigation.backStack.last { it !is ItemActions && it !is QuickCategory }
+    val visibleScreen =
+      navigation.backStack.last { it !is ItemActions && it !is QuickCategory && it !is TransformIntro }
     val transformEnabled = rememberRemoteConfig<TransformFeature>().isEnabled()
+
+    var introPending by retain { mutableStateOf(transformIntroFlag.isEnabled()) }
+    val showTransformIntro =
+      shouldShowTransformIntro(
+        featureEnabled = transformEnabled,
+        introPending = introPending,
+        onboardingShowing = navigation.backStack.any { it is Onboarding },
+        openedFromOutside = openedFromOutside,
+        // Only Home with nothing on top: no other screen, dialog, sheet or selection is open.
+        overlayOpen = navigation.current !is Home,
+      )
+    LaunchedEffect(showTransformIntro) {
+      if (showTransformIntro) {
+        // Seen as soon as it opens, however it closes (button, outside tap or back).
+        introPending = false
+        transformIntroFlag.disable()
+        navigation.navigate(TransformIntro)
+      }
+    }
 
     AppShell(
       currentTab = navigation.currentTab,
@@ -145,6 +177,8 @@ fun App(
         modifier = Modifier,
         backStack = navigation.backStack,
         onBack = {
+          // Back or a tap outside the «Novetat Transforma» modal is the same as «Ara no».
+          if (navigation.current is TransformIntro) eventTracker.trackAction(DismissTransformIntroAction())
           if (!navigation.pop()) activity?.finish()
         },
         entryDecorators =
@@ -282,6 +316,19 @@ fun App(
             }
             entry<QuickCategory>(metadata = BottomSheetSceneStrategy.bottomSheet()) {
               QuickCategorySheet(onClose = { navigation.pop() })
+            }
+            entry<TransformIntro>(metadata = BottomSheetSceneStrategy.bottomSheet()) {
+              TransformIntroSheet(
+                onTry = {
+                  eventTracker.trackAction(NavigateToTransformAction(origin = "home", source = "intro_modal"))
+                  navigation.pop()
+                  navigation.navigate(Transform())
+                },
+                onNotNow = {
+                  eventTracker.trackAction(DismissTransformIntroAction())
+                  navigation.pop()
+                },
+              )
             }
           },
       )

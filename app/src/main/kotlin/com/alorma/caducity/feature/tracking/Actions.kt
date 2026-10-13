@@ -161,7 +161,10 @@ class AddCloseAction(
 
 // Transform Screen Actions
 
-/** [origin]: "status_list", "item_actions" or "shell"; [source]: "selection", "item_actions" or "split_menu". */
+/**
+ * [origin]: "status_list", "item_actions", "shell" or "home"; [source]: "selection", "item_actions", "split_menu" or
+ * "intro_modal" («Prova Transforma» of the «Novetat Transforma» modal).
+ */
 class NavigateToTransformAction(
   origin: String,
   source: String,
@@ -169,6 +172,14 @@ class NavigateToTransformAction(
     actionName = "transform",
     origin = origin,
     parameters = mapOf("source" to source),
+  )
+
+/** «Ara no» (or a tap outside) on the «Novetat Transforma» modal. */
+class DismissTransformIntroAction :
+  NavigationAction(
+    actionName = "dismiss_transform_intro",
+    origin = "home",
+    parameters = mapOf("source" to "intro_modal"),
   )
 
 class TransformCloseAction :
