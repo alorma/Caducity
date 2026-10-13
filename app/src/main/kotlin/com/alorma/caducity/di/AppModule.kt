@@ -20,6 +20,7 @@ import com.alorma.caducity.domain.usecase.TransformItemsUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
 import com.alorma.caducity.domain.usecase.backup.ImportBackupUseCase
+import com.alorma.caducity.feature.appicon.appIconModule
 import com.alorma.caducity.feature.backup.AndroidBackupFileHandler
 import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.feature.consent.consentModule
@@ -69,6 +70,7 @@ val appModule =
     includes(domainModule)
     includes(fireAndForgetModule)
     includes(consentModule)
+    includes(appIconModule)
     includes(reviewModule)
     includes(trackingModule)
 
