@@ -1,6 +1,3 @@
-Versión 1.0.0:
-• Un aspecto totalmente nuevo, con tema claro y oscuro
-• Calendario nuevo: mira qué caduca cada día del mes
-• Añade productos más rápido, escribiendo la fecha con el teclado numérico
-• Elige con cuántos días de antelación empieza «pronto» en cada categoría
-• Un único aviso diario, a la hora que elijas
+Versión 1.0.1:
+• Hasta ahora solo podías disfrutar del helado de vainilla. Ahora también puedes darte un capricho con Snow Cone, Snow Cone v2, Tiramisú y Upside Down Cake
+• En claro: Caducity ahora funciona desde Android 12
