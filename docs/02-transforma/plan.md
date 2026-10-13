@@ -1,6 +1,7 @@
 # Pla: Transforma (ingredients → elaboracions)
 
-Especificació: [`spec.md`](spec.md). Captures: `captures/Transforma{Seleccio,Caldo,Pollastre,Ingredient}`, `EntradaMenu`, `EntradaAccions`.
+Especificació: [`spec.md`](spec.md). Captures: `captures/Transforma{Seleccio,Caldo,Pollastre,Ingredient,Buit}`, `EntradaMenu`, `EntradaAccions`.
+**Canvi de disseny (2026-10-13):** nou **accés lliure** (`TransformaBuit`, vegeu «Accés lliure» a l'especificació: sense ingredients, nom + categoria + data obligatoris) i captures actualitzades. Afecta les fases 2 i 3 ja validades (vegeu «Fase 2b» i «Fase 3b») i la 5. Validació sempre al Pixel 8a, mai a l'emulador.
 **Ordre: segona de les dues**, després de [diverses unitats](../01-diverses-unitats/plan.md). Independent a nivell de codi, però comparteix el patró de «Desfés» amb snapshots.
 
 ## Punt de partida i diferències amb l'especificació
@@ -56,6 +57,15 @@ Validada amb l'app `.dev` al Pixel 8a: v3 → v4 amb 61 ítems, 5 categories i 2
 
 Decisió oberta 4 aplicada: un resultat congelat guarda els dies fins a la seva data (`TODO(transforma-open-4)`); es rebutja amb data passada.
 
+## Fase 2b — Accés lliure al cas d'ús (nova, pendent)
+
+1. `TransformItemsUseCase.transform` accepta **0 ingredients** (ara falla amb `ItemNotFound`); falla només si no hi ha resultats.
+2. `PantryDataSource.transform` sense ingredients: **no crea `Transformation`**; els resultats són productes nous normals (sense `originTransformationId`). El desfés elimina només els resultats.
+3. Els resultats sense ingredients necessiten categoria i data explícites (rebutjar-los al cas d'ús si falten; els congelats no necessiten data).
+4. Tests: sense ingredients crea resultats i cap `Transformation`; desfés els elimina; categoria/data absents es rebutgen.
+
+**Sortida:** cas d'ús verd també sense ingredients.
+
 ## Fase 3 — Pantalla Transforma (sense entrades)
 
 1. Ruta a pantalla completa a `Routes.kt` / `AppShell.kt`, amb `TransformViewModel` (`BaseViewModel<TransformNavigation, TransformNavigationSideEffect, TransformSideEffect>`) i `TransformState`.
@@ -76,6 +86,18 @@ Decisió oberta 4 aplicada: un resultat congelat guarda els dies fins a la seva 
 
 Validada amb l'app `.dev` al Pixel 8a: desa de veritat i «Desfés» restaura els ingredients. «Afegeix ingredient» no fa res fins a la fase 4. Decisió oberta 2 aplicada: un ingredient caducat dona data per defecte «avui» (`TODO(transforma-open-2)`).
 
+## Fase 3b — Pantalla en accés lliure (nova, pendent)
+
+Ruta `Transform` amb `itemIds` buit = accés lliure.
+1. Secció «Ingredients · opcional» amb estat buit («Què has cuinat?», icona de cassola, «Afegeix ingredient») segons `TransformaBuit`; textos nous a `values`, `values-ca`, `values-es`.
+2. Un resultat buit amb Nom autoenfocat; xips **Categoria** i **Caducitat** buits (traç discontinu) i text d'ajuda «Sense ingredients, la categoria i la data les tries tu.»; nota al peu «Desa s'activa quan hi ha nom, categoria i data.»
+3. `canSave`: amb ingredients, com ara; sense, exigeix nom + categoria + data (la data no si tots els resultats són congelats). Afegir un ingredient torna al comportament normal (data per defecte = la de l'ingredient que caduca primer).
+4. Treure l'últim ingredient **no tanca** la pantalla en accés lliure (en els altres modes, sí).
+5. Snackbar sense ingredients: «M productes afegits · Desfés».
+6. Previews clar/fosc de l'estat buit; test d'UI/ViewModel de `canSave`.
+
+**Sortida:** la ruta de Depuració pot obrir Transforma buit i desar sense ingredients.
+
 ## Fase 4 — Selector d'ingredients
 
 1. `IngredientPickerScreen` a pantalla completa: cerca, xips d'estat (Tots · Aviat · Fresc · Congelat) i de categoria, llista amb casella, meta i pastilla d'estat; inclou congelats; els ja afegits surten marcats; botó «Afegeix N ingredients».
@@ -92,10 +114,10 @@ Validada a l'emulador (el Pixel no era a l'adb): preselecció, recompte del bot�
 
 **Flag:** totes les entrades noves (barra de selecció, full d'Accions, pulsació llarga al «+») s'han de mostrar només si `TransformFeature` (`transform_enabled`, Remote Config, apagat per defecte) és actiu. Ja protegeix l'entrada de Depuració. L'activació per als usuaris és una decisió a part.
 
-1. **Barra de selecció** (`StatusListScreen`/`StatusListViewModel`, i Categoria si té selecció): grup connectat **Consumit · Congela · Transforma**, 68 dp, Transforma `primary`, etiqueta amb recompte per a accessibilitat. Seleccions de diverses seccions i de diverses unitats.
+1. **Barra de selecció** (`StatusListScreen`/`StatusListViewModel`, i Categoria si té selecció): grup connectat **Consumit · Congela · Transforma** (`TransformaSeleccio`: icona sobre text, 68 dp, Transforma `primary`, Congela en to gelat), etiqueta amb recompte per a accessibilitat. Substitueix els botons de text actuals (decisió pendent: com queda a Caducats i a Congelats, que no tenen Congela). Seleccions de diverses seccions i de diverses unitats.
 2. **Full d'Accions** (`ItemActionsSheet`): fila «Transforma amb aquest» entre «Mou…» i «Esborra»; obre Transforma amb 1 unitat.
-3. **Pulsació llarga al «+»** (`FloatingNavBar`/Inici): menú Transforma / Afegeix producte, scrim 45 %; el toc normal continua obrint Afegeix.
-4. En desar: files d'ingredients es tanquen en cascada (80 ms), torna a l'origen (la selecció es tanca), snackbar «N ingredients transformats en M productes · Desfés».
+3. **Pulsació llarga al «+»** (`FloatingNavBar`/Inici): menú Transforma / Afegeix producte, scrim 45 %; el toc normal continua obrint Afegeix. **Transforma obre l'accés lliure** (`Transform(itemIds = [])`, fases 2b i 3b; han d'estar fetes abans).
+4. En desar: files d'ingredients es tanquen en cascada (80 ms), torna a l'origen (la selecció es tanca), snackbar «N ingredients transformats en M productes · Desfés» (sense ingredients: «M productes afegits · Desfés»).
 5. Tracking a `feature/tracking/Actions.kt` (`nav_transform`, `source = selection|long_press_fab|item_actions`; sense dades d'usuari).
 
 ## Fase 6 — Qualitat
@@ -125,7 +147,9 @@ Receptes, escalat de quantitats, pes/volum, historial visible de transformacions
 | 2 — Cas d'ús transaccional | Validada |
 | 3 — Pantalla Transforma | Validada |
 | 4 — Selector d'ingredients | Validada |
-| 5 — Entrades i flux final | Pendent |
+| 2b — Accés lliure al cas d'ús | Pendent |
+| 3b — Pantalla en accés lliure | Pendent |
+| 5 — Entrades i flux final | Pendent (després de 2b i 3b) |
 | 6 — Qualitat | Pendent |
 
 Només es passa a «Validada» quan Bernat l'aprova (`.claude/rules/phased-work.md`).
