@@ -36,7 +36,9 @@ class IngredientPickerViewModel(
       IngredientPickerNavigation.Close -> emitNavigationSideEffect(IngredientPickerNavigationSideEffect.Close)
       IngredientPickerNavigation.Confirm -> {
         val current = _state.value
-        results.deliver(current.groups.chosenItemIds(current.selectedKeys, args.selectedItemIds))
+        results.deliver(
+          current.groups.chosenItemIds(current.selectedKeys, args.selectedItemIds, current.statusFilters),
+        )
         emitNavigationSideEffect(IngredientPickerNavigationSideEffect.Close)
       }
     }

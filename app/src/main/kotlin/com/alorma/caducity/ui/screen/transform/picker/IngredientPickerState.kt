@@ -80,11 +80,20 @@ fun List<ProductGroup>.keysOf(itemIds: Collection<String>): Set<String> =
 
 /**
  * One unit per selected product, which enters Transform as an ingredient: the unit that was already an
- * ingredient ([current]) or, for a new one, the closest to expire.
+ * ingredient ([current]) or, for a new one, the closest to expire among the units in a chosen status
+ * ([statusFilters]; no filter, or a product with none of them, means all its units).
  */
 fun List<ProductGroup>.chosenItemIds(
   keys: Set<String>,
   current: Collection<String>,
+  statusFilters: Set<ExpiryStatus> = emptySet(),
 ): List<String> =
   filter { it.key in keys }
-    .map { group -> group.units.firstOrNull { it.itemId in current }?.itemId ?: group.nearest.itemId }
+    .map { group ->
+      group.units.firstOrNull { it.itemId in current }?.itemId
+        ?: group.units
+          .filter { it.status in statusFilters }
+          .ifEmpty { group.units }
+          .first()
+          .itemId
+    }

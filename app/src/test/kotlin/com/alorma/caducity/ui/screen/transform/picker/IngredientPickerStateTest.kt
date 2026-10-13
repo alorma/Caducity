@@ -133,6 +133,17 @@ class IngredientPickerStateTest {
   }
 
   @Test
+  fun `a new product enters with its closest unit in the filtered status`() {
+    expectThat(
+      groups.chosenItemIds(setOf("Pastanagues"), current = emptyList(), statusFilters = setOf(ExpiryStatus.FRESH)),
+    ).containsExactly("carrot1")
+    // A product with none of the chosen statuses falls back to its closest unit.
+    expectThat(
+      groups.chosenItemIds(setOf("Pastanagues"), current = emptyList(), statusFilters = setOf(ExpiryStatus.FROZEN)),
+    ).containsExactly("carrot2")
+  }
+
+  @Test
   fun `a product that was already an ingredient keeps its unit`() {
     expectThat(groups.chosenItemIds(setOf("Pastanagues"), current = listOf("carrot1"))).containsExactly("carrot1")
   }
