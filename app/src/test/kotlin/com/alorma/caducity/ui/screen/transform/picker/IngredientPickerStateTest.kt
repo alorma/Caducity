@@ -149,6 +149,32 @@ class IngredientPickerStateTest {
   }
 
   @Test
+  fun `the expired count is the selected products that enter with an expired unit`() {
+    expectThat(IngredientPickerState(groups = groups).expiredSelectedCount).isEqualTo(0)
+
+    val state = IngredientPickerState(groups = groups, selectedKeys = setOf("Iogurt", "Llet", "Pastanagues"))
+    expectThat(state.expiredSelectedCount).isEqualTo(2)
+  }
+
+  @Test
+  fun `the expired count follows the unit that enters, not the product`() {
+    val llet = setOf("Llet")
+    // A status filter makes the fresh unit the one that enters.
+    expectThat(
+      IngredientPickerState(groups = groups, selectedKeys = llet, statusFilters = setOf(ExpiryStatus.FRESH))
+        .expiredSelectedCount,
+    ).isEqualTo(0)
+    // A product that was already an ingredient keeps its live unit.
+    expectThat(
+      IngredientPickerState(groups = groups, selectedKeys = llet, currentItemIds = listOf("milk"))
+        .expiredSelectedCount,
+    ).isEqualTo(0)
+    expectThat(
+      IngredientPickerState(groups = groups, selectedKeys = llet).expiredSelectedCount,
+    ).isEqualTo(1)
+  }
+
+  @Test
   fun `selection survives a filter that hides it`() {
     val state = IngredientPickerState(groups = groups, selectedKeys = setOf("Llet"), query = "pern")
     expectThat(state.visibleGroups.map { it.name }).containsExactly("Pernil dolç")

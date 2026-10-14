@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.transform.picker
 
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.PantryEntry
 import com.alorma.caducity.domain.model.ProductGroup
 import com.alorma.caducity.domain.model.normalizeForSearch
 
@@ -22,11 +23,20 @@ data class IngredientPickerState(
   val categoryFilters: Set<String> = emptySet(),
   /** Keys of the selected products; they stay selected while a filter hides them. */
   val selectedKeys: Set<String> = emptySet(),
+  /** Units that are already ingredients: their products keep that unit when they are confirmed. */
+  val currentItemIds: List<String> = emptyList(),
 ) {
   val visibleGroups: List<ProductGroup>
     get() = groups.filterPickerGroups(query, statusFilters, categoryFilters)
 
   val selectedCount: Int get() = selectedKeys.size
+
+  /** Selected products that enter with an expired unit, which the note above the button warns about. */
+  val expiredSelectedCount: Int
+    get() =
+      groups
+        .chosenUnits(selectedKeys, currentItemIds, statusFilters)
+        .count { it.status == ExpiryStatus.EXPIRED }
 
   /** Statuses present among the listed products, in display order. */
   val availableStatuses: List<ExpiryStatus>
@@ -80,13 +90,19 @@ fun List<ProductGroup>.chosenItemIds(
   keys: Set<String>,
   current: Collection<String>,
   statusFilters: Set<ExpiryStatus> = emptySet(),
-): List<String> =
+): List<String> = chosenUnits(keys, current, statusFilters).map { it.itemId }
+
+/** The units that [chosenItemIds] picks, with their status. */
+fun List<ProductGroup>.chosenUnits(
+  keys: Set<String>,
+  current: Collection<String>,
+  statusFilters: Set<ExpiryStatus> = emptySet(),
+): List<PantryEntry> =
   filter { it.key in keys }
     .map { group ->
-      group.units.firstOrNull { it.itemId in current }?.itemId
+      group.units.firstOrNull { it.itemId in current }
         ?: group.units
           .filter { it.status in statusFilters }
           .ifEmpty { group.units }
           .first()
-          .itemId
     }

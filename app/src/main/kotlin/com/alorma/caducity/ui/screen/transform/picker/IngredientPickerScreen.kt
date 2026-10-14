@@ -52,6 +52,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -60,6 +63,7 @@ import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.Close
 import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
 import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
+import com.alorma.caducity.base.ui.icons.symbols.Info
 import com.alorma.caducity.base.ui.icons.symbols.Search
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.Category
@@ -126,7 +130,11 @@ internal fun IngredientPickerContent(
     modifier = modifier,
     topBar = { PickerTopBar(onClose = actions.onClose) },
     bottomBar = {
-      PickerBottomBar(count = state.selectedCount, onConfirm = actions.onConfirm)
+      PickerBottomBar(
+        count = state.selectedCount,
+        expiredCount = state.expiredSelectedCount,
+        onConfirm = actions.onConfirm,
+      )
     },
   ) { insets ->
     ResponsiveCenteredContainer {
@@ -423,25 +431,45 @@ private fun ExpiryStatus.label(): String =
 @Composable
 private fun PickerBottomBar(
   count: Int,
+  expiredCount: Int,
   onConfirm: () -> Unit,
 ) {
   ResponsiveCenteredContainer(fillHeight = false) {
-    Button(
-      onClick = onConfirm,
-      enabled = count > 0,
-      modifier =
-        Modifier
-          .navigationBarsPadding()
-          .fillMaxWidth()
-          .padding(horizontal = ScreenGutter, vertical = 12.dp)
-          .heightIn(min = 56.dp),
-    ) {
-      Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp))
-      Text(
-        text = pluralStringResource(R.plurals.transform_picker_add, count, count),
-        style = CaducityTheme.typography.labelLarge,
-        modifier = Modifier.padding(start = 10.dp),
-      )
+    Column(modifier = Modifier.navigationBarsPadding().padding(horizontal = ScreenGutter, vertical = 12.dp)) {
+      if (expiredCount > 0) {
+        ExpiredNote(count = expiredCount)
+        Spacer(Modifier.size(12.dp))
+      }
+      Button(
+        onClick = onConfirm,
+        enabled = count > 0,
+        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+      ) {
+        Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+        Text(
+          text = pluralStringResource(R.plurals.transform_picker_add, count, count),
+          style = CaducityTheme.typography.labelLarge,
+          modifier = Modifier.padding(start = 10.dp),
+        )
+      }
     }
+  }
+}
+
+/** Warns that the selection includes expired products, so the result will expire today. */
+@Composable
+private fun ExpiredNote(count: Int) {
+  val color = CaducityTheme.colors.expired.onContainer
+  Row(
+    modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Icon(Symbols.Outlined.Info, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
+    Text(
+      text = pluralStringResource(R.plurals.transform_picker_expired_note, count, count),
+      style = CaducityTheme.typography.bodyMedium,
+      color = color,
+      modifier = Modifier.padding(start = 10.dp),
+    )
   }
 }
