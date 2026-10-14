@@ -68,7 +68,8 @@ class TransformViewModel(
       val picked = args.itemIds.mapNotNull { active[it] }
       val ingredients = picked.toIngredients(active.values.toList(), unitStatuses())
       initialIngredients = ingredients.signature()
-      _state.update { it.copy(ingredients = ingredients) }
+      // The picker can answer before this load ends (free entry starts empty): what it brought is not overwritten.
+      _state.update { if (it.ingredients.isEmpty()) it.copy(ingredients = ingredients) else it }
     }
   }
 
