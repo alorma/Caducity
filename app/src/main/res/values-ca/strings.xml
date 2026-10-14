@@ -527,8 +527,9 @@
   <string name="margins_restored">Valors suggerits restaurats</string>
   <string name="margins_failed">No s\'ha pogut desar la durada</string>
   <string name="category_editor_margin">Durada habitual · opcional</string>
-  <string name="category_editor_margin_help">Llisca o toca un punt. Per suggerir la data quan afegeixes un producte a «%1$s»: %2$s.</string>
-  <string name="category_editor_margin_this_category">aquesta categoria</string>
+  <string name="category_editor_margin_help">Per suggerir la data quan afegeixes un producte a «%1$s»: %2$s.</string>
+  <string name="category_editor_margin_help_blank">Per suggerir la data quan afegeixes un producte a aquesta categoria: %1$s.</string>
+  <string name="category_editor_margin_help_none">Sense durada · la data la poses tu.</string>
   <string name="ob_alerts_default_help">Aquest és el marge d\'«Aviat» per a tots els productes. Ho pots canviar després a Ajustos.</string>
   <string name="threshold_unit_days">dies</string>
   <string name="threshold_unit_weeks">setmanes</string>
@@ -547,10 +548,5 @@
     <item quantity="one">%d mes</item>
     <item quantity="many">%d mesos</item>
     <item quantity="other">%d mesos</item>
-  </plurals>
-  <plurals name="threshold_days_before">
-    <item quantity="one">%d dia abans de caducar</item>
-    <item quantity="many">%d dies abans de caducar</item>
-    <item quantity="other">%d dies abans de caducar</item>
   </plurals>
 </resources>

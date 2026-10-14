@@ -2,11 +2,9 @@ package com.alorma.caducity.ui.components.threshold
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -20,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
@@ -96,24 +93,12 @@ fun ThresholdSlider(
   val label = thresholdLabel(days)
 
   Column(modifier = modifier.fillMaxWidth()) {
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      verticalAlignment = Alignment.Bottom,
-      horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-      Text(
-        text = label,
-        style = CaducityTheme.typography.headlineMedium.copy(fontSize = 28.sp, lineHeight = 32.sp),
-        fontWeight = FontWeight.ExtraBold,
-        color = CaducityTheme.colorScheme.onSurface,
-      )
-      Text(
-        text = pluralStringResource(R.plurals.threshold_days_before, days, days),
-        style = CaducityTheme.typography.bodySmall,
-        color = CaducityTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(bottom = 4.dp),
-      )
-    }
+    Text(
+      text = label,
+      style = CaducityTheme.typography.headlineMedium.copy(fontSize = 28.sp, lineHeight = 32.sp),
+      fontWeight = FontWeight.ExtraBold,
+      color = CaducityTheme.colorScheme.onSurface,
+    )
 
     val sliderState =
       rememberSliderState(

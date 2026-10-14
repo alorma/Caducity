@@ -505,8 +505,9 @@
   <string name="margins_restored">Suggested values restored</string>
   <string name="margins_failed">Couldn\'t save the duration</string>
   <string name="category_editor_margin">Usual duration · optional</string>
-  <string name="category_editor_margin_help">Slide or tap a dot. To suggest the date when you add a product to “%1$s”: %2$s.</string>
-  <string name="category_editor_margin_this_category">this category</string>
+  <string name="category_editor_margin_help">To suggest the date when you add a product to “%1$s”: %2$s.</string>
+  <string name="category_editor_margin_help_blank">To suggest the date when you add a product to this category: %1$s.</string>
+  <string name="category_editor_margin_help_none">No duration · you set the date.</string>
   <string name="ob_alerts_default_help">This is the “Soon” margin for every product. You can change it later in Settings.</string>
   <string name="threshold_unit_days">days</string>
   <string name="threshold_unit_weeks">weeks</string>
@@ -522,9 +523,5 @@
   <plurals name="threshold_months">
     <item quantity="one">%d month</item>
     <item quantity="other">%d months</item>
-  </plurals>
-  <plurals name="threshold_days_before">
-    <item quantity="one">%d day before it expires</item>
-    <item quantity="other">%d days before it expires</item>
   </plurals>
 </resources>

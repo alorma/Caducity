@@ -527,8 +527,9 @@
   <string name="margins_restored">Valores sugeridos restaurados</string>
   <string name="margins_failed">No se ha podido guardar la duración</string>
   <string name="category_editor_margin">Duración habitual · opcional</string>
-  <string name="category_editor_margin_help">Desliza o toca un punto. Para sugerir la fecha al añadir un producto a «%1$s»: %2$s.</string>
-  <string name="category_editor_margin_this_category">esta categoría</string>
+  <string name="category_editor_margin_help">Para sugerir la fecha al añadir un producto a «%1$s»: %2$s.</string>
+  <string name="category_editor_margin_help_blank">Para sugerir la fecha al añadir un producto a esta categoría: %1$s.</string>
+  <string name="category_editor_margin_help_none">Sin duración · la fecha la pones tú.</string>
   <string name="ob_alerts_default_help">Este es el margen de «Pronto» para todos los productos. Puedes cambiarlo luego en Ajustes.</string>
   <string name="threshold_unit_days">días</string>
   <string name="threshold_unit_weeks">semanas</string>
@@ -547,10 +548,5 @@
     <item quantity="one">%d mes</item>
     <item quantity="many">%d meses</item>
     <item quantity="other">%d meses</item>
-  </plurals>
-  <plurals name="threshold_days_before">
-    <item quantity="one">%d día antes de que caduque</item>
-    <item quantity="many">%d días antes de que caduque</item>
-    <item quantity="other">%d días antes de que caduque</item>
   </plurals>
 </resources>

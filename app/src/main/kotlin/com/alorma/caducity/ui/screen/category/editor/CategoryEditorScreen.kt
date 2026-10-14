@@ -212,13 +212,20 @@ private fun CategoryEditorContent(
           verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
           ThresholdSlider(days = state.shownDurationDays, onDaysChange = onUsualDurationChange)
+          val categoryName = state.name.trim()
           Text(
             text =
-              stringResource(
-                R.string.category_editor_margin_help,
-                state.name.trim().ifBlank { stringResource(R.string.category_editor_margin_this_category) },
-                thresholdLabel(state.shownDurationDays),
-              ),
+              when {
+                state.usualDurationDays == null -> stringResource(R.string.category_editor_margin_help_none)
+                categoryName.isBlank() ->
+                  stringResource(R.string.category_editor_margin_help_blank, thresholdLabel(state.shownDurationDays))
+                else ->
+                  stringResource(
+                    R.string.category_editor_margin_help,
+                    categoryName,
+                    thresholdLabel(state.shownDurationDays),
+                  )
+              },
             style = CaducityTheme.typography.bodySmall,
             color = CaducityTheme.colorScheme.onSurfaceVariant,
           )
