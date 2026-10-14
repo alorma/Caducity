@@ -5,15 +5,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -37,7 +37,7 @@ import com.alorma.caducity.domain.model.ProductRowModel
 import com.alorma.caducity.ui.components.category.CategoryIcons
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
-import com.alorma.caducity.ui.components.connected.ConnectedRow
+import com.alorma.caducity.ui.components.connected.connectedRowColors
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
@@ -59,24 +59,17 @@ fun ProductRow(
 ) {
   val statusColors = model.status.colors()
   val detailText = productRowDetailText(model)
-  ConnectedRow(
-    index = index,
-    count = count,
+  SegmentedListItem(
     onClick = onClick,
+    shapes = ListItemDefaults.segmentedShapes(index, count),
     modifier = modifier.heightIn(min = 64.dp),
+    colors = connectedRowColors(),
     contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
-  ) {
-    model.category?.let {
-      CategoryShapeIcon(shape = it.shape, icon = CategoryIcons.vectorOf(it.icon), size = 44.dp)
-      Spacer(Modifier.width(14.dp))
-    }
-    Column(modifier = Modifier.weight(1f)) {
-      Text(
-        text = model.name,
-        style = CaducityTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-      )
+    leadingContent =
+      model.category?.let {
+        { CategoryShapeIcon(shape = it.shape, icon = CategoryIcons.vectorOf(it.icon), size = 44.dp) }
+      },
+    supportingContent = {
       if (model.detail is ProductRowDetail.WithDays) {
         Text(
           text = detailText,
@@ -94,39 +87,57 @@ fun ProductRow(
           overflow = TextOverflow.Ellipsis,
         )
       }
-    }
-    Spacer(Modifier.width(8.dp))
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-      when (model.status) {
-        ExpiryStatus.EXPIRED ->
-          RoundButton(
-            icon = Symbols.Outlined.Delete,
-            contentDescription = stringResource(R.string.status_action_discard, model.name),
-            tint = CaducityTheme.colors.expired.strong,
-            onClick = onDiscard,
-          )
-        ExpiryStatus.SOON, ExpiryStatus.FRESH -> {
-          RoundButton(
-            icon = Symbols.Outlined.Check,
-            contentDescription = stringResource(R.string.home_mark_consumed, model.name),
-            tint = CaducityTheme.colors.fresh.strong,
-            onClick = onConsume,
-          )
-          RoundButton(
-            icon = Symbols.Outlined.AcUnit,
-            contentDescription = stringResource(R.string.status_action_freeze, model.name),
-            tint = CaducityTheme.colors.frozen.strong,
-            onClick = onFreeze,
-          )
-        }
-        ExpiryStatus.FROZEN ->
-          RoundButton(
-            icon = Symbols.Outlined.Check,
-            contentDescription = stringResource(R.string.home_mark_consumed, model.name),
-            tint = CaducityTheme.colors.fresh.strong,
-            onClick = onConsume,
-          )
+    },
+    trailingContent = {
+      ProductRowActions(model = model, onConsume = onConsume, onFreeze = onFreeze, onDiscard = onDiscard)
+    },
+  ) {
+    Text(
+      text = model.name,
+      style = CaducityTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+      maxLines = 1,
+      overflow = TextOverflow.Ellipsis,
+    )
+  }
+}
+
+@Composable
+private fun ProductRowActions(
+  model: ProductRowModel,
+  onConsume: () -> Unit,
+  onFreeze: () -> Unit,
+  onDiscard: () -> Unit,
+) {
+  Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    when (model.status) {
+      ExpiryStatus.EXPIRED ->
+        RoundButton(
+          icon = Symbols.Outlined.Delete,
+          contentDescription = stringResource(R.string.status_action_discard, model.name),
+          tint = CaducityTheme.colors.expired.strong,
+          onClick = onDiscard,
+        )
+      ExpiryStatus.SOON, ExpiryStatus.FRESH -> {
+        RoundButton(
+          icon = Symbols.Outlined.Check,
+          contentDescription = stringResource(R.string.home_mark_consumed, model.name),
+          tint = CaducityTheme.colors.fresh.strong,
+          onClick = onConsume,
+        )
+        RoundButton(
+          icon = Symbols.Outlined.AcUnit,
+          contentDescription = stringResource(R.string.status_action_freeze, model.name),
+          tint = CaducityTheme.colors.frozen.strong,
+          onClick = onFreeze,
+        )
       }
+      ExpiryStatus.FROZEN ->
+        RoundButton(
+          icon = Symbols.Outlined.Check,
+          contentDescription = stringResource(R.string.home_mark_consumed, model.name),
+          tint = CaducityTheme.colors.fresh.strong,
+          onClick = onConsume,
+        )
     }
   }
 }

@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +29,7 @@ import com.alorma.caducity.base.ui.icons.symbols.CloudUpload
 import com.alorma.caducity.base.ui.icons.symbols.Smartphone
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
-import com.alorma.caducity.ui.components.connected.ConnectedRow
+import com.alorma.caducity.ui.components.connected.connectedRowColors
 import com.alorma.caducity.ui.components.motion.Reveal
 import com.alorma.caducity.ui.components.switch.CaducitySwitch
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingBackAndPrimary
@@ -113,14 +115,15 @@ private fun InfoRow(
   icon: ImageVector,
   text: String,
 ) {
-  ConnectedRow(index = index, count = 2, contentPadding = PaddingValues(16.dp)) {
-    Icon(icon, contentDescription = null, tint = CaducityTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
-    Text(
-      text = text,
-      style = CaducityTheme.typography.bodyMedium,
-      color = CaducityTheme.colorScheme.onSurface,
-      modifier = Modifier.padding(start = 16.dp),
-    )
+  SegmentedListItem(
+    shapes = ListItemDefaults.segmentedShapes(index, 2),
+    colors = connectedRowColors(),
+    contentPadding = PaddingValues(16.dp),
+    leadingContent = {
+      Icon(icon, contentDescription = null, tint = CaducityTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+    },
+  ) {
+    Text(text = text, style = CaducityTheme.typography.bodyMedium, color = CaducityTheme.colorScheme.onSurface)
   }
 }
 

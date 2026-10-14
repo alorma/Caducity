@@ -24,6 +24,8 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
@@ -75,7 +77,7 @@ import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.chips.QuickDateChips
 import com.alorma.caducity.ui.components.chips.QuickDateOption
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
-import com.alorma.caducity.ui.components.connected.ConnectedRow
+import com.alorma.caducity.ui.components.connected.connectedRowColors
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogHost
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
@@ -508,26 +510,24 @@ private fun MoreActions(
   content: @Composable () -> Unit,
 ) {
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(if (open) 16.dp else 0.dp)) {
-    ConnectedRow(
-      index = 0,
-      count = 1,
+    SegmentedListItem(
       onClick = onToggle,
-      modifier = Modifier.height(56.dp).fillMaxWidth(),
+      shapes = ListItemDefaults.segmentedShapes(0, 1),
+      modifier = Modifier.heightIn(min = 56.dp).fillMaxWidth(),
       contentPadding = PaddingValues(horizontal = 16.dp),
-      containerColor = CaducityTheme.colorScheme.surfaceContainer,
+      colors = connectedRowColors(),
+      leadingContent = {
+        Icon(Symbols.Outlined.MoreHoriz, contentDescription = null, tint = CaducityTheme.colorScheme.onSurfaceVariant)
+      },
+      trailingContent = {
+        Icon(
+          if (open) Symbols.Outlined.ExpandLess else Symbols.Outlined.ExpandMore,
+          contentDescription = null,
+          tint = CaducityTheme.colorScheme.onSurfaceVariant,
+        )
+      },
     ) {
-      Icon(Symbols.Outlined.MoreHoriz, contentDescription = null, tint = CaducityTheme.colorScheme.onSurfaceVariant)
-      Spacer(Modifier.width(16.dp))
-      Text(
-        text = stringResource(R.string.item_actions_more),
-        style = CaducityTheme.typography.bodyLarge,
-        modifier = Modifier.weight(1f),
-      )
-      Icon(
-        if (open) Symbols.Outlined.ExpandLess else Symbols.Outlined.ExpandMore,
-        contentDescription = null,
-        tint = CaducityTheme.colorScheme.onSurfaceVariant,
-      )
+      Text(text = stringResource(R.string.item_actions_more), style = CaducityTheme.typography.bodyLarge)
     }
     if (open) content()
   }
@@ -627,22 +627,21 @@ private fun ActionRow(
   containerColor: Color = CaducityTheme.colorScheme.surfaceContainer,
   contentColor: Color = CaducityTheme.colorScheme.onSurface,
 ) {
-  ConnectedRow(
-    index = index,
-    count = count,
+  SegmentedListItem(
     onClick = onClick,
-    modifier = modifier.height(56.dp),
+    shapes = ListItemDefaults.segmentedShapes(index, count),
+    modifier = modifier.heightIn(min = 56.dp),
     contentPadding = PaddingValues(horizontal = 16.dp),
-    containerColor = containerColor,
-    contentColor = contentColor,
+    colors = connectedRowColors(containerColor, contentColor),
+    leadingContent = {
+      Icon(
+        icon,
+        contentDescription = null,
+        tint =
+          tint.takeIf { it != Color.Unspecified } ?: CaducityTheme.colorScheme.onSurfaceVariant,
+      )
+    },
   ) {
-    Icon(
-      icon,
-      contentDescription = null,
-      tint =
-        tint.takeIf { it != Color.Unspecified } ?: CaducityTheme.colorScheme.onSurfaceVariant,
-    )
-    Spacer(Modifier.width(16.dp))
     Text(
       text = label,
       style = CaducityTheme.typography.bodyLarge,
@@ -677,14 +676,15 @@ private fun CategoryPicker(
       )
     }
     categories.forEachIndexed { index, category ->
-      ConnectedRow(
-        index = index,
-        count = categories.size,
+      SegmentedListItem(
         onClick = { onPick(category.id) },
-        modifier = Modifier.height(56.dp),
+        shapes = ListItemDefaults.segmentedShapes(index, categories.size),
+        modifier = Modifier.heightIn(min = 56.dp),
+        colors = connectedRowColors(),
+        leadingContent = {
+          CategoryShapeIcon(shape = category.shape, icon = CategoryIcons.vectorOf(category.icon), size = 36.dp)
+        },
       ) {
-        CategoryShapeIcon(shape = category.shape, icon = CategoryIcons.vectorOf(category.icon), size = 36.dp)
-        Spacer(Modifier.width(14.dp))
         Text(category.name, style = CaducityTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
       }
     }

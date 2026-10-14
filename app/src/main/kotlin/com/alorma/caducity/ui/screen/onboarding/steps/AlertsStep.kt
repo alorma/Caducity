@@ -14,8 +14,12 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,7 +43,7 @@ import com.alorma.caducity.base.ui.icons.symbols.CheckCircle
 import com.alorma.caducity.base.ui.icons.symbols.NotificationsActive
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
-import com.alorma.caducity.ui.components.connected.ConnectedRow
+import com.alorma.caducity.ui.components.connected.connectedRowColors
 import com.alorma.caducity.ui.components.motion.Reveal
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingBackAndPrimary
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingBackButton
@@ -108,74 +112,67 @@ fun AlertsStep(
     Spacer(Modifier.size(24.dp))
     Reveal(delayMillis = 480, modifier = Modifier.fillMaxWidth()) {
       Column(verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing)) {
-        ConnectedRow(index = 0, count = 2, contentPadding = PaddingValues16) {
-          Column {
-            Text(
-              text = stringResource(R.string.ob_alerts_notify_me),
-              style = CaducityTheme.typography.bodyLarge,
-              color = CaducityTheme.colorScheme.onSurface,
-            )
-            Text(
-              text = stringResource(R.string.ob_alerts_before),
-              style = CaducityTheme.typography.bodyMedium,
-              color = CaducityTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(Modifier.size(12.dp))
-            Row(
-              modifier = Modifier.fillMaxWidth(),
-              horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
-            ) {
-              THRESHOLD_OPTIONS.forEachIndexed { index, days ->
-                ToggleButton(
-                  checked = days == thresholdDays,
-                  onCheckedChange = { onThresholdChange(days) },
-                  modifier = Modifier.weight(1f).semantics { role = Role.RadioButton },
-                  shapes =
-                    when (index) {
-                      0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                      THRESHOLD_OPTIONS.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                      else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                    },
-                  colors = ToggleButtonDefaults.colors(containerColor = CaducityTheme.colorScheme.surfaceContainerHigh),
-                ) {
-                  Text(thresholdLabel(days), maxLines = 2, textAlign = TextAlign.Center)
-                }
-              }
+        SegmentedListItem(
+          shapes = ListItemDefaults.segmentedShapes(0, 2),
+          colors = connectedRowColors(),
+          contentPadding = PaddingValues16,
+          supportingContent = {
+            Column {
+              Text(
+                text = stringResource(R.string.ob_alerts_before),
+                style = CaducityTheme.typography.bodyMedium,
+                color = CaducityTheme.colorScheme.onSurfaceVariant,
+              )
+              Spacer(Modifier.size(12.dp))
+              ThresholdButtons(thresholdDays = thresholdDays, onThresholdChange = onThresholdChange)
+              Spacer(Modifier.size(12.dp))
+              Text(
+                text = stringResource(R.string.ob_alerts_default_help),
+                style = CaducityTheme.typography.bodySmall,
+                color = CaducityTheme.colorScheme.onSurfaceVariant,
+              )
             }
-            Spacer(Modifier.size(12.dp))
-            Text(
-              text = stringResource(R.string.ob_alerts_default_help),
-              style = CaducityTheme.typography.bodySmall,
-              color = CaducityTheme.colorScheme.onSurfaceVariant,
-            )
-          }
+          },
+        ) {
+          Text(
+            text = stringResource(R.string.ob_alerts_notify_me),
+            style = CaducityTheme.typography.bodyLarge,
+            color = CaducityTheme.colorScheme.onSurface,
+          )
         }
-        ConnectedRow(index = 1, count = 2, contentPadding = PaddingValues16) {
-          Column(modifier = Modifier.weight(1f)) {
-            Text(
-              text = stringResource(R.string.ob_alerts_time),
-              style = CaducityTheme.typography.bodyLarge,
-              color = CaducityTheme.colorScheme.onSurface,
-            )
+        SegmentedListItem(
+          shapes = ListItemDefaults.segmentedShapes(1, 2),
+          colors = connectedRowColors(),
+          contentPadding = PaddingValues16,
+          supportingContent = {
             Text(
               text = stringResource(R.string.ob_alerts_daily),
               style = CaducityTheme.typography.bodyMedium,
               color = CaducityTheme.colorScheme.onSurfaceVariant,
             )
-          }
-          Surface(
-            onClick = onTimeClick,
-            shape = RoundedCornerShape(50),
-            color = CaducityTheme.colorScheme.surfaceContainerHigh,
-            modifier = Modifier.semantics { role = Role.Button },
-          ) {
-            Text(
-              text = formatTime(time),
-              style = CaducityTheme.typography.titleLarge,
-              color = CaducityTheme.colorScheme.onSurface,
-              modifier = Modifier.padding(horizontal = 20.dp, vertical = 14.dp),
-            )
-          }
+          },
+          trailingContent = {
+            FilledTonalButton(
+              onClick = onTimeClick,
+              colors =
+                ButtonDefaults.filledTonalButtonColors(
+                  containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
+                ),
+              contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp),
+            ) {
+              Text(
+                text = formatTime(time),
+                style = CaducityTheme.typography.titleLarge,
+                color = CaducityTheme.colorScheme.onSurface,
+              )
+            }
+          },
+        ) {
+          Text(
+            text = stringResource(R.string.ob_alerts_time),
+            style = CaducityTheme.typography.bodyLarge,
+            color = CaducityTheme.colorScheme.onSurface,
+          )
         }
       }
     }
@@ -200,6 +197,34 @@ fun AlertsStep(
 }
 
 private val PaddingValues16 = PaddingValues(16.dp)
+
+@Composable
+private fun ThresholdButtons(
+  thresholdDays: Int,
+  onThresholdChange: (Int) -> Unit,
+) {
+  Row(
+    modifier = Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+  ) {
+    THRESHOLD_OPTIONS.forEachIndexed { index, days ->
+      ToggleButton(
+        checked = days == thresholdDays,
+        onCheckedChange = { onThresholdChange(days) },
+        modifier = Modifier.weight(1f).semantics { role = Role.RadioButton },
+        shapes =
+          when (index) {
+            0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+            THRESHOLD_OPTIONS.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+            else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+          },
+        colors = ToggleButtonDefaults.colors(containerColor = CaducityTheme.colorScheme.surfaceContainerHigh),
+      ) {
+        Text(thresholdLabel(days), maxLines = 2, textAlign = TextAlign.Center)
+      }
+    }
+  }
+}
 
 @Composable
 private fun thresholdLabel(days: Int): String =

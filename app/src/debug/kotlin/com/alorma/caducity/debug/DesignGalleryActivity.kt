@@ -15,6 +15,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
@@ -49,7 +51,7 @@ import com.alorma.caducity.ui.components.chips.FilterChips
 import com.alorma.caducity.ui.components.chips.QuickDateChips
 import com.alorma.caducity.ui.components.chips.QuickDateOption
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
-import com.alorma.caducity.ui.components.connected.ConnectedRow
+import com.alorma.caducity.ui.components.connected.connectedRowColors
 import com.alorma.caducity.ui.components.status.StatusPill
 import com.alorma.caducity.ui.components.switch.CaducitySwitch
 import com.alorma.caducity.ui.theme.AppTheme
@@ -137,7 +139,11 @@ private fun Gallery(onToggleDark: () -> Unit) {
     Section("Llista connectada")
     Column(verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing)) {
       repeat(3) { i ->
-        ConnectedRow(index = i, count = 3, onClick = {}) {
+        SegmentedListItem(
+          onClick = {},
+          shapes = ListItemDefaults.segmentedShapes(i, 3),
+          colors = connectedRowColors(),
+        ) {
           Text("Fila ${i + 1}", style = type.titleSmall)
         }
       }
