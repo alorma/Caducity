@@ -185,7 +185,7 @@ class RoomPantryDataSource(
       results.forEach { result ->
         val (product, created) = findOrCreateProduct(result.categoryId, result.name)
         if (created) createdProductIds += product.id
-        // TODO(transforma-open-4): frozen results keep the days until their date, like the add-frozen path.
+        // Frozen results keep the days until their date, like the add-frozen path.
         val remainingDays = (result.expiration.toEpochDays() - today.toEpochDays()).toInt()
         repeat(result.servings) { index ->
           val id = UUID.randomUUID().toString()

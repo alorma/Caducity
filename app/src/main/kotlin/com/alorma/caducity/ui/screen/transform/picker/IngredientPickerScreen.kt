@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.transform.picker
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -355,20 +358,39 @@ private fun PickerRow(
 ) {
   val status = group.nearest.status
   val units = pluralStringResource(R.plurals.home_unit_count, group.unitCount, group.unitCount)
+  val statusColors = status.colors()
+  val shapes = ListItemDefaults.segmentedShapes(index, count)
   SegmentedListItem(
     checked = selected,
     onCheckedChange = { onToggle() },
-    shapes = ListItemDefaults.segmentedShapes(index, count),
+    shapes = shapes,
+    // Neutral until it is selected; then the row takes the colour of its status.
     colors =
       ListItemDefaults.segmentedColors(
         containerColor = CaducityTheme.colorScheme.surfaceContainer,
         contentColor = CaducityTheme.colorScheme.onSurface,
-        selectedContainerColor = CaducityTheme.colorScheme.primaryContainer,
-        selectedContentColor = CaducityTheme.colorScheme.onPrimaryContainer,
+        // Soft enough for the status pill, which has the full container colour, to stand out.
+        selectedContainerColor =
+          statusColors.container.copy(alpha = 0.5f).compositeOver(CaducityTheme.colorScheme.surfaceContainer),
+        selectedContentColor = statusColors.onContainer,
       ),
-    modifier = Modifier.fillMaxWidth(),
+    // A thin outline in the status colour, so it shows in any palette.
+    modifier =
+      Modifier
+        .fillMaxWidth()
+        .then(if (selected) Modifier.border(1.dp, statusColors.strong, shapes.selectedShape) else Modifier),
     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
-    leadingContent = { Checkbox(checked = selected, onCheckedChange = null) },
+    leadingContent = {
+      Checkbox(
+        checked = selected,
+        onCheckedChange = null,
+        colors =
+          CheckboxDefaults.colors(
+            checkedColor = statusColors.strong,
+            checkmarkColor = CaducityTheme.colorScheme.surface,
+          ),
+      )
+    },
     supportingContent = {
       Text(
         text = category?.let { stringResource(R.string.transform_picker_meta, it.name, units) } ?: units,

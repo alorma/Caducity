@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.transform
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -76,6 +77,7 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
@@ -85,6 +87,9 @@ internal val RowCardWidth = 148.dp
 internal val RowCardSpacing = 10.dp
 internal val RowCardShape = RoundedCornerShape(20.dp)
 private val IngredientCardHeight = 118.dp
+
+/** How long an open quantity stepper waits without a change before it folds back into the chip. */
+private const val StepperFoldDelay = 3_000L
 
 /**
  * «Ingredients · N»: a horizontal row of narrow cards, one per product. The «+ Afegeix» button sits in the header,
@@ -128,13 +133,21 @@ fun IngredientsSection(
     val statusColors =
       visible.map { (it.status?.colors()?.strong ?: CaducityTheme.colorScheme.primary).withLineContrast(background) }
     SideEffect { links?.ingredientColors = statusColors }
-    // TODO(transforma-open-1): the stepper only folds when the user taps outside or scrolls; maybe also after a few seconds.
+    // The stepper folds when the user taps outside, scrolls, or leaves it alone for a few seconds.
     var editingKey by rememberSaveable { mutableStateOf<String?>(null) }
+    val editingCount = ingredients.firstOrNull { it.key == editingKey }?.count
+    LaunchedEffect(editingKey, editingCount) {
+      if (editingKey != null) {
+        delay(StepperFoldDelay)
+        editingKey = null
+      }
+    }
     LaunchedEffect(listState) {
       snapshotFlow { listState.isScrollInProgress }.filter { it }.collect { editingKey = null }
     }
     LazyRow(
       state = listState,
+      flingBehavior = rememberSnapFlingBehavior(listState),
       contentPadding = PaddingValues(horizontal = ScreenGutter),
       horizontalArrangement = Arrangement.spacedBy(RowCardSpacing),
       modifier =

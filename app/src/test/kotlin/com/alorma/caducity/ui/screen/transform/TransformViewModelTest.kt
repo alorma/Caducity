@@ -228,6 +228,15 @@ class TransformViewModelTest {
     }
 
   @Test
+  fun `an expired ingredient makes the default date today`() =
+    runTest {
+      val yogurt = add("Yogurt", days = -3)
+      val vm = ready(yogurt.itemIds)
+
+      expectThat(vm.state.value.defaultExpiration).isEqualTo(inDays(0))
+    }
+
+  @Test
   fun `the picker selection adds new ingredients, drops the left out and keeps counts`() =
     runTest {
       val chicken = add("Chicken", days = 6, quantity = 2)

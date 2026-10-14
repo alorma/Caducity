@@ -2,18 +2,16 @@ package com.alorma.caducity.ui.screen.transform.picker
 
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
-import com.alorma.caducity.domain.model.PantryEntry
 import com.alorma.caducity.domain.model.ProductGroup
 import com.alorma.caducity.domain.model.normalizeForSearch
-import com.alorma.caducity.domain.model.toProductGroups
 
 /** Arguments of the picker route: units that are already ingredients, so their products start selected. */
 data class IngredientPickerArgs(
   val selectedItemIds: List<String> = emptyList(),
 )
 
-/** Statuses the picker can filter by. Expired units are never listed (TODO(transforma-open-2)). */
-val PickerStatuses = listOf(ExpiryStatus.SOON, ExpiryStatus.FRESH, ExpiryStatus.FROZEN)
+/** Statuses the picker can filter by, in display order. */
+val PickerStatuses = listOf(ExpiryStatus.EXPIRED, ExpiryStatus.SOON, ExpiryStatus.FRESH, ExpiryStatus.FROZEN)
 
 data class IngredientPickerState(
   val groups: List<ProductGroup> = emptyList(),
@@ -42,11 +40,6 @@ data class IngredientPickerState(
 
   val showCategoryFilter: Boolean get() = availableCategories.size > 1
 }
-
-/** Products with at least one live unit; expired units are left out, and a product with only those disappears. */
-fun List<PantryEntry>.toPickerGroups(): List<ProductGroup> =
-  filterNot { it.status == ExpiryStatus.EXPIRED }
-    .toProductGroups()
 
 fun List<ProductGroup>.filterPickerGroups(
   query: String,
