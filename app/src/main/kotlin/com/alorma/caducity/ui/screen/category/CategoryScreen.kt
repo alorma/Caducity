@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -72,7 +74,7 @@ import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarSt
 import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.components.topbar.StyledLargeTopAppBar
 import com.alorma.caducity.ui.components.weekstrip.WeekStrip
 import com.alorma.caducity.ui.navigation.AddFab
 import com.alorma.caducity.ui.screen.home.capitalizeFirst
@@ -117,19 +119,15 @@ fun CategoryScreen(
   // The category vanished (e.g. deleted): nothing left to show.
   LaunchedEffect(state) { if (state is CategoryState.NotFound) onBack() }
 
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   AppScaffold(
     modifier = modifier,
     dialogState = dialogState,
     snackbarState = snackbarState,
     topBar = {
       CategoryTopBar(
-        categoryName =
-          (state as? CategoryState.Ready)
-            ?.data
-            ?.category
-            ?.name
-            .orEmpty(),
-        enabled = state is CategoryState.Ready,
+        ready = state as? CategoryState.Ready,
+        scrollBehavior = scrollBehavior,
         onBack = onBack,
         onCalendar = { viewModel.navigate(CategoryNavigation.Calendar) },
         onEdit = { viewModel.navigate(CategoryNavigation.Edit) },
@@ -155,7 +153,9 @@ fun CategoryScreen(
       }
     },
   ) { padding ->
-    ResponsiveCenteredContainer(modifier = Modifier.padding(padding)) {
+    ResponsiveCenteredContainer(
+      modifier = Modifier.padding(padding).nestedScroll(scrollBehavior.nestedScrollConnection),
+    ) {
       when (val current = state) {
         CategoryState.Loading, CategoryState.NotFound -> Unit
         is CategoryState.Ready ->
@@ -207,16 +207,32 @@ private fun SideEffectHandler(
 
 @Composable
 private fun CategoryTopBar(
-  categoryName: String,
-  enabled: Boolean,
+  ready: CategoryState.Ready?,
+  scrollBehavior: TopAppBarScrollBehavior,
   onBack: () -> Unit,
   onCalendar: () -> Unit,
   onEdit: () -> Unit,
   onDelete: () -> Unit,
 ) {
   var menuOpen by remember { mutableStateOf(false) }
-  StyledTopAppBar(
-    title = {},
+  val enabled = ready != null
+  val categoryName = ready?.let { it.data.category.name }.orEmpty()
+  StyledLargeTopAppBar(
+    scrollBehavior = scrollBehavior,
+    title = {
+      ready?.let {
+        val category = it.data.category
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+          CategoryShapeIcon(category.shape, CategoryIcons.vectorOf(category.icon), size = 40.dp)
+          Text(text = category.name, maxLines = 1, modifier = Modifier.semantics { heading() })
+        }
+      }
+    },
+    subtitle = {
+      ready?.let {
+        Text(text = categoryMeta(it.data.unitCount, it.data.nearest, it.data.today))
+      }
+    },
     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
     navigationIcon = {
       IconButton(onClick = onBack) {
@@ -364,8 +380,6 @@ private fun CategoryContent(
   }
 
   Column(modifier = modifier.fillMaxSize()) {
-    // The header is fixed: it does not scroll with the list.
-    CategoryHeader(state)
     LazyColumn(
       state = listState,
       modifier = Modifier.fillMaxSize(),
@@ -505,30 +519,6 @@ private fun DayFilter(
       style = CaducityTheme.typography.bodyMedium,
       color = CaducityTheme.colorScheme.onSurfaceVariant,
     )
-  }
-}
-
-@Composable
-private fun CategoryHeader(state: CategoryState.Ready) {
-  val category = state.data.category
-  Row(
-    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-  ) {
-    CategoryShapeIcon(category.shape, CategoryIcons.vectorOf(category.icon), size = 80.dp)
-    Column(modifier = Modifier.weight(1f)) {
-      Text(
-        text = category.name,
-        style = CaducityTheme.typography.headlineLarge,
-        modifier = Modifier.semantics { heading() },
-      )
-      Text(
-        text = categoryMeta(state.data.unitCount, state.data.nearest, state.data.today),
-        style = CaducityTheme.typography.bodyMedium,
-        color = CaducityTheme.colorScheme.onSurfaceVariant,
-      )
-    }
   }
 }
 

@@ -16,12 +16,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -44,7 +47,7 @@ import com.alorma.caducity.feature.tracking.PantryScreen as PantryScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
-import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.components.topbar.StyledLargeTopAppBar
 import com.alorma.caducity.ui.navigation.LocalFloatingBarPadding
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
@@ -114,8 +117,9 @@ internal fun PantryContent(
   val data = state.data
   val columns = 2
 
-  Column(modifier = modifier.fillMaxSize()) {
-    PantryHeader(data)
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+  Column(modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection)) {
+    PantryHeader(data, scrollBehavior)
     Box(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)) {
       PantrySearchField(state.query, onQueryChange, focusRequester)
     }
@@ -207,26 +211,22 @@ private fun LazyListScope.searchResults(
 }
 
 @Composable
-private fun PantryHeader(data: PantryData) {
-  StyledTopAppBar(
-    title = {
-      Column {
-        Text(
-          text =
-            stringResource(
-              R.string.pantry_overline,
-              pluralStringResource(R.plurals.home_product_count, data.totalUnits, data.totalUnits),
-              pluralStringResource(R.plurals.pantry_category_count, data.categories.size, data.categories.size),
-            ).uppercase(),
-          style = CaducityTheme.typography.labelSmall,
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-          text = stringResource(R.string.nav_pantry),
-          style = CaducityTheme.typography.headlineMedium,
-          modifier = Modifier.semantics { heading() },
-        )
-      }
+private fun PantryHeader(
+  data: PantryData,
+  scrollBehavior: TopAppBarScrollBehavior,
+) {
+  StyledLargeTopAppBar(
+    scrollBehavior = scrollBehavior,
+    title = { Text(text = stringResource(R.string.nav_pantry), modifier = Modifier.semantics { heading() }) },
+    subtitle = {
+      Text(
+        text =
+          stringResource(
+            R.string.pantry_overline,
+            pluralStringResource(R.plurals.home_product_count, data.totalUnits, data.totalUnits),
+            pluralStringResource(R.plurals.pantry_category_count, data.categories.size, data.categories.size),
+          ),
+      )
     },
   )
 }

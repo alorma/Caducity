@@ -4,8 +4,11 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -59,6 +62,31 @@ fun StyledTopAppBar(
       colors = colors,
       scrollBehavior = scrollBehavior,
       contentPadding = contentPadding,
+    )
+  }
+}
+
+/** Large collapsing app bar with subtitle (Home, Pantry, Category); it folds into a regular one on scroll. */
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+fun StyledLargeTopAppBar(
+  title: @Composable () -> Unit,
+  subtitle: @Composable () -> Unit,
+  modifier: Modifier = Modifier,
+  navigationIcon: @Composable () -> Unit = {},
+  actions: @Composable RowScope.() -> Unit = {},
+  colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
+  scrollBehavior: TopAppBarScrollBehavior? = null,
+) {
+  ResponsiveCenteredContainer(fillHeight = false) {
+    LargeFlexibleTopAppBar(
+      title = title,
+      modifier = modifier,
+      subtitle = subtitle,
+      navigationIcon = navigationIcon,
+      actions = actions,
+      colors = colors,
+      scrollBehavior = scrollBehavior,
     )
   }
 }

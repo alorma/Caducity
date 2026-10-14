@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,6 +19,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -164,12 +166,14 @@ internal fun HomeContent(
   val scope = rememberCoroutineScope()
   var selectedDay by rememberSaveable(stateSaver = LocalDateSaver) { mutableStateOf<LocalDate?>(null) }
 
-  Column(modifier = modifier.fillMaxSize()) {
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+  Column(modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection)) {
     HomeHeader(
       today = data.today,
       showActions = !data.isPantryEmpty,
       onCalendar = { onNavigate(HomeNavigation.Calendar()) },
       onSearch = { onNavigate(HomeNavigation.Search) },
+      scrollBehavior = scrollBehavior,
     )
     if (!data.isPantryEmpty) {
       WeekStrip(

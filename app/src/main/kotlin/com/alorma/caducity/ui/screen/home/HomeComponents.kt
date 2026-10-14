@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -49,7 +50,7 @@ import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.HomeDaySection
 import com.alorma.caducity.ui.components.category.toComposeShape
-import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.components.topbar.StyledLargeTopAppBar
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.NumberTextStyle
@@ -64,23 +65,13 @@ internal fun HomeHeader(
   onCalendar: () -> Unit,
   onSearch: () -> Unit,
   modifier: Modifier = Modifier,
+  scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-  StyledTopAppBar(
+  StyledLargeTopAppBar(
     modifier = modifier,
-    title = {
-      Column {
-        Text(
-          text = today.headerText().uppercase(),
-          style = CaducityTheme.typography.labelSmall,
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-          text = stringResource(R.string.home_title),
-          style = CaducityTheme.typography.headlineMedium,
-          modifier = Modifier.semantics { heading() },
-        )
-      }
-    },
+    scrollBehavior = scrollBehavior,
+    title = { Text(text = stringResource(R.string.home_title), modifier = Modifier.semantics { heading() }) },
+    subtitle = { Text(text = today.headerText().capitalizeFirst()) },
     actions = {
       if (showActions) {
         IconButton(onClick = onCalendar) {
