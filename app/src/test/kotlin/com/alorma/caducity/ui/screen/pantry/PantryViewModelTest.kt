@@ -174,7 +174,8 @@ class PantryViewModelTest {
       expectThat(byCategory.isSearching).isTrue()
 
       vm.onQueryChange("pérnil")
-      val byProduct = vm.ready { it.query == "pérnil" && it.results.isNotEmpty() }
+      // The query lands before its results, so wait for the ones of this query, not the previous ones.
+      val byProduct = vm.ready { it.query == "pérnil" && it.results.any { result -> result.group.name == "Pernil" } }
       expectThat(byProduct.results.map { it.group.name }).containsExactly("Pernil")
     }
 

@@ -219,6 +219,7 @@ class ItemActionsSheetViewModelTest {
       expectThat(state.expired).isEqualTo(false)
 
       vm.onSelect(2)
+      vm.ready { it.selected == 2 }
       vm.onDiscardSelected()
       nextSnackbar()
 
@@ -236,6 +237,7 @@ class ItemActionsSheetViewModelTest {
       vm.ready()
 
       vm.onSelect(2)
+      vm.ready { it.selected == 2 }
       vm.onConsume()
       val snackbar = nextSnackbar()
 
@@ -259,9 +261,9 @@ class ItemActionsSheetViewModelTest {
       vm.ready()
 
       vm.onSelect(9)
-      expectThat(vm.ready().selected).isEqualTo(3)
+      expectThat(vm.ready { it.selected == 3 }.selected).isEqualTo(3)
       vm.onSelect(0)
-      expectThat(vm.ready().selected).isEqualTo(1)
+      expectThat(vm.ready { it.selected == 1 }.selected).isEqualTo(1)
     }
 
   @Test
@@ -276,7 +278,7 @@ class ItemActionsSheetViewModelTest {
       expectThat(state.freezableCount).isEqualTo(2)
 
       vm.onSelect(3)
-      expectThat(vm.ready().freezeCount).isEqualTo(2)
+      expectThat(vm.ready { it.selected == 3 }.freezeCount).isEqualTo(2)
       vm.onFreezeToggle()
       nextSnackbar()
 
@@ -318,6 +320,7 @@ class ItemActionsSheetViewModelTest {
       vm.ready()
 
       vm.onSelect(1)
+      vm.ready { it.selected == 1 }
       vm.onEatAnyway()
       nextSnackbar()
 
