@@ -53,6 +53,10 @@ import com.alorma.caducity.ui.navigation.TopLevelBackStack
 import com.alorma.caducity.ui.navigation.TopLevelRoute
 import com.alorma.caducity.ui.navigation.Transform
 import com.alorma.caducity.ui.navigation.TransformIntro
+import com.alorma.caducity.ui.navigation.modalTransitions
+import com.alorma.caducity.ui.navigation.nativeTransition
+import com.alorma.caducity.ui.navigation.predictiveBack
+import com.alorma.caducity.ui.navigation.tabTransitions
 import com.alorma.caducity.ui.navigation.toStatus
 import com.alorma.caducity.ui.screen.add.AddArgs
 import com.alorma.caducity.ui.screen.add.AddScreen
@@ -169,6 +173,9 @@ fun App(
           if (navigation.current is TransformIntro) eventTracker.trackAction(DismissTransformIntroAction())
           if (!navigation.pop()) activity?.finish()
         },
+        transitionSpec = { nativeTransition(forward = true, vertical = false) },
+        popTransitionSpec = { nativeTransition(forward = false, vertical = false) },
+        predictivePopTransitionSpec = { edge -> predictiveBack(edge, vertical = false) },
         entryDecorators =
           listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
@@ -194,7 +201,7 @@ fun App(
                 onOpenTransform = { navigation.navigate(Transform()) },
               )
             }
-            entry<Pantry> {
+            entry<Pantry>(metadata = tabTransitions) {
               PantryScreen(
                 onOpenCategory = { navigation.navigate(Category(it)) },
                 onOpenNewCategory = { navigation.navigate(CategoryEditor()) },
@@ -253,14 +260,14 @@ fun App(
                 onOpenItemActions = { itemIds -> navigation.navigate(ItemActions(itemIds)) },
               )
             }
-            entry<Add> {
+            entry<Add>(metadata = modalTransitions) {
               AddScreen(
                 args = AddArgs(categoryId = it.categoryId, itemId = it.itemId),
                 onClose = { navigation.pop() },
                 onOpenQuickCategory = { navigation.navigate(QuickCategory) },
               )
             }
-            entry<Transform> {
+            entry<Transform>(metadata = modalTransitions) {
               TransformScreen(
                 args = TransformArgs(itemIds = it.itemIds),
                 onClose = { navigation.pop() },
@@ -273,7 +280,7 @@ fun App(
                 onClose = { navigation.pop() },
               )
             }
-            entry<CategoryEditor> {
+            entry<CategoryEditor>(metadata = modalTransitions) {
               CategoryEditorScreen(
                 categoryId = it.id,
                 onClose = { navigation.pop() },
