@@ -5,19 +5,20 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 /**
- * Strategy for generating comprehensive test data with all item statuses
+ * Small data set that covers the main cases of the app without bulk (about 40 units):
+ * - 2 categories, 10 products, each product exercising a different mix.
+ * - Every status: fresh, expiring soon, expired (recently and long ago), frozen.
+ * - Units: single unit, several units on the same day (one row, «N unitats»), several days, mixed statuses in one product.
+ * - Units that must not show up anywhere: consumed and used as an ingredient of a Transforma.
+ * - A long name, to check ellipsis.
  *
- * Creates:
- * - 2 categories
- * - 2 products per category
- * - 6 items for each status (Fresh, ExpiringSoon, Expired, Frozen, Consumed) per product
- * - 6 items for each status as standalone items (no product) per category
- *
- * Dates are calculated relative to today based on expiration thresholds
+ * Dates are relative to today and to the expiration thresholds.
  */
 class FakeTestDataStrategy(
   private val expirationThresholds: ExpirationThresholds,
 ) : FakeDataStrategy {
+  private val freshDays: Long get() = expirationThresholds.soonExpiringThreshold.inWholeDays + 3
+
   override fun getCategoryConfigs(now: Instant): List<CategoryConfig> =
     listOf(
       createDairyCategory(now),
@@ -31,10 +32,38 @@ class FakeTestDataStrategy(
       usualDurationDays = 7,
       products =
         listOf(
-          createProductWithAllStatuses("Llet sencera", now),
-          createProductWithAllStatuses("Formatge cheddar", now),
+          // Mixed statuses: the row takes the state of the unit that expires first.
+          ProductConfig(
+            name = "Llet sencera",
+            items =
+              units(now, "Llet fresca", daysAhead = freshDays, count = 4) +
+                units(now, "Llet aviat", daysAhead = 1, count = 2) +
+                units(now, "Llet caducada", daysAhead = -1, count = 1) +
+                units(now, "Llet congelada", daysAhead = 6, count = 2, frozen = true) +
+                units(now, "Llet consumida", daysAhead = 2, count = 1, consumed = true) +
+                units(now, "Llet transformada", daysAhead = 10, count = 1, transformed = true),
+          ),
+          // Several units long expired on the same day, plus one on another day.
+          ProductConfig(
+            name = "Formatge cheddar",
+            items =
+              units(now, "Formatge caducat", daysAhead = -6, count = 3) +
+                units(now, "Formatge caducat un altre dia", daysAhead = -9, count = 1),
+          ),
+          // Long name, expires today.
+          ProductConfig(
+            name = "Iogurt natural amb fruites del bosc i cereals integrals",
+            items = units(now, "Iogurt", daysAhead = 0, count = 1),
+          ),
+          ProductConfig(
+            name = "Mantega",
+            items = units(now, "Mantega", daysAhead = 8, count = 1, frozen = true),
+          ),
+          ProductConfig(
+            name = "Nata",
+            items = units(now, "Nata", daysAhead = freshDays + 4, count = 1),
+          ),
         ),
-      standaloneItems = createStandaloneItemsWithAllStatuses("Solt", now),
     )
 
   private fun createProduceCategory(now: Instant): CategoryConfig =
@@ -44,206 +73,61 @@ class FakeTestDataStrategy(
       usualDurationDays = 7,
       products =
         listOf(
-          createProductWithAllStatuses("Pomes", now),
-          createProductWithAllStatuses("Pastanagues", now),
+          // Fresh on several days, soon on a single day, and recently expired.
+          ProductConfig(
+            name = "Pomes",
+            items =
+              (0 until 5).flatMap { units(now, "Poma fresca", daysAhead = freshDays + it, count = 1) } +
+                units(now, "Poma aviat", daysAhead = 2, count = 3) +
+                units(now, "Poma caducada", daysAhead = -2, count = 2),
+          ),
+          ProductConfig(
+            name = "Pastanagues",
+            items =
+              units(now, "Pastanaga aviat", daysAhead = 3, count = 1) +
+                units(now, "Pastanaga fresca", daysAhead = freshDays, count = 1) +
+                units(now, "Pastanaga consumida", daysAhead = -1, count = 2, consumed = true),
+          ),
+          ProductConfig(
+            name = "Espinacs",
+            items = units(now, "Espinacs", daysAhead = -1, count = 1),
+          ),
+          // Frozen on different days.
+          ProductConfig(
+            name = "Pèsols",
+            items =
+              (0L until 3L).flatMap {
+                units(now, "Pèsols congelats", daysAhead = 5 + it, count = 1, frozen = true)
+              },
+          ),
+          // Ingredients of a Transforma next to a fresh unit.
+          ProductConfig(
+            name = "Albergínia",
+            items =
+              units(now, "Albergínia transformada", daysAhead = 10, count = 2, transformed = true) +
+                units(now, "Albergínia fresca", daysAhead = freshDays + 1, count = 1),
+          ),
         ),
-      standaloneItems = createStandaloneItemsWithAllStatuses("Solt", now),
     )
 
-  /**
-   * Creates a product with 6 items for each status: Fresh, ExpiringSoon, Expired, Frozen, Consumed
-   * Total: 30 items (6 per status)
-   */
-  private fun createProductWithAllStatuses(
-    productName: String,
+  /** [count] units expiring on the same day, [daysAhead] days from [now] (negative = already expired). */
+  private fun units(
     now: Instant,
-  ): ProductConfig {
-    val items = mutableListOf<ItemConfig>()
-
-    // Fresh items (beyond the soonExpiringThreshold)
-    repeat(6) { index ->
-      val daysAhead = expirationThresholds.soonExpiringThreshold.inWholeDays + 3 + index
-      items.add(
-        ItemConfig(
-          identifier = "$productName Fresc #${index + 1}",
-          expirationDate = now.plus(daysAhead.days),
-        ),
+    label: String,
+    daysAhead: Long,
+    count: Int,
+    frozen: Boolean = false,
+    consumed: Boolean = false,
+    transformed: Boolean = false,
+  ): List<ItemConfig> =
+    List(count) { index ->
+      ItemConfig(
+        identifier = "$label #${index + 1}",
+        expirationDate = now.plus(daysAhead.days),
+        shouldFreeze = frozen,
+        remainingDaysWhenFrozen = 5,
+        shouldConsume = consumed,
+        shouldTransform = transformed,
       )
     }
-
-    // ExpiringSoon items (within soonExpiringThreshold but not expired)
-    repeat(6) { index ->
-      val daysAhead = 1 + index // 1-6 days from now
-      items.add(
-        ItemConfig(
-          identifier = "$productName Caduca aviat #${index + 1}",
-          expirationDate = now.plus(daysAhead.days),
-        ),
-      )
-    }
-
-    // Expired items (past expiration date)
-    val consumeThresholdDays = CONSUME_THRESHOLD_DAYS
-
-    // Near expired (within consume threshold - can be consumed)
-    repeat(3) { index ->
-      items.add(
-        ItemConfig(
-          identifier = "$productName Caducat recent #${index + 1}",
-          expirationDate = now.minus((index + 1).days), // 1-3 days ago
-        ),
-      )
-    }
-
-    // Far expired (beyond consume threshold - cannot be consumed)
-    repeat(3) { index ->
-      items.add(
-        ItemConfig(
-          identifier = "$productName Caducat fa temps #${index + 1}",
-          expirationDate = now.minus((consumeThresholdDays + index + 1).days),
-        ),
-      )
-    }
-
-    // Frozen items (will be frozen after creation)
-    repeat(6) { index ->
-      items.add(
-        ItemConfig(
-          identifier = "$productName Congelat #${index + 1}",
-          expirationDate = now.plus((5 + index).days),
-          shouldFreeze = true,
-          remainingDaysWhenFrozen = 5,
-        ),
-      )
-    }
-
-    // Consumed items (will be consumed after creation)
-    // Near expiration (within consumeExpiredThreshold)
-    repeat(3) { index ->
-      items.add(
-        ItemConfig(
-          identifier = "$productName Consumit recent #${index + 1}",
-          expirationDate = now.minus((index + 1).days), // 1-3 days ago
-          shouldConsume = true,
-        ),
-      )
-    }
-
-    // Far from expiration (beyond consumeExpiredThreshold)
-    repeat(3) { index ->
-      items.add(
-        ItemConfig(
-          identifier = "$productName Consumit fa temps #${index + 1}",
-          expirationDate = now.minus((consumeThresholdDays + index + 1).days),
-          shouldConsume = true,
-        ),
-      )
-    }
-
-    // Transformed ingredients: must not show up anywhere (they would otherwise be fresh)
-    repeat(3) { index ->
-      items.add(
-        ItemConfig(
-          identifier = "$productName Transformat #${index + 1}",
-          expirationDate = now.plus((10 + index).days),
-          shouldTransform = true,
-        ),
-      )
-    }
-
-    return ProductConfig(name = productName, items = items)
-  }
-
-  /**
-   * Creates standalone items (no product) with all statuses
-   */
-  private fun createStandaloneItemsWithAllStatuses(
-    prefix: String,
-    now: Instant,
-  ): List<StandaloneItemConfig> {
-    val items = mutableListOf<StandaloneItemConfig>()
-    val consumeThresholdDays = CONSUME_THRESHOLD_DAYS
-
-    // Fresh items
-    repeat(6) { index ->
-      val daysAhead = expirationThresholds.soonExpiringThreshold.inWholeDays + 3 + index
-      items.add(
-        StandaloneItemConfig(
-          identifier = "$prefix Fresc #${index + 1}",
-          expirationDate = now.plus(daysAhead.days),
-        ),
-      )
-    }
-
-    // ExpiringSoon items
-    repeat(6) { index ->
-      items.add(
-        StandaloneItemConfig(
-          identifier = "$prefix Caduca aviat #${index + 1}",
-          expirationDate = now.plus((1 + index).days),
-        ),
-      )
-    }
-
-    // Expired items (near)
-    repeat(3) { index ->
-      items.add(
-        StandaloneItemConfig(
-          identifier = "$prefix Caducat recent #${index + 1}",
-          expirationDate = now.minus((index + 1).days),
-        ),
-      )
-    }
-
-    // Expired items (far)
-    repeat(3) { index ->
-      items.add(
-        StandaloneItemConfig(
-          identifier = "$prefix Caducat fa temps #${index + 1}",
-          expirationDate = now.minus((consumeThresholdDays + index + 1).days),
-        ),
-      )
-    }
-
-    // Frozen items
-    repeat(6) { index ->
-      items.add(
-        StandaloneItemConfig(
-          identifier = "$prefix Congelat #${index + 1}",
-          expirationDate = now.plus((5 + index).days),
-          shouldFreeze = true,
-          remainingDaysWhenFrozen = 5,
-        ),
-      )
-    }
-
-    // Consumed items (near)
-    repeat(3) { index ->
-      items.add(
-        StandaloneItemConfig(
-          identifier = "$prefix Consumit recent #${index + 1}",
-          expirationDate = now.minus((index + 1).days),
-          shouldConsume = true,
-        ),
-      )
-    }
-
-    // Consumed items (far)
-    repeat(3) { index ->
-      items.add(
-        StandaloneItemConfig(
-          identifier = "$prefix Consumit fa temps #${index + 1}",
-          expirationDate = now.minus((consumeThresholdDays + index + 1).days),
-          shouldConsume = true,
-        ),
-      )
-    }
-
-    return items
-  }
-
-  private companion object {
-    /** Days before today that still count as «recently expired» in the fake data. */
-    const val CONSUME_THRESHOLD_DAYS = 2L
-  }
 }
