@@ -23,6 +23,8 @@ Flux: `.claude/rules/phased-work.md`. Paquet independent de la revisió de coher
 
 ## Estat
 
+**Validat per Bernat (14 d'octubre).**
+
 | Tasca | Estat |
 | --- | --- |
 | 1 — Documentació | Feta: `2c8f2b64` |
