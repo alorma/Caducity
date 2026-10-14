@@ -129,7 +129,7 @@ internal fun PantryContent(
   ) { padding ->
     ResponsiveCenteredContainer(modifier = Modifier.padding(padding)) {
       Column(modifier = Modifier.fillMaxSize()) {
-        Box(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)) {
+        Box(modifier = Modifier.padding(start = 20.dp, top = 8.dp, end = 20.dp, bottom = 10.dp)) {
           PantrySearchField(state.query, onQueryChange, focusRequester)
         }
         LazyColumn(
