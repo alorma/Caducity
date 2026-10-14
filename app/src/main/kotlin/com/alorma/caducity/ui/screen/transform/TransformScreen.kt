@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.transform
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,9 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -111,6 +109,17 @@ fun TransformScreen(
     snackbarState = snackbarState,
     bottomSheetState = bottomSheetState,
     topBar = { TransformTopBar(onClose = viewModel::onCloseRequest) },
+    // In the bottom bar slot, so the snackbar shows above «Desa» instead of covering it.
+    bottomBar = {
+      ResponsiveCenteredContainer(fillHeight = false) {
+        TransformSaveBar(
+          canSave = state.canSave,
+          count = state.results.size,
+          onSave = viewModel::onSave,
+          modifier = Modifier.navigationBarsPadding(),
+        )
+      }
+    },
   ) { insets ->
     ResponsiveCenteredContainer {
       Box(modifier = Modifier.fillMaxSize().padding(insets)) {
@@ -119,8 +128,7 @@ fun TransformScreen(
             Modifier
               .fillMaxSize()
               .verticalScroll(rememberScrollState())
-              // Room for the fixed «Desa» bar, so the last thing on screen is never behind it.
-              .padding(bottom = SaveBarClearance)
+              .padding(bottom = 16.dp)
               .rowLinks(links, expanded = state.results.any { it.id == state.expandedResultId }),
           verticalArrangement = Arrangement.spacedBy(SectionSpacing),
         ) {
@@ -151,21 +159,12 @@ fun TransformScreen(
             )
           }
         }
-        TransformSaveBar(
-          canSave = state.canSave,
-          count = state.results.size,
-          onSave = viewModel::onSave,
-          modifier = Modifier.align(Alignment.BottomCenter),
-        )
       }
     }
   }
 }
 
-/** How much room the scrolling content leaves at the bottom for [TransformSaveBar]. */
-internal val SaveBarClearance = 104.dp
-
-/** «Desa · M productes»: fixed at the bottom, over the keyboard, with a fade so the content goes under it softly. */
+/** «Desa · M productes»: fixed at the bottom, over the keyboard. */
 @Composable
 internal fun TransformSaveBar(
   canSave: Boolean,
@@ -178,8 +177,7 @@ internal fun TransformSaveBar(
       modifier
         .fillMaxWidth()
         .imePadding()
-        .background(Brush.verticalGradient(listOf(Color.Transparent, CaducityTheme.colorScheme.background)))
-        .padding(start = ScreenGutter, end = ScreenGutter, top = 24.dp, bottom = 12.dp),
+        .padding(start = ScreenGutter, end = ScreenGutter, top = 8.dp, bottom = 12.dp),
   ) {
     Button(
       onClick = onSave,
