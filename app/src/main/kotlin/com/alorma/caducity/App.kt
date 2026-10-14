@@ -7,12 +7,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
@@ -102,13 +104,12 @@ fun App(
   AppTheme(
     themePreferences = koinInject(),
   ) {
-    val navigation =
-      retain {
-        TopLevelBackStack(
-          initialRoot =
-            if (onboardingFlag.isEnabled() || disclaimerPreferences.needsAcceptance()) Onboarding else Home,
-        )
-      }
+    // Saveable: survives process death. The root only matters on the first composition.
+    val backStack =
+      rememberNavBackStack(
+        if (onboardingFlag.isEnabled() || disclaimerPreferences.needsAcceptance()) Onboarding else Home,
+      )
+    val navigation = remember(backStack) { TopLevelBackStack(backStack) }
     // The «Novetat Transforma» modal waits for a normal opening: not after a deep link, widget or notification.
     var openedFromOutside by retain { mutableStateOf(deepLinkAction != null) }
     LaunchedEffect(deepLinkAction) {
