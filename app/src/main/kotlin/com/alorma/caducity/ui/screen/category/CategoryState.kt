@@ -3,7 +3,6 @@ package com.alorma.caducity.ui.screen.category
 import com.alorma.caducity.domain.model.CategoryData
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.PantryEntry
-import com.alorma.caducity.domain.model.UnitPosition
 import com.alorma.caducity.domain.usecase.WeekStripData
 import kotlinx.datetime.LocalDate
 
@@ -14,11 +13,10 @@ data class CategoryArgs(
   val highlightProductId: String? = null,
 )
 
-/** A unit listed under a selected day, with its «Unitat N de M». */
+/** A unit listed under a selected day. */
 data class DayUnit(
   val name: String,
   val unit: PantryEntry,
-  val position: UnitPosition,
 )
 
 sealed interface CategoryState {
@@ -47,7 +45,7 @@ sealed interface CategoryState {
           .flatMap { it.groups }
           .flatMap { group ->
             group.units.filter { it.expiration == day }.map { unit ->
-              DayUnit(group.name, unit, data.positions[unit.itemId] ?: UnitPosition(1, 1))
+              DayUnit(group.name, unit)
             }
           }.sortedBy { it.name.lowercase() }
       }

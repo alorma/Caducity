@@ -11,10 +11,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -31,7 +29,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,7 +39,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
@@ -59,6 +55,9 @@ import com.alorma.caducity.base.ui.icons.symbols.TouchApp
 import com.alorma.caducity.domain.model.CategorySection
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.ProductGroup
+import com.alorma.caducity.domain.model.ProductRowDetail
+import com.alorma.caducity.domain.model.ProductRowModel
+import com.alorma.caducity.domain.model.toProductRow
 import com.alorma.caducity.feature.tracking.CategoryScreen as CategoryScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.category.CategoryIcons
@@ -66,19 +65,15 @@ import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.categoryMeta
 import com.alorma.caducity.ui.components.chips.FilterChipOption
 import com.alorma.caducity.ui.components.chips.FilterChips
-import com.alorma.caducity.ui.components.connected.ConnectedRow
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
-import com.alorma.caducity.ui.components.product.ProductGroupRow
-import com.alorma.caducity.ui.components.product.shortDateText
+import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.status.StatusPill
-import com.alorma.caducity.ui.components.status.statusPillText
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.weekstrip.WeekStrip
 import com.alorma.caducity.ui.screen.home.capitalizeFirst
@@ -87,7 +82,7 @@ import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
 import kotlinx.coroutines.launch
-import kotlinx.datetime.daysUntil
+import kotlinx.datetime.LocalDate
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -167,6 +162,9 @@ fun CategoryScreen(
             onFilterSelected = viewModel::onFilterSelected,
             onDayClick = viewModel::onDayClick,
             onItemClick = { viewModel.navigate(CategoryNavigation.ItemActions(it)) },
+            onConsume = viewModel::onConsume,
+            onFreeze = viewModel::onFreeze,
+            onDiscard = viewModel::onDiscard,
           )
       }
     }
@@ -286,11 +284,11 @@ private sealed interface CategoryItem {
   }
 
   data class DayRow(
-    val day: DayUnit,
+    val row: ProductRowModel,
     val index: Int,
     val count: Int,
   ) : CategoryItem {
-    override val key = "day-${day.unit.itemId}"
+    override val key = "day-${row.key}"
   }
 
   data class SectionHeader(
@@ -308,17 +306,23 @@ private sealed interface CategoryItem {
   }
 }
 
+/** The units of a selected day grouped by product: one row each, its buttons acting on the nearest unit. */
+private fun List<DayUnit>.toDayRows(today: LocalDate): List<ProductRowModel> =
+  groupBy { it.unit.groupKey }.values.map { units ->
+    units.map { it.unit }.toProductRow(category = null, detail = ProductRowDetail.WithDays, today = today)
+  }
+
 private fun CategoryState.Ready.items(): List<CategoryItem> =
   buildList {
     add(CategoryItem.WeekStrip)
     if (selectedDay != null) {
-      // Day filter: only the units that expire that day, in one connected list (no sections, no expanding).
+      // Day filter: only the units that expire that day, one row per product, in one connected list (no sections).
       add(CategoryItem.DayFilter)
-      val units = dayUnits
-      if (units.isEmpty()) {
+      val rows = dayUnits.toDayRows(data.today)
+      if (rows.isEmpty()) {
         add(CategoryItem.DayEmpty)
       } else {
-        units.forEachIndexed { index, unit -> add(CategoryItem.DayRow(unit, index, units.size)) }
+        rows.forEachIndexed { index, row -> add(CategoryItem.DayRow(row, index, rows.size)) }
       }
       add(CategoryItem.DayHint)
       return@buildList
@@ -337,18 +341,20 @@ private fun CategoryContent(
   onFilterSelected: (ExpiryStatus?) -> Unit,
   onDayClick: (kotlinx.datetime.LocalDate) -> Unit,
   onItemClick: (String) -> Unit,
+  onConsume: (ProductRowModel) -> Unit,
+  onFreeze: (ProductRowModel) -> Unit,
+  onDiscard: (ProductRowModel) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val data = state.data
   val items = state.items()
   val listState = rememberLazyListState()
-  var expanded by rememberSaveable { mutableStateOf(emptySet<String>()) }
 
   // Picking a day filters the list; keep the strip in view while the filter is on.
   LaunchedEffect(state.selectedDay) {
     if (state.selectedDay != null) listState.animateScrollToItem(0)
   }
-  // Opened for a product (notification scheduled before the redesign): show it, expanded.
+  // Opened for a product (notification scheduled before the redesign): scroll to it.
   LaunchedEffect(state.highlightProductId) {
     val id = state.highlightProductId ?: return@LaunchedEffect
     val index = items.indexOfFirst { it is CategoryItem.Product && it.group.productId == id }
@@ -406,7 +412,16 @@ private fun CategoryContent(
               color = CaducityTheme.colorScheme.onSurfaceVariant,
               modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
             )
-          is CategoryItem.DayRow -> DayUnitRow(item.day, data.today, item.index, item.count, onItemClick)
+          is CategoryItem.DayRow ->
+            ProductRow(
+              model = item.row,
+              index = item.index,
+              count = item.count,
+              onClick = { onItemClick(item.row.nearestItemId) },
+              onConsume = { onConsume(item.row) },
+              onFreeze = { onFreeze(item.row) },
+              onDiscard = { onDiscard(item.row) },
+            )
           CategoryItem.Empty ->
             Text(
               text = stringResource(R.string.category_empty),
@@ -415,18 +430,23 @@ private fun CategoryContent(
               modifier = Modifier.padding(vertical = 24.dp),
             )
           is CategoryItem.SectionHeader -> SectionHeader(item.section, Modifier.padding(top = 14.dp, bottom = 6.dp))
-          is CategoryItem.Product ->
-            ProductGroupRow(
-              group = item.group,
-              today = data.today,
+          is CategoryItem.Product -> {
+            val row =
+              item.group.units.toProductRow(
+                category = null,
+                detail = ProductRowDetail.WithDays,
+                today = state.data.today,
+              )
+            ProductRow(
+              model = row,
               index = item.index,
               count = item.section.groups.size,
-              expanded = item.group.key in expanded || item.group.productId == state.highlightProductId,
-              onToggleExpanded = {
-                expanded = if (item.group.key in expanded) expanded - item.group.key else expanded + item.group.key
-              },
-              onUnitClick = onItemClick,
+              onClick = { onItemClick(row.nearestItemId) },
+              onConsume = { onConsume(row) },
+              onFreeze = { onFreeze(row) },
+              onDiscard = { onDiscard(row) },
             )
+          }
         }
       }
     }
@@ -483,37 +503,6 @@ private fun DayFilter(
       style = CaducityTheme.typography.bodyMedium,
       color = CaducityTheme.colorScheme.onSurfaceVariant,
     )
-  }
-}
-
-@Composable
-private fun DayUnitRow(
-  day: DayUnit,
-  today: kotlinx.datetime.LocalDate,
-  index: Int,
-  count: Int,
-  onClick: (String) -> Unit,
-) {
-  val unit = day.unit
-  val date = unit.expiration.shortDateText()
-  val meta =
-    if (day.position.count > 1) {
-      stringResource(R.string.category_unit_of, day.position.index, day.position.count, date)
-    } else {
-      "${pluralStringResource(R.plurals.home_unit_count, 1, 1)} · $date"
-    }
-  ConnectedRow(
-    index = index,
-    count = count,
-    onClick = { onClick(unit.itemId) },
-    modifier = Modifier.heightIn(min = 64.dp),
-  ) {
-    Column(modifier = Modifier.weight(1f)) {
-      Text(day.name, style = CaducityTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-      Text(meta, style = CaducityTheme.typography.bodySmall, color = CaducityTheme.colorScheme.onSurfaceVariant)
-    }
-    Spacer(Modifier.width(8.dp))
-    StatusPill(unit.status, statusPillText(unit.status, today.daysUntil(unit.expiration)))
   }
 }
 

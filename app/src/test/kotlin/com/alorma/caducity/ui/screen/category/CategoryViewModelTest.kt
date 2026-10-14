@@ -9,6 +9,7 @@ import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.config.time.date
 import com.alorma.caducity.data.datasource.RoomCategoryDataSource
+import com.alorma.caducity.data.datasource.RoomItemDataSource
 import com.alorma.caducity.data.datasource.RoomPantryDataSource
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
@@ -16,14 +17,21 @@ import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.ProductRowDetail
+import com.alorma.caducity.domain.model.toProductRow
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
+import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
+import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
+import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveCalendarUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoryUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.ObserveWeekStripUseCase
+import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
@@ -78,6 +86,8 @@ class CategoryViewModelTest {
   private lateinit var pantry: RoomPantryDataSource
   private lateinit var addProduct: AddProductUseCase
   private lateinit var categoryDataSource: RoomCategoryDataSource
+  private lateinit var itemDataSource: RoomItemDataSource
+  private val snackbars = GlobalSnackbarEvents()
   private val created = mutableListOf<CategoryViewModel>()
 
   @Before
@@ -105,6 +115,7 @@ class CategoryViewModelTest {
         CategoryRoomMapper(ProductRoomMapper(), itemMapper),
         itemMapper,
       )
+    itemDataSource = RoomItemDataSource(db.itemDao(), clock, itemMapper)
     addProduct = AddProductUseCase(pantry, clock)
   }
 
@@ -141,6 +152,11 @@ class CategoryViewModelTest {
       observeCategory = ObserveCategoryUseCase(items, pantry, todayProvider),
       observeWeekStrip = ObserveWeekStripUseCase(ObserveCalendarUseCase(items), todayProvider),
       deleteCategory = DeleteCategoryUseCase(categoryDataSource),
+      consumeItem = ConsumeItemUseCase(itemDataSource, pantry, clock),
+      freezeItem = FreezeItemUseCase(itemDataSource, pantry, clock),
+      discardItems = DiscardItemsUseCase(pantry, clock),
+      restoreItems = RestoreItemsUseCase(pantry),
+      snackbars = snackbars,
       eventTracker = EventTracker(emptyList()),
     ).also { created += it }
   }
@@ -184,7 +200,7 @@ class CategoryViewModelTest {
     }
 
   @Test
-  fun `one unit is a single row and several units form one expandable group`() =
+  fun `one unit is a single group and several units of one product form one group`() =
     runTest {
       category("dairy")
       add("Eggs", "dairy", days = 10)
@@ -222,7 +238,7 @@ class CategoryViewModelTest {
     }
 
   @Test
-  fun `a selected day lists only the units that expire that day with their position`() =
+  fun `a selected day lists only the units that expire that day`() =
     runTest {
       category("dairy")
       add("Milk", "dairy", days = 2)
@@ -235,8 +251,27 @@ class CategoryViewModelTest {
       val state = vm.ready { it.selectedDay == inDays(2) }
 
       expectThat(state.dayUnits.map { it.name }).containsExactly("Milk", "Milk")
-      expectThat(state.dayUnits.map { it.position.index }).containsExactly(1, 2)
-      expectThat(state.dayUnits.map { it.position.count }).containsExactly(3, 3)
+    }
+
+  @Test
+  fun `the row buttons consume one unit of the product, not the whole row`() =
+    runTest {
+      category("dairy")
+      add("Milk", "dairy", days = 2, quantity = 2)
+      val vm = viewModel()
+      val row =
+        vm
+          .ready()
+          .data.sections
+          .single()
+          .groups
+          .single()
+          .units
+          .toProductRow(category = null, detail = ProductRowDetail.WithDays, today = today)
+
+      vm.onConsume(row)
+
+      expectThat(vm.ready { it.data.unitCount == 1 }.data.unitCount).isEqualTo(1)
     }
 
   @Test

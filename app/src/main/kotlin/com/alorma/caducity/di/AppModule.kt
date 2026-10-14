@@ -133,6 +133,11 @@ val appModule =
         observeCategory = get(),
         observeWeekStrip = get(),
         deleteCategory = get(),
+        consumeItem = get(),
+        freezeItem = get(),
+        discardItems = get(),
+        restoreItems = get(),
+        snackbars = get(),
         eventTracker = get(),
       )
     }

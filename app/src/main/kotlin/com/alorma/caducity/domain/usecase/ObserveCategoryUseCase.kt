@@ -7,7 +7,6 @@ import com.alorma.caducity.domain.model.CategorySection
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.STATUS_ORDER
 import com.alorma.caducity.domain.model.toProductGroups
-import com.alorma.caducity.domain.model.unitPositions
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 
@@ -33,7 +32,6 @@ class ObserveCategoryUseCase(
         unitCount = units.size,
         nearest = units.filter { it.status != ExpiryStatus.FROZEN }.minOfOrNull { it.expiration },
         statusCounts = STATUS_ORDER.mapNotNull { status -> counts[status]?.let { status to it } }.toMap(),
-        positions = units.unitPositions(),
         sections =
           STATUS_ORDER.mapNotNull { status ->
             val groups = units.filter { it.status == status }.toProductGroups()
