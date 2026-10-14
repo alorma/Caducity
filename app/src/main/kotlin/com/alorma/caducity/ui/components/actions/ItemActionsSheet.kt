@@ -20,8 +20,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
@@ -423,17 +425,20 @@ private fun StepperButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Surface(
+  FilledIconButton(
     onClick = onClick,
     enabled = enabled,
     modifier = modifier.height(72.dp),
     shape = shape,
-    color = container,
-    contentColor = content,
+    colors =
+      IconButtonDefaults.filledIconButtonColors(
+        containerColor = container,
+        contentColor = content,
+        disabledContainerColor = container.copy(alpha = 0.12f),
+        disabledContentColor = content.copy(alpha = 0.38f),
+      ),
   ) {
-    Box(contentAlignment = Alignment.Center) {
-      Icon(icon, contentDescription = description, modifier = Modifier.size(28.dp))
-    }
+    Icon(icon, contentDescription = description, modifier = Modifier.size(28.dp))
   }
 }
 

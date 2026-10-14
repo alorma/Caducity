@@ -16,10 +16,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -397,15 +397,17 @@ private fun StepperButton(
   label: String,
   content: @Composable () -> Unit,
 ) {
-  Surface(
+  IconButton(
     onClick = onClick,
     enabled = enabled,
-    shape = CircleShape,
-    color = Color.Transparent,
-    contentColor = if (enabled) CaducityTheme.colorScheme.onSurface else CaducityTheme.colorScheme.outline,
+    colors =
+      IconButtonDefaults.iconButtonColors(
+        contentColor = CaducityTheme.colorScheme.onSurface,
+        disabledContentColor = CaducityTheme.colorScheme.outline,
+      ),
     modifier = Modifier.size(width = 40.dp, height = 48.dp).semantics { contentDescription = label },
   ) {
-    Box(contentAlignment = Alignment.Center) { content() }
+    content()
   }
 }
 

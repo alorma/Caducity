@@ -1,7 +1,6 @@
 package com.alorma.caducity.ui.screen.add
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,12 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -112,14 +112,19 @@ internal fun StepButton(
   label: String,
   content: @Composable () -> Unit,
 ) {
-  Surface(
+  FilledIconButton(
     onClick = onClick,
     enabled = enabled,
     shape = CaducityTheme.shapes.small,
-    color = CaducityTheme.colorScheme.surface,
-    contentColor = if (enabled) CaducityTheme.colorScheme.onSurface else CaducityTheme.colorScheme.outline,
-    modifier = Modifier.minimumInteractiveComponentSize().size(44.dp).semantics { contentDescription = label },
+    colors =
+      IconButtonDefaults.filledIconButtonColors(
+        containerColor = CaducityTheme.colorScheme.surface,
+        contentColor = CaducityTheme.colorScheme.onSurface,
+        disabledContainerColor = CaducityTheme.colorScheme.surface,
+        disabledContentColor = CaducityTheme.colorScheme.outline,
+      ),
+    modifier = Modifier.size(44.dp).semantics { contentDescription = label },
   ) {
-    Box(contentAlignment = Alignment.Center) { content() }
+    content()
   }
 }
