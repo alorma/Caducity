@@ -76,11 +76,11 @@
   <string name="error_delete_category_failed">Error al eliminar categoría</string>
 
   <!-- Backup & Restore -->
-  <string name="backup_export_title">Exportar Respaldo</string>
+  <string name="backup_export_title">Exportar la copia de seguridad</string>
   <string name="backup_export_description">Guardar tus datos en un archivo</string>
-  <string name="backup_restore_title">Restaurar Respaldo</string>
-  <string name="backup_restore_description">Cargar datos desde un archivo de respaldo</string>
-  <string name="backup_restore_warning_title">¿Reemplazar Todos los Datos?</string>
+  <string name="backup_restore_title">Restaurar la copia de seguridad</string>
+  <string name="backup_restore_description">Cargar los datos de un archivo de copia de seguridad</string>
+  <string name="backup_restore_warning_title">¿Reemplazar todos los datos?</string>
   <string name="backup_restore_warning_message">Esto eliminará todos los datos actuales y restaurará desde el respaldo. Esta acción no se puede deshacer.</string>
   <string name="backup_restore_confirm">Restaurar</string>
   <string name="backup_cancel">Cancelar</string>
@@ -99,7 +99,7 @@
   <string name="nav_settings">Ajustes</string>
   <string name="action_add_product">Añadir un producto</string>
   <string name="add_date_placeholder">dd/mm/aa</string>
-  <string name="add_date_pick">Elige la fecha</string>
+  <string name="add_date_pick">Elegir la fecha</string>
   <string name="add_date_help_expired">ya ha caducado</string>
   <string name="add_date_suggested">Sugerida: %1$s duran %2$s</string>
   <string name="add_date_help_today">%1$s · hoy</string>
@@ -114,7 +114,7 @@
   <string name="add_quick_1_week">+1 semana</string>
   <string name="add_quick_2_weeks">+2 semanas</string>
   <string name="add_quick_1_month">+1 mes</string>
-  <string name="add_title">Añade</string>
+  <string name="add_title">Añadir</string>
   <string name="add_close">Cerrar</string>
   <string name="add_name_label">Nombre</string>
   <string name="add_name_hint">¿Qué añades?</string>
@@ -145,9 +145,9 @@
   <string name="transform_result_name_hint">¿Qué estás cocinando?</string>
   <string name="transform_units">Unidades</string>
   <string name="transform_date_hint">Fecha del ingrediente que caduca primero (%s).</string>
-  <string name="transform_freeze">Congela</string>
-  <string name="transform_freeze_chip">Congela · %d</string>
-  <string name="transform_freeze_in_freezer">Congela · %1$d en el congelador</string>
+  <string name="transform_freeze">Congelar</string>
+  <string name="transform_freeze_chip">Congelar · %d</string>
+  <string name="transform_freeze_in_freezer">Congelar · %1$d en el congelador</string>
   <string name="transform_footer_title">No es un recetario:</string>
   <string name="transform_footer">solo apunta lo que has gastado y lo que ha salido. Los ingredientes desaparecen de la despensa al guardar.</string>
   <string name="transform_result_unnamed">Resultado nuevo</string>
@@ -178,37 +178,37 @@
   <string name="transform_add_ingredient">Añadir ingrediente</string>
   <string name="transform_add">Añadir</string>
   <string name="transform_section_ingredients_count">Ingredientes · %d</string>
-  <string name="transform_ingredient_units_edit">Cambia la cantidad, %1$d de %2$d</string>
+  <string name="transform_ingredient_units_edit">Cambiar la cantidad, %1$d de %2$d</string>
   <string name="transform_ingredient_units">%1$d de %2$d</string>
   <string name="transform_ingredient_remove">Quitar %1$s</string>
   <string name="transform_discard_title">¿Descartar los cambios?</string>
   <string name="transform_discard_message">No se transformará nada.</string>
   <string name="transform_discard_confirm">Descartar</string>
   <string name="transform_discard_keep">Seguir editando</string>
-  <string name="transform_picker_title">Añade ingredientes</string>
-  <string name="transform_picker_search">Busca en la despensa</string>
+  <string name="transform_picker_title">Añadir ingredientes</string>
+  <string name="transform_picker_search">Buscar en la despensa</string>
   <string name="transform_picker_filter_status">Estado</string>
   <string name="transform_picker_filter_category">Categoría</string>
   <string name="transform_picker_filter_count">%1$s · %2$d</string>
   <string name="transform_picker_meta">%1$s · %2$s</string>
   <string name="transform_picker_empty">No hay coincidencias</string>
   <plurals name="transform_picker_add">
-    <item quantity="one">Añade %d ingrediente</item>
-    <item quantity="many">Añade %d ingredientes</item>
-    <item quantity="other">Añade %d ingredientes</item>
+    <item quantity="one">Añadir %d ingrediente</item>
+    <item quantity="many">Añadir %d ingredientes</item>
+    <item quantity="other">Añadir %d ingredientes</item>
   </plurals>
   <string name="add_save_failed">No se ha podido guardar</string>
   <string name="add_frozen_past_date">Un producto congelado no puede tener una fecha pasada</string>
   <string name="add_picker_ok">Aceptar</string>
   <string name="add_picker_cancel">Cancelar</string>
-  <string name="add_edit_title">Edita</string>
+  <string name="add_edit_title">Editar</string>
   <string name="quick_category_title">Nueva categoría</string>
   <string name="category_form_name">Nombre</string>
   <string name="category_form_shape">Forma</string>
   <string name="category_form_shape_option">Forma %1$d de %2$d</string>
   <string name="category_form_icon">Icono</string>
   <string name="quick_category_note">La descripción y el orden se pueden cambiar después, en Despensa.</string>
-  <string name="quick_category_create">Crea y úsala</string>
+  <string name="quick_category_create">Crear y usarla</string>
   <string name="quick_category_error_duplicate">Ya tienes una categoría con ese nombre</string>
   <string name="quick_category_error_failed">No se ha podido crear la categoría</string>
   <string name="item_actions_units_first">%1$d unidades · la primera, %2$s</string>
@@ -219,9 +219,9 @@
   <string name="item_actions_of_total">de %1$d</string>
   <string name="item_actions_selector_hint">Primero las que caducan antes</string>
   <string name="item_actions_selector_hint_expired">Primero las que caducan antes · %1$d ya han caducado</string>
-  <string name="item_actions_consume_n">Consume %1$d</string>
-  <string name="item_actions_freeze_n">Congela %1$d</string>
-  <string name="item_actions_discard_n">Tira %1$d</string>
+  <string name="item_actions_consume_n">Consumir %1$d</string>
+  <string name="item_actions_freeze_n">Congelar %1$d</string>
+  <string name="item_actions_discard_n">Tirar %1$d</string>
   <string name="item_actions_more">Más acciones</string>
   <string name="item_actions_eat_anyway">Consumir igualmente</string>
   <string name="item_actions_eat_anyway_hint">Mantén pulsado · bajo tu responsabilidad</string>
@@ -245,18 +245,18 @@
   </plurals>
   <string name="item_pill_frozen">Congelado</string>
   <string name="item_actions_consumed">Consumido</string>
-  <string name="item_actions_freeze">Congela</string>
-  <string name="item_actions_unfreeze">Descongela</string>
-  <string name="item_actions_change_date">Cambia la fecha</string>
+  <string name="item_actions_freeze">Congelar</string>
+  <string name="item_actions_unfreeze">Descongelar</string>
+  <string name="item_actions_change_date">Cambiar la fecha</string>
   <string name="item_actions_plus_1d">+1 día</string>
   <string name="item_actions_plus_3d">+3 días</string>
   <string name="item_actions_plus_1w">+1 semana</string>
-  <string name="item_actions_pick_date">Elige una fecha</string>
-  <string name="item_actions_edit">Edita</string>
+  <string name="item_actions_pick_date">Elegir una fecha</string>
+  <string name="item_actions_edit">Editar</string>
   <string name="item_actions_move">Mover a otra categoría</string>
   <string name="item_actions_transform">Transformar este producto</string>
   <string name="item_actions_move_title">Mover a…</string>
-  <string name="item_actions_discard">Tira</string>
+  <string name="item_actions_discard">Tirar</string>
   <string name="item_actions_cancel">Cancelar</string>
   <string name="item_actions_snackbar_consumed">1 %1$s consumido</string>
   <string name="item_actions_snackbar_rescheduled">Fecha de %1$s cambiada</string>
@@ -281,7 +281,7 @@
     <item quantity="many">El más antiguo, hace %d días</item>
     <item quantity="other">El más antiguo, hace %d días</item>
   </plurals>
-  <string name="home_expired_banner_action">Revisa</string>
+  <string name="home_expired_banner_action">Revisar</string>
   <string name="home_summary_soon">Pronto</string>
   <string name="home_summary_fresh">Frescos</string>
   <string name="home_summary_frozen">Congelados</string>
@@ -303,14 +303,14 @@
     <item quantity="many">%d unidades</item>
     <item quantity="other">%d unidades</item>
   </plurals>
-  <string name="home_mark_consumed">Marca %1$s como consumido</string>
+  <string name="home_mark_consumed">Marcar %1$s como consumido</string>
   <string name="home_see_pantry">Ver la despensa</string>
   <string name="home_more_rows">+%d más</string>
   <string name="home_cooked_title">¿Has cocinado?</string>
   <string name="home_cooked_body">Apúntalo en Transformar</string>
   <string name="home_empty_title">La despensa está vacía</string>
   <string name="home_empty_body">Empieza por la compra de hoy: añade lo que acabas de guardar en la nevera.</string>
-  <string name="home_empty_cta">Añade el primer producto</string>
+  <string name="home_empty_cta">Añadir el primer producto</string>
   <string name="week_strip_day_none">%1$s, nada</string>
   <plurals name="week_strip_day_count">
     <item quantity="one">%1$s, %2$d producto</item>
@@ -343,7 +343,7 @@
     <item quantity="other">hace %d días</item>
   </plurals>
   <string name="pantry_overline">%1$s · %2$s</string>
-  <string name="pantry_search">Busca un producto</string>
+  <string name="pantry_search">Buscar un producto</string>
   <string name="pantry_search_clear">Vaciar la búsqueda</string>
   <string name="pantry_card_meta">%1$s · próximo, %2$s</string>
   <string name="pantry_new_category">Nueva categoría</string>
@@ -390,11 +390,11 @@
   <string name="status_title_soon">Pronto</string>
   <string name="status_title_fresh">Frescos</string>
   <string name="status_title_frozen">Congelados</string>
-  <string name="status_discard_all">Tíralos todos</string>
+  <string name="status_discard_all">Tirarlos todos</string>
   <string name="status_expired_warning">Han caducado. Por seguridad, tíralos.</string>
   <string name="product_row_in_days">En %1$d días</string>
-  <string name="status_action_discard">Tira %1$s</string>
-  <string name="status_action_freeze">Congela %1$s</string>
+  <string name="status_action_discard">Tirar %1$s</string>
+  <string name="status_action_freeze">Congelar %1$s</string>
   <string name="status_empty_expired_title">Nada caducado</string>
   <string name="status_empty_expired_body">Todo lo que tienes está en fecha.</string>
   <string name="status_empty_soon_title">Nada caduca pronto</string>
@@ -414,7 +414,7 @@
   <string name="status_discard_confirm">Tirarlos</string>
   <string name="home_summary_cell_cd">%1$s, %2$s. Abre la lista</string>
   <string name="category_editor_title_new">Nueva categoría</string>
-  <string name="category_editor_title_edit">Edita la categoría</string>
+  <string name="category_editor_title_edit">Editar la categoría</string>
   <string name="category_editor_close">Cerrar</string>
   <string name="category_editor_save">Guardar</string>
   <string name="category_editor_preview_placeholder">Nombre de la categoría</string>
@@ -437,7 +437,7 @@
   <string name="settings_1w">1 semana</string>
   <string name="settings_week_start">La semana empieza</string>
   <string name="settings_app_language">Idioma de la aplicación</string>
-  <string name="settings_backup_sub">Exporta y restaura</string>
+  <string name="settings_backup_sub">Exportar y restaurar</string>
   <string name="settings_about_sub">Versión y créditos</string>
   <string name="settings_time_dialog_title">Hora del aviso</string>
   <string name="settings_dialog_save">Guardar</string>
@@ -452,7 +452,7 @@
   <!-- Onboarding (redisseny) -->
   <string name="ob_welcome_title">Sabe qué caduca antes de que pase</string>
   <string name="ob_welcome_body">Apunta lo que compras y Caducity te avisa cuando se acerca la fecha. Menos comida a la basura.</string>
-  <string name="ob_start">Empieza</string>
+  <string name="ob_start">Empezar</string>
   <string name="ob_step">Paso %1$d de %2$d</string>
   <string name="ob_back">Atrás</string>
   <string name="ob_categories_title">¿Qué guardas en casa?</string>
@@ -471,7 +471,7 @@
   <string name="ob_alerts_days_7">1 semana</string>
   <string name="ob_alerts_time">Hora</string>
   <string name="ob_alerts_daily">Cada día</string>
-  <string name="ob_alerts_enable">Activa los avisos</string>
+  <string name="ob_alerts_enable">Activar los avisos</string>
   <string name="ob_alerts_enabled">Avisos activados</string>
   <string name="ob_not_now">Ahora no</string>
   <string name="ob_privacy_title">Tu despensa es tuya</string>
@@ -500,10 +500,10 @@
   <string name="ob_disclaimer_p1">Caducity solo te recuerda las fechas que tú apuntas. &lt;b&gt;No comprueba el estado de los alimentos ni garantiza que sean seguros.&lt;/b&gt;</string>
   <string name="ob_disclaimer_p2">Antes de comer cualquier cosa, revisa su aspecto, su olor, cómo se ha conservado y las indicaciones del envase. Las fechas y los avisos de la app son orientativos y pueden contener errores.</string>
   <string name="ob_disclaimer_p3">Eres el único responsable de decidir qué consumes. Los desarrolladores no se hacen responsables de ningún daño derivado del consumo de alimentos.</string>
-  <string name="ob_disclaimer_link">Lee las condiciones de uso completas</string>
+  <string name="ob_disclaimer_link">Leer las condiciones de uso completas</string>
   <string name="ob_disclaimer_check">He leído el aviso y entiendo que la app no garantiza que un alimento sea seguro para comer.</string>
   <string name="ob_disclaimer_required">Marca la casilla para continuar.</string>
-  <string name="ob_accept_and_start">Acepto y empiezo</string>
+  <string name="ob_accept_and_start">Aceptar y empezar</string>
   <string name="ob_category_dairy">Lácteos</string>
   <string name="ob_category_produce">Fruta y verdura</string>
   <string name="ob_category_meat_fish">Carne y pescado</string>

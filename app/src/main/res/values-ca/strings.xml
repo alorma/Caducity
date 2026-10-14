@@ -76,14 +76,14 @@
   <string name="error_delete_category_failed">Error en eliminar categoria</string>
 
   <!-- Backup & Restore -->
-  <string name="backup_export_title">Exportar Còpia de seguretat</string>
-  <string name="backup_export_description">Desar les teves dades en un arxiu</string>
-  <string name="backup_restore_title">Restaurar Còpia de seguretat</string>
-  <string name="backup_restore_description">Carregar dades des d\'un arxiu de còpia de seguretat</string>
-  <string name="backup_restore_warning_title">Reemplaçar Totes les Dades?</string>
+  <string name="backup_export_title">Exporta la còpia de seguretat</string>
+  <string name="backup_export_description">Desa les teves dades en un fitxer</string>
+  <string name="backup_restore_title">Restaura la còpia de seguretat</string>
+  <string name="backup_restore_description">Carrega les dades d\'un fitxer de còpia de seguretat</string>
+  <string name="backup_restore_warning_title">Substituir totes les dades?</string>
   <string name="backup_restore_warning_message">Això eliminarà totes les dades actuals i restaurarà des de la còpia de seguretat. Aquesta acció no es pot desfer.</string>
-  <string name="backup_restore_confirm">Restaurar</string>
-  <string name="backup_cancel">Cancel·lar</string>
+  <string name="backup_restore_confirm">Restaura</string>
+  <string name="backup_cancel">Cancel·la</string>
   <string name="backup_export_success">Còpia de seguretat exportada amb èxit</string>
   <string name="backup_restore_success">Còpia de seguretat restaurada amb èxit</string>
   <string name="backup_error_invalid_file">Arxiu de còpia de seguretat invàlid</string>

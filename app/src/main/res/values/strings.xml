@@ -75,11 +75,11 @@
   <string name="error_delete_category_failed">Failed to delete category</string>
 
   <!-- Backup & Restore -->
-  <string name="backup_export_title">Export Backup</string>
+  <string name="backup_export_title">Export backup</string>
   <string name="backup_export_description">Save your data to a file</string>
-  <string name="backup_restore_title">Restore Backup</string>
+  <string name="backup_restore_title">Restore backup</string>
   <string name="backup_restore_description">Load data from a backup file</string>
-  <string name="backup_restore_warning_title">Replace All Data?</string>
+  <string name="backup_restore_warning_title">Replace all data?</string>
   <string name="backup_restore_warning_message">This will delete all current data and restore from backup. This action cannot be undone.</string>
   <string name="backup_restore_confirm">Restore</string>
   <string name="backup_cancel">Cancel</string>
