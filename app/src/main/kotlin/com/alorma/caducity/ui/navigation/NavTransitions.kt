@@ -1,0 +1,105 @@
+package com.alorma.caducity.ui.navigation
+
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
+import androidx.compose.ui.unit.IntOffset
+import androidx.navigation3.ui.NavDisplay
+
+// Same transitions as Converses (ui/AppNavigation.kt), plus the fade between tabs.
+
+private const val TransitionMs = 300
+private const val FadeMs = 150
+private const val BackScale = 0.9f
+
+private val transitionEasing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
+
+/**
+ * Transitions close to the native Android ones: the new screen slides in a little; going back,
+ * only the leaving screen shrinks and fades out, revealing the previous one (like predictive back).
+ * Modal screens (Add, Transform, editors) slide in vertically and leave the screen below untouched.
+ */
+internal fun <S> AnimatedContentTransitionScope<S>.nativeTransition(
+  forward: Boolean,
+  vertical: Boolean,
+): ContentTransform {
+  val offset = tween<IntOffset>(TransitionMs, easing = transitionEasing)
+
+  fun distance(size: Int) = size / 12
+  val enter: EnterTransition
+  val exit: ExitTransition
+  if (forward) {
+    // Opaque while it slides in: a fading entry lets the screen below show through it.
+    enter = if (vertical) slideInVertically(offset, ::distance) else slideInHorizontally(offset, ::distance)
+    exit = ExitTransition.None
+  } else {
+    enter = EnterTransition.None
+    // Fully opaque until the very end, like the system animation: an early fade shows the screen
+    // below through the leaving one.
+    val lateFade = fadeOut(tween(TransitionMs / 3, delayMillis = TransitionMs * 2 / 3, easing = LinearEasing))
+    exit =
+      if (vertical) {
+        slideOutVertically(offset, ::distance) + lateFade
+      } else {
+        scaleOut(tween(TransitionMs, easing = transitionEasing), targetScale = BackScale) + lateFade
+      }
+  }
+  return enter togetherWith exit
+}
+
+private const val EdgeRight = 1
+private const val GestureScale = 0.85f
+
+/**
+ * Back gesture (seeked by the finger): like the system animation, the leaving screen shrinks and
+ * moves towards the side the gesture comes from, and only fades at the very end. The screen below
+ * stays in place.
+ */
+internal fun <S> AnimatedContentTransitionScope<S>.predictiveBack(
+  edge: Int,
+  vertical: Boolean,
+): ContentTransform {
+  val offset = tween<IntOffset>(TransitionMs, easing = LinearOutSlowInEasing)
+  val side = if (edge == EdgeRight) -1 else 1
+  val slide =
+    if (vertical) {
+      slideOutVertically(offset) { it / 8 }
+    } else {
+      slideOutHorizontally(offset) { side * it / 8 }
+    }
+  val exit =
+    slide +
+      scaleOut(tween(TransitionMs, easing = LinearOutSlowInEasing), targetScale = GestureScale) +
+      fadeOut(tween(TransitionMs / 3, delayMillis = TransitionMs * 2 / 3, easing = LinearEasing))
+  return EnterTransition.None togetherWith exit
+}
+
+/** Fade through: the leaving tab fades out quickly, then the new one fades in. */
+private fun <S> AnimatedContentTransitionScope<S>.tabTransition(): ContentTransform =
+  fadeIn(tween(TransitionMs - FadeMs / 2, delayMillis = FadeMs / 2, easing = LinearEasing)) togetherWith
+    fadeOut(tween(FadeMs / 2, easing = LinearEasing))
+
+/** Metadata for the modal screens (Add, Transform, editors): vertical transitions. */
+internal val modalTransitions =
+  NavDisplay.transitionSpec { nativeTransition(forward = true, vertical = true) } +
+    NavDisplay.popTransitionSpec { nativeTransition(forward = false, vertical = true) } +
+    NavDisplay.predictivePopTransitionSpec { edge -> predictiveBack(edge, vertical = true) }
+
+/**
+ * Metadata for every tab but the base: going to it (`[Home]` → `[Home, Pantry]`) fades. Leaving it
+ * (back key, gesture or the bar) uses the default pop, where the tab shrinks and reveals Home.
+ */
+internal val tabTransitions = NavDisplay.transitionSpec { tabTransition() }

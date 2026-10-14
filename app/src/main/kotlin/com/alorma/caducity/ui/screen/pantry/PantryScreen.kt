@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,6 +48,7 @@ import com.alorma.caducity.feature.tracking.PantryScreen as PantryScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.StyledLargeTopAppBar
 import com.alorma.caducity.ui.navigation.LocalFloatingBarPadding
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -84,21 +86,20 @@ fun PantryScreen(
     }
   }
 
-  ResponsiveCenteredContainer(modifier = modifier) {
-    when (val current = state) {
-      PantryState.Loading -> Unit
-      is PantryState.Ready ->
-        PantryContent(
-          state = current,
-          focusRequester = focusRequester,
-          onQueryChange = viewModel::onQueryChange,
-          onNavigate = viewModel::navigate,
-          onOpenItemActions = onOpenItemActions,
-          onConsume = viewModel::onConsume,
-          onFreeze = viewModel::onFreeze,
-          onDiscard = viewModel::onDiscard,
-        )
-    }
+  when (val current = state) {
+    PantryState.Loading -> Unit
+    is PantryState.Ready ->
+      PantryContent(
+        state = current,
+        focusRequester = focusRequester,
+        onQueryChange = viewModel::onQueryChange,
+        onNavigate = viewModel::navigate,
+        onOpenItemActions = onOpenItemActions,
+        onConsume = viewModel::onConsume,
+        onFreeze = viewModel::onFreeze,
+        onDiscard = viewModel::onDiscard,
+        modifier = modifier,
+      )
   }
 }
 
@@ -118,51 +119,61 @@ internal fun PantryContent(
   val columns = 2
 
   val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-  Column(modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection)) {
-    PantryHeader(data, scrollBehavior)
-    Box(modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 10.dp)) {
-      PantrySearchField(state.query, onQueryChange, focusRequester)
-    }
-    LazyColumn(
-      modifier = Modifier.fillMaxSize(),
-      contentPadding =
-        PaddingValues(
-          start = 20.dp,
-          end = 20.dp,
-          bottom = LocalFloatingBarPadding.current.calculateBottomPadding() + 24.dp,
-        ),
-      verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-      if (state.isSearching) {
-        searchResults(state, onOpenItemActions, onConsume, onFreeze, onDiscard)
-      } else {
-        val cells: List<PantryCategory?> = data.categories + null
-        items(
-          cells.chunked(columns),
-          key = { row -> row.first()?.category?.id ?: "new-category" },
-          contentType = "category-row",
-        ) { row ->
-          Row(
-            modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-          ) {
-            row.forEach { cell ->
-              if (cell == null) {
-                NewCategoryCard(
-                  onClick = { onNavigate(PantryNavigation.NewCategory) },
-                  modifier = Modifier.weight(1f).fillMaxHeight(),
-                )
-              } else {
-                CategoryCard(
-                  entry = cell,
-                  today = data.today,
-                  onClick = { onNavigate(PantryNavigation.Category(cell.category.id, "card")) },
-                  modifier = Modifier.weight(1f).fillMaxHeight(),
-                )
+  // The floating bar overlays the content, so the scaffold reserves no space at the bottom.
+  AppScaffold(
+    modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    contentWindowInsets = WindowInsets(0.dp),
+    topBar = {
+      ResponsiveCenteredContainer(fillHeight = false) { PantryHeader(data, scrollBehavior) }
+    },
+  ) { padding ->
+    ResponsiveCenteredContainer(modifier = Modifier.padding(padding)) {
+      Column(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.padding(start = 20.dp, top = 8.dp, end = 20.dp, bottom = 10.dp)) {
+          PantrySearchField(state.query, onQueryChange, focusRequester)
+        }
+        LazyColumn(
+          modifier = Modifier.fillMaxSize(),
+          contentPadding =
+            PaddingValues(
+              start = 20.dp,
+              end = 20.dp,
+              bottom = LocalFloatingBarPadding.current.calculateBottomPadding() + 24.dp,
+            ),
+          verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+          if (state.isSearching) {
+            searchResults(state, onOpenItemActions, onConsume, onFreeze, onDiscard)
+          } else {
+            val cells: List<PantryCategory?> = data.categories + null
+            items(
+              cells.chunked(columns),
+              key = { row -> row.first()?.category?.id ?: "new-category" },
+              contentType = "category-row",
+            ) { row ->
+              Row(
+                modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+              ) {
+                row.forEach { cell ->
+                  if (cell == null) {
+                    NewCategoryCard(
+                      onClick = { onNavigate(PantryNavigation.NewCategory) },
+                      modifier = Modifier.weight(1f).fillMaxHeight(),
+                    )
+                  } else {
+                    CategoryCard(
+                      entry = cell,
+                      today = data.today,
+                      onClick = { onNavigate(PantryNavigation.Category(cell.category.id, "card")) },
+                      modifier = Modifier.weight(1f).fillMaxHeight(),
+                    )
+                  }
+                }
+                if (row.size < columns) {
+                  repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
+                }
               }
-            }
-            if (row.size < columns) {
-              repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
             }
           }
         }

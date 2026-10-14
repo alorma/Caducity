@@ -23,11 +23,11 @@ Com es treballa cada fase (tasques, commits, validació): `.claude/rules/phased-
 
 ## Fase K · Caducity
 
-- [ ] **K1.** Reescriure l'interior de `TopLevelBackStack` sobre un `NavBackStack` desable amb els punts 1–4, mantenint l'API (`navigate`, `switchTab`, `pop`, `resetTo`, `openFromOutside`); `currentTab` = darrera ruta top level de la pila. `App.kt` crea la pila amb `rememberNavBackStack` (Onboarding o Home com a arrel) en lloc de `retain`.
+- [x] **K1.** (`62d493d0`) Reescriure l'interior de `TopLevelBackStack` sobre un `NavBackStack` desable amb els punts 1–4, mantenint l'API (`navigate`, `switchTab`, `pop`, `resetTo`, `openFromOutside`); `currentTab` = darrera ruta top level de la pila. `App.kt` crea la pila amb `rememberNavBackStack` (Onboarding o Home com a arrel) en lloc de `retain`.
   Validació: reescriure `TopLevelBackStackTest` (`starts on home` → `[Home]`, canvis de pestanya, back, onboarding, `openFromOutside`); `testDebugUnitTest`, `ktlintCheck`; emulador: back a Home sense Pantry a sota i amb l'animació del sistema. Risc: si `NavBackStack` no es pot fer servir en un test JVM, testejar la lògica sobre una llista normal.
-- [ ] **K2.** Barra a l'`AppShell` amb `AnimatedVisibility` (lliscar avall i fondre) en lloc de mostrar-la o amagar-la de cop.
+- [x] **K2.** (`6f2f487c`) Barra a l'`AppShell` amb `AnimatedVisibility` (lliscar avall i fondre) en lloc de mostrar-la o amagar-la de cop.
   Validació: screenshot tests; emulador obrint Category i tornant.
-- [ ] **K3.** Portar les transicions de Converses (`ui/AppNavigation.kt`): `nativeTransition`, `predictiveBack`, metadata vertical per a les modals i fos per a les pestanyes.
+- [x] **K3.** (`09bc2b6a`, ajustat a `661e637e`: entrades opaques i fade final) Portar les transicions de Converses (`ui/AppNavigation.kt`): `nativeTransition`, `predictiveBack`, metadata vertical per a les modals i fos per a les pestanyes.
   Validació: emulador; Bernat per a la sensació d'ús.
 
 Execució: en sèrie, a la sessió principal, sense agents. Un commit per tasca.

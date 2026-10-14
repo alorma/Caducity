@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,6 +39,7 @@ import com.alorma.caducity.feature.tracking.HomeScreen as HomeScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.weekstrip.WeekStrip
 import com.alorma.caducity.ui.navigation.LocalFloatingBarPadding
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
@@ -76,17 +78,16 @@ fun HomeScreen(
     }
   }
 
-  ResponsiveCenteredContainer(modifier = modifier) {
-    when (val current = state) {
-      HomeState.Loading -> HomeLoading(today = koinInject<TodayProvider>().today())
-      is HomeState.Ready ->
-        HomeContent(
-          state = current,
-          onNavigate = viewModel::navigate,
-          onConsume = viewModel::onConsume,
-          onFreeze = viewModel::onFreeze,
-        )
-    }
+  when (val current = state) {
+    HomeState.Loading -> HomeLoading(today = koinInject<TodayProvider>().today(), modifier = modifier)
+    is HomeState.Ready ->
+      HomeContent(
+        state = current,
+        onNavigate = viewModel::navigate,
+        onConsume = viewModel::onConsume,
+        onFreeze = viewModel::onFreeze,
+        modifier = modifier,
+      )
   }
 }
 
@@ -167,83 +168,95 @@ internal fun HomeContent(
   var selectedDay by rememberSaveable(stateSaver = LocalDateSaver) { mutableStateOf<LocalDate?>(null) }
 
   val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-  Column(modifier = modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection)) {
-    HomeHeader(
-      today = data.today,
-      showActions = !data.isPantryEmpty,
-      onCalendar = { onNavigate(HomeNavigation.Calendar()) },
-      onSearch = { onNavigate(HomeNavigation.Search) },
-      scrollBehavior = scrollBehavior,
-    )
-    if (!data.isPantryEmpty) {
-      WeekStrip(
-        data = state.weekStrip,
-        selected = selectedDay,
-        onDayClick = { date ->
-          val sectionIndex = items.indexOfFirst { it is HomeItem.SectionHeader && it.section.date == date }
-          when {
-            selectedDay == date -> selectedDay = null
-            sectionIndex >= 0 -> {
-              selectedDay = date
-              scope.launch { listState.animateScrollToItem(sectionIndex) }
+  // The floating bar overlays the content, so the scaffold reserves no space at the bottom.
+  AppScaffold(
+    modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    contentWindowInsets = WindowInsets(0.dp),
+    topBar = {
+      ResponsiveCenteredContainer(fillHeight = false) {
+        HomeHeader(
+          today = data.today,
+          showActions = !data.isPantryEmpty,
+          onCalendar = { onNavigate(HomeNavigation.Calendar()) },
+          onSearch = { onNavigate(HomeNavigation.Search) },
+          scrollBehavior = scrollBehavior,
+        )
+      }
+    },
+  ) { padding ->
+    ResponsiveCenteredContainer(modifier = Modifier.padding(padding)) {
+      Column(modifier = Modifier.fillMaxSize()) {
+        if (!data.isPantryEmpty) {
+          WeekStrip(
+            data = state.weekStrip,
+            selected = selectedDay,
+            onDayClick = { date ->
+              val sectionIndex = items.indexOfFirst { it is HomeItem.SectionHeader && it.section.date == date }
+              when {
+                selectedDay == date -> selectedDay = null
+                sectionIndex >= 0 -> {
+                  selectedDay = date
+                  scope.launch { listState.animateScrollToItem(sectionIndex) }
+                }
+                // No «soon» section that day: open the month view on it (P18).
+                else -> onNavigate(HomeNavigation.Calendar(date = date, source = "week_strip"))
+              }
+            },
+            modifier = Modifier.padding(top = 12.dp, bottom = 12.dp),
+            contentPadding = PaddingValues(horizontal = 20.dp),
+          )
+        }
+        LazyColumn(
+          state = listState,
+          modifier = Modifier.fillMaxSize(),
+          contentPadding =
+            PaddingValues(
+              start = 20.dp,
+              end = 20.dp,
+              bottom = LocalFloatingBarPadding.current.calculateBottomPadding() + 24.dp,
+            ),
+          verticalArrangement = Arrangement.spacedBy(ConnectedGap),
+        ) {
+          items(items, key = { it.key }, contentType = { it::class }) { item ->
+            when (item) {
+              HomeItem.Banner ->
+                ExpiredBanner(
+                  count = data.expiredCount,
+                  oldestDaysAgo = data.oldestExpiredDaysAgo ?: 0,
+                  onReview = { onNavigate(HomeNavigation.StatusList(ExpiryStatus.EXPIRED, "banner")) },
+                  modifier = Modifier.padding(bottom = 12.dp),
+                )
+              HomeItem.Summary ->
+                SummaryRow(
+                  soon = data.soonCount,
+                  fresh = data.freshCount,
+                  frozen = data.frozenCount,
+                  onSoon = { onNavigate(HomeNavigation.StatusList(ExpiryStatus.SOON, "summary")) },
+                  onFresh = { onNavigate(HomeNavigation.StatusList(ExpiryStatus.FRESH, "summary")) },
+                  onFrozen = { onNavigate(HomeNavigation.StatusList(ExpiryStatus.FROZEN, "summary")) },
+                  modifier = Modifier.padding(bottom = 12.dp),
+                )
+              is HomeItem.SectionHeader ->
+                DaySectionHeader(
+                  section = item.section,
+                  today = data.today,
+                  modifier = Modifier.padding(top = 16.dp, bottom = 6.dp),
+                )
+              is HomeItem.Row ->
+                ProductRow(
+                  model = item.row.toProductRow(item.section, data.today),
+                  index = item.index,
+                  count = item.section.rows.size,
+                  onClick = { onNavigate(HomeNavigation.ItemActions(item.row.itemIds)) },
+                  onConsume = { onConsume(item.row) },
+                  onFreeze = { onFreeze(item.row) },
+                )
+              is HomeItem.More -> MoreRows(count = item.count)
+              HomeItem.SeePantry -> SeePantry(onSeePantry = { onNavigate(HomeNavigation.Pantry("see_pantry")) })
+              HomeItem.Cooked -> CookedCard(onClick = { onNavigate(HomeNavigation.Transform("cooked_card")) })
+              HomeItem.Empty -> HomeEmptyState(onAdd = { onNavigate(HomeNavigation.AddFirst) })
             }
-            // No «soon» section that day: open the month view on it (P18).
-            else -> onNavigate(HomeNavigation.Calendar(date = date, source = "week_strip"))
           }
-        },
-        modifier = Modifier.padding(top = 12.dp, bottom = 12.dp),
-        contentPadding = PaddingValues(horizontal = 20.dp),
-      )
-    }
-    LazyColumn(
-      state = listState,
-      modifier = Modifier.fillMaxSize(),
-      contentPadding =
-        PaddingValues(
-          start = 20.dp,
-          end = 20.dp,
-          bottom = LocalFloatingBarPadding.current.calculateBottomPadding() + 24.dp,
-        ),
-      verticalArrangement = Arrangement.spacedBy(ConnectedGap),
-    ) {
-      items(items, key = { it.key }, contentType = { it::class }) { item ->
-        when (item) {
-          HomeItem.Banner ->
-            ExpiredBanner(
-              count = data.expiredCount,
-              oldestDaysAgo = data.oldestExpiredDaysAgo ?: 0,
-              onReview = { onNavigate(HomeNavigation.StatusList(ExpiryStatus.EXPIRED, "banner")) },
-              modifier = Modifier.padding(bottom = 12.dp),
-            )
-          HomeItem.Summary ->
-            SummaryRow(
-              soon = data.soonCount,
-              fresh = data.freshCount,
-              frozen = data.frozenCount,
-              onSoon = { onNavigate(HomeNavigation.StatusList(ExpiryStatus.SOON, "summary")) },
-              onFresh = { onNavigate(HomeNavigation.StatusList(ExpiryStatus.FRESH, "summary")) },
-              onFrozen = { onNavigate(HomeNavigation.StatusList(ExpiryStatus.FROZEN, "summary")) },
-              modifier = Modifier.padding(bottom = 12.dp),
-            )
-          is HomeItem.SectionHeader ->
-            DaySectionHeader(
-              section = item.section,
-              today = data.today,
-              modifier = Modifier.padding(top = 16.dp, bottom = 6.dp),
-            )
-          is HomeItem.Row ->
-            ProductRow(
-              model = item.row.toProductRow(item.section, data.today),
-              index = item.index,
-              count = item.section.rows.size,
-              onClick = { onNavigate(HomeNavigation.ItemActions(item.row.itemIds)) },
-              onConsume = { onConsume(item.row) },
-              onFreeze = { onFreeze(item.row) },
-            )
-          is HomeItem.More -> MoreRows(count = item.count)
-          HomeItem.SeePantry -> SeePantry(onSeePantry = { onNavigate(HomeNavigation.Pantry("see_pantry")) })
-          HomeItem.Cooked -> CookedCard(onClick = { onNavigate(HomeNavigation.Transform("cooked_card")) })
-          HomeItem.Empty -> HomeEmptyState(onAdd = { onNavigate(HomeNavigation.AddFirst) })
         }
       }
     }
@@ -256,24 +269,35 @@ internal fun HomeLoading(
   today: LocalDate,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier = modifier.fillMaxSize()) {
-    HomeHeader(today = today, showActions = true, onCalendar = {}, onSearch = {})
-    WeekStrip(
-      data = WeekStripData(today, emptyMap()),
-      selected = null,
-      onDayClick = {},
-      modifier = Modifier.padding(top = 12.dp, bottom = 12.dp),
-      contentPadding = PaddingValues(horizontal = 20.dp),
-    )
-    SummaryRow(
-      soon = 0,
-      fresh = 0,
-      frozen = 0,
-      onSoon = {},
-      onFresh = {},
-      onFrozen = {},
-      modifier = Modifier.padding(horizontal = 20.dp),
-    )
+  AppScaffold(
+    modifier = modifier,
+    contentWindowInsets = WindowInsets(0.dp),
+    topBar = {
+      ResponsiveCenteredContainer(fillHeight = false) {
+        HomeHeader(today = today, showActions = true, onCalendar = {}, onSearch = {})
+      }
+    },
+  ) { padding ->
+    ResponsiveCenteredContainer(modifier = Modifier.padding(padding)) {
+      Column(modifier = Modifier.fillMaxSize()) {
+        WeekStrip(
+          data = WeekStripData(today, emptyMap()),
+          selected = null,
+          onDayClick = {},
+          modifier = Modifier.padding(top = 12.dp, bottom = 12.dp),
+          contentPadding = PaddingValues(horizontal = 20.dp),
+        )
+        SummaryRow(
+          soon = 0,
+          fresh = 0,
+          frozen = 0,
+          onSoon = {},
+          onFresh = {},
+          onFrozen = {},
+          modifier = Modifier.padding(horizontal = 20.dp),
+        )
+      }
+    }
   }
 }
 

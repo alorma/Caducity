@@ -10,15 +10,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
@@ -70,6 +67,7 @@ import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
 import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
+import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -109,21 +107,20 @@ fun CalendarScreen(
     }
   }
 
-  ResponsiveCenteredContainer(modifier = modifier) {
-    when (val current = state) {
-      CalendarState.Loading -> Unit
-      is CalendarState.Ready ->
-        CalendarContent(
-          state = current,
-          onBack = { viewModel.navigate(CalendarNavigation.Back) },
-          onMonthShown = viewModel::onMonthShown,
-          onDayClick = viewModel::onDayClick,
-          onRowClick = { viewModel.navigate(CalendarNavigation.ItemActions(it)) },
-          onConsume = viewModel::onConsume,
-          onFreeze = viewModel::onFreeze,
-          onDiscard = viewModel::onDiscard,
-        )
-    }
+  when (val current = state) {
+    CalendarState.Loading -> Unit
+    is CalendarState.Ready ->
+      CalendarContent(
+        state = current,
+        onBack = { viewModel.navigate(CalendarNavigation.Back) },
+        onMonthShown = viewModel::onMonthShown,
+        onDayClick = viewModel::onDayClick,
+        onRowClick = { viewModel.navigate(CalendarNavigation.ItemActions(it)) },
+        onConsume = viewModel::onConsume,
+        onFreeze = viewModel::onFreeze,
+        onDiscard = viewModel::onDiscard,
+        modifier = modifier,
+      )
   }
 }
 
@@ -147,55 +144,60 @@ internal fun CalendarContent(
   LaunchedEffect(pagerState) {
     snapshotFlow { pagerState.settledPage }.collect { currentOnMonthShown(monthAt(base, it)) }
   }
-  Column(modifier = modifier.fillMaxSize()) {
-    CalendarTopBar(
-      title = monthAt(base, pagerState.currentPage).monthTitle(),
-      categoryName = state.categoryName,
-      onBack = onBack,
-      onPrevious = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) } },
-      onNext = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } },
-    )
-    LazyColumn(
-      modifier = Modifier.fillMaxSize(),
-      contentPadding =
-        PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 24.dp),
-      verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing),
-    ) {
-      item(key = "month", contentType = "month") {
-        MonthCard(
-          state = state,
-          pagerState = pagerState,
-          base = base,
-          onDayClick = onDayClick,
-          modifier = Modifier.padding(bottom = 12.dp),
+  AppScaffold(
+    modifier = modifier,
+    topBar = {
+      ResponsiveCenteredContainer(fillHeight = false) {
+        CalendarTopBar(
+          title = monthAt(base, pagerState.currentPage).monthTitle(),
+          categoryName = state.categoryName,
+          onBack = onBack,
+          onPrevious = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) } },
+          onNext = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } },
         )
       }
-      item(key = "day-title", contentType = "day-title") {
-        DayTitle(state = state, modifier = Modifier.padding(top = 8.dp, bottom = 6.dp))
-      }
-      if (state.rows.isEmpty()) {
-        item(key = "empty", contentType = "empty") {
-          Text(
-            text = stringResource(R.string.calendar_day_empty),
-            style = CaducityTheme.typography.bodyMedium,
-            color = CaducityTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
+    },
+  ) { padding ->
+    ResponsiveCenteredContainer(modifier = Modifier.padding(padding)) {
+      LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding =
+          PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing),
+      ) {
+        item(key = "month", contentType = "month") {
+          MonthCard(
+            state = state,
+            pagerState = pagerState,
+            base = base,
+            onDayClick = onDayClick,
+            modifier = Modifier.padding(bottom = 12.dp),
           )
         }
-      }
-      itemsIndexed(state.rows, key = { _, row -> row.key }, contentType = { _, _ -> "row" }) { index, row ->
-        ProductRow(
-          model = row,
-          index = index,
-          count = state.rows.size,
-          onClick = { onRowClick(row.itemIds) },
-          onConsume = { onConsume(row) },
-          onFreeze = { onFreeze(row) },
-          onDiscard = { onDiscard(row) },
-        )
-      }
-      item(key = "bottom-inset", contentType = "bottom-inset") {
-        Spacer(Modifier.windowInsetsPadding(WindowInsets.navigationBars))
+        item(key = "day-title", contentType = "day-title") {
+          DayTitle(state = state, modifier = Modifier.padding(top = 8.dp, bottom = 6.dp))
+        }
+        if (state.rows.isEmpty()) {
+          item(key = "empty", contentType = "empty") {
+            Text(
+              text = stringResource(R.string.calendar_day_empty),
+              style = CaducityTheme.typography.bodyMedium,
+              color = CaducityTheme.colorScheme.onSurfaceVariant,
+              modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
+            )
+          }
+        }
+        itemsIndexed(state.rows, key = { _, row -> row.key }, contentType = { _, _ -> "row" }) { index, row ->
+          ProductRow(
+            model = row,
+            index = index,
+            count = state.rows.size,
+            onClick = { onRowClick(row.itemIds) },
+            onConsume = { onConsume(row) },
+            onFreeze = { onFreeze(row) },
+            onDiscard = { onDiscard(row) },
+          )
+        }
       }
     }
   }

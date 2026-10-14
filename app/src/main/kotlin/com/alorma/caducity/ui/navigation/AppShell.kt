@@ -1,5 +1,10 @@
 package com.alorma.caducity.ui.navigation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -38,7 +43,8 @@ private val FloatingBarContentPadding = PaddingValues(bottom = 96.dp)
 
 /**
  * Parent scaffold of the top-level screens. The [FloatingNavBar] lives in the FAB slot, so it is drawn
- * over [content] (each screen keeps its own scaffold) instead of reserving space below it.
+ * over [content] (each screen keeps its own scaffold) instead of reserving space below it. It slides
+ * down and fades out when the screen on top is not a tab.
  */
 @Suppress("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -82,7 +88,11 @@ fun AppShell(
     contentWindowInsets = WindowInsets.navigationBars,
     floatingActionButtonPosition = FabPosition.Center,
     floatingActionButton = {
-      if (showNavigation) {
+      AnimatedVisibility(
+        visible = showNavigation,
+        enter = slideInVertically { it } + fadeIn(),
+        exit = slideOutVertically { it } + fadeOut(),
+      ) {
         ResponsiveCenteredContainer(fillHeight = false) {
           FloatingNavBar(
             currentTab = currentTab,
