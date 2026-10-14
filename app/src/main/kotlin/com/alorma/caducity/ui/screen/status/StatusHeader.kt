@@ -34,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -63,7 +62,6 @@ import androidx.constraintlayout.compose.MotionLayout
 import androidx.constraintlayout.compose.MotionScene
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.ArrowBack
-import com.alorma.caducity.base.ui.icons.symbols.Close
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.ui.adaptive.rememberIsExpanded
@@ -252,19 +250,14 @@ fun StatusHeader(
   actions: List<HeaderAction>,
   state: StatusHeaderState,
   onBack: () -> Unit,
-  selectionCount: Int?,
-  onCloseSelection: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val colors = status.colors()
-  val selecting = selectionCount != null
-  // The selection bar replaces the header, folded or not.
-  val fraction = if (selecting) 1f else state.fraction
+  val fraction = state.fraction
   // The color goes edge to edge, the content stays in the same column as the list below.
   val contentMaxWidth = if (rememberIsExpanded()) 600.dp else Dp.Unspecified
   val topInset = TopAppBarDefaults.windowInsets.asPaddingValues().calculateTopPadding()
-  val visibleActions = if (selecting) emptyList() else actions
-  val scene = remember(topInset, visibleActions.isNotEmpty()) { headerScene(topInset, visibleActions.isNotEmpty()) }
+  val scene = remember(topInset, actions.isNotEmpty()) { headerScene(topInset, actions.isNotEmpty()) }
   val collapsedPx = with(LocalDensity.current) { (CollapsedBarHeight + topInset).toPx() }
 
   Surface(
@@ -290,29 +283,20 @@ fun StatusHeader(
       ) {
         Box(Modifier.layoutId(BAR))
         IconButton(
-          onClick = if (selecting) onCloseSelection else onBack,
+          onClick = onBack,
           modifier = Modifier.layoutId(BACK).size(48.dp),
         ) {
-          Icon(
-            if (selecting) Symbols.Outlined.Close else Symbols.Outlined.ArrowBack,
-            contentDescription =
-              stringResource(if (selecting) R.string.status_select_done else R.string.calendar_back),
-          )
+          Icon(Symbols.Outlined.ArrowBack, contentDescription = stringResource(R.string.calendar_back))
         }
         Text(
           text = pluralStringResource(R.plurals.home_product_count, count, count).uppercase(),
           style = CaducityTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp),
           maxLines = 1,
-          modifier = Modifier.layoutId(OVERLINE).alpha(if (selecting) 0f else 1f),
+          modifier = Modifier.layoutId(OVERLINE),
         )
         val titleSize = motionFontSize(TITLE, "fontSize")
         Text(
-          text =
-            if (selectionCount != null) {
-              pluralStringResource(R.plurals.status_selected_count, selectionCount, selectionCount)
-            } else {
-              title
-            },
+          text = title,
           style = CaducityTheme.typography.displaySmall.copy(fontSize = titleSize, lineHeight = titleSize * 1.1f),
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
@@ -328,7 +312,7 @@ fun StatusHeader(
           horizontalArrangement = Arrangement.spacedBy(lerp(8.dp, 4.dp, fraction)),
           verticalAlignment = Alignment.CenterVertically,
         ) {
-          visibleActions.forEach { action -> HeaderActionButton(action, status, fraction, colors.onContainer) }
+          actions.forEach { action -> HeaderActionButton(action, status, fraction, colors.onContainer) }
         }
       }
     }

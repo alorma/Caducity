@@ -23,7 +23,6 @@ import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsByStatusUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
-import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
@@ -52,11 +51,9 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import strikt.api.expectThat
-import strikt.assertions.contains
 import strikt.assertions.containsExactly
 import strikt.assertions.hasSize
 import strikt.assertions.isA
-import strikt.assertions.isEmpty
 import strikt.assertions.isEqualTo
 import strikt.assertions.isTrue
 
@@ -138,7 +135,6 @@ class StatusListViewModelTest {
       observeByStatus = ObserveItemsByStatusUseCase(items, pantry, todayProvider),
       consumeItem = ConsumeItemUseCase(itemDataSource, pantry, clock),
       freezeItem = FreezeItemUseCase(itemDataSource, pantry, clock),
-      rescheduleItem = RescheduleItemUseCase(itemDataSource, pantry),
       discardItems = DiscardItemsUseCase(pantry, clock),
       restoreItems = RestoreItemsUseCase(pantry),
       snackbars = snackbars,
@@ -248,96 +244,6 @@ class StatusListViewModelTest {
 
       snackbar.onAction!!.invoke()
       expectThat(vm.ready { !it.isEmpty }.totalCount).isEqualTo(1)
-    }
-
-  @Test
-  fun `selection bulk consume acts on every unit of the selected rows and undo restores them`() =
-    runTest {
-      category("dairy")
-      add("Milk", days = 2, quantity = 3)
-      add("Eggs", days = 1)
-      add("Cheese", days = 2)
-      val vm = viewModel(ExpiryStatus.SOON)
-      val rows =
-        vm
-          .ready()
-          .sections
-          .single()
-          .rows
-
-      vm.onToggleSelecting()
-      vm.onToggleRow(rows.first { it.name == "Milk" }.key)
-      vm.onToggleRow(rows.first { it.name == "Eggs" }.key)
-      expectThat(vm.ready { it.selectedKeys.size == 2 }.selectedUnitCount).isEqualTo(4)
-
-      vm.onBulkConsume()
-      val snackbar = nextSnackbar()
-      expectThat(db.itemDao().getAllItemsSync().count { it.consumedDate != null }).isEqualTo(4)
-      expectThat(vm.ready { it.totalCount == 1 }.selectedKeys).isEmpty()
-
-      snackbar.onAction!!.invoke()
-      expectThat(vm.ready { it.totalCount == 5 }.totalCount).isEqualTo(5)
-    }
-
-  @Test
-  fun `transform sends every unit of the selected rows and closes the selection`() =
-    runTest {
-      category("dairy")
-      val milk = add("Milk", days = 2, quantity = 2)
-      val eggs = add("Eggs", days = 1)
-      add("Cheese", days = 2)
-      val vm = viewModel(ExpiryStatus.SOON)
-      val rows =
-        vm
-          .ready()
-          .sections
-          .single()
-          .rows
-
-      vm.onToggleSelecting()
-      vm.onToggleRow(rows.first { it.name == "Milk" }.key)
-      vm.onToggleRow(rows.first { it.name == "Eggs" }.key)
-      vm.ready { it.selectedKeys.size == 2 }
-      vm.navigate(StatusListNavigation.TransformSelection)
-
-      val effect = withContext(Dispatchers.Default) { withTimeout(5_000) { vm.navigationSideEffects.first() } }
-      expectThat(effect).isA<StatusListNavigationSideEffect.OpenTransform>().get { itemIds.toSet() }.isEqualTo(
-        (
-          milk +
-            eggs
-        ).toSet(),
-      )
-      expectThat(vm.ready { !it.selecting }.selectedKeys).isEmpty()
-    }
-
-  @Test
-  fun `bulk reschedule gives the same date to every selected unit`() =
-    runTest {
-      category("dairy")
-      add("Milk", days = -3)
-      add("Eggs", days = -1)
-      val vm = viewModel(ExpiryStatus.EXPIRED)
-      val rows =
-        vm
-          .ready()
-          .sections
-          .single()
-          .rows
-
-      vm.onToggleSelecting()
-      rows.forEach { vm.onToggleRow(it.key) }
-      vm.ready { it.selectedKeys.size == 2 }
-      vm.onDateChosen(DateTarget(rows.flatMap { it.itemIds }, rows.map { it.name }), inDays(4))
-      nextSnackbar()
-
-      expectThat(vm.ready { it.isEmpty }.isEmpty).isTrue()
-      expectThat(
-        db
-          .itemDao()
-          .getAllItemsSync()
-          .map { it.expirationDate }
-          .distinct(),
-      ).hasSize(1)
     }
 
   @Test

@@ -242,7 +242,6 @@ fun App(
                 onBack = { navigation.pop() },
                 onOpenItemActions = { itemIds -> navigation.navigate(ItemActions(itemIds)) },
                 onOpenAdd = { navigation.navigate(Add(source = "status_empty")) },
-                onOpenTransform = { itemIds -> navigation.navigate(Transform(itemIds)) },
               )
             }
             entry<Calendar> {

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -45,8 +44,7 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 
 /**
  * The one row of a product in every list. Tapping the bar opens the product's sheet; the round buttons act
- * on one unit, the one that expires first. When [selected] is not null the list is selecting: a checkbox
- * replaces the buttons.
+ * on one unit, the one that expires first.
  */
 @Composable
 fun ProductRow(
@@ -58,7 +56,6 @@ fun ProductRow(
   onConsume: () -> Unit = {},
   onFreeze: () -> Unit = {},
   onDiscard: () -> Unit = {},
-  selected: Boolean? = null,
 ) {
   val statusColors = model.status.colors()
   val detailText = productRowDetailText(model)
@@ -69,9 +66,6 @@ fun ProductRow(
     modifier = modifier.heightIn(min = 64.dp),
     contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
   ) {
-    if (selected != null) {
-      Checkbox(checked = selected, onCheckedChange = null, modifier = Modifier.padding(end = 12.dp))
-    }
     model.category?.let {
       CategoryShapeIcon(shape = it.shape, icon = CategoryIcons.vectorOf(it.icon), size = 44.dp)
       Spacer(Modifier.width(14.dp))
@@ -101,39 +95,37 @@ fun ProductRow(
         )
       }
     }
-    if (selected == null) {
-      Spacer(Modifier.width(8.dp))
-      Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        when (model.status) {
-          ExpiryStatus.EXPIRED ->
-            RoundButton(
-              icon = Symbols.Outlined.Delete,
-              contentDescription = stringResource(R.string.status_action_discard, model.name),
-              tint = CaducityTheme.colors.expired.strong,
-              onClick = onDiscard,
-            )
-          ExpiryStatus.SOON, ExpiryStatus.FRESH -> {
-            RoundButton(
-              icon = Symbols.Outlined.Check,
-              contentDescription = stringResource(R.string.home_mark_consumed, model.name),
-              tint = CaducityTheme.colors.fresh.strong,
-              onClick = onConsume,
-            )
-            RoundButton(
-              icon = Symbols.Outlined.AcUnit,
-              contentDescription = stringResource(R.string.status_action_freeze, model.name),
-              tint = CaducityTheme.colors.frozen.strong,
-              onClick = onFreeze,
-            )
-          }
-          ExpiryStatus.FROZEN ->
-            RoundButton(
-              icon = Symbols.Outlined.Check,
-              contentDescription = stringResource(R.string.home_mark_consumed, model.name),
-              tint = CaducityTheme.colors.fresh.strong,
-              onClick = onConsume,
-            )
+    Spacer(Modifier.width(8.dp))
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+      when (model.status) {
+        ExpiryStatus.EXPIRED ->
+          RoundButton(
+            icon = Symbols.Outlined.Delete,
+            contentDescription = stringResource(R.string.status_action_discard, model.name),
+            tint = CaducityTheme.colors.expired.strong,
+            onClick = onDiscard,
+          )
+        ExpiryStatus.SOON, ExpiryStatus.FRESH -> {
+          RoundButton(
+            icon = Symbols.Outlined.Check,
+            contentDescription = stringResource(R.string.home_mark_consumed, model.name),
+            tint = CaducityTheme.colors.fresh.strong,
+            onClick = onConsume,
+          )
+          RoundButton(
+            icon = Symbols.Outlined.AcUnit,
+            contentDescription = stringResource(R.string.status_action_freeze, model.name),
+            tint = CaducityTheme.colors.frozen.strong,
+            onClick = onFreeze,
+          )
         }
+        ExpiryStatus.FROZEN ->
+          RoundButton(
+            icon = Symbols.Outlined.Check,
+            contentDescription = stringResource(R.string.home_mark_consumed, model.name),
+            tint = CaducityTheme.colors.fresh.strong,
+            onClick = onConsume,
+          )
       }
     }
   }

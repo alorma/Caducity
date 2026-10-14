@@ -38,22 +38,11 @@ sealed interface StatusListState {
     val status: ExpiryStatus,
     val totalCount: Int,
     val sections: List<StatusSection>,
-    val selecting: Boolean,
-    val selectedKeys: Set<String>,
   ) : StatusListState {
     val rows: List<StatusRow> get() = sections.flatMap { it.rows }
-    val selectedRows: List<StatusRow> get() = rows.filter { it.key in selectedKeys }
-    val selectedUnitCount: Int get() = selectedRows.sumOf { it.unitCount }
     val isEmpty: Boolean get() = totalCount == 0
   }
 }
-
-/** What a date picked in the quick-dates sheet is for: the units of the selected rows (bulk reschedule). */
-@Immutable
-data class DateTarget(
-  val itemIds: List<String>,
-  val names: List<String>,
-)
 
 sealed interface StatusListNavigation {
   data class ItemActions(
@@ -61,9 +50,6 @@ sealed interface StatusListNavigation {
   ) : StatusListNavigation
 
   data object AddFirst : StatusListNavigation
-
-  /** Turns the units of the selected rows into new products. */
-  data object TransformSelection : StatusListNavigation
 }
 
 sealed interface StatusListNavigationSideEffect {
@@ -72,19 +58,11 @@ sealed interface StatusListNavigationSideEffect {
   ) : StatusListNavigationSideEffect
 
   data object OpenAdd : StatusListNavigationSideEffect
-
-  data class OpenTransform(
-    val itemIds: List<String>,
-  ) : StatusListNavigationSideEffect
 }
 
 sealed interface StatusListSideEffect {
   data class ShowDiscardConfirm(
     val itemIds: List<String>,
     val unitCount: Int,
-  ) : StatusListSideEffect
-
-  data class ShowQuickDates(
-    val target: DateTarget,
   ) : StatusListSideEffect
 }

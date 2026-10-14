@@ -173,12 +173,6 @@
     <item quantity="other">%d congelats</item>
   </plurals>
   <string name="transform_title">Transforma</string>
-  <string name="transform_bar_consume">Consumit</string>
-  <string name="transform_bar_freeze">Congela</string>
-  <string name="transform_bar_discard">Llença</string>
-  <string name="transform_bar_reschedule">Data</string>
-  <string name="transform_bar_transform">Transforma</string>
-  <string name="transform_bar_transform_description">Transforma %1$d unitats</string>
   <string name="transform_section_ingredients">Ingredients</string>
   <string name="transform_add_ingredient">Afegeix ingredient</string>
   <string name="transform_add">Afegeix</string>
@@ -390,21 +384,10 @@
   <string name="status_help_expired">Si encara són bons, canvia\'n la data. Si no, llença\'ls.</string>
   <string name="status_help_fresh">Encara tenen marge. Primer, els que caduquen abans.</string>
   <string name="status_help_frozen">No caduquen mentre són al congelador. Quan en treguis un, descongela\'l i posa-li data.</string>
-  <string name="status_select">Selecciona</string>
-  <string name="status_select_done">Fet</string>
   <string name="status_discard_all">Llença\'ls tots</string>
-  <plurals name="status_selected_count">
-    <item quantity="one">%d seleccionat</item>
-    <item quantity="many">%d seleccionats</item>
-    <item quantity="other">%d seleccionats</item>
-  </plurals>
   <string name="product_row_in_days">D\'aquí %1$d dies</string>
   <string name="status_action_discard">Llença %1$s</string>
   <string name="status_action_freeze">Congela %1$s</string>
-  <string name="status_bulk_discard">Llença (%1$d)</string>
-  <string name="status_bulk_reschedule">Canvia la data (%1$d)</string>
-  <string name="status_bulk_consume">Consumit (%1$d)</string>
-  <string name="status_bulk_freeze">Congela (%1$d)</string>
   <string name="status_empty_expired_title">Res caducat</string>
   <string name="status_empty_expired_body">Tot el que tens és dins de data.</string>
   <string name="status_empty_soon_title">Res caduca aviat</string>
@@ -413,11 +396,8 @@
   <string name="status_empty_fresh_body">Afegeix la compra d\'avui.</string>
   <string name="status_empty_fresh_action">Afegeix</string>
   <string name="status_empty_frozen_title">El congelador és buit</string>
-  <string name="status_snackbar_consumed_many">%d productes consumits</string>
-  <string name="status_snackbar_frozen_many">%d productes congelats</string>
   <string name="status_snackbar_discarded">1 %1$s llençat</string>
   <string name="status_snackbar_discarded_many">%d productes llençats</string>
-  <string name="status_snackbar_rescheduled_many">Data canviada a %d productes</string>
   <plurals name="status_discard_title">
     <item quantity="one">Llençar %d producte a les escombraries?</item>
     <item quantity="many">Llençar %d productes a les escombraries?</item>
@@ -425,10 +405,6 @@
   </plurals>
   <string name="status_discard_body">Es marcaran com a llençats. Ho podràs desfer just després.</string>
   <string name="status_discard_confirm">Llença\'ls</string>
-  <string name="status_dates_tomorrow">Demà</string>
-  <string name="status_dates_in_3d">D\'aquí 3 dies</string>
-  <string name="status_dates_in_1w">D\'aquí 1 setmana</string>
-  <string name="status_dates_pick">Tria una data</string>
   <string name="home_summary_cell_cd">%1$s, %2$s. Obre la llista</string>
   <string name="category_editor_title_new">Nova categoria</string>
   <string name="category_editor_title_edit">Edita la categoria</string>

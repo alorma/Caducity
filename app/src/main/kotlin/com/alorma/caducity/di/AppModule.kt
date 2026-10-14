@@ -117,7 +117,6 @@ val appModule =
         observeByStatus = get(),
         consumeItem = get(),
         freezeItem = get(),
-        rescheduleItem = get(),
         discardItems = get(),
         restoreItems = get(),
         snackbars = get(),
