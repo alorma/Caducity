@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -281,8 +281,7 @@ private fun StatusListContent(
           item(key = "header-${section.category.id}") {
             SectionHeader(section, Modifier.padding(top = 16.dp, bottom = 8.dp))
           }
-          items(section.rows, key = { it.key }) { row ->
-            val index = section.rows.indexOf(row)
+          itemsIndexed(section.rows, key = { _, row -> row.key }) { index, row ->
             ProductRow(
               model = row.toRowModel(today),
               index = index,

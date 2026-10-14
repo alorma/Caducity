@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -132,8 +132,7 @@ private fun DurationsList(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp).padding(bottom = 8.dp),
       )
     }
-    items(state.rows, key = { it.category.id }) { row ->
-      val index = state.rows.indexOf(row)
+    itemsIndexed(state.rows, key = { _, row -> row.category.id }) { index, row ->
       DurationRow(
         row = row,
         index = index,
