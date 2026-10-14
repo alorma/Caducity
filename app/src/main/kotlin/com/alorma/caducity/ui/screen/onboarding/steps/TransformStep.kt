@@ -145,7 +145,17 @@ internal fun TransformDiagram(
       }
       Reveal(delayMillis = startDelayMillis + ResultDelay, offsetY = (-16).dp, modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-          Box(Modifier.width(2.dp).height(20.dp).background(CaducityTheme.colorScheme.primary))
+          val resultLine = CaducityTheme.colorScheme.primary
+          // From the node down to the result's icon, curved like the ingredient lines.
+          Canvas(Modifier.fillMaxWidth().height(28.dp)) {
+            val iconX = size.width * (1f - ResultCardWidth) / 2f + ResultIconCenter.toPx()
+            val path =
+              Path().apply {
+                moveTo(size.width / 2f, 0f)
+                cubicTo(size.width / 2f, size.height * 0.6f, iconX, size.height * 0.4f, iconX, size.height)
+              }
+            drawPath(path, resultLine, style = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round))
+          }
           SampleResultCard()
         }
       }
@@ -160,13 +170,19 @@ private const val LinesDuration = 600
 private const val NodeDelay = 1000
 private const val ResultDelay = 1400
 
+/** Width of the sample result card, as a fraction of the diagram. */
+private const val ResultCardWidth = 0.8f
+
+/** Center of the result's icon from the card's leading edge: padding + half the icon. */
+private val ResultIconCenter = 12.dp + 22.dp
+
 @Composable
 private fun SampleResultCard() {
   Surface(
     shape = RoundedCornerShape(20.dp),
     color = CaducityTheme.colorScheme.primaryContainer,
     border = BorderStroke(2.dp, CaducityTheme.colorScheme.primary),
-    modifier = Modifier.fillMaxWidth(0.8f),
+    modifier = Modifier.fillMaxWidth(ResultCardWidth),
   ) {
     Row(
       modifier = Modifier.padding(12.dp),

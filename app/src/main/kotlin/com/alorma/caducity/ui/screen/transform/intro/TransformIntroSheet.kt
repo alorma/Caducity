@@ -21,7 +21,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingPrimaryButton
-import com.alorma.caducity.ui.screen.onboarding.steps.NotARecipeBookCard
 import com.alorma.caducity.ui.screen.onboarding.steps.TransformDiagram
 import com.alorma.caducity.ui.screen.onboarding.steps.TransformHint
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -30,8 +29,8 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 
 /**
  * «Novetat Transforma»: the content of the bottom sheet that tells whoever updates the app about Transforma, once.
- * It is the same story as the onboarding step (diagram, «not a recipe book», where to find it) with two actions of the
- * same size: try it, or not now.
+ * It is a shorter version of the onboarding step (diagram and where to find it, without «not a recipe book» so the
+ * sheet does not fill the screen) with two actions of the same size: try it, or not now.
  */
 @Composable
 fun TransformIntroSheet(
@@ -39,37 +38,41 @@ fun TransformIntroSheet(
   onNotNow: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  // The content scrolls if it does not fit (big font, small screen); the two buttons stay fixed at the bottom.
   Column(
     modifier =
       modifier
         .navigationBarsPadding()
-        .verticalScroll(rememberScrollState())
         .padding(horizontal = 24.dp)
         .padding(bottom = 24.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
-    Surface(shape = CircleShape, color = CaducityTheme.colorScheme.primaryContainer) {
+    Column(
+      modifier = Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()),
+      verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+      Surface(shape = CircleShape, color = CaducityTheme.colorScheme.primaryContainer) {
+        Text(
+          text = stringResource(R.string.transform_intro_badge),
+          style = OverlineTextStyle,
+          color = CaducityTheme.colorScheme.onPrimaryContainer,
+          modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+        )
+      }
       Text(
-        text = stringResource(R.string.transform_intro_badge),
-        style = OverlineTextStyle,
-        color = CaducityTheme.colorScheme.onPrimaryContainer,
-        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+        text = stringResource(R.string.transform_title),
+        style = CaducityTheme.typography.headlineMedium,
+        color = CaducityTheme.colorScheme.onSurface,
+        modifier = Modifier.semantics { heading() },
       )
+      Text(
+        text = stringResource(R.string.transform_intro_body),
+        style = CaducityTheme.typography.bodyMedium,
+        color = CaducityTheme.colorScheme.onSurfaceVariant,
+      )
+      TransformDiagram()
+      TransformHint(hint = stringResource(R.string.transform_intro_hint))
     }
-    Text(
-      text = stringResource(R.string.transform_title),
-      style = CaducityTheme.typography.headlineMedium,
-      color = CaducityTheme.colorScheme.onSurface,
-      modifier = Modifier.semantics { heading() },
-    )
-    Text(
-      text = stringResource(R.string.transform_intro_body),
-      style = CaducityTheme.typography.bodyMedium,
-      color = CaducityTheme.colorScheme.onSurfaceVariant,
-    )
-    TransformDiagram()
-    NotARecipeBookCard()
-    TransformHint(hint = stringResource(R.string.transform_intro_hint))
     OnboardingPrimaryButton(
       text = stringResource(R.string.transform_intro_try),
       onClick = onTry,
