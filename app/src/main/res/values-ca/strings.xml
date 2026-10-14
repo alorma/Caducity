@@ -381,9 +381,6 @@
   <string name="status_title_soon">Aviat</string>
   <string name="status_title_fresh">Frescos</string>
   <string name="status_title_frozen">Congelats</string>
-  <string name="status_help_expired">Si encara són bons, canvia\'n la data. Si no, llença\'ls.</string>
-  <string name="status_help_fresh">Encara tenen marge. Primer, els que caduquen abans.</string>
-  <string name="status_help_frozen">No caduquen mentre són al congelador. Quan en treguis un, descongela\'l i posa-li data.</string>
   <string name="status_discard_all">Llença\'ls tots</string>
   <string name="product_row_in_days">D\'aquí %1$d dies</string>
   <string name="status_action_discard">Llença %1$s</string>
@@ -523,7 +520,6 @@
   <string name="category_editor_margin">Avisa\'m abans</string>
   <string name="category_editor_margin_help">Llisca o toca un punt. «%1$s» passarà a «Aviat» %2$s abans de caducar.</string>
   <string name="category_editor_margin_this_category">Aquesta categoria</string>
-  <string name="status_help_soon_margin">Segons el marge de cada categoria. Fes-los servir primer.</string>
   <string name="ob_alerts_default_help">Cada categoria ja porta el seu marge. Aquest és per a les que creïs tu.</string>
   <string name="threshold_unit_days">dies</string>
   <string name="threshold_unit_weeks">setmanes</string>

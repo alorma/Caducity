@@ -10,27 +10,30 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.AppIcons
+import com.alorma.caducity.base.ui.icons.Back
 import com.alorma.caducity.base.ui.icons.symbols.DeleteSweep
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.config.time.TodayProvider
@@ -51,6 +54,7 @@ import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.colors.colors
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import org.koin.compose.koinInject
@@ -69,10 +73,6 @@ fun StatusListScreen(
   TrackScreen(screen = StatusListScreenEvent(status.name.lowercase()))
   val state by viewModel.state.collectAsStateWithLifecycle()
   val dialogState = rememberAppDialogState()
-  val listState = rememberLazyListState()
-  val headerState = rememberStatusHeaderState()
-  val connection = remember(listState) { headerState.connection(listState) }
-
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
@@ -84,33 +84,62 @@ fun StatusListScreen(
   SideEffectHandler(viewModel, dialogState)
 
   val ready = state as? StatusListState.Ready
+  val showDiscardAll = status == ExpiryStatus.EXPIRED && ready?.isEmpty == false
   AppScaffold(
-    modifier = modifier.nestedScroll(connection),
+    modifier = modifier,
     dialogState = dialogState,
     topBar = {
-      StatusHeader(
+      StatusTopBar(
         status = status,
         count = ready?.totalCount ?: 0,
-        title = stringResource(titleRes(status)),
-        help = ready?.let { helpText(it) }.orEmpty(),
-        actions = ready?.takeIf { !it.isEmpty }?.let { headerActions(it, viewModel) }.orEmpty(),
-        state = headerState,
         onBack = onBack,
+        onDiscardAll = viewModel::onDiscardAllClick.takeIf { showDiscardAll },
       )
     },
   ) { padding ->
-    // The list goes under the header (only the bottom inset is applied) so it shows through its shadow.
-    ResponsiveCenteredContainer(modifier = Modifier.padding(bottom = padding.calculateBottomPadding())) {
+    ResponsiveCenteredContainer(modifier = Modifier.padding(padding)) {
       if (ready != null) {
-        StatusListContent(
-          ready = ready,
-          viewModel = viewModel,
-          listState = listState,
-          topPadding = padding.calculateTopPadding(),
-        )
+        StatusListContent(ready = ready, viewModel = viewModel)
       }
     }
   }
+}
+
+/** Always folded: a standard M3E [TopAppBar] in the color of the status, with the count as subtitle. */
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun StatusTopBar(
+  status: ExpiryStatus,
+  count: Int,
+  onBack: () -> Unit,
+  onDiscardAll: (() -> Unit)?,
+) {
+  val colors = status.colors()
+  TopAppBar(
+    title = { Text(stringResource(titleRes(status))) },
+    subtitle = { Text(pluralStringResource(R.plurals.home_product_count, count, count)) },
+    navigationIcon = {
+      IconButton(onClick = onBack) {
+        Icon(AppIcons.Back, contentDescription = stringResource(R.string.calendar_back))
+      }
+    },
+    actions = {
+      if (onDiscardAll != null) {
+        IconButton(onClick = onDiscardAll) {
+          Icon(Symbols.Outlined.DeleteSweep, contentDescription = stringResource(R.string.status_discard_all))
+        }
+      }
+    },
+    colors =
+      TopAppBarDefaults.topAppBarColors(
+        containerColor = colors.container,
+        scrolledContainerColor = colors.container,
+        navigationIconContentColor = colors.onContainer,
+        titleContentColor = colors.onContainer,
+        subtitleContentColor = colors.onContainer,
+        actionIconContentColor = colors.onContainer,
+      ),
+  )
 }
 
 @Composable
@@ -147,21 +176,18 @@ private fun SideEffectHandler(
 private fun StatusListContent(
   ready: StatusListState.Ready,
   viewModel: StatusListViewModel,
-  listState: LazyListState,
-  topPadding: Dp,
   modifier: Modifier = Modifier,
 ) {
   val today = koinInject<TodayProvider>().today()
   Column(modifier = modifier.fillMaxSize()) {
     if (ready.isEmpty) {
-      Box(modifier = Modifier.fillMaxSize().padding(top = topPadding)) {
+      Box(modifier = Modifier.fillMaxSize()) {
         StatusEmpty(ready.status, onAdd = { viewModel.navigate(StatusListNavigation.AddFirst) })
       }
     } else {
       LazyColumn(
-        state = listState,
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = topPadding + 8.dp, bottom = 32.dp),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 32.dp),
         verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing),
       ) {
         ready.sections.forEach { section ->
@@ -186,39 +212,12 @@ private fun StatusListContent(
   }
 }
 
-@Composable
-private fun headerActions(
-  ready: StatusListState.Ready,
-  viewModel: StatusListViewModel,
-): List<HeaderAction> =
-  if (ready.status == ExpiryStatus.EXPIRED) {
-    listOf(
-      HeaderAction(
-        label = stringResource(R.string.status_discard_all),
-        icon = Symbols.Outlined.DeleteSweep,
-        primary = true,
-        onClick = viewModel::onDiscardAllClick,
-      ),
-    )
-  } else {
-    emptyList()
-  }
-
 private fun titleRes(status: ExpiryStatus): Int =
   when (status) {
     ExpiryStatus.EXPIRED -> R.string.status_title_expired
     ExpiryStatus.SOON -> R.string.status_title_soon
     ExpiryStatus.FRESH -> R.string.status_title_fresh
     ExpiryStatus.FROZEN -> R.string.status_title_frozen
-  }
-
-@Composable
-private fun helpText(ready: StatusListState.Ready): String =
-  when (ready.status) {
-    ExpiryStatus.EXPIRED -> stringResource(R.string.status_help_expired)
-    ExpiryStatus.SOON -> stringResource(R.string.status_help_soon_margin)
-    ExpiryStatus.FRESH -> stringResource(R.string.status_help_fresh)
-    ExpiryStatus.FROZEN -> stringResource(R.string.status_help_frozen)
   }
 
 @Composable

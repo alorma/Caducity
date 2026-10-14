@@ -362,9 +362,6 @@
   <string name="status_title_soon">Soon</string>
   <string name="status_title_fresh">Fresh</string>
   <string name="status_title_frozen">Frozen</string>
-  <string name="status_help_expired">If they\'re still good, change the date. If not, throw them out.</string>
-  <string name="status_help_fresh">They still have time. The ones expiring first come first.</string>
-  <string name="status_help_frozen">They don\'t expire while in the freezer. When you take one out, thaw it and give it a date.</string>
   <string name="status_discard_all">Throw them all out</string>
   <string name="product_row_in_days">In %1$d days</string>
   <string name="status_action_discard">Throw out %1$s</string>
@@ -502,7 +499,6 @@
   <string name="category_editor_margin">Warn me before</string>
   <string name="category_editor_margin_help">Slide or tap a dot. “%1$s” will turn “Soon” %2$s before it expires.</string>
   <string name="category_editor_margin_this_category">This category</string>
-  <string name="status_help_soon_margin">Based on each category\'s margin. Use them first.</string>
   <string name="ob_alerts_default_help">Every category already has its own margin. This one is for the ones you create.</string>
   <string name="threshold_unit_days">days</string>
   <string name="threshold_unit_weeks">weeks</string>
