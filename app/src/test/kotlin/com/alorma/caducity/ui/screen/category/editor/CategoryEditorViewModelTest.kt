@@ -79,7 +79,7 @@ class CategoryEditorViewModelTest {
     val categoryMapper = CategoryRoomMapper(ProductRoomMapper(), itemMapper)
     pantry = RoomPantryDataSource(db, db.categoryDao(), db.itemDao(), db.productDao(), categoryMapper, clock)
     val dataSource = RoomCategoryDataSource(db.categoryDao(), db.itemDao(), categoryMapper, itemMapper)
-    create = CreateCategoryUseCase(dataSource, clock, thresholds, pantry)
+    create = CreateCategoryUseCase(dataSource, pantry)
     update = UpdateCategoryUseCase(pantry)
     delete = DeleteCategoryUseCase(dataSource)
   }

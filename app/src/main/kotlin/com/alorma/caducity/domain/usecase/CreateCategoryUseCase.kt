@@ -1,6 +1,5 @@
 package com.alorma.caducity.domain.usecase
 
-import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.CategoryDataSource
 import com.alorma.caducity.domain.PantryDataSource
 import com.alorma.caducity.domain.model.Category
@@ -14,8 +13,6 @@ import kotlinx.collections.immutable.persistentListOf
 
 class CreateCategoryUseCase(
   private val categoryDataSource: CategoryDataSource,
-  private val appClock: AppClock,
-  private val expirationThresholds: ExpirationThresholds,
   private val pantryDataSource: PantryDataSource,
 ) {
   @OptIn(ExperimentalUuidApi::class)

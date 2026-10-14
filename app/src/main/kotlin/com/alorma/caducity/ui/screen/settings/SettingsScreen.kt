@@ -185,7 +185,7 @@ internal fun SettingsContent(
           icon = { Icon(Symbols.Outlined.Notifications, contentDescription = null) },
           title = stringResource(R.string.settings_notifications),
           subtitle = stringResource(R.string.settings_notifications_time, formatTime(state.reminderTime)),
-          shapes = ListItemDefaults.segmentedShapes(index = 0, count = 3),
+          shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
           onClick = onReminderTimeClick,
           action = {
             Switch(
@@ -207,8 +207,10 @@ internal fun SettingsContent(
             }
           },
           onItemSelected = onSoonThresholdChange,
-          shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
+          shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
         )
+      }
+      StyledSettingsGroup(title = { Text(stringResource(R.string.settings_section_products)) }) {
         StyledSettingsCard(
           icon = { Icon(Symbols.Outlined.Tune, contentDescription = null) },
           title = stringResource(R.string.settings_category_margins),
@@ -216,7 +218,7 @@ internal fun SettingsContent(
           subtitleMaxLines = 1,
           action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
           onClick = { onNavigate(SettingsNavigation.CategoryMargins) },
-          shapes = ListItemDefaults.segmentedShapes(index = 2, count = 3),
+          shapes = ListItemDefaults.segmentedShapes(index = 0, count = 1),
         )
       }
     }

@@ -59,8 +59,6 @@ class QuickCategoryTest {
     create =
       CreateCategoryUseCase(
         categoryDataSource = RoomCategoryDataSource(db.categoryDao(), db.itemDao(), categoryMapper, itemMapper),
-        appClock = clock,
-        expirationThresholds = thresholds,
         pantryDataSource = pantry,
       )
   }
