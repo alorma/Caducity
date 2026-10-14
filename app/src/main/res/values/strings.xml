@@ -318,8 +318,6 @@
   <string name="pantry_card_meta">%1$s · closest, %2$s</string>
   <string name="pantry_new_category">New category</string>
   <string name="pantry_no_results">No products match your search.</string>
-  <string name="category_next">closest %s</string>
-  <string name="category_unit_n">Unit %d</string>
   <plurals name="pantry_category_count">
     <item quantity="one">%d category</item>
     <item quantity="other">%d categories</item>

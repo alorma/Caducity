@@ -333,8 +333,6 @@
   <string name="pantry_card_meta">%1$s · propera, %2$s</string>
   <string name="pantry_new_category">Nova categoria</string>
   <string name="pantry_no_results">Cap producte coincideix amb la cerca.</string>
-  <string name="category_next">propera %s</string>
-  <string name="category_unit_n">Unitat %d</string>
   <plurals name="pantry_category_count">
     <item quantity="one">%d categoria</item>
     <item quantity="many">%d categories</item>

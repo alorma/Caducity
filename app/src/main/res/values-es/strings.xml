@@ -333,8 +333,6 @@
   <string name="pantry_card_meta">%1$s · próximo, %2$s</string>
   <string name="pantry_new_category">Nueva categoría</string>
   <string name="pantry_no_results">Ningún producto coincide con la búsqueda.</string>
-  <string name="category_next">próximo %s</string>
-  <string name="category_unit_n">Unidad %d</string>
   <plurals name="pantry_category_count">
     <item quantity="one">%d categoría</item>
     <item quantity="many">%d categorías</item>

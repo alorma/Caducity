@@ -150,7 +150,7 @@ Visibles per a l'usuari: fases 0 (un sol «Desa», fora la tanda), 1 (packs com 
 | --- | --- |
 | 0 — Fora d'abast | Validada (14 d'octubre): `ffabb36` valoració, `458df5c` widget, `0472842` tanda, `55e1a77` helpers, `0d8dd93` backlog, `ebf8ba7` + `0752b2f` renom a `AddProductUseCase` |
 | 1 — Migració v5 | Validada (14 d'octubre, `66ef801`; migració v4 → v5 comprovada a l'emulador amb dades fake). Abast ampliat (Bernat, 14 d'octubre): `packSize` i `soonThresholdDays` s'esborren de la BBDD (taules reconstruïdes), `usualDurationDays` hereta el marge configurat; la fase 3.7 (packs) i la 6.1 (Aviat global, «Més endavant») s'han avançat. Backup v4: només s'importa la versió actual, sense codi d'upgrade. Pendent a les fases 6/8: textos i noms «marge» (`CategoryMargins*`, «Marge per categoria», «Avisa'm abans»), `CreateCategoryUseCase` amb un paràmetre sense ús |
-| 2 — Fila única | Pendent |
+| 2 — Fila única | Feta, pendent d'aprovació (14 d'octubre): `7176e40` model, `d4fe7d1` `ProductRow`, `8887423` Inici, `1c5f1f4` llistes d'estat, `6bd9ea1` Categoria, `e60111a` calendari i cerca, `e825d00` dies, `5692109` snackbars. Provat a l'emulador (no Frescos, «Selecciona» ni Desfés). Tasca 8: `StatusPill`/`StatusPillText`/`StatusBadge` es queden perquè la modal (`ItemActionsSheet`) i el selector de Transforma encara els fan servir; es revisaran a la fase 3. Desviacions: D10 (calendari amb color d'estat); Congelats sense data de congelació; una fila amb unitats d'estats diferents mostra l'estat de la que caduca primer |
 | 3 — Modal d'accions | Pendent |
 | 4 — «Llença» i Caducats | Pendent |
 | 5 — Navegació, FAB i pistes | Pendent |
