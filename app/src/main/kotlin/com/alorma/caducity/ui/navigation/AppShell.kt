@@ -25,7 +25,8 @@ import kotlinx.coroutines.launch
 
 /**
  * Space a screen should leave at the end of its scrollable content so the last row can clear the
- * floating bar, which is drawn above the content. Zero when the bar is not shown.
+ * floating bar, which is drawn above the content. Constant on purpose: it must not change while a screen
+ * is entering or leaving, or its list would jump when the bar shows or hides.
  */
 val LocalFloatingBarPadding = compositionLocalOf { PaddingValues() }
 
@@ -84,9 +85,7 @@ fun AppShell(
     },
   ) {
     // The scaffold padding is ignored on purpose: the bar overlays the content.
-    CompositionLocalProvider(
-      LocalFloatingBarPadding provides if (showNavigation) FloatingBarContentPadding else PaddingValues(),
-    ) {
+    CompositionLocalProvider(LocalFloatingBarPadding provides FloatingBarContentPadding) {
       content()
     }
   }
