@@ -201,6 +201,11 @@
     <item quantity="many">Añadir %d ingredientes</item>
     <item quantity="other">Añadir %d ingredientes</item>
   </plurals>
+  <plurals name="transform_picker_expired_note">
+    <item quantity="one">Incluye %d producto caducado · el resultado caducará hoy</item>
+    <item quantity="many">Incluye %d productos caducados · el resultado caducará hoy</item>
+    <item quantity="other">Incluye %d productos caducados · el resultado caducará hoy</item>
+  </plurals>
   <string name="add_save_failed">No se ha podido guardar</string>
   <string name="add_frozen_past_date">Un producto congelado no puede tener una fecha pasada</string>
   <string name="add_picker_ok">Aceptar</string>

@@ -196,6 +196,10 @@
     <item quantity="one">Add %d ingredient</item>
     <item quantity="other">Add %d ingredients</item>
   </plurals>
+  <plurals name="transform_picker_expired_note">
+    <item quantity="one">Includes %d expired product · the result will expire today</item>
+    <item quantity="other">Includes %d expired products · the result will expire today</item>
+  </plurals>
   <string name="add_save_failed">Could not save</string>
   <string name="add_frozen_past_date">A frozen product cannot have a past date</string>
   <string name="add_picker_ok">OK</string>
