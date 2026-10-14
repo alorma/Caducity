@@ -1,7 +1,6 @@
 package com.alorma.caducity.ui.screen.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,16 +8,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -30,7 +30,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -93,12 +92,11 @@ internal fun ExpiredBanner(
   modifier: Modifier = Modifier,
 ) {
   val colors = CaducityTheme.colors.expired
-  Surface(
+  Card(
     onClick = onReview,
     modifier = modifier.fillMaxWidth(),
     shape = CaducityShapes.group,
-    color = colors.container,
-    contentColor = colors.onContainer,
+    colors = CardDefaults.cardColors(containerColor = colors.container, contentColor = colors.onContainer),
   ) {
     Row(
       modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
@@ -186,13 +184,18 @@ private fun SummaryCell(
       pluralStringResource(R.plurals.home_product_count, count, count),
     )
   // With nothing in it the cell does not navigate (no ripple either).
-  Surface(
+  Card(
     onClick = onClick,
     enabled = count > 0,
     modifier = modifier.semantics { contentDescription = description },
     shape = shape,
-    color = colors.container,
-    contentColor = colors.onContainer,
+    colors =
+      CardDefaults.cardColors(
+        containerColor = colors.container,
+        contentColor = colors.onContainer,
+        disabledContainerColor = colors.container,
+        disabledContentColor = colors.onContainer,
+      ),
   ) {
     // Three equal-width cells: cap the font scale so labels like «Congelats» never break mid-word.
     val density = LocalDensity.current
@@ -259,26 +262,9 @@ internal fun SeePantry(
   modifier: Modifier = Modifier,
 ) {
   Box(modifier = modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      modifier =
-        Modifier
-          .heightIn(min = 48.dp)
-          .clip(CaducityShapes.chip)
-          .clickable(role = Role.Button, onClick = onSeePantry)
-          .padding(horizontal = 12.dp, vertical = 12.dp),
-    ) {
-      Text(
-        text = stringResource(R.string.home_see_pantry),
-        style = CaducityTheme.typography.labelLarge,
-        color = CaducityTheme.colorScheme.primary,
-      )
-      Icon(
-        imageVector = Symbols.Outlined.ChevronRight,
-        contentDescription = null,
-        tint = CaducityTheme.colorScheme.primary,
-        modifier = Modifier.size(20.dp),
-      )
+    TextButton(onClick = onSeePantry) {
+      Text(text = stringResource(R.string.home_see_pantry))
+      Icon(imageVector = Symbols.Outlined.ChevronRight, contentDescription = null, modifier = Modifier.size(20.dp))
     }
   }
 }
@@ -290,11 +276,10 @@ internal fun CookedCard(
   modifier: Modifier = Modifier,
 ) {
   val colors = CaducityTheme.colors.fresh
-  Surface(
+  Card(
     onClick = onClick,
     shape = RoundedCornerShape(24.dp),
-    color = colors.container,
-    contentColor = colors.onContainer,
+    colors = CardDefaults.cardColors(containerColor = colors.container, contentColor = colors.onContainer),
     modifier = modifier.fillMaxWidth().padding(top = 16.dp),
   ) {
     Row(
