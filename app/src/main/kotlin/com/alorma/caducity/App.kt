@@ -215,7 +215,7 @@ fun App(
             entry<SettingsAbout> {
               AboutScreen(
                 appVersion = versionProvider.getVersionName(),
-                onNavigateToRepo = { uriHandler.openUri("https://github.com/alorma/caducity") },
+                onOpenWebsite = { url -> uriHandler.openUri(url) },
               )
             }
             if (debugModeProvider.isDebugMode()) {

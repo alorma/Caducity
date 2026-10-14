@@ -26,13 +26,13 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 @Composable
 fun AboutScreen(
   appVersion: String,
-  onNavigateToRepo: () -> Unit,
+  onOpenWebsite: (url: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   TrackScreen(screen = AboutScreenEvent())
   AboutScreenContent(
     appVersion = appVersion,
-    onNavigateToRepo = onNavigateToRepo,
+    onOpenWebsite = onOpenWebsite,
     modifier = modifier,
   )
 }
@@ -40,7 +40,7 @@ fun AboutScreen(
 @Composable
 private fun AboutScreenContent(
   appVersion: String,
-  onNavigateToRepo: () -> Unit,
+  onOpenWebsite: (url: String) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   AppScaffold(
@@ -68,16 +68,17 @@ private fun AboutScreenContent(
           ) {
             StyledSettingsCard(
               title = appVersion,
-              subtitle = "Current version",
+              subtitle = stringResource(R.string.about_current_version),
               shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
               onClick = { /* No action for version */ },
             )
 
+            val websiteUrl = stringResource(R.string.url_landing)
             StyledSettingsCard(
-              title = stringResource(R.string.about_github_link),
-              subtitle = "github.com/alorma/caducity",
+              title = stringResource(R.string.about_website_link),
+              subtitle = websiteUrl.removePrefix("https://").removeSuffix("/"),
               shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
-              onClick = onNavigateToRepo,
+              onClick = { onOpenWebsite(websiteUrl) },
             )
           }
         }
@@ -94,7 +95,7 @@ fun AboutScreenPreview() {
     Surface {
       AboutScreenContent(
         appVersion = "1.1.2",
-        onNavigateToRepo = {},
+        onOpenWebsite = {},
       )
     }
   }
