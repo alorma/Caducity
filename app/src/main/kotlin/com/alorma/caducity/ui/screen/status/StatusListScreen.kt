@@ -57,6 +57,7 @@ import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
+import com.alorma.caducity.ui.components.feedback.snackbar.snackbarAnchor
 import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -199,7 +200,12 @@ private fun StatusTopBar(
 private fun DiscardAllBar(onDiscardAll: () -> Unit) {
   val expired = CaducityTheme.colors.expired
   Column(
-    modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 20.dp, vertical = 12.dp),
+    modifier =
+      Modifier
+        .fillMaxWidth()
+        .snackbarAnchor()
+        .navigationBarsPadding()
+        .padding(horizontal = 20.dp, vertical = 12.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     Text(

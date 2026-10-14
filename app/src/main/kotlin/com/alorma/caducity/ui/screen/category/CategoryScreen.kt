@@ -71,6 +71,7 @@ import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.snackbarAnchor
 import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -136,7 +137,10 @@ fun CategoryScreen(
     },
     floatingActionButton = {
       ResponsiveCenteredContainer(fillHeight = false) {
-        Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), contentAlignment = Alignment.CenterEnd) {
+        Box(
+          modifier = Modifier.fillMaxWidth().snackbarAnchor().padding(horizontal = 4.dp),
+          contentAlignment = Alignment.CenterEnd,
+        ) {
           AddFab(
             contentDescription =
               stringResource(
