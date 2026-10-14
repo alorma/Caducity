@@ -1,22 +1,21 @@
 package com.alorma.caducity.ui.screen.add
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
@@ -52,24 +51,31 @@ fun CategoryChips(
     val scheme = CaducityTheme.colorScheme
     categories.forEach { category ->
       val selected = category.id == selectedId
-      Surface(
+      FilterChip(
         selected = selected,
         onClick = { onSelect(category.id) },
         shape = ChipShape,
-        color = if (selected) scheme.primaryContainer else scheme.surfaceContainer,
-        contentColor = if (selected) scheme.onPrimaryContainer else scheme.onSurface,
-        border = if (selected) BorderStroke(2.dp, CaducityTheme.colorScheme.primary) else null,
         modifier = Modifier.height(44.dp),
-      ) {
-        Row(
-          modifier = Modifier.padding(start = 6.dp, end = 14.dp),
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
+        border =
+          FilterChipDefaults.filterChipBorder(
+            enabled = true,
+            selected = selected,
+            borderColor = Color.Transparent,
+            selectedBorderColor = scheme.primary,
+            selectedBorderWidth = 2.dp,
+          ),
+        colors =
+          FilterChipDefaults.filterChipColors(
+            containerColor = scheme.surfaceContainer,
+            labelColor = scheme.onSurface,
+            selectedContainerColor = scheme.primaryContainer,
+            selectedLabelColor = scheme.onPrimaryContainer,
+          ),
+        leadingIcon = {
           CategoryShapeIcon(shape = category.shape, icon = category.icon.imageVector, size = 32.dp, selected = selected)
-          Text(category.name, style = CaducityTheme.typography.labelLarge, maxLines = 1)
-        }
-      }
+        },
+        label = { Text(category.name, style = CaducityTheme.typography.labelLarge, maxLines = 1) },
+      )
     }
     NewCategoryChip(highlight = highlightNew, onClick = onNew)
   }
@@ -82,11 +88,17 @@ private fun NewCategoryChip(
 ) {
   val scheme = CaducityTheme.colorScheme
   val outline = scheme.outline
-  Surface(
+  // The dashed outline has no native equivalent: AssistChip only takes a solid BorderStroke.
+  AssistChip(
     onClick = onClick,
     shape = ChipShape,
-    color = if (highlight) scheme.primaryContainer else scheme.surface,
-    contentColor = if (highlight) scheme.onPrimaryContainer else scheme.onSurfaceVariant,
+    colors =
+      AssistChipDefaults.assistChipColors(
+        containerColor = if (highlight) scheme.primaryContainer else scheme.surface,
+        labelColor = if (highlight) scheme.onPrimaryContainer else scheme.onSurfaceVariant,
+        leadingIconContentColor = if (highlight) scheme.onPrimaryContainer else scheme.onSurfaceVariant,
+      ),
+    border = null,
     modifier =
       Modifier
         .height(44.dp)
@@ -97,14 +109,7 @@ private fun NewCategoryChip(
             style = Stroke(width = 1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 8f))),
           )
         },
-  ) {
-    Row(
-      modifier = Modifier.padding(horizontal = 14.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-      Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp))
-      Text(stringResource(R.string.add_category_new), style = CaducityTheme.typography.labelLarge)
-    }
-  }
+    leadingIcon = { Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp)) },
+    label = { Text(stringResource(R.string.add_category_new), style = CaducityTheme.typography.labelLarge) },
+  )
 }
