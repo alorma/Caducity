@@ -184,6 +184,38 @@ Abans de començar: ensenyar l'SQL i la taula de correspondències i esperar el 
 
 **Sortida:** mides, formes i capçaleres segons §11; res es trenca amb lletra al 200 %.
 
+## Fase 11 — Components natius M3/M3E (D15)
+
+**D15 (Bernat, 14 d'octubre):** els components natius d'M3/M3E tenen sempre preferència sobre els fets a mà. Si un natiu no pot fer la feina, s'avisa explícitament (què li falta i per què) abans de fer-ne un a mà; mai en silenci. Substitueix el «res fet a mà» de D14 pel que fa a l'abast: ara s'aplica a tota l'app, no només a les capçaleres.
+
+Components fets a mà amb equivalent natiu (inventari del 14 d'octubre) i el natiu que els substitueix:
+
+| Propi | On | Natiu |
+|---|---|---|
+| `BarButton` («Desa») | Afegeix | `Button` mida M |
+| `ActionButton` (Consumeix/Congela/Llença) | modal d'accions | `Button` mida M, o `ButtonGroup` |
+| `ConnectedButtonGroup` i `connectedButtonShape` | onboarding Avisos | `ButtonGroup` connectat + `ToggleButton` |
+| `QuantityFrozenRow`, `StepperButton` ×2, `QuantitySelector` | Afegeix, modal, Transforma | `FilledIconButton` / `IconButton` + `ButtonGroup` |
+| `ConnectedRow` | llistes, modal, onboarding | `ListItem` amb `ListItemDefaults.segmentedShapes` |
+| `CookedCard`, `SummaryCell`, `ExpiredBanner` | Inici | `Card` clicable |
+| `SeePantry` | Inici | `TextButton` |
+| `FilterChips`, `CategoryChips`, `QuickDateChips` | diversos | `FilterChip` / `AssistChip` |
+| `FloatingNavBar` | navegació | revisar: ja és `HorizontalFloatingToolbar`, mirar els elements interns |
+
+Sense equivalent natiu (es queden a mà, i ja s'avisa aquí): `WeekStrip`, `ThresholdSlider` amb les etiquetes dies/setmanes/mesos, `ShapePicker` i `IconPicker`, `StatusPill`.
+
+Tasques (un commit per tasca; captures abans/després a cada pas; sense canviar el comportament):
+
+1. Botons de pantalla: `BarButton` → `Button` (cal decidir com es manté el toc en un «Desa» deshabilitat, que avui dispara l'haptic de rebuig: un `Button` deshabilitat no rep clics) i `ActionButton` → `Button`/`ButtonGroup`.
+2. Grups connectats: `ConnectedButtonGroup` i `QuantityFrozenRow` → `ButtonGroup` + `ToggleButton`.
+3. Passos (steppers) i selector de quantitat → `FilledIconButton`/`ButtonGroup`.
+4. Files: `ConnectedRow` → `ListItem` amb `segmentedShapes` (modal d'accions, onboarding, llistes).
+5. Targetes de l'Inici: `CookedCard`, `SummaryCell`, `ExpiredBanner` → `Card`; `SeePantry` → `TextButton`.
+6. Xips: `FilterChips`, `CategoryChips`, `QuickDateChips` → `FilterChip`/`AssistChip`.
+7. Revisió de `FloatingNavBar`, `StyledSettings*` i la resta de `Surface(onClick…)`; captures finals en clar, fosc i lletra al 200 %.
+
+**Sortida:** cap botó, fila, targeta ni xip fet a mà amb equivalent natiu; la llista «sense equivalent natiu» és l'única excepció.
+
 ## Release notes
 
 Visibles per a l'usuari: fases 0 (un sol «Desa», fora la tanda), 1 (packs com a unitats), 2-7, 9 (llistes d'estat, fora «Selecciona») i 10 (formes i capçaleres). Fase 8, com a molt la línia de petits canvis. El text es decideix en preparar la versió.
@@ -202,6 +234,7 @@ Visibles per a l'usuari: fases 0 (un sol «Desa», fora la tanda), 1 (packs com 
 | 7 — Llista de l'Inici | Validada (14 d'octubre): 7.1 (seccions per dia amb l'«Aviat» global, sense «Més endavant») ja venia de la fase 1; `63df71cb` estat «0 Aviat» (`HomeData.upcoming`: 3 primers dies frescos, màxim 8 files, `upcomingMoreCount`; fora `NothingSoon`) i targeta «Has cuinat?» → `Transform()` buida, abans de «Veure el rebost»; `a34cc52f` «+N més» just després de les files; `bc08a667` captures de test de l'Inici (aviat, sense aviat, buit) i referències regenerades (Inici/Ajustos per paleta, llistes d'estat). Tasques 1 i 2 en un sol commit (fitxers compartits). Provat a l'emulador (0 Aviat, amb aviat, targeta → Transforma); l'Inici buit només per captura de test. Pendent a la fase 8: comptadors de secció compten unitats i diuen «productes» |
 | 8 — Textos i dades de prova | Pendent |
 | 9 — Pantalles d'estat i fora la selecció | Validada (14 d'octubre): `0e8d7a00` fora la selecció múltiple, `87dc512e` `TopAppBar` M3E amb recompte com a subtítol, `0b24859d` «Llença'ls tots» fix a baix amb l'avís, `c3bf05ab` captures de test (Aviat, Frescos, Congelats, Caducats). Les tasques 4 i 5 (Congelats només ✓, entrades de l'Inici) comprovades per codi, no a l'emulador |
-| 10 — Material 3 Expressive | Pendent (D13, D14 decidides) |
+| 10 — Material 3 Expressive | Feta, pendent d'aprovació de Bernat (14 d'octubre): `22d75905` formes (selector amb galeta 9, galeta 7, trèvol 4, sol, galeta 4 i núvol; `FLOWER` descartada per Bernat, en lloc seu `Cookie7Sided`; formes antigues només per mostrar; `SuggestedDurations` reconeix les formes antigues per a la migració 4→5), `0618f705` botons a 56 dp, `613e2365` botons rodons d'M3E, `3205117b` capçaleres `LargeFlexibleTopAppBar` (Inici, Rebost, Categoria), `fa2d9abb` correccions a lletra al 200 % del Rebost, `3d528dd7` captures de test (Categoria, Nova categoria, Inici/Rebost al 200 %), `3f5a3fac` barra flotant sense salt. Desviació: els botons principals queden fets a mà (només canvia l'alçada); es resol a la fase 11 |
+| 11 — Components natius M3/M3E | Pendent (D15; llista de tasques a la secció de la fase) |
 
 Només es passa a «Validada» quan Bernat l'aprova (`.claude/rules/phased-work.md`).
