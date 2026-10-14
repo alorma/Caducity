@@ -201,7 +201,7 @@ Visibles per a l'usuari: fases 0 (un sol «Desa», fora la tanda), 1 (packs com 
 | 6 — Durada habitual i «Aviat» global | Pendent |
 | 7 — Llista de l'Inici | Pendent |
 | 8 — Textos i dades de prova | Pendent |
-| 9 — Pantalles d'estat i fora la selecció | Pendent (D11, D12 decidides) |
+| 9 — Pantalles d'estat i fora la selecció | Validada (14 d'octubre): `0e8d7a00` fora la selecció múltiple, `87dc512e` `TopAppBar` M3E amb recompte com a subtítol, `0b24859d` «Llença'ls tots» fix a baix amb l'avís, `c3bf05ab` captures de test (Aviat, Frescos, Congelats, Caducats). Les tasques 4 i 5 (Congelats només ✓, entrades de l'Inici) comprovades per codi, no a l'emulador |
 | 10 — Material 3 Expressive | Pendent (D13, D14 decidides) |
 
 Només es passa a «Validada» quan Bernat l'aprova (`.claude/rules/phased-work.md`).
