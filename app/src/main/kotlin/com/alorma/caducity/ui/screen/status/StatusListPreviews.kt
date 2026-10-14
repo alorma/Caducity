@@ -67,7 +67,7 @@ private fun sampleReady(status: ExpiryStatus): StatusListState.Ready {
       ),
       StatusSection(category = meat, rows = listOf(row(meat, "Pollastre", days[1], status))),
     )
-  return StatusListState.Ready(status, totalCount = sections.sumOf { it.rows.size }, sections = sections)
+  return StatusListState.Ready(status, totalCount = sections.sumOf { it.rows.size }, sections = sections, soonDays = 3)
 }
 
 /** Llista d'estat amb dades d'exemple (per a les captures de test). */

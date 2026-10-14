@@ -38,6 +38,8 @@ sealed interface StatusListState {
     val status: ExpiryStatus,
     val totalCount: Int,
     val sections: List<StatusSection>,
+    /** The global "Soon" window, shown in the Aviat subtitle. */
+    val soonDays: Int,
   ) : StatusListState {
     val rows: List<StatusRow> get() = sections.flatMap { it.rows }
     val isEmpty: Boolean get() = totalCount == 0

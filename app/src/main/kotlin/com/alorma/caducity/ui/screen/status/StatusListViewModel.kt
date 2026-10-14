@@ -8,6 +8,7 @@ import com.alorma.caducity.domain.model.StatusListData
 import com.alorma.caducity.domain.model.sortedNearestFirst
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
+import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsByStatusUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
@@ -21,7 +22,7 @@ import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -32,6 +33,7 @@ import kotlinx.coroutines.launch
 class StatusListViewModel(
   private val status: ExpiryStatus,
   observeByStatus: ObserveItemsByStatusUseCase,
+  expirationThresholds: ExpirationThresholds,
   private val consumeItem: ConsumeItemUseCase,
   private val freezeItem: FreezeItemUseCase,
   private val discardItems: DiscardItemsUseCase,
@@ -40,15 +42,14 @@ class StatusListViewModel(
   private val eventTracker: EventTracker,
 ) : BaseViewModel<StatusListNavigation, StatusListNavigationSideEffect, StatusListSideEffect>() {
   val state: StateFlow<StatusListState> =
-    observeByStatus
-      .observe(status)
-      .map<_, StatusListState> { data ->
-        StatusListState.Ready(
-          status = status,
-          totalCount = data.totalCount,
-          sections = data.toSections(),
-        )
-      }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), StatusListState.Loading)
+    combine(observeByStatus.observe(status), expirationThresholds.soonThresholdDays) { data, soonDays ->
+      StatusListState.Ready(
+        status = status,
+        totalCount = data.totalCount,
+        sections = data.toSections(),
+        soonDays = soonDays,
+      )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), StatusListState.Loading)
 
   override fun navigate(navigation: StatusListNavigation) {
     when (navigation) {

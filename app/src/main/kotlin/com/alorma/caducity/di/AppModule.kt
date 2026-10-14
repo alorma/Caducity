@@ -115,6 +115,7 @@ val appModule =
       StatusListViewModel(
         status = params.get(),
         observeByStatus = get(),
+        expirationThresholds = get(),
         consumeItem = get(),
         freezeItem = get(),
         discardItems = get(),

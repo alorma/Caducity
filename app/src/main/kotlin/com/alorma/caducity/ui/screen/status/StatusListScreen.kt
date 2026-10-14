@@ -127,6 +127,7 @@ internal fun StatusListLayout(
       StatusTopBar(
         status = status,
         count = ready?.totalCount ?: 0,
+        soonDays = ready?.soonDays,
         onBack = onBack,
       )
     },
@@ -156,12 +157,24 @@ internal fun StatusListLayout(
 private fun StatusTopBar(
   status: ExpiryStatus,
   count: Int,
+  soonDays: Int?,
   onBack: () -> Unit,
 ) {
   val colors = status.colors()
+  val countText = pluralStringResource(R.plurals.home_product_count, count, count)
+  val subtitle =
+    if (status == ExpiryStatus.SOON && soonDays != null) {
+      stringResource(
+        R.string.status_soon_subtitle,
+        countText,
+        pluralStringResource(R.plurals.status_soon_window, soonDays, soonDays),
+      )
+    } else {
+      countText
+    }
   TopAppBar(
     title = { Text(stringResource(titleRes(status))) },
-    subtitle = { Text(pluralStringResource(R.plurals.home_product_count, count, count)) },
+    subtitle = { Text(subtitle) },
     navigationIcon = {
       IconButton(onClick = onBack) {
         Icon(AppIcons.Back, contentDescription = stringResource(R.string.calendar_back))

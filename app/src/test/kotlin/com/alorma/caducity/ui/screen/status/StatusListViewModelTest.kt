@@ -133,6 +133,7 @@ class StatusListViewModelTest {
     return StatusListViewModel(
       status = status,
       observeByStatus = ObserveItemsByStatusUseCase(items, pantry, todayProvider),
+      expirationThresholds = thresholds,
       consumeItem = ConsumeItemUseCase(itemDataSource, pantry, clock),
       freezeItem = FreezeItemUseCase(itemDataSource, pantry, clock),
       discardItems = DiscardItemsUseCase(pantry, clock),
