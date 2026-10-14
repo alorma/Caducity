@@ -8,21 +8,30 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,22 +40,28 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
-import com.alorma.caducity.base.ui.icons.symbols.Backup
 import com.alorma.caducity.base.ui.icons.symbols.ChevronRight
+import com.alorma.caducity.base.ui.icons.symbols.CloudUpload
+import com.alorma.caducity.base.ui.icons.symbols.Contrast
+import com.alorma.caducity.base.ui.icons.symbols.EventAvailable
+import com.alorma.caducity.base.ui.icons.symbols.HourglassBottom
 import com.alorma.caducity.base.ui.icons.symbols.Info
 import com.alorma.caducity.base.ui.icons.symbols.Language
 import com.alorma.caducity.base.ui.icons.symbols.Notifications
 import com.alorma.caducity.base.ui.icons.symbols.Settings
 import com.alorma.caducity.base.ui.icons.symbols.Shield
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
-import com.alorma.caducity.base.ui.icons.symbols.Tune
+import com.alorma.caducity.base.ui.icons.symbols.ViewWeek
 import com.alorma.caducity.config.language.LocalizedDateFormatter
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.feature.debug.DebugModeProvider
@@ -63,12 +78,14 @@ import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
-import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.components.topbar.StyledLargeTopAppBar
 import com.alorma.caducity.ui.screen.settings.components.ColorPaletteSelector
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
+import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.ColorPalette
+import com.alorma.caducity.ui.theme.OverlineTextStyle
 import com.alorma.caducity.ui.theme.ThemeMode
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
@@ -117,14 +134,18 @@ fun SettingsScreen(
   // The user can revoke the permission from the system settings: then the reminder is shown (and works) as off.
   val hasPermission = context.hasNotificationPermission()
 
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
   AppScaffold(
-    modifier = modifier,
+    modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     dialogState = dialogState,
     snackbarState = snackbarState,
     topBar = {
-      StyledTopAppBar(
+      StyledLargeTopAppBar(
+        scrollBehavior = scrollBehavior,
         navigationIcon = { NavigationIcon() },
-        title = { Text(stringResource(R.string.settings_screen_title)) },
+        title = {
+          Text(stringResource(R.string.settings_screen_title), modifier = Modifier.semantics { heading() })
+        },
       )
     },
   ) { padding ->
@@ -167,6 +188,7 @@ internal fun SettingsContent(
   onNavigate: (SettingsNavigation) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  // Four groups (Avisos, Dates, Aparença, Les teves dades) and «Quant a» as a footer (spec 21).
   LazyColumn(
     modifier = modifier.padding(horizontal = 16.dp),
     verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -175,17 +197,13 @@ internal fun SettingsContent(
       val oneDay = stringResource(R.string.settings_1d)
       val threeDays = stringResource(R.string.settings_3d)
       val oneWeek = stringResource(R.string.settings_1w)
-      val marginsSummary =
-        state.categoryDurations
-          .mapNotNull { summary -> summary.days?.let { "${summary.name} ${thresholdLabel(it)}" } }
-          .joinToString(" · ")
-          .ifBlank { null }
-      StyledSettingsGroup(title = { Text(stringResource(R.string.settings_section_alerts)) }) {
+      StyledSettingsGroup(title = { GroupTitle(R.string.settings_section_alerts) }) {
         StyledSettingsCard(
           icon = { Icon(Symbols.Outlined.Notifications, contentDescription = null) },
           title = stringResource(R.string.settings_notifications),
           subtitle = stringResource(R.string.settings_notifications_time, formatTime(state.reminderTime)),
           shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
+          // The row picks the time; the switch turns the reminder on and off.
           onClick = onReminderTimeClick,
           action = {
             Switch(
@@ -195,6 +213,7 @@ internal fun SettingsContent(
           },
         )
         StyledSettingsButtonGroupCard(
+          icon = { Icon(Symbols.Outlined.HourglassBottom, contentDescription = null) },
           title = stringResource(R.string.settings_soon_default),
           subtitle = stringResource(R.string.settings_soon_default_sub),
           selectedItem = state.soonThresholdDays,
@@ -210,15 +229,31 @@ internal fun SettingsContent(
           shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
         )
       }
-      StyledSettingsGroup(title = { Text(stringResource(R.string.settings_section_products)) }) {
+    }
+
+    item {
+      val durationsSummary =
+        state.categoryDurations
+          .mapNotNull { summary -> summary.days?.let { "${summary.name} ${thresholdLabel(it)}" } }
+          .joinToString(" · ")
+          .ifBlank { null }
+      StyledSettingsGroup(title = { GroupTitle(R.string.settings_section_dates) }) {
         StyledSettingsCard(
-          icon = { Icon(Symbols.Outlined.Tune, contentDescription = null) },
+          icon = { Icon(Symbols.Outlined.EventAvailable, contentDescription = null) },
           title = stringResource(R.string.settings_category_durations),
-          subtitle = marginsSummary,
+          subtitle = durationsSummary,
           subtitleMaxLines = 1,
           action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
           onClick = { onNavigate(SettingsNavigation.CategoryDurations) },
-          shapes = ListItemDefaults.segmentedShapes(index = 0, count = 1),
+          shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
+        )
+        StyledSettingsCard(
+          icon = { Icon(Symbols.Outlined.ViewWeek, contentDescription = null) },
+          title = stringResource(R.string.settings_week_start),
+          subtitle = localizedDateFormatter.getDayOfWeekFullName(state.firstDayOfWeek),
+          action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
+          onClick = onWeekStartClick,
+          shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
         )
       }
     }
@@ -228,8 +263,9 @@ internal fun SettingsContent(
       val themeLight = stringResource(R.string.settings_theme_light)
       val themeDark = stringResource(R.string.settings_theme_dark)
       val themeSystem = stringResource(R.string.settings_theme_system)
-      StyledSettingsGroup(title = { Text(stringResource(R.string.settings_section_appearance)) }) {
+      StyledSettingsGroup(title = { GroupTitle(R.string.settings_section_appearance) }) {
         StyledSettingsButtonGroupCard(
+          icon = { Icon(Symbols.Outlined.Contrast, contentDescription = null) },
           title = stringResource(R.string.settings_theme_title),
           selectedItem = state.themeMode,
           items = listOf(ThemeMode.LIGHT, ThemeMode.DARK, ThemeMode.SYSTEM),
@@ -241,21 +277,13 @@ internal fun SettingsContent(
             }
           },
           onItemSelected = onThemeModeChange,
-          shapes = ListItemDefaults.segmentedShapes(index = 0, count = 4),
+          shapes = ListItemDefaults.segmentedShapes(index = 0, count = 3),
         )
         ColorPaletteSelector(
           selected = state.colorPalette,
           palettes = palettes,
           onSelected = onColorPaletteChange,
-          shapes = ListItemDefaults.segmentedShapes(index = 1, count = 4),
-        )
-        StyledSettingsCard(
-          title = stringResource(R.string.settings_week_start),
-          subtitle = localizedDateFormatter.getDayOfWeekFullName(state.firstDayOfWeek),
-          action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
-          onClick = onWeekStartClick,
-          shapes =
-            ListItemDefaults.segmentedShapes(index = 2, count = 4),
+          shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
         )
         val context = LocalContext.current
         StyledSettingsCard(
@@ -264,45 +292,71 @@ internal fun SettingsContent(
           subtitle = currentLanguageName(context),
           action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
           onClick = { context.openLanguageSettings() },
-          shapes =
-            ListItemDefaults.segmentedShapes(index = 3, count = 4),
+          shapes = ListItemDefaults.segmentedShapes(index = 2, count = 3),
         )
       }
     }
 
     item {
-      val rows = if (isDebug) 4 else 3
-      StyledSettingsGroup(title = { Text(stringResource(R.string.settings_section_data)) }) {
+      val rows = if (isDebug) 3 else 2
+      StyledSettingsGroup(title = { GroupTitle(R.string.settings_section_data) }) {
         StyledSettingsCard(
-          icon = { Icon(Symbols.Outlined.Backup, contentDescription = null) },
+          icon = { Icon(Symbols.Outlined.CloudUpload, contentDescription = null) },
           title = stringResource(R.string.settings_backup_title),
           subtitle = stringResource(R.string.settings_backup_sub),
+          action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
           onClick = { onNavigate(SettingsNavigation.Backup) },
           shapes = ListItemDefaults.segmentedShapes(index = 0, count = rows),
         )
         StyledSettingsCard(
           icon = { Icon(Symbols.Outlined.Shield, contentDescription = null) },
           title = stringResource(R.string.settings_privacy_title),
+          action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
           onClick = { onNavigate(SettingsNavigation.Privacy) },
           shapes = ListItemDefaults.segmentedShapes(index = 1, count = rows),
-        )
-        StyledSettingsCard(
-          icon = { Icon(Symbols.Outlined.Info, contentDescription = null) },
-          title = stringResource(R.string.settings_about_title),
-          subtitle = stringResource(R.string.settings_about_sub),
-          onClick = { onNavigate(SettingsNavigation.About) },
-          shapes = ListItemDefaults.segmentedShapes(index = 2, count = rows),
         )
         if (isDebug) {
           StyledSettingsCard(
             icon = { Icon(Symbols.Outlined.Settings, contentDescription = null) },
             title = stringResource(R.string.settings_debug_title),
             subtitle = stringResource(R.string.settings_debug_description),
+            action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
             onClick = { onNavigate(SettingsNavigation.Debug) },
-            shapes = ListItemDefaults.segmentedShapes(index = 3, count = rows),
+            shapes = ListItemDefaults.segmentedShapes(index = 2, count = rows),
           )
         }
       }
+    }
+
+    item {
+      AboutFooter(onClick = { onNavigate(SettingsNavigation.About) })
+    }
+  }
+}
+
+/** Group label: uppercase, 12 sp with 1.2 sp spacing, secondary color. */
+@Composable
+private fun GroupTitle(
+  @StringRes textRes: Int,
+) {
+  Text(
+    text = stringResource(textRes).uppercase(),
+    style = OverlineTextStyle,
+    color = CaducityTheme.colorScheme.onSurfaceVariant,
+  )
+}
+
+/** «Quant a Caducity · versió i crèdits»: a quiet footer instead of a row. */
+@Composable
+private fun AboutFooter(onClick: () -> Unit) {
+  Box(modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp), contentAlignment = Alignment.Center) {
+    TextButton(
+      onClick = onClick,
+      colors = ButtonDefaults.textButtonColors(contentColor = CaducityTheme.colorScheme.onSurfaceVariant),
+    ) {
+      Icon(Symbols.Outlined.Info, contentDescription = null, modifier = Modifier.size(18.dp))
+      Spacer(Modifier.width(8.dp))
+      Text(text = stringResource(R.string.settings_about_footer), style = CaducityTheme.typography.bodyMedium)
     }
   }
 }

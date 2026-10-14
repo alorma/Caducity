@@ -407,7 +407,7 @@
   <string name="notification_highlight_days">%1$s in %2$d days</string>
   <string name="settings_section_alerts">Alerts</string>
   <string name="settings_section_appearance">Appearance</string>
-  <string name="settings_section_data">Data</string>
+  <string name="settings_section_data">Your data</string>
   <string name="settings_notifications">Notifications</string>
   <string name="settings_notifications_time">Every day at %s</string>
   <string name="settings_1d">1 day</string>
@@ -416,7 +416,7 @@
   <string name="settings_week_start">Week starts on</string>
   <string name="settings_app_language">App language</string>
   <string name="settings_backup_sub">Export and restore</string>
-  <string name="settings_about_sub">Version and credits</string>
+  <string name="settings_about_footer">About Caducity · version and credits</string>
   <string name="settings_time_dialog_title">Reminder time</string>
   <string name="settings_dialog_save">Save</string>
   <string name="settings_dialog_cancel">Cancel</string>
@@ -489,7 +489,7 @@
   <string name="ob_category_drinks">Drinks</string>
   <string name="ob_category_cold_cuts">Cold cuts</string>
   <string name="ob_category_ready_meals">Ready meals</string>
-  <string name="settings_section_products">Products</string>
+  <string name="settings_section_dates">Dates</string>
   <string name="settings_soon_default">“Soon” means</string>
   <string name="settings_soon_default_sub">How many days before expiry it turns yellow and we warn you</string>
   <string name="settings_category_durations">Usual duration</string>

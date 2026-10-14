@@ -66,13 +66,13 @@ fun StyledTopAppBar(
   }
 }
 
-/** Large collapsing app bar with subtitle (Home, Pantry, Category); it folds into a regular one on scroll. */
+/** Large collapsing app bar (Home, Pantry, Category, Settings); it folds into a regular one on scroll. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun StyledLargeTopAppBar(
   title: @Composable () -> Unit,
-  subtitle: @Composable () -> Unit,
   modifier: Modifier = Modifier,
+  subtitle: (@Composable () -> Unit)? = null,
   navigationIcon: @Composable () -> Unit = {},
   actions: @Composable RowScope.() -> Unit = {},
   colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),

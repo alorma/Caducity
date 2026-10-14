@@ -28,6 +28,10 @@ ICONS = [
     "emoji_food_beverage", "wine_bar", "coffee", "cake", "fastfood", "pets", "child_care", "soup_kitchen",
     # onboarding
     "radio_button_unchecked", "notifications_active", "smartphone", "cloud_upload", "arrow_forward", "menu_book",
+    # afegides a mà abans (no eren a la llista)
+    "lightbulb", "more_horiz", "remove", "wallpaper",
+    # ajustos
+    "event_available", "view_week", "contrast",
 ]
 
 

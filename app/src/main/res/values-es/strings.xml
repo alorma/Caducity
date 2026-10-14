@@ -428,7 +428,7 @@
   <string name="notification_highlight_days">%1$s en %2$d días</string>
   <string name="settings_section_alerts">Avisos</string>
   <string name="settings_section_appearance">Apariencia</string>
-  <string name="settings_section_data">Datos</string>
+  <string name="settings_section_data">Tus datos</string>
   <string name="settings_notifications">Notificaciones</string>
   <string name="settings_notifications_time">Cada día a las %s</string>
   <string name="settings_1d">1 día</string>
@@ -437,7 +437,7 @@
   <string name="settings_week_start">La semana empieza</string>
   <string name="settings_app_language">Idioma de la aplicación</string>
   <string name="settings_backup_sub">Exportar y restaurar</string>
-  <string name="settings_about_sub">Versión y créditos</string>
+  <string name="settings_about_footer">Acerca de Caducity · versión y créditos</string>
   <string name="settings_time_dialog_title">Hora del aviso</string>
   <string name="settings_dialog_save">Guardar</string>
   <string name="settings_dialog_cancel">Cancelar</string>
@@ -511,7 +511,7 @@
   <string name="ob_category_drinks">Bebidas</string>
   <string name="ob_category_cold_cuts">Embutidos</string>
   <string name="ob_category_ready_meals">Platos preparados</string>
-  <string name="settings_section_products">Productos</string>
+  <string name="settings_section_dates">Fechas</string>
   <string name="settings_soon_default">«Pronto» significa</string>
   <string name="settings_soon_default_sub">Cuántos días antes de caducar pasa a amarillo y te avisamos</string>
   <string name="settings_category_durations">Duración habitual</string>

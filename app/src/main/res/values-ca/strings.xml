@@ -428,7 +428,7 @@
   <string name="notification_highlight_days">%1$s d\'aquí a %2$d dies</string>
   <string name="settings_section_alerts">Avisos</string>
   <string name="settings_section_appearance">Aparença</string>
-  <string name="settings_section_data">Dades</string>
+  <string name="settings_section_data">Les teves dades</string>
   <string name="settings_notifications">Notificacions</string>
   <string name="settings_notifications_time">Cada dia a les %s</string>
   <string name="settings_1d">1 dia</string>
@@ -437,7 +437,7 @@
   <string name="settings_week_start">La setmana comença</string>
   <string name="settings_app_language">Idioma de l\'aplicació</string>
   <string name="settings_backup_sub">Exporta i restaura</string>
-  <string name="settings_about_sub">Versió i crèdits</string>
+  <string name="settings_about_footer">Quant a Caducity · versió i crèdits</string>
   <string name="settings_time_dialog_title">Hora de l\'avís</string>
   <string name="settings_dialog_save">Desa</string>
   <string name="settings_dialog_cancel">Cancel·la</string>
@@ -511,7 +511,7 @@
   <string name="ob_category_drinks">Begudes</string>
   <string name="ob_category_cold_cuts">Embotits</string>
   <string name="ob_category_ready_meals">Plats preparats</string>
-  <string name="settings_section_products">Productes</string>
+  <string name="settings_section_dates">Dates</string>
   <string name="settings_soon_default">«Aviat» vol dir</string>
   <string name="settings_soon_default_sub">Quants dies abans de caducar passa a groc i t\'avisem</string>
   <string name="settings_category_durations">Durada habitual</string>
