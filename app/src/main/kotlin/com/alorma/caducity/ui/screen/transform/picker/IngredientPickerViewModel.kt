@@ -25,7 +25,13 @@ class IngredientPickerViewModel(
   init {
     viewModelScope.launch {
       val groups = observeItems.observe().first().toProductGroups()
-      _state.update { it.copy(groups = groups, selectedKeys = groups.keysOf(args.selectedItemIds)) }
+      _state.update {
+        it.copy(
+          groups = groups,
+          selectedKeys = groups.keysOf(args.selectedItemIds),
+          currentItemIds = args.selectedItemIds,
+        )
+      }
     }
     viewModelScope.launch {
       observeCategories.observe().collect { categories -> _state.update { it.copy(categories = categories) } }
