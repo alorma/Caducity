@@ -24,8 +24,6 @@ import androidx.navigation3.ui.NavDisplay
 private const val TransitionMs = 300
 private const val FadeMs = 150
 private const val BackScale = 0.9f
-private const val EnterStartAlpha = 0.6f
-private const val ExitEndAlpha = 0.4f
 
 private val transitionEasing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)
 
@@ -44,19 +42,19 @@ internal fun <S> AnimatedContentTransitionScope<S>.nativeTransition(
   val enter: EnterTransition
   val exit: ExitTransition
   if (forward) {
-    enter = (
-      if (vertical) slideInVertically(offset, ::distance) else slideInHorizontally(offset, ::distance)
-    ) + fadeIn(tween(TransitionMs, easing = LinearEasing), initialAlpha = EnterStartAlpha)
+    // Opaque while it slides in: a fading entry lets the screen below show through it.
+    enter = if (vertical) slideInVertically(offset, ::distance) else slideInHorizontally(offset, ::distance)
     exit = ExitTransition.None
   } else {
     enter = EnterTransition.None
+    // Fully opaque until the very end, like the system animation: an early fade shows the screen
+    // below through the leaving one.
+    val lateFade = fadeOut(tween(TransitionMs / 3, delayMillis = TransitionMs * 2 / 3, easing = LinearEasing))
     exit =
       if (vertical) {
-        slideOutVertically(offset, ::distance) +
-          fadeOut(tween(FadeMs + 100, easing = LinearEasing), targetAlpha = ExitEndAlpha)
+        slideOutVertically(offset, ::distance) + lateFade
       } else {
-        scaleOut(tween(TransitionMs, easing = transitionEasing), targetScale = BackScale) +
-          fadeOut(tween(FadeMs + 100, easing = LinearEasing), targetAlpha = ExitEndAlpha)
+        scaleOut(tween(TransitionMs, easing = transitionEasing), targetScale = BackScale) + lateFade
       }
   }
   return enter togetherWith exit
@@ -101,9 +99,7 @@ internal val modalTransitions =
     NavDisplay.predictivePopTransitionSpec { edge -> predictiveBack(edge, vertical = true) }
 
 /**
- * Metadata for every tab but the base: going to it (`[Home]` → `[Home, Pantry]`) and leaving it from
- * the bar (`[Home, Pantry]` → `[Home]`) fade. The back gesture keeps the predictive animation.
+ * Metadata for every tab but the base: going to it (`[Home]` → `[Home, Pantry]`) fades. Leaving it
+ * (back key, gesture or the bar) uses the default pop, where the tab shrinks and reveals Home.
  */
-internal val tabTransitions =
-  NavDisplay.transitionSpec { tabTransition() } +
-    NavDisplay.popTransitionSpec { tabTransition() }
+internal val tabTransitions = NavDisplay.transitionSpec { tabTransition() }
