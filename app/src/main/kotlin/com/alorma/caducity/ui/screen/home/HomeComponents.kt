@@ -25,7 +25,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
@@ -107,7 +106,7 @@ internal fun ExpiredBanner(
         modifier = Modifier.size(48.dp).clip(CategoryShape.BURST.toComposeShape()).background(colors.strong),
         contentAlignment = Alignment.Center,
       ) {
-        Icon(Symbols.Filled.DeleteHistory, contentDescription = null, tint = Color.White)
+        Icon(Symbols.Filled.DeleteHistory, contentDescription = null, tint = CaducityTheme.contentOn(colors.strong))
       }
       Column(modifier = Modifier.weight(1f)) {
         Text(

@@ -38,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -251,8 +250,7 @@ private fun ExpiredContent(
       },
     icon = Symbols.Outlined.Delete,
     container = expired.strong,
-    // `strong` is dark in the light theme and light in the dark one.
-    content = if (expired.strong.luminance() > 0.5f) expired.container else Color.White,
+    content = CaducityTheme.contentOn(expired.strong),
     shape = RoundedCornerShape(32.dp),
     onClick = actions::onDiscardSelected,
     modifier = Modifier.fillMaxWidth(),
