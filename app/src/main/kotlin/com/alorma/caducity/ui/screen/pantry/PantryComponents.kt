@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
@@ -90,6 +93,7 @@ internal fun PantrySearchField(
   )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun CategoryCard(
   entry: PantryCategory,
@@ -105,7 +109,12 @@ internal fun CategoryCard(
     color = CaducityTheme.colorScheme.surfaceContainer,
   ) {
     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-      Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+      // With large fonts the badge does not fit next to the icon: it moves below it instead of breaking mid-word.
+      FlowRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+      ) {
         CategoryShapeIcon(category.shape, CategoryIcons.vectorOf(category.icon), size = 56.dp)
         if (entry.expiredCount > 0) {
           val colors = ExpiryStatus.EXPIRED.colors()
@@ -113,6 +122,7 @@ internal fun CategoryCard(
             text = pluralStringResource(R.plurals.pantry_card_expired, entry.expiredCount, entry.expiredCount),
             style = CaducityTheme.typography.labelMedium,
             color = colors.onContainer,
+            softWrap = false,
             modifier =
               Modifier
                 .clip(CaducityShapes.chip)
@@ -210,6 +220,8 @@ internal fun NewCategoryCard(
         stringResource(R.string.pantry_new_category),
         style = CaducityTheme.typography.labelLarge,
         color = CaducityTheme.colorScheme.primary,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.padding(horizontal = 8.dp),
       )
     }
   }
