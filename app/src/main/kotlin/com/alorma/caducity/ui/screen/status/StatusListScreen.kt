@@ -235,7 +235,7 @@ private fun SideEffectHandler(
             val result =
               dialogState.showAlertDialog(
                 title = {
-                  Text(pluralStringResource(R.plurals.status_discard_title, effect.unitCount, effect.unitCount))
+                  Text(pluralStringResource(R.plurals.status_discard_title, effect.productCount, effect.productCount))
                 },
                 content = { Text(discardBody) },
                 positiveButton = { Text(discardLabel) },
@@ -325,7 +325,7 @@ private fun SectionHeader(
         overflow = TextOverflow.Ellipsis,
       )
       Text(
-        text = section.unitCount.toString(),
+        text = section.productCount.toString(),
         style = CaducityTheme.typography.bodyMedium,
         color = CaducityTheme.colorScheme.onSurfaceVariant,
       )

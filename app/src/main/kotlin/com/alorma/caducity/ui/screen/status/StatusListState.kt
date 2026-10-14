@@ -27,7 +27,7 @@ data class StatusSection(
   val category: Category,
   val rows: List<StatusRow>,
 ) {
-  val unitCount: Int get() = rows.sumOf { it.unitCount }
+  val productCount: Int get() = rows.distinctBy { it.nearest.groupKey }.size
 }
 
 sealed interface StatusListState {
@@ -65,6 +65,6 @@ sealed interface StatusListNavigationSideEffect {
 sealed interface StatusListSideEffect {
   data class ShowDiscardConfirm(
     val itemIds: List<String>,
-    val unitCount: Int,
+    val productCount: Int,
   ) : StatusListSideEffect
 }

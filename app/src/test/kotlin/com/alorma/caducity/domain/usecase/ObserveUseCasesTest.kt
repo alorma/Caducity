@@ -204,7 +204,7 @@ class ObserveUseCasesTest {
   // region Home
 
   @Test
-  fun `home groups soon units by day and product, counting units`() =
+  fun `home groups soon units by day and product, counting products`() =
     runTest {
       category("c1", "Dairy")
       category("c2", "Pantry", 1)
@@ -221,12 +221,12 @@ class ObserveUseCasesTest {
       expectThat(data.today).isEqualTo(today)
       expectThat(data.sections.map { it.date }).containsExactly(inDays(0), inDays(2))
       val todaySection = data.sections.first()
-      expectThat(todaySection.unitCount).isEqualTo(4)
+      expectThat(todaySection.productCount).isEqualTo(2)
       expectThat(todaySection.rows.map { it.name to it.unitCount }).containsExactly("Milk" to 3, "Yogurt" to 1)
-      expectThat(data.soonCount).isEqualTo(5)
+      expectThat(data.soonCount).isEqualTo(3)
       expectThat(data.freshCount).isEqualTo(1)
       expectThat(data.frozenCount).isEqualTo(1)
-      expectThat(data.expiredCount).isEqualTo(3)
+      expectThat(data.expiredCount).isEqualTo(2)
       expectThat(data.oldestExpiredDaysAgo).isEqualTo(9)
       expectThat(data.isPantryEmpty).isFalse()
       expectThat(data.nothingExpiresSoon).isFalse()
@@ -247,7 +247,7 @@ class ObserveUseCasesTest {
 
       expectThat(data.sections.map { it.date }).containsExactly(inDays(6), inDays(7))
       expectThat(data.soonCount).isEqualTo(2)
-      expectThat(data.freshCount).isEqualTo(3)
+      expectThat(data.freshCount).isEqualTo(2)
       expectThat(data.nothingExpiresSoon).isFalse()
     }
 
@@ -358,19 +358,20 @@ class ObserveUseCasesTest {
 
       val data = pantryUseCase.observe().first()
 
-      expectThat(data.totalUnits).isEqualTo(6)
+      // Products, not units: «X» has two units and counts once.
+      expectThat(data.totalProducts).isEqualTo(5)
       expectThat(data.categories.map { it.category.id }).containsExactly("a", "b", "empty")
       val a = data.categories.first()
-      expectThat(a.unitCount).isEqualTo(5)
-      expectThat(a.expiredCount).isEqualTo(2)
+      expectThat(a.productCount).isEqualTo(4)
+      expectThat(a.expiredCount).isEqualTo(1)
       expectThat(a.statusCounts.entries.map { it.key to it.value }).containsExactly(
-        ExpiryStatus.EXPIRED to 2,
+        ExpiryStatus.EXPIRED to 1,
         ExpiryStatus.SOON to 1,
         ExpiryStatus.FRESH to 1,
         ExpiryStatus.FROZEN to 1,
       )
       expectThat(a.nearest).isEqualTo(inDays(-2))
-      expectThat(data.categories.last().unitCount).isEqualTo(0)
+      expectThat(data.categories.last().productCount).isEqualTo(0)
       expectThat(data.categories.last().nearest).isNull()
     }
 
@@ -408,14 +409,14 @@ class ObserveUseCasesTest {
 
       val data = category.observe("c1").first()!!
 
-      expectThat(data.unitCount).isEqualTo(5)
+      expectThat(data.productCount).isEqualTo(3)
       expectThat(data.sections.map { it.status }).containsExactly(
         ExpiryStatus.EXPIRED,
         ExpiryStatus.SOON,
         ExpiryStatus.FRESH,
         ExpiryStatus.FROZEN,
       )
-      expectThat(data.statusCounts[ExpiryStatus.FRESH]).isEqualTo(2)
+      expectThat(data.statusCounts[ExpiryStatus.FRESH]).isEqualTo(1)
       expectThat(data.nearest).isEqualTo(inDays(-2))
       val fresh = data.sections.first { it.status == ExpiryStatus.FRESH }
       expectThat(
@@ -591,7 +592,8 @@ class ObserveUseCasesTest {
 
       expectThat(data.today).isEqualTo(today)
       expectThat(data.statusesByDate.keys.toList()).containsExactly(inDays(6))
-      expectThat(data.statusesByDate.getValue(inDays(6))).hasSize(3)
+      // One status per product: «Soon» has two units and counts once.
+      expectThat(data.statusesByDate.getValue(inDays(6))).hasSize(2)
     }
 
   @Test

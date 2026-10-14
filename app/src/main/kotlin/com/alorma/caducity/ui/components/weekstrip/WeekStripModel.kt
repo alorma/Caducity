@@ -11,8 +11,8 @@ import kotlinx.datetime.plus
 data class WeekStripDay(
   val date: LocalDate,
   val dots: List<ExpiryStatus>,
-  /** Units that expire that day, to describe it for accessibility; dots are capped, this is not. */
-  val unitCount: Int,
+  /** Products that expire that day, to describe it for accessibility; dots are capped, this is not. */
+  val productCount: Int,
 )
 
 const val MAX_DOTS = 3
@@ -22,5 +22,5 @@ fun WeekStripData.window(page: Int): List<WeekStripDay> =
   (0 until ObserveWeekStripUseCase.DAYS_PER_WINDOW).map { offset ->
     val date = today.plus(page * ObserveWeekStripUseCase.DAYS_PER_WINDOW + offset, DateTimeUnit.DAY)
     val statuses = statusesByDate[date].orEmpty().filter { it != ExpiryStatus.EXPIRED }
-    WeekStripDay(date = date, dots = statuses.take(MAX_DOTS), unitCount = statuses.size)
+    WeekStripDay(date = date, dots = statuses.take(MAX_DOTS), productCount = statuses.size)
   }

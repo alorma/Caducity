@@ -12,7 +12,7 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 
-/** What the week strip draws: [today] and, for each date, the status of every unit that expires that day. */
+/** What the week strip draws: [today] and, for each date, the status of every product that expires that day. */
 data class WeekStripData(
   val today: LocalDate,
   val statusesByDate: Map<LocalDate, List<ExpiryStatus>>,
@@ -42,7 +42,11 @@ class ObserveWeekStripUseCase(
             today = today,
             statusesByDate =
               byDate.mapValues { (_, units) ->
-                units.map { it.status }.filter { it != ExpiryStatus.EXPIRED }.sortedBy { it.ordinal }
+                units
+                  .distinctBy { it.groupKey }
+                  .map { it.status }
+                  .filter { it != ExpiryStatus.EXPIRED }
+                  .sortedBy { it.ordinal }
               },
           )
         }

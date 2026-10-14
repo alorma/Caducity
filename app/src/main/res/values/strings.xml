@@ -362,9 +362,9 @@
   <string name="category_day_clear">Clear the day filter</string>
   <string name="category_day_empty">Nothing in %s expires this day.</string>
   <string name="category_unit_of">Unit %1$d of %2$d · %3$s</string>
-  <plurals name="category_day_units">
-    <item quantity="one">%d unit expires this day</item>
-    <item quantity="other">%d units expire this day</item>
+  <plurals name="category_day_products">
+    <item quantity="one">%d product expires this day</item>
+    <item quantity="other">%d products expire this day</item>
   </plurals>
   <string name="status_title_expired">Expired</string>
   <string name="status_title_soon">Soon</string>

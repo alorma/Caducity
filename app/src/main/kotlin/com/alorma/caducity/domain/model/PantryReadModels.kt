@@ -20,6 +20,9 @@ data class PantryEntry(
     get() = productId ?: "legacy:$categoryId:${name.normalizeForSearch()}"
 }
 
+/** Counters count products, not units (§9): every unit of a product counts once. */
+fun List<PantryEntry>.productCount(): Int = distinctBy { it.groupKey }.size
+
 /** Units of one product, ordered by date; «Unitat N» is the position in [units]. */
 data class ProductGroup(
   val key: String,
@@ -72,10 +75,11 @@ data class HomeDaySection(
   /** Status of every unit of the section: `SOON` in the «soon» window, `FRESH` in [HomeData.upcoming]. */
   val status: ExpiryStatus = ExpiryStatus.SOON,
 ) {
-  /** Units, not rows (P6). */
-  val unitCount: Int get() = rows.sumOf { it.unitCount }
+  /** Products, not units (§9): one row per product. */
+  val productCount: Int get() = rows.size
 }
 
+/** Counters are products, not units (§9). */
 data class HomeData(
   val today: LocalDate,
   val expiredCount: Int,
@@ -95,7 +99,7 @@ data class HomeData(
   /** There are items but none is about to expire (and no section to show). */
   val nothingExpiresSoon: Boolean get() = !isPantryEmpty && sections.isEmpty()
 
-  /** Something that is not expired can still be cooked: units that are soon, fresh or frozen. */
+  /** Something that is not expired can still be cooked: products that are soon, fresh or frozen. */
   val hasUsableProducts: Boolean get() = soonCount + freshCount + frozenCount > 0
 
   companion object {
@@ -110,9 +114,9 @@ data class HomeData(
 
 data class PantryCategory(
   val category: Category,
-  val unitCount: Int,
+  val productCount: Int,
   val expiredCount: Int,
-  /** Units per status, only non-zero ones, in order Expired, Soon, Fresh, Frozen. */
+  /** Products per status, only non-zero ones, in order Expired, Soon, Fresh, Frozen. */
   val statusCounts: Map<ExpiryStatus, Int>,
   /** The closest date among non-frozen units (may be in the past). */
   val nearest: LocalDate?,
@@ -120,7 +124,7 @@ data class PantryCategory(
 
 data class PantryData(
   val today: LocalDate,
-  val totalUnits: Int,
+  val totalProducts: Int,
   val categories: List<PantryCategory>,
 )
 
@@ -137,13 +141,13 @@ data class CategorySection(
   val status: ExpiryStatus,
   val groups: List<ProductGroup>,
 ) {
-  val unitCount: Int get() = groups.sumOf { it.unitCount }
+  val productCount: Int get() = groups.size
 }
 
 data class CategoryData(
   val today: LocalDate,
   val category: Category,
-  val unitCount: Int,
+  val productCount: Int,
   val nearest: LocalDate?,
   val statusCounts: Map<ExpiryStatus, Int>,
   /** Sections in order Expired, Soon, Fresh, Frozen; empty ones are left out. */
@@ -163,6 +167,7 @@ data class StatusCategoryGroup(
 data class StatusListData(
   val status: ExpiryStatus,
   val today: LocalDate,
+  /** Products, not units. */
   val totalCount: Int,
   /** Ordered by number of units, descending. */
   val groups: List<StatusCategoryGroup>,

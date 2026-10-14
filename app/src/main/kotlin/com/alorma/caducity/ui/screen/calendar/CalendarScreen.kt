@@ -420,8 +420,8 @@ private fun DayTitle(
     if (state.rows.isEmpty()) {
       whenText
     } else {
-      val units = state.rows.sumOf { it.unitCount }
-      "$whenText · ${pluralStringResource(R.plurals.home_product_count, units, units)}"
+      val products = state.rows.size
+      "$whenText · ${pluralStringResource(R.plurals.home_product_count, products, products)}"
     }
   Row(
     modifier = modifier.fillMaxWidth().padding(horizontal = 8.dp),

@@ -197,10 +197,11 @@ class CategoryEditorViewModelTest {
     }
 
   @Test
-  fun `deleting asks first with the number of units and then removes the category`() =
+  fun `deleting asks first with the number of products and then removes the category`() =
     runTest {
       val id = create.createCategory("Lactics", "").getOrThrow()
       AddProductUseCase(pantry, clock).add("Llet", id, LocalDate(2026, 10, 14), 2, false).getOrThrow()
+      AddProductUseCase(pantry, clock).add("Iogurt", id, LocalDate(2026, 10, 14), 1, false).getOrThrow()
       val vm = viewModel(id)
 
       vm.onDeleteClick()

@@ -7,6 +7,7 @@ import com.alorma.caducity.domain.model.PantryEntry
 import com.alorma.caducity.domain.model.StatusCategoryGroup
 import com.alorma.caducity.domain.model.StatusListData
 import com.alorma.caducity.domain.model.normalizeForSearch
+import com.alorma.caducity.domain.model.productCount
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -31,7 +32,7 @@ class ObserveItemsByStatusUseCase(
       StatusListData(
         status = status,
         today = today,
-        totalCount = matching.size,
+        totalCount = matching.productCount(),
         groups =
           categories
             .mapNotNull { category ->

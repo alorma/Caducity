@@ -188,7 +188,7 @@ private fun SideEffectHandler(
               dialogState.showAlertDialog(
                 title = { Text(stringResource(R.string.category_delete_title, effect.name)) },
                 content = {
-                  Text(pluralStringResource(R.plurals.category_delete_body, effect.unitCount, effect.unitCount))
+                  Text(pluralStringResource(R.plurals.category_delete_body, effect.productCount, effect.productCount))
                 },
                 positiveButton = { Text(stringResource(R.string.category_delete_confirm)) },
                 negativeButton = { Text(stringResource(R.string.category_delete_cancel)) },
@@ -230,7 +230,7 @@ internal fun CategoryTopBar(
     },
     subtitle = {
       ready?.let {
-        Text(text = categoryMeta(it.data.unitCount, it.data.nearest, it.data.today))
+        Text(text = categoryMeta(it.data.productCount, it.data.nearest, it.data.today))
       }
     },
     colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
@@ -346,7 +346,7 @@ private fun CategoryState.Ready.items(): List<CategoryItem> =
       return@buildList
     }
     add(CategoryItem.Filters)
-    if (data.unitCount == 0) add(CategoryItem.Empty)
+    if (data.productCount == 0) add(CategoryItem.Empty)
     visibleSections.forEach { section ->
       add(CategoryItem.SectionHeader(section))
       section.groups.forEachIndexed { index, group -> add(CategoryItem.Product(section, group, index)) }
@@ -400,7 +400,7 @@ internal fun CategoryContent(
           CategoryItem.DayFilter ->
             DayFilter(
               day = state.selectedDay!!,
-              unitCount = state.dayUnits.size,
+              productCount = state.dayUnits.distinctBy { it.unit.groupKey }.size,
               onClear = { onDayClick(state.selectedDay) },
               modifier = Modifier.padding(bottom = 12.dp),
             )
@@ -469,11 +469,11 @@ internal fun CategoryContent(
   }
 }
 
-/** Active day filter: «Dimecres 14 ✕» plus how many units expire that day. */
+/** Active day filter: «Dimecres 14 ✕» plus how many products expire that day. */
 @Composable
 private fun DayFilter(
   day: kotlinx.datetime.LocalDate,
-  unitCount: Int,
+  productCount: Int,
   onClear: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -508,7 +508,7 @@ private fun DayFilter(
       },
     )
     Text(
-      text = pluralStringResource(R.plurals.category_day_units, unitCount, unitCount),
+      text = pluralStringResource(R.plurals.category_day_products, productCount, productCount),
       style = CaducityTheme.typography.bodyMedium,
       color = CaducityTheme.colorScheme.onSurfaceVariant,
     )
@@ -537,7 +537,7 @@ private fun CategoryFilters(
       .toList()
       .let { present -> if (state.filter != null && state.filter !in present) present + state.filter else present }
   val options =
-    listOf(FilterChipOption(stringResource(R.string.category_filter_all), state.data.unitCount)) +
+    listOf(FilterChipOption(stringResource(R.string.category_filter_all), state.data.productCount)) +
       statuses.map { FilterChipOption(statusLabel(it), state.data.statusCounts[it] ?: 0, it) }
   FilterChips(
     options = options,
@@ -564,7 +564,7 @@ private fun SectionHeader(
       modifier = Modifier.semantics { heading() },
     )
     Text(
-      text = section.unitCount.toString(),
+      text = section.productCount.toString(),
       style = CaducityTheme.typography.bodyMedium,
       color = CaducityTheme.colorScheme.onSurfaceVariant,
     )

@@ -8,6 +8,7 @@ import com.alorma.caducity.domain.model.HomeDaySection
 import com.alorma.caducity.domain.model.HomeRow
 import com.alorma.caducity.domain.model.PantryEntry
 import com.alorma.caducity.domain.model.normalizeForSearch
+import com.alorma.caducity.domain.model.productCount
 import com.alorma.caducity.domain.model.sortedNearestFirst
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -69,11 +70,11 @@ class ObserveHomeUseCase(
 
       HomeData(
         today = today,
-        expiredCount = expired.size,
+        expiredCount = expired.productCount(),
         oldestExpiredDaysAgo = expired.minOfOrNull { it.expiration }?.let { it.daysUntil(today) },
-        soonCount = byStatus[ExpiryStatus.SOON].orEmpty().size,
-        freshCount = byStatus[ExpiryStatus.FRESH].orEmpty().size,
-        frozenCount = byStatus[ExpiryStatus.FROZEN].orEmpty().size,
+        soonCount = byStatus[ExpiryStatus.SOON].orEmpty().productCount(),
+        freshCount = byStatus[ExpiryStatus.FRESH].orEmpty().productCount(),
+        frozenCount = byStatus[ExpiryStatus.FROZEN].orEmpty().productCount(),
         sections = sections,
         isPantryEmpty = entries.isEmpty(),
         upcoming = upcoming,

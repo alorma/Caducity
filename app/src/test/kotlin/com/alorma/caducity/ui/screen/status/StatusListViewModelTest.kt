@@ -158,14 +158,14 @@ class StatusListViewModelTest {
   private suspend fun StatusListViewModel.runUndo() = nextSnackbar().onAction!!.invoke()
 
   @Test
-  fun `rows join the units of a product that share a date and count units`() =
+  fun `rows join the units of a product that share a date and count products`() =
     runTest {
       category("dairy")
       add("Milk", days = -2, quantity = 3)
       add("Eggs", days = -2)
       val ready = viewModel(ExpiryStatus.EXPIRED).ready()
 
-      expectThat(ready.totalCount).isEqualTo(4)
+      expectThat(ready.totalCount).isEqualTo(2)
       val rows = ready.sections.single().rows
       expectThat(rows).hasSize(2)
       expectThat(rows.first { it.name == "Milk" }.unitCount).isEqualTo(3)
@@ -189,11 +189,11 @@ class StatusListViewModelTest {
       val snackbar = nextSnackbar()
       expectThat(db.itemDao().getAllItemsSync().count { it.consumedDate != null }).isEqualTo(1)
       expectThat(snackbar.messageArgs).containsExactly("Milk")
-      vm.ready { it.totalCount == 2 }
+      vm.ready { it.rows.single().unitCount == 2 }
 
       snackbar.onAction!!.invoke()
       expectThat(db.itemDao().getAllItemsSync().count { it.consumedDate != null }).isEqualTo(0)
-      expectThat(vm.ready { it.totalCount == 3 }.totalCount).isEqualTo(3)
+      expectThat(vm.ready { it.rows.single().unitCount == 3 }.totalCount).isEqualTo(1)
     }
 
   @Test
@@ -266,7 +266,7 @@ class StatusListViewModelTest {
     }
 
   @Test
-  fun `discard all asks for confirmation with every expired unit`() =
+  fun `discard all asks for confirmation counting expired products`() =
     runTest {
       category("dairy")
       add("Milk", days = -3, quantity = 2)
@@ -277,7 +277,7 @@ class StatusListViewModelTest {
       vm.onDiscardAllClick()
       val effect = withContext(Dispatchers.Default) { withTimeout(5_000) { vm.sideEffects.first() } }
 
-      expectThat(effect).isA<StatusListSideEffect.ShowDiscardConfirm>().get { unitCount }.isEqualTo(3)
+      expectThat(effect).isA<StatusListSideEffect.ShowDiscardConfirm>().get { productCount }.isEqualTo(2)
     }
 
   @Test
@@ -300,7 +300,7 @@ class StatusListViewModelTest {
       expectThat(db.itemDao().getAllItemsSync().all { it.discardedDate != null }).isTrue()
 
       snackbar.onAction!!.invoke()
-      expectThat(vm.ready { !it.isEmpty }.totalCount).isEqualTo(3)
+      expectThat(vm.ready { !it.isEmpty }.totalCount).isEqualTo(2)
     }
 
   @Test

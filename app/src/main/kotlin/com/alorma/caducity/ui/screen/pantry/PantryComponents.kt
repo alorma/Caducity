@@ -141,7 +141,7 @@ internal fun CategoryCard(
           overflow = TextOverflow.Ellipsis,
         )
         Text(
-          text = categoryMeta(entry.unitCount, entry.nearest, today),
+          text = categoryMeta(entry.productCount, entry.nearest, today),
           style = CaducityTheme.typography.bodySmall,
           color = CaducityTheme.colorScheme.onSurfaceVariant,
           maxLines = 2,

@@ -152,7 +152,7 @@ class HomeViewModelTest {
     }
 
   @Test
-  fun `units of the same product and day share one row and count as units`() =
+  fun `units of the same product and day share one row and count as one product`() =
     runTest {
       category("dairy")
       add("Milk", days = 1, quantity = 3)
@@ -164,9 +164,9 @@ class HomeViewModelTest {
       expectThat(data.sections).hasSize(1)
       val section = data.sections.single()
       expectThat(section.rows).hasSize(2)
-      expectThat(section.unitCount).isEqualTo(4)
+      expectThat(section.productCount).isEqualTo(2)
       expectThat(section.rows.first { it.name == "Milk" }.unitCount).isEqualTo(3)
-      expectThat(data.soonCount).isEqualTo(4)
+      expectThat(data.soonCount).isEqualTo(2)
     }
 
   @Test
@@ -251,6 +251,8 @@ class HomeViewModelTest {
         vm
           .ready {
             it.data.sections
+              .single()
+              .rows
               .single()
               .unitCount == 2
           }.data

@@ -147,7 +147,7 @@ class CategoryViewModel(
 
   fun onDeleteClick() {
     val current = state.value as? CategoryState.Ready ?: return
-    emitSideEffect(CategorySideEffect.ShowDeleteConfirm(current.data.category.name, current.data.unitCount))
+    emitSideEffect(CategorySideEffect.ShowDeleteConfirm(current.data.category.name, current.data.productCount))
   }
 
   fun onDeleteConfirmed() {

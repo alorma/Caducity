@@ -7,14 +7,14 @@ import com.alorma.caducity.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 
-/** «14 productes · propera, avui»: the units of a category and when the closest one expires. */
+/** «14 productes · propera, avui»: the products of a category and when the closest one expires. */
 @Composable
 fun categoryMeta(
-  unitCount: Int,
+  productCount: Int,
   nearest: LocalDate?,
   today: LocalDate,
 ): String {
-  val count = pluralStringResource(R.plurals.home_product_count, unitCount, unitCount)
+  val count = pluralStringResource(R.plurals.home_product_count, productCount, productCount)
   nearest ?: return count
   val relative =
     when (val days = today.daysUntil(nearest)) {

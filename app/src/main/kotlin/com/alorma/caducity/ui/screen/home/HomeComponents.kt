@@ -217,7 +217,7 @@ internal fun DaySectionHeader(
   modifier: Modifier = Modifier,
 ) {
   val days = today.daysUntil(section.date)
-  val count = pluralStringResource(R.plurals.home_product_count, section.unitCount, section.unitCount)
+  val count = pluralStringResource(R.plurals.home_product_count, section.productCount, section.productCount)
   val title =
     when (days) {
       0 -> stringResource(R.string.home_section_today)

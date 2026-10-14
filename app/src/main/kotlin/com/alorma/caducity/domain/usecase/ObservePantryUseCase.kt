@@ -8,6 +8,7 @@ import com.alorma.caducity.domain.model.PantryData
 import com.alorma.caducity.domain.model.PantrySearchResult
 import com.alorma.caducity.domain.model.STATUS_ORDER
 import com.alorma.caducity.domain.model.normalizeForSearch
+import com.alorma.caducity.domain.model.productCount
 import com.alorma.caducity.domain.model.toProductGroups
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -27,14 +28,14 @@ class ObservePantryUseCase(
       val byCategory = entries.groupBy { it.categoryId }
       PantryData(
         today = today,
-        totalUnits = entries.size,
+        totalProducts = entries.productCount(),
         categories =
           categories.map { category ->
             val units = byCategory[category.id].orEmpty()
-            val counts = units.groupingBy { it.status }.eachCount()
+            val counts = units.groupBy { it.status }.mapValues { (_, inStatus) -> inStatus.productCount() }
             PantryCategory(
               category = category,
-              unitCount = units.size,
+              productCount = units.productCount(),
               expiredCount = counts[ExpiryStatus.EXPIRED] ?: 0,
               statusCounts = STATUS_ORDER.mapNotNull { status -> counts[status]?.let { status to it } }.toMap(),
               nearest = units.filter { it.status != ExpiryStatus.FROZEN }.minOfOrNull { it.expiration },

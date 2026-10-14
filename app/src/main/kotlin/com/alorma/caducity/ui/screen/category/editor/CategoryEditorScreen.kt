@@ -276,7 +276,7 @@ private fun SideEffectHandler(
               dialogState.showAlertDialog(
                 title = { Text(stringResource(R.string.category_delete_title, effect.name)) },
                 content = {
-                  Text(pluralStringResource(R.plurals.category_delete_body, effect.unitCount, effect.unitCount))
+                  Text(pluralStringResource(R.plurals.category_delete_body, effect.productCount, effect.productCount))
                 },
                 positiveButton = { Text(stringResource(R.string.category_delete_confirm)) },
                 negativeButton = { Text(stringResource(R.string.category_delete_cancel)) },

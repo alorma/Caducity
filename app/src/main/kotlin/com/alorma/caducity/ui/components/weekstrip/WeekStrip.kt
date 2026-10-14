@@ -164,10 +164,10 @@ private fun ExpiryStatus.dotColor(): Color = colors().strong
 @Composable
 private fun dayDescription(day: WeekStripDay): String {
   val name = day.date.longName()
-  return if (day.unitCount == 0) {
+  return if (day.productCount == 0) {
     stringResource(R.string.week_strip_day_none, name)
   } else {
-    pluralStringResource(R.plurals.week_strip_day_count, day.unitCount, name, day.unitCount)
+    pluralStringResource(R.plurals.week_strip_day_count, day.productCount, name, day.productCount)
   }
 }
 

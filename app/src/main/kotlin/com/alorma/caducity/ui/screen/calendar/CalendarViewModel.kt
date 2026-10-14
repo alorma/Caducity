@@ -79,7 +79,11 @@ class CalendarViewModel(
           today = params.today,
           selected = params.selected,
           categoryName = args.categoryId?.let { categoriesById[it]?.name },
-          statusesByDate = byDate.mapValues { (_, units) -> units.map { it.status }.sortedBy { it.ordinal } },
+          // One status per product: the cell's dots and description count products, not units.
+          statusesByDate =
+            byDate.mapValues { (_, units) ->
+              units.distinctBy { it.groupKey }.map { it.status }.sortedBy { it.ordinal }
+            },
           rows =
             byDate[params.selected]
               .orEmpty()

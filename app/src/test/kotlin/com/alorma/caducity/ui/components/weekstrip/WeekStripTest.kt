@@ -35,13 +35,13 @@ class WeekStripTest {
   }
 
   @Test
-  fun `at most 3 dots per day but the unit count is kept`() {
+  fun `at most 3 dots per day but the product count is kept`() {
     val data = WeekStripData(today, mapOf(today to List(5) { ExpiryStatus.SOON }))
 
     val day = data.window(0).first()
 
     expectThat(day.dots).hasSize(3)
-    expectThat(day.unitCount).isEqualTo(5)
+    expectThat(day.productCount).isEqualTo(5)
   }
 
   @Test

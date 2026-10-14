@@ -223,7 +223,7 @@ private fun PantryHeader(
         text =
           stringResource(
             R.string.pantry_overline,
-            pluralStringResource(R.plurals.home_product_count, data.totalUnits, data.totalUnits),
+            pluralStringResource(R.plurals.home_product_count, data.totalProducts, data.totalProducts),
             pluralStringResource(R.plurals.pantry_category_count, data.categories.size, data.categories.size),
           ),
       )
@@ -244,7 +244,7 @@ private fun previewCategory(
   expired: Int,
 ) = PantryCategory(
   category = Category(id, name, "", shape, CategoryIcon(icon)),
-  unitCount = units,
+  productCount = units,
   expiredCount = expired,
   statusCounts =
     buildMap {
@@ -270,7 +270,7 @@ internal fun PantryPreviewContent() {
         data =
           PantryData(
             today = previewToday,
-            totalUnits = 61,
+            totalProducts = 61,
             categories =
               listOf(
                 previewCategory("dairy", "Làctics", CategoryShape.COOKIE, "water_full", 14, 1),

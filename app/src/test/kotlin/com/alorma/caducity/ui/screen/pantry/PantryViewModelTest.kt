@@ -143,7 +143,7 @@ class PantryViewModelTest {
     }
 
   @Test
-  fun `categories follow sortOrder and carry unit and expired counts`() =
+  fun `categories follow sortOrder and carry product and expired counts`() =
     runTest {
       category("pantry", sortOrder = 1)
       category("dairy", sortOrder = 0)
@@ -154,9 +154,9 @@ class PantryViewModelTest {
 
       expectThat(data.categories.map { it.category.id }).containsExactly("dairy", "pantry")
       val dairy = data.categories.first()
-      expectThat(dairy.unitCount).isEqualTo(4)
+      expectThat(dairy.productCount).isEqualTo(2)
       expectThat(dairy.expiredCount).isEqualTo(1)
-      expectThat(data.totalUnits).isEqualTo(4)
+      expectThat(data.totalProducts).isEqualTo(2)
     }
 
   @Test

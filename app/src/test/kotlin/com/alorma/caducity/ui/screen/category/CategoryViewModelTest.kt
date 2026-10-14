@@ -229,7 +229,7 @@ class CategoryViewModelTest {
 
       val state = viewModel().ready()
 
-      expectThat(state.data.unitCount).isEqualTo(1)
+      expectThat(state.data.productCount).isEqualTo(1)
       expectThat(
         state.weekStrip.statusesByDate[inDays(2)]
           .orEmpty()
@@ -271,7 +271,15 @@ class CategoryViewModelTest {
 
       vm.onConsume(row)
 
-      expectThat(vm.ready { it.data.unitCount == 1 }.data.unitCount).isEqualTo(1)
+      val after =
+        vm.ready {
+          it.data.sections
+            .single()
+            .groups
+            .single()
+            .unitCount == 1
+        }
+      expectThat(after.data.productCount).isEqualTo(1)
     }
 
   @Test

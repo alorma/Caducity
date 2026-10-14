@@ -59,9 +59,9 @@ internal fun CategoryPreviewContent() {
     CategoryData(
       today = today,
       category = category,
-      unitCount = sections.sumOf { it.unitCount },
+      productCount = sections.sumOf { it.productCount },
       nearest = today,
-      statusCounts = sections.associate { it.status to it.unitCount },
+      statusCounts = sections.associate { it.status to it.productCount },
       sections = sections,
     )
   val state =

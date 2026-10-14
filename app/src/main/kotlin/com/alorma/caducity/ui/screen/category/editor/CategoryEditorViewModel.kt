@@ -150,8 +150,14 @@ class CategoryEditorViewModel(
     val id = categoryId ?: return
     val name = categories.firstOrNull { it.id == id }?.name ?: _state.value.name
     viewModelScope.launch {
-      val unitCount = pantryDataSource.observeActiveItems().first().count { it.categoryId == id }
-      emitSideEffect(CategoryEditorSideEffect.ShowDeleteConfirm(name, unitCount))
+      val productCount =
+        pantryDataSource
+          .observeActiveItems()
+          .first()
+          .filter { it.categoryId == id }
+          .distinctBy { it.productId ?: it.name.normalizeForSearch() }
+          .size
+      emitSideEffect(CategoryEditorSideEffect.ShowDeleteConfirm(name, productCount))
     }
   }
 

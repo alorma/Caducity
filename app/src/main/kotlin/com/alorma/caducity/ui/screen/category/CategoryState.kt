@@ -84,7 +84,7 @@ sealed interface CategoryNavigationSideEffect {
 sealed interface CategorySideEffect {
   data class ShowDeleteConfirm(
     val name: String,
-    val unitCount: Int,
+    val productCount: Int,
   ) : CategorySideEffect
 
   data object DeleteFailed : CategorySideEffect

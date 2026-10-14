@@ -289,7 +289,7 @@ class CalendarViewModelTest {
     }
 
   @Test
-  fun `grid dots and the day list come from the same units for every day, today included`() =
+  fun `grid dots and the day list come from the same products for every day, today included`() =
     runTest {
       category("dairy")
       add("Past", days = -2)
@@ -302,8 +302,8 @@ class CalendarViewModelTest {
       month.statusesByDate.forEach { (date, statuses) ->
         vm.onDayClick(date)
         val day = vm.ready { it.selected == date }
-        expectThat(day.rows.sumOf { it.unitCount }).isEqualTo(statuses.size)
+        expectThat(day.rows.size).isEqualTo(statuses.size)
       }
-      expectThat(month.statusesByDate.getValue(today)).hasSize(2)
+      expectThat(month.statusesByDate.getValue(today)).hasSize(1)
     }
 }

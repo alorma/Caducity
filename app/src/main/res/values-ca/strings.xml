@@ -169,9 +169,9 @@
     <item quantity="other">%d unitats</item>
   </plurals>
   <plurals name="transform_result_frozen_chip">
-    <item quantity="one">%d congelat</item>
-    <item quantity="many">%d congelats</item>
-    <item quantity="other">%d congelats</item>
+    <item quantity="one">%d congelada</item>
+    <item quantity="many">%d congelades</item>
+    <item quantity="other">%d congelades</item>
   </plurals>
   <string name="transform_title">Transforma</string>
   <string name="transform_section_ingredients">Ingredients</string>
@@ -381,10 +381,10 @@
   <string name="category_day_clear">Treu el filtre del dia</string>
   <string name="category_day_empty">Res de %s caduca aquest dia.</string>
   <string name="category_unit_of">Unitat %1$d de %2$d · %3$s</string>
-  <plurals name="category_day_units">
-    <item quantity="one">%d unitat caduca aquest dia</item>
-    <item quantity="many">%d unitats caduquen aquest dia</item>
-    <item quantity="other">%d unitats caduquen aquest dia</item>
+  <plurals name="category_day_products">
+    <item quantity="one">%d producte caduca aquest dia</item>
+    <item quantity="many">%d productes caduquen aquest dia</item>
+    <item quantity="other">%d productes caduquen aquest dia</item>
   </plurals>
   <string name="status_title_expired">Caducats</string>
   <string name="status_title_soon">Aviat</string>

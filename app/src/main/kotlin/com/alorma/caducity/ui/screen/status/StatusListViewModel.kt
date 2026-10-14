@@ -79,7 +79,7 @@ class StatusListViewModel(
   fun onDiscardAllClick() {
     val ready = state.value as? StatusListState.Ready ?: return
     val ids = ready.rows.flatMap { it.itemIds }
-    if (ids.isNotEmpty()) emitSideEffect(StatusListSideEffect.ShowDiscardConfirm(ids, ids.size))
+    if (ids.isNotEmpty()) emitSideEffect(StatusListSideEffect.ShowDiscardConfirm(ids, ready.totalCount))
   }
 
   fun onDiscardConfirmed(itemIds: List<String>) {
