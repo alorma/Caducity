@@ -14,10 +14,13 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,14 +31,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.CheckCircle
 import com.alorma.caducity.base.ui.icons.symbols.NotificationsActive
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
-import com.alorma.caducity.ui.components.button.ConnectedButtonGroup
-import com.alorma.caducity.ui.components.button.ConnectedButtonOption
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
 import com.alorma.caducity.ui.components.connected.ConnectedRow
 import com.alorma.caducity.ui.components.motion.Reveal
@@ -119,15 +121,27 @@ fun AlertsStep(
               color = CaducityTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(Modifier.size(12.dp))
-            ConnectedButtonGroup(
-              options =
-                THRESHOLD_OPTIONS.map { days ->
-                  ConnectedButtonOption(label = thresholdLabel(days))
-                },
-              selectedIndex = THRESHOLD_OPTIONS.indexOf(thresholdDays),
-              onClick = { onThresholdChange(THRESHOLD_OPTIONS[it]) },
-              height = 48.dp,
-            )
+            Row(
+              modifier = Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+            ) {
+              THRESHOLD_OPTIONS.forEachIndexed { index, days ->
+                ToggleButton(
+                  checked = days == thresholdDays,
+                  onCheckedChange = { onThresholdChange(days) },
+                  modifier = Modifier.weight(1f).semantics { role = Role.RadioButton },
+                  shapes =
+                    when (index) {
+                      0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                      THRESHOLD_OPTIONS.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                      else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                    },
+                  colors = ToggleButtonDefaults.colors(containerColor = CaducityTheme.colorScheme.surfaceContainerHigh),
+                ) {
+                  Text(thresholdLabel(days), maxLines = 2, textAlign = TextAlign.Center)
+                }
+              }
+            }
             Spacer(Modifier.size(12.dp))
             Text(
               text = stringResource(R.string.ob_alerts_default_help),

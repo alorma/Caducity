@@ -2,15 +2,20 @@ package com.alorma.caducity.ui.screen.add
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,8 +30,6 @@ import com.alorma.caducity.base.ui.icons.symbols.AcUnit
 import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.usecase.AddProductUseCase
-import com.alorma.caducity.ui.components.button.ConnectedButtonSpacing
-import com.alorma.caducity.ui.components.button.connectedButtonShape
 import com.alorma.caducity.ui.theme.CaducityTheme
 
 /** Connected group of 64 dp: quantity stepper and the «Congelat» toggle. */
@@ -40,10 +43,10 @@ fun QuantityFrozenRow(
 ) {
   Row(
     modifier = modifier.fillMaxWidth().height(64.dp),
-    horizontalArrangement = Arrangement.spacedBy(ConnectedButtonSpacing),
+    horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
   ) {
     Surface(
-      shape = connectedButtonShape(0, 2),
+      shape = ButtonGroupDefaults.connectedLeadingButtonShape,
       color = CaducityTheme.colorScheme.surfaceContainerHigh,
       modifier = Modifier.weight(2f).height(64.dp),
     ) {
@@ -81,22 +84,23 @@ fun QuantityFrozenRow(
       }
     }
     val frozenColors = CaducityTheme.colors.frozen
-    Surface(
+    ToggleButton(
       checked = frozen,
       onCheckedChange = onFrozenChange,
-      shape = connectedButtonShape(1, 2),
-      color = if (frozen) frozenColors.container else CaducityTheme.colorScheme.surfaceContainerHigh,
-      contentColor = if (frozen) frozenColors.onContainer else CaducityTheme.colorScheme.onSurface,
       modifier = Modifier.weight(1f).height(64.dp),
+      shapes = ButtonGroupDefaults.connectedTrailingButtonShapes(),
+      colors =
+        ToggleButtonDefaults.colors(
+          containerColor = CaducityTheme.colorScheme.surfaceContainerHigh,
+          contentColor = CaducityTheme.colorScheme.onSurface,
+          checkedContainerColor = frozenColors.container,
+          checkedContentColor = frozenColors.onContainer,
+        ),
+      contentPadding = PaddingValues(horizontal = 8.dp),
     ) {
-      Row(
-        modifier = Modifier.padding(horizontal = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Icon(Symbols.Outlined.AcUnit, contentDescription = null, modifier = Modifier.size(20.dp))
-        Text(stringResource(R.string.add_frozen), style = CaducityTheme.typography.labelLarge, maxLines = 1)
-      }
+      Icon(Symbols.Outlined.AcUnit, contentDescription = null, modifier = Modifier.size(20.dp))
+      Spacer(Modifier.width(6.dp))
+      Text(stringResource(R.string.add_frozen), maxLines = 1)
     }
   }
 }

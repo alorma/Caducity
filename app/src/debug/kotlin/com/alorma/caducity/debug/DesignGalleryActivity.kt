@@ -11,8 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonGroupDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -38,8 +43,6 @@ import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.WaterFull
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.ExpiryStatus
-import com.alorma.caducity.ui.components.button.ConnectedButtonGroup
-import com.alorma.caducity.ui.components.button.ConnectedButtonOption
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.chips.FilterChipOption
 import com.alorma.caducity.ui.components.chips.FilterChips
@@ -89,11 +92,10 @@ private fun Gallery(onToggleDark: () -> Unit) {
         .padding(20.dp),
     verticalArrangement = Arrangement.spacedBy(20.dp),
   ) {
-    ConnectedButtonGroup(
-      options = listOf(ConnectedButtonOption("Clar"), ConnectedButtonOption("Fosc")),
-      selectedIndex = null,
-      onClick = { onToggleDark() },
-    )
+    Row(horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)) {
+      Button(onClick = onToggleDark, shape = ButtonGroupDefaults.connectedLeadingButtonShape) { Text("Clar") }
+      Button(onClick = onToggleDark, shape = ButtonGroupDefaults.connectedTrailingButtonShape) { Text("Fosc") }
+    }
     Section("Tipografia")
     Text("Què caduca", style = type.displaySmall)
     Text("Rebost", style = type.headlineLarge)
@@ -143,25 +145,41 @@ private fun Gallery(onToggleDark: () -> Unit) {
 
     Section("Grup de botons")
     var group by remember { mutableIntStateOf(0) }
-    ConnectedButtonGroup(
-      options = listOf(ConnectedButtonOption("Avui"), ConnectedButtonOption("Demà"), ConnectedButtonOption("Setmana")),
-      selectedIndex = group,
-      onClick = { group = it },
-    )
-    ConnectedButtonGroup(
-      options =
-        listOf(
-          ConnectedButtonOption("Consumit", Symbols.Outlined.Check),
-          ConnectedButtonOption(
-            "Congela",
-            Symbols.Outlined.AcUnit,
-            container = CaducityTheme.colors.frozen.container,
-            content = CaducityTheme.colors.frozen.onContainer,
+    val groupOptions = listOf("Avui", "Demà", "Setmana")
+    Row(horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)) {
+      groupOptions.forEachIndexed { index, label ->
+        ToggleButton(
+          checked = group == index,
+          onCheckedChange = { group = index },
+          modifier = Modifier.weight(1f),
+          shapes =
+            when (index) {
+              0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+              groupOptions.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+              else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+            },
+        ) { Text(label) }
+      }
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)) {
+      Button(onClick = {}, modifier = Modifier.weight(1f), shape = ButtonGroupDefaults.connectedLeadingButtonShape) {
+        Icon(Symbols.Outlined.Check, contentDescription = null)
+        Text("Consumit")
+      }
+      Button(
+        onClick = {},
+        modifier = Modifier.weight(1f),
+        shape = ButtonGroupDefaults.connectedTrailingButtonShape,
+        colors =
+          ButtonDefaults.buttonColors(
+            containerColor = CaducityTheme.colors.frozen.container,
+            contentColor = CaducityTheme.colors.frozen.onContainer,
           ),
-        ),
-      selectedIndex = null,
-      onClick = {},
-    )
+      ) {
+        Icon(Symbols.Outlined.AcUnit, contentDescription = null)
+        Text("Congela")
+      }
+    }
 
     Section("Xips")
     var chip by remember { mutableIntStateOf(0) }
