@@ -3,6 +3,8 @@ package com.alorma.caducity.ui.screen.settings.debug
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.PopulateFakeDataUseCase
+import com.alorma.caducity.domain.usecase.fakedata.FakeDataStrategy
+import com.alorma.caducity.domain.usecase.fakedata.FakeShowcaseDataStrategy
 import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
 import com.alorma.caducity.feature.consent.ConsentManager
 import com.alorma.caducity.feature.consent.ConsentStatus
@@ -21,6 +23,7 @@ class DebugSettingsViewModel(
   private val notificationDebugHelper: NotificationDebugHelper,
   private val populateFakeDataUseCase: PopulateFakeDataUseCase,
   private val fakeTestDataStrategy: FakeTestDataStrategy,
+  private val fakeShowcaseDataStrategy: FakeShowcaseDataStrategy,
   private val consentManager: ConsentManager,
   private val getActiveItem: GetActiveItemUseCase,
 ) : BaseViewModel<Unit, DebugSettingsSideEffect, DebugSettingsSideEffect>() {
@@ -28,6 +31,7 @@ class DebugSettingsViewModel(
     MutableStateFlow(
       DebugSettingsUiState(
         onPopulateFakeData = ::onPopulateFakeData,
+        onPopulateShowcaseData = ::onPopulateShowcaseData,
         onOpenTransform = ::onOpenTransform,
         onOpenTransformFree = ::onOpenTransformFree,
         onTriggerNotificationCheck = ::onTriggerNotificationCheck,
@@ -47,11 +51,16 @@ class DebugSettingsViewModel(
     notificationDebugHelper.triggerImmediateCheck()
   }
 
-  fun onPopulateFakeData() {
+  fun onPopulateFakeData() = populate(fakeTestDataStrategy)
+
+  /** The pantry of the Play screenshots (spec §12). */
+  fun onPopulateShowcaseData() = populate(fakeShowcaseDataStrategy)
+
+  private fun populate(strategy: FakeDataStrategy) {
     viewModelScope.launch {
       _uiState.value = _uiState.value.copy(isGenerating = true)
 
-      val result = populateFakeDataUseCase.execute(fakeTestDataStrategy)
+      val result = populateFakeDataUseCase.execute(strategy)
 
       result.fold(
         onSuccess = {
@@ -139,6 +148,7 @@ data class DebugSettingsUiState(
   val adUserDataEnabled: Boolean = false,
   val adPersonalizationEnabled: Boolean = false,
   val onPopulateFakeData: () -> Unit,
+  val onPopulateShowcaseData: () -> Unit,
   val onOpenTransform: () -> Unit,
   val onOpenTransformFree: () -> Unit,
   val onTriggerNotificationCheck: () -> Unit,

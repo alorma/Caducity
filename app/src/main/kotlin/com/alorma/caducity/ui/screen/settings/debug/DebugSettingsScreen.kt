@@ -123,6 +123,13 @@ private fun DebugSettingsContent(
               onClick = { uiState.onPopulateFakeData() },
               enabled = !uiState.isGenerating,
             )
+            StyledSettingsCard(
+              title = "Populate screenshot data",
+              subtitle = "Clear all data and create the 61 products of the Play screenshots («Aviat» = 3 days)",
+              shapes = ListItemDefaults.shapes(),
+              onClick = { uiState.onPopulateShowcaseData() },
+              enabled = !uiState.isGenerating,
+            )
           }
         }
 
@@ -227,6 +234,7 @@ fun DebugSettingsScreenPreview() {
             adUserDataEnabled = true,
             adPersonalizationEnabled = true,
             onPopulateFakeData = {},
+            onPopulateShowcaseData = {},
             onOpenTransform = {},
             onOpenTransformFree = {},
             onTriggerNotificationCheck = {},

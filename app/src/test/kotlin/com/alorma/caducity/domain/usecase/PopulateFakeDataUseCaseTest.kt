@@ -15,6 +15,8 @@ import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
+import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.usecase.fakedata.FakeShowcaseDataStrategy
 import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
@@ -141,5 +143,48 @@ class PopulateFakeDataUseCaseTest {
       val produced = db.itemDao().getAllItemsSync().filter { it.originTransformationId != null }
       expectThat(produced).isNotEmpty()
       expectThat(produced.all { it.id in live }).isEqualTo(true)
+    }
+
+  @Test
+  fun `showcase data is the pantry of spec 12 with soon at 3 days`() =
+    runTest {
+      expectThat(populate.execute(FakeShowcaseDataStrategy())).isSuccess()
+
+      val categories = db.categoryDao().getCategoriesOrderedSync()
+      expectThat(categories.map { it.name }).containsExactly(
+        "Làctics",
+        "Fruita i verdura",
+        "Carn i peix",
+        "Secs i conserves",
+        "Fleca",
+        "Plats preparats",
+      )
+      expectThat(categories.all { it.usualDurationDays != null }).isEqualTo(true)
+
+      val today = clock.nowDate()
+      val items = db.itemDao().getAllItemsSync()
+      val statusByProduct =
+        items.groupBy { it.productId!! }.mapValues { (_, units) ->
+          val unit = units.first()
+          ExpiryStatus.of(
+            expiry = Instant.fromEpochMilliseconds(unit.expirationDate).date(),
+            today = today,
+            thresholdDays = 3,
+            frozen = unit.pausedDate != null,
+          )
+        }
+      val productsPerStatus = statusByProduct.values.groupingBy { it }.eachCount()
+      expectThat(statusByProduct.size).isEqualTo(61)
+      expectThat(productsPerStatus).isEqualTo(
+        mapOf(ExpiryStatus.EXPIRED to 7, ExpiryStatus.SOON to 8, ExpiryStatus.FRESH to 43, ExpiryStatus.FROZEN to 3),
+      )
+      // Frozen on 28 September and 4 October.
+      expectThat(
+        items
+          .mapNotNull { it.pausedDate }
+          .map { Instant.fromEpochMilliseconds(it).date() }
+          .distinct()
+          .sorted(),
+      ).containsExactly(LocalDate(2026, 9, 28), LocalDate(2026, 10, 4))
     }
 }

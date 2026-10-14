@@ -69,6 +69,7 @@ class PopulateFakeDataUseCase(
           remainingDaysWhenFrozen: Int,
           shouldConsume: Boolean,
           shouldTransform: Boolean = false,
+          frozenDaysAgo: Int = 0,
         ): String? {
           val newItem =
             NewItem(
@@ -78,7 +79,8 @@ class PopulateFakeDataUseCase(
             )
           val itemId = itemDataSource.addItem(category.id, newItem)
           when {
-            shouldFreeze -> itemDataSource.freezeItem(itemId, remainingDays = remainingDaysWhenFrozen)
+            shouldFreeze ->
+              itemDataSource.freezeItem(itemId, remainingDaysWhenFrozen, frozenAt = now - frozenDaysAgo.days)
             shouldConsume -> itemDataSource.markItemAsConsumed(itemId)
           }
           return itemId.takeIf { shouldTransform }
@@ -95,6 +97,7 @@ class PopulateFakeDataUseCase(
                 item.remainingDaysWhenFrozen,
                 item.shouldConsume,
                 item.shouldTransform,
+                item.frozenDaysAgo,
               )
             }
           if (ingredientIds.isNotEmpty()) {

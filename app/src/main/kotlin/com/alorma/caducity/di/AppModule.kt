@@ -234,6 +234,7 @@ val appModule =
         notificationDebugHelper = get(),
         populateFakeDataUseCase = get(),
         fakeTestDataStrategy = get(),
+        fakeShowcaseDataStrategy = get(),
         consentManager = get(),
         getActiveItem = get(),
       )

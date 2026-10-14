@@ -46,6 +46,8 @@ data class ItemConfig(
   val expirationDate: Instant,
   val shouldFreeze: Boolean = false,
   val remainingDaysWhenFrozen: Int = 5,
+  /** Days since it went into the freezer (0 = today). */
+  val frozenDaysAgo: Int = 0,
   val shouldConsume: Boolean = false,
   /** Used as an ingredient of a Transforma: must disappear from every live view. */
   val shouldTransform: Boolean = false,

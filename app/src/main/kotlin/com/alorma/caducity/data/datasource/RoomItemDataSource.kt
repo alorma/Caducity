@@ -8,6 +8,7 @@ import com.alorma.caducity.domain.model.Item
 import com.alorma.caducity.domain.model.NewItem
 import java.util.UUID
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -52,11 +53,12 @@ class RoomItemDataSource(
   override suspend fun freezeItem(
     itemId: String,
     remainingDays: Int,
+    frozenAt: Instant?,
   ) {
     itemDao.getItem(itemId)?.let { item ->
       val updatedItem =
         item.copy(
-          pausedDate = appClock.now().toEpochMilliseconds(),
+          pausedDate = (frozenAt ?: appClock.now()).toEpochMilliseconds(),
           remainingDays = remainingDays,
         )
       itemDao.updateItem(updatedItem)
