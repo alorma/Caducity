@@ -3,25 +3,22 @@ package com.alorma.caducity.ui.screen.onboarding.steps
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
@@ -70,33 +67,27 @@ fun PrivacyStep(
     Spacer(Modifier.size(24.dp))
     Reveal(delayMillis = 360, modifier = Modifier.fillMaxWidth()) {
       Column {
-        Surface(
-          shape = RoundedCornerShape(24.dp),
-          color = CaducityTheme.colorScheme.surfaceContainer,
-          modifier =
-            Modifier
-              .fillMaxWidth()
-              .clip(RoundedCornerShape(24.dp))
-              .toggleable(value = analyticsEnabled, role = Role.Switch, onValueChange = onAnalyticsChange),
+        SegmentedListItem(
+          checked = analyticsEnabled,
+          onCheckedChange = onAnalyticsChange,
+          shapes = ListItemDefaults.segmentedShapes(0, 1),
+          colors = connectedRowColors(),
+          modifier = Modifier.fillMaxWidth().semantics { role = Role.Switch },
+          contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+          supportingContent = {
+            Text(
+              text = stringResource(R.string.ob_privacy_analytics_sub),
+              style = CaducityTheme.typography.bodySmall,
+              color = CaducityTheme.colorScheme.onSurfaceVariant,
+            )
+          },
+          trailingContent = { CaducitySwitch(checked = analyticsEnabled, onCheckedChange = null) },
         ) {
-          Row(
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-          ) {
-            Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
-              Text(
-                text = stringResource(R.string.ob_privacy_analytics),
-                style = CaducityTheme.typography.bodyLarge,
-                color = CaducityTheme.colorScheme.onSurface,
-              )
-              Text(
-                text = stringResource(R.string.ob_privacy_analytics_sub),
-                style = CaducityTheme.typography.bodySmall,
-                color = CaducityTheme.colorScheme.onSurfaceVariant,
-              )
-            }
-            CaducitySwitch(checked = analyticsEnabled, onCheckedChange = null)
-          }
+          Text(
+            text = stringResource(R.string.ob_privacy_analytics),
+            style = CaducityTheme.typography.bodyLarge,
+            color = CaducityTheme.colorScheme.onSurface,
+          )
         }
         Text(
           text = stringResource(R.string.ob_privacy_default_off),

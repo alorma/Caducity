@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -22,10 +21,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -109,12 +109,9 @@ private fun CategoryCard(
   )
   val iconScale by animateFloatAsState(if (checked) 1f else 0.92f, label = "icon")
   Surface(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .height(104.dp)
-        .clip(RoundedCornerShape(24.dp))
-        .toggleable(value = checked, role = Role.Checkbox, onValueChange = onCheckedChange),
+    checked = checked,
+    onCheckedChange = onCheckedChange,
+    modifier = modifier.fillMaxWidth().height(104.dp).semantics { role = Role.Checkbox },
     shape = RoundedCornerShape(24.dp),
     color = container,
     border = BorderStroke(2.dp, border),

@@ -15,4 +15,10 @@ val ConnectedListSpacing: Dp = ListItemDefaults.SegmentedGap
 fun connectedRowColors(
   containerColor: Color = CaducityTheme.colorScheme.surfaceContainer,
   contentColor: Color = CaducityTheme.colorScheme.onSurface,
-): ListItemColors = ListItemDefaults.segmentedColors(containerColor = containerColor, contentColor = contentColor)
+): ListItemColors =
+  ListItemDefaults.segmentedColors(
+    containerColor = containerColor,
+    contentColor = contentColor,
+    selectedContainerColor = containerColor,
+    selectedContentColor = contentColor,
+  )

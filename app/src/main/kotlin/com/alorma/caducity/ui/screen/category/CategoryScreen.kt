@@ -1,7 +1,6 @@
 package com.alorma.caducity.ui.screen.category
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +20,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.InputChip
+import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -37,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -482,38 +482,31 @@ private fun DayFilter(
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(12.dp),
   ) {
-    Row(
-      modifier =
-        Modifier
-          .height(36.dp)
-          .clip(CaducityShapes.chip)
-          .background(CaducityTheme.colorScheme.primary)
-          .clickable(
-            onClickLabel = stringResource(R.string.category_day_clear),
-            role = Role.Button,
-            onClick = onClear,
-          ).padding(start = 12.dp, end = 8.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-      Icon(
-        Symbols.Outlined.Event,
-        contentDescription = null,
-        tint = CaducityTheme.colorScheme.onPrimary,
-        modifier = Modifier.size(18.dp),
-      )
-      Text(
-        text = day.weekdayDayText().capitalizeFirst(),
-        style = CaducityTheme.typography.labelLarge,
-        color = CaducityTheme.colorScheme.onPrimary,
-      )
-      Icon(
-        Symbols.Outlined.Close,
-        contentDescription = stringResource(R.string.category_day_clear),
-        tint = CaducityTheme.colorScheme.onPrimary,
-        modifier = Modifier.padding(start = 2.dp).size(18.dp),
-      )
-    }
+    InputChip(
+      selected = true,
+      onClick = onClear,
+      shape = CaducityShapes.chip,
+      colors =
+        InputChipDefaults.inputChipColors(
+          selectedContainerColor = CaducityTheme.colorScheme.primary,
+          selectedLabelColor = CaducityTheme.colorScheme.onPrimary,
+          selectedLeadingIconColor = CaducityTheme.colorScheme.onPrimary,
+          selectedTrailingIconColor = CaducityTheme.colorScheme.onPrimary,
+        ),
+      border = null,
+      modifier = Modifier.height(36.dp),
+      label = {
+        Text(text = day.weekdayDayText().capitalizeFirst(), style = CaducityTheme.typography.labelLarge)
+      },
+      leadingIcon = { Icon(Symbols.Outlined.Event, contentDescription = null, modifier = Modifier.size(18.dp)) },
+      trailingIcon = {
+        Icon(
+          Symbols.Outlined.Close,
+          contentDescription = stringResource(R.string.category_day_clear),
+          modifier = Modifier.size(18.dp),
+        )
+      },
+    )
     Text(
       text = pluralStringResource(R.plurals.category_day_units, unitCount, unitCount),
       style = CaducityTheme.typography.bodyMedium,

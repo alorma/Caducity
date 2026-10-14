@@ -6,7 +6,6 @@ import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -21,6 +20,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -34,14 +35,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CollectionInfo
 import androidx.compose.ui.semantics.CollectionItemInfo
 import androidx.compose.ui.semantics.CustomAccessibilityAction
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.collectionInfo
 import androidx.compose.ui.semantics.collectionItemInfo
 import androidx.compose.ui.semantics.contentDescription
@@ -197,9 +196,15 @@ private fun ResultItem(
   val nextLabel = stringResource(R.string.transform_result_next)
   // A folded card has the border of its line, with the same opacity: the further from the middle, the fainter.
   val lineAlpha by resultLineAlpha(listState, index)
-  Surface(
+  Card(
+    onClick = { actions.onSelect(result.id) },
+    enabled = !selected,
     shape = RowCardShape,
-    color = CaducityTheme.colorScheme.surfaceContainer,
+    colors =
+      CardDefaults.cardColors(
+        containerColor = CaducityTheme.colorScheme.surfaceContainer,
+        disabledContainerColor = CaducityTheme.colorScheme.surfaceContainer,
+      ),
     border =
       BorderStroke(
         2.dp,
@@ -213,9 +218,6 @@ private fun ResultItem(
         // Folded, the card is its final height from the first frame (the form is still fading out inside it), so the
         // size animation goes from the form to the small card in one go instead of waiting for the form to leave.
         .then(if (selected) Modifier else Modifier.height(ResultCardHeight))
-        // The ripple and the hit area follow the shape of the card.
-        .clip(RowCardShape)
-        .clickable(enabled = !selected, role = Role.Button) { actions.onSelect(result.id) }
         .semantics {
           this.selected = selected
           collectionItemInfo = CollectionItemInfo(rowIndex = 0, rowSpan = 1, columnIndex = index, columnSpan = 1)
