@@ -27,6 +27,7 @@ Transforma is on for everyone (the `transform_enabled` flag is gone). What is le
 - **Review the ca/es translations**: not reviewed by a native reader.
 - **Large font on more screens**: the scale is capped in some places only.
 - **Clean install and upgrade walk-through with the release build**: clean install, and update from 0.9 (Room v2 → v3 → v4 and `PreferencesMigrator`) with no crashes, and from the last release (v3 → v4, the Transforma columns and table). Take a backup before.
+- **Baseline profile**: the app has none (no `baselineprofile` module, no `profileinstaller`). A Perfetto trace of a cold start on the debug build (14 October) showed ~0.6 s in `bindApplication` and ~1.9 s of Compose `measure`/`recompose` over the first two frames, with 60+ skipped frames. A baseline profile (and `profileinstaller`) is the standard fix; measure the release build before and after.
 - **Real Play screenshots**: the current ones are design mockups. Google Play expects screenshots of the real app.
 - **Legal text**: the privacy policy and the notice (`privacy_policy.md`, `terms_and_conditions.md`, the onboarding notice, the pages on converses.app) have not been reviewed by a lawyer. If the text changes, bump `DisclaimerPreferences.CURRENT_VERSION` so everyone accepts it again.
 

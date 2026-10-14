@@ -567,7 +567,9 @@ class ObserveUseCasesTest {
       weekStrip.observe().test {
         expectThat(awaitItem().statusesByDate.keys.toList()).containsExactly(inDays(0), inDays(3))
         todayFlow.value = inDays(1)
-        val next = awaitItem()
+        // The pipeline runs on another dispatcher: a stale emission may still be queued before the new day's one.
+        var next = awaitItem()
+        while (next.today != inDays(1)) next = awaitItem()
         expectThat(next.today).isEqualTo(inDays(1))
         expectThat(next.statusesByDate.keys.toList()).containsExactly(inDays(3))
         cancelAndIgnoreRemainingEvents()

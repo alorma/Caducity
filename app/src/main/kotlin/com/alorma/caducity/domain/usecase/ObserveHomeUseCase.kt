@@ -9,8 +9,10 @@ import com.alorma.caducity.domain.model.HomeRow
 import com.alorma.caducity.domain.model.PantryEntry
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.model.sortedNearestFirst
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.datetime.daysUntil
 
 /** «Què caduca»: counters per status and one row per (product, day) for the units that are about to expire. */
@@ -54,7 +56,7 @@ class ObserveHomeUseCase(
         sections = sections,
         isPantryEmpty = entries.isEmpty(),
       )
-    }
+    }.flowOn(Dispatchers.Default)
 
   private fun toRow(
     units: List<PantryEntry>,

@@ -5,8 +5,10 @@ import com.alorma.caducity.domain.PantryDataSource
 import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.PantryEntry
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.datetime.LocalDate
 
 /**
@@ -25,7 +27,7 @@ class ObserveItemsUseCase(
       todayProvider.observe(),
     ) { items, soonDays, today ->
       items.map { it.toEntry(today, soonDays) }
-    }
+    }.flowOn(Dispatchers.Default)
 
   private fun ActiveItem.toEntry(
     today: LocalDate,
