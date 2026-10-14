@@ -18,19 +18,15 @@ a{color:#2E6B3B}a:hover{color:#10300F}
 </helmet>
 <div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFAEE; font-family: 'Figtree', sans-serif; color: #2B2418">
 
-  <div style="padding: 16px 20px 24px; border-radius: 0 0 32px 32px; background: #F8E2AE; color: #5C3F00; display: flex; flex-direction: column; gap: 12px">
-    <a href="Main.dc.html" aria-label="Torna" style="width: 48px; height: 48px; margin-left: -8px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #5C3F00; text-decoration: none"><span class="ms" style="font-size: 24px">arrow_back</span></a>
-    <div>
-      <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase">9 productes</div>
-      <h1 style="margin: 6px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 44px; font-weight: 800; font-stretch: 80%; line-height: 1">Aviat</h1>
-      <p style="margin: 8px 0 0; font-size: 15px; line-height: 1.4">Caduquen en els pròxims 3 dies. Fes-los servir primer.</p>
-    </div>
-    <div style="display: flex; gap: 8px; margin-top: 4px">
-      <button style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 18px; border: 1px solid #5C3F00; border-radius: 24px; background: transparent; color: #5C3F00; font-family: 'Figtree', sans-serif; font-size: 15px; font-weight: 700"><span class="ms" style="font-size: 22px">checklist</span>Selecciona</button>
+  <div role="banner" style="height: 72px; box-sizing: border-box; padding: 12px 16px 12px 4px; border-radius: 0 0 24px 24px; background: #F8E2AE; color: #5C3F00; display: flex; align-items: center; gap: 4px">
+    <a href="Main.dc.html" aria-label="Torna" style="width: 48px; height: 48px; flex: none; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #5C3F00; text-decoration: none"><span class="ms" style="font-size: 24px">arrow_back</span></a>
+    <div style="flex: 1; min-width: 0">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 800; font-stretch: 80%; line-height: 1.05">Aviat</h1>
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-top: 2px">8 productes · pròxims 3 dies</div>
     </div>
   </div>
 
-  <div style="padding: 20px 20px 40px; display: flex; flex-direction: column; gap: 18px">
+  <div style="padding: 16px 20px 40px; display: flex; flex-direction: column; gap: 18px">
     <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
       <div style="display: flex; flex-direction: column; gap: 8px">
         <div style="display: flex; align-items: center; gap: 10px; padding: 0 4px">
@@ -48,7 +44,7 @@ a{color:#2E6B3B}a:hover{color:#10300F}
                 <div style="font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</div>
                 <div style="font-size: 13px; color: #5C3F00; margin-top: 2px; font-weight: 600">{{r.when}}</div>
               </div>
-              <button aria-label="Marca com a consumit" style="width: 44px; height: 44px; border: none; border-radius: 22px; background: #FFFAEE; color: #2E6B3B; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">check</span></button>
+              <button aria-label="Consumeix" style="width: 44px; height: 44px; border: none; border-radius: 22px; background: #FFFAEE; color: #2E6B3B; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">check</span></button>
               <button aria-label="Congela" style="width: 44px; height: 44px; border: none; border-radius: 22px; background: #FFFAEE; color: #3F7F92; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">ac_unit</span></button>
             </a>
           </sc-for>
@@ -79,10 +75,10 @@ class Component extends DCLogic {
   renderVals() {
     var self = this;
     var raw = [
-      ["Làctics", "water_full", this.blob(9, 3, 0), [["Llet sencera", "1 unitat · Avui"], ["Mozzarella", "1 unitat · Demà"], ["Iogurt natural", "2 unitats · D'aquí 2 dies"]]],
+      ["Làctics", "water_full", this.blob(9, 3, 0), [["Llet sencera", "1 unitat · Avui"], ["Mozzarella", "1 unitat · Demà"], ["Iogurt natural", "4 unitats · D'aquí 2 dies"]]],
       ["Fruita i verdura", "nutrition", this.blob(6, 6, 0), [["Espinacs", "1 unitat · Avui"], ["Maduixes", "1 unitat · Demà"]]],
-      ["Carn i peix", "set_meal", this.blob(4, 8, Math.PI / 4), [["Pernil dolç", "1 unitat · Demà"]]],
-      ["Rebost", "grocery", this.blob(8, 4, 0), [["Hummus", "1 unitat · D'aquí 3 dies"]]],
+      ["Carn i peix", "set_meal", this.blob(4, 8, Math.PI / 4), [["Pernil dolç", "3 unitats · Demà"]]],
+      ["Secs i conserves", "grocery", this.blob(8, 4, 0), [["Hummus", "1 unitat · D'aquí 3 dies"]]],
       ["Fleca", "bakery_dining", this.blob(4, 2.5, Math.PI / 4), [["Pa de motlle", "1 unitat · D'aquí 3 dies"]]]
     ];
     var groups = raw.map(function (g) {

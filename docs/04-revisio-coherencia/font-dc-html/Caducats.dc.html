@@ -18,20 +18,15 @@ a{color:#2E6B3B}a:hover{color:#10300F}
 </helmet>
 <div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFAEE; font-family: 'Figtree', sans-serif; color: #2B2418">
 
-  <div style="padding: 16px 20px 24px; border-radius: 0 0 32px 32px; background: #F7D8CC; color: #7A2414; display: flex; flex-direction: column; gap: 12px">
-    <a href="Main.dc.html" aria-label="Torna" style="width: 48px; height: 48px; margin-left: -8px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #7A2414; text-decoration: none"><span class="ms" style="font-size: 24px">arrow_back</span></a>
-    <div>
-      <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase">7 productes</div>
-      <h1 style="margin: 6px 0 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 44px; font-weight: 800; font-stretch: 80%; line-height: 1">Caducats</h1>
-      <p style="margin: 8px 0 0; font-size: 15px; line-height: 1.4">Han caducat. Per seguretat, llença'ls.</p>
-    </div>
-    <div style="display: flex; gap: 8px; margin-top: 4px">
-      <button style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 20px 0 16px; border: none; border-radius: 24px; background: #B23F2A; color: #FFFFFF; font-family: 'Figtree', sans-serif; font-size: 15px; font-weight: 700"><span class="ms" style="font-size: 22px">delete_sweep</span>Llença'ls tots</button>
-      <button style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 18px; border: 1px solid #7A2414; border-radius: 24px; background: transparent; color: #7A2414; font-family: 'Figtree', sans-serif; font-size: 15px; font-weight: 700"><span class="ms" style="font-size: 22px">checklist</span>Selecciona</button>
+  <div role="banner" style="height: 72px; box-sizing: border-box; padding: 12px 16px 12px 4px; border-radius: 0 0 24px 24px; background: #F7D8CC; color: #7A2414; display: flex; align-items: center; gap: 4px">
+    <a href="Main.dc.html" aria-label="Torna" style="width: 48px; height: 48px; flex: none; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #7A2414; text-decoration: none"><span class="ms" style="font-size: 24px">arrow_back</span></a>
+    <div style="flex: 1; min-width: 0">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 800; font-stretch: 80%; line-height: 1.05">Caducats</h1>
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-top: 2px">7 productes</div>
     </div>
   </div>
 
-  <div style="padding: 20px 20px 40px; display: flex; flex-direction: column; gap: 18px">
+  <div style="padding: 16px 20px 150px; display: flex; flex-direction: column; gap: 18px">
     <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
       <div style="display: flex; flex-direction: column; gap: 8px">
         <div style="display: flex; align-items: center; gap: 10px; padding: 0 4px">
@@ -55,6 +50,10 @@ a{color:#2E6B3B}a:hover{color:#10300F}
         </div>
       </div>
     </sc-for>
+  </div>
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; padding: 24px 20px 24px; background: linear-gradient(to top, #FFFAEE 70%, rgba(255,250,238,0))">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 6px; padding-bottom: 10px; font-size: 14px; font-weight: 600; color: #7A2414"><span class="ms" style="font-size: 18px">error</span>Han caducat. Per seguretat, llença'ls.</div>
+    <button style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; height: 56px; border: none; border-radius: 28px; background: #B23F2A; color: #FFFFFF; font-family: 'Figtree', sans-serif; font-size: 17px; font-weight: 700; box-shadow: 0 6px 20px rgba(41,36,28,0.18)"><span class="ms" style="font-size: 22px">delete_sweep</span>Llença'ls tots</button>
   </div>
 </div>
 </x-dc>
@@ -81,8 +80,8 @@ class Component extends DCLogic {
     var raw = [
       ["Carn i peix", "set_meal", this.blob(4, 8, Math.PI / 4), [["Pit de pollastre", "1 unitat · Fa 1 dia"], ["Salmó", "1 unitat · Fa 1 dia"], ["Gambes", "2 unitats · Fa 3 dies"]]],
       ["Fruita i verdura", "nutrition", this.blob(6, 6, 0), [["Pastanagues", "1 unitat · Fa 2 dies"], ["Tomàquets", "1 unitat · Fa 1 dia"]]],
-      ["Làctics", "water_full", this.blob(9, 3, 0), [["Iogurt grec", "1 unitat · Fa 2 dies"]]],
-      ["Rebost", "grocery", this.blob(8, 4, 0), [["Salsa de tomàquet", "1 unitat · Fa 5 dies"]]]
+      ["Làctics", "water_full", this.blob(9, 3, 0), [["Iogurt grec", "3 unitats · Fa 2 dies"]]],
+      ["Secs i conserves", "grocery", this.blob(8, 4, 0), [["Salsa de tomàquet", "1 unitat · Fa 5 dies"]]]
     ];
     var groups = raw.map(function (g) {
       return {

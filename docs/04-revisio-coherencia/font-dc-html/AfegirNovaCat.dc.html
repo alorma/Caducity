@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Afegeix · nova categoria</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Figtree:wght@400..700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E6B3B}a:hover{color:#10300F}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'opsz' 24;display:inline-block}
+.msf{font-variation-settings:'FILL' 1,'wght' 400,'opsz' 24}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFAEE; font-family: 'Figtree', sans-serif; color: #2B2418">
+  <div aria-hidden="true" style="padding: 12px 20px 0; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; align-items: center; gap: 4px; margin-left: -8px; height: 48px">
+      <span style="width: 48px; display: flex; justify-content: center"><span class="ms" style="font-size: 24px">close</span></span>
+      <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 700; font-stretch: 85%">Afegeix</span>
+    </div>
+    <div style="height: 60px; box-sizing: border-box; padding: 0 18px; border-radius: 16px; background: #F0E2CB; display: flex; align-items: center; font-size: 19px; font-weight: 600">Kombucha</div>
+  </div>
+
+  <div style="position: absolute; inset: 0; background: rgba(41,36,28,0.45)"></div>
+
+  <div role="dialog" aria-labelledby="nc-titol" style="position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 20px 24px; border-radius: 32px 32px 0 0; background: #FFFAEE; display: flex; flex-direction: column; gap: 18px">
+    <div style="align-self: center; width: 32px; height: 4px; border-radius: 2px; background: #8F8266"></div>
+
+    <h2 id="nc-titol" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 700; font-stretch: 85%">Nova categoria</h2>
+
+    <div style="display: flex; align-items: center; gap: 14px">
+      <div style="position: relative; width: 64px; height: 64px; flex: none; display: flex; align-items: center; justify-content: center">
+        <svg viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{sel}}" fill="#EFD8C0"></path></svg>
+        <span class="ms" style="position: relative; font-size: 30px; color: #2E6B3B">local_drink</span>
+      </div>
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 6px">
+        <label for="ncnom" style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #6A5D45">Nom</label>
+        <input id="ncnom" value="Begudes" style="width: 100%; box-sizing: border-box; height: 52px; border: 2px solid #2E6B3B; border-radius: 16px; background: #F0E2CB; padding: 0 16px; font-family: 'Figtree', sans-serif; font-size: 18px; font-weight: 600; color: #2B2418">
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #6A5D45">Forma</div>
+      <div role="radiogroup" aria-label="Forma" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px">
+        <sc-for list="{{shapes}}" as="s" hint-placeholder-count="6">
+          <button role="radio" aria-checked="{{s.on}}" aria-label="{{s.name}}" style="height: 52px; border: {{s.border}}; border-radius: 16px; background: {{s.bg}}; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer">
+            <svg viewBox="0 0 100 100" aria-hidden="true" style="width: 34px; height: 34px"><path d="{{s.d}}" fill="{{s.fill}}"></path></svg>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #6A5D45">Icona</div>
+      <div role="radiogroup" aria-label="Icona" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px">
+        <sc-for list="{{icons}}" as="i" hint-placeholder-count="12">
+          <button role="radio" aria-checked="{{i.on}}" aria-label="{{i.name}}" style="height: 48px; border: none; border-radius: 24px; background: {{i.bg}}; color: {{i.fg}}; display: flex; align-items: center; justify-content: center; cursor: pointer"><span class="ms" style="font-size: 22px">{{i.name}}</span></button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="font-size: 13px; color: #6A5D45">La descripció i l'ordre es poden canviar després, a Rebost.</div>
+
+    <a href="Afegir.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 56px; border-radius: 28px; background: #2E6B3B; color: #FFFFFF; text-decoration: none; font-size: 17px; font-weight: 700"><span class="ms" style="font-size: 22px">check</span>Crea i fes-la servir</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  blob(n, a, rot) {
+    rot = rot || 0;
+    var p = [];
+    for (var i = 0; i < 120; i++) {
+      var t = i / 120 * Math.PI * 2;
+      var r = 50 - a + a * Math.cos(n * (t + rot));
+      p.push((50 + r * Math.cos(t)).toFixed(1) + " " + (50 + r * Math.sin(t)).toFixed(1));
+    }
+    return "M" + p.join("L") + "Z";
+  }
+  renderVals() {
+    var self = this;
+    var sh = [
+      ["Galeta", 9, 3, 0], ["Flor", 6, 6, 0], ["Trèvol", 4, 8, Math.PI / 4],
+      ["Sol", 8, 4, 0], ["Coixí", 4, 2.5, Math.PI / 4], ["Segell", 12, 3, 0]
+    ];
+    var shapes = sh.map(function (s, k) {
+      var on = k === 5;
+      return {
+        name: s[0], d: self.blob(s[1], s[2], s[3]), on: on ? "true" : "false",
+        bg: on ? "#DCE9C6" : "#F7EEDA", border: on ? "2px solid #2E6B3B" : "none",
+        fill: on ? "#2E6B3B" : "#CDBFA6"
+      };
+    });
+    var names = ["local_drink", "local_cafe", "liquor", "icecream", "egg", "rice_bowl", "cookie", "soup_kitchen", "kebab_dining", "lunch_dining", "breakfast_dining", "eco"];
+    var icons = names.map(function (n, k) {
+      var on = k === 0;
+      return { name: n, on: on ? "true" : "false", bg: on ? "#2E6B3B" : "#F7EEDA", fg: on ? "#FFFFFF" : "#2E6B3B" };
+    });
+    return { shapes: shapes, icons: icons, sel: this.blob(12, 3, 0) };
+  }
+}
+</script>
+</body>
+</html>

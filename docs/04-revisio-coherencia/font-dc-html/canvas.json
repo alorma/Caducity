@@ -1,399 +1,415 @@
 {
-  "v": 3,
-  "attachments": {},
-  "boards": {
-    "Accions.dc.html": {
-      "h": 844,
-      "title": "Modal · una unitat",
-      "w": 390,
-      "x": 0,
-      "y": 4492
-    },
-    "AccionsCaducat.dc.html": {
-      "h": 844,
-      "title": "Modal · una unitat caducada («Més accions» obert, prement «Consumit igualment»)",
-      "w": 390,
-      "x": 470,
-      "y": 4492
-    },
-    "Afegir.dc.html": {
-      "h": 844,
-      "title": "Afegeix producte",
-      "w": 390,
-      "x": 0,
-      "y": 1964
-    },
-    "AfegirNou.dc.html": {
-      "h": 844,
-      "title": "Afegeix · producte nou",
-      "w": 390,
-      "x": 470,
-      "y": 1964
-    },
-    "Ajustos.dc.html": {
-      "h": 1010,
-      "title": "Ajustos",
-      "w": 390,
-      "x": 0,
-      "y": 8284
-    },
-    "Caducats.dc.html": {
-      "h": 844,
-      "title": "Caducats",
-      "w": 390,
-      "x": 0,
-      "y": 3228
-    },
-    "CaducatsScroll.dc.html": {
-      "h": 844,
-      "title": "Caducats · en fer scroll",
-      "w": 390,
-      "x": 470,
-      "y": 3228
-    },
-    "CalMes.dc.html": {
-      "h": 844,
-      "title": "Calendari de mes (des de l'Inici i Categoria)",
-      "w": 390,
-      "x": 1410,
-      "y": 0
-    },
-    "Categoria.dc.html": {
-      "h": 844,
-      "title": "Categoria · Làctics",
-      "w": 390,
-      "x": 940,
-      "y": 0
-    },
-    "EstatAviat.dc.html": {
-      "h": 844,
-      "title": "Aviat (des del resum de l'Inici)",
-      "w": 390,
-      "x": 940,
-      "y": 3228
-    },
-    "Icona.dc.html": {
-      "h": 800,
-      "title": "Icona de l'app",
-      "w": 1240,
-      "x": 3290,
-      "y": 10978
-    },
-    "IniciSenseAviat.dc.html": {
-      "h": 844,
-      "title": "Inici · res «Aviat»",
-      "w": 390,
-      "x": 1880,
-      "y": 0
-    },
-    "IniciSenseAviatCaducats.dc.html": {
-      "h": 844,
-      "title": "Inici · res «Aviat», amb caducats",
-      "w": 390,
-      "x": 2350,
-      "y": 0
-    },
-    "InicibBuit.dc.html": {
-      "h": 844,
-      "title": "Inici buit",
-      "w": 390,
-      "x": 1410,
-      "y": 3228
-    },
-    "Main.dc.html": {
-      "h": 1544,
-      "title": "Inici · Què caduca (llista sencera, amb la targeta «Has cuinat?» al final)",
-      "w": 390,
-      "x": 0,
-      "y": 0
-    },
-    "MainFosc.dc.html": {
-      "h": 844,
-      "title": "Inici · mode fosc",
-      "w": 390,
-      "x": 0,
-      "y": 9714
-    },
-    "MargeCategories.dc.html": {
-      "h": 844,
-      "title": "Durada habitual per categoria",
-      "w": 390,
-      "x": 0,
-      "y": 5756
-    },
-    "MultiToc.dc.html": {
-      "h": 844,
-      "title": "Categoria · toc a ✓ (consumeix la unitat que caduca primer)",
-      "w": 390,
-      "x": 1880,
-      "y": 4492
-    },
-    "NovetatTransforma.dc.html": {
-      "h": 844,
-      "title": "Novetat en actualitzar · Transforma (usuaris existents)",
-      "w": 390,
-      "x": 2350,
-      "y": 7020
-    },
-    "OB1Benvinguda.dc.html": {
-      "h": 844,
-      "title": "Onboarding 1 · Benvinguda",
-      "w": 390,
-      "x": 470,
-      "y": 10978
-    },
-    "OB2Categories.dc.html": {
-      "h": 844,
-      "title": "Onboarding 2 · Categories",
-      "w": 390,
-      "x": 940,
-      "y": 10978
-    },
-    "OB3Avisos.dc.html": {
-      "h": 844,
-      "title": "Onboarding 3 · Avisos",
-      "w": 390,
-      "x": 1410,
-      "y": 10978
-    },
-    "OB4Privadesa.dc.html": {
-      "h": 844,
-      "title": "Onboarding 4 · Privadesa",
-      "w": 390,
-      "x": 2350,
-      "y": 10978
-    },
-    "OB5Avis.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "title": "Onboarding 5 · Avís important",
-      "w": 390,
-      "x": 2820,
-      "y": 10978
-    },
-    "OBTransforma.dc.html": {
-      "h": 844,
-      "title": "Onboarding 3 · Transforma (no és un receptari)",
-      "w": 390,
-      "x": 1880,
-      "y": 10978
-    },
-    "QuantitatAccions.dc.html": {
-      "h": 844,
-      "title": "Modal · diverses unitats",
-      "w": 390,
-      "x": 940,
-      "y": 4492
-    },
-    "QuantitatCaducat.dc.html": {
-      "h": 844,
-      "title": "Modal · diverses unitats, caducades",
-      "w": 390,
-      "x": 1410,
-      "y": 4492
-    },
-    "Rebost.dc.html": {
-      "h": 844,
-      "title": "Rebost",
-      "w": 390,
-      "x": 470,
-      "y": 0
-    },
-    "RebostFosc.dc.html": {
-      "h": 844,
-      "title": "Rebost · mode fosc",
-      "w": 390,
-      "x": 470,
-      "y": 9714
-    },
-    "Splash.dc.html": {
-      "h": 844,
-      "title": "Splash",
-      "w": 390,
-      "x": 0,
-      "y": 10978
-    },
-    "TransformaCarrBuit.dc.html": {
-      "h": 844,
-      "title": "Transforma en files · sense ingredients",
-      "w": 390,
-      "x": 470,
-      "y": 7020
-    },
-    "TransformaCarrMolts.dc.html": {
-      "h": 844,
-      "title": "Transforma en files · editant un resultat (9 ingredients, 6 resultats)",
-      "w": 390,
-      "x": 940,
-      "y": 7020
-    },
-    "TransformaCarrPlegat.dc.html": {
-      "h": 844,
-      "title": "Transforma en files · resultats plegats (després de «Fet»)",
-      "w": 390,
-      "x": 1410,
-      "y": 7020
-    },
-    "TransformaIngredient.dc.html": {
-      "h": 844,
-      "title": "Afegeix ingredients (inclou congelats)",
-      "w": 390,
-      "x": 1880,
-      "y": 7020
-    },
-    "TransformaSeleccio.dc.html": {
-      "h": 844,
-      "title": "Selecció amb «Transforma»",
-      "w": 390,
-      "x": 0,
-      "y": 7020
-    }
+ "v": 3,
+ "attachments": {},
+ "boards": {
+  "Accions.dc.html": {
+   "h": 844,
+   "title": "Modal · una unitat",
+   "w": 390,
+   "x": 0,
+   "y": 4492
   },
-  "createdOnFiles": {
-    "at": "2026-10-11T09:45:00Z",
-    "v": 1
+  "AccionsCaducat.dc.html": {
+   "h": 844,
+   "title": "Modal · una unitat caducada («Més accions» obert, prement «Consumit igualment»)",
+   "w": 390,
+   "x": 470,
+   "y": 4492
   },
-  "designSystems": [
-    {
-      "artifact": "https://claude.ai/artifact/EoTZVNV8TUKAQdmsyeac4R",
-      "copiedAt": "2026-10-11T09:46:00Z",
-      "namespace": "caducity",
-      "title": "Caducity",
-      "version": "1791711531-4217"
-    }
-  ],
-  "launch": {
-    "view": "canvas"
+  "Afegir.dc.html": {
+   "h": 844,
+   "title": "Afegeix producte",
+   "w": 390,
+   "x": 0,
+   "y": 1964
   },
-  "notes": {
-    "n_botons": {
-      "fill": "orange",
-      "maxH": 600,
-      "size": 24,
-      "text": "Botons rodons de la fila\n\n• ✓ i ❄ actuen sempre sobre UNA unitat: la que caduca primer.\n• Després surt l'avís «1 iogurt natural consumit · Desfés».\n• Als caducats només hi ha la paperera, «Llença», també d'una en una. No s'ofereix cap alternativa: la data no s'allarga (si es va entrar malament, «Edita»).\n\nTocar la fila obre la modal del producte:\n• 1 unitat → totes les accions desplegades.\n• Diverses unitats → selector + «Consumeix N» / «Congela N». La resta, plegada a «Més accions» (s'aplica a tot el producte).\n• Caducat → avís «Per seguretat, llença'l» + un sol botó «Llença».",
-      "w": 370,
-      "x": 2350,
-      "y": 4492
-    },
-    "r0": {
-      "kind": "title1",
-      "maxW": 2740,
-      "text": "Fluxos principals",
-      "w": 240,
-      "x": 0,
-      "y": -300
-    },
-    "r1": {
-      "kind": "title1",
-      "maxW": 860,
-      "text": "Afegir",
-      "w": 240,
-      "x": 0,
-      "y": 1664
-    },
-    "r2": {
-      "kind": "title1",
-      "maxW": 1800,
-      "text": "Estats i revisió",
-      "w": 240,
-      "x": 0,
-      "y": 2928
-    },
-    "r3": {
-      "kind": "title1",
-      "maxW": 2720,
-      "text": "Accions de producte",
-      "w": 240,
-      "x": 0,
-      "y": 4192
-    },
-    "r4": {
-      "kind": "title1",
-      "maxW": 860,
-      "text": "Durada habitual per categoria",
-      "w": 240,
-      "x": 0,
-      "y": 5456
-    },
-    "r5": {
-      "kind": "title1",
-      "maxW": 2740,
-      "text": "Transforma",
-      "w": 240,
-      "x": 0,
-      "y": 6720
-    },
-    "r6": {
-      "kind": "title1",
-      "maxW": 860,
-      "text": "Ajustos",
-      "w": 240,
-      "x": 0,
-      "y": 7984
-    },
-    "r8": {
-      "kind": "title1",
-      "maxW": 860,
-      "text": "Mode fosc",
-      "w": 240,
-      "x": 0,
-      "y": 9414
-    },
-    "r9": {
-      "kind": "title1",
-      "maxW": 5850,
-      "text": "Onboarding",
-      "w": 240,
-      "x": 0,
-      "y": 10678
-    },
-    "n_llenca": {
-      "x": 1880,
-      "y": 3228,
-      "w": 370,
-      "maxH": 760,
-      "fill": "red",
-      "size": 24,
-      "text": "«Llença'ls tots»\n\n• Demana confirmació: «Llençar 7 productes a les escombraries?» → «Llença'ls» / «Cancel·la».\n• Després: «7 productes llençats · Desfés».\n\nUna sola paraula a tota l'app: «Llença» (icona paperera). «Esborra» ja no existeix.\n\nCaducats: «Més accions» va sempre plegat. Dins: «Consumit igualment · Sota la teva responsabilitat»: s'ha de mantenir premut 1,5 s (la fila s'omple; si deixes anar abans, es buida; vibració en completar-se). Amb TalkBack: acció personalitzada amb diàleg de confirmació, «La data era incorrecta» i «Edita». Mai «Congela» ni «Transforma». A les files i a «Llença'ls tots», res d'això."
-    }
+  "AfegirNou.dc.html": {
+   "h": 844,
+   "title": "Afegeix · producte nou",
+   "w": 390,
+   "x": 470,
+   "y": 1964
   },
-  "order": [
-    "Main.dc.html",
-    "Rebost.dc.html",
-    "Categoria.dc.html",
-    "CalMes.dc.html",
-    "IniciSenseAviat.dc.html",
-    "IniciSenseAviatCaducats.dc.html",
-    "Afegir.dc.html",
-    "AfegirNou.dc.html",
-    "Caducats.dc.html",
-    "CaducatsScroll.dc.html",
-    "EstatAviat.dc.html",
-    "InicibBuit.dc.html",
-    "Accions.dc.html",
-    "AccionsCaducat.dc.html",
-    "QuantitatAccions.dc.html",
-    "QuantitatCaducat.dc.html",
-    "MultiToc.dc.html",
-    "MargeCategories.dc.html",
-    "TransformaSeleccio.dc.html",
-    "TransformaIngredient.dc.html",
-    "Ajustos.dc.html",
-    "MainFosc.dc.html",
-    "RebostFosc.dc.html",
-    "Splash.dc.html",
-    "OB1Benvinguda.dc.html",
-    "OB2Categories.dc.html",
-    "OB3Avisos.dc.html",
-    "OB4Privadesa.dc.html",
-    "OB5Avis.dc.html",
-    "Icona.dc.html",
-    "TransformaCarrBuit.dc.html",
-    "TransformaCarrMolts.dc.html",
-    "TransformaCarrPlegat.dc.html",
-    "OBTransforma.dc.html",
-    "NovetatTransforma.dc.html"
-  ],
-  "pages": [],
-  "title": "Caducity · Redisseny"
+  "Ajustos.dc.html": {
+   "h": 1010,
+   "title": "Ajustos",
+   "w": 390,
+   "x": 0,
+   "y": 8284
+  },
+  "Caducats.dc.html": {
+   "h": 844,
+   "title": "Caducats",
+   "w": 390,
+   "x": 0,
+   "y": 3228
+  },
+  "CalMes.dc.html": {
+   "h": 844,
+   "title": "Calendari de mes (des de l'Inici i Categoria)",
+   "w": 390,
+   "x": 1410,
+   "y": 0
+  },
+  "Categoria.dc.html": {
+   "h": 844,
+   "title": "Categoria · Làctics",
+   "w": 390,
+   "x": 940,
+   "y": 0
+  },
+  "EstatAviat.dc.html": {
+   "h": 844,
+   "title": "Aviat (des del resum de l'Inici)",
+   "w": 390,
+   "x": 470,
+   "y": 3228
+  },
+  "Icona.dc.html": {
+   "h": 800,
+   "title": "Icona de l'app",
+   "w": 1240,
+   "x": 3290,
+   "y": 11678
+  },
+  "IniciSenseAviat.dc.html": {
+   "h": 844,
+   "title": "Inici · res «Aviat»",
+   "w": 390,
+   "x": 1880,
+   "y": 0
+  },
+  "IniciSenseAviatCaducats.dc.html": {
+   "h": 844,
+   "title": "Inici · res «Aviat», amb caducats",
+   "w": 390,
+   "x": 2350,
+   "y": 0
+  },
+  "InicibBuit.dc.html": {
+   "h": 844,
+   "title": "Inici buit",
+   "w": 390,
+   "x": 1880,
+   "y": 3228
+  },
+  "Main.dc.html": {
+   "h": 1544,
+   "title": "Inici · Què caduca (llista sencera, amb la targeta «Has cuinat?» al final)",
+   "w": 390,
+   "x": 0,
+   "y": 0
+  },
+  "MainFosc.dc.html": {
+   "h": 1544,
+   "title": "Inici · mode fosc (llista sencera)",
+   "w": 390,
+   "x": 0,
+   "y": 9714
+  },
+  "MargeCategories.dc.html": {
+   "h": 844,
+   "title": "Durada habitual per categoria",
+   "w": 390,
+   "x": 0,
+   "y": 5756
+  },
+  "MultiToc.dc.html": {
+   "h": 844,
+   "title": "Categoria · toc a ✓ (consumeix la unitat que caduca primer)",
+   "w": 390,
+   "x": 1880,
+   "y": 4492
+  },
+  "NovetatTransforma.dc.html": {
+   "h": 844,
+   "title": "Novetat en actualitzar · Transforma (usuaris existents)",
+   "w": 390,
+   "x": 1880,
+   "y": 7020
+  },
+  "OB1Benvinguda.dc.html": {
+   "h": 844,
+   "title": "Onboarding 1 · Benvinguda",
+   "w": 390,
+   "x": 470,
+   "y": 11678
+  },
+  "OB2Categories.dc.html": {
+   "h": 844,
+   "title": "Onboarding 2 · Categories",
+   "w": 390,
+   "x": 940,
+   "y": 11678
+  },
+  "OB3Avisos.dc.html": {
+   "h": 844,
+   "title": "Onboarding 3 · Avisos",
+   "w": 390,
+   "x": 1410,
+   "y": 11678
+  },
+  "OB4Privadesa.dc.html": {
+   "h": 844,
+   "title": "Onboarding 4 · Privadesa",
+   "w": 390,
+   "x": 2350,
+   "y": 11678
+  },
+  "OB5Avis.dc.html": {
+   "h": 844,
+   "is_interactive": true,
+   "title": "Onboarding 5 · Avís important",
+   "w": 390,
+   "x": 2820,
+   "y": 11678
+  },
+  "OBTransforma.dc.html": {
+   "h": 844,
+   "title": "Onboarding 3 · Transforma (no és un receptari)",
+   "w": 390,
+   "x": 1880,
+   "y": 11678
+  },
+  "QuantitatAccions.dc.html": {
+   "h": 844,
+   "title": "Modal · diverses unitats",
+   "w": 390,
+   "x": 940,
+   "y": 4492
+  },
+  "QuantitatCaducat.dc.html": {
+   "h": 844,
+   "title": "Modal · diverses unitats, caducades",
+   "w": 390,
+   "x": 1410,
+   "y": 4492
+  },
+  "Rebost.dc.html": {
+   "h": 844,
+   "title": "Rebost",
+   "w": 390,
+   "x": 470,
+   "y": 0
+  },
+  "RebostFosc.dc.html": {
+   "h": 844,
+   "title": "Rebost · mode fosc",
+   "w": 390,
+   "x": 470,
+   "y": 9714
+  },
+  "Splash.dc.html": {
+   "h": 844,
+   "title": "Splash",
+   "w": 390,
+   "x": 0,
+   "y": 11678
+  },
+  "TransformaCarrBuit.dc.html": {
+   "h": 844,
+   "title": "Transforma en files · sense ingredients",
+   "w": 390,
+   "x": 0,
+   "y": 7020
+  },
+  "TransformaCarrMolts.dc.html": {
+   "h": 844,
+   "title": "Transforma en files · editant un resultat (9 ingredients, 6 resultats)",
+   "w": 390,
+   "x": 470,
+   "y": 7020
+  },
+  "TransformaCarrPlegat.dc.html": {
+   "h": 844,
+   "title": "Transforma en files · resultats plegats (després de «Fet»)",
+   "w": 390,
+   "x": 940,
+   "y": 7020
+  },
+  "TransformaIngredient.dc.html": {
+   "h": 844,
+   "title": "Afegeix ingredients (inclou congelats)",
+   "w": 390,
+   "x": 1410,
+   "y": 7020
+  },
+  "EstatFrescos.dc.html": {
+   "x": 940,
+   "y": 3228,
+   "w": 390,
+   "h": 844,
+   "title": "Frescos (des del resum de l'Inici)"
+  },
+  "EstatCongelats.dc.html": {
+   "x": 1410,
+   "y": 3228,
+   "w": 390,
+   "h": 844,
+   "title": "Congelats (des del resum de l'Inici)"
+  },
+  "NovaCategoria.dc.html": {
+   "x": 940,
+   "y": 1964,
+   "w": 390,
+   "h": 844,
+   "title": "Nova categoria (des del Rebost)"
+  },
+  "AfegirNovaCat.dc.html": {
+   "x": 1410,
+   "y": 1964,
+   "w": 390,
+   "h": 844,
+   "title": "Afegeix · nova categoria al vol"
+  }
+ },
+ "createdOnFiles": {
+  "at": "2026-10-11T09:45:00Z",
+  "v": 1
+ },
+ "designSystems": [
+  {
+   "artifact": "https://claude.ai/artifact/EoTZVNV8TUKAQdmsyeac4R",
+   "copiedAt": "2026-10-11T09:46:00Z",
+   "namespace": "caducity",
+   "title": "Caducity",
+   "version": "1791711531-4217"
+  }
+ ],
+ "launch": {
+  "view": "canvas"
+ },
+ "notes": {
+  "n_botons": {
+   "fill": "orange",
+   "maxH": 600,
+   "size": 24,
+   "text": "Botons rodons de la fila\n\n• ✓ i ❄ actuen sempre sobre UNA unitat: la que caduca primer.\n• Després surt l'avís «1 iogurt natural consumit · Desfés».\n• Als caducats només hi ha la paperera, «Llença», també d'una en una. No s'ofereix cap alternativa: la data no s'allarga (si es va entrar malament, «Edita»).\n\nTocar la fila obre la modal del producte:\n• 1 unitat → totes les accions desplegades.\n• Diverses unitats → selector + «Consumeix N» / «Congela N». La resta, plegada a «Més accions» (s'aplica a tot el producte).\n• Caducat → avís «Per seguretat, llença'l» + un sol botó «Llença».",
+   "w": 370,
+   "x": 2350,
+   "y": 4492
+  },
+  "r0": {
+   "kind": "title1",
+   "maxW": 2740,
+   "text": "Fluxos principals",
+   "w": 240,
+   "x": 0,
+   "y": -300
+  },
+  "r1": {
+   "kind": "title1",
+   "maxW": 1800,
+   "text": "Afegir",
+   "w": 240,
+   "x": 0,
+   "y": 1664
+  },
+  "r2": {
+   "kind": "title1",
+   "maxW": 3200,
+   "text": "Estats i revisió",
+   "w": 240,
+   "x": 0,
+   "y": 2928
+  },
+  "r3": {
+   "kind": "title1",
+   "maxW": 2720,
+   "text": "Accions de producte",
+   "w": 240,
+   "x": 0,
+   "y": 4192
+  },
+  "r4": {
+   "kind": "title1",
+   "maxW": 860,
+   "text": "Durada habitual per categoria",
+   "w": 240,
+   "x": 0,
+   "y": 5456
+  },
+  "r5": {
+   "kind": "title1",
+   "maxW": 2740,
+   "text": "Transforma",
+   "w": 240,
+   "x": 0,
+   "y": 6720
+  },
+  "r6": {
+   "kind": "title1",
+   "maxW": 860,
+   "text": "Ajustos",
+   "w": 240,
+   "x": 0,
+   "y": 7984
+  },
+  "r8": {
+   "kind": "title1",
+   "maxW": 860,
+   "text": "Mode fosc",
+   "w": 240,
+   "x": 0,
+   "y": 9414
+  },
+  "r9": {
+   "kind": "title1",
+   "maxW": 5850,
+   "text": "Onboarding",
+   "w": 240,
+   "x": 0,
+   "y": 11378
+  },
+  "n_llenca": {
+   "x": 2350,
+   "y": 3228,
+   "w": 370,
+   "maxH": 760,
+   "fill": "red",
+   "size": 24,
+   "text": "«Llença'ls tots»\n\n• Demana confirmació: «Llençar 7 productes a les escombraries?» → «Llença'ls» / «Cancel·la».\n• Després: «7 productes llençats · Desfés».\n\nUna sola paraula a tota l'app: «Llença» (icona paperera). «Esborra» ja no existeix.\n\nCaducats: «Més accions» va sempre plegat. Dins: «Consumit igualment · Sota la teva responsabilitat»: s'ha de mantenir premut 1,5 s (la fila s'omple; si deixes anar abans, es buida; vibració en completar-se). Amb TalkBack: acció personalitzada amb diàleg de confirmació, «La data era incorrecta» i «Edita». Mai «Congela» ni «Transforma». A les files i a «Llença'ls tots», res d'això."
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "Rebost.dc.html",
+  "Categoria.dc.html",
+  "CalMes.dc.html",
+  "IniciSenseAviat.dc.html",
+  "IniciSenseAviatCaducats.dc.html",
+  "Afegir.dc.html",
+  "AfegirNou.dc.html",
+  "NovaCategoria.dc.html",
+  "AfegirNovaCat.dc.html",
+  "Caducats.dc.html",
+  "EstatAviat.dc.html",
+  "EstatFrescos.dc.html",
+  "EstatCongelats.dc.html",
+  "InicibBuit.dc.html",
+  "Accions.dc.html",
+  "AccionsCaducat.dc.html",
+  "QuantitatAccions.dc.html",
+  "QuantitatCaducat.dc.html",
+  "MultiToc.dc.html",
+  "MargeCategories.dc.html",
+  "TransformaIngredient.dc.html",
+  "Ajustos.dc.html",
+  "MainFosc.dc.html",
+  "RebostFosc.dc.html",
+  "Splash.dc.html",
+  "OB1Benvinguda.dc.html",
+  "OB2Categories.dc.html",
+  "OB3Avisos.dc.html",
+  "OB4Privadesa.dc.html",
+  "OB5Avis.dc.html",
+  "Icona.dc.html",
+  "TransformaCarrBuit.dc.html",
+  "TransformaCarrMolts.dc.html",
+  "TransformaCarrPlegat.dc.html",
+  "OBTransforma.dc.html",
+  "NovetatTransforma.dc.html"
+ ],
+ "pages": [],
+ "title": "Caducity · Redisseny"
 }

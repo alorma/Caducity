@@ -28,7 +28,7 @@ a{color:#2E6B3B}a:hover{color:#10300F}
       <label for="nom" style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #6A5D45; padding: 0 4px">Nom</label>
       <div style="position: relative">
         <input id="nom" value="Formatge ched" autocomplete="off" style="width: 100%; box-sizing: border-box; height: 60px; border: 2px solid #2E6B3B; border-radius: 16px; background: #F0E2CB; padding: 0 52px 0 18px; font-family: 'Figtree', sans-serif; font-size: 19px; font-weight: 600; color: #2B2418">
-        <button aria-label="Esborra el nom" style="position: absolute; right: 8px; top: 8px; width: 44px; height: 44px; border: none; border-radius: 22px; background: transparent; color: #6A5D45; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">cancel</span></button>
+        <button aria-label="Buida el nom" style="position: absolute; right: 8px; top: 8px; width: 44px; height: 44px; border: none; border-radius: 22px; background: transparent; color: #6A5D45; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">cancel</span></button>
       </div>
       <div style="display: flex; flex-direction: column; gap: 2px">
         <button style="display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 6px 14px 6px 10px; border: none; border-radius: 16px; background: #F7EEDA; color: #2B2418; font-family: 'Figtree', sans-serif; text-align: left; cursor: pointer">
@@ -85,7 +85,7 @@ a{color:#2E6B3B}a:hover{color:#10300F}
   </div>
 
   <div style="position: absolute; left: 20px; right: 20px; bottom: 24px; display: flex">
-    <a href="Main.dc.html" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 64px; border-radius: 32px; background: #2E6B3B; color: #FFFFFF; text-decoration: none; font-size: 17px; font-weight: 700"><span class="ms" style="font-size: 22px">check</span>Desa</a>
+    <a href="Main.dc.html" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 56px; border-radius: 28px; background: #2E6B3B; color: #FFFFFF; text-decoration: none; font-size: 17px; font-weight: 700"><span class="ms" style="font-size: 22px">check</span>Desa</a>
   </div>
 </div>
 </x-dc>
@@ -106,7 +106,7 @@ class Component extends DCLogic {
       ["Làctics", "water_full", this.blob(9, 3, 0), true],
       ["Fruita i verdura", "nutrition", this.blob(6, 6, 0), false],
       ["Carn i peix", "set_meal", this.blob(4, 8, Math.PI / 4), false],
-      ["Rebost", "grocery", this.blob(8, 4, 0), false],
+      ["Secs i conserves", "grocery", this.blob(8, 4, 0), false],
       ["Fleca", "bakery_dining", this.blob(4, 2.5, Math.PI / 4), false]
     ];
     return {

@@ -34,7 +34,7 @@ a{color:#2E6B3B}a:hover{color:#10300F}
       </div>
       <div>
         <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 40px; font-weight: 800; font-stretch: 80%; line-height: 1.05">Làctics</h1>
-        <div style="font-size: 14px; color: #6A5D45; margin-top: 4px">14 productes · propera, avui</div>
+        <div style="font-size: 14px; color: #6A5D45; margin-top: 4px">13 productes · propera, avui</div>
       </div>
     </div>
 
@@ -53,9 +53,9 @@ a{color:#2E6B3B}a:hover{color:#10300F}
     </div>
 
     <div role="group" aria-label="Filtra per estat" style="display: flex; gap: 8px; overflow: hidden; margin-right: -20px">
-      <button style="flex: none; display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px 0 10px; border: none; border-radius: 12px; background: #2E6B3B; color: #FFFFFF; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 700"><span class="ms" style="font-size: 18px">check</span>Tots 14</button>
+      <button style="flex: none; display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px 0 10px; border: none; border-radius: 12px; background: #2E6B3B; color: #FFFFFF; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 700"><span class="ms" style="font-size: 18px">check</span>Tots 13</button>
       <button style="flex: none; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid #E0D2B2; border-radius: 12px; background: transparent; color: #2B2418; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600"><span style="width: 8px; height: 8px; border-radius: 4px; background: #B23F2A"></span>Caducat 1</button>
-      <button style="flex: none; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid #E0D2B2; border-radius: 12px; background: transparent; color: #2B2418; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600"><span style="width: 8px; height: 8px; border-radius: 4px; background: #D9A23A"></span>Aviat 4</button>
+      <button style="flex: none; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid #E0D2B2; border-radius: 12px; background: transparent; color: #2B2418; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600"><span style="width: 8px; height: 8px; border-radius: 4px; background: #D9A23A"></span>Aviat 3</button>
       <button style="flex: none; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid #E0D2B2; border-radius: 12px; background: transparent; color: #2B2418; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600"><span style="width: 8px; height: 8px; border-radius: 4px; background: #7E9B4C"></span>Fresc 8</button>
       <button style="flex: none; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border: 1px solid #E0D2B2; border-radius: 12px; background: transparent; color: #2B2418; font-family: 'Figtree', sans-serif; font-size: 14px; font-weight: 600"><span style="width: 8px; height: 8px; border-radius: 4px; background: #4F8FA3"></span>Congelat 1</button>
     </div>
@@ -75,7 +75,7 @@ a{color:#2E6B3B}a:hover{color:#10300F}
                   <div style="font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</div>
                   <div style="font-size: 13px; color: {{r.metaFg}}; margin-top: 2px; font-weight: {{r.metaW}}">{{r.meta}}</div>
                 </div>
-                <sc-if value="{{r.cons}}" hint-placeholder-val="{{ true }}"><button aria-label="Marca com a consumit" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #2E6B3B; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">check</span></button><button aria-label="Congela" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #3F7F92; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">ac_unit</span></button></sc-if><sc-if value="{{r.exp}}" hint-placeholder-val="{{ false }}"><button aria-label="Llença" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #B23F2A; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">delete</span></button></sc-if><sc-if value="{{r.frz}}" hint-placeholder-val="{{ false }}"><button aria-label="Marca com a consumit" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #2E6B3B; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">check</span></button></sc-if>
+                <sc-if value="{{r.cons}}" hint-placeholder-val="{{ true }}"><button aria-label="Consumeix" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #2E6B3B; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">check</span></button><button aria-label="Congela" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #3F7F92; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">ac_unit</span></button></sc-if><sc-if value="{{r.exp}}" hint-placeholder-val="{{ false }}"><button aria-label="Llença" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #B23F2A; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">delete</span></button></sc-if><sc-if value="{{r.frz}}" hint-placeholder-val="{{ false }}"><button aria-label="Consumeix" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #2E6B3B; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">check</span></button></sc-if>
                 
               </a>
             </sc-if>
@@ -86,7 +86,7 @@ a{color:#2E6B3B}a:hover{color:#10300F}
     </sc-for>
   </div>
 
-  <a href="Afegir.dc.html" aria-label="Afegeix a Làctics" style="position: absolute; right: 20px; bottom: 24px; width: 64px; height: 64px; border-radius: 20px; background: #2E6B3B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 20px rgba(41,36,28,0.18)"><span class="ms" style="font-size: 30px">add</span></a>
+  <a href="Afegir.dc.html" aria-label="Afegeix a Làctics" style="position: absolute; right: 20px; bottom: 24px; width: 56px; height: 56px; border-radius: 16px; background: #2E6B3B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 20px rgba(41,36,28,0.18)"><span class="ms" style="font-size: 24px">add</span></a>
   <div style="position: absolute; left: 16px; right: 16px; bottom: 104px; min-height: 56px; box-sizing: border-box; display: flex; align-items: center; gap: 2px; padding: 8px 8px 8px 18px; border-radius: 16px; background: #2B2418; color: #FFFAEE; box-shadow: 0 6px 20px rgba(41,36,28,0.25)"><div style="flex: 1; font-size: 14px; font-weight: 500; line-height: 1.3">1 iogurt natural consumit</div><button style="height: 40px; padding: 0 12px; border: none; border-radius: 20px; background: transparent; color: #C9D88F; font-family: Figtree, sans-serif; font-size: 14px; font-weight: 700">Desfés</button></div>
 </div>
 </x-dc>
@@ -115,15 +115,15 @@ class Component extends DCLogic {
     };
     var raw = [
       { title: "Caducat", count: "1", dot: "#B23F2A", st: "exp", rows: [
-        { name: "Iogurt grec", meta: "1 unitat · Fa 2 dies", when: "Fa 2 dies" }] },
-      { title: "Aviat", count: "4", dot: "#D9A23A", st: "soon", rows: [
+        { name: "Iogurt grec", meta: "3 unitats · Fa 2 dies", when: "Fa 2 dies" }] },
+      { title: "Aviat", count: "3", dot: "#D9A23A", st: "soon", rows: [
         { name: "Llet sencera", meta: "1 unitat · Avui", when: "Avui" },
         { name: "Mozzarella", meta: "1 unitat · Demà", when: "Demà" },
-        { name: "Iogurt natural", meta: "1 unitat · D'aquí 2 dies", when: "2 dies" }] },
+        { name: "Iogurt natural", meta: "4 unitats · D'aquí 2 dies", when: "2 dies" }] },
       { title: "Fresc", count: "8", dot: "#7E9B4C", st: "fresh", rows: [
         { name: "Formatge cheddar", meta: "3 unitats · D'aquí 10 dies", when: "10 dies" },
         { name: "Mantega", meta: "1 unitat · D'aquí 22 dies", when: "22 dies" },
-        { name: "Kéfir", meta: "1 unitat · D'aquí 24 dies", when: "24 dies" }] },
+        { name: "Ous", meta: "12 unitats · D'aquí 18 dies", when: "18 dies" }] },
       { title: "Congelat", count: "1", dot: "#4F8FA3", st: "frz", rows: [
         { name: "Parmesà ratllat", meta: "1 unitat · Congelat el 28 set", when: "Congelat" }] }
     ];
@@ -145,7 +145,7 @@ class Component extends DCLogic {
     var A = "#D9A23A";
     var week = [
       ["dg", 11, [A], "Avui, 1 producte"], ["dl", 12, [A], "Demà, 1 producte"],
-      ["dt", 13, [A, A], "Dimarts 13, 2 unitats"], ["dc", 14, [], "Dimecres 14, res"],
+      ["dt", 13, [A], "Dimarts 13, 1 producte"], ["dc", 14, [], "Dimecres 14, res"],
       ["dj", 15, [], "Dijous 15, res"], ["dv", 16, [], "Divendres 16, res"], ["ds", 17, [], "Dissabte 17, res"]
     ];
     var days = week.map(function (d, i) {

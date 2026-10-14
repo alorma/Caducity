@@ -66,7 +66,7 @@ a{color:#2E6B3B}a:hover{color:#10300F}
 
   <div style="position: absolute; left: 20px; right: 20px; bottom: 100px; text-align: center; font-size: 13px; color: #6A5D45">Falten la categoria i la data per desar</div>
   <div style="position: absolute; left: 20px; right: 20px; bottom: 24px; display: flex">
-    <button disabled style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 64px; border: none; border-radius: 32px; background: #F0E2CB; color: #8F8266; font-family: 'Figtree', sans-serif; font-size: 17px; font-weight: 700"><span class="ms" style="font-size: 22px">check</span>Desa</button>
+    <button disabled style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; height: 56px; border: none; border-radius: 28px; background: #F0E2CB; color: #8F8266; font-family: 'Figtree', sans-serif; font-size: 17px; font-weight: 700"><span class="ms" style="font-size: 22px">check</span>Desa</button>
   </div>
 </div>
 </x-dc>
@@ -87,7 +87,7 @@ class Component extends DCLogic {
       ["Làctics", "water_full", this.blob(9, 3, 0)],
       ["Fruita i verdura", "nutrition", this.blob(6, 6, 0)],
       ["Carn i peix", "set_meal", this.blob(4, 8, Math.PI / 4)],
-      ["Rebost", "grocery", this.blob(8, 4, 0)],
+      ["Secs i conserves", "grocery", this.blob(8, 4, 0)],
       ["Fleca", "bakery_dining", this.blob(4, 2.5, Math.PI / 4)]
     ];
     return { cats: raw.map(function (c) { return { name: c[0], icon: c[1], shape: c[2] }; }) };

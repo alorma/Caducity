@@ -58,11 +58,11 @@ a{color:#2E6B3B}a:hover{color:#10300F}
 
     <div style="display: flex; gap: 3px">
       <a href="EstatAviat.dc.html" style="flex: 1; padding: 12px 14px; border-radius: 20px 8px 8px 20px; background: #F8E2AE; color: #5C3F00; text-decoration: none">
-        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 800; font-stretch: 80%; line-height: 1">9</div>
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 800; font-stretch: 80%; line-height: 1">8</div>
         <div style="font-size: 13px; font-weight: 600; margin-top: 4px">Aviat</div>
       </a>
       <a href="EstatFrescos.dc.html" style="flex: 1; padding: 12px 14px; border-radius: 8px; background: #DCE8C4; color: #2F4515; text-decoration: none">
-        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 800; font-stretch: 80%; line-height: 1">42</div>
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 800; font-stretch: 80%; line-height: 1">43</div>
         <div style="font-size: 13px; font-weight: 600; margin-top: 4px">Frescos</div>
       </a>
       <a href="EstatCongelats.dc.html" style="flex: 1; padding: 12px 14px; border-radius: 8px 20px 20px 8px; background: #D3E5EA; color: #163F4C; text-decoration: none">
@@ -88,7 +88,7 @@ a{color:#2E6B3B}a:hover{color:#10300F}
                 <div style="font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</div>
                 <div style="font-size: 13px; color: #6A5D45; margin-top: 2px">{{r.meta}}</div>
               </div>
-              <button aria-label="Marca com a consumit" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #2E6B3B; display: flex; align-items: center; justify-content: center; cursor: pointer"><span class="ms" style="font-size: 22px">check</span></button>
+              <button aria-label="Consumeix" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #2E6B3B; display: flex; align-items: center; justify-content: center; cursor: pointer"><span class="ms" style="font-size: 22px">check</span></button>
               <button aria-label="Congela" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #3F7F92; display: flex; align-items: center; justify-content: center; cursor: pointer"><span class="ms" style="font-size: 22px">ac_unit</span></button>
             </a>
           </sc-for>
@@ -110,11 +110,11 @@ a{color:#2E6B3B}a:hover{color:#10300F}
 
   <div style="position: absolute; left: 20px; right: 20px; bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px">
     <nav aria-label="Navegació principal" style="display: flex; align-items: center; gap: 4px; padding: 6px; border-radius: 32px; background: #DCE9C6; box-shadow: 0 6px 20px rgba(41,36,28,0.18)">
-      <a href="Main.dc.html" style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 18px 0 14px; border-radius: 24px; background: #2E6B3B; color: #FFFFFF; text-decoration: none; font-size: 15px; font-weight: 700"><span class="ms msf" style="font-size: 22px">hourglass_bottom</span>Aviat</a>
+      <a href="Main.dc.html" style="display: flex; align-items: center; gap: 8px; height: 48px; padding: 0 18px 0 14px; border-radius: 24px; background: #2E6B3B; color: #FFFFFF; text-decoration: none; font-size: 15px; font-weight: 700"><span class="ms msf" style="font-size: 22px">hourglass_bottom</span>Inici</a>
       <a href="Rebost.dc.html" aria-label="Rebost" style="width: 48px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #10300F; text-decoration: none"><span class="ms" style="font-size: 24px">kitchen</span></a>
       <a href="Ajustos.dc.html" aria-label="Ajustos" style="width: 48px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #10300F; text-decoration: none"><span class="ms" style="font-size: 24px">settings</span></a>
     </nav>
-    <a href="Afegir.dc.html" aria-label="Afegeix un producte" style="width: 64px; height: 64px; flex: none; border-radius: 20px; background: #2E6B3B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 20px rgba(41,36,28,0.18)"><span class="ms" style="font-size: 30px">add</span></a>
+    <a href="Afegir.dc.html" aria-label="Afegeix un producte" style="width: 56px; height: 56px; flex: none; border-radius: 16px; background: #2E6B3B; color: #FFFFFF; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 6px 20px rgba(41,36,28,0.18)"><span class="ms" style="font-size: 24px">add</span></a>
   </div>
 </div>
 </x-dc>
@@ -145,14 +145,14 @@ class Component extends DCLogic {
       lac: { cat: "Làctics", icon: "water_full", shape: S.cookie },
       fru: { cat: "Fruita i verdura", icon: "nutrition", shape: S.flower },
       car: { cat: "Carn i peix", icon: "set_meal", shape: S.clover },
-      reb: { cat: "Rebost", icon: "grocery", shape: S.sunny },
+      reb: { cat: "Secs i conserves", icon: "grocery", shape: S.sunny },
       fle: { cat: "Fleca", icon: "bakery_dining", shape: S.soft }
     };
     var self = this;
     var raw = [
       { title: "Avui", sub: "2 productes", rows: [["Llet sencera", "lac", "1 unitat"], ["Espinacs", "fru", "1 unitat"]] },
-      { title: "Demà", sub: "dilluns 12 · 3 productes", rows: [["Pernil dolç", "car", "1 unitat"], ["Maduixes", "fru", "1 unitat"], ["Mozzarella", "lac", "1 unitat"]] },
-      { title: "Dimarts 13", sub: "2 productes", rows: [["Iogurt natural", "lac", "2 unitats"]] },
+      { title: "Demà", sub: "dilluns 12 · 3 productes", rows: [["Pernil dolç", "car", "3 unitats"], ["Maduixes", "fru", "1 unitat"], ["Mozzarella", "lac", "1 unitat"]] },
+      { title: "Dimarts 13", sub: "1 producte", rows: [["Iogurt natural", "lac", "4 unitats"]] },
       { title: "Dimecres 14", sub: "2 productes", rows: [["Hummus", "reb", "1 unitat"], ["Pa de motlle", "fle", "1 unitat"]] }
     ];
     var sections = raw.map(function (s) {
@@ -167,7 +167,7 @@ class Component extends DCLogic {
     var A = "#D9A23A", F = "#7E9B4C";
     var week = [
       ["dg", 11, [A, A], "Avui, 2 productes"], ["dl", 12, [A, A, A], "Demà, 3 productes"],
-      ["dt", 13, [A, A], "Dimarts 13, 2 productes"], ["dc", 14, [A, A], "Dimecres 14, 2 productes"],
+      ["dt", 13, [A], "Dimarts 13, 1 producte"], ["dc", 14, [A, A], "Dimecres 14, 2 productes"],
       ["dj", 15, [F], "Dijous 15, 1 producte"], ["dv", 16, [], "Divendres 16, res"], ["ds", 17, [F], "Dissabte 17, 1 producte"]
     ];
     var days = week.map(function (d, i) {
