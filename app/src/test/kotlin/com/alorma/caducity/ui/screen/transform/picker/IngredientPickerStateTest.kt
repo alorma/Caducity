@@ -5,6 +5,7 @@ import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.PantryEntry
+import com.alorma.caducity.domain.model.toProductGroups
 import kotlinx.datetime.LocalDate
 import org.junit.Test
 import strikt.api.expectThat
@@ -52,7 +53,7 @@ class IngredientPickerStateTest {
       Category(id, id, "", CategoryShape.COOKIE, CategoryIcon("set_meal"), index)
     }
 
-  private val groups = entries.toPickerGroups()
+  private val groups = entries.toProductGroups()
 
   private fun names(
     query: String = "",
@@ -61,10 +62,11 @@ class IngredientPickerStateTest {
   ) = groups.filterPickerGroups(query, status, category).map { it.name }
 
   @Test
-  fun `expired units are not listed and a product with only expired units disappears`() {
+  fun `expired units are listed, also in a product that has only expired ones`() {
     val listed = groups.map { it.name }
-    expectThat(listed).containsExactlyInAnyOrder("Pollastre sencer", "Pernil dolç", "Pastanagues", "Llet")
-    expectThat(groups.first { it.name == "Llet" }.units.map { it.itemId }).containsExactly("milk")
+    expectThat(listed).containsExactlyInAnyOrder("Pollastre sencer", "Pernil dolç", "Pastanagues", "Iogurt", "Llet")
+    expectThat(groups.first { it.name == "Llet" }.units.map { it.itemId }).containsExactly("milk-old", "milk")
+    expectThat(names(status = setOf(ExpiryStatus.EXPIRED))).containsExactlyInAnyOrder("Iogurt", "Llet")
   }
 
   @Test
@@ -80,7 +82,7 @@ class IngredientPickerStateTest {
     expectThat(names(status = setOf(ExpiryStatus.FROZEN))).containsExactly("Pollastre sencer")
     expectThat(names(status = setOf(ExpiryStatus.FROZEN, ExpiryStatus.FRESH)))
       .containsExactlyInAnyOrder("Pollastre sencer", "Pastanagues", "Llet")
-    expectThat(names()).hasSize(4)
+    expectThat(names()).hasSize(5)
   }
 
   @Test
@@ -99,7 +101,7 @@ class IngredientPickerStateTest {
   @Test
   fun `category filter and the other filters combine`() {
     expectThat(names(category = setOf("veg"))).containsExactly("Pastanagues")
-    expectThat(names(category = setOf("veg", "dairy"))).containsExactlyInAnyOrder("Pastanagues", "Llet")
+    expectThat(names(category = setOf("veg", "dairy"))).containsExactlyInAnyOrder("Pastanagues", "Iogurt", "Llet")
     expectThat(names(category = setOf("meat"), status = setOf(ExpiryStatus.SOON))).containsExactly("Pernil dolç")
     expectThat(names(category = setOf("veg"), query = "pern")).isEmpty()
   }
@@ -127,7 +129,7 @@ class IngredientPickerStateTest {
   @Test
   fun `a new product enters with its closest unit`() {
     expectThat(groups.chosenItemIds(setOf("Pastanagues", "Llet"), current = emptyList()))
-      .containsExactlyInAnyOrder("carrot2", "milk")
+      .containsExactlyInAnyOrder("carrot2", "milk-old")
   }
 
   @Test

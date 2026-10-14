@@ -6,6 +6,7 @@ import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.PantryEntry
+import com.alorma.caducity.domain.model.toProductGroups
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.datetime.LocalDate
@@ -39,7 +40,7 @@ private val groups =
     entry("carrot-1", "Carrots", produce, ExpiryStatus.FRESH, 20),
     entry("carrot-2", "Carrots", produce, ExpiryStatus.FRESH, 22),
     entry("onion", "Onions", produce, ExpiryStatus.FRESH, 28),
-  ).toPickerGroups()
+  ).toProductGroups()
 
 private val noActions =
   IngredientPickerActions(

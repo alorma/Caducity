@@ -70,7 +70,7 @@ data class TransformState(
   val firstToExpire: IngredientUi?
     get() = spentWithOwner.filterNot { (_, unit) -> unit.frozen }.minByOrNull { (_, unit) -> unit.expiration }?.first
 
-  /** Date of the ingredient that expires first; it never gets longer on its own (TODO(transforma-open-2): expired ones start today). */
+  /** Date of the ingredient that expires first; it never gets longer on its own, and an expired one starts today. */
   val defaultExpiration: LocalDate
     get() {
       val first =

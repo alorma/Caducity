@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.transform.picker
 
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.toProductGroups
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.ui.base.BaseViewModel
@@ -23,7 +24,7 @@ class IngredientPickerViewModel(
 
   init {
     viewModelScope.launch {
-      val groups = observeItems.observe().first().toPickerGroups()
+      val groups = observeItems.observe().first().toProductGroups()
       _state.update { it.copy(groups = groups, selectedKeys = groups.keysOf(args.selectedItemIds)) }
     }
     viewModelScope.launch {
