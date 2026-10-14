@@ -206,7 +206,8 @@ private fun ColorPaletteSwatch(
         Icon(
           imageVector = if (selected) Symbols.Outlined.Check else Symbols.Outlined.Wallpaper,
           contentDescription = null,
-          tint = Color.White,
+          // The check sits across both halves: dark in light theme, light in dark theme (white on the gradient).
+          tint = if (palette == ColorPalette.DYNAMIC) Color.White else CaducityTheme.colorScheme.onSurface,
         )
       }
     }
