@@ -152,7 +152,7 @@ private fun DecorativeShapes() {
   )
   Box(modifier = Modifier.fillMaxSize()) {
     Shape(
-      shape = CategoryShape.CLOVER8,
+      shape = CategoryShape.COOKIE7,
       color = CaducityTheme.colors.fresh.container,
       modifier =
         Modifier

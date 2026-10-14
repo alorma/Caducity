@@ -48,9 +48,19 @@ object SuggestedDurations {
   /** Suggested duration for a category recognised by its name; null for user-made categories. */
   fun forName(name: String): Int? = suggestedFor(name)?.let(::of)
 
+  /** Shapes the onboarding gave to the suggested categories before they changed; stored categories may still have them. */
+  private val LEGACY_SHAPES: Map<SuggestedCategory, CategoryShape> =
+    mapOf(
+      SuggestedCategory.PRODUCE to CategoryShape.CLOVER8,
+      SuggestedCategory.BAKERY to CategoryShape.PUFFY,
+      SuggestedCategory.DRINKS to CategoryShape.BURST,
+      SuggestedCategory.READY_MEALS to CategoryShape.CLOVER8,
+    )
+
   /**
    * Duration for a category that still looks like a default one: its name matches a suggested category
-   * and it keeps that category's shape and icon. Null for user-made or edited categories (v4 → v5 migration).
+   * and it keeps that category's shape (current or legacy) and icon. Null for user-made or edited categories
+   * (v4 → v5 migration).
    */
   fun forDefaultCategory(
     name: String,
@@ -58,6 +68,6 @@ object SuggestedDurations {
     icon: CategoryIcon,
   ): Int? =
     suggestedFor(name)
-      ?.takeIf { it.shape == shape && it.icon == icon }
+      ?.takeIf { (it.shape == shape || LEGACY_SHAPES[it] == shape) && it.icon == icon }
       ?.let(::of)
 }

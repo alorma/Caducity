@@ -16,6 +16,8 @@ val CategoryShape.polygon: RoundedPolygon
       CategoryShape.SUNNY -> MaterialShapes.Sunny
       CategoryShape.PUFFY -> MaterialShapes.Puffy
       CategoryShape.BURST -> MaterialShapes.SoftBurst
+      CategoryShape.COOKIE7 -> MaterialShapes.Cookie7Sided
+      CategoryShape.COOKIE4 -> MaterialShapes.Cookie4Sided
     }
 
 @Composable

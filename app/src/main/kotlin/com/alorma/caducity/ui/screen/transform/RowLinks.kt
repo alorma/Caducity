@@ -128,7 +128,7 @@ internal fun RowLinksNode(
     modifier =
       modifier
         .size(NodeSize)
-        .clip(CategoryShape.CLOVER8.toComposeShape())
+        .clip(CategoryShape.COOKIE7.toComposeShape())
         .background(CaducityTheme.colorScheme.surfaceContainerHigh)
         .onGloballyPositioned { links?.node = it },
     contentAlignment = Alignment.Center,

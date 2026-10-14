@@ -100,7 +100,7 @@ class PopulateFakeDataUseCaseTest {
       expectThat(categories.map { it.name }).containsExactly("Làctics", "Fruita i verdura")
       expectThat(categories.map { it.sortOrder }).containsExactly(0, 1)
       expectThat(categories.map { it.icon.id }).containsExactly("water_full", "nutrition")
-      expectThat(categories.map { it.shape.name }).containsExactly("COOKIE", "CLOVER8")
+      expectThat(categories.map { it.shape.name }).containsExactly("COOKIE", "COOKIE7")
 
       val items = db.itemDao().getAllItemsSync()
       expectThat(items.size).isGreaterThan(30)

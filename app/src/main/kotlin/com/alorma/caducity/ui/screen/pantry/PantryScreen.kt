@@ -274,7 +274,7 @@ internal fun PantryPreviewContent() {
             categories =
               listOf(
                 previewCategory("dairy", "Làctics", CategoryShape.COOKIE, "water_full", 14, 1),
-                previewCategory("produce", "Fruita i verdura", CategoryShape.CLOVER8, "nutrition", 20, 0),
+                previewCategory("produce", "Fruita i verdura", CategoryShape.COOKIE7, "nutrition", 20, 0),
                 previewCategory("meat", "Carn i peix", CategoryShape.CLOVER, "set_meal", 9, 3),
               ),
           ),

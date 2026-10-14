@@ -16,20 +16,20 @@ class CategoryDefaultsTest {
     expectThat(of("Dairy")).isEqualTo("COOKIE" to "water_full")
     expectThat(of("Lácteos")).isEqualTo("COOKIE" to "water_full")
     expectThat(of("Làctics")).isEqualTo("COOKIE" to "water_full")
-    expectThat(of("Fruita i verdura")).isEqualTo("CLOVER8" to "nutrition")
+    expectThat(of("Fruita i verdura")).isEqualTo("COOKIE7" to "nutrition")
     expectThat(of("Carne y pescado")).isEqualTo("CLOVER" to "set_meal")
     expectThat(of("Carn")).isEqualTo("CLOVER" to "set_meal")
     expectThat(of("Rebost")).isEqualTo("SUNNY" to "grocery")
     expectThat(of("Despensa")).isEqualTo("SUNNY" to "grocery")
-    expectThat(of("Fleca")).isEqualTo("PUFFY" to "bakery_dining")
-    expectThat(of("Pan")).isEqualTo("PUFFY" to "bakery_dining")
-    expectThat(of("Begudes")).isEqualTo("BURST" to "local_drink")
-    expectThat(of("Congelados")).isEqualTo("BURST" to "icecream")
+    expectThat(of("Fleca")).isEqualTo("COOKIE4" to "bakery_dining")
+    expectThat(of("Pan")).isEqualTo("COOKIE4" to "bakery_dining")
+    expectThat(of("Begudes")).isEqualTo("CLOVER" to "local_drink")
+    expectThat(of("Congelados")).isEqualTo("SUNNY" to "icecream")
   }
 
   @Test
   fun `pan only matches as a whole word`() {
-    expectThat(of("Panko", index = 1)).isEqualTo("CLOVER8" to "eco")
+    expectThat(of("Panko", index = 1)).isEqualTo("COOKIE7" to "eco")
   }
 
   @Test
@@ -41,7 +41,7 @@ class CategoryDefaultsTest {
   fun `unmatched names cycle shapes by index with the default icon`() {
     val shapes = (0..7).map { CategoryDefaults.forName("Zzz", it).shape.name }
     expectThat(shapes).isEqualTo(
-      listOf("COOKIE", "CLOVER8", "CLOVER", "SUNNY", "PUFFY", "BURST", "COOKIE", "CLOVER8"),
+      listOf("COOKIE", "COOKIE7", "CLOVER", "SUNNY", "COOKIE4", "PUFFY", "COOKIE", "COOKIE7"),
     )
     expectThat(CategoryDefaults.forName("Zzz", 3).icon.id).isEqualTo("eco")
   }

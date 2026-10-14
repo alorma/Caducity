@@ -18,7 +18,7 @@ import kotlinx.datetime.LocalDate
 
 private val today = LocalDate(2026, 10, 11)
 private val dairy = Category("dairy", "Dairy", "", CategoryShape.COOKIE, CategoryIcon("water_full"), 0)
-private val produce = Category("produce", "Produce", "", CategoryShape.CLOVER8, CategoryIcon("nutrition"), 1)
+private val produce = Category("produce", "Produce", "", CategoryShape.COOKIE7, CategoryIcon("nutrition"), 1)
 private val bakery = Category("bakery", "Bakery", "", CategoryShape.PUFFY, CategoryIcon("bakery_dining"), 2)
 private val categories = listOf(dairy, produce, bakery)
 

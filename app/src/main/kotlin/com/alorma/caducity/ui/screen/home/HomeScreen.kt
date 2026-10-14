@@ -299,7 +299,7 @@ private val LocalDateSaver =
 
 private val today = LocalDate(2026, 10, 11)
 private val dairy = Category("dairy", "Làctics", "", CategoryShape.COOKIE, CategoryIcon("water_full"))
-private val produce = Category("produce", "Fruita i verdura", "", CategoryShape.CLOVER8, CategoryIcon("nutrition"))
+private val produce = Category("produce", "Fruita i verdura", "", CategoryShape.COOKIE7, CategoryIcon("nutrition"))
 
 private fun row(
   name: String,

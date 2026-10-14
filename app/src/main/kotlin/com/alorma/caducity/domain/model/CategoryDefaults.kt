@@ -9,7 +9,7 @@ data class CategoryDefaults(
   val icon: CategoryIcon,
 ) {
   companion object {
-    private val SHAPE_CYCLE = CategoryShape.entries
+    private val SHAPE_CYCLE = CategoryShape.selectableShapes
 
     private class Rule(
       val prefixes: List<String>,
@@ -30,7 +30,7 @@ data class CategoryDefaults(
         Rule(
           listOf("produce", "fruit", "fruta", "verdura"),
           emptyList(),
-          CategoryShape.CLOVER8,
+          CategoryShape.COOKIE7,
           CategoryIcon("nutrition"),
         ),
         Rule(
@@ -45,9 +45,9 @@ data class CategoryDefaults(
           CategoryShape.SUNNY,
           CategoryIcon("grocery"),
         ),
-        Rule(listOf("bakery", "panader", "fleca"), listOf("pan"), CategoryShape.PUFFY, CategoryIcon("bakery_dining")),
-        Rule(listOf("drink", "bebida", "begud"), emptyList(), CategoryShape.BURST, CategoryIcon("local_drink")),
-        Rule(listOf("frozen", "congelad", "congelat"), emptyList(), CategoryShape.BURST, CategoryIcon("icecream")),
+        Rule(listOf("bakery", "panader", "fleca"), listOf("pan"), CategoryShape.COOKIE4, CategoryIcon("bakery_dining")),
+        Rule(listOf("drink", "bebida", "begud"), emptyList(), CategoryShape.CLOVER, CategoryIcon("local_drink")),
+        Rule(listOf("frozen", "congelad", "congelat"), emptyList(), CategoryShape.SUNNY, CategoryIcon("icecream")),
       )
 
     /** @param index position in the sort order, used to cycle shapes when no keyword matches. */

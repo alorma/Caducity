@@ -173,7 +173,7 @@ private fun SampleResultCard() {
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-      CategoryShapeIcon(shape = CategoryShape.CLOVER8, icon = Symbols.Outlined.SoupKitchen, size = 44.dp)
+      CategoryShapeIcon(shape = CategoryShape.COOKIE7, icon = Symbols.Outlined.SoupKitchen, size = 44.dp)
       Column {
         Text(
           text = stringResource(R.string.ob_transform_sample_result),
@@ -202,7 +202,7 @@ private fun IngredientPill(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-      CategoryShapeIcon(shape = CategoryShape.CLOVER8, icon = icon, size = 36.dp)
+      CategoryShapeIcon(shape = CategoryShape.COOKIE7, icon = icon, size = 36.dp)
       Text(
         text = name,
         style = CaducityTheme.typography.titleSmall,

@@ -454,7 +454,7 @@ class PantryUseCasesTest {
       expectThat(categories.map { it.name }).containsExactly("cold_cuts", "dairy", "ready_meals")
       expectThat(categories.map { it.sortOrder }).containsExactly(0, 1, 2)
       expectThat(categories.map { it.shape })
-        .containsExactly(CategoryShape.COOKIE, CategoryShape.COOKIE, CategoryShape.CLOVER8)
+        .containsExactly(CategoryShape.COOKIE, CategoryShape.COOKIE, CategoryShape.PUFFY)
       expectThat(categories.map { it.icon.id }).containsExactly("kebab_dining", "water_full", "soup_kitchen")
       expectThat(pantry.getNextSortOrder()).isEqualTo(3)
     }

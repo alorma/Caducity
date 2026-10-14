@@ -92,9 +92,10 @@ fun ShapePicker(
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
-    CategoryShape.entries.forEachIndexed { index, shape ->
+    CategoryShape.selectableShapes.forEachIndexed { index, shape ->
       val isSelected = shape == selected
-      val description = stringResource(R.string.category_form_shape_option, index + 1, CategoryShape.entries.size)
+      val description =
+        stringResource(R.string.category_form_shape_option, index + 1, CategoryShape.selectableShapes.size)
       val scheme = CaducityTheme.colorScheme
       Surface(
         selected = isSelected,
