@@ -123,14 +123,15 @@ fun InternalTheme(
         states = if (darkMode) DarkStateColors else LightStateColors,
       ),
   ) {
+    // Settings rows (spec 21): dark title, secondary subtitle and trailing content, icon in the primary color.
     val settingsColors =
       ListItemDefaults.colors(
         containerColor = colorScheme.surfaceContainer,
-        contentColor = colorScheme.primary,
+        contentColor = colorScheme.onSurface,
         overlineContentColor = colorScheme.onSurface,
-        supportingContentColor = colorScheme.onSurface,
+        supportingContentColor = colorScheme.onSurfaceVariant,
         leadingContentColor = colorScheme.primary,
-        trailingContentColor = colorScheme.primary,
+        trailingContentColor = colorScheme.onSurfaceVariant,
       )
     CompositionLocalProvider(LocalSettingsTileColors provides settingsColors) {
       content()
