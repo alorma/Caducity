@@ -162,9 +162,13 @@ class ItemActionsSheetViewModelTest {
     ).also { created += it }
   }
 
-  private suspend fun ItemActionsSheetViewModel.ready(): ItemActionsSheetState.Ready =
+  private suspend fun ItemActionsSheetViewModel.ready(
+    until: (ItemActionsSheetState.Ready) -> Boolean = { true },
+  ): ItemActionsSheetState.Ready =
     withContext(Dispatchers.Default) {
-      withTimeout(5_000) { state.first { it is ItemActionsSheetState.Ready } as ItemActionsSheetState.Ready }
+      withTimeout(5_000) {
+        state.first { it is ItemActionsSheetState.Ready && until(it) } as ItemActionsSheetState.Ready
+      }
     }
 
   private suspend fun ItemActionsSheetViewModel.untilClosed() =
@@ -418,7 +422,8 @@ class ItemActionsSheetViewModelTest {
       vm.onFreezeToggle()
       nextSnackbar()
       expectThat(item(id).remainingDays).isEqualTo(6)
-      expectThat(vm.ready().frozen).isTrue()
+      // The state comes from Room and re-emits after the write: wait for it before toggling again.
+      expectThat(vm.ready { it.frozen }.frozen).isTrue()
 
       vm.onFreezeToggle()
       val effect = vm.sideEffects.first { it is ItemActionsSheetSideEffect.ShowDatePicker }
