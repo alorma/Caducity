@@ -374,8 +374,7 @@ private fun PickerRow(
           statusColors.container.copy(alpha = 0.5f).compositeOver(CaducityTheme.colorScheme.surfaceContainer),
         selectedContentColor = statusColors.onContainer,
       ),
-    // A thin outline in the status colour and a little lift, so it shows in any palette.
-    elevation = ListItemDefaults.elevation(elevation = if (selected) 2.dp else 0.dp),
+    // A thin outline in the status colour, so it shows in any palette.
     modifier =
       Modifier
         .fillMaxWidth()
