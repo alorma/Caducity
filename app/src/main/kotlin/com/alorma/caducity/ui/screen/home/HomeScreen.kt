@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
@@ -41,6 +42,7 @@ import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -72,7 +74,7 @@ fun HomeScreen(
 
   ResponsiveCenteredContainer(modifier = modifier) {
     when (val current = state) {
-      HomeState.Loading -> Unit
+      HomeState.Loading -> HomeLoading(today = koinInject<TodayProvider>().today())
       is HomeState.Ready ->
         HomeContent(
           state = current,
@@ -225,6 +227,33 @@ internal fun HomeContent(
         }
       }
     }
+  }
+}
+
+/** While the first data arrives: the fixed parts of the screen (header, week strip, status blocks) without data. */
+@Composable
+internal fun HomeLoading(
+  today: LocalDate,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier = modifier.fillMaxSize()) {
+    HomeHeader(today = today, showActions = true, onCalendar = {}, onSearch = {})
+    WeekStrip(
+      data = WeekStripData(today, emptyMap()),
+      selected = null,
+      onDayClick = {},
+      modifier = Modifier.padding(top = 12.dp, bottom = 12.dp),
+      contentPadding = PaddingValues(horizontal = 20.dp),
+    )
+    SummaryRow(
+      soon = 0,
+      fresh = 0,
+      frozen = 0,
+      onSoon = {},
+      onFresh = {},
+      onFrozen = {},
+      modifier = Modifier.padding(horizontal = 20.dp),
+    )
   }
 }
 
