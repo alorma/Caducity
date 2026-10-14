@@ -101,6 +101,7 @@
   <string name="add_date_placeholder">dd/mm/aa</string>
   <string name="add_date_pick">Elige la fecha</string>
   <string name="add_date_help_expired">ya ha caducado</string>
+  <string name="add_date_suggested">Sugerida: %1$s duran %2$s</string>
   <string name="add_date_help_today">%1$s · hoy</string>
   <string name="add_date_help_tomorrow">%1$s · mañana</string>
   <plurals name="add_date_help_days">
@@ -291,6 +292,12 @@
     <item quantity="many">%d productos</item>
     <item quantity="other">%d productos</item>
   </plurals>
+  <plurals name="status_soon_window">
+    <item quantity="one">próximo día</item>
+    <item quantity="many">próximos %d días</item>
+    <item quantity="other">próximos %d días</item>
+  </plurals>
+  <string name="status_soon_subtitle">%1$s · %2$s</string>
   <plurals name="home_unit_count">
     <item quantity="one">%d unidad</item>
     <item quantity="many">%d unidades</item>

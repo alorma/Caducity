@@ -100,6 +100,7 @@
   <string name="add_date_placeholder">dd/mm/yy</string>
   <string name="add_date_pick">Pick a date</string>
   <string name="add_date_help_expired">already expired</string>
+  <string name="add_date_suggested">Suggested: %1$s last %2$s</string>
   <string name="add_date_help_today">%1$s · today</string>
   <string name="add_date_help_tomorrow">%1$s · tomorrow</string>
   <plurals name="add_date_help_days">
@@ -281,6 +282,11 @@
     <item quantity="one">%d product</item>
     <item quantity="other">%d products</item>
   </plurals>
+  <plurals name="status_soon_window">
+    <item quantity="one">next day</item>
+    <item quantity="other">next %d days</item>
+  </plurals>
+  <string name="status_soon_subtitle">%1$s · %2$s</string>
   <plurals name="home_unit_count">
     <item quantity="one">%d unit</item>
     <item quantity="other">%d units</item>

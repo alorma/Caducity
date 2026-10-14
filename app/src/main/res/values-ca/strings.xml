@@ -101,6 +101,7 @@
   <string name="add_date_placeholder">dd/mm/aa</string>
   <string name="add_date_pick">Tria la data</string>
   <string name="add_date_help_expired">ja ha caducat</string>
+  <string name="add_date_suggested">Suggerida: %1$s duren %2$s</string>
   <string name="add_date_help_today">%1$s · avui</string>
   <string name="add_date_help_tomorrow">%1$s · demà</string>
   <plurals name="add_date_help_days">
@@ -291,6 +292,12 @@
     <item quantity="many">%d productes</item>
     <item quantity="other">%d productes</item>
   </plurals>
+  <plurals name="status_soon_window">
+    <item quantity="one">pròxim dia</item>
+    <item quantity="many">pròxims %d dies</item>
+    <item quantity="other">pròxims %d dies</item>
+  </plurals>
+  <string name="status_soon_subtitle">%1$s · %2$s</string>
   <plurals name="home_unit_count">
     <item quantity="one">%d unitat</item>
     <item quantity="many">%d unitats</item>
