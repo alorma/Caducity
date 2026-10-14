@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.settings.margins
+package com.alorma.caducity.ui.screen.settings.durations
 
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.domain.PantryDataSource
@@ -15,23 +15,23 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /** «Marge per categoria»: every category with its usual duration, edited in place, one row open at a time. */
-class CategoryMarginsViewModel(
+class CategoryDurationsViewModel(
   pantryDataSource: PantryDataSource,
   private val durations: CategoryDurationsUseCase,
-) : BaseViewModel<Unit, Unit, CategoryMarginsSideEffect>() {
+) : BaseViewModel<Unit, Unit, CategoryDurationsSideEffect>() {
   private val expandedId = MutableStateFlow<String?>(null)
 
   // Rows keep their place while one is open, so the row being edited does not jump under the finger.
   private var frozenOrder: List<String>? = null
 
-  val state: StateFlow<CategoryMarginsState> =
+  val state: StateFlow<CategoryDurationsState> =
     combine(
       pantryDataSource.observeCategories(),
       expandedId,
     ) { categories, expanded ->
       val rows =
         categories.map { category ->
-          CategoryMarginRow(
+          CategoryDurationRow(
             category = category,
             usualDays = category.usualDurationDays,
             suggestedDays = SuggestedDurations.forName(category.name),
@@ -44,13 +44,13 @@ class CategoryMarginsViewModel(
         } else {
           rows.sortedWith(compareBy({ it.usualDays ?: Int.MAX_VALUE }, { it.category.name.normalizeForSearch() }))
         }
-      CategoryMarginsState.Ready(sorted, expanded) as CategoryMarginsState
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), CategoryMarginsState.Loading)
+      CategoryDurationsState.Ready(sorted, expanded) as CategoryDurationsState
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), CategoryDurationsState.Loading)
 
   override fun navigate(navigation: Unit) = Unit
 
   fun onRowClick(categoryId: String) {
-    val ready = state.value as? CategoryMarginsState.Ready ?: return
+    val ready = state.value as? CategoryDurationsState.Ready ?: return
     if (expandedId.value == categoryId) {
       frozenOrder = null
       expandedId.value = null
@@ -65,12 +65,12 @@ class CategoryMarginsViewModel(
     days: Int,
   ) {
     viewModelScope.launch {
-      durations.set(categoryId, days).onFailure { emitSideEffect(CategoryMarginsSideEffect.Failed) }
+      durations.set(categoryId, days).onFailure { emitSideEffect(CategoryDurationsSideEffect.Failed) }
     }
   }
 
   fun onRestoreClick() {
-    emitSideEffect(CategoryMarginsSideEffect.ShowRestoreConfirm)
+    emitSideEffect(CategoryDurationsSideEffect.ShowRestoreConfirm)
   }
 
   fun onRestoreConfirmed() {
@@ -79,8 +79,8 @@ class CategoryMarginsViewModel(
       expandedId.update { null }
       durations
         .restoreSuggested()
-        .onSuccess { emitSideEffect(CategoryMarginsSideEffect.Restored) }
-        .onFailure { emitSideEffect(CategoryMarginsSideEffect.Failed) }
+        .onSuccess { emitSideEffect(CategoryDurationsSideEffect.Restored) }
+        .onFailure { emitSideEffect(CategoryDurationsSideEffect.Failed) }
     }
   }
 }

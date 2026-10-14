@@ -3,7 +3,7 @@ package com.alorma.caducity.ui.screen.settings
 sealed interface SettingsNavigation {
   data object Backup : SettingsNavigation
 
-  data object CategoryMargins : SettingsNavigation
+  data object CategoryDurations : SettingsNavigation
 
   data object Privacy : SettingsNavigation
 
@@ -15,7 +15,7 @@ sealed interface SettingsNavigation {
 sealed interface SettingsNavigationSideEffect {
   data object OpenBackup : SettingsNavigationSideEffect
 
-  data object OpenCategoryMargins : SettingsNavigationSideEffect
+  data object OpenCategoryDurations : SettingsNavigationSideEffect
 
   data object OpenPrivacy : SettingsNavigationSideEffect
 

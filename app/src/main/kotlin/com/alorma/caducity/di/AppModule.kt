@@ -40,7 +40,7 @@ import com.alorma.caducity.ui.screen.settings.SettingsViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugRemoteConfigsViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
-import com.alorma.caducity.ui.screen.settings.margins.CategoryMarginsViewModel
+import com.alorma.caducity.ui.screen.settings.durations.CategoryDurationsViewModel
 import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsViewModel
 import com.alorma.caducity.ui.screen.status.StatusListViewModel
 import com.alorma.caducity.ui.screen.transform.TransformViewModel
@@ -225,7 +225,7 @@ val appModule =
     viewModelOf(::BackupViewModel)
 
     // Privacy Settings
-    viewModelOf(::CategoryMarginsViewModel)
+    viewModelOf(::CategoryDurationsViewModel)
     viewModelOf(::PrivacySettingsViewModel)
 
     // Debug Settings

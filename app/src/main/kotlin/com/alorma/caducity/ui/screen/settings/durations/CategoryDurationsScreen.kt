@@ -1,4 +1,4 @@
-package com.alorma.caducity.ui.screen.settings.margins
+package com.alorma.caducity.ui.screen.settings.durations
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
@@ -29,7 +29,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Lightbulb
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.Undo
-import com.alorma.caducity.feature.tracking.CategoryMarginsScreen as CategoryMarginsScreenEvent
+import com.alorma.caducity.feature.tracking.CategoryDurationsScreen as CategoryDurationsScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.imageVector
@@ -50,23 +50,23 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun CategoryMarginsScreen(
+fun CategoryDurationsScreen(
   modifier: Modifier = Modifier,
-  viewModel: CategoryMarginsViewModel = koinViewModel(),
+  viewModel: CategoryDurationsViewModel = koinViewModel(),
 ) {
-  TrackScreen(screen = CategoryMarginsScreenEvent())
+  TrackScreen(screen = CategoryDurationsScreenEvent())
   val state by viewModel.state.collectAsStateWithLifecycle()
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarState()
 
-  val restoreTitle = stringResource(R.string.margins_restore_title)
-  val restoreBody = stringResource(R.string.margins_restore_body)
-  val restoreConfirm = stringResource(R.string.margins_restore_confirm)
-  val restoreCancel = stringResource(R.string.margins_restore_cancel)
+  val restoreTitle = stringResource(R.string.durations_restore_title)
+  val restoreBody = stringResource(R.string.durations_restore_body)
+  val restoreConfirm = stringResource(R.string.durations_restore_confirm)
+  val restoreCancel = stringResource(R.string.durations_restore_cancel)
   LaunchedEffect(viewModel) {
     viewModel.sideEffects.collect { effect ->
       when (effect) {
-        CategoryMarginsSideEffect.ShowRestoreConfirm ->
+        CategoryDurationsSideEffect.ShowRestoreConfirm ->
           launch {
             val result =
               dialogState.showAlertDialog(
@@ -78,10 +78,10 @@ fun CategoryMarginsScreen(
               )
             if (result == DialogResult.Positive) viewModel.onRestoreConfirmed()
           }
-        CategoryMarginsSideEffect.Restored ->
-          launch { snackbarState.showSnackbar(message = R.string.margins_restored, type = AppFeedbackType.Success) }
-        CategoryMarginsSideEffect.Failed ->
-          launch { snackbarState.showSnackbar(message = R.string.margins_failed, type = AppFeedbackType.Error) }
+        CategoryDurationsSideEffect.Restored ->
+          launch { snackbarState.showSnackbar(message = R.string.durations_restored, type = AppFeedbackType.Success) }
+        CategoryDurationsSideEffect.Failed ->
+          launch { snackbarState.showSnackbar(message = R.string.durations_failed, type = AppFeedbackType.Error) }
       }
     }
   }
@@ -93,15 +93,15 @@ fun CategoryMarginsScreen(
     topBar = {
       StyledTopAppBar(
         navigationIcon = { NavigationIcon() },
-        title = { Text(stringResource(R.string.margins_title)) },
+        title = { Text(stringResource(R.string.durations_title)) },
       )
     },
   ) { padding ->
     ResponsiveSettingsContainer(modifier = Modifier.padding(padding)) {
       when (val current = state) {
-        CategoryMarginsState.Loading -> Unit
-        is CategoryMarginsState.Ready ->
-          MarginsList(
+        CategoryDurationsState.Loading -> Unit
+        is CategoryDurationsState.Ready ->
+          DurationsList(
             state = current,
             onRowClick = viewModel::onRowClick,
             onDaysChange = viewModel::onDaysChange,
@@ -113,8 +113,8 @@ fun CategoryMarginsScreen(
 }
 
 @Composable
-private fun MarginsList(
-  state: CategoryMarginsState.Ready,
+private fun DurationsList(
+  state: CategoryDurationsState.Ready,
   onRowClick: (String) -> Unit,
   onDaysChange: (String, Int) -> Unit,
   onRestore: () -> Unit,
@@ -126,7 +126,7 @@ private fun MarginsList(
   ) {
     item {
       Text(
-        text = stringResource(R.string.margins_help),
+        text = stringResource(R.string.durations_help),
         style = CaducityTheme.typography.bodyMedium,
         color = CaducityTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp).padding(bottom = 8.dp),
@@ -134,7 +134,7 @@ private fun MarginsList(
     }
     items(state.rows, key = { it.category.id }) { row ->
       val index = state.rows.indexOf(row)
-      MarginRow(
+      DurationRow(
         row = row,
         index = index,
         count = state.rows.size,
@@ -146,7 +146,7 @@ private fun MarginsList(
     item {
       TextButton(onClick = onRestore, modifier = Modifier.padding(top = 12.dp)) {
         Icon(Symbols.Outlined.Undo, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
-        Text(stringResource(R.string.margins_restore))
+        Text(stringResource(R.string.durations_restore))
       }
     }
   }
@@ -156,8 +156,8 @@ private fun MarginsList(
 private const val SLIDER_START_DAYS = 7
 
 @Composable
-private fun MarginRow(
-  row: CategoryMarginRow,
+private fun DurationRow(
+  row: CategoryDurationRow,
   index: Int,
   count: Int,
   expanded: Boolean,
@@ -195,9 +195,9 @@ private fun MarginRow(
           Text(
             text =
               if (label == null) {
-                stringResource(R.string.margins_row_default)
+                stringResource(R.string.durations_row_default)
               } else {
-                stringResource(R.string.margins_row_notify, label)
+                stringResource(R.string.durations_row_notify, label)
               },
             style = CaducityTheme.typography.bodySmall,
             color = colors.onSurfaceVariant,
@@ -237,7 +237,7 @@ private fun MarginRow(
               modifier = Modifier.size(20.dp),
             )
             Text(
-              text = stringResource(R.string.margins_suggested_hint, row.category.name, thresholdLabel(suggested)),
+              text = stringResource(R.string.durations_suggested_hint, row.category.name, thresholdLabel(suggested)),
               style = CaducityTheme.typography.bodyMedium,
               color = colors.onSurfaceVariant,
             )

@@ -58,9 +58,9 @@ class SettingsViewModel(
         reminderEnabled = reminder.enabled,
         reminderTime = reminder.time,
         soonThresholdDays = threshold,
-        categoryMargins =
+        categoryDurations =
           categories
-            .map { CategoryMarginSummary(it.name, it.usualDurationDays) }
+            .map { CategoryDurationSummary(it.name, it.usualDurationDays) }
             .sortedWith(compareBy({ it.days ?: Int.MAX_VALUE }, { it.name.normalizeForSearch() })),
         themeMode = themeMode,
         colorPalette = colorPalette,
@@ -84,9 +84,9 @@ class SettingsViewModel(
         eventTracker.trackAction(NavigateFromSettingsAction("backup"))
         emitNavigationSideEffect(SettingsNavigationSideEffect.OpenBackup)
       }
-      SettingsNavigation.CategoryMargins -> {
+      SettingsNavigation.CategoryDurations -> {
         eventTracker.trackAction(NavigateFromSettingsAction("category_margins"))
-        emitNavigationSideEffect(SettingsNavigationSideEffect.OpenCategoryMargins)
+        emitNavigationSideEffect(SettingsNavigationSideEffect.OpenCategoryDurations)
       }
       SettingsNavigation.Privacy -> {
         eventTracker.trackAction(NavigateFromSettingsAction("privacy"))

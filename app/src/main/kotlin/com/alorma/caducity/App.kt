@@ -42,7 +42,7 @@ import com.alorma.caducity.ui.navigation.QuickCategory
 import com.alorma.caducity.ui.navigation.Settings
 import com.alorma.caducity.ui.navigation.SettingsAbout
 import com.alorma.caducity.ui.navigation.SettingsBackup
-import com.alorma.caducity.ui.navigation.SettingsCategoryMargins
+import com.alorma.caducity.ui.navigation.SettingsCategoryDurations
 import com.alorma.caducity.ui.navigation.SettingsDebug
 import com.alorma.caducity.ui.navigation.SettingsDebugRemoteConfigs
 import com.alorma.caducity.ui.navigation.SettingsPrivacy
@@ -70,7 +70,7 @@ import com.alorma.caducity.ui.screen.settings.about.AboutScreen
 import com.alorma.caducity.ui.screen.settings.backup.BackupScreen
 import com.alorma.caducity.ui.screen.settings.debug.DebugRemoteConfigsScreen
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsScreen
-import com.alorma.caducity.ui.screen.settings.margins.CategoryMarginsScreen
+import com.alorma.caducity.ui.screen.settings.durations.CategoryDurationsScreen
 import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsScreen
 import com.alorma.caducity.ui.screen.status.StatusListScreen
 import com.alorma.caducity.ui.screen.transform.TransformArgs
@@ -203,14 +203,14 @@ fun App(
             entry<Settings> {
               SettingsScreen(
                 onOpenBackup = { navigation.navigate(SettingsBackup) },
-                onOpenCategoryMargins = { navigation.navigate(SettingsCategoryMargins) },
+                onOpenCategoryDurations = { navigation.navigate(SettingsCategoryDurations) },
                 onOpenPrivacy = { navigation.navigate(SettingsPrivacy) },
                 onOpenAbout = { navigation.navigate(SettingsAbout) },
                 onOpenDebug = { navigation.navigate(SettingsDebug) },
               )
             }
             entry<SettingsBackup> { BackupScreen() }
-            entry<SettingsCategoryMargins> { CategoryMarginsScreen() }
+            entry<SettingsCategoryDurations> { CategoryDurationsScreen() }
             entry<SettingsPrivacy> { PrivacySettingsScreen(onClose = { navigation.pop() }) }
             entry<SettingsAbout> {
               AboutScreen(

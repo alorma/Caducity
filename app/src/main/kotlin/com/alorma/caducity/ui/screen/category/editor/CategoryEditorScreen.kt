@@ -201,7 +201,7 @@ internal fun CategoryEditorContent(
       IconPicker(selected = state.icon, onSelect = onIconChange)
     }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      FormOverline(stringResource(R.string.category_editor_margin))
+      FormOverline(stringResource(R.string.category_editor_duration))
       Surface(
         shape = RoundedCornerShape(20.dp),
         color = CaducityTheme.colorScheme.surfaceContainer,
@@ -216,12 +216,12 @@ internal fun CategoryEditorContent(
           Text(
             text =
               when {
-                state.usualDurationDays == null -> stringResource(R.string.category_editor_margin_help_none)
+                state.usualDurationDays == null -> stringResource(R.string.category_editor_duration_help_none)
                 categoryName.isBlank() ->
-                  stringResource(R.string.category_editor_margin_help_blank, thresholdLabel(state.shownDurationDays))
+                  stringResource(R.string.category_editor_duration_help_blank, thresholdLabel(state.shownDurationDays))
                 else ->
                   stringResource(
-                    R.string.category_editor_margin_help,
+                    R.string.category_editor_duration_help,
                     categoryName,
                     thresholdLabel(state.shownDurationDays),
                   )

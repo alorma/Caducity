@@ -128,15 +128,15 @@ class SettingsViewModelTest {
   @Test
   fun `the usual durations are listed shortest first, categories without one last`() =
     runTest {
-      val margins = vm.state.first { it.categoryMargins.isNotEmpty() }.categoryMargins
+      val margins = vm.state.first { it.categoryDurations.isNotEmpty() }.categoryDurations
       expectThat(margins).containsExactly(
-        CategoryMarginSummary("Fleca", 2),
-        CategoryMarginSummary("Rebost", 30),
-        CategoryMarginSummary("Làctics", null),
+        CategoryDurationSummary("Fleca", 2),
+        CategoryDurationSummary("Rebost", 30),
+        CategoryDurationSummary("Làctics", null),
       )
 
       vm.onSoonThresholdChange(7)
-      val updated = vm.state.first { it.soonThresholdDays == 7 }.categoryMargins
+      val updated = vm.state.first { it.soonThresholdDays == 7 }.categoryDurations
       expectThat(updated.first { it.name == "Làctics" }.days).isNull()
       expectThat(updated.first { it.name == "Rebost" }.days).isEqualTo(30)
     }

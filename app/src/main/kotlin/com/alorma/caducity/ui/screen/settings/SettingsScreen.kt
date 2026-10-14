@@ -82,7 +82,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun SettingsScreen(
   onOpenBackup: () -> Unit,
-  onOpenCategoryMargins: () -> Unit,
+  onOpenCategoryDurations: () -> Unit,
   onOpenPrivacy: () -> Unit,
   onOpenAbout: () -> Unit,
   onOpenDebug: () -> Unit,
@@ -101,7 +101,7 @@ fun SettingsScreen(
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
         SettingsNavigationSideEffect.OpenBackup -> onOpenBackup()
-        SettingsNavigationSideEffect.OpenCategoryMargins -> onOpenCategoryMargins()
+        SettingsNavigationSideEffect.OpenCategoryDurations -> onOpenCategoryDurations()
         SettingsNavigationSideEffect.OpenPrivacy -> onOpenPrivacy()
         SettingsNavigationSideEffect.OpenAbout -> onOpenAbout()
         SettingsNavigationSideEffect.OpenDebug -> onOpenDebug()
@@ -176,7 +176,7 @@ internal fun SettingsContent(
       val threeDays = stringResource(R.string.settings_3d)
       val oneWeek = stringResource(R.string.settings_1w)
       val marginsSummary =
-        state.categoryMargins
+        state.categoryDurations
           .mapNotNull { summary -> summary.days?.let { "${summary.name} ${thresholdLabel(it)}" } }
           .joinToString(" · ")
           .ifBlank { null }
@@ -213,11 +213,11 @@ internal fun SettingsContent(
       StyledSettingsGroup(title = { Text(stringResource(R.string.settings_section_products)) }) {
         StyledSettingsCard(
           icon = { Icon(Symbols.Outlined.Tune, contentDescription = null) },
-          title = stringResource(R.string.settings_category_margins),
+          title = stringResource(R.string.settings_category_durations),
           subtitle = marginsSummary,
           subtitleMaxLines = 1,
           action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
-          onClick = { onNavigate(SettingsNavigation.CategoryMargins) },
+          onClick = { onNavigate(SettingsNavigation.CategoryDurations) },
           shapes = ListItemDefaults.segmentedShapes(index = 0, count = 1),
         )
       }
@@ -418,7 +418,11 @@ internal fun SettingsPreviewContent(selectedPalette: ColorPalette = ColorPalette
       SettingsState(
         reminderEnabled = true,
         colorPalette = selectedPalette,
-        categoryMargins = listOf(CategoryMarginSummary("Fruita i verdura", 7), CategoryMarginSummary("Làctics", 3)),
+        categoryDurations =
+          listOf(
+            CategoryDurationSummary("Fruita i verdura", 7),
+            CategoryDurationSummary("Làctics", 3),
+          ),
       ),
     reminderOn = true,
     isDebug = false,
