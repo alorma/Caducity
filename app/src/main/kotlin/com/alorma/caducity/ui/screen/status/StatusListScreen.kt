@@ -5,13 +5,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -83,7 +88,37 @@ fun StatusListScreen(
   }
   SideEffectHandler(viewModel, dialogState)
 
-  val ready = state as? StatusListState.Ready
+  StatusListLayout(
+    status = status,
+    ready = state as? StatusListState.Ready,
+    today = koinInject<TodayProvider>().today(),
+    dialogState = dialogState,
+    onBack = onBack,
+    onRowClick = { row -> viewModel.navigate(StatusListNavigation.ItemActions(row.itemIds)) },
+    onConsume = viewModel::onConsume,
+    onFreeze = viewModel::onFreeze,
+    onDiscard = viewModel::onDiscard,
+    onAdd = { viewModel.navigate(StatusListNavigation.AddFirst) },
+    onDiscardAll = viewModel::onDiscardAllClick,
+    modifier = modifier,
+  )
+}
+
+@Composable
+internal fun StatusListLayout(
+  status: ExpiryStatus,
+  ready: StatusListState.Ready?,
+  today: LocalDate,
+  dialogState: AppDialogState,
+  onBack: () -> Unit,
+  onRowClick: (StatusRow) -> Unit,
+  onConsume: (StatusRow) -> Unit,
+  onFreeze: (StatusRow) -> Unit,
+  onDiscard: (StatusRow) -> Unit,
+  onAdd: () -> Unit,
+  onDiscardAll: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
   val showDiscardAll = status == ExpiryStatus.EXPIRED && ready?.isEmpty == false
   AppScaffold(
     modifier = modifier,
@@ -93,13 +128,23 @@ fun StatusListScreen(
         status = status,
         count = ready?.totalCount ?: 0,
         onBack = onBack,
-        onDiscardAll = viewModel::onDiscardAllClick.takeIf { showDiscardAll },
       )
+    },
+    bottomBar = {
+      if (showDiscardAll) DiscardAllBar(onDiscardAll = onDiscardAll)
     },
   ) { padding ->
     ResponsiveCenteredContainer(modifier = Modifier.padding(padding)) {
       if (ready != null) {
-        StatusListContent(ready = ready, viewModel = viewModel)
+        StatusListContent(
+          ready = ready,
+          today = today,
+          onRowClick = onRowClick,
+          onConsume = onConsume,
+          onFreeze = onFreeze,
+          onDiscard = onDiscard,
+          onAdd = onAdd,
+        )
       }
     }
   }
@@ -112,7 +157,6 @@ private fun StatusTopBar(
   status: ExpiryStatus,
   count: Int,
   onBack: () -> Unit,
-  onDiscardAll: (() -> Unit)?,
 ) {
   val colors = status.colors()
   TopAppBar(
@@ -123,13 +167,6 @@ private fun StatusTopBar(
         Icon(AppIcons.Back, contentDescription = stringResource(R.string.calendar_back))
       }
     },
-    actions = {
-      if (onDiscardAll != null) {
-        IconButton(onClick = onDiscardAll) {
-          Icon(Symbols.Outlined.DeleteSweep, contentDescription = stringResource(R.string.status_discard_all))
-        }
-      }
-    },
     colors =
       TopAppBarDefaults.topAppBarColors(
         containerColor = colors.container,
@@ -137,9 +174,33 @@ private fun StatusTopBar(
         navigationIconContentColor = colors.onContainer,
         titleContentColor = colors.onContainer,
         subtitleContentColor = colors.onContainer,
-        actionIconContentColor = colors.onContainer,
       ),
   )
+}
+
+/** Caducats: the warning and a full-width red 56 dp button pinned at the bottom. */
+@Composable
+private fun DiscardAllBar(onDiscardAll: () -> Unit) {
+  val expired = CaducityTheme.colors.expired
+  Column(
+    modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 20.dp, vertical = 12.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    Text(
+      text = stringResource(R.string.status_expired_warning),
+      style = CaducityTheme.typography.bodyMedium,
+      color = CaducityTheme.colorScheme.onSurfaceVariant,
+    )
+    Button(
+      onClick = onDiscardAll,
+      modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+      colors = ButtonDefaults.buttonColors(containerColor = expired.strong, contentColor = expired.container),
+    ) {
+      Icon(Symbols.Outlined.DeleteSweep, contentDescription = null, modifier = Modifier.size(20.dp))
+      Spacer(Modifier.width(8.dp))
+      Text(stringResource(R.string.status_discard_all))
+    }
+  }
 }
 
 @Composable
@@ -175,14 +236,18 @@ private fun SideEffectHandler(
 @Composable
 private fun StatusListContent(
   ready: StatusListState.Ready,
-  viewModel: StatusListViewModel,
+  today: LocalDate,
+  onRowClick: (StatusRow) -> Unit,
+  onConsume: (StatusRow) -> Unit,
+  onFreeze: (StatusRow) -> Unit,
+  onDiscard: (StatusRow) -> Unit,
+  onAdd: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val today = koinInject<TodayProvider>().today()
   Column(modifier = modifier.fillMaxSize()) {
     if (ready.isEmpty) {
       Box(modifier = Modifier.fillMaxSize()) {
-        StatusEmpty(ready.status, onAdd = { viewModel.navigate(StatusListNavigation.AddFirst) })
+        StatusEmpty(ready.status, onAdd = onAdd)
       }
     } else {
       LazyColumn(
@@ -200,10 +265,10 @@ private fun StatusListContent(
               model = row.toRowModel(today),
               index = index,
               count = section.rows.size,
-              onClick = { viewModel.navigate(StatusListNavigation.ItemActions(row.itemIds)) },
-              onConsume = { viewModel.onConsume(row) },
-              onFreeze = { viewModel.onFreeze(row) },
-              onDiscard = { viewModel.onDiscard(row) },
+              onClick = { onRowClick(row) },
+              onConsume = { onConsume(row) },
+              onFreeze = { onFreeze(row) },
+              onDiscard = { onDiscard(row) },
             )
           }
         }

@@ -363,6 +363,7 @@
   <string name="status_title_fresh">Fresh</string>
   <string name="status_title_frozen">Frozen</string>
   <string name="status_discard_all">Throw them all out</string>
+  <string name="status_expired_warning">They\'ve expired. For safety, throw them out.</string>
   <string name="product_row_in_days">In %1$d days</string>
   <string name="status_action_discard">Throw out %1$s</string>
   <string name="status_action_freeze">Freeze %1$s</string>

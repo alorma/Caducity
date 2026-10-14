@@ -382,6 +382,7 @@
   <string name="status_title_fresh">Frescos</string>
   <string name="status_title_frozen">Congelados</string>
   <string name="status_discard_all">Tíralos todos</string>
+  <string name="status_expired_warning">Han caducado. Por seguridad, tíralos.</string>
   <string name="product_row_in_days">En %1$d días</string>
   <string name="status_action_discard">Tira %1$s</string>
   <string name="status_action_freeze">Congela %1$s</string>

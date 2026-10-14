@@ -382,6 +382,7 @@
   <string name="status_title_fresh">Frescos</string>
   <string name="status_title_frozen">Congelats</string>
   <string name="status_discard_all">Llença\'ls tots</string>
+  <string name="status_expired_warning">Han caducat. Per seguretat, llença\'ls.</string>
   <string name="product_row_in_days">D\'aquí %1$d dies</string>
   <string name="status_action_discard">Llença %1$s</string>
   <string name="status_action_freeze">Congela %1$s</string>
