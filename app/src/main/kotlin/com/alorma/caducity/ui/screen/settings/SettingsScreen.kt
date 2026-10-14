@@ -69,6 +69,8 @@ import com.alorma.caducity.feature.notification.hasNotificationPermission
 import com.alorma.caducity.feature.tracking.SettingsScreen as SettingsScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
@@ -80,6 +82,7 @@ import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledLargeTopAppBar
 import com.alorma.caducity.ui.screen.home.capitalizeFirst
+import com.alorma.caducity.ui.screen.settings.components.ColorPaletteRow
 import com.alorma.caducity.ui.screen.settings.components.ColorPaletteSelector
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
@@ -126,7 +129,8 @@ fun SettingsScreen(
       }
     }
   }
-  SideEffectHandler(viewModel, dialogState, snackbarState)
+  val bottomSheetState = rememberAppBottomSheetState()
+  SideEffectHandler(viewModel, dialogState, snackbarState, bottomSheetState)
 
   val permissionLauncher =
     rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -140,6 +144,7 @@ fun SettingsScreen(
     modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     dialogState = dialogState,
     snackbarState = snackbarState,
+    bottomSheetState = bottomSheetState,
     topBar = {
       StyledLargeTopAppBar(
         scrollBehavior = scrollBehavior,
@@ -166,7 +171,7 @@ fun SettingsScreen(
         onReminderTimeClick = viewModel::onReminderTimeClick,
         onSoonThresholdChange = viewModel::onSoonThresholdChange,
         onThemeModeChange = viewModel::onThemeModeChange,
-        onColorPaletteChange = viewModel::onColorPaletteChange,
+        onColorsClick = viewModel::onColorsClick,
         onFirstDayOfWeekChange = viewModel::onFirstDayOfWeekChange,
         onNavigate = viewModel::navigate,
       )
@@ -184,7 +189,7 @@ internal fun SettingsContent(
   onReminderTimeClick: () -> Unit,
   onSoonThresholdChange: (Int) -> Unit,
   onThemeModeChange: (ThemeMode) -> Unit,
-  onColorPaletteChange: (ColorPalette) -> Unit,
+  onColorsClick: () -> Unit,
   onFirstDayOfWeekChange: (DayOfWeek) -> Unit,
   onNavigate: (SettingsNavigation) -> Unit,
   modifier: Modifier = Modifier,
@@ -288,7 +293,6 @@ internal fun SettingsContent(
     }
 
     item {
-      val palettes = ColorPalette.entries.filter { it != ColorPalette.DYNAMIC || supportsDynamicColors() }
       val themeLight = stringResource(R.string.settings_theme_light)
       val themeDark = stringResource(R.string.settings_theme_dark)
       val themeSystem = stringResource(R.string.settings_theme_system)
@@ -308,10 +312,9 @@ internal fun SettingsContent(
           onItemSelected = onThemeModeChange,
           shapes = ListItemDefaults.segmentedShapes(index = 0, count = 3),
         )
-        ColorPaletteSelector(
+        ColorPaletteRow(
           selected = state.colorPalette,
-          palettes = palettes,
-          onSelected = onColorPaletteChange,
+          onClick = onColorsClick,
           shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
         )
         val context = LocalContext.current
@@ -398,11 +401,13 @@ private fun SideEffectHandler(
   viewModel: SettingsViewModel,
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
+  bottomSheetState: AppBottomSheetState,
 ) {
   val scope = rememberCoroutineScope()
   LaunchedEffect(viewModel) {
     viewModel.sideEffects.collect { effect ->
       when (effect) {
+        SettingsSideEffect.ShowColors -> bottomSheetState.ColorsBottomSheet(viewModel)
         is SettingsSideEffect.ShowTimePicker ->
           scope.launch {
             val pickerState = TimePickerState(effect.current.hour, effect.current.minute, is24Hour = true)
@@ -427,6 +432,18 @@ private fun SideEffectHandler(
           }
       }
     }
+  }
+}
+
+/** «Colors» sheet: it reads the live palette, so a tap repaints at once and the sheet stays open. */
+private fun AppBottomSheetState.ColorsBottomSheet(viewModel: SettingsViewModel) {
+  show {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    ColorPaletteSelector(
+      selected = state.colorPalette,
+      palettes = ColorPalette.entries.filter { it != ColorPalette.DYNAMIC || supportsDynamicColors() },
+      onSelected = viewModel::onColorPaletteChange,
+    )
   }
 }
 
@@ -479,7 +496,7 @@ internal fun SettingsPreviewContent(selectedPalette: ColorPalette = ColorPalette
     onReminderTimeClick = {},
     onSoonThresholdChange = {},
     onThemeModeChange = {},
-    onColorPaletteChange = {},
+    onColorsClick = {},
     onFirstDayOfWeekChange = {},
     onNavigate = {},
   )

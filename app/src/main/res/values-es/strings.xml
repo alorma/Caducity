@@ -21,6 +21,8 @@
   <string name="settings_theme_dark">Oscuro</string>
   <string name="settings_theme_system">Sistema</string>
   <string name="settings_colors">Colores</string>
+  <string name="settings_colors_sheet_subtitle">Se aplican al instante, en claro y en oscuro.</string>
+  <string name="settings_colors_note">Los colores de los estados (caducado, pronto, fresco, congelado) no cambian.</string>
   <string name="palette_dynamic">Dinámico</string>
   <string name="palette_dynamic_help">Del fondo de pantalla</string>
   <string name="palette_caducity">Caducity</string>

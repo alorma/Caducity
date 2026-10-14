@@ -141,6 +141,10 @@ class SettingsViewModel(
     themePreferences.setThemeModeState(mode)
   }
 
+  fun onColorsClick() {
+    emitSideEffect(SettingsSideEffect.ShowColors)
+  }
+
   fun onColorPaletteChange(palette: ColorPalette) {
     themePreferences.setColorPalette(palette)
   }

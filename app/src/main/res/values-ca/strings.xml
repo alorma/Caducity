@@ -21,6 +21,8 @@
   <string name="settings_theme_dark">Fosc</string>
   <string name="settings_theme_system">Sistema</string>
   <string name="settings_colors">Colors</string>
+  <string name="settings_colors_sheet_subtitle">S\'apliquen a l\'instant, en clar i en fosc.</string>
+  <string name="settings_colors_note">Els colors dels estats (caducat, aviat, fresc, congelat) no canvien.</string>
   <string name="palette_dynamic">Dinàmic</string>
   <string name="palette_dynamic_help">Del fons de pantalla</string>
   <string name="palette_caducity">Caducity</string>
