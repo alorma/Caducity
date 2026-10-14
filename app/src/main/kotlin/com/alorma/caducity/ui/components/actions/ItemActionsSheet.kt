@@ -39,8 +39,11 @@ import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
@@ -360,22 +363,23 @@ private fun QuantitySelector(
         shape = RoundedCornerShape(8.dp),
         color = CaducityTheme.colorScheme.surfaceContainer,
       ) {
-        Row(
-          horizontalArrangement = Arrangement.Center,
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = Modifier.fillMaxSize(),
-        ) {
+        val ofTotal = CaducityTheme.typography.titleMedium
+        val ofTotalColor = CaducityTheme.colorScheme.onSurfaceVariant
+        val ofTotalText = stringResource(R.string.item_actions_of_total, state.unitCount)
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+          // One text, so the number and «de N» share a baseline and the whole thing is centered.
           Text(
-            text = state.selected.toString(),
+            text =
+              buildAnnotatedString {
+                append(state.selected.toString())
+                withStyle(
+                  SpanStyle(fontSize = ofTotal.fontSize, fontFamily = ofTotal.fontFamily, color = ofTotalColor),
+                ) {
+                  append("  $ofTotalText")
+                }
+              },
             style = CaducityTheme.typography.displaySmall,
-            modifier = Modifier.alignByBaseline(),
-          )
-          Spacer(Modifier.width(8.dp))
-          Text(
-            text = stringResource(R.string.item_actions_of_total, state.unitCount),
-            style = CaducityTheme.typography.titleMedium,
-            color = CaducityTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.alignByBaseline(),
+            textAlign = TextAlign.Center,
           )
         }
       }
