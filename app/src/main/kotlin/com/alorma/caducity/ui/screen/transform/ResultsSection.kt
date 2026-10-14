@@ -161,7 +161,11 @@ fun ResultsSection(
               collectionInfo = CollectionInfo(rowCount = 1, columnCount = state.results.size)
             },
       ) {
-        itemsIndexed(state.results, key = { _, result -> result.id }) { index, result ->
+        itemsIndexed(
+          state.results,
+          key = { _, result -> result.id },
+          contentType = { _, _ -> "result" },
+        ) { index, result ->
           ResultItem(
             state = state,
             result = result,

@@ -63,7 +63,11 @@ private fun DebugRemoteConfigsContent(
       ) {
         val entries = uiState.remoteConfigValues.entries.toList()
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-          itemsIndexed(entries) { index, (key, configState) ->
+          itemsIndexed(
+            entries,
+            key = { _, entry -> entry.key },
+            contentType = { _, _ -> "config" },
+          ) { index, (key, configState) ->
             StyledSettingsSwitchCard(
               title = key,
               subtitle =

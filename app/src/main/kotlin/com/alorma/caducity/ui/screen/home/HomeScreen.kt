@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -217,7 +217,7 @@ internal fun HomeContent(
             ),
           verticalArrangement = Arrangement.spacedBy(ConnectedGap),
         ) {
-          itemsIndexed(items, key = { _, item -> item.key }) { _, item ->
+          items(items, key = { it.key }, contentType = { it::class }) { item ->
             when (item) {
               HomeItem.Banner ->
                 ExpiredBanner(
