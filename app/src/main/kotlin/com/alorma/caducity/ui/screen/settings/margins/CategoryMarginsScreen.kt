@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -165,10 +167,13 @@ private fun MarginRow(
 ) {
   val colors = CaducityTheme.colorScheme
   val label = row.usualDays?.let { thresholdLabel(it) }
-  Surface(
+  Card(
     onClick = onClick,
     shape = connectedShape(index, count),
-    color = if (expanded) colors.surfaceContainerHigh else colors.surfaceContainer,
+    colors =
+      CardDefaults.cardColors(
+        containerColor = if (expanded) colors.surfaceContainerHigh else colors.surfaceContainer,
+      ),
     modifier = modifier.fillMaxWidth().animateContentSize(),
   ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {

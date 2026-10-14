@@ -5,15 +5,19 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -132,39 +136,38 @@ fun SuggestionRow(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Surface(
+  ListItem(
     onClick = onClick,
-    shape = CaducityShapes.field,
-    color = CaducityTheme.colorScheme.surfaceContainer,
-    modifier = modifier.fillMaxWidth().height(52.dp),
-  ) {
-    Row(
-      modifier = Modifier.padding(horizontal = 16.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
+    shapes = ListItemDefaults.shapes(shape = CaducityShapes.field),
+    colors = ListItemDefaults.colors(containerColor = CaducityTheme.colorScheme.surfaceContainer),
+    contentPadding = PaddingValues(horizontal = 16.dp),
+    modifier = modifier.fillMaxWidth().heightIn(min = 52.dp),
+    leadingContent = {
       Icon(
         imageVector = Symbols.Outlined.History,
         contentDescription = null,
         tint = CaducityTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.size(20.dp),
       )
-      Text(
-        text = boldMatch(suggestion, typed),
-        style = CaducityTheme.typography.bodyMedium,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.weight(1f),
-      )
-      if (categoryName != null) {
-        Text(
-          text = categoryName,
-          style = CaducityTheme.typography.labelMedium,
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
-          maxLines = 1,
-        )
-      }
-    }
+    },
+    trailingContent =
+      categoryName?.let {
+        {
+          Text(
+            text = it,
+            style = CaducityTheme.typography.labelMedium,
+            color = CaducityTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+          )
+        }
+      },
+  ) {
+    Text(
+      text = boldMatch(suggestion, typed),
+      style = CaducityTheme.typography.bodyMedium,
+      maxLines = 1,
+      overflow = TextOverflow.Ellipsis,
+    )
   }
 }
 

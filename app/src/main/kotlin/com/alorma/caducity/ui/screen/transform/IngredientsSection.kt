@@ -11,18 +11,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -188,21 +194,19 @@ private fun HeaderRow(
       modifier = Modifier.weight(1f).padding(start = 4.dp),
     )
     if (onAdd != null) {
-      Surface(
+      FilledTonalButton(
         onClick = onAdd,
-        shape = CaducityShapes.full,
-        color = CaducityTheme.colorScheme.primaryContainer,
-        contentColor = CaducityTheme.colorScheme.onPrimaryContainer,
-        modifier = Modifier.minimumInteractiveComponentSize().height(32.dp),
+        modifier = Modifier.heightIn(min = ButtonDefaults.ExtraSmallContainerHeight),
+        colors =
+          ButtonDefaults.filledTonalButtonColors(
+            containerColor = CaducityTheme.colorScheme.primaryContainer,
+            contentColor = CaducityTheme.colorScheme.onPrimaryContainer,
+          ),
+        contentPadding = ButtonDefaults.ExtraSmallContentPadding,
       ) {
-        Row(
-          modifier = Modifier.padding(horizontal = 14.dp),
-          horizontalArrangement = Arrangement.spacedBy(6.dp),
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-          Text(stringResource(R.string.transform_add), style = CaducityTheme.typography.labelLarge)
-        }
+        Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+        Spacer(Modifier.width(6.dp))
+        Text(stringResource(R.string.transform_add))
       }
     }
   }
@@ -215,11 +219,11 @@ private fun AddIngredientRow(
   modifier: Modifier = Modifier,
 ) {
   val dash = CaducityTheme.colorScheme.outline
-  Surface(
+  // The dashed outline has no native equivalent: Button only takes a solid BorderStroke.
+  TextButton(
     onClick = onClick,
     shape = RowCardShape,
-    color = Color.Transparent,
-    contentColor = CaducityTheme.colorScheme.onSurfaceVariant,
+    colors = ButtonDefaults.textButtonColors(contentColor = CaducityTheme.colorScheme.onSurfaceVariant),
     modifier =
       modifier
         .padding(horizontal = ScreenGutter)
@@ -233,14 +237,9 @@ private fun AddIngredientRow(
           )
         },
   ) {
-    Row(
-      modifier = Modifier.fillMaxSize(),
-      horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp))
-      Text(stringResource(R.string.transform_add_ingredient), style = CaducityTheme.typography.labelLarge)
-    }
+    Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+    Spacer(Modifier.width(10.dp))
+    Text(stringResource(R.string.transform_add_ingredient))
   }
 }
 
@@ -320,25 +319,23 @@ private fun UnitsChip(
   onClick: () -> Unit,
 ) {
   val description = stringResource(R.string.transform_ingredient_units_edit, count, available)
-  Surface(
+  AssistChip(
     onClick = onClick,
     shape = CaducityShapes.full,
-    color = CaducityTheme.colorScheme.surfaceContainerHigh,
-    modifier = Modifier.minimumInteractiveComponentSize().height(32.dp).semantics { contentDescription = description },
-  ) {
-    Row(
-      modifier = Modifier.padding(horizontal = 12.dp),
-      horizontalArrangement = Arrangement.spacedBy(4.dp),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
+    colors = AssistChipDefaults.assistChipColors(containerColor = CaducityTheme.colorScheme.surfaceContainerHigh),
+    border = null,
+    modifier = Modifier.semantics { contentDescription = description },
+    label = {
       Text(
         text = stringResource(R.string.transform_ingredient_units, count, available),
         style = CaducityTheme.typography.labelLarge,
         maxLines = 1,
       )
+    },
+    trailingIcon = {
       Icon(Symbols.Outlined.UnfoldMore, contentDescription = null, modifier = Modifier.size(16.dp))
-    }
-  }
+    },
+  )
 }
 
 /** `− 2 de 25 +`: announces the new value politely. At least one unit, at most the ones left. */

@@ -1,6 +1,5 @@
 package com.alorma.caducity.ui.screen.transform
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,16 +7,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,7 +65,6 @@ import com.alorma.caducity.ui.components.category.imageVector
 import com.alorma.caducity.ui.screen.add.NameField
 import com.alorma.caducity.ui.screen.add.StepButton
 import com.alorma.caducity.ui.screen.add.SuggestionRow
-import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 
 private val ChipShape = RoundedCornerShape(22.dp)
@@ -183,21 +187,14 @@ fun ResultForm(
     ) {
       if (state.results.size > 1) {
         val removeLabel = stringResource(R.string.transform_result_delete)
-        Surface(
+        IconButton(
           onClick = {
             focusManager.clearFocus()
             actions.onRemove(id)
           },
-          shape = CaducityShapes.full,
-          color = Color.Transparent,
-          contentColor = CaducityTheme.colorScheme.onSurfaceVariant,
-          modifier = Modifier.minimumInteractiveComponentSize(),
+          colors = IconButtonDefaults.iconButtonColors(contentColor = CaducityTheme.colorScheme.onSurfaceVariant),
         ) {
-          Icon(
-            Symbols.Outlined.Delete,
-            contentDescription = removeLabel,
-            modifier = Modifier.padding(8.dp).size(24.dp),
-          )
+          Icon(Symbols.Outlined.Delete, contentDescription = removeLabel)
         }
       } else {
         Box {}
@@ -222,26 +219,19 @@ private fun DoneButton(
 ) {
   val scheme = CaducityTheme.colorScheme
   val invalidLabel = stringResource(R.string.transform_result_invalid)
-  Surface(
+  FilledTonalButton(
     onClick = onClick,
     enabled = enabled,
-    shape = CaducityShapes.full,
-    color = if (enabled) scheme.primaryContainer else scheme.onSurface.copy(alpha = 0.12f),
-    contentColor = if (enabled) scheme.onPrimaryContainer else scheme.onSurface.copy(alpha = 0.38f),
-    modifier =
-      modifier
-        .minimumInteractiveComponentSize()
-        .height(40.dp)
-        .semantics { if (!enabled) stateDescription = invalidLabel },
+    colors =
+      ButtonDefaults.filledTonalButtonColors(
+        containerColor = scheme.primaryContainer,
+        contentColor = scheme.onPrimaryContainer,
+      ),
+    modifier = modifier.semantics { if (!enabled) stateDescription = invalidLabel },
   ) {
-    Row(
-      modifier = Modifier.padding(horizontal = 18.dp),
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Icon(Symbols.Outlined.Check, contentDescription = null, modifier = Modifier.size(20.dp))
-      Text(stringResource(R.string.transform_result_done), style = CaducityTheme.typography.labelLarge)
-    }
+    Icon(Symbols.Outlined.Check, contentDescription = null, modifier = Modifier.size(20.dp))
+    Spacer(Modifier.width(8.dp))
+    Text(stringResource(R.string.transform_result_done))
   }
 }
 
@@ -372,28 +362,31 @@ private fun ResultChip(
 ) {
   val scheme = CaducityTheme.colorScheme
   val dash = scheme.outline
-  Surface(
+  FilterChip(
+    selected = selected,
     onClick = onClick,
     shape = ChipShape,
-    color =
-      when {
-        empty -> Color.Transparent
-        selected -> scheme.primaryContainer
-        else -> scheme.surfaceContainerHigh
-      },
-    contentColor =
-      when {
-        empty -> scheme.onSurfaceVariant
-        selected -> scheme.onPrimaryContainer
-        else -> scheme.onSurface
-      },
-    border = if (selected) BorderStroke(2.dp, scheme.primary) else null,
+    colors =
+      FilterChipDefaults.filterChipColors(
+        containerColor = if (empty) Color.Transparent else scheme.surfaceContainerHigh,
+        labelColor = if (empty) scheme.onSurfaceVariant else scheme.onSurface,
+        selectedContainerColor = scheme.primaryContainer,
+        selectedLabelColor = scheme.onPrimaryContainer,
+      ),
+    border =
+      FilterChipDefaults.filterChipBorder(
+        enabled = true,
+        selected = selected,
+        borderColor = Color.Transparent,
+        selectedBorderColor = scheme.primary,
+        selectedBorderWidth = 2.dp,
+      ),
     modifier =
       Modifier
-        .minimumInteractiveComponentSize()
         .height(44.dp)
         .then(if (description != null) Modifier.semantics { contentDescription = description } else Modifier)
         .then(
+          // The dashed outline has no native equivalent: FilterChip only takes a solid border.
           if (empty) {
             Modifier.drawBehind {
               drawRoundRect(
@@ -406,13 +399,10 @@ private fun ResultChip(
             Modifier
           },
         ),
-  ) {
-    Row(
-      modifier = Modifier.padding(start = 6.dp, end = 14.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      content()
-    }
-  }
+    label = {
+      Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        content()
+      }
+    },
+  )
 }

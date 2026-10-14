@@ -6,16 +6,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -50,7 +50,6 @@ import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarSt
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.screen.add.ScreenGutter
-import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -182,26 +181,20 @@ internal fun TransformSaveBar(
         .background(Brush.verticalGradient(listOf(Color.Transparent, CaducityTheme.colorScheme.background)))
         .padding(start = ScreenGutter, end = ScreenGutter, top = 24.dp, bottom = 12.dp),
   ) {
-    Surface(
+    Button(
       onClick = onSave,
       enabled = canSave,
-      shape = CaducityShapes.full,
-      color = if (canSave) CaducityTheme.colorScheme.primary else CaducityTheme.colorScheme.surfaceContainerHigh,
-      contentColor = if (canSave) CaducityTheme.colorScheme.onPrimary else CaducityTheme.colorScheme.outline,
-      modifier = Modifier.fillMaxWidth().height(56.dp),
+      modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
     ) {
-      Box(contentAlignment = Alignment.Center) {
-        Text(
-          // Disabled, it only says «Desa»: the count of products comes once there is something to save.
-          text =
-            if (canSave) {
-              pluralStringResource(R.plurals.transform_save_count, count, count)
-            } else {
-              stringResource(R.string.add_save)
-            },
-          style = CaducityTheme.typography.titleMedium,
-        )
-      }
+      Text(
+        // Disabled, it only says «Desa»: the count of products comes once there is something to save.
+        text =
+          if (canSave) {
+            pluralStringResource(R.plurals.transform_save_count, count, count)
+          } else {
+            stringResource(R.string.add_save)
+          },
+      )
     }
   }
 }
