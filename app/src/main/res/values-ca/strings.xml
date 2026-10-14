@@ -359,13 +359,13 @@
     <item quantity="other">%d caducats</item>
   </plurals>
   <string name="category_add">Afegeix</string>
-  <string name="category_delete_title">Esborrar %s?</string>
-  <string name="category_delete_confirm">Esborra</string>
+  <string name="category_delete_title">Eliminar %s?</string>
+  <string name="category_delete_confirm">Elimina</string>
   <string name="category_delete_cancel">Cancel·la</string>
   <string name="category_calendar_cd">Calendari de %s</string>
   <string name="category_menu">Opcions de la categoria</string>
   <string name="category_menu_edit">Edita la categoria</string>
-  <string name="category_menu_delete">Esborra la categoria</string>
+  <string name="category_menu_delete">Eliminar categoria</string>
   <string name="category_empty">Encara no hi ha cap producte en aquesta categoria.</string>
   <string name="category_status_expired">Caducat</string>
   <string name="category_status_soon">Aviat</string>
@@ -373,9 +373,9 @@
   <string name="category_status_frozen">Congelat</string>
   <string name="category_filter_all">Tots</string>
   <plurals name="category_delete_body">
-    <item quantity="one">Això esborrarà la categoria i el seu %d producte. No es pot desfer.</item>
-    <item quantity="many">Això esborrarà la categoria i els seus %d productes. No es pot desfer.</item>
-    <item quantity="other">Això esborrarà la categoria i els seus %d productes. No es pot desfer.</item>
+    <item quantity="one">Això eliminarà la categoria i el seu %d producte. No es pot desfer.</item>
+    <item quantity="many">Això eliminarà la categoria i els seus %d productes. No es pot desfer.</item>
+    <item quantity="other">Això eliminarà la categoria i els seus %d productes. No es pot desfer.</item>
   </plurals>
   <string name="category_day_hint">Toca el dia o la ✕ per tornar a veure-ho tot.</string>
   <string name="category_day_clear">Treu el filtre del dia</string>
@@ -422,12 +422,12 @@
   <string name="status_snackbar_discarded_many">%d productes llençats</string>
   <string name="status_snackbar_rescheduled_many">Data canviada a %d productes</string>
   <plurals name="status_discard_title">
-    <item quantity="one">Llençar %d producte?</item>
-    <item quantity="many">Llençar %d productes?</item>
-    <item quantity="other">Llençar %d productes?</item>
+    <item quantity="one">Llençar %d producte a les escombraries?</item>
+    <item quantity="many">Llençar %d productes a les escombraries?</item>
+    <item quantity="other">Llençar %d productes a les escombraries?</item>
   </plurals>
   <string name="status_discard_body">Es marcaran com a llençats. Ho podràs desfer just després.</string>
-  <string name="status_discard_confirm">Llença</string>
+  <string name="status_discard_confirm">Llença\'ls</string>
   <string name="status_dates_tomorrow">Demà</string>
   <string name="status_dates_in_3d">D\'aquí 3 dies</string>
   <string name="status_dates_in_1w">D\'aquí 1 setmana</string>
@@ -441,7 +441,7 @@
   <string name="category_editor_error_failed">No s\'ha pogut desar la categoria</string>
   <string name="category_editor_description">Descripció · opcional</string>
   <string name="category_editor_description_placeholder">Per exemple: refrescos, sucs i begudes fermentades</string>
-  <string name="category_editor_delete">Esborra la categoria</string>
+  <string name="category_editor_delete">Eliminar categoria</string>
   <string name="notification_channel_name">Avís diari</string>
   <string name="notification_channel_description">Una notificació al dia quan alguna cosa està a punt de caducar</string>
   <string name="notification_highlight_today">%1$s avui</string>

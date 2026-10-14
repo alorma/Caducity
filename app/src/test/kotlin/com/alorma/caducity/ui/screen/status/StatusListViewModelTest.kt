@@ -374,6 +374,29 @@ class StatusListViewModelTest {
     }
 
   @Test
+  fun `discard all after confirming throws every expired unit out and undo brings them back`() =
+    runTest {
+      category("dairy")
+      add("Milk", days = -3, quantity = 2)
+      add("Eggs", days = -1)
+      val vm = viewModel(ExpiryStatus.EXPIRED)
+      vm.ready()
+
+      vm.onDiscardAllClick()
+      val effect =
+        withContext(Dispatchers.Default) { withTimeout(5_000) { vm.sideEffects.first() } }
+          as StatusListSideEffect.ShowDiscardConfirm
+      vm.onDiscardConfirmed(effect.itemIds)
+      val snackbar = nextSnackbar()
+
+      expectThat(vm.ready { it.isEmpty }.isEmpty).isTrue()
+      expectThat(db.itemDao().getAllItemsSync().all { it.discardedDate != null }).isTrue()
+
+      snackbar.onAction!!.invoke()
+      expectThat(vm.ready { !it.isEmpty }.totalCount).isEqualTo(3)
+    }
+
+  @Test
   fun `empty variant reports empty`() =
     runTest {
       category("dairy")

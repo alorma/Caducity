@@ -402,11 +402,11 @@
   <string name="status_snackbar_discarded_many">%d products thrown out</string>
   <string name="status_snackbar_rescheduled_many">Date changed for %d products</string>
   <plurals name="status_discard_title">
-    <item quantity="one">Throw out %d product?</item>
-    <item quantity="other">Throw out %d products?</item>
+    <item quantity="one">Throw %d product in the trash?</item>
+    <item quantity="other">Throw %d products in the trash?</item>
   </plurals>
   <string name="status_discard_body">They\'ll be marked as thrown out. You can undo it right after.</string>
-  <string name="status_discard_confirm">Throw out</string>
+  <string name="status_discard_confirm">Throw them out</string>
   <string name="status_dates_tomorrow">Tomorrow</string>
   <string name="status_dates_in_3d">In 3 days</string>
   <string name="status_dates_in_1w">In 1 week</string>

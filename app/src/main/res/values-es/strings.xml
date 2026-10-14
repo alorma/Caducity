@@ -359,13 +359,13 @@
     <item quantity="other">%d caducados</item>
   </plurals>
   <string name="category_add">Añade</string>
-  <string name="category_delete_title">¿Borrar %s?</string>
-  <string name="category_delete_confirm">Borrar</string>
+  <string name="category_delete_title">¿Eliminar %s?</string>
+  <string name="category_delete_confirm">Eliminar</string>
   <string name="category_delete_cancel">Cancelar</string>
   <string name="category_calendar_cd">Calendario de %s</string>
   <string name="category_menu">Opciones de la categoría</string>
   <string name="category_menu_edit">Editar categoría</string>
-  <string name="category_menu_delete">Borrar categoría</string>
+  <string name="category_menu_delete">Eliminar categoría</string>
   <string name="category_empty">Todavía no hay ningún producto en esta categoría.</string>
   <string name="category_status_expired">Caducado</string>
   <string name="category_status_soon">Pronto</string>
@@ -373,9 +373,9 @@
   <string name="category_status_frozen">Congelado</string>
   <string name="category_filter_all">Todos</string>
   <plurals name="category_delete_body">
-    <item quantity="one">Esto borrará la categoría y su %d producto. No se puede deshacer.</item>
-    <item quantity="many">Esto borrará la categoría y sus %d productos. No se puede deshacer.</item>
-    <item quantity="other">Esto borrará la categoría y sus %d productos. No se puede deshacer.</item>
+    <item quantity="one">Esto eliminará la categoría y su %d producto. No se puede deshacer.</item>
+    <item quantity="many">Esto eliminará la categoría y sus %d productos. No se puede deshacer.</item>
+    <item quantity="other">Esto eliminará la categoría y sus %d productos. No se puede deshacer.</item>
   </plurals>
   <string name="category_day_hint">Toca el día o la ✕ para volver a verlo todo.</string>
   <string name="category_day_clear">Quitar el filtro del día</string>
@@ -422,12 +422,12 @@
   <string name="status_snackbar_discarded_many">%d productos tirados</string>
   <string name="status_snackbar_rescheduled_many">Fecha cambiada en %d productos</string>
   <plurals name="status_discard_title">
-    <item quantity="one">¿Tirar %d producto?</item>
-    <item quantity="many">¿Tirar %d productos?</item>
-    <item quantity="other">¿Tirar %d productos?</item>
+    <item quantity="one">¿Tirar %d producto a la basura?</item>
+    <item quantity="many">¿Tirar %d productos a la basura?</item>
+    <item quantity="other">¿Tirar %d productos a la basura?</item>
   </plurals>
   <string name="status_discard_body">Se marcarán como tirados. Podrás deshacerlo justo después.</string>
-  <string name="status_discard_confirm">Tirar</string>
+  <string name="status_discard_confirm">Tirarlos</string>
   <string name="status_dates_tomorrow">Mañana</string>
   <string name="status_dates_in_3d">En 3 días</string>
   <string name="status_dates_in_1w">En 1 semana</string>
@@ -441,7 +441,7 @@
   <string name="category_editor_error_failed">No se ha podido guardar la categoría</string>
   <string name="category_editor_description">Descripción · opcional</string>
   <string name="category_editor_description_placeholder">Por ejemplo: refrescos, zumos y bebidas fermentadas</string>
-  <string name="category_editor_delete">Borrar la categoría</string>
+  <string name="category_editor_delete">Eliminar categoría</string>
   <string name="notification_channel_name">Aviso diario</string>
   <string name="notification_channel_description">Una notificación al día cuando algo está a punto de caducar</string>
   <string name="notification_highlight_today">%1$s hoy</string>
