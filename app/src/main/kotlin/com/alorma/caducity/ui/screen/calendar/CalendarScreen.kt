@@ -93,7 +93,7 @@ import org.koin.core.parameter.parametersOf
 fun CalendarScreen(
   args: CalendarArgs,
   onBack: () -> Unit,
-  onOpenItemActions: (itemId: String) -> Unit,
+  onOpenItemActions: (itemIds: List<String>) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: CalendarViewModel = koinViewModel { parametersOf(args) },
 ) {
@@ -104,7 +104,7 @@ fun CalendarScreen(
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
         CalendarNavigationSideEffect.Back -> onBack()
-        is CalendarNavigationSideEffect.OpenItemActions -> onOpenItemActions(effect.itemId)
+        is CalendarNavigationSideEffect.OpenItemActions -> onOpenItemActions(effect.itemIds)
       }
     }
   }
@@ -133,7 +133,7 @@ internal fun CalendarContent(
   onBack: () -> Unit,
   onMonthShown: (LocalDate) -> Unit,
   onDayClick: (LocalDate) -> Unit,
-  onRowClick: (String) -> Unit,
+  onRowClick: (List<String>) -> Unit,
   onConsume: (ProductRowModel) -> Unit,
   onFreeze: (ProductRowModel) -> Unit,
   onDiscard: (ProductRowModel) -> Unit,
@@ -188,7 +188,7 @@ internal fun CalendarContent(
           model = row,
           index = index,
           count = state.rows.size,
-          onClick = { onRowClick(row.nearestItemId) },
+          onClick = { onRowClick(row.itemIds) },
           onConsume = { onConsume(row) },
           onFreeze = { onFreeze(row) },
           onDiscard = { onDiscard(row) },

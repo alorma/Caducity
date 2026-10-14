@@ -84,7 +84,7 @@ data class CategoryEditor(
 /** Shown as a bottom sheet over the current screen. */
 @Serializable
 data class ItemActions(
-  val itemId: String,
+  val itemIds: List<String>,
 ) : AppRoute
 
 /** Shown as a bottom sheet over the current screen. */

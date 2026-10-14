@@ -177,7 +177,7 @@ class CategoryViewModel(
       }
       is CategoryNavigation.ItemActions -> {
         eventTracker.trackAction(NavigateToItemActionsFromCategoryAction())
-        emitNavigationSideEffect(CategoryNavigationSideEffect.OpenItemActions(navigation.itemId))
+        emitNavigationSideEffect(CategoryNavigationSideEffect.OpenItemActions(navigation.itemIds))
       }
     }
   }

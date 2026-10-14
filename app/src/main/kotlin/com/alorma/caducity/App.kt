@@ -237,14 +237,14 @@ fun App(
                 onOpenAdd = { navigation.navigate(Add(categoryId = it.id, source = "category")) },
                 onOpenCalendar = { navigation.navigate(Calendar(categoryId = it.id)) },
                 onOpenEditor = { navigation.navigate(CategoryEditor(it.id)) },
-                onOpenItemActions = { itemId -> navigation.navigate(ItemActions(itemId)) },
+                onOpenItemActions = { itemIds -> navigation.navigate(ItemActions(itemIds)) },
               )
             }
             entry<StatusList> {
               StatusListScreen(
                 status = it.status,
                 onBack = { navigation.pop() },
-                onOpenItemActions = { itemId -> navigation.navigate(ItemActions(itemId)) },
+                onOpenItemActions = { itemIds -> navigation.navigate(ItemActions(itemIds)) },
                 onOpenAdd = { navigation.navigate(Add(source = "status_empty")) },
                 onOpenTransform = { itemIds -> navigation.navigate(Transform(itemIds)) },
               )
@@ -253,7 +253,7 @@ fun App(
               CalendarScreen(
                 args = CalendarArgs(categoryId = it.categoryId, date = it.date),
                 onBack = { navigation.pop() },
-                onOpenItemActions = { itemId -> navigation.navigate(ItemActions(itemId)) },
+                onOpenItemActions = { itemIds -> navigation.navigate(ItemActions(itemIds)) },
               )
             }
             entry<Add> {
@@ -293,7 +293,7 @@ fun App(
             }
             entry<ItemActions>(metadata = BottomSheetSceneStrategy.bottomSheet()) {
               ItemActionsSheet(
-                itemId = it.itemId,
+                itemIds = it.itemIds,
                 onClose = { navigation.pop() },
                 onEdit = { itemId ->
                   navigation.pop()

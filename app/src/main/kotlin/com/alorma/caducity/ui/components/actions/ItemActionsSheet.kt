@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -95,12 +96,12 @@ import org.koin.core.parameter.parametersOf
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemActionsSheet(
-  itemId: String,
+  itemIds: List<String>,
   onClose: () -> Unit,
   onEdit: (itemId: String) -> Unit,
   onTransform: (itemIds: List<String>) -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: ItemActionsSheetViewModel = koinViewModel { parametersOf(itemId) },
+  viewModel: ItemActionsSheetViewModel = koinViewModel { parametersOf(itemIds) },
 ) {
   val state by viewModel.state.collectAsState()
   val dialogState = rememberAppDialogState()
@@ -361,8 +362,8 @@ private fun QuantitySelector(
       ) {
         Row(
           horizontalArrangement = Arrangement.Center,
-          verticalAlignment = Alignment.Bottom,
-          modifier = Modifier.padding(bottom = 14.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.fillMaxSize(),
         ) {
           Text(
             text = state.selected.toString(),

@@ -62,7 +62,7 @@ class HomeViewModel(
       }
       is HomeNavigation.ItemActions -> {
         eventTracker.trackAction(NavigateToItemActionsFromHomeAction())
-        emitNavigationSideEffect(HomeNavigationSideEffect.OpenItemActions(navigation.itemId))
+        emitNavigationSideEffect(HomeNavigationSideEffect.OpenItemActions(navigation.itemIds))
       }
       HomeNavigation.AddFirst -> {
         eventTracker.trackAction(NavigateToAddFromHomeAction())

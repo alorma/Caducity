@@ -49,7 +49,7 @@ fun HomeScreen(
   onOpenSearch: () -> Unit,
   onOpenStatusList: (ExpiryStatus) -> Unit,
   onOpenPantry: () -> Unit,
-  onOpenItemActions: (itemId: String) -> Unit,
+  onOpenItemActions: (itemIds: List<String>) -> Unit,
   onOpenAdd: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: HomeViewModel = koinViewModel(),
@@ -64,7 +64,7 @@ fun HomeScreen(
         HomeNavigationSideEffect.OpenSearch -> onOpenSearch()
         is HomeNavigationSideEffect.OpenStatusList -> onOpenStatusList(effect.status)
         HomeNavigationSideEffect.OpenPantry -> onOpenPantry()
-        is HomeNavigationSideEffect.OpenItemActions -> onOpenItemActions(effect.itemId)
+        is HomeNavigationSideEffect.OpenItemActions -> onOpenItemActions(effect.itemIds)
         HomeNavigationSideEffect.OpenAdd -> onOpenAdd()
       }
     }
@@ -216,7 +216,7 @@ internal fun HomeContent(
               model = item.row.toProductRow(item.section, data.today),
               index = item.index,
               count = item.section.rows.size,
-              onClick = { onNavigate(HomeNavigation.ItemActions(item.row.nearestItemId)) },
+              onClick = { onNavigate(HomeNavigation.ItemActions(item.row.itemIds)) },
               onConsume = { onConsume(item.row) },
               onFreeze = { onFreeze(item.row) },
             )

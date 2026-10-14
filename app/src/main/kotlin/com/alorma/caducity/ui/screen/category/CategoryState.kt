@@ -62,7 +62,7 @@ sealed interface CategoryNavigation {
   data object Edit : CategoryNavigation
 
   data class ItemActions(
-    val itemId: String,
+    val itemIds: List<String>,
   ) : CategoryNavigation
 }
 
@@ -74,7 +74,7 @@ sealed interface CategoryNavigationSideEffect {
   data object OpenEditor : CategoryNavigationSideEffect
 
   data class OpenItemActions(
-    val itemId: String,
+    val itemIds: List<String>,
   ) : CategoryNavigationSideEffect
 
   /** The category was deleted: leave the screen. */

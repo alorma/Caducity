@@ -56,7 +56,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun PantryScreen(
   onOpenCategory: (categoryId: String) -> Unit,
   onOpenNewCategory: () -> Unit,
-  onOpenItemActions: (itemId: String) -> Unit,
+  onOpenItemActions: (itemIds: List<String>) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: PantryViewModel = koinViewModel(),
   searchRequests: PantrySearchRequests = koinInject(),
@@ -105,7 +105,7 @@ internal fun PantryContent(
   focusRequester: FocusRequester,
   onQueryChange: (String) -> Unit,
   onNavigate: (PantryNavigation) -> Unit,
-  onOpenItemActions: (String) -> Unit,
+  onOpenItemActions: (List<String>) -> Unit,
   onConsume: (ProductRowModel) -> Unit,
   onFreeze: (ProductRowModel) -> Unit,
   onDiscard: (ProductRowModel) -> Unit,
@@ -171,7 +171,7 @@ private fun <T> LazyListScope.items(
 
 private fun LazyListScope.searchResults(
   state: PantryState.Ready,
-  onOpenItemActions: (String) -> Unit,
+  onOpenItemActions: (List<String>) -> Unit,
   onConsume: (ProductRowModel) -> Unit,
   onFreeze: (ProductRowModel) -> Unit,
   onDiscard: (ProductRowModel) -> Unit,
@@ -198,7 +198,7 @@ private fun LazyListScope.searchResults(
       model = row,
       index = index,
       count = state.results.size,
-      onClick = { onOpenItemActions(row.nearestItemId) },
+      onClick = { onOpenItemActions(row.itemIds) },
       onConsume = { onConsume(row) },
       onFreeze = { onFreeze(row) },
       onDiscard = { onDiscard(row) },

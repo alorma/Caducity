@@ -141,10 +141,12 @@ class ItemActionsSheetViewModelTest {
     quantity: Int = 1,
   ): List<String> = addProduct.add(name, categoryId, inDays(days), quantity, false).getOrThrow().itemIds
 
-  private fun viewModel(itemId: String): ItemActionsSheetViewModel {
+  private fun viewModel(itemId: String) = viewModel(listOf(itemId))
+
+  private fun viewModel(itemIds: List<String>): ItemActionsSheetViewModel {
     val consume = ConsumeItemUseCase(itemDataSource, pantry, clock)
     return ItemActionsSheetViewModel(
-      itemId = itemId,
+      itemIds = itemIds,
       observeItems = ObserveItemsUseCase(pantry, thresholds, todayProvider),
       observeCategories = ObserveCategoriesUseCase(pantry),
       consumeItem = consume,
@@ -186,7 +188,7 @@ class ItemActionsSheetViewModelTest {
     runTest {
       category("dairy")
       val ids = add("Milk", days = 10, quantity = 1) + add("Milk", days = 2) + add("Milk", days = 5)
-      val vm = viewModel(ids[2])
+      val vm = viewModel(ids)
       keepAlive(vm)
 
       val state = vm.ready()
@@ -199,11 +201,33 @@ class ItemActionsSheetViewModelTest {
     }
 
   @Test
+  fun `only the units of the row are acted on, not the rest of the product`() =
+    runTest {
+      category("dairy")
+      val tomorrow = add("Milk", days = 1, quantity = 2)
+      val expired = add("Milk", days = -4)
+      val vm = viewModel(tomorrow)
+      keepAlive(vm)
+
+      val state = vm.ready()
+
+      expectThat(state.units.map { it.id }.toSet()).isEqualTo(tomorrow.toSet())
+      expectThat(state.expired).isEqualTo(false)
+
+      vm.onSelect(2)
+      vm.onDiscardSelected()
+      nextSnackbar()
+
+      expectThat(tomorrow.all { item(it).discardedDate != null }).isTrue()
+      expectThat(item(expired.single()).discardedDate).isNull()
+    }
+
+  @Test
   fun `consume N takes the units that expire first and undo brings them back`() =
     runTest {
       category("dairy")
       val ids = add("Milk", days = 10) + add("Milk", days = 2) + add("Milk", days = 5)
-      val vm = viewModel(ids[0])
+      val vm = viewModel(ids)
       keepAlive(vm)
       vm.ready()
 
@@ -226,7 +250,7 @@ class ItemActionsSheetViewModelTest {
     runTest {
       category("dairy")
       val ids = add("Milk", days = 3, quantity = 3)
-      val vm = viewModel(ids[0])
+      val vm = viewModel(ids)
       keepAlive(vm)
       vm.ready()
 
@@ -241,7 +265,7 @@ class ItemActionsSheetViewModelTest {
     runTest {
       category("dairy")
       val ids = add("Milk", days = -2) + add("Milk", days = 4) + add("Milk", days = 6)
-      val vm = viewModel(ids[0])
+      val vm = viewModel(ids)
       keepAlive(vm)
       val state = vm.ready()
       expectThat(state.expired).isTrue()
@@ -262,7 +286,7 @@ class ItemActionsSheetViewModelTest {
     runTest {
       category("dairy")
       val ids = add("Milk", days = -3) + add("Milk", days = -1) + add("Milk", days = 5)
-      val vm = viewModel(ids[2])
+      val vm = viewModel(ids)
       keepAlive(vm)
 
       val state = vm.ready()
@@ -285,7 +309,7 @@ class ItemActionsSheetViewModelTest {
     runTest {
       category("dairy")
       val ids = add("Milk", days = -3) + add("Milk", days = -1)
-      val vm = viewModel(ids[0])
+      val vm = viewModel(ids)
       keepAlive(vm)
       vm.ready()
 
@@ -302,7 +326,7 @@ class ItemActionsSheetViewModelTest {
     runTest {
       category("dairy")
       val ids = add("Milk", days = -3) + add("Milk", days = 5)
-      val vm = viewModel(ids[0])
+      val vm = viewModel(ids)
       keepAlive(vm)
       vm.ready()
 
@@ -440,7 +464,7 @@ class ItemActionsSheetViewModelTest {
     runTest {
       category("dairy")
       val ids = add("Milk", days = 5, quantity = 2)
-      val vm = viewModel(ids[0])
+      val vm = viewModel(ids)
       keepAlive(vm)
       vm.ready()
 

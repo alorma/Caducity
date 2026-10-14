@@ -30,7 +30,7 @@ sealed interface CalendarNavigation {
   data object Back : CalendarNavigation
 
   data class ItemActions(
-    val itemId: String,
+    val itemIds: List<String>,
   ) : CalendarNavigation
 }
 
@@ -38,6 +38,6 @@ sealed interface CalendarNavigationSideEffect {
   data object Back : CalendarNavigationSideEffect
 
   data class OpenItemActions(
-    val itemId: String,
+    val itemIds: List<String>,
   ) : CalendarNavigationSideEffect
 }

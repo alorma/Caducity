@@ -231,9 +231,9 @@
   <string name="item_actions_freeze_n">Congela %1$d</string>
   <string name="item_actions_discard_n">Tira %1$d</string>
   <string name="item_actions_more">Más acciones</string>
-  <string name="item_actions_eat_anyway">Consumido igualmente</string>
+  <string name="item_actions_eat_anyway">Consumir igualmente</string>
   <string name="item_actions_eat_anyway_hint">Mantén pulsado · bajo tu responsabilidad</string>
-  <string name="item_actions_eat_anyway_title">¿Consumirlo igualmente?</string>
+  <string name="item_actions_eat_anyway_title">¿Consumir igualmente?</string>
   <string name="item_actions_eat_anyway_body">Ha caducado. Se marcará como consumido, bajo tu responsabilidad.</string>
   <string name="item_actions_wrong_date">La fecha era incorrecta</string>
   <string name="item_actions_expires">Caduca %1$s</string>

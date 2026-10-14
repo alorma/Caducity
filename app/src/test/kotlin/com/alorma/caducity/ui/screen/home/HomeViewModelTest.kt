@@ -298,13 +298,13 @@ class HomeViewModelTest {
 
       vm.navigate(HomeNavigation.Calendar(date = inDays(3), source = "week_strip"))
       vm.navigate(HomeNavigation.StatusList(ExpiryStatus.EXPIRED, "banner"))
-      vm.navigate(HomeNavigation.ItemActions("abc"))
+      vm.navigate(HomeNavigation.ItemActions(listOf("abc")))
 
       val effects = vm.navigationSideEffects.take(3).toList()
       expectThat(effects).containsExactly(
         HomeNavigationSideEffect.OpenCalendar(inDays(3)),
         HomeNavigationSideEffect.OpenStatusList(ExpiryStatus.EXPIRED),
-        HomeNavigationSideEffect.OpenItemActions("abc"),
+        HomeNavigationSideEffect.OpenItemActions(listOf("abc")),
       )
     }
 

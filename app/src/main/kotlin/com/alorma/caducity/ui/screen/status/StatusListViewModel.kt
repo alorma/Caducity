@@ -68,7 +68,7 @@ class StatusListViewModel(
     when (navigation) {
       is StatusListNavigation.ItemActions -> {
         eventTracker.trackAction(NavigateToItemActionsFromStatusListAction(status.name.lowercase()))
-        emitNavigationSideEffect(StatusListNavigationSideEffect.OpenItemActions(navigation.itemId))
+        emitNavigationSideEffect(StatusListNavigationSideEffect.OpenItemActions(navigation.itemIds))
       }
       StatusListNavigation.AddFirst -> {
         eventTracker.trackAction(NavigateToAddFromStatusListAction(status.name.lowercase()))

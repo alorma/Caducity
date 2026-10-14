@@ -231,9 +231,9 @@
   <string name="item_actions_freeze_n">Congela %1$d</string>
   <string name="item_actions_discard_n">Llença %1$d</string>
   <string name="item_actions_more">Més accions</string>
-  <string name="item_actions_eat_anyway">Consumit igualment</string>
+  <string name="item_actions_eat_anyway">Consumeix igualment</string>
   <string name="item_actions_eat_anyway_hint">Mantén premut · sota la teva responsabilitat</string>
-  <string name="item_actions_eat_anyway_title">Consumir-lo igualment?</string>
+  <string name="item_actions_eat_anyway_title">Consumeix igualment?</string>
   <string name="item_actions_eat_anyway_body">Ha caducat. Es marcarà com a consumit, sota la teva responsabilitat.</string>
   <string name="item_actions_wrong_date">La data era incorrecta</string>
   <string name="item_actions_expires">Caduca %1$s</string>

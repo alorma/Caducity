@@ -93,7 +93,7 @@ import org.koin.core.parameter.parametersOf
 fun StatusListScreen(
   status: ExpiryStatus,
   onBack: () -> Unit,
-  onOpenItemActions: (itemId: String) -> Unit,
+  onOpenItemActions: (itemIds: List<String>) -> Unit,
   onOpenAdd: () -> Unit,
   onOpenTransform: (itemIds: List<String>) -> Unit,
   modifier: Modifier = Modifier,
@@ -111,7 +111,7 @@ fun StatusListScreen(
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
-        is StatusListNavigationSideEffect.OpenItemActions -> onOpenItemActions(effect.itemId)
+        is StatusListNavigationSideEffect.OpenItemActions -> onOpenItemActions(effect.itemIds)
         StatusListNavigationSideEffect.OpenAdd -> onOpenAdd()
         is StatusListNavigationSideEffect.OpenTransform -> onOpenTransform(effect.itemIds)
       }
@@ -314,7 +314,7 @@ private fun StatusListContent(
                 if (ready.selecting) {
                   viewModel.onToggleRow(row.key)
                 } else {
-                  viewModel.navigate(StatusListNavigation.ItemActions(row.nearest.itemId))
+                  viewModel.navigate(StatusListNavigation.ItemActions(row.itemIds))
                 }
               },
               onConsume = { viewModel.onConsume(row) },

@@ -39,11 +39,11 @@ import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
 
 /**
- * Actions on a product, opened from any of its rows ([itemId] is any of its units): with one unit they act on
- * it; with several, on the first [ItemActionsSheetState.Ready.selected] ones, the ones that expire first.
+ * Actions on the units of a row ([itemIds]): with one unit they act on it; with several, on the first
+ * [ItemActionsSheetState.Ready.selected] ones, the ones that expire first.
  */
 class ItemActionsSheetViewModel(
-  private val itemId: String,
+  private val itemIds: List<String>,
   observeItems: ObserveItemsUseCase,
   observeCategories: ObserveCategoriesUseCase,
   private val consumeItem: ConsumeItemUseCase,
@@ -71,11 +71,11 @@ class ItemActionsSheetViewModel(
       moreOpen,
       chosen,
     ) { entries, categories, picking, more, chosenCount ->
-      val focus = entries.firstOrNull { it.itemId == itemId }
-      val units = focus?.let { f -> entries.filter { it.groupKey == f.groupKey }.sortedNearestFirst() }.orEmpty()
+      val units = entries.filter { it.itemId in itemIds }.sortedNearestFirst()
+      val focus = units.firstOrNull()
       val category = focus?.let { f -> categories.firstOrNull { it.id == f.categoryId } }
       if (focus == null || category == null) {
-        // The product is gone (acted on, or removed elsewhere): nothing left to act on.
+        // The units are gone (acted on, or removed elsewhere): nothing left to act on.
         if (entries.isNotEmpty() || categories.isNotEmpty()) close()
         ItemActionsSheetState.Loading
       } else {
@@ -101,13 +101,13 @@ class ItemActionsSheetViewModel(
     when (navigation) {
       ItemActionsSheetNavigation.Close -> close()
       ItemActionsSheetNavigation.Edit -> {
-        val nearest = ready?.units?.first()?.id ?: itemId
+        val nearest = ready?.units?.first()?.id ?: itemIds.first()
         eventTracker.trackAction(NavigateToEditItemAction())
         closing = true
         emitNavigationSideEffect(ItemActionsSheetNavigationSideEffect.Edit(nearest))
       }
       ItemActionsSheetNavigation.Transform -> {
-        val ids = ready?.units?.map { it.id } ?: listOf(itemId)
+        val ids = ready?.units?.map { it.id } ?: itemIds
         eventTracker.trackAction(NavigateToTransformAction(origin = "item_actions", source = "item_actions"))
         closing = true
         emitNavigationSideEffect(ItemActionsSheetNavigationSideEffect.Transform(ids))

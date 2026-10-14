@@ -104,7 +104,7 @@ class CalendarViewModel(
       CalendarNavigation.Back -> emitNavigationSideEffect(CalendarNavigationSideEffect.Back)
       is CalendarNavigation.ItemActions -> {
         eventTracker.trackAction(NavigateToItemActionsFromCalendarAction())
-        emitNavigationSideEffect(CalendarNavigationSideEffect.OpenItemActions(navigation.itemId))
+        emitNavigationSideEffect(CalendarNavigationSideEffect.OpenItemActions(navigation.itemIds))
       }
     }
   }

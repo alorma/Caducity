@@ -250,7 +250,7 @@ val appModule =
     singleOf(::GlobalSnackbarEvents)
     viewModel { params ->
       ItemActionsSheetViewModel(
-        itemId = params.get(),
+        itemIds = params.get(),
         observeItems = get(),
         observeCategories = get(),
         consumeItem = get(),

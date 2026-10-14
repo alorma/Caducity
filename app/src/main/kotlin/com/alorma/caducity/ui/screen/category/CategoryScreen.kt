@@ -93,7 +93,7 @@ fun CategoryScreen(
   onOpenAdd: () -> Unit,
   onOpenCalendar: () -> Unit,
   onOpenEditor: () -> Unit,
-  onOpenItemActions: (itemId: String) -> Unit,
+  onOpenItemActions: (itemIds: List<String>) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: CategoryViewModel = koinViewModel { parametersOf(args) },
 ) {
@@ -108,7 +108,7 @@ fun CategoryScreen(
         CategoryNavigationSideEffect.OpenAdd -> onOpenAdd()
         CategoryNavigationSideEffect.OpenCalendar -> onOpenCalendar()
         CategoryNavigationSideEffect.OpenEditor -> onOpenEditor()
-        is CategoryNavigationSideEffect.OpenItemActions -> onOpenItemActions(effect.itemId)
+        is CategoryNavigationSideEffect.OpenItemActions -> onOpenItemActions(effect.itemIds)
         CategoryNavigationSideEffect.Close -> onBack()
       }
     }
@@ -340,7 +340,7 @@ private fun CategoryContent(
   state: CategoryState.Ready,
   onFilterSelected: (ExpiryStatus?) -> Unit,
   onDayClick: (kotlinx.datetime.LocalDate) -> Unit,
-  onItemClick: (String) -> Unit,
+  onItemClick: (List<String>) -> Unit,
   onConsume: (ProductRowModel) -> Unit,
   onFreeze: (ProductRowModel) -> Unit,
   onDiscard: (ProductRowModel) -> Unit,
@@ -417,7 +417,7 @@ private fun CategoryContent(
               model = item.row,
               index = item.index,
               count = item.count,
-              onClick = { onItemClick(item.row.nearestItemId) },
+              onClick = { onItemClick(item.row.itemIds) },
               onConsume = { onConsume(item.row) },
               onFreeze = { onFreeze(item.row) },
               onDiscard = { onDiscard(item.row) },
@@ -441,7 +441,7 @@ private fun CategoryContent(
               model = row,
               index = item.index,
               count = item.section.groups.size,
-              onClick = { onItemClick(row.nearestItemId) },
+              onClick = { onItemClick(row.itemIds) },
               onConsume = { onConsume(row) },
               onFreeze = { onFreeze(row) },
               onDiscard = { onDiscard(row) },

@@ -34,7 +34,7 @@ sealed interface HomeNavigation {
   ) : HomeNavigation
 
   data class ItemActions(
-    val itemId: String,
+    val itemIds: List<String>,
   ) : HomeNavigation
 
   data object AddFirst : HomeNavigation
@@ -54,7 +54,7 @@ sealed interface HomeNavigationSideEffect {
   data object OpenPantry : HomeNavigationSideEffect
 
   data class OpenItemActions(
-    val itemId: String,
+    val itemIds: List<String>,
   ) : HomeNavigationSideEffect
 
   data object OpenAdd : HomeNavigationSideEffect

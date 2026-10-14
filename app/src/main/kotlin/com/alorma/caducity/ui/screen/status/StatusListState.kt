@@ -57,7 +57,7 @@ data class DateTarget(
 
 sealed interface StatusListNavigation {
   data class ItemActions(
-    val itemId: String,
+    val itemIds: List<String>,
   ) : StatusListNavigation
 
   data object AddFirst : StatusListNavigation
@@ -68,7 +68,7 @@ sealed interface StatusListNavigation {
 
 sealed interface StatusListNavigationSideEffect {
   data class OpenItemActions(
-    val itemId: String,
+    val itemIds: List<String>,
   ) : StatusListNavigationSideEffect
 
   data object OpenAdd : StatusListNavigationSideEffect
