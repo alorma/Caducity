@@ -206,7 +206,8 @@ private fun ColorPaletteSwatch(
         Icon(
           imageVector = if (selected) Symbols.Outlined.Check else Symbols.Outlined.Wallpaper,
           contentDescription = null,
-          // The check sits across both halves: dark in light theme, light in dark theme (white on the gradient).
+          // The check sits across both halves: dark in light theme, light in dark theme. The wallpaper icon stays
+          // white: the gradient is the same fixed colours in both themes, so there is no theme colour to follow.
           tint = if (palette == ColorPalette.DYNAMIC) Color.White else CaducityTheme.colorScheme.onSurface,
         )
       }
@@ -242,14 +243,22 @@ private fun Swatch(
   }
 }
 
-private val DynamicSwatchBrush =
-  Brush.sweepGradient(
-    listOf(
-      Color(0xFFEA4335),
-      Color(0xFFFBBC05),
-      Color(0xFF34A853),
-      Color(0xFF4285F4),
-      Color(0xFF9B59B6),
-      Color(0xFFEA4335),
-    ),
+/** Fixed decoration of the Dynamic swatch: it does not follow the theme, since it stands for "any wallpaper colour". */
+private val DynamicSwatchRed = Color(0xFFEA4335)
+private val DynamicSwatchYellow = Color(0xFFFBBC05)
+private val DynamicSwatchGreen = Color(0xFF34A853)
+private val DynamicSwatchBlue = Color(0xFF4285F4)
+private val DynamicSwatchPurple = Color(0xFF9B59B6)
+
+/** A sweep gradient must end on the colour it starts with, hence the red twice. */
+private val DynamicSwatchColors =
+  listOf(
+    DynamicSwatchRed,
+    DynamicSwatchYellow,
+    DynamicSwatchGreen,
+    DynamicSwatchBlue,
+    DynamicSwatchPurple,
+    DynamicSwatchRed,
   )
+
+private val DynamicSwatchBrush = Brush.sweepGradient(DynamicSwatchColors)
