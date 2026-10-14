@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
@@ -43,6 +44,7 @@ import com.alorma.caducity.base.ui.icons.symbols.CalendarMonth
 import com.alorma.caducity.base.ui.icons.symbols.ChevronRight
 import com.alorma.caducity.base.ui.icons.symbols.DeleteHistory
 import com.alorma.caducity.base.ui.icons.symbols.Search
+import com.alorma.caducity.base.ui.icons.symbols.SoupKitchen
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.HomeDaySection
@@ -244,31 +246,87 @@ internal fun DaySectionHeader(
   }
 }
 
+/** «+N més» (rows that did not fit) and the link to the pantry, at the end of the list when nothing is soon. */
 @Composable
-internal fun NothingSoon(
+internal fun SeePantry(
+  moreCount: Int,
   onSeePantry: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = modifier.fillMaxWidth().padding(vertical = 24.dp),
+    modifier = modifier.fillMaxWidth().padding(top = 16.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
-    Text(
-      stringResource(R.string.home_nothing_soon),
-      style = CaducityTheme.typography.titleMedium,
-    )
-    Text(
-      text = stringResource(R.string.home_nothing_soon_link),
-      style = CaducityTheme.typography.labelLarge,
-      color = CaducityTheme.colorScheme.primary,
+    if (moreCount > 0) {
+      Text(
+        text = stringResource(R.string.home_more_rows, moreCount),
+        style = CaducityTheme.typography.bodyMedium,
+        color = CaducityTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(bottom = 4.dp),
+      )
+    }
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
       modifier =
         Modifier
           .heightIn(min = 48.dp)
           .clip(CaducityShapes.chip)
           .clickable(role = Role.Button, onClick = onSeePantry)
-          .padding(horizontal = 8.dp, vertical = 12.dp),
-    )
+          .padding(horizontal = 12.dp, vertical = 12.dp),
+    ) {
+      Text(
+        text = stringResource(R.string.home_see_pantry),
+        style = CaducityTheme.typography.labelLarge,
+        color = CaducityTheme.colorScheme.primary,
+      )
+      Icon(
+        imageVector = Symbols.Outlined.ChevronRight,
+        contentDescription = null,
+        tint = CaducityTheme.colorScheme.primary,
+        modifier = Modifier.size(20.dp),
+      )
+    }
+  }
+}
+
+/** «Has cuinat?»: opens an empty Transforma. Always the last row of the list when there is something usable. */
+@Composable
+internal fun CookedCard(
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val colors = CaducityTheme.colors.fresh
+  Surface(
+    onClick = onClick,
+    shape = RoundedCornerShape(24.dp),
+    color = colors.container,
+    contentColor = colors.onContainer,
+    modifier = modifier.fillMaxWidth().padding(top = 16.dp),
+  ) {
+    Row(
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+      Box(
+        modifier = Modifier.size(48.dp).clip(CaducityShapes.chip).background(CaducityTheme.colorScheme.surface),
+        contentAlignment = Alignment.Center,
+      ) {
+        Icon(Symbols.Outlined.SoupKitchen, contentDescription = null, modifier = Modifier.size(28.dp))
+      }
+      Column(modifier = Modifier.weight(1f)) {
+        Text(
+          text = stringResource(R.string.home_cooked_title),
+          style = CaducityTheme.typography.titleMedium,
+          fontWeight = FontWeight.Bold,
+        )
+        Text(
+          text = stringResource(R.string.home_cooked_body),
+          style = CaducityTheme.typography.bodyMedium,
+        )
+      }
+      Icon(Symbols.Outlined.ChevronRight, contentDescription = null)
+    }
   }
 }
 

@@ -160,8 +160,8 @@ class AddCloseAction :
 // Transform Screen Actions
 
 /**
- * [origin]: "status_list", "item_actions" or "home"; [source]: "selection", "item_actions" or
- * "intro_modal" («Prova Transforma» of the «Novetat Transforma» modal).
+ * [origin]: "status_list", "item_actions" or "home"; [source]: "selection", "item_actions",
+ * "cooked_card" (the «Has cuinat?» card of Home) or "intro_modal" («Prova Transforma» of the «Novetat Transforma» modal).
  */
 class NavigateToTransformAction(
   origin: String,
@@ -240,7 +240,7 @@ class NavigateToSearchAction :
   )
 
 class NavigateToPantryFromHomeAction(
-  source: String, // nothing_soon
+  source: String, // see_pantry
 ) : NavigationAction(
     actionName = "pantry",
     origin = "home",

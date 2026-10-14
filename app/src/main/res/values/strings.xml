@@ -292,8 +292,10 @@
     <item quantity="other">%d units</item>
   </plurals>
   <string name="home_mark_consumed">Mark %1$s as consumed</string>
-  <string name="home_nothing_soon">Nothing expires soon. Nice work.</string>
-  <string name="home_nothing_soon_link">See the pantry</string>
+  <string name="home_see_pantry">See the pantry</string>
+  <string name="home_more_rows">+%d more</string>
+  <string name="home_cooked_title">Cooked something?</string>
+  <string name="home_cooked_body">Note it down in Transform</string>
   <string name="home_empty_title">The pantry is empty</string>
   <string name="home_empty_body">Start with today\'s shopping: add what you just put in the fridge.</string>
   <string name="home_empty_cta">Add the first product</string>

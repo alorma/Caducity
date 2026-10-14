@@ -304,8 +304,10 @@
     <item quantity="other">%d unitats</item>
   </plurals>
   <string name="home_mark_consumed">Marca %1$s com a consumit</string>
-  <string name="home_nothing_soon">Res caduca aviat. Bona feina.</string>
-  <string name="home_nothing_soon_link">Mira el rebost</string>
+  <string name="home_see_pantry">Veure el rebost</string>
+  <string name="home_more_rows">+%d més</string>
+  <string name="home_cooked_title">Has cuinat?</string>
+  <string name="home_cooked_body">Apunta-ho a Transforma</string>
   <string name="home_empty_title">El rebost és buit</string>
   <string name="home_empty_body">Comença per la compra d\'avui: afegeix el que acabes de guardar a la nevera.</string>
   <string name="home_empty_cta">Afegeix el primer producte</string>

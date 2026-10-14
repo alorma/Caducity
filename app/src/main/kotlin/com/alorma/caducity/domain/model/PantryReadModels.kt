@@ -69,6 +69,8 @@ data class HomeRow(
 data class HomeDaySection(
   val date: LocalDate,
   val rows: List<HomeRow>,
+  /** Status of every unit of the section: `SOON` in the «soon» window, `FRESH` in [HomeData.upcoming]. */
+  val status: ExpiryStatus = ExpiryStatus.SOON,
 ) {
   /** Units, not rows (P6). */
   val unitCount: Int get() = rows.sumOf { it.unitCount }
@@ -85,9 +87,21 @@ data class HomeData(
   val sections: List<HomeDaySection>,
   /** No active item at all (empty pantry). */
   val isPantryEmpty: Boolean,
+  /** Only when [sections] is empty: the next fresh expirations (first days with units, at most [UPCOMING_MAX_ROWS] rows). */
+  val upcoming: List<HomeDaySection> = emptyList(),
+  /** Rows of the upcoming days that did not fit in [upcoming]. */
+  val upcomingMoreCount: Int = 0,
 ) {
   /** There are items but none is about to expire (and no section to show). */
   val nothingExpiresSoon: Boolean get() = !isPantryEmpty && sections.isEmpty()
+
+  /** Something that is not expired can still be cooked: units that are soon, fresh or frozen. */
+  val hasUsableProducts: Boolean get() = soonCount + freshCount + frozenCount > 0
+
+  companion object {
+    const val UPCOMING_DAYS = 3
+    const val UPCOMING_MAX_ROWS = 8
+  }
 }
 
 // endregion

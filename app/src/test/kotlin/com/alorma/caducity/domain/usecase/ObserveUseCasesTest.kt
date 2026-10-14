@@ -262,6 +262,55 @@ class ObserveUseCasesTest {
     }
 
   @Test
+  fun `with nothing soon the home lists the first three days of fresh units`() =
+    runTest {
+      category("c1")
+      add("Pasta", "c1", 15)
+      add("Rice", "c1", 15)
+      add("Beans", "c1", 20, quantity = 2)
+      add("Flour", "c1", 25)
+      add("Sugar", "c1", 40)
+      add("Peas", "c1", 5, frozen = true)
+      add("Old", "c1", -3)
+
+      val data = home.observe().first()
+
+      expectThat(data.sections).isEmpty()
+      expectThat(data.upcoming.map { it.date }).containsExactly(inDays(15), inDays(20), inDays(25))
+      expectThat(data.upcoming.all { it.status == ExpiryStatus.FRESH }).isTrue()
+      val firstDay = data.upcoming.first()
+      expectThat(firstDay.rows.map { it.name }).containsExactly("Pasta", "Rice")
+      expectThat(data.upcomingMoreCount).isEqualTo(0)
+    }
+
+  @Test
+  fun `the upcoming list is cut at eight rows and counts the rest`() =
+    runTest {
+      category("c1")
+      repeat(6) { add("A$it", "c1", 15) }
+      repeat(4) { add("B$it", "c1", 20) }
+
+      val data = home.observe().first()
+
+      expectThat(data.upcoming.sumOf { it.rows.size }).isEqualTo(8)
+      expectThat(data.upcoming.map { it.rows.size }).containsExactly(6, 2)
+      expectThat(data.upcomingMoreCount).isEqualTo(2)
+    }
+
+  @Test
+  fun `the upcoming list is empty while something is soon`() =
+    runTest {
+      category("c1")
+      add("Milk", "c1", 1)
+      add("Pasta", "c1", 15)
+
+      val data = home.observe().first()
+
+      expectThat(data.sections).hasSize(1)
+      expectThat(data.upcoming).isEmpty()
+    }
+
+  @Test
   fun `home row names the closest unit for the check button and excludes expired from sections`() =
     runTest {
       category("c1")

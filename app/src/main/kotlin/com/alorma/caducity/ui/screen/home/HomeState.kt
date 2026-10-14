@@ -38,6 +38,11 @@ sealed interface HomeNavigation {
   ) : HomeNavigation
 
   data object AddFirst : HomeNavigation
+
+  /** The «Has cuinat?» card opens an empty Transforma. */
+  data class Transform(
+    val source: String,
+  ) : HomeNavigation
 }
 
 sealed interface HomeNavigationSideEffect {
@@ -58,4 +63,6 @@ sealed interface HomeNavigationSideEffect {
   ) : HomeNavigationSideEffect
 
   data object OpenAdd : HomeNavigationSideEffect
+
+  data object OpenTransform : HomeNavigationSideEffect
 }

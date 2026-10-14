@@ -46,6 +46,27 @@ class ObserveHomeUseCase(
           .map { (date, dayEntries) -> HomeDaySection(date = date, rows = rowsOf(dayEntries)) }
           .filter { it.rows.isNotEmpty() }
 
+      val upcomingDays =
+        if (sections.isNotEmpty()) {
+          emptyList()
+        } else {
+          byStatus[ExpiryStatus.FRESH]
+            .orEmpty()
+            .groupBy { it.expiration }
+            .toSortedMap()
+            .entries
+            .take(HomeData.UPCOMING_DAYS)
+            .map { (date, dayEntries) -> HomeDaySection(date, rowsOf(dayEntries), ExpiryStatus.FRESH) }
+        }
+      var roomLeft = HomeData.UPCOMING_MAX_ROWS
+      val upcoming =
+        upcomingDays
+          .map { section ->
+            val kept = section.rows.take(roomLeft)
+            roomLeft -= kept.size
+            section.copy(rows = kept)
+          }.filter { it.rows.isNotEmpty() }
+
       HomeData(
         today = today,
         expiredCount = expired.size,
@@ -55,6 +76,8 @@ class ObserveHomeUseCase(
         frozenCount = byStatus[ExpiryStatus.FROZEN].orEmpty().size,
         sections = sections,
         isPantryEmpty = entries.isEmpty(),
+        upcoming = upcoming,
+        upcomingMoreCount = upcomingDays.sumOf { it.rows.size } - upcoming.sumOf { it.rows.size },
       )
     }.flowOn(Dispatchers.Default)
 

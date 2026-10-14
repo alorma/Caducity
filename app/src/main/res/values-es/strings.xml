@@ -304,8 +304,10 @@
     <item quantity="other">%d unidades</item>
   </plurals>
   <string name="home_mark_consumed">Marca %1$s como consumido</string>
-  <string name="home_nothing_soon">Nada caduca pronto. Buen trabajo.</string>
-  <string name="home_nothing_soon_link">Mira la despensa</string>
+  <string name="home_see_pantry">Ver la despensa</string>
+  <string name="home_more_rows">+%d más</string>
+  <string name="home_cooked_title">¿Has cocinado?</string>
+  <string name="home_cooked_body">Apúntalo en Transformar</string>
   <string name="home_empty_title">La despensa está vacía</string>
   <string name="home_empty_body">Empieza por la compra de hoy: añade lo que acabas de guardar en la nevera.</string>
   <string name="home_empty_cta">Añade el primer producto</string>

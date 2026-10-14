@@ -190,6 +190,7 @@ fun App(
                 onOpenPantry = { navigation.switchTab(Pantry) },
                 onOpenItemActions = { navigation.navigate(ItemActions(it)) },
                 onOpenAdd = { navigation.navigate(Add(source = "home_empty")) },
+                onOpenTransform = { navigation.navigate(Transform()) },
               )
             }
             entry<Pantry> {

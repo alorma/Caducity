@@ -53,6 +53,7 @@ fun HomeScreen(
   onOpenPantry: () -> Unit,
   onOpenItemActions: (itemIds: List<String>) -> Unit,
   onOpenAdd: () -> Unit,
+  onOpenTransform: () -> Unit,
   modifier: Modifier = Modifier,
   viewModel: HomeViewModel = koinViewModel(),
 ) {
@@ -68,6 +69,7 @@ fun HomeScreen(
         HomeNavigationSideEffect.OpenPantry -> onOpenPantry()
         is HomeNavigationSideEffect.OpenItemActions -> onOpenItemActions(effect.itemIds)
         HomeNavigationSideEffect.OpenAdd -> onOpenAdd()
+        HomeNavigationSideEffect.OpenTransform -> onOpenTransform()
       }
     }
   }
@@ -112,8 +114,14 @@ private sealed interface HomeItem {
     override val key = "row-${section.date}-${row.key}"
   }
 
-  data object NothingSoon : HomeItem {
-    override val key = "nothing-soon"
+  data class SeePantry(
+    val moreCount: Int,
+  ) : HomeItem {
+    override val key = "see-pantry"
+  }
+
+  data object Cooked : HomeItem {
+    override val key = "cooked"
   }
 
   data object Empty : HomeItem {
@@ -129,11 +137,12 @@ private fun HomeState.Ready.items(): List<HomeItem> =
     }
     if (data.expiredCount > 0) add(HomeItem.Banner)
     add(HomeItem.Summary)
-    if (data.nothingExpiresSoon) add(HomeItem.NothingSoon)
-    data.sections.forEach { section ->
+    (data.sections + data.upcoming).forEach { section ->
       add(HomeItem.SectionHeader(section))
       section.rows.forEachIndexed { index, row -> add(HomeItem.Row(section, row, index)) }
     }
+    if (data.hasUsableProducts) add(HomeItem.Cooked)
+    if (data.nothingExpiresSoon) add(HomeItem.SeePantry(data.upcomingMoreCount))
   }
 
 @Composable
@@ -222,7 +231,12 @@ internal fun HomeContent(
               onConsume = { onConsume(item.row) },
               onFreeze = { onFreeze(item.row) },
             )
-          HomeItem.NothingSoon -> NothingSoon(onSeePantry = { onNavigate(HomeNavigation.Pantry("nothing_soon")) })
+          is HomeItem.SeePantry ->
+            SeePantry(
+              moreCount = item.moreCount,
+              onSeePantry = { onNavigate(HomeNavigation.Pantry("see_pantry")) },
+            )
+          HomeItem.Cooked -> CookedCard(onClick = { onNavigate(HomeNavigation.Transform("cooked_card")) })
           HomeItem.Empty -> HomeEmptyState(onAdd = { onNavigate(HomeNavigation.AddFirst) })
         }
       }
@@ -257,7 +271,7 @@ internal fun HomeLoading(
   }
 }
 
-/** Every row of the list is «soon» (the section's day): the days left are the distance from today to that day. */
+/** Every row has the status of its section: the days left are the distance from today to that day. */
 private fun HomeRow.toProductRow(
   section: HomeDaySection,
   today: LocalDate,
@@ -266,7 +280,7 @@ private fun HomeRow.toProductRow(
     key = key,
     name = name,
     itemIds = itemIds,
-    status = ExpiryStatus.SOON,
+    status = section.status,
     remainingDays = today.daysUntil(section.date),
     category = category,
     detail = ProductRowDetail.InCategory(category.name),
@@ -325,7 +339,21 @@ private fun HomeNothingSoonPreview() {
   PreviewTheme {
     HomeContent(
       HomeState.Ready(
-        sampleData.copy(expiredCount = 0, sections = emptyList()),
+        sampleData.copy(
+          expiredCount = 0,
+          soonCount = 0,
+          sections = emptyList(),
+          upcoming =
+            listOf(
+              HomeDaySection(LocalDate(2026, 10, 15), listOf(row("Iogurt", dairy, units = 4)), ExpiryStatus.FRESH),
+              HomeDaySection(
+                LocalDate(2026, 10, 17),
+                listOf(row("Hummus", produce), row("Pa de motlle", dairy)),
+                ExpiryStatus.FRESH,
+              ),
+            ),
+          upcomingMoreCount = 3,
+        ),
         WeekStripData(today, emptyMap()),
       ),
       {},
