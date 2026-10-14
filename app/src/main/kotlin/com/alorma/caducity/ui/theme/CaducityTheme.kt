@@ -8,6 +8,8 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
+import com.alorma.caducity.ui.screen.transform.contrastRatio
 import com.alorma.caducity.ui.theme.colors.CaducityColors
 
 data class CaducityDims(
@@ -69,4 +71,16 @@ object CaducityTheme {
     @Composable
     @ReadOnlyComposable
     get() = MaterialTheme.motionScheme
+
+  /** Text or icon colour for content drawn over [color]: see [ColorScheme.contentOn]. */
+  @Composable
+  @ReadOnlyComposable
+  fun contentOn(color: Color): Color = colorScheme.contentOn(color)
 }
+
+/**
+ * Of `onSurface` and `surface`, the one with more contrast against [color]. Over the `strong` status colours
+ * (dark in the light theme, light in the dark theme) this gives the cream or the ink the theme already defines.
+ */
+internal fun ColorScheme.contentOn(color: Color): Color =
+  if (contrastRatio(onSurface, color) >= contrastRatio(surface, color)) onSurface else surface
