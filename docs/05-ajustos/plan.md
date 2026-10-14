@@ -34,4 +34,4 @@ Flux: `.claude/rules/phased-work.md`. Paquet independent de la revisió de coher
 
 Fora del pla, demanat per Bernat: `075a659c` «Quant a» enllaça a la web (per idioma) en lloc del repositori de GitHub.
 
-Desviacions: els botons segmentats queden sagnats sota el títol (els posa el `SettingsTileScaffold` de compose-settings), no a tota l'amplada com a la captura; els títols de fila es mantenen en el color primari de la resta d'Ajustos. Validat a l'emulador en clar (fosc només per captures de test).
+Desviacions: els botons segmentats queden sagnats sota el títol (els posa el `SettingsTileScaffold` de compose-settings), no a tota l'amplada com a la captura. Títols de fila foscos com a la captura (`ef0c3952`, també a les subpantalles d'Ajustos). Validat a l'emulador en clar (fosc només per captures de test).
