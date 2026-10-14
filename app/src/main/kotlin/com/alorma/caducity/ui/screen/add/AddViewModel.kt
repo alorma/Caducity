@@ -172,10 +172,7 @@ class AddViewModel(
   /** "Desa": saves and closes. While editing a unit it updates that unit instead. */
   fun onSave() {
     val current = _state.value
-    if (!current.canSave) {
-      emitSideEffect(AddSideEffect.Reject)
-      return
-    }
+    if (!current.canSave) return
     if (current.frozenWithPastDate) {
       emitSideEffect(AddSideEffect.ShowFrozenPastDate)
       emitSideEffect(AddSideEffect.Reject)

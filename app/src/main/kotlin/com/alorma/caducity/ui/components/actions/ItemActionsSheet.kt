@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -479,21 +482,15 @@ private fun ActionButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Surface(
+  Button(
     onClick = onClick,
-    modifier = modifier.height(56.dp),
+    modifier = modifier.heightIn(min = 56.dp),
     shape = shape,
-    color = container,
-    contentColor = content,
+    colors = ButtonDefaults.buttonColors(containerColor = container, contentColor = content),
   ) {
-    Row(
-      horizontalArrangement = Arrangement.Center,
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      Icon(icon, contentDescription = null, modifier = Modifier.size(22.dp))
-      Spacer(Modifier.width(8.dp))
-      Text(label, style = CaducityTheme.typography.labelLarge, maxLines = 1)
-    }
+    Icon(icon, contentDescription = null, modifier = Modifier.size(22.dp))
+    Spacer(Modifier.width(8.dp))
+    Text(label, maxLines = 1)
   }
 }
 

@@ -354,12 +354,12 @@ class AddViewModelTest {
     }
 
   @Test
-  fun `tapping save with missing fields rejects and saves nothing`() =
+  fun `saving with missing fields does nothing`() =
     runTest {
       val vm = viewModel()
       vm.sideEffects.test {
         vm.onSave()
-        expectThat(awaitItem()).isEqualTo(AddSideEffect.Reject)
+        expectNoEvents()
       }
       expectThat(items()).isEmpty()
     }

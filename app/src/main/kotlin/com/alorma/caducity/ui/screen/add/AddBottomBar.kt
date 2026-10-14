@@ -2,26 +2,19 @@ package com.alorma.caducity.ui.screen.add
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
-import com.alorma.caducity.ui.components.button.connectedButtonShape
 import com.alorma.caducity.ui.theme.CaducityTheme
 
-/**
- * The single «Desa» button, full width, below the form. It is only dimmed while something is missing: tapping
- * it still reaches [onSave], which answers with the `Reject` haptic.
- */
+/** The single «Desa» button, full width, below the form. Disabled while something is missing. */
 @Composable
 fun AddBottomBar(
   state: AddState,
@@ -37,41 +30,12 @@ fun AddBottomBar(
         modifier = Modifier.padding(horizontal = 4.dp),
       )
     }
-    val scheme = CaducityTheme.colorScheme
-    BarButton(
-      modifier = Modifier.fillMaxWidth(),
-      enabled = state.canSave,
-      container = scheme.primary,
-      content = scheme.onPrimary,
+    Button(
       onClick = onSave,
+      enabled = state.canSave,
+      modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
     ) {
-      Text(stringResource(R.string.add_save), style = CaducityTheme.typography.labelLarge, maxLines = 1)
-    }
-  }
-}
-
-@Composable
-private fun BarButton(
-  enabled: Boolean,
-  container: Color,
-  content: Color,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  label: @Composable () -> Unit,
-) {
-  Surface(
-    onClick = onClick,
-    shape = connectedButtonShape(0, 1),
-    color = if (enabled) container else CaducityTheme.colorScheme.surfaceContainerHigh,
-    contentColor = if (enabled) content else CaducityTheme.colorScheme.outline,
-    modifier = modifier.height(56.dp),
-  ) {
-    Row(
-      modifier = Modifier.padding(horizontal = 12.dp),
-      horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      label()
+      Text(stringResource(R.string.add_save), maxLines = 1)
     }
   }
 }
