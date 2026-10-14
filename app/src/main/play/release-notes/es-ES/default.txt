@@ -1,6 +1,2 @@
-Versión 1.1.0:
-• Nuevo Transformar: ¿has hecho cocido con media despensa? Apúntalo en la app sin complicaciones.
-• ¿Te encanta el pan? ¿O prefieres los tonos de un huerto bien cuidado? Cambia los colores de la app a tu gusto.
-• Ya no hace falta ser adivino: te sugerimos la fecha según lo que suele durar cada categoría.
-• Una fila por producto: consume, congela o tira varias unidades de una vez.
-• Más de doscientos retoques de diseño y usabilidad. Sí, los hemos contado.
+Versión 1.1.1:
+• Corrección de errores.

@@ -1,6 +1,2 @@
-Version 1.1.0:
-• New Transform: made a stew with half the pantry? Note it down in the app, no fuss.
-• Love bread? Or do you prefer the shades of a well-kept garden? Change the app's colors to your taste.
-• No need to be a fortune teller: we suggest the date based on how long each category usually lasts.
-• One row per product: consume, freeze or throw out several units in one go.
-• Over two hundred design and usability tweaks. Yes, we counted.
+Version 1.1.1:
+• Bug fixes.
