@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
@@ -51,12 +52,12 @@ fun QuantityFrozenRow(
       modifier = Modifier.weight(2f).height(64.dp),
     ) {
       Row(
-        modifier = Modifier.padding(start = 12.dp, end = 8.dp),
+        modifier = Modifier.padding(start = 20.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
           text = stringResource(R.string.add_quantity),
-          style = CaducityTheme.typography.labelLarge,
+          style = CaducityTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
           maxLines = 1,
           softWrap = false,
           modifier = Modifier.weight(1f),
@@ -72,7 +73,7 @@ fun QuantityFrozenRow(
           text = quantity.toString(),
           style = CaducityTheme.typography.titleMedium,
           textAlign = TextAlign.Center,
-          modifier = Modifier.width(24.dp),
+          modifier = Modifier.width(36.dp),
         )
         StepButton(
           enabled = quantity < AddProductUseCase.MAX_QUANTITY,
