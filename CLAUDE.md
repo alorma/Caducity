@@ -52,7 +52,7 @@ Caducity is an Android grocery expiration tracker application built with Jetpack
 
 ### Navigation System
 
-Uses Jetpack Navigation 3:
+Uses Jetpack Navigation 3. Pending plan to make it behave like Converses (single back stack, fixed floating bar): `docs/navigation/README.md`.
 
 ### Theming
 
