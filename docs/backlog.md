@@ -1,8 +1,6 @@
 # Backlog
 
-What is left after the «Caducity» redesign (1.0.0). The plan and the design package that came with it were removed from the repo; they are in the git history (`git log -- docs/redisseny`).
-
-The plans, specs and design files of the three packages that followed the redesign (multi-unit actions, Transforma, Home without «soon» items) were removed once Transforma shipped. They are in the git history, at commit `0af1f05` (`git show 0af1f05:docs/<folder>/spec.md`, with the folders `01-diverses-unitats`, `02-transforma` and `03-inici-sense-aviat`).
+What is left to do in Caducity.
 
 ## Features
 
@@ -34,12 +32,12 @@ Transforma is on for everyone (the `transform_enabled` flag is gone). What is le
 ## Cleanup
 
 - **`// TEMP` leftovers**: adapters for old screens that may be dead now (`StatusBadge`, `ExpirationDefaults`, `ItemRoomMapper`, `UnfreezeItemUseCase`, `ExpirationThresholds`). Check with `git grep` and remove the ones with no consumer.
-- **Quantity limit on Add**: 20 per entry is a hypothesis (P22), never confirmed.
+- **Quantity limit on Add**: 20 per entry is a hypothesis, never confirmed.
 - **Flaky unit tests** (14 October): `TransformViewModelTest` fails one different case almost every full run (timeouts waiting for state, e.g. «adding an ingredient to a free entry brings back the default date»), and `PantryViewModelTest` search once returned the previous query's results; both pass when re-run. Look at how they wait for state (`withTimeout` + `first`) and at races between `onQueryChange` and the results.
 
 ## Fora d'abast de moment
 
-Aquests punts estan fora del paquet de revisió de coherència: el codi s'ha tret i es tornaran a implementar quan calgui (el codi anterior és a l'historial de git). El pla i les decisions són a [`04-revisio-coherencia/plan.md`](04-revisio-coherencia/plan.md).
+El codi d'aquests punts s'ha tret; es tornaran a implementar quan calgui (el codi anterior és a l'historial de git).
 
 - **Valoració a Google Play**: demanar una ressenya amb l'API In-App Review (`com.google.android.play:review`), en un bon moment (per exemple després d'unes quantes unitats consumides), mai a la primera obertura ni després d'un error. Google limita cada quant es mostra, així que pot no sortir cada vegada. Cal decidir el moment i les normes abans de tornar-la.
 - **Widget (Glance)**: mostra els comptadors d'«Aviat» i de caducats i els dos primers productes, amb el marge global d'«Aviat». `glance-appwidget` + `glance-material3`; `updateAll()` després de cada escriptura i des del worker diari; botó **Afegeix** (obre `add?source=widget`) i el cos obre l'Inici; estat buit. Riscos: R8 amb Glance, refresc a mitjanit, mides del widget. Ha de seguir la paleta de colors escollida (`ThemePreferences.colorPalette`; Dinàmic: el color del sistema). Tests: `WidgetStateMapperTest`.
