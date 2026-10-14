@@ -10,13 +10,13 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
@@ -156,6 +156,8 @@ private fun productRowDaysText(
     else -> pluralStringResource(R.plurals.item_pill_days_ago, -days, -days)
   }
 
+/** Round action that morphs its shape while pressed (M3 Expressive). */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun RoundButton(
   icon: ImageVector,
@@ -163,9 +165,15 @@ private fun RoundButton(
   tint: Color,
   onClick: () -> Unit,
 ) {
-  IconButton(
+  FilledIconButton(
     onClick = onClick,
-    modifier = Modifier.size(44.dp).clip(CircleShape).background(CaducityTheme.colorScheme.surface),
+    modifier = Modifier.size(44.dp),
+    shapes = IconButtonDefaults.shapes(),
+    colors =
+      IconButtonDefaults.filledIconButtonColors(
+        containerColor = CaducityTheme.colorScheme.surface,
+        contentColor = tint,
+      ),
   ) {
     Icon(icon, contentDescription = contentDescription, tint = tint)
   }
