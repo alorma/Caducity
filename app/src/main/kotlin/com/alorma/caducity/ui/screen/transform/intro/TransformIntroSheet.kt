@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.screen.onboarding.components.OnboardingPrimaryButton
 import com.alorma.caducity.ui.screen.onboarding.steps.NotARecipeBookCard
-import com.alorma.caducity.ui.screen.onboarding.steps.SplitButtonHint
 import com.alorma.caducity.ui.screen.onboarding.steps.TransformDiagram
+import com.alorma.caducity.ui.screen.onboarding.steps.TransformHint
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.OverlineTextStyle
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
@@ -69,7 +69,7 @@ fun TransformIntroSheet(
     )
     TransformDiagram()
     NotARecipeBookCard()
-    SplitButtonHint(hint = stringResource(R.string.transform_intro_hint))
+    TransformHint(hint = stringResource(R.string.transform_intro_hint))
     OnboardingPrimaryButton(
       text = stringResource(R.string.transform_intro_try),
       onClick = onTry,

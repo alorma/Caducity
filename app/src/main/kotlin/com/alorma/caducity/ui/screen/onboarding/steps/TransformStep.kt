@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,17 +34,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.Placeholder
-import androidx.compose.ui.text.PlaceholderVerticalAlign
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.alorma.caducity.R
-import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.Eco
-import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
 import com.alorma.caducity.base.ui.icons.symbols.MenuBook
 import com.alorma.caducity.base.ui.icons.symbols.SetMeal
 import com.alorma.caducity.base.ui.icons.symbols.SoupKitchen
@@ -90,7 +81,7 @@ fun TransformStep(
     Reveal(delayMillis = 2000, modifier = Modifier.fillMaxWidth()) { NotARecipeBookCard() }
     Spacer(Modifier.height(20.dp))
     Reveal(delayMillis = 2200, modifier = Modifier.fillMaxWidth()) {
-      SplitButtonHint(hint = stringResource(R.string.ob_transform_hint))
+      TransformHint(hint = stringResource(R.string.ob_transform_hint))
     }
   }
 }
@@ -278,75 +269,18 @@ internal fun NotARecipeBookCard(modifier: Modifier = Modifier) {
   }
 }
 
-/** The «+ ⌃» button in small, and where Transforma lives. The «{chevron}» marker of [hint] is the ⌃ icon. */
+/** Where Transforma lives: the end of the home list and every product. */
 @Composable
-internal fun SplitButtonHint(
+internal fun TransformHint(
   hint: String,
   modifier: Modifier = Modifier,
 ) {
-  val marker = "{chevron}"
-  val before = hint.substringBefore(marker)
-  val after = hint.substringAfter(marker, missingDelimiterValue = "")
-  val text =
-    buildAnnotatedString {
-      append(before)
-      appendInlineContent("chevron", "⌃")
-      append(after)
-    }
-  val inline =
-    mapOf(
-      "chevron" to
-        InlineTextContent(Placeholder(18.sp, 18.sp, PlaceholderVerticalAlign.Center)) {
-          Icon(Symbols.Outlined.ExpandLess, contentDescription = null, modifier = Modifier.size(18.dp))
-        },
-    )
-  Row(
+  Text(
+    text = hint,
+    style = CaducityTheme.typography.bodyMedium,
+    color = CaducityTheme.colorScheme.onSurfaceVariant,
     modifier = modifier.fillMaxWidth().padding(horizontal = 4.dp),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(16.dp),
-  ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-      // Real size and shape of the «+ ⌃» of the navigation bar (SplitAddButton).
-      SplitPart(
-        icon = Symbols.Outlined.Add,
-        iconSize = 28.dp,
-        width = 64.dp,
-        shape = RoundedCornerShape(topStart = 20.dp, bottomStart = 20.dp, topEnd = 6.dp, bottomEnd = 6.dp),
-      )
-      SplitPart(
-        icon = Symbols.Outlined.ExpandLess,
-        iconSize = 24.dp,
-        width = 40.dp,
-        shape = RoundedCornerShape(topStart = 6.dp, bottomStart = 6.dp, topEnd = 20.dp, bottomEnd = 20.dp),
-      )
-    }
-    Text(
-      text = text,
-      inlineContent = inline,
-      style = CaducityTheme.typography.bodyMedium,
-      color = CaducityTheme.colorScheme.onSurfaceVariant,
-      modifier = Modifier.weight(1f),
-    )
-  }
-}
-
-@Composable
-private fun SplitPart(
-  icon: ImageVector,
-  iconSize: Dp,
-  width: Dp,
-  shape: RoundedCornerShape,
-) {
-  Surface(
-    shape = shape,
-    color = CaducityTheme.colorScheme.primary,
-    contentColor = CaducityTheme.colorScheme.onPrimary,
-    modifier = Modifier.width(width).height(64.dp),
-  ) {
-    Box(contentAlignment = Alignment.Center) {
-      Icon(icon, contentDescription = null, modifier = Modifier.size(iconSize))
-    }
-  }
+  )
 }
 
 @PreviewLightDark

@@ -94,13 +94,10 @@
   <string name="app_name">Caducity</string>
 
   <!-- Navigation -->
-  <string name="nav_soon">Pronto</string>
+  <string name="nav_home">Inicio</string>
   <string name="nav_pantry">Despensa</string>
   <string name="nav_settings">Ajustes</string>
   <string name="action_add_product">Añadir un producto</string>
-  <string name="action_more_actions">Más acciones</string>
-  <string name="state_expanded">Desplegado</string>
-  <string name="state_collapsed">Plegado</string>
   <string name="add_date_placeholder">dd/mm/aa</string>
   <string name="add_date_pick">Elige la fecha</string>
   <string name="add_date_help_expired">ya ha caducado</string>
@@ -358,7 +355,7 @@
     <item quantity="many">%d caducados</item>
     <item quantity="other">%d caducados</item>
   </plurals>
-  <string name="category_add">Añade</string>
+  <string name="category_add_to">Añadir a %s</string>
   <string name="category_delete_title">¿Eliminar %s?</string>
   <string name="category_delete_confirm">Eliminar</string>
   <string name="category_delete_cancel">Cancelar</string>
@@ -509,10 +506,10 @@
   <string name="ob_transform_sample_result_meta">4 raciones · 2 congelados</string>
   <string name="ob_transform_not_recipe_title">No es un recetario</string>
   <string name="ob_transform_not_recipe_body">No hay recetas ni sugerencias de qué cocinar. Transformar solo apunta lo que has gastado y lo que ha salido.</string>
-  <string name="ob_transform_hint">Siempre está en el botón + de abajo, en la parte {chevron}.</string>
+  <string name="ob_transform_hint">La tienes al final del Inicio y en cada producto.</string>
   <string name="transform_intro_badge">NOVEDAD</string>
   <string name="transform_intro_body">¿Has cocinado con cosas de la despensa? Apúntalo: los ingredientes salen y el plato que ha salido entra, con su fecha.</string>
-  <string name="transform_intro_hint">La encontrarás siempre en el botón +, en la parte {chevron}.</string>
+  <string name="transform_intro_hint">La tienes al final del Inicio y en cada producto.</string>
   <string name="transform_intro_try">Probar Transformar</string>
   <string name="ob_continue">Continuar</string>
   <string name="ob_disclaimer_title">Antes de empezar</string>

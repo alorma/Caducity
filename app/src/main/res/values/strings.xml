@@ -93,13 +93,10 @@
   <string name="app_name">Caducity</string>
 
   <!-- Navigation -->
-  <string name="nav_soon">Soon</string>
+  <string name="nav_home">Home</string>
   <string name="nav_pantry">Pantry</string>
   <string name="nav_settings">Settings</string>
   <string name="action_add_product">Add a product</string>
-  <string name="action_more_actions">More actions</string>
-  <string name="state_expanded">Expanded</string>
-  <string name="state_collapsed">Collapsed</string>
   <string name="add_date_placeholder">dd/mm/yy</string>
   <string name="add_date_pick">Pick a date</string>
   <string name="add_date_help_expired">already expired</string>
@@ -341,7 +338,7 @@
     <item quantity="one">%d expired</item>
     <item quantity="other">%d expired</item>
   </plurals>
-  <string name="category_add">Add</string>
+  <string name="category_add_to">Add to %s</string>
   <string name="category_delete_title">Delete %s?</string>
   <string name="category_delete_confirm">Delete</string>
   <string name="category_delete_cancel">Cancel</string>
@@ -487,10 +484,10 @@
   <string name="ob_transform_sample_result_meta">4 servings · 2 frozen</string>
   <string name="ob_transform_not_recipe_title">Not a recipe book</string>
   <string name="ob_transform_not_recipe_body">No recipes or ideas for what to cook. Transform only notes what you used and what came out.</string>
-  <string name="ob_transform_hint">It is always in the + button at the bottom, on the {chevron} part.</string>
+  <string name="ob_transform_hint">You will find it at the end of Home and on every product.</string>
   <string name="transform_intro_badge">NEW</string>
   <string name="transform_intro_body">Cooked with things from the pantry? Note it down: the ingredients go out and the dish that came out goes in, with its date.</string>
-  <string name="transform_intro_hint">You will always find it in the + button, on the {chevron} part.</string>
+  <string name="transform_intro_hint">You will find it at the end of Home and on every product.</string>
   <string name="transform_intro_try">Try Transform</string>
   <string name="ob_continue">Continue</string>
   <string name="ob_disclaimer_title">Before we start</string>

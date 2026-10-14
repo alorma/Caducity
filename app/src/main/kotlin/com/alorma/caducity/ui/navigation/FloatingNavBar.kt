@@ -18,10 +18,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -43,21 +48,20 @@ private data class NavDestination(
 
 private val Destinations =
   listOf(
-    Home to NavDestination(R.string.nav_soon, Symbols.Outlined.HourglassBottom, Symbols.Filled.HourglassBottom),
+    Home to NavDestination(R.string.nav_home, Symbols.Outlined.HourglassBottom, Symbols.Filled.HourglassBottom),
     Pantry to NavDestination(R.string.nav_pantry, Symbols.Outlined.Kitchen, Symbols.Filled.Kitchen),
   )
 
 private val SettingsDestination =
   NavDestination(R.string.nav_settings, Symbols.Outlined.Settings, Symbols.Filled.Settings)
 
-/** Floating bar with two tabs plus the settings shortcut, and the separated add FAB (64 dp, radius 20). */
+/** Floating bar with two tabs plus the settings shortcut, and the separated add FAB (56 dp, radius 16). */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun FloatingNavBar(
   currentTab: TopLevelRoute,
   onTabSelected: (TopLevelRoute) -> Unit,
   onAddClick: () -> Unit,
-  onTransformClick: () -> Unit,
   onSettingsClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -88,7 +92,7 @@ fun FloatingNavBar(
         onClick = onSettingsClick,
       )
     }
-    SplitAddButton(onAddClick = onAddClick, onTransformClick = onTransformClick)
+    AddFab(contentDescription = stringResource(R.string.action_add_product), onClick = onAddClick)
   }
 }
 
@@ -100,6 +104,9 @@ private fun NavItem(
 ) {
   val label = stringResource(destination.label)
   val colors = MaterialTheme.colorScheme
+  // With a large font the active label may not fit next to the other tabs: then only the icon is shown.
+  var labelFits by remember(label, LocalDensity.current.fontScale) { mutableStateOf(true) }
+  val showLabel = selected && labelFits
   Row(
     modifier =
       Modifier
@@ -115,8 +122,8 @@ private fun NavItem(
         .semantics {
           role = Role.Tab
           this.selected = selected
-          if (!selected) contentDescription = label
-        }.padding(horizontal = if (selected) 16.dp else 12.dp),
+          if (!showLabel) contentDescription = label
+        }.padding(horizontal = if (showLabel) 16.dp else 12.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Icon(
@@ -125,12 +132,15 @@ private fun NavItem(
       tint = if (selected) colors.onPrimary else colors.onPrimaryContainer,
       modifier = Modifier.size(24.dp),
     )
-    if (selected) {
+    if (showLabel) {
       Spacer(Modifier.width(8.dp))
       Text(
         text = label,
         style = MaterialTheme.typography.labelLarge,
         color = colors.onPrimary,
+        maxLines = 1,
+        softWrap = false,
+        onTextLayout = { if (it.hasVisualOverflow) labelFits = false },
       )
     }
   }

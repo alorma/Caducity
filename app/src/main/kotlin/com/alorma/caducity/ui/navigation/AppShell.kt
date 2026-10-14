@@ -42,7 +42,6 @@ fun AppShell(
   showNavigation: Boolean,
   onTabSelected: (TopLevelRoute) -> Unit,
   onAddClick: () -> Unit,
-  onTransformClick: () -> Unit,
   onSettingsClick: () -> Unit,
   snackbarEvents: GlobalSnackbarEvents,
   modifier: Modifier = Modifier,
@@ -78,7 +77,6 @@ fun AppShell(
             onTabSelected = onTabSelected,
             onAddClick = onAddClick,
             onSettingsClick = onSettingsClick,
-            onTransformClick = onTransformClick,
             modifier = Modifier.padding(horizontal = 20.dp),
           )
         }

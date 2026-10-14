@@ -159,10 +159,6 @@ fun App(
         eventTracker.trackAction(NavigateToAddAction())
         navigation.navigate(Add(source = "fab"))
       },
-      onTransformClick = {
-        eventTracker.trackAction(NavigateToTransformAction(origin = "shell", source = "split_menu"))
-        navigation.navigate(Transform())
-      },
     ) {
       NavDisplay(
         modifier = Modifier,

@@ -13,7 +13,7 @@ object CaducityShapes {
   val joint = RoundedCornerShape(8.dp)
   val chip = RoundedCornerShape(12.dp)
   val field = RoundedCornerShape(16.dp)
-  val fab = RoundedCornerShape(20.dp)
+  val fab = RoundedCornerShape(16.dp)
   val group = RoundedCornerShape(24.dp)
   val card = RoundedCornerShape(28.dp)
   val sheet = RoundedCornerShape(32.dp)

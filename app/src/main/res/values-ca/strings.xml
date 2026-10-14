@@ -94,13 +94,10 @@
   <string name="app_name">Caducity</string>
 
   <!-- Navigation -->
-  <string name="nav_soon">Aviat</string>
+  <string name="nav_home">Inici</string>
   <string name="nav_pantry">Rebost</string>
   <string name="nav_settings">Ajustos</string>
   <string name="action_add_product">Afegeix un producte</string>
-  <string name="action_more_actions">Més accions</string>
-  <string name="state_expanded">Desplegat</string>
-  <string name="state_collapsed">Plegat</string>
   <string name="add_date_placeholder">dd/mm/aa</string>
   <string name="add_date_pick">Tria la data</string>
   <string name="add_date_help_expired">ja ha caducat</string>
@@ -358,7 +355,7 @@
     <item quantity="many">%d caducats</item>
     <item quantity="other">%d caducats</item>
   </plurals>
-  <string name="category_add">Afegeix</string>
+  <string name="category_add_to">Afegeix a %s</string>
   <string name="category_delete_title">Eliminar %s?</string>
   <string name="category_delete_confirm">Elimina</string>
   <string name="category_delete_cancel">Cancel·la</string>
@@ -509,10 +506,10 @@
   <string name="ob_transform_sample_result_meta">4 racions · 2 congelats</string>
   <string name="ob_transform_not_recipe_title">No és un receptari</string>
   <string name="ob_transform_not_recipe_body">No hi ha receptes ni suggeriments de què cuinar. Transforma només apunta què has gastat i què n\'ha sortit.</string>
-  <string name="ob_transform_hint">Sempre és al botó + de baix, a la part {chevron}.</string>
+  <string name="ob_transform_hint">La tens al final de l\'Inici i a cada producte.</string>
   <string name="transform_intro_badge">NOVETAT</string>
   <string name="transform_intro_body">Has cuinat amb coses del rebost? Apunta-ho: els ingredients en surten i el plat que n\'ha sortit hi entra, amb la seva data.</string>
-  <string name="transform_intro_hint">La trobaràs sempre al botó +, a la part {chevron}.</string>
+  <string name="transform_intro_hint">La tens al final de l\'Inici i a cada producte.</string>
   <string name="transform_intro_try">Prova Transforma</string>
   <string name="ob_continue">Continua</string>
   <string name="ob_disclaimer_title">Abans de començar</string>

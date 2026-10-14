@@ -160,7 +160,7 @@ class AddCloseAction :
 // Transform Screen Actions
 
 /**
- * [origin]: "status_list", "item_actions", "shell" or "home"; [source]: "selection", "item_actions", "split_menu" or
+ * [origin]: "status_list", "item_actions" or "home"; [source]: "selection", "item_actions" or
  * "intro_modal" («Prova Transforma» of the «Novetat Transforma» modal).
  */
 class NavigateToTransformAction(

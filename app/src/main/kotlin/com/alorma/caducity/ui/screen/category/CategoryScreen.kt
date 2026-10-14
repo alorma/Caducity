@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -42,7 +41,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
-import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.ArrowBack
 import com.alorma.caducity.base.ui.icons.symbols.CalendarMonth
 import com.alorma.caducity.base.ui.icons.symbols.Close
@@ -76,6 +74,7 @@ import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.components.weekstrip.WeekStrip
+import com.alorma.caducity.ui.navigation.AddFab
 import com.alorma.caducity.ui.screen.home.capitalizeFirst
 import com.alorma.caducity.ui.screen.home.weekdayDayText
 import com.alorma.caducity.ui.theme.CaducityShapes
@@ -140,14 +139,17 @@ fun CategoryScreen(
     floatingActionButton = {
       ResponsiveCenteredContainer(fillHeight = false) {
         Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp), contentAlignment = Alignment.CenterEnd) {
-          ExtendedFloatingActionButton(
+          AddFab(
+            contentDescription =
+              stringResource(
+                R.string.category_add_to,
+                (state as? CategoryState.Ready)
+                  ?.data
+                  ?.category
+                  ?.name
+                  .orEmpty(),
+              ),
             onClick = { viewModel.navigate(CategoryNavigation.AddItem("fab")) },
-            shape = CaducityShapes.fab,
-            containerColor = CaducityTheme.colorScheme.primary,
-            contentColor = CaducityTheme.colorScheme.onPrimary,
-            modifier = Modifier.height(64.dp),
-            icon = { Icon(Symbols.Outlined.Add, contentDescription = null) },
-            text = { Text(stringResource(R.string.category_add)) },
           )
         }
       }
