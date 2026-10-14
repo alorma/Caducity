@@ -12,11 +12,6 @@ What is left to do in Caducity.
 
 Transforma is on for everyone (the `transform_enabled` flag is gone). What is left:
 
-- **Expired ingredients**: the picker does not list them. Proposal: allow them, with «today» as the default date (`TODO(transforma-open-2)`).
-- **Frozen result without a date**: which `remainingDays` to store when thawing; proposal: the same value as «Add frozen» (`TODO(transforma-open-4)`).
-- **Stats of transformed items**: the data is stored (`transformedDate`, `transformationId`), there is no screen.
-- **Row details**: whether the quantity chip folds by itself after a few seconds, `snap` on the rows, a limit per row (50?), and whether the neighbour card's edge is tappable and shows «3 of 6».
-- **Screenshot tests** for the onboarding step and the novelty modal: `Reveal` starts transparent, so a capture needs a no-animation mode first. The modal holds back for deep links, widgets and notifications, and while another screen is on top; a dialog or selection open over Home is only covered by «Home with nothing on top».
 - **Release notes** for the version that ships Transforma (`.claude/rules/release-notes.md`): the update test and the user-visible bullets are still to decide.
 
 ## Quality
@@ -45,6 +40,7 @@ El codi d'aquests punts s'ha tret; es tornaran a implementar quan calgui (el cod
 - **Dreceres de la pantalla d'inici**: Afegeix producte, Què caduca i Caducats (`StatusList(EXPIRED)`). Test: `ShortcutIntentTest`.
 - **Tauleta, plegable (mode llibre) i Wear OS**: avui el disseny és el de mòbil centrat a 600 dp (Pantry fins a uns 840 dp). Un mode tauleta real necessita disseny previ: `ListDetailPaneScaffold` amb Pantry | Categoria i Inici | calendari de mes. Wear OS només si arriba a existir un Tile.
 - **Mode tanda («Desa i un altre»)**: afegir diversos productes seguits sense tancar la pantalla d'Afegeix. Ara només hi ha un «Desa» que tanca.
+- **Estadístiques dels ítems transformats**: les dades ja es guarden (`transformedDate`, `transformationId`) però cap pantalla les llegeix. Té més sentit juntament amb el cost del producte («has aprofitat X€ cuinant»).
 
 ## Out of scope for now
 
