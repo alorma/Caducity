@@ -132,7 +132,7 @@ private fun DurationsList(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp).padding(bottom = 8.dp),
       )
     }
-    itemsIndexed(state.rows, key = { _, row -> row.category.id }) { index, row ->
+    itemsIndexed(state.rows, key = { _, row -> row.category.id }, contentType = { _, _ -> "duration" }) { index, row ->
       DurationRow(
         row = row,
         index = index,

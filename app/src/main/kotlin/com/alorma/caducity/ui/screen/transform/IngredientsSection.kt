@@ -143,7 +143,7 @@ fun IngredientsSection(
           .pointerInput(Unit) { detectTapGestures { editingKey = null } }
           .semantics { collectionInfo = CollectionInfo(rowCount = 1, columnCount = visible.size) },
     ) {
-      itemsIndexed(visible, key = { _, it -> it.key }) { index, ingredient ->
+      itemsIndexed(visible, key = { _, it -> it.key }, contentType = { _, _ -> "ingredient" }) { index, ingredient ->
         IngredientCard(
           ingredient = ingredient,
           statusColor = statusColors[index],

@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.DropdownMenu
@@ -390,7 +390,7 @@ internal fun CategoryContent(
       contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 112.dp),
       verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-      itemsIndexed(items, key = { _, item -> item.key }) { _, item ->
+      items(items, key = { it.key }, contentType = { it::class }) { item ->
         when (item) {
           CategoryItem.WeekStrip ->
             WeekStrip(

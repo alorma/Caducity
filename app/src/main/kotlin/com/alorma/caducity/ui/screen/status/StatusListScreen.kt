@@ -278,10 +278,10 @@ private fun StatusListContent(
         verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing),
       ) {
         ready.sections.forEach { section ->
-          item(key = "header-${section.category.id}") {
+          item(key = "header-${section.category.id}", contentType = "header") {
             SectionHeader(section, Modifier.padding(top = 16.dp, bottom = 8.dp))
           }
-          itemsIndexed(section.rows, key = { _, row -> row.key }) { index, row ->
+          itemsIndexed(section.rows, key = { _, row -> row.key }, contentType = { _, _ -> "row" }) { index, row ->
             ProductRow(
               model = row.toRowModel(today),
               index = index,

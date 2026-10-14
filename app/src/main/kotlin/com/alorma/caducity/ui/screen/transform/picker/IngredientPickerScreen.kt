@@ -331,7 +331,7 @@ private fun PickerList(
     verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing),
     contentPadding = PaddingValues(bottom = 16.dp),
   ) {
-    itemsIndexed(groups, key = { _, group -> group.key }) { index, group ->
+    itemsIndexed(groups, key = { _, group -> group.key }, contentType = { _, _ -> "group" }) { index, group ->
       PickerRow(
         group = group,
         category = state.categories.firstOrNull { it.id == group.categoryId },
