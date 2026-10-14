@@ -145,10 +145,6 @@ class SettingsViewModel(
     themePreferences.setColorPalette(palette)
   }
 
-  fun onWeekStartClick() {
-    emitSideEffect(SettingsSideEffect.ShowWeekStartPicker(firstDayOfWeekPreferences.state.value.firstDayOfWeek))
-  }
-
   fun onFirstDayOfWeekChange(day: DayOfWeek) {
     firstDayOfWeekPreferences.setFirstDayOfWeek(day)
   }

@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,13 +18,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,17 +42,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.symbols.Check
 import com.alorma.caducity.base.ui.icons.symbols.ChevronRight
 import com.alorma.caducity.base.ui.icons.symbols.CloudUpload
 import com.alorma.caducity.base.ui.icons.symbols.Contrast
 import com.alorma.caducity.base.ui.icons.symbols.EventAvailable
+import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
 import com.alorma.caducity.base.ui.icons.symbols.HourglassBottom
 import com.alorma.caducity.base.ui.icons.symbols.Info
 import com.alorma.caducity.base.ui.icons.symbols.Language
@@ -79,6 +79,7 @@ import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledLargeTopAppBar
+import com.alorma.caducity.ui.screen.home.capitalizeFirst
 import com.alorma.caducity.ui.screen.settings.components.ColorPaletteSelector
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsButtonGroupCard
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
@@ -125,7 +126,7 @@ fun SettingsScreen(
       }
     }
   }
-  SideEffectHandler(viewModel, dialogState, snackbarState, localizedDateFormatter)
+  SideEffectHandler(viewModel, dialogState, snackbarState)
 
   val permissionLauncher =
     rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -166,7 +167,7 @@ fun SettingsScreen(
         onSoonThresholdChange = viewModel::onSoonThresholdChange,
         onThemeModeChange = viewModel::onThemeModeChange,
         onColorPaletteChange = viewModel::onColorPaletteChange,
-        onWeekStartClick = viewModel::onWeekStartClick,
+        onFirstDayOfWeekChange = viewModel::onFirstDayOfWeekChange,
         onNavigate = viewModel::navigate,
       )
     }
@@ -184,7 +185,7 @@ internal fun SettingsContent(
   onSoonThresholdChange: (Int) -> Unit,
   onThemeModeChange: (ThemeMode) -> Unit,
   onColorPaletteChange: (ColorPalette) -> Unit,
-  onWeekStartClick: () -> Unit,
+  onFirstDayOfWeekChange: (DayOfWeek) -> Unit,
   onNavigate: (SettingsNavigation) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -247,12 +248,40 @@ internal fun SettingsContent(
           onClick = { onNavigate(SettingsNavigation.CategoryDurations) },
           shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
         )
+        // A native drop-down menu anchored to the current day, instead of a dialog.
+        var weekStartMenuOpen by remember { mutableStateOf(false) }
         StyledSettingsCard(
           icon = { Icon(Symbols.Outlined.ViewWeek, contentDescription = null) },
           title = stringResource(R.string.settings_week_start),
-          subtitle = localizedDateFormatter.getDayOfWeekFullName(state.firstDayOfWeek),
-          action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
-          onClick = onWeekStartClick,
+          action = {
+            Box {
+              Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                  text = localizedDateFormatter.getDayOfWeekFullName(state.firstDayOfWeek).capitalizeFirst(),
+                  style = CaducityTheme.typography.bodyLarge,
+                )
+                Icon(Symbols.Outlined.ExpandMore, contentDescription = null)
+              }
+              DropdownMenu(expanded = weekStartMenuOpen, onDismissRequest = { weekStartMenuOpen = false }) {
+                WEEK_START_OPTIONS.forEach { day ->
+                  DropdownMenuItem(
+                    text = { Text(localizedDateFormatter.getDayOfWeekFullName(day).capitalizeFirst()) },
+                    onClick = {
+                      weekStartMenuOpen = false
+                      onFirstDayOfWeekChange(day)
+                    },
+                    trailingIcon =
+                      if (day == state.firstDayOfWeek) {
+                        { Icon(Symbols.Outlined.Check, contentDescription = null) }
+                      } else {
+                        null
+                      },
+                  )
+                }
+              }
+            }
+          },
+          onClick = { weekStartMenuOpen = true },
           shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
         )
       }
@@ -369,7 +398,6 @@ private fun SideEffectHandler(
   viewModel: SettingsViewModel,
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
-  localizedDateFormatter: LocalizedDateFormatter,
 ) {
   val scope = rememberCoroutineScope()
   LaunchedEffect(viewModel) {
@@ -389,40 +417,6 @@ private fun SideEffectHandler(
             if (result == DialogResult.Positive) {
               viewModel.onReminderTimeChange(LocalTime(pickerState.hour, pickerState.minute))
             }
-          }
-        is SettingsSideEffect.ShowWeekStartPicker ->
-          scope.launch {
-            var selected by mutableStateOf(effect.current)
-            val result =
-              dialogState.showAlertDialog(
-                title = { Text(stringResource(R.string.settings_week_start)) },
-                content = {
-                  Column(Modifier.selectableGroup()) {
-                    WEEK_START_OPTIONS.forEach { day ->
-                      Row(
-                        modifier =
-                          Modifier
-                            .selectable(
-                              selected = selected == day,
-                              role = Role.RadioButton,
-                              onClick = { selected = day },
-                            ).padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                      ) {
-                        RadioButton(selected = selected == day, onClick = null)
-                        Text(
-                          text = localizedDateFormatter.getDayOfWeekFullName(day),
-                          modifier = Modifier.padding(start = 12.dp),
-                        )
-                      }
-                    }
-                  }
-                },
-                positiveButton = { Text(stringResource(R.string.settings_dialog_save)) },
-                negativeButton = { Text(stringResource(R.string.settings_dialog_cancel)) },
-                type = AppFeedbackType.Info,
-              )
-            if (result == DialogResult.Positive) viewModel.onFirstDayOfWeekChange(selected)
           }
         SettingsSideEffect.NotificationsDenied ->
           scope.launch {
@@ -486,7 +480,7 @@ internal fun SettingsPreviewContent(selectedPalette: ColorPalette = ColorPalette
     onSoonThresholdChange = {},
     onThemeModeChange = {},
     onColorPaletteChange = {},
-    onWeekStartClick = {},
+    onFirstDayOfWeekChange = {},
     onNavigate = {},
   )
 }
