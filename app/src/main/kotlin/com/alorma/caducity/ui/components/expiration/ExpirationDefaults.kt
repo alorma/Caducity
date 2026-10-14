@@ -3,16 +3,12 @@ package com.alorma.caducity.ui.components.expiration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.ui.components.colors.ContainerColors
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.StatusColors
-
-private val LightInk = Color(0xFF29241C)
-private val LightSurface = Color(0xFFFBF6EC)
 
 object ExpirationDefaults {
   @Composable
@@ -31,7 +27,7 @@ object ExpirationDefaults {
     val strong = strongColor(itemStatus) ?: return consumedColors()
     return ContainerColors(
       container = strong,
-      onContainer = contentColorFor(strong),
+      onContainer = CaducityTheme.contentOn(strong),
     )
   }
 
@@ -76,14 +72,4 @@ object ExpirationDefaults {
       container = CaducityTheme.colorScheme.surfaceContainerHigh,
       onContainer = CaducityTheme.colorScheme.onSurfaceVariant,
     )
-
-  /** Tinta o crema segons la lluminància del fons. */
-  @Composable
-  @ReadOnlyComposable
-  private fun contentColorFor(background: Color): Color =
-    if (background.luminance() > 0.4f) {
-      LightInk
-    } else {
-      LightSurface
-    }
 }
