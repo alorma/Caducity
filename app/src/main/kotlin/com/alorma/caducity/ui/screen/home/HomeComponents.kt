@@ -246,25 +246,28 @@ internal fun DaySectionHeader(
   }
 }
 
-/** «+N més» (rows that did not fit) and the link to the pantry, at the end of the list when nothing is soon. */
+/** «+N més»: rows of the upcoming days that were left out. */
+@Composable
+internal fun MoreRows(
+  count: Int,
+  modifier: Modifier = Modifier,
+) {
+  Text(
+    text = stringResource(R.string.home_more_rows, count),
+    style = CaducityTheme.typography.bodyMedium,
+    color = CaducityTheme.colorScheme.onSurfaceVariant,
+    textAlign = TextAlign.Center,
+    modifier = modifier.fillMaxWidth().padding(top = 12.dp),
+  )
+}
+
+/** Link to the pantry, last element of the list when nothing is soon. */
 @Composable
 internal fun SeePantry(
-  moreCount: Int,
   onSeePantry: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier = modifier.fillMaxWidth().padding(top = 16.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    if (moreCount > 0) {
-      Text(
-        text = stringResource(R.string.home_more_rows, moreCount),
-        style = CaducityTheme.typography.bodyMedium,
-        color = CaducityTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(bottom = 4.dp),
-      )
-    }
+  Box(modifier = modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier =

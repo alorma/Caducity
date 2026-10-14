@@ -114,9 +114,13 @@ private sealed interface HomeItem {
     override val key = "row-${section.date}-${row.key}"
   }
 
-  data class SeePantry(
-    val moreCount: Int,
+  data class More(
+    val count: Int,
   ) : HomeItem {
+    override val key = "more"
+  }
+
+  data object SeePantry : HomeItem {
     override val key = "see-pantry"
   }
 
@@ -141,8 +145,9 @@ private fun HomeState.Ready.items(): List<HomeItem> =
       add(HomeItem.SectionHeader(section))
       section.rows.forEachIndexed { index, row -> add(HomeItem.Row(section, row, index)) }
     }
+    if (data.upcomingMoreCount > 0) add(HomeItem.More(data.upcomingMoreCount))
     if (data.hasUsableProducts) add(HomeItem.Cooked)
-    if (data.nothingExpiresSoon) add(HomeItem.SeePantry(data.upcomingMoreCount))
+    if (data.nothingExpiresSoon) add(HomeItem.SeePantry)
   }
 
 @Composable
@@ -231,11 +236,8 @@ internal fun HomeContent(
               onConsume = { onConsume(item.row) },
               onFreeze = { onFreeze(item.row) },
             )
-          is HomeItem.SeePantry ->
-            SeePantry(
-              moreCount = item.moreCount,
-              onSeePantry = { onNavigate(HomeNavigation.Pantry("see_pantry")) },
-            )
+          is HomeItem.More -> MoreRows(count = item.count)
+          HomeItem.SeePantry -> SeePantry(onSeePantry = { onNavigate(HomeNavigation.Pantry("see_pantry")) })
           HomeItem.Cooked -> CookedCard(onClick = { onNavigate(HomeNavigation.Transform("cooked_card")) })
           HomeItem.Empty -> HomeEmptyState(onAdd = { onNavigate(HomeNavigation.AddFirst) })
         }
@@ -336,47 +338,55 @@ internal fun HomePreviewContent() {
 @PreviewLightDark
 @Composable
 private fun HomeNothingSoonPreview() {
-  PreviewTheme {
-    HomeContent(
-      HomeState.Ready(
-        sampleData.copy(
-          expiredCount = 0,
-          soonCount = 0,
-          sections = emptyList(),
-          upcoming =
-            listOf(
-              HomeDaySection(LocalDate(2026, 10, 15), listOf(row("Iogurt", dairy, units = 4)), ExpiryStatus.FRESH),
-              HomeDaySection(
-                LocalDate(2026, 10, 17),
-                listOf(row("Hummus", produce), row("Pa de motlle", dairy)),
-                ExpiryStatus.FRESH,
-              ),
+  PreviewTheme { HomeNothingSoonPreviewContent() }
+}
+
+/** Inici amb «0 Aviat»: properes caducitats, «+N més» i enllaç al Rebost (sense tema, per a les captures). */
+@Composable
+internal fun HomeNothingSoonPreviewContent() {
+  HomeContent(
+    HomeState.Ready(
+      sampleData.copy(
+        expiredCount = 0,
+        soonCount = 0,
+        sections = emptyList(),
+        upcoming =
+          listOf(
+            HomeDaySection(LocalDate(2026, 10, 15), listOf(row("Iogurt", dairy, units = 4)), ExpiryStatus.FRESH),
+            HomeDaySection(
+              LocalDate(2026, 10, 17),
+              listOf(row("Hummus", produce), row("Pa de motlle", dairy)),
+              ExpiryStatus.FRESH,
             ),
-          upcomingMoreCount = 3,
-        ),
-        WeekStripData(today, emptyMap()),
+          ),
+        upcomingMoreCount = 3,
       ),
-      {},
-      {},
-      {},
-    )
-  }
+      WeekStripData(today, emptyMap()),
+    ),
+    {},
+    {},
+    {},
+  )
 }
 
 @PreviewLightDark
 @Composable
 private fun HomeEmptyPreview() {
-  PreviewTheme {
-    HomeContent(
-      HomeState.Ready(
-        HomeData(today, 0, null, 0, 0, 0, emptyList(), isPantryEmpty = true),
-        WeekStripData(today, emptyMap()),
-      ),
-      {},
-      {},
-      {},
-    )
-  }
+  PreviewTheme { HomeEmptyPreviewContent() }
+}
+
+/** Inici amb el rebost buit (sense tema, per a les captures). */
+@Composable
+internal fun HomeEmptyPreviewContent() {
+  HomeContent(
+    HomeState.Ready(
+      HomeData(today, 0, null, 0, 0, 0, emptyList(), isPantryEmpty = true),
+      WeekStripData(today, emptyMap()),
+    ),
+    {},
+    {},
+    {},
+  )
 }
 
 // endregion
