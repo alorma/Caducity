@@ -35,6 +35,7 @@ Transforma is on for everyone (the `transform_enabled` flag is gone). What is le
 
 - **`// TEMP` leftovers**: adapters for old screens that may be dead now (`StatusBadge`, `ExpirationDefaults`, `ItemRoomMapper`, `UnfreezeItemUseCase`, `ExpirationThresholds`). Check with `git grep` and remove the ones with no consumer.
 - **Quantity limit on Add**: 20 per entry is a hypothesis (P22), never confirmed.
+- **Flaky unit tests** (14 October): `TransformViewModelTest` fails one different case almost every full run (timeouts waiting for state, e.g. «adding an ingredient to a free entry brings back the default date»), and `PantryViewModelTest` search once returned the previous query's results; both pass when re-run. Look at how they wait for state (`withTimeout` + `first`) and at races between `onQueryChange` and the results.
 
 ## Fora d'abast de moment
 

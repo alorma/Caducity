@@ -25,9 +25,13 @@ Flux: `.claude/rules/phased-work.md`. Paquet independent de la revisió de coher
 
 | Tasca | Estat |
 | --- | --- |
-| 1 — Documentació | Feta |
-| 2 — Estructura i grups | Pendent |
-| 3 — Selectors | Pendent |
-| 4 — Colors en full modal | Pendent |
-| 5 — Textos i subtítols | Pendent |
-| 6 — Captures i tancament | Pendent |
+| 1 — Documentació | Feta: `2c8f2b64` |
+| 2 — Estructura i grups | Feta: `be813024` (icones noves `event_available`, `view_week`, `contrast`; el generador d'icones ara també porta les quatre que s'havien afegit a mà) |
+| 3 — Selectors | Feta: `2ae0e8a3`, `31ef3928` (`ToggleButton` connectats d'M3E amb ✓; desplegable natiu per a «La setmana comença») |
+| 4 — Colors en full modal | Feta: `465357c1`, `e04ca72b` (✓ del color del text del tema, Bernat) |
+| 5 — Textos i subtítols | Feta: `ae8e2e59` (Privadesa llegeix el consentiment en tornar a Ajustos; «verd i crema» sense «(per defecte)», com a la captura nova) |
+| 6 — Captures i tancament | Feta: `80db8fb7` (full de Colors en les 6 paletes, clar i fosc; referències refrescades) |
+
+Fora del pla, demanat per Bernat: `075a659c` «Quant a» enllaça a la web (per idioma) en lloc del repositori de GitHub.
+
+Desviacions: els botons segmentats queden sagnats sota el títol (els posa el `SettingsTileScaffold` de compose-settings), no a tota l'amplada com a la captura; els títols de fila es mantenen en el color primari de la resta d'Ajustos. Validat a l'emulador en clar (fosc només per captures de test).
