@@ -3,6 +3,7 @@ package com.alorma.caducity.debug
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -121,7 +122,10 @@ private fun Gallery(onToggleDark: () -> Unit) {
     }
 
     Section("Formes de categoria")
-    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+    Row(
+      modifier = Modifier.horizontalScroll(rememberScrollState()),
+      horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
       val icons =
         listOf(
           Symbols.Outlined.WaterFull,
@@ -132,7 +136,7 @@ private fun Gallery(onToggleDark: () -> Unit) {
           Symbols.Outlined.LocalDrink,
         )
       CategoryShape.entries.forEachIndexed { i, shape ->
-        CategoryShapeIcon(shape = shape, icon = icons[i], size = 48.dp, selected = i == 2)
+        CategoryShapeIcon(shape = shape, icon = icons[i % icons.size], size = 48.dp, selected = i == 2)
       }
     }
 
