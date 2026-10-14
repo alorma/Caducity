@@ -11,7 +11,6 @@ import com.alorma.caducity.domain.domainModule
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
-import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.TransformItemsUseCase
@@ -141,7 +140,6 @@ val appModule =
         eventTracker = get(),
       )
     }
-    singleOf(::DeleteItemUseCase)
     singleOf(::DeleteCategoryUseCase)
     singleOf(::ConsumeItemUseCase)
     singleOf(::FreezeItemUseCase)
@@ -259,7 +257,7 @@ val appModule =
         freezeItem = get(),
         unfreezeItem = get(),
         rescheduleItem = get(),
-        deleteItem = get(),
+        discardItems = get(),
         moveItem = get(),
         restoreItems = get(),
         appClock = get(),

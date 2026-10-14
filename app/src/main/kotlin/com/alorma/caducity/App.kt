@@ -299,9 +299,9 @@ fun App(
                   navigation.pop()
                   navigation.navigate(Add(itemId = itemId, source = "item_actions"))
                 },
-                onTransform = { itemId ->
+                onTransform = { itemIds ->
                   navigation.pop()
-                  navigation.navigate(Transform(listOf(itemId)))
+                  navigation.navigate(Transform(itemIds))
                 },
               )
             }

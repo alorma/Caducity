@@ -20,7 +20,7 @@ import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
-import com.alorma.caducity.domain.usecase.DeleteItemUseCase
+import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.MoveItemToCategoryUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
@@ -29,6 +29,7 @@ import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.ui.components.actions.DatePickerPurpose
 import com.alorma.caducity.ui.components.actions.ItemActionsSheetNavigationSideEffect
 import com.alorma.caducity.ui.components.actions.ItemActionsSheetSideEffect
 import com.alorma.caducity.ui.components.actions.ItemActionsSheetState
@@ -150,7 +151,7 @@ class ItemActionsSheetViewModelTest {
       freezeItem = FreezeItemUseCase(itemDataSource, pantry, clock),
       unfreezeItem = UnfreezeItemUseCase(itemDataSource, pantry, clock),
       rescheduleItem = RescheduleItemUseCase(itemDataSource, pantry),
-      deleteItem = DeleteItemUseCase(itemDataSource),
+      discardItems = DiscardItemsUseCase(pantry, clock),
       moveItem = MoveItemToCategoryUseCase(pantry),
       restoreItems = RestoreItemsUseCase(pantry),
       appClock = clock,
@@ -181,7 +182,7 @@ class ItemActionsSheetViewModelTest {
   }
 
   @Test
-  fun `header shows the position of the unit among its product, ordered by date`() =
+  fun `the sheet gathers every unit of the product, the one that expires first on top`() =
     runTest {
       category("dairy")
       val ids = add("Milk", days = 10, quantity = 1) + add("Milk", days = 2) + add("Milk", days = 5)
@@ -190,10 +191,126 @@ class ItemActionsSheetViewModelTest {
 
       val state = vm.ready()
 
-      expectThat(state.unitIndex).isEqualTo(2)
+      expectThat(state.units.map { it.id }).containsExactly(ids[1], ids[2], ids[0])
       expectThat(state.unitCount).isEqualTo(3)
-      expectThat(state.daysLeft).isEqualTo(5)
-      expectThat(state.status).isEqualTo(ExpiryStatus.FRESH)
+      expectThat(state.daysLeft).isEqualTo(2)
+      expectThat(state.status).isEqualTo(ExpiryStatus.SOON)
+      expectThat(state.selected).isEqualTo(1)
+    }
+
+  @Test
+  fun `consume N takes the units that expire first and undo brings them back`() =
+    runTest {
+      category("dairy")
+      val ids = add("Milk", days = 10) + add("Milk", days = 2) + add("Milk", days = 5)
+      val vm = viewModel(ids[0])
+      keepAlive(vm)
+      vm.ready()
+
+      vm.onSelect(2)
+      vm.onConsume()
+      val snackbar = nextSnackbar()
+
+      expectThat(item(ids[1]).consumedDate).isNotNull()
+      expectThat(item(ids[2]).consumedDate).isNotNull()
+      expectThat(item(ids[0]).consumedDate).isNull()
+      expectThat(snackbar.messageArgs).containsExactly(2, "Milk")
+
+      snackbar.onAction!!.invoke()
+      expectThat(item(ids[1]).consumedDate).isNull()
+      expectThat(item(ids[2]).consumedDate).isNull()
+    }
+
+  @Test
+  fun `the selector stays between one and the number of units`() =
+    runTest {
+      category("dairy")
+      val ids = add("Milk", days = 3, quantity = 3)
+      val vm = viewModel(ids[0])
+      keepAlive(vm)
+      vm.ready()
+
+      vm.onSelect(9)
+      expectThat(vm.ready().selected).isEqualTo(3)
+      vm.onSelect(0)
+      expectThat(vm.ready().selected).isEqualTo(1)
+    }
+
+  @Test
+  fun `freeze N skips expired units and counts only the ones that can be frozen`() =
+    runTest {
+      category("dairy")
+      val ids = add("Milk", days = -2) + add("Milk", days = 4) + add("Milk", days = 6)
+      val vm = viewModel(ids[0])
+      keepAlive(vm)
+      val state = vm.ready()
+      expectThat(state.expired).isTrue()
+      expectThat(state.freezableCount).isEqualTo(2)
+
+      vm.onSelect(3)
+      expectThat(vm.ready().freezeCount).isEqualTo(2)
+      vm.onFreezeToggle()
+      nextSnackbar()
+
+      expectThat(item(ids[0]).pausedDate).isNull()
+      expectThat(item(ids[1]).pausedDate).isNotNull()
+      expectThat(item(ids[2]).pausedDate).isNotNull()
+    }
+
+  @Test
+  fun `an expired product defaults the selector to its expired units and discards only those`() =
+    runTest {
+      category("dairy")
+      val ids = add("Milk", days = -3) + add("Milk", days = -1) + add("Milk", days = 5)
+      val vm = viewModel(ids[2])
+      keepAlive(vm)
+
+      val state = vm.ready()
+      expectThat(state.expired).isTrue()
+      expectThat(state.selected).isEqualTo(2)
+
+      vm.onDiscardSelected()
+      val snackbar = nextSnackbar()
+
+      expectThat(item(ids[0]).discardedDate).isNotNull()
+      expectThat(item(ids[1]).discardedDate).isNotNull()
+      expectThat(item(ids[2]).discardedDate).isNull()
+
+      snackbar.onAction!!.invoke()
+      expectThat(item(ids[0]).discardedDate).isNull()
+    }
+
+  @Test
+  fun `eat anyway consumes the chosen expired units`() =
+    runTest {
+      category("dairy")
+      val ids = add("Milk", days = -3) + add("Milk", days = -1)
+      val vm = viewModel(ids[0])
+      keepAlive(vm)
+      vm.ready()
+
+      vm.onSelect(1)
+      vm.onEatAnyway()
+      nextSnackbar()
+
+      expectThat(item(ids[0]).consumedDate).isNotNull()
+      expectThat(item(ids[1]).consumedDate).isNull()
+    }
+
+  @Test
+  fun `fixing the date of an expired product reschedules only the expired units`() =
+    runTest {
+      category("dairy")
+      val ids = add("Milk", days = -3) + add("Milk", days = 5)
+      val vm = viewModel(ids[0])
+      keepAlive(vm)
+      vm.ready()
+
+      vm.onDatePicked(inDays(2), DatePickerPurpose.FixExpiredDate)
+      nextSnackbar()
+
+      expectThat(item(ids[0]).expirationDate).isEqualTo(inDays(2).toEpochMillis())
+      expectThat(item(ids[1]).expirationDate).isEqualTo(inDays(5).toEpochMillis())
     }
 
   @Test
@@ -228,7 +345,7 @@ class ItemActionsSheetViewModelTest {
       vm.navigate(ItemActionsSheetNavigation.Transform)
 
       val effect = withContext(Dispatchers.Default) { withTimeout(5_000) { vm.navigationSideEffects.first() } }
-      expectThat(effect).isEqualTo(ItemActionsSheetNavigationSideEffect.Transform(id))
+      expectThat(effect).isEqualTo(ItemActionsSheetNavigationSideEffect.Transform(listOf(id)))
     }
 
   @Test
@@ -281,7 +398,7 @@ class ItemActionsSheetViewModelTest {
 
       vm.onFreezeToggle()
       val effect = vm.sideEffects.first { it is ItemActionsSheetSideEffect.ShowDatePicker }
-      expectThat((effect as ItemActionsSheetSideEffect.ShowDatePicker).unfreeze).isTrue()
+      expectThat((effect as ItemActionsSheetSideEffect.ShowDatePicker).purpose).isEqualTo(DatePickerPurpose.Unfreeze)
       expectThat(effect.currentMillis).isEqualTo(inDays(6).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds())
     }
 
@@ -319,22 +436,22 @@ class ItemActionsSheetViewModelTest {
     }
 
   @Test
-  fun `delete asks for confirmation before removing the unit`() =
+  fun `throw out discards every unit of the product and undo brings them back`() =
     runTest {
       category("dairy")
-      val id = add("Milk", days = 5).single()
-      val vm = viewModel(id)
+      val ids = add("Milk", days = 5, quantity = 2)
+      val vm = viewModel(ids[0])
       keepAlive(vm)
       vm.ready()
 
-      vm.onDelete()
-      val effect = vm.sideEffects.first { it is ItemActionsSheetSideEffect.ShowDeleteConfirm }
-      expectThat((effect as ItemActionsSheetSideEffect.ShowDeleteConfirm).name).isEqualTo("Milk")
-      expectThat(db.itemDao().getAllItemsSync().map { it.id }).contains(id)
+      vm.onDiscardAll()
+      val snackbar = nextSnackbar()
 
-      vm.onDeleteConfirmed()
-      nextSnackbar()
-      expectThat(db.itemDao().getAllItemsSync().map { it.id }).not { contains(id) }
+      expectThat(ids.map { item(it).discardedDate }.all { it != null }).isTrue()
+      expectThat(db.itemDao().getAllItemsSync().map { it.id }).contains(ids)
+
+      snackbar.onAction!!.invoke()
+      expectThat(ids.map { item(it).discardedDate }.all { it == null }).isTrue()
     }
 
   private fun LocalDate.toEpochMillis() = atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds()

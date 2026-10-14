@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -37,19 +38,28 @@ import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.AppIcons
 import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.symbols.AcUnit
+import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.ArrowBack
 import com.alorma.caducity.base.ui.icons.symbols.CalendarMonth
 import com.alorma.caducity.base.ui.icons.symbols.Check
 import com.alorma.caducity.base.ui.icons.symbols.Delete
 import com.alorma.caducity.base.ui.icons.symbols.DriveFileMove
 import com.alorma.caducity.base.ui.icons.symbols.Edit
+import com.alorma.caducity.base.ui.icons.symbols.Error
+import com.alorma.caducity.base.ui.icons.symbols.Event
+import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
+import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
+import com.alorma.caducity.base.ui.icons.symbols.MoreHoriz
+import com.alorma.caducity.base.ui.icons.symbols.Remove
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
+import com.alorma.caducity.base.ui.icons.symbols.TouchApp
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.ui.components.category.CategoryIcons
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
@@ -62,6 +72,7 @@ import com.alorma.caducity.ui.components.feedback.dialog.AppDialogHost
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
+import com.alorma.caducity.ui.components.shape.connectedShape
 import com.alorma.caducity.ui.components.status.StatusPill
 import com.alorma.caducity.ui.components.status.statusPillText
 import com.alorma.caducity.ui.theme.CaducityShapes
@@ -77,14 +88,17 @@ import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-/** Content of the actions bottom sheet (`ItemActions` route): everything you can do to one unit. */
+/**
+ * Content of the actions bottom sheet (`ItemActions` route): everything you can do to a product. One unit,
+ * several units, and the expired variants of both (spec §4).
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemActionsSheet(
   itemId: String,
   onClose: () -> Unit,
   onEdit: (itemId: String) -> Unit,
-  onTransform: (itemId: String) -> Unit,
+  onTransform: (itemIds: List<String>) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: ItemActionsSheetViewModel = koinViewModel { parametersOf(itemId) },
 ) {
@@ -98,7 +112,7 @@ fun ItemActionsSheet(
       when (effect) {
         ItemActionsSheetNavigationSideEffect.Close -> onClose()
         is ItemActionsSheetNavigationSideEffect.Edit -> onEdit(effect.itemId)
-        is ItemActionsSheetNavigationSideEffect.Transform -> onTransform(effect.itemId)
+        is ItemActionsSheetNavigationSideEffect.Transform -> onTransform(effect.itemIds)
       }
     }
   }
@@ -120,7 +134,7 @@ fun ItemActionsSheet(
             onBack = viewModel::onMoveBack,
           )
         } else {
-          ActionsContent(state = current, viewModel = viewModel)
+          ActionsContent(state = current, actions = viewModel)
         }
     }
     AppDialogHost(dialogState)
@@ -128,9 +142,9 @@ fun ItemActionsSheet(
 }
 
 @Composable
-private fun ActionsContent(
+internal fun ActionsContent(
   state: ItemActionsSheetState.Ready,
-  viewModel: ItemActionsSheetViewModel,
+  actions: ItemActionsHandlers,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -141,16 +155,124 @@ private fun ActionsContent(
     verticalArrangement = Arrangement.spacedBy(16.dp),
   ) {
     Header(state)
-    PrimaryActions(state = state, onConsume = viewModel::onConsume, onFreeze = viewModel::onFreezeToggle)
-    if (!state.frozen) {
-      ChangeDate(onQuick = viewModel::onQuickReschedule, onPick = viewModel::onPickDate)
+    when {
+      state.expired -> ExpiredContent(state, actions)
+      state.multiple -> MultipleContent(state, actions)
+      else -> SingleContent(state, actions)
     }
-    SecondaryActions(
-      onEdit = { viewModel.navigate(ItemActionsSheetNavigation.Edit) },
-      onMove = viewModel::onMoveClick,
-      onTransform = { viewModel.navigate(ItemActionsSheetNavigation.Transform) },
-      onDelete = viewModel::onDelete,
+  }
+}
+
+/** `Accions`: one unit, everything unfolded. */
+@Composable
+private fun SingleContent(
+  state: ItemActionsSheetState.Ready,
+  actions: ItemActionsHandlers,
+) {
+  PrimaryActions(
+    consumeLabel = stringResource(R.string.item_actions_consumed),
+    freezeLabel =
+      stringResource(if (state.frozen) R.string.item_actions_unfreeze else R.string.item_actions_freeze),
+    showFreeze = true,
+    onConsume = actions::onConsume,
+    onFreeze = actions::onFreezeToggle,
+  )
+  if (!state.frozen) {
+    ChangeDate(onQuick = actions::onQuickReschedule, onPick = actions::onPickDate)
+  }
+  SecondaryActions(actions)
+}
+
+/** `QuantitatAccions`: several units, a selector and «Més accions» folded. */
+@Composable
+private fun MultipleContent(
+  state: ItemActionsSheetState.Ready,
+  actions: ItemActionsHandlers,
+) {
+  QuantitySelector(state = state, onSelect = actions::onSelect)
+  PrimaryActions(
+    consumeLabel = stringResource(R.string.item_actions_consume_n, state.selected),
+    freezeLabel = stringResource(R.string.item_actions_freeze_n, state.freezeCount),
+    showFreeze = state.freezableCount > 0,
+    onConsume = actions::onConsume,
+    onFreeze = actions::onFreezeToggle,
+  )
+  MoreActions(open = state.moreOpen, onToggle = actions::onToggleMore) {
+    ChangeDate(onQuick = actions::onQuickReschedule, onPick = actions::onPickDate)
+    SecondaryActions(actions)
+  }
+}
+
+/** `AccionsCaducat` and `QuantitatCaducat`: the only big button is «Llença»; eating it anyway is hidden away. */
+@Composable
+private fun ExpiredContent(
+  state: ItemActionsSheetState.Ready,
+  actions: ItemActionsHandlers,
+) {
+  val expired = CaducityTheme.colors.expired
+  Row(
+    modifier =
+      Modifier
+        .fillMaxWidth()
+        .clip(RoundedCornerShape(20.dp))
+        .background(expired.container)
+        .padding(horizontal = 16.dp, vertical = 14.dp),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Icon(Symbols.Outlined.Error, contentDescription = null, tint = expired.onContainer)
+    Spacer(Modifier.width(12.dp))
+    Text(
+      text =
+        stringResource(
+          if (state.multiple) R.string.item_actions_expired_warning_many else R.string.item_actions_expired_warning_one,
+        ),
+      style = CaducityTheme.typography.bodyMedium,
+      color = expired.onContainer,
     )
+  }
+  if (state.multiple) QuantitySelector(state = state, onSelect = actions::onSelect)
+  ActionButton(
+    label =
+      if (state.multiple) {
+        stringResource(R.string.item_actions_discard_n, state.selected)
+      } else {
+        stringResource(R.string.item_actions_discard)
+      },
+    icon = Symbols.Outlined.Delete,
+    container = expired.strong,
+    // `strong` is dark in the light theme and light in the dark one.
+    content = if (expired.strong.luminance() > 0.5f) expired.container else Color.White,
+    shape = RoundedCornerShape(32.dp),
+    onClick = actions::onDiscardSelected,
+    modifier = Modifier.fillMaxWidth(),
+  )
+  MoreActions(open = state.moreOpen, onToggle = actions::onToggleMore) {
+    val count = 3
+    Column(verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing)) {
+      HoldToConfirmRow(
+        icon = Symbols.Outlined.TouchApp,
+        title = stringResource(R.string.item_actions_eat_anyway),
+        subtitle = stringResource(R.string.item_actions_eat_anyway_hint),
+        accessibilityLabel = stringResource(R.string.item_actions_eat_anyway),
+        onConfirmed = actions::onEatAnyway,
+        onRequestConfirm = actions::onEatAnywayRequested,
+        shape = connectedShape(0, count),
+      )
+      ActionRow(
+        1,
+        count,
+        Symbols.Outlined.Event,
+        stringResource(R.string.item_actions_wrong_date),
+        onClick = actions::onFixDate,
+      )
+      ActionRow(
+        2,
+        count,
+        Symbols.Outlined.Edit,
+        stringResource(R.string.item_actions_edit),
+        onClick = actions::onEdit,
+      )
+    }
   }
 }
 
@@ -183,7 +305,9 @@ private fun Header(
         color = CaducityTheme.colorScheme.onSurfaceVariant,
       )
     }
-    StatusPill(status = state.status, label = statusPillText(state.status, state.daysLeft))
+    if (!state.multiple) {
+      StatusPill(status = state.status, label = statusPillText(state.status, state.daysLeft))
+    }
   }
 }
 
@@ -191,10 +315,11 @@ private fun Header(
 private fun metaText(state: ItemActionsSheetState.Ready): String {
   val date = formatDate(state.expiration)
   return when {
-    state.frozen && state.unitCount > 1 ->
-      stringResource(R.string.item_actions_unit_of_frozen, state.unitIndex, state.unitCount)
+    state.multiple && state.expired ->
+      stringResource(R.string.item_actions_units_first_expired, state.unitCount, date)
+    state.multiple -> stringResource(R.string.item_actions_units_first, state.unitCount, date)
+    state.expired -> stringResource(R.string.item_actions_unit_expired, date)
     state.frozen -> stringResource(R.string.item_actions_frozen_meta)
-    state.unitCount > 1 -> stringResource(R.string.item_actions_unit_of, state.unitIndex, state.unitCount, date)
     else -> stringResource(R.string.item_actions_expires, date)
   }
 }
@@ -208,10 +333,108 @@ private fun formatDate(
   locale: Locale,
 ): String = DateTimeFormatter.ofPattern("EEE d MMM", locale).format(date.toJavaLocalDate())
 
+/** − [N de M] +: how many units the buttons below act on (the ones that expire first). */
+@Composable
+private fun QuantitySelector(
+  state: ItemActionsSheetState.Ready,
+  onSelect: (Int) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val container = CaducityTheme.colorScheme.primaryContainer
+  val onContainer = CaducityTheme.colorScheme.onPrimaryContainer
+  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+      StepperButton(
+        icon = Symbols.Outlined.Remove,
+        description = stringResource(R.string.add_quantity_decrease),
+        enabled = state.selected > 1,
+        shape = RoundedCornerShape(36.dp, 8.dp, 8.dp, 36.dp),
+        container = container,
+        content = onContainer,
+        onClick = { onSelect(state.selected - 1) },
+        modifier = Modifier.weight(1f),
+      )
+      Surface(
+        modifier = Modifier.weight(2.8f).height(72.dp),
+        shape = RoundedCornerShape(8.dp),
+        color = CaducityTheme.colorScheme.surfaceContainer,
+      ) {
+        Row(
+          horizontalArrangement = Arrangement.Center,
+          verticalAlignment = Alignment.Bottom,
+          modifier = Modifier.padding(bottom = 14.dp),
+        ) {
+          Text(
+            text = state.selected.toString(),
+            style = CaducityTheme.typography.displaySmall,
+            modifier = Modifier.alignByBaseline(),
+          )
+          Spacer(Modifier.width(8.dp))
+          Text(
+            text = stringResource(R.string.item_actions_of_total, state.unitCount),
+            style = CaducityTheme.typography.titleMedium,
+            color = CaducityTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.alignByBaseline(),
+          )
+        }
+      }
+      StepperButton(
+        icon = Symbols.Outlined.Add,
+        description = stringResource(R.string.add_quantity_increase),
+        enabled = state.selected < state.unitCount,
+        shape = RoundedCornerShape(8.dp, 36.dp, 36.dp, 8.dp),
+        container = container,
+        content = onContainer,
+        onClick = { onSelect(state.selected + 1) },
+        modifier = Modifier.weight(1f),
+      )
+    }
+    Text(
+      text =
+        if (state.expiredCount > 0) {
+          stringResource(R.string.item_actions_selector_hint_expired, state.expiredCount)
+        } else {
+          stringResource(R.string.item_actions_selector_hint)
+        },
+      style = CaducityTheme.typography.bodyMedium,
+      color = CaducityTheme.colorScheme.onSurfaceVariant,
+      textAlign = TextAlign.Center,
+      modifier = Modifier.fillMaxWidth(),
+    )
+  }
+}
+
+@Composable
+private fun StepperButton(
+  icon: ImageVector,
+  description: String,
+  enabled: Boolean,
+  shape: Shape,
+  container: Color,
+  content: Color,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Surface(
+    onClick = onClick,
+    enabled = enabled,
+    modifier = modifier.height(72.dp),
+    shape = shape,
+    color = container,
+    contentColor = content,
+  ) {
+    Box(contentAlignment = Alignment.Center) {
+      Icon(icon, contentDescription = description, modifier = Modifier.size(28.dp))
+    }
+  }
+}
+
 /** Consumit (wide, `primary`) next to Congela / Descongela (`frozen-container`), 64 dp, joined. */
 @Composable
 private fun PrimaryActions(
-  state: ItemActionsSheetState.Ready,
+  consumeLabel: String,
+  freezeLabel: String,
+  showFreeze: Boolean,
   onConsume: () -> Unit,
   onFreeze: () -> Unit,
   modifier: Modifier = Modifier,
@@ -219,24 +442,25 @@ private fun PrimaryActions(
   val frozen = CaducityTheme.colors.frozen
   Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(3.dp)) {
     ActionButton(
-      label = stringResource(R.string.item_actions_consumed),
+      label = consumeLabel,
       icon = Symbols.Outlined.Check,
       container = CaducityTheme.colorScheme.primary,
       content = CaducityTheme.colorScheme.onPrimary,
-      shape = RoundedCornerShape(32.dp, 8.dp, 8.dp, 32.dp),
+      shape = if (showFreeze) RoundedCornerShape(32.dp, 8.dp, 8.dp, 32.dp) else RoundedCornerShape(32.dp),
       onClick = onConsume,
       modifier = Modifier.weight(1.4f),
     )
-    ActionButton(
-      label =
-        stringResource(if (state.frozen) R.string.item_actions_unfreeze else R.string.item_actions_freeze),
-      icon = Symbols.Outlined.AcUnit,
-      container = frozen.container,
-      content = frozen.onContainer,
-      shape = RoundedCornerShape(8.dp, 32.dp, 32.dp, 8.dp),
-      onClick = onFreeze,
-      modifier = Modifier.weight(1f),
-    )
+    if (showFreeze) {
+      ActionButton(
+        label = freezeLabel,
+        icon = Symbols.Outlined.AcUnit,
+        container = frozen.container,
+        content = frozen.onContainer,
+        shape = RoundedCornerShape(8.dp, 32.dp, 32.dp, 8.dp),
+        onClick = onFreeze,
+        modifier = Modifier.weight(1f),
+      )
+    }
   }
 }
 
@@ -265,6 +489,40 @@ private fun ActionButton(
       Spacer(Modifier.width(8.dp))
       Text(label, style = CaducityTheme.typography.labelLarge, maxLines = 1)
     }
+  }
+}
+
+/** «Més accions»: the rest of the actions, folded away until asked for. */
+@Composable
+private fun MoreActions(
+  open: Boolean,
+  onToggle: () -> Unit,
+  modifier: Modifier = Modifier,
+  content: @Composable () -> Unit,
+) {
+  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(if (open) 16.dp else 0.dp)) {
+    ConnectedRow(
+      index = 0,
+      count = 1,
+      onClick = onToggle,
+      modifier = Modifier.height(56.dp).fillMaxWidth(),
+      contentPadding = PaddingValues(horizontal = 16.dp),
+      containerColor = CaducityTheme.colorScheme.surfaceContainer,
+    ) {
+      Icon(Symbols.Outlined.MoreHoriz, contentDescription = null, tint = CaducityTheme.colorScheme.onSurfaceVariant)
+      Spacer(Modifier.width(16.dp))
+      Text(
+        text = stringResource(R.string.item_actions_more),
+        style = CaducityTheme.typography.bodyLarge,
+        modifier = Modifier.weight(1f),
+      )
+      Icon(
+        if (open) Symbols.Outlined.ExpandLess else Symbols.Outlined.ExpandMore,
+        contentDescription = null,
+        tint = CaducityTheme.colorScheme.onSurfaceVariant,
+      )
+    }
+    if (open) content()
   }
 }
 
@@ -310,17 +568,26 @@ private fun ChangeDate(
 
 @Composable
 private fun SecondaryActions(
-  onEdit: () -> Unit,
-  onMove: () -> Unit,
-  onTransform: () -> Unit,
-  onDelete: () -> Unit,
+  actions: ItemActionsHandlers,
   modifier: Modifier = Modifier,
 ) {
   val expired = CaducityTheme.colors.expired.strong
   val count = 4
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing)) {
-    ActionRow(0, count, Symbols.Outlined.Edit, stringResource(R.string.item_actions_edit), onClick = onEdit)
-    ActionRow(1, count, Symbols.Outlined.DriveFileMove, stringResource(R.string.item_actions_move), onClick = onMove)
+    ActionRow(
+      0,
+      count,
+      Symbols.Outlined.Edit,
+      stringResource(R.string.item_actions_edit),
+      onClick = actions::onEdit,
+    )
+    ActionRow(
+      1,
+      count,
+      Symbols.Outlined.DriveFileMove,
+      stringResource(R.string.item_actions_move),
+      onClick = actions::onMoveClick,
+    )
     ActionRow(
       2,
       count,
@@ -328,15 +595,15 @@ private fun SecondaryActions(
       stringResource(R.string.item_actions_transform),
       containerColor = CaducityTheme.colorScheme.primaryContainer,
       contentColor = CaducityTheme.colorScheme.onPrimaryContainer,
-      onClick = onTransform,
+      onClick = actions::onTransform,
     )
     ActionRow(
       count - 1,
       count,
       Symbols.Outlined.Delete,
-      stringResource(R.string.item_actions_delete),
+      stringResource(R.string.item_actions_discard),
       tint = expired,
-      onClick = onDelete,
+      onClick = actions::onDiscardAll,
     )
   }
 }
@@ -427,9 +694,10 @@ private fun SideEffectHandler(
 ) {
   val okLabel = stringResource(R.string.add_picker_ok)
   val cancelLabel = stringResource(R.string.add_picker_cancel)
-  val deleteLabel = stringResource(R.string.item_actions_delete)
   val cancelAction = stringResource(R.string.item_actions_cancel)
-  val deleteBody = stringResource(R.string.item_actions_delete_body)
+  val eatAnywayTitle = stringResource(R.string.item_actions_eat_anyway_title)
+  val eatAnywayBody = stringResource(R.string.item_actions_eat_anyway_body)
+  val eatAnywayLabel = stringResource(R.string.item_actions_eat_anyway)
   LaunchedEffect(viewModel) {
     viewModel.sideEffects.collect { effect ->
       when (effect) {
@@ -447,21 +715,24 @@ private fun SideEffectHandler(
               )
             val picked = datePickerState.selectedDateMillis
             if (result == DialogResult.Positive && picked != null) {
-              viewModel.onDatePicked(Instant.fromEpochMilliseconds(picked).toLocalDateTime(TimeZone.UTC).date)
+              viewModel.onDatePicked(
+                Instant.fromEpochMilliseconds(picked).toLocalDateTime(TimeZone.UTC).date,
+                effect.purpose,
+              )
             }
           }
 
-        is ItemActionsSheetSideEffect.ShowDeleteConfirm ->
+        ItemActionsSheetSideEffect.ShowEatAnywayConfirm ->
           launch {
             val result =
               dialogState.showAlertDialog(
-                title = { Text(stringResource(R.string.item_actions_delete_title, effect.name)) },
-                content = { Text(deleteBody) },
-                positiveButton = { Text(deleteLabel) },
+                title = { Text(eatAnywayTitle) },
+                content = { Text(eatAnywayBody) },
+                positiveButton = { Text(eatAnywayLabel) },
                 negativeButton = { Text(cancelAction) },
                 type = AppFeedbackType.Error,
               )
-            if (result == DialogResult.Positive) viewModel.onDeleteConfirmed()
+            if (result == DialogResult.Positive) viewModel.onEatAnyway()
           }
       }
     }

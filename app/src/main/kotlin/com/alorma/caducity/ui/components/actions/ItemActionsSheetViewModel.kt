@@ -3,11 +3,12 @@ package com.alorma.caducity.ui.components.actions
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
-import com.alorma.caducity.domain.model.InstanceActionError
+import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.ItemSnapshot
 import com.alorma.caducity.domain.model.ItemStatus
-import com.alorma.caducity.domain.model.unitPositions
+import com.alorma.caducity.domain.model.sortedNearestFirst
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
-import com.alorma.caducity.domain.usecase.DeleteItemUseCase
+import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.MoveItemToCategoryUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
@@ -37,7 +38,10 @@ import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.daysUntil
 import kotlinx.datetime.plus
 
-/** Actions on **one unit** (P2): consume, freeze, change the date, edit, move or delete it. */
+/**
+ * Actions on a product, opened from any of its rows ([itemId] is any of its units): with one unit they act on
+ * it; with several, on the first [ItemActionsSheetState.Ready.selected] ones, the ones that expire first.
+ */
 class ItemActionsSheetViewModel(
   private val itemId: String,
   observeItems: ObserveItemsUseCase,
@@ -46,34 +50,46 @@ class ItemActionsSheetViewModel(
   private val freezeItem: FreezeItemUseCase,
   private val unfreezeItem: UnfreezeItemUseCase,
   private val rescheduleItem: RescheduleItemUseCase,
-  private val deleteItem: DeleteItemUseCase,
+  private val discardItems: DiscardItemsUseCase,
   private val moveItem: MoveItemToCategoryUseCase,
   private val restoreItems: RestoreItemsUseCase,
   private val appClock: AppClock,
   private val snackbars: GlobalSnackbarEvents,
   private val eventTracker: EventTracker,
-) : BaseViewModel<ItemActionsSheetNavigation, ItemActionsSheetNavigationSideEffect, ItemActionsSheetSideEffect>() {
+) : BaseViewModel<ItemActionsSheetNavigation, ItemActionsSheetNavigationSideEffect, ItemActionsSheetSideEffect>(),
+  ItemActionsHandlers {
   private val pickingCategory = MutableStateFlow(false)
+  private val moreOpen = MutableStateFlow(false)
+  private val chosen = MutableStateFlow<Int?>(null)
   private var closing = false
 
   val state: StateFlow<ItemActionsSheetState> =
-    combine(observeItems.observe(), observeCategories.observe(), pickingCategory) { entries, categories, picking ->
-      val entry = entries.firstOrNull { it.itemId == itemId }
-      val category = entry?.let { e -> categories.firstOrNull { it.id == e.categoryId } }
-      if (entry == null || category == null) {
-        // The unit is gone (acted on, or removed elsewhere): nothing left to act on.
+    combine(
+      observeItems.observe(),
+      observeCategories.observe(),
+      pickingCategory,
+      moreOpen,
+      chosen,
+    ) { entries, categories, picking, more, chosenCount ->
+      val focus = entries.firstOrNull { it.itemId == itemId }
+      val units = focus?.let { f -> entries.filter { it.groupKey == f.groupKey }.sortedNearestFirst() }.orEmpty()
+      val category = focus?.let { f -> categories.firstOrNull { it.id == f.categoryId } }
+      if (focus == null || category == null) {
+        // The product is gone (acted on, or removed elsewhere): nothing left to act on.
         if (entries.isNotEmpty() || categories.isNotEmpty()) close()
         ItemActionsSheetState.Loading
       } else {
-        val position = entries.unitPositions().getValue(itemId)
+        val actionUnits = units.map { ActionUnit(it.itemId, it.expiration, it.status) }
+        val expiredCount = actionUnits.count { it.status == ExpiryStatus.EXPIRED }
+        val expired = actionUnits.first().status == ExpiryStatus.EXPIRED
+        val default = if (expired) expiredCount else 1
         ItemActionsSheetState.Ready(
-          name = entry.name,
+          name = focus.name,
           category = category,
-          unitIndex = position.index,
-          unitCount = position.count,
-          expiration = entry.expiration,
-          status = entry.status,
-          daysLeft = appClock.nowDate().daysUntil(entry.expiration),
+          units = actionUnits,
+          selected = (chosenCount ?: default).coerceIn(1, actionUnits.size),
+          moreOpen = more,
+          daysLeft = appClock.nowDate().daysUntil(actionUnits.first().expiration),
           otherCategories = categories.filter { it.id != category.id },
           pickingCategory = picking,
         )
@@ -81,180 +97,273 @@ class ItemActionsSheetViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ItemActionsSheetState.Loading)
 
   override fun navigate(navigation: ItemActionsSheetNavigation) {
+    val ready = ready()
     when (navigation) {
       ItemActionsSheetNavigation.Close -> close()
       ItemActionsSheetNavigation.Edit -> {
+        val nearest = ready?.units?.first()?.id ?: itemId
         eventTracker.trackAction(NavigateToEditItemAction())
         closing = true
-        emitNavigationSideEffect(ItemActionsSheetNavigationSideEffect.Edit(itemId))
+        emitNavigationSideEffect(ItemActionsSheetNavigationSideEffect.Edit(nearest))
       }
       ItemActionsSheetNavigation.Transform -> {
+        val ids = ready?.units?.map { it.id } ?: listOf(itemId)
         eventTracker.trackAction(NavigateToTransformAction(origin = "item_actions", source = "item_actions"))
         closing = true
-        emitNavigationSideEffect(ItemActionsSheetNavigationSideEffect.Transform(itemId))
+        emitNavigationSideEffect(ItemActionsSheetNavigationSideEffect.Transform(ids))
       }
     }
   }
 
-  fun onConsume() {
+  override fun onEdit() = navigate(ItemActionsSheetNavigation.Edit)
+
+  override fun onTransform() = navigate(ItemActionsSheetNavigation.Transform)
+
+  override fun onSelect(count: Int) {
+    chosen.value = count
+  }
+
+  override fun onToggleMore() {
+    moreOpen.value = !moreOpen.value
+  }
+
+  override fun onConsume() {
     val ready = ready() ?: return
     eventTracker.trackAction(ItemActionAction("consume"))
+    consume(ready, ready.units.take(ready.selected).map { it.id })
+  }
+
+  /** «Consumit igualment», once held for long enough (or confirmed with TalkBack). */
+  override fun onEatAnyway() {
+    val ready = ready() ?: return
+    eventTracker.trackAction(ItemActionAction("eat_anyway"))
+    consume(ready, ready.units.take(ready.selected).map { it.id })
+  }
+
+  override fun onEatAnywayRequested() {
+    emitSideEffect(ItemActionsSheetSideEffect.ShowEatAnywayConfirm)
+  }
+
+  private fun consume(
+    ready: ItemActionsSheetState.Ready,
+    ids: List<String>,
+  ) {
     viewModelScope.launch {
+      val snapshots = restoreItems.snapshots(ids)
       consumeItem
-        .consume(itemId)
+        .consume(ids)
         .onSuccess {
           feedback(
-            GlobalSnackbar(
-              message = R.string.item_actions_snackbar_consumed,
-              messageArgs = listOf(ready.name),
-              actionLabel = R.string.add_undo,
+            countedSnackbar(
+              count = ids.size,
+              one = R.string.item_actions_snackbar_consumed,
+              many = R.string.item_actions_snackbar_consumed_n,
+              name = ready.name,
               type = AppFeedbackType.Success,
-              onAction = { restoreItems.restore(listOf(itemId)) },
+              snapshots = snapshots,
             ),
           )
         }.onFailure { failed() }
     }
   }
 
-  fun onFreezeToggle() {
+  override fun onFreezeToggle() {
     val ready = ready() ?: return
     if (ready.frozen) {
       eventTracker.trackAction(ItemActionAction("unfreeze"))
       viewModelScope.launch {
-        val proposed = unfreezeItem.proposedDate(itemId) ?: ready.expiration
-        emitSideEffect(ItemActionsSheetSideEffect.ShowDatePicker(proposed.toUtcMillis(), unfreeze = true))
+        val proposed = unfreezeItem.proposedDate(ready.units.first().id) ?: ready.expiration
+        emitSideEffect(ItemActionsSheetSideEffect.ShowDatePicker(proposed.toUtcMillis(), DatePickerPurpose.Unfreeze))
       }
       return
     }
-    eventTracker.trackAction(ItemActionAction("freeze"))
-    viewModelScope.launch {
-      freezeItem
-        .freezeItem(itemId, ready.expiration.toExpirationInstant())
-        .onSuccess {
-          feedback(
-            GlobalSnackbar(
-              message = R.string.item_actions_snackbar_frozen,
-              messageArgs = listOf(ready.name),
-              actionLabel = R.string.add_undo,
-              type = AppFeedbackType.Status(ItemStatus.Frozen),
-              onAction = { freezeItem.unfreezeItem(itemId) },
-            ),
-          )
-        }.onFailure {
-          if (it is InstanceActionError.CannotFreezeExpiredInstance) {
-            snackbars.show(
-              GlobalSnackbar(R.string.item_actions_error_freeze_expired, type = AppFeedbackType.Error),
-            )
-          } else {
-            snackbars.show(GlobalSnackbar(R.string.item_actions_error, type = AppFeedbackType.Error))
-          }
-        }
-    }
-  }
-
-  fun onQuickReschedule(option: QuickReschedule) {
-    val ready = ready() ?: return
-    eventTracker.trackAction(ItemActionAction("quick_date"))
-    reschedule(ready.expiration.plus(option.days, DateTimeUnit.DAY))
-  }
-
-  fun onPickDate() {
-    val ready = ready() ?: return
-    eventTracker.trackAction(ItemActionAction("pick_date"))
-    emitSideEffect(ItemActionsSheetSideEffect.ShowDatePicker(ready.expiration.toUtcMillis(), unfreeze = false))
-  }
-
-  /** The date chosen in the picker: reschedules, or (when the unit is frozen) unfreezes with that date. */
-  fun onDatePicked(date: LocalDate) {
-    val ready = ready() ?: return
-    if (!ready.frozen) {
-      reschedule(date)
+    if (ready.freezableCount == 0) {
+      snackbars.show(GlobalSnackbar(R.string.item_actions_error_freeze_expired, type = AppFeedbackType.Error))
       return
     }
+    eventTracker.trackAction(ItemActionAction("freeze"))
+    val ids =
+      ready.units
+        .filter { it.status == ExpiryStatus.SOON || it.status == ExpiryStatus.FRESH }
+        .take(ready.freezeCount)
+        .map { it.id }
     viewModelScope.launch {
-      unfreezeItem
-        .unfreezeOn(itemId, date)
-        .onSuccess {
+      val snapshots = restoreItems.snapshots(ids)
+      freezeItem
+        .freeze(ids)
+        .onSuccess { frozen ->
           feedback(
-            GlobalSnackbar(
-              message = R.string.item_actions_snackbar_unfrozen,
-              messageArgs = listOf(ready.name),
-              type = AppFeedbackType.Success,
+            countedSnackbar(
+              count = frozen.size,
+              one = R.string.item_actions_snackbar_frozen,
+              many = R.string.item_actions_snackbar_frozen_n,
+              name = ready.name,
+              type = AppFeedbackType.Status(ItemStatus.Frozen),
+              snapshots = snapshots,
             ),
           )
         }.onFailure { failed() }
     }
   }
 
-  fun onDelete() {
+  override fun onQuickReschedule(option: QuickReschedule) {
     val ready = ready() ?: return
-    emitSideEffect(ItemActionsSheetSideEffect.ShowDeleteConfirm(ready.name))
+    eventTracker.trackAction(ItemActionAction("quick_date"))
+    val ids = ready.units.map { it.id }
+    viewModelScope.launch {
+      val snapshots = restoreItems.snapshots(ids)
+      val failure =
+        ready.units.firstNotNullOfOrNull { unit ->
+          rescheduleItem
+            .rescheduleItem(unit.id, unit.expiration.plus(option.days, DateTimeUnit.DAY).toExpirationInstant())
+            .exceptionOrNull()
+        }
+      if (failure == null) feedback(rescheduledSnackbar(ready.name, snapshots)) else failed()
+    }
   }
 
-  fun onDeleteConfirmed() {
+  override fun onPickDate() {
     val ready = ready() ?: return
-    eventTracker.trackAction(ItemActionAction("delete"))
+    eventTracker.trackAction(ItemActionAction("pick_date"))
+    emitSideEffect(
+      ItemActionsSheetSideEffect.ShowDatePicker(ready.expiration.toUtcMillis(), DatePickerPurpose.Reschedule),
+    )
+  }
+
+  /** «La data era incorrecta»: a new date for the expired units, which were typed wrong. */
+  override fun onFixDate() {
+    val ready = ready() ?: return
+    eventTracker.trackAction(ItemActionAction("fix_date"))
+    emitSideEffect(
+      ItemActionsSheetSideEffect.ShowDatePicker(ready.expiration.toUtcMillis(), DatePickerPurpose.FixExpiredDate),
+    )
+  }
+
+  /** The date chosen in the picker. */
+  fun onDatePicked(
+    date: LocalDate,
+    purpose: DatePickerPurpose,
+  ) {
+    val ready = ready() ?: return
+    val ids =
+      when (purpose) {
+        DatePickerPurpose.Reschedule, DatePickerPurpose.Unfreeze -> ready.units.map { it.id }
+        DatePickerPurpose.FixExpiredDate ->
+          ready.units.filter { it.status == ExpiryStatus.EXPIRED }.map { it.id }
+      }
     viewModelScope.launch {
-      deleteItem
-        .deleteItem(itemId)
+      if (purpose == DatePickerPurpose.Unfreeze) {
+        unfreezeItem
+          .unfreezeOn(ids.first(), date)
+          .onSuccess {
+            feedback(
+              GlobalSnackbar(
+                message = R.string.item_actions_snackbar_unfrozen,
+                messageArgs = listOf(ready.name),
+                type = AppFeedbackType.Success,
+              ),
+            )
+          }.onFailure { failed() }
+        return@launch
+      }
+      val snapshots = restoreItems.snapshots(ids)
+      rescheduleItem
+        .reschedule(ids, date)
+        .onSuccess { feedback(rescheduledSnackbar(ready.name, snapshots)) }
+        .onFailure { failed() }
+    }
+  }
+
+  /** «Llença» with the − / + selector: the first [ItemActionsSheetState.Ready.selected] units. */
+  override fun onDiscardSelected() {
+    val ready = ready() ?: return
+    discard(ready, ready.units.take(ready.selected).map { it.id })
+  }
+
+  /** «Llença» from «Més accions» of a product that has not expired: every unit. */
+  override fun onDiscardAll() {
+    val ready = ready() ?: return
+    discard(ready, ready.units.map { it.id })
+  }
+
+  private fun discard(
+    ready: ItemActionsSheetState.Ready,
+    ids: List<String>,
+  ) {
+    eventTracker.trackAction(ItemActionAction("discard"))
+    viewModelScope.launch {
+      val snapshots = restoreItems.snapshots(ids)
+      discardItems
+        .discard(ids)
         .onSuccess {
           feedback(
-            GlobalSnackbar(
-              message = R.string.item_actions_snackbar_deleted,
-              messageArgs = listOf(ready.name),
+            countedSnackbar(
+              count = ids.size,
+              one = R.string.status_snackbar_discarded,
+              many = R.string.item_actions_snackbar_discarded_n,
+              name = ready.name,
               type = AppFeedbackType.Info,
+              snapshots = snapshots,
             ),
           )
         }.onFailure { failed() }
     }
   }
 
-  fun onMoveClick() {
+  override fun onMoveClick() {
     pickingCategory.value = true
   }
 
-  fun onMoveBack() {
+  override fun onMoveBack() {
     pickingCategory.value = false
   }
 
-  fun onMove(categoryId: String) {
+  override fun onMove(categoryId: String) {
     val ready = ready() ?: return
     val target = ready.otherCategories.firstOrNull { it.id == categoryId } ?: return
     eventTracker.trackAction(ItemActionAction("move"))
+    val ids = ready.units.map { it.id }
     viewModelScope.launch {
-      moveItem
-        .move(itemId, categoryId)
-        .onSuccess {
-          feedback(
-            GlobalSnackbar(
-              message = R.string.item_actions_snackbar_moved,
-              messageArgs = listOf(ready.name, target.name),
-              actionLabel = R.string.add_undo,
-              onAction = { moveItem.move(itemId, ready.category.id) },
-            ),
-          )
-        }.onFailure { failed() }
+      val failure = ids.firstNotNullOfOrNull { moveItem.move(it, categoryId).exceptionOrNull() }
+      if (failure != null) {
+        failed()
+        return@launch
+      }
+      feedback(
+        GlobalSnackbar(
+          message = R.string.item_actions_snackbar_moved,
+          messageArgs = listOf(ready.name, target.name),
+          actionLabel = R.string.add_undo,
+          onAction = { ids.forEach { moveItem.move(it, ready.category.id) } },
+        ),
+      )
     }
   }
 
-  private fun reschedule(date: LocalDate) {
-    val ready = ready() ?: return
-    val previous = ready.expiration
-    viewModelScope.launch {
-      rescheduleItem
-        .rescheduleItem(itemId, date.toExpirationInstant())
-        .onSuccess {
-          feedback(
-            GlobalSnackbar(
-              message = R.string.item_actions_snackbar_rescheduled,
-              messageArgs = listOf(ready.name),
-              actionLabel = R.string.add_undo,
-              onAction = { rescheduleItem.rescheduleItem(itemId, previous.toExpirationInstant()) },
-            ),
-          )
-        }.onFailure { failed() }
-    }
-  }
+  private fun rescheduledSnackbar(
+    name: String,
+    snapshots: List<ItemSnapshot>,
+  ) = GlobalSnackbar(
+    message = R.string.item_actions_snackbar_rescheduled,
+    messageArgs = listOf(name),
+    actionLabel = R.string.add_undo,
+    onAction = { restoreItems.restoreSnapshots(snapshots) },
+  )
+
+  private fun countedSnackbar(
+    count: Int,
+    one: Int,
+    many: Int,
+    name: String,
+    type: AppFeedbackType,
+    snapshots: List<ItemSnapshot>,
+  ) = GlobalSnackbar(
+    message = if (count == 1) one else many,
+    messageArgs = if (count == 1) listOf(name) else listOf(count, name),
+    actionLabel = R.string.add_undo,
+    type = type,
+    onAction = { restoreItems.restoreSnapshots(snapshots) },
+  )
 
   private fun feedback(snackbar: GlobalSnackbar) {
     emitSideEffect(ItemActionsSheetSideEffect.Confirm)
