@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -20,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -226,25 +228,34 @@ private fun StopLabels(selectedIndex: Int) {
           )
         }
       }
-      Canvas(Modifier.fillMaxWidth().height(BracketHeight)) {
-        val stroke = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
-        val reach = 9.dp.toPx()
-        val radius = 4.dp.toPx()
-        UnitGroups.forEach { (range, _) ->
-          val left = centerOf(range.first).toPx() - reach
-          val right = centerOf(range.last).toPx() + reach
-          val path =
-            Path().apply {
-              moveTo(left, 0f)
-              lineTo(left, size.height - radius)
-              quadraticTo(left, size.height, left + radius, size.height)
-              lineTo(right - radius, size.height)
-              quadraticTo(right, size.height, right, size.height - radius)
-              lineTo(right, 0f)
-            }
-          drawPath(path, bracketColor, style = stroke)
-        }
-      }
+      Spacer(
+        Modifier
+          .fillMaxWidth()
+          .height(BracketHeight)
+          .drawWithCache {
+            val stroke = Stroke(width = 2.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+            val reach = 9.dp.toPx()
+            val radius = 4.dp.toPx()
+            val labelWidth = LabelWidth.toPx()
+
+            fun centerOf(index: Int): Float =
+              labelWidth / 2 + (size.width - labelWidth) * (index.toFloat() / ThresholdStops.lastIndex)
+            val paths =
+              UnitGroups.map { (range, _) ->
+                val left = centerOf(range.first) - reach
+                val right = centerOf(range.last) + reach
+                Path().apply {
+                  moveTo(left, 0f)
+                  lineTo(left, size.height - radius)
+                  quadraticTo(left, size.height, left + radius, size.height)
+                  lineTo(right - radius, size.height)
+                  quadraticTo(right, size.height, right, size.height - radius)
+                  lineTo(right, 0f)
+                }
+              }
+            onDrawBehind { paths.forEach { drawPath(it, bracketColor, style = stroke) } }
+          },
+      )
       Box(Modifier.fillMaxWidth().height(22.dp).padding(top = 4.dp)) {
         UnitGroups.forEach { (range, nameRes) ->
           val left = centerOf(range.first) - 9.dp
