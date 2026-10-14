@@ -253,9 +253,9 @@
   <string name="item_actions_delete_title">¿Borrar %1$s?</string>
   <string name="item_actions_delete_body">Esta acción no se puede deshacer.</string>
   <string name="item_actions_cancel">Cancelar</string>
-  <string name="item_actions_snackbar_consumed">%1$s consumido</string>
+  <string name="item_actions_snackbar_consumed">1 %1$s consumido</string>
   <string name="item_actions_snackbar_rescheduled">Fecha de %1$s cambiada</string>
-  <string name="item_actions_snackbar_frozen">%1$s congelado</string>
+  <string name="item_actions_snackbar_frozen">1 %1$s congelado</string>
   <string name="item_actions_snackbar_unfrozen">%1$s descongelado</string>
   <string name="item_actions_snackbar_deleted">%1$s borrado</string>
   <string name="item_actions_snackbar_moved">%1$s movido a %2$s</string>
@@ -405,7 +405,7 @@
   <string name="status_empty_frozen_title">El congelador está vacío</string>
   <string name="status_snackbar_consumed_many">%d productos consumidos</string>
   <string name="status_snackbar_frozen_many">%d productos congelados</string>
-  <string name="status_snackbar_discarded">%1$s tirado</string>
+  <string name="status_snackbar_discarded">1 %1$s tirado</string>
   <string name="status_snackbar_discarded_many">%d productos tirados</string>
   <string name="status_snackbar_rescheduled_many">Fecha cambiada en %d productos</string>
   <plurals name="status_discard_title">

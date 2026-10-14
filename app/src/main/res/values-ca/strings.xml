@@ -253,9 +253,9 @@
   <string name="item_actions_delete_title">Esborrar %1$s?</string>
   <string name="item_actions_delete_body">Aquesta acció no es pot desfer.</string>
   <string name="item_actions_cancel">Cancel·la</string>
-  <string name="item_actions_snackbar_consumed">%1$s consumit</string>
+  <string name="item_actions_snackbar_consumed">1 %1$s consumit</string>
   <string name="item_actions_snackbar_rescheduled">Data de %1$s canviada</string>
-  <string name="item_actions_snackbar_frozen">%1$s congelat</string>
+  <string name="item_actions_snackbar_frozen">1 %1$s congelat</string>
   <string name="item_actions_snackbar_unfrozen">%1$s descongelat</string>
   <string name="item_actions_snackbar_deleted">%1$s esborrat</string>
   <string name="item_actions_snackbar_moved">%1$s mogut a %2$s</string>
@@ -405,7 +405,7 @@
   <string name="status_empty_frozen_title">El congelador és buit</string>
   <string name="status_snackbar_consumed_many">%d productes consumits</string>
   <string name="status_snackbar_frozen_many">%d productes congelats</string>
-  <string name="status_snackbar_discarded">%1$s llençat</string>
+  <string name="status_snackbar_discarded">1 %1$s llençat</string>
   <string name="status_snackbar_discarded_many">%d productes llençats</string>
   <string name="status_snackbar_rescheduled_many">Data canviada a %d productes</string>
   <plurals name="status_discard_title">

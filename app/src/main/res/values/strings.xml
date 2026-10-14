@@ -246,9 +246,9 @@
   <string name="item_actions_delete_title">Delete %1$s?</string>
   <string name="item_actions_delete_body">This can\'t be undone.</string>
   <string name="item_actions_cancel">Cancel</string>
-  <string name="item_actions_snackbar_consumed">%1$s consumed</string>
+  <string name="item_actions_snackbar_consumed">1 %1$s consumed</string>
   <string name="item_actions_snackbar_rescheduled">Date of %1$s changed</string>
-  <string name="item_actions_snackbar_frozen">%1$s frozen</string>
+  <string name="item_actions_snackbar_frozen">1 %1$s frozen</string>
   <string name="item_actions_snackbar_unfrozen">%1$s unfrozen</string>
   <string name="item_actions_snackbar_deleted">%1$s deleted</string>
   <string name="item_actions_snackbar_moved">%1$s moved to %2$s</string>
@@ -385,7 +385,7 @@
   <string name="status_empty_frozen_title">The freezer is empty</string>
   <string name="status_snackbar_consumed_many">%d products consumed</string>
   <string name="status_snackbar_frozen_many">%d products frozen</string>
-  <string name="status_snackbar_discarded">%1$s thrown out</string>
+  <string name="status_snackbar_discarded">1 %1$s thrown out</string>
   <string name="status_snackbar_discarded_many">%d products thrown out</string>
   <string name="status_snackbar_rescheduled_many">Date changed for %d products</string>
   <plurals name="status_discard_title">
