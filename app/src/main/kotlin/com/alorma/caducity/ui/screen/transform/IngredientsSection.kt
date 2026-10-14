@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.transform
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -146,6 +147,7 @@ fun IngredientsSection(
     }
     LazyRow(
       state = listState,
+      flingBehavior = rememberSnapFlingBehavior(listState),
       contentPadding = PaddingValues(horizontal = ScreenGutter),
       horizontalArrangement = Arrangement.spacedBy(RowCardSpacing),
       modifier =
