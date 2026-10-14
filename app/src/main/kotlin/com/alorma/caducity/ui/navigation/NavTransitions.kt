@@ -16,17 +16,8 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
-import androidx.navigation3.runtime.NavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.alorma.caducity.config.navigation.BottomSheetSceneStrategy
 
 // Same transitions as Converses (ui/AppNavigation.kt), plus the fade between tabs.
 
@@ -116,22 +107,3 @@ internal val modalTransitions =
 internal val tabTransitions =
   NavDisplay.transitionSpec { tabTransition() } +
     NavDisplay.popTransitionSpec { tabTransition() }
-
-/**
- * Paints the theme background under every screen (but the bottom sheets, which float over the previous
- * one). With a single stack the screen below stays composed, so without it it shows through the
- * leaving screen while it shrinks or fades.
- */
-@Composable
-internal fun <T : Any> rememberOpaqueBackgroundNavEntryDecorator(): NavEntryDecorator<T> {
-  val background = MaterialTheme.colorScheme.background
-  return remember(background) {
-    NavEntryDecorator { entry ->
-      if (entry.metadata.containsKey(BottomSheetSceneStrategy.BOTTOM_SHEET_KEY)) {
-        entry.Content()
-      } else {
-        Box(Modifier.fillMaxSize().background(background)) { entry.Content() }
-      }
-    }
-  }
-}

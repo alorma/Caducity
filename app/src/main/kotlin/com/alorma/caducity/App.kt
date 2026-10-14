@@ -56,7 +56,6 @@ import com.alorma.caducity.ui.navigation.TransformIntro
 import com.alorma.caducity.ui.navigation.modalTransitions
 import com.alorma.caducity.ui.navigation.nativeTransition
 import com.alorma.caducity.ui.navigation.predictiveBack
-import com.alorma.caducity.ui.navigation.rememberOpaqueBackgroundNavEntryDecorator
 import com.alorma.caducity.ui.navigation.tabTransitions
 import com.alorma.caducity.ui.navigation.toStatus
 import com.alorma.caducity.ui.screen.add.AddArgs
@@ -179,7 +178,6 @@ fun App(
         predictivePopTransitionSpec = { edge -> predictiveBack(edge, vertical = false) },
         entryDecorators =
           listOf(
-            rememberOpaqueBackgroundNavEntryDecorator(),
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),
           ),
