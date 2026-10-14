@@ -131,7 +131,7 @@ fun CategoryEditorScreen(
 }
 
 @Composable
-private fun CategoryEditorContent(
+internal fun CategoryEditorContent(
   state: CategoryEditorState,
   onNameChange: (String) -> Unit,
   onDescriptionChange: (String) -> Unit,

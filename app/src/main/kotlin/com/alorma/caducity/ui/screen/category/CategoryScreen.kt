@@ -206,7 +206,7 @@ private fun SideEffectHandler(
 }
 
 @Composable
-private fun CategoryTopBar(
+internal fun CategoryTopBar(
   ready: CategoryState.Ready?,
   scrollBehavior: TopAppBarScrollBehavior,
   onBack: () -> Unit,
@@ -354,7 +354,7 @@ private fun CategoryState.Ready.items(): List<CategoryItem> =
   }
 
 @Composable
-private fun CategoryContent(
+internal fun CategoryContent(
   state: CategoryState.Ready,
   onFilterSelected: (ExpiryStatus?) -> Unit,
   onDayClick: (kotlinx.datetime.LocalDate) -> Unit,

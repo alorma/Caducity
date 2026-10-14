@@ -6,6 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.alorma.caducity.ui.screen.home.HomeEmptyPreviewContent
 import com.alorma.caducity.ui.screen.home.HomeNothingSoonPreviewContent
 import com.alorma.caducity.ui.screen.home.HomePreviewContent
+import com.alorma.caducity.ui.screen.pantry.PantryPreviewContent
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import com.android.tools.screenshot.PreviewTest
 
@@ -20,6 +21,20 @@ class HomeScreenshotTests {
   @Composable
   fun homeSoon() {
     PreviewTheme { HomePreviewContent() }
+  }
+
+  @PreviewTest
+  @Preview(name = "Font 200", locale = "ca", widthDp = Width, heightDp = Height, fontScale = 2f)
+  @Composable
+  fun homeLargeFont() {
+    PreviewTheme { HomePreviewContent() }
+  }
+
+  @PreviewTest
+  @Preview(name = "Font 200", locale = "ca", widthDp = Width, heightDp = Height, fontScale = 2f)
+  @Composable
+  fun pantryLargeFont() {
+    PreviewTheme { PantryPreviewContent() }
   }
 
   @PreviewTest
