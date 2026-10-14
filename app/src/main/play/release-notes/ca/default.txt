@@ -1,5 +1,6 @@
-Versió 1.0.2:
-• Nou Transforma: apunta què has cuinat. Tria els ingredients que has gastat i afegeix-hi el resultat, amb les racions i la data. El trobaràs al costat del botó +
-• Tria els colors a Ajustos: sis paletes (Rebost, Nevera, Hort, Fleca, Bessa i Camp) o els colors del teu fons de pantalla
-• La icona de l'app segueix la paleta que triïs
-• El Rebost, la paleta per defecte, estrena colors
+Versió 1.1.0:
+• Nou Transforma: has fet escudella amb mig rebost? Apunta-ho a l'app sense complicacions.
+• T'agrada molt el pa? O prefereixes els tons d'un hort ben cuidat? Canvia els colors de l'app al teu gust.
+• Ja no cal fer de vident: et suggerim la data segons el que sol durar cada categoria.
+• Una fila per producte: consumeix, congela o llença unes quantes unitats d'un sol cop.
+• Més de dos-cents retocs de disseny i usabilitat. Sí, els hem comptat.

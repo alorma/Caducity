@@ -1,5 +1,6 @@
-Versión 1.0.2:
-• Nuevo Transformar: apunta lo que has cocinado. Elige los ingredientes que has gastado y añade el resultado, con sus raciones y su fecha. Lo encontrarás junto al botón +
-• Elige los colores en Ajustes: seis paletas (Despensa, Nevera, Huerto, Panadería, Bayas y Campo) o los colores de tu fondo de pantalla
-• El icono de la app sigue la paleta que elijas
-• La Despensa, la paleta por defecto, estrena colores
+Versión 1.1.0:
+• Nuevo Transformar: ¿has hecho cocido con media despensa? Apúntalo en la app sin complicaciones.
+• ¿Te encanta el pan? ¿O prefieres los tonos de un huerto bien cuidado? Cambia los colores de la app a tu gusto.
+• Ya no hace falta ser adivino: te sugerimos la fecha según lo que suele durar cada categoría.
+• Una fila por producto: consume, congela o tira varias unidades de una vez.
+• Más de doscientos retoques de diseño y usabilidad. Sí, los hemos contado.
