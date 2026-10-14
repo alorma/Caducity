@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.category.quick
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -72,7 +73,7 @@ fun QuickCategorySheet(
     Button(
       onClick = viewModel::onCreate,
       enabled = state.canCreate,
-      modifier = Modifier.fillMaxWidth(),
+      modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
     ) {
       Text(stringResource(R.string.quick_category_create))
     }

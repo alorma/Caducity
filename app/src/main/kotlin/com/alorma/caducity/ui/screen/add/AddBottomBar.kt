@@ -64,7 +64,7 @@ private fun BarButton(
     shape = connectedButtonShape(0, 1),
     color = if (enabled) container else CaducityTheme.colorScheme.surfaceContainerHigh,
     contentColor = if (enabled) content else CaducityTheme.colorScheme.outline,
-    modifier = modifier.height(64.dp),
+    modifier = modifier.height(56.dp),
   ) {
     Row(
       modifier = Modifier.padding(horizontal = 12.dp),

@@ -168,7 +168,7 @@ fun OnboardingProgressBar(
   }
 }
 
-/** 60 dp pill button used as the main action of every step. */
+/** 56 dp pill button used as the main action of every step. */
 @Composable
 fun OnboardingPrimaryButton(
   text: String,
@@ -181,7 +181,7 @@ fun OnboardingPrimaryButton(
   Button(
     onClick = onClick,
     enabled = enabled,
-    modifier = modifier.height(60.dp).widthIn(min = 160.dp),
+    modifier = modifier.height(56.dp).widthIn(min = 160.dp),
     shape = CircleShape,
     colors =
       ButtonDefaults.buttonColors(

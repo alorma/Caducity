@@ -434,7 +434,7 @@ private fun StepperButton(
   }
 }
 
-/** Consumit (wide, `primary`) next to Congela / Descongela (`frozen-container`), 64 dp, joined. */
+/** Consumit (wide, `primary`) next to Congela / Descongela (`frozen-container`), 56 dp, joined. */
 @Composable
 private fun PrimaryActions(
   consumeLabel: String,
@@ -481,7 +481,7 @@ private fun ActionButton(
 ) {
   Surface(
     onClick = onClick,
-    modifier = modifier.height(64.dp),
+    modifier = modifier.height(56.dp),
     shape = shape,
     color = container,
     contentColor = content,
