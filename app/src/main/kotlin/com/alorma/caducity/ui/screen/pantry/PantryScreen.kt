@@ -137,7 +137,11 @@ internal fun PantryContent(
         searchResults(state, onOpenItemActions, onConsume, onFreeze, onDiscard)
       } else {
         val cells: List<PantryCategory?> = data.categories + null
-        items(cells.chunked(columns), key = { row -> row.first()?.category?.id ?: "new-category" }) { row ->
+        items(
+          cells.chunked(columns),
+          key = { row -> row.first()?.category?.id ?: "new-category" },
+          contentType = "category-row",
+        ) { row ->
           Row(
             modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -170,8 +174,13 @@ internal fun PantryContent(
 private fun <T> LazyListScope.items(
   list: List<T>,
   key: (T) -> Any,
+  contentType: Any,
   content: @Composable (T) -> Unit,
-) = itemsIndexed(list, key = { _, item -> key(item) }) { _, item -> content(item) }
+) = itemsIndexed(
+  list,
+  key = { _, item -> key(item) },
+  contentType = { _, _ -> contentType },
+) { _, item -> content(item) }
 
 private fun LazyListScope.searchResults(
   state: PantryState.Ready,
@@ -181,7 +190,7 @@ private fun LazyListScope.searchResults(
   onDiscard: (ProductRowModel) -> Unit,
 ) {
   if (state.results.isEmpty()) {
-    item(key = "no-results") {
+    item(key = "no-results", contentType = "no-results") {
       Text(
         text = stringResource(R.string.pantry_no_results),
         style = CaducityTheme.typography.bodyMedium,
@@ -191,7 +200,11 @@ private fun LazyListScope.searchResults(
     }
     return
   }
-  itemsIndexed(state.results, key = { _, result -> "result-${result.group.key}" }) { index, result ->
+  itemsIndexed(
+    state.results,
+    key = { _, result -> "result-${result.group.key}" },
+    contentType = { _, _ -> "result" },
+  ) { index, result ->
     val row =
       result.group.units.toProductRow(
         category = result.category,

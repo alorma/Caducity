@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -331,8 +331,7 @@ private fun PickerList(
     verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing),
     contentPadding = PaddingValues(bottom = 16.dp),
   ) {
-    items(groups, key = { it.key }) { group ->
-      val index = groups.indexOf(group)
+    itemsIndexed(groups, key = { _, group -> group.key }, contentType = { _, _ -> "group" }) { index, group ->
       PickerRow(
         group = group,
         category = state.categories.firstOrNull { it.id == group.categoryId },

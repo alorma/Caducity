@@ -161,7 +161,7 @@ internal fun CalendarContent(
         PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 24.dp),
       verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing),
     ) {
-      item(key = "month") {
+      item(key = "month", contentType = "month") {
         MonthCard(
           state = state,
           pagerState = pagerState,
@@ -170,11 +170,11 @@ internal fun CalendarContent(
           modifier = Modifier.padding(bottom = 12.dp),
         )
       }
-      item(key = "day-title") {
+      item(key = "day-title", contentType = "day-title") {
         DayTitle(state = state, modifier = Modifier.padding(top = 8.dp, bottom = 6.dp))
       }
       if (state.rows.isEmpty()) {
-        item(key = "empty") {
+        item(key = "empty", contentType = "empty") {
           Text(
             text = stringResource(R.string.calendar_day_empty),
             style = CaducityTheme.typography.bodyMedium,
@@ -183,7 +183,7 @@ internal fun CalendarContent(
           )
         }
       }
-      itemsIndexed(state.rows, key = { _, row -> row.key }) { index, row ->
+      itemsIndexed(state.rows, key = { _, row -> row.key }, contentType = { _, _ -> "row" }) { index, row ->
         ProductRow(
           model = row,
           index = index,
@@ -194,7 +194,7 @@ internal fun CalendarContent(
           onDiscard = { onDiscard(row) },
         )
       }
-      item(key = "bottom-inset") {
+      item(key = "bottom-inset", contentType = "bottom-inset") {
         Spacer(Modifier.windowInsetsPadding(WindowInsets.navigationBars))
       }
     }
