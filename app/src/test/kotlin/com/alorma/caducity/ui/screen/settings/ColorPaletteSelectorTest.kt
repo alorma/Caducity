@@ -51,7 +51,7 @@ class ColorPaletteSelectorTest {
   @Test
   fun `exactly one swatch is selected and each one is a named radio button`() {
     setContent(ThemePreferencesImpl(MapSettings()))
-    rule.onNodeWithContentDescription("Pantry").assertIsSelected()
+    rule.onNodeWithContentDescription("Caducity").assertIsSelected()
     val radios = SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton)
     rule.onAllNodes(radios).assertCountEquals(palettes.size)
     rule

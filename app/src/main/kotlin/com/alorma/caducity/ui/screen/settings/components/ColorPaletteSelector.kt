@@ -54,7 +54,7 @@ private val ColorPalette.nameRes: Int
   get() =
     when (this) {
       ColorPalette.DYNAMIC -> R.string.palette_dynamic
-      ColorPalette.REBOST -> R.string.palette_rebost
+      ColorPalette.REBOST -> R.string.palette_caducity
       ColorPalette.NEVERA -> R.string.palette_nevera
       ColorPalette.HORT -> R.string.palette_hort
       ColorPalette.FLECA -> R.string.palette_fleca
@@ -67,7 +67,7 @@ private val ColorPalette.helpRes: Int
   get() =
     when (this) {
       ColorPalette.DYNAMIC -> R.string.palette_dynamic_help
-      ColorPalette.REBOST -> R.string.palette_rebost_help
+      ColorPalette.REBOST -> R.string.palette_caducity_help
       ColorPalette.NEVERA -> R.string.palette_nevera_help
       ColorPalette.HORT -> R.string.palette_hort_help
       ColorPalette.FLECA -> R.string.palette_fleca_help

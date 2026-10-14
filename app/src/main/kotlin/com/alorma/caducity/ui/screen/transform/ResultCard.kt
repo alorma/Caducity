@@ -109,7 +109,7 @@ fun ResultForm(
       }
     }
     CounterRow(
-      label = stringResource(R.string.transform_servings),
+      label = stringResource(R.string.transform_units),
       value = result.servings,
       range = 1..TransformItemsUseCase.MAX_SERVINGS,
       onChange = { actions.onServingsChange(id, it) },

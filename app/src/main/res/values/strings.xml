@@ -23,8 +23,8 @@
   <string name="settings_colors">Colors</string>
   <string name="palette_dynamic">Dynamic</string>
   <string name="palette_dynamic_help">From your wallpaper</string>
-  <string name="palette_rebost">Pantry</string>
-  <string name="palette_rebost_help">basil and mozzarella</string>
+  <string name="palette_caducity">Caducity</string>
+  <string name="palette_caducity_help">green and cream (default)</string>
   <string name="palette_nevera">Fridge</string>
   <string name="palette_nevera_help">cool tones, clean and calm</string>
   <string name="palette_hort">Garden</string>
@@ -141,7 +141,7 @@
   <string name="transform_category_empty">Category</string>
   <string name="transform_date_empty">Expiry</string>
   <string name="transform_result_name_hint">What are you cooking?</string>
-  <string name="transform_servings">Servings</string>
+  <string name="transform_units">Units</string>
   <string name="transform_date_hint">Date of the ingredient that expires first (%s).</string>
   <string name="transform_freeze">Freeze</string>
   <string name="transform_freeze_chip">Freeze · %d</string>
@@ -464,7 +464,7 @@
   <string name="ob_transform_sample_chicken">Whole chicken</string>
   <string name="ob_transform_sample_vegetables">Vegetables</string>
   <string name="ob_transform_sample_result">Broth</string>
-  <string name="ob_transform_sample_result_meta">4 servings · 2 frozen</string>
+  <string name="ob_transform_sample_result_meta">4 units · 2 frozen</string>
   <string name="ob_transform_not_recipe_title">Not a recipe book</string>
   <string name="ob_transform_not_recipe_body">No recipes or ideas for what to cook. Transform only notes what you used and what came out.</string>
   <string name="ob_transform_hint">You will find it at the end of Home and on every product.</string>

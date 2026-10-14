@@ -23,8 +23,8 @@
   <string name="settings_colors">Colors</string>
   <string name="palette_dynamic">Dinàmic</string>
   <string name="palette_dynamic_help">Del fons de pantalla</string>
-  <string name="palette_rebost">Rebost</string>
-  <string name="palette_rebost_help">alfàbrega i mozzarella</string>
+  <string name="palette_caducity">Caducity</string>
+  <string name="palette_caducity_help">verd i crema (per defecte)</string>
   <string name="palette_nevera">Nevera</string>
   <string name="palette_nevera_help">tons freds, net i serè</string>
   <string name="palette_hort">Hort</string>
@@ -118,7 +118,7 @@
   <string name="add_close">Tanca</string>
   <string name="add_name_label">Nom</string>
   <string name="add_name_hint">Què afegeixes?</string>
-  <string name="add_name_clear">Esborra el nom</string>
+  <string name="add_name_clear">Buida el nom</string>
   <string name="add_new_product_bold">Producte nou.</string>
   <string name="add_new_product_rest">Tria\'n la categoria i la data.</string>
   <string name="add_category_label">Categoria</string>
@@ -143,7 +143,7 @@
   <string name="transform_category_empty">Categoria</string>
   <string name="transform_date_empty">Caducitat</string>
   <string name="transform_result_name_hint">Què estàs cuinant?</string>
-  <string name="transform_servings">Racions</string>
+  <string name="transform_units">Unitats</string>
   <string name="transform_date_hint">Data de l\'ingredient que caduca primer (%s).</string>
   <string name="transform_freeze">Congela\'n</string>
   <string name="transform_freeze_chip">Congela\'n · %d</string>
@@ -344,7 +344,7 @@
   </plurals>
   <string name="pantry_overline">%1$s · %2$s</string>
   <string name="pantry_search">Cerca un producte</string>
-  <string name="pantry_search_clear">Esborra la cerca</string>
+  <string name="pantry_search_clear">Buida la cerca</string>
   <string name="pantry_card_meta">%1$s · propera, %2$s</string>
   <string name="pantry_new_category">Nova categoria</string>
   <string name="pantry_no_results">Cap producte coincideix amb la cerca.</string>
@@ -486,7 +486,7 @@
   <string name="ob_transform_sample_chicken">Pollastre sencer</string>
   <string name="ob_transform_sample_vegetables">Verdures</string>
   <string name="ob_transform_sample_result">Caldo</string>
-  <string name="ob_transform_sample_result_meta">4 racions · 2 congelats</string>
+  <string name="ob_transform_sample_result_meta">4 unitats · 2 congelades</string>
   <string name="ob_transform_not_recipe_title">No és un receptari</string>
   <string name="ob_transform_not_recipe_body">No hi ha receptes ni suggeriments de què cuinar. Transforma només apunta què has gastat i què n\'ha sortit.</string>
   <string name="ob_transform_hint">La tens al final de l\'Inici i a cada producte.</string>
