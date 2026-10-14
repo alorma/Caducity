@@ -26,7 +26,7 @@
   <string name="palette_dynamic">Dinàmic</string>
   <string name="palette_dynamic_help">Del fons de pantalla</string>
   <string name="palette_caducity">Caducity</string>
-  <string name="palette_caducity_help">verd i crema (per defecte)</string>
+  <string name="palette_caducity_help">verd i crema</string>
   <string name="palette_nevera">Nevera</string>
   <string name="palette_nevera_help">tons freds, net i serè</string>
   <string name="palette_hort">Hort</string>
@@ -517,7 +517,11 @@
   <string name="ob_category_ready_meals">Plats preparats</string>
   <string name="settings_section_dates">Dates</string>
   <string name="settings_soon_default">«Aviat» vol dir</string>
-  <string name="settings_soon_default_sub">Quants dies abans de caducar passa a groc i t\'avisem</string>
+  <string name="settings_soon_default_sub">Quan passa a groc i t\'avisem</string>
+  <string name="settings_durations_sub">Per suggerir la data · %1$s</string>
+  <string name="settings_durations_sub_empty">Per suggerir la data</string>
+  <string name="settings_privacy_analytics_on">Estadístiques d\'ús: activades</string>
+  <string name="settings_privacy_analytics_off">Estadístiques d\'ús: desactivades</string>
   <string name="settings_category_durations">Durada habitual</string>
   <string name="durations_title">Durada habitual</string>
   <string name="durations_help">Quant triga a fer-se malbé cada tipus d\'aliment. Només serveix per suggerir la data quan afegeixes un producte.</string>

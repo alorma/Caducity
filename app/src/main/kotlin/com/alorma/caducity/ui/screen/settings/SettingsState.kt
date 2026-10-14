@@ -21,4 +21,6 @@ data class SettingsState(
   val themeMode: ThemeMode = ThemeMode.SYSTEM,
   val colorPalette: ColorPalette = ColorPalette.REBOST,
   val firstDayOfWeek: DayOfWeek = DayOfWeek.MONDAY,
+  /** Usage statistics granted (Privadesa). */
+  val analyticsEnabled: Boolean = false,
 )

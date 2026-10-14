@@ -46,6 +46,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Check
@@ -113,6 +114,11 @@ fun SettingsScreen(
   localizedDateFormatter: LocalizedDateFormatter = koinInject(),
 ) {
   TrackScreen(screen = SettingsScreenEvent())
+  // Coming back from Privacy: read the consent again for the row's subtitle.
+  LifecycleResumeEffect(viewModel) {
+    viewModel.onResume()
+    onPauseOrDispose {}
+  }
   val state by viewModel.state.collectAsStateWithLifecycle()
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarState()
@@ -238,11 +244,17 @@ internal fun SettingsContent(
     }
 
     item {
-      val durationsSummary =
+      val durations =
         state.categoryDurations
           .mapNotNull { summary -> summary.days?.let { "${summary.name} ${thresholdLabel(it)}" } }
           .joinToString(" · ")
-          .ifBlank { null }
+      // «Per suggerir la data · Làctics 1 setmana…»: what it is for, then the durations (one line, ellipsized).
+      val durationsSummary =
+        if (durations.isBlank()) {
+          stringResource(R.string.settings_durations_sub_empty)
+        } else {
+          stringResource(R.string.settings_durations_sub, durations)
+        }
       StyledSettingsGroup(title = { GroupTitle(R.string.settings_section_dates) }) {
         StyledSettingsCard(
           icon = { Icon(Symbols.Outlined.EventAvailable, contentDescription = null) },
@@ -343,6 +355,12 @@ internal fun SettingsContent(
         StyledSettingsCard(
           icon = { Icon(Symbols.Outlined.Shield, contentDescription = null) },
           title = stringResource(R.string.settings_privacy_title),
+          subtitle =
+            if (state.analyticsEnabled) {
+              stringResource(R.string.settings_privacy_analytics_on)
+            } else {
+              stringResource(R.string.settings_privacy_analytics_off)
+            },
           action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
           onClick = { onNavigate(SettingsNavigation.Privacy) },
           shapes = ListItemDefaults.segmentedShapes(index = 1, count = rows),

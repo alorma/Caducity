@@ -7,6 +7,8 @@ import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.domain.NotificationConfigDataSource
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
+import com.alorma.caducity.feature.consent.ConsentManager
+import com.alorma.caducity.feature.consent.ConsentStatus
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.NavigateFromSettingsAction
@@ -36,6 +38,7 @@ class SettingsViewModel(
   private val themePreferences: ThemePreferences,
   private val firstDayOfWeekPreferences: FirstDayOfWeekPreferences,
   private val eventTracker: EventTracker,
+  private val consentManager: ConsentManager,
 ) : BaseViewModel<SettingsNavigation, SettingsNavigationSideEffect, SettingsSideEffect>() {
   private data class Reminder(
     val enabled: Boolean = false,
@@ -44,16 +47,22 @@ class SettingsViewModel(
 
   private val reminder = MutableStateFlow(Reminder())
 
+  /** Consent is not observable: it is read again whenever Settings comes back (e.g. from Privacy). */
+  private val analyticsEnabled = MutableStateFlow(false)
+
   val state: StateFlow<SettingsState> =
     combine(
       reminder,
       combine(soonThreshold.thresholdDays, observeCategories.observe()) { days, categories ->
         days to categories
       },
-      snapshotFlow { themePreferences.themeMode.value },
-      snapshotFlow { themePreferences.colorPalette.value },
+      combine(
+        snapshotFlow { themePreferences.themeMode.value },
+        snapshotFlow { themePreferences.colorPalette.value },
+      ) { themeMode, colorPalette -> themeMode to colorPalette },
       firstDayOfWeekPreferences.state,
-    ) { reminder, (threshold, categories), themeMode, colorPalette, calendar ->
+      analyticsEnabled,
+    ) { reminder, (threshold, categories), (themeMode, colorPalette), calendar, analytics ->
       SettingsState(
         reminderEnabled = reminder.enabled,
         reminderTime = reminder.time,
@@ -65,10 +74,12 @@ class SettingsViewModel(
         themeMode = themeMode,
         colorPalette = colorPalette,
         firstDayOfWeek = calendar.firstDayOfWeek,
+        analyticsEnabled = analytics,
       )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SettingsState())
 
   init {
+    onResume()
     viewModelScope.launch {
       reminder.value =
         Reminder(
@@ -139,6 +150,10 @@ class SettingsViewModel(
 
   fun onThemeModeChange(mode: ThemeMode) {
     themePreferences.setThemeModeState(mode)
+  }
+
+  fun onResume() {
+    analyticsEnabled.value = consentManager.getConsentPreferences().analyticsStorage == ConsentStatus.GRANTED
   }
 
   fun onColorsClick() {

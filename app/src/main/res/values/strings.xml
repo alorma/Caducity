@@ -26,7 +26,7 @@
   <string name="palette_dynamic">Dynamic</string>
   <string name="palette_dynamic_help">From your wallpaper</string>
   <string name="palette_caducity">Caducity</string>
-  <string name="palette_caducity_help">green and cream (default)</string>
+  <string name="palette_caducity_help">green and cream</string>
   <string name="palette_nevera">Fridge</string>
   <string name="palette_nevera_help">cool tones, clean and calm</string>
   <string name="palette_hort">Garden</string>
@@ -495,7 +495,11 @@
   <string name="ob_category_ready_meals">Ready meals</string>
   <string name="settings_section_dates">Dates</string>
   <string name="settings_soon_default">“Soon” means</string>
-  <string name="settings_soon_default_sub">How many days before expiry it turns yellow and we warn you</string>
+  <string name="settings_soon_default_sub">When it turns yellow and we warn you</string>
+  <string name="settings_durations_sub">To suggest the date · %1$s</string>
+  <string name="settings_durations_sub_empty">To suggest the date</string>
+  <string name="settings_privacy_analytics_on">Usage statistics: on</string>
+  <string name="settings_privacy_analytics_off">Usage statistics: off</string>
   <string name="settings_category_durations">Usual duration</string>
   <string name="durations_title">Usual duration</string>
   <string name="durations_help">How long each kind of food lasts. It only suggests the date when you add a product.</string>

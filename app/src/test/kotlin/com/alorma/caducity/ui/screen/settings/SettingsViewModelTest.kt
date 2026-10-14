@@ -7,6 +7,9 @@ import com.alorma.caducity.data.datasource.SettingsNotificationConfigDataSource
 import com.alorma.caducity.domain.PantryDataSource
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
+import com.alorma.caducity.feature.consent.ConsentManager
+import com.alorma.caducity.feature.consent.ConsentPreferences
+import com.alorma.caducity.feature.consent.ConsentStatus
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.theme.ColorPalette
@@ -27,6 +30,7 @@ import kotlinx.datetime.LocalTime
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import strikt.api.expectThat
@@ -69,12 +73,14 @@ class SettingsViewModelTest {
       ),
     )
   private val themePreferences = ThemePreferencesImpl(MapSettings())
+  private var consent = ConsentPreferences.DEFAULT
   private lateinit var vm: SettingsViewModel
 
   @Before
   fun setUp() {
     Dispatchers.setMain(UnconfinedTestDispatcher())
     val pantry = mock<PantryDataSource> { on { observeCategories() } doReturn categories }
+    val consentManager = mock<ConsentManager> { on { getConsentPreferences() } doAnswer { consent } }
     vm =
       SettingsViewModel(
         config,
@@ -84,8 +90,18 @@ class SettingsViewModelTest {
         themePreferences,
         firstDay,
         EventTracker(emptyList()),
+        consentManager,
       )
   }
+
+  @Test
+  fun `the privacy row follows the stored analytics consent when settings comes back`() =
+    runTest {
+      expectThat(vm.state.value.analyticsEnabled).isEqualTo(false)
+      consent = ConsentPreferences.DEFAULT.copy(analyticsStorage = ConsentStatus.GRANTED)
+      vm.onResume()
+      expectThat(vm.state.first { it.analyticsEnabled }.analyticsEnabled).isEqualTo(true)
+    }
 
   @After
   fun tearDown() {

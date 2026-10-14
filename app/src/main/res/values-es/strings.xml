@@ -26,7 +26,7 @@
   <string name="palette_dynamic">Dinámico</string>
   <string name="palette_dynamic_help">Del fondo de pantalla</string>
   <string name="palette_caducity">Caducity</string>
-  <string name="palette_caducity_help">verde y crema (por defecto)</string>
+  <string name="palette_caducity_help">verde y crema</string>
   <string name="palette_nevera">Nevera</string>
   <string name="palette_nevera_help">tonos fríos, limpio y sereno</string>
   <string name="palette_hort">Huerto</string>
@@ -517,7 +517,11 @@
   <string name="ob_category_ready_meals">Platos preparados</string>
   <string name="settings_section_dates">Fechas</string>
   <string name="settings_soon_default">«Pronto» significa</string>
-  <string name="settings_soon_default_sub">Cuántos días antes de caducar pasa a amarillo y te avisamos</string>
+  <string name="settings_soon_default_sub">Cuándo pasa a amarillo y te avisamos</string>
+  <string name="settings_durations_sub">Para sugerir la fecha · %1$s</string>
+  <string name="settings_durations_sub_empty">Para sugerir la fecha</string>
+  <string name="settings_privacy_analytics_on">Estadísticas de uso: activadas</string>
+  <string name="settings_privacy_analytics_off">Estadísticas de uso: desactivadas</string>
   <string name="settings_category_durations">Duración habitual</string>
   <string name="durations_title">Duración habitual</string>
   <string name="durations_help">Cuánto tarda en estropearse cada tipo de alimento. Solo sirve para sugerir la fecha al añadir un producto.</string>
