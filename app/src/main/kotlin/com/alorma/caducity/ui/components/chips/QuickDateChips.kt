@@ -23,6 +23,7 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 data class QuickDateOption(
   val label: String,
   val icon: ImageVector? = null,
+  val selected: Boolean = false,
 )
 
 /** Dates ràpides en una sola fila amb scroll horitzontal: xips outlined de radi 12. */
@@ -41,9 +42,10 @@ fun QuickDateChips(
       Surface(
         onClick = { onClick(index) },
         shape = CaducityShapes.chip,
-        color = Color.Transparent,
-        border = BorderStroke(1.dp, CaducityTheme.colorScheme.outlineVariant),
-        contentColor = CaducityTheme.colorScheme.onSurface,
+        color = if (option.selected) CaducityTheme.colorScheme.secondaryContainer else Color.Transparent,
+        border = if (option.selected) null else BorderStroke(1.dp, CaducityTheme.colorScheme.outlineVariant),
+        contentColor =
+          if (option.selected) CaducityTheme.colorScheme.onSecondaryContainer else CaducityTheme.colorScheme.onSurface,
       ) {
         Row(
           modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),

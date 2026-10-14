@@ -28,6 +28,8 @@ data class AddState(
   val dateDigits: String = "",
   /** Parsed from [dateDigits]; null while incomplete or invalid. */
   val date: LocalDate? = null,
+  /** Usual duration of the category when [date] is the suggestion built from it; null once the user sets the date. */
+  val suggestedDurationDays: Int? = null,
   val quantity: Int = 1,
   val frozen: Boolean = false,
   val saving: Boolean = false,

@@ -43,6 +43,7 @@ import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -231,7 +232,18 @@ private fun DateSection(
       onSelect = viewModel::onQuickDate,
       modifier = Modifier.fullBleed(ScreenGutter),
       contentPadding = PaddingValues(horizontal = ScreenGutter),
+      date = state.date,
+      today = state.today,
     )
+    val suggestedDays = state.suggestedDurationDays
+    val categoryName = state.categories.firstOrNull { it.id == state.categoryId }?.name
+    if (suggestedDays != null && categoryName != null) {
+      Text(
+        text = stringResource(R.string.add_date_suggested, categoryName, thresholdLabel(suggestedDays)),
+        style = CaducityTheme.typography.bodySmall,
+        color = CaducityTheme.colorScheme.onSurfaceVariant,
+      )
+    }
   }
 }
 

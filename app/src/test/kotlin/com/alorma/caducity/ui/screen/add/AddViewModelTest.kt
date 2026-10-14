@@ -114,7 +114,10 @@ class AddViewModelTest {
   private suspend fun category(
     id: String,
     sortOrder: Int = 0,
-  ) = db.categoryDao().insertCategory(CategoryRoomEntity(id, id, "", sortOrder = sortOrder))
+    usualDurationDays: Int? = null,
+  ) = db.categoryDao().insertCategory(
+    CategoryRoomEntity(id, id, "", sortOrder = sortOrder, usualDurationDays = usualDurationDays),
+  )
 
   private val created = mutableListOf<AddViewModel>()
 
@@ -169,6 +172,49 @@ class AddViewModelTest {
       vm.onDateTextChange("01/12/26")
       expectThat(vm.state.value.missing).isEmpty()
       expectThat(vm.state.value.canSave).isTrue()
+    }
+
+  @Test
+  fun `choosing a category suggests today plus its usual duration`() =
+    runTest {
+      category("dairy", usualDurationDays = 7)
+      category("pantry", sortOrder = 1)
+      val vm = viewModel()
+      vm.await { it.categories.size == 2 }
+
+      vm.onCategorySelect("dairy")
+      expectThat(vm.state.value.date).isEqualTo(inDays(7))
+      expectThat(vm.state.value.suggestedDurationDays).isEqualTo(7)
+
+      vm.onCategorySelect("pantry")
+      expectThat(vm.state.value.date).isNull()
+      expectThat(vm.state.value.dateDigits).isEmpty()
+      expectThat(vm.state.value.suggestedDurationDays).isNull()
+    }
+
+  @Test
+  fun `a preselected category suggests the date once categories load`() =
+    runTest {
+      category("dairy", usualDurationDays = 3)
+      val vm = viewModel(initialCategoryId = "dairy")
+
+      expectThat(vm.await { it.date != null }.date).isEqualTo(inDays(3))
+    }
+
+  @Test
+  fun `a date set by the user is kept when the category changes`() =
+    runTest {
+      category("dairy", usualDurationDays = 7)
+      category("meat", sortOrder = 1, usualDurationDays = 3)
+      val vm = viewModel()
+      vm.await { it.categories.size == 2 }
+
+      vm.onCategorySelect("dairy")
+      vm.onQuickDate(QuickDate.TwoWeeks)
+      expectThat(vm.state.value.suggestedDurationDays).isNull()
+
+      vm.onCategorySelect("meat")
+      expectThat(vm.state.value.date).isEqualTo(inDays(14))
     }
 
   @Test

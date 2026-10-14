@@ -162,6 +162,9 @@ fun QuickDateRow(
   onSelect: (QuickDate) -> Unit,
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues = PaddingValues(),
+  /** The chip whose date equals [date] (relative to [today]) is marked. */
+  date: LocalDate? = null,
+  today: LocalDate? = null,
 ) {
   val options =
     QuickDate.entries.map { quick ->
@@ -176,6 +179,7 @@ fun QuickDateRow(
               QuickDate.OneMonth -> R.string.add_quick_1_month
             },
           ),
+        selected = date != null && today != null && quick.from(today) == date,
       )
     }
   QuickDateChips(

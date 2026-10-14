@@ -44,6 +44,9 @@ class AddViewModel(
   private var categoryPinned = args.categoryId != null
   private var suggestionJob: Job? = null
 
+  /** The user typed, picked or is editing the date: choosing a category no longer suggests one. */
+  private var dateTouched = args.itemId != null
+
   /** A category just created in the sheet that the categories flow has not delivered yet. */
   private var pendingCategoryId: String? = null
 
@@ -54,10 +57,11 @@ class AddViewModel(
         _state.update { current ->
           val pending = pendingCategoryId?.takeIf { id -> categories.any { it.id == id } }
           if (pending != null) pendingCategoryId = null
-          current.copy(
-            categories = categories,
-            categoryId = pending ?: current.categoryId?.takeIf { id -> categories.any { it.id == id } },
-          )
+          current
+            .copy(
+              categories = categories,
+              categoryId = pending ?: current.categoryId?.takeIf { id -> categories.any { it.id == id } },
+            ).withSuggestedDate()
         }
       }
     }
@@ -89,16 +93,17 @@ class AddViewModel(
         val suggestions = getNameSuggestions.suggest(name)
         val exact = suggestions.firstOrNull { it.name.normalizeForSearch() == typed }
         _state.update { current ->
-          current.copy(
-            suggestion = suggestions.firstOrNull { it !== exact },
-            isNewProduct = suggestions.isEmpty(),
-            categoryId =
-              if (exact != null && !categoryPinned && current.categories.any { it.id == exact.categoryId }) {
-                exact.categoryId
-              } else {
-                current.categoryId
-              },
-          )
+          current
+            .copy(
+              suggestion = suggestions.firstOrNull { it !== exact },
+              isNewProduct = suggestions.isEmpty(),
+              categoryId =
+                if (exact != null && !categoryPinned && current.categories.any { it.id == exact.categoryId }) {
+                  exact.categoryId
+                } else {
+                  current.categoryId
+                },
+            ).withSuggestedDate()
         }
       }
   }
@@ -109,12 +114,13 @@ class AddViewModel(
     suggestionJob?.cancel()
     categoryPinned = false
     _state.update {
-      it.copy(
-        name = suggestion.name,
-        suggestion = null,
-        isNewProduct = false,
-        categoryId = suggestion.categoryId.takeIf { id -> it.categories.any { c -> c.id == id } } ?: it.categoryId,
-      )
+      it
+        .copy(
+          name = suggestion.name,
+          suggestion = null,
+          isNewProduct = false,
+          categoryId = suggestion.categoryId.takeIf { id -> it.categories.any { c -> c.id == id } } ?: it.categoryId,
+        ).withSuggestedDate()
     }
   }
 
@@ -122,29 +128,38 @@ class AddViewModel(
 
   fun onCategorySelect(categoryId: String) {
     categoryPinned = true
-    _state.update { it.copy(categoryId = categoryId) }
+    _state.update { it.copy(categoryId = categoryId).withSuggestedDate() }
   }
 
   /** The quick category sheet created [categoryId]: it is left selected. */
   private fun onCategoryCreated(categoryId: String) {
     categoryPinned = true
     if (_state.value.categories.any { it.id == categoryId }) {
-      _state.update { it.copy(categoryId = categoryId) }
+      _state.update { it.copy(categoryId = categoryId).withSuggestedDate() }
     } else {
       pendingCategoryId = categoryId
     }
   }
 
-  fun onDateTextChange(text: String) = setDigits(ExpiryDateParser.normalize(text))
+  fun onDateTextChange(text: String) {
+    dateTouched = true
+    setDigits(ExpiryDateParser.normalize(text))
+  }
 
-  fun onQuickDate(quickDate: QuickDate) = setDate(quickDate.from(_state.value.today))
+  fun onQuickDate(quickDate: QuickDate) {
+    dateTouched = true
+    setDate(quickDate.from(_state.value.today))
+  }
 
   fun onPickDate() {
     val current = _state.value.date ?: _state.value.today
     emitSideEffect(AddSideEffect.ShowDatePicker(current.atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()))
   }
 
-  fun onDatePicked(date: LocalDate) = setDate(date)
+  fun onDatePicked(date: LocalDate) {
+    dateTouched = true
+    setDate(date)
+  }
 
   fun onQuantityChange(quantity: Int) {
     _state.update { it.copy(quantity = quantity.coerceIn(1, AddProductUseCase.MAX_QUANTITY)) }
@@ -234,6 +249,17 @@ class AddViewModel(
   }
 
   private fun setDigits(digits: String) {
-    _state.update { it.copy(dateDigits = digits, date = ExpiryDateParser.parse(digits)) }
+    _state.update {
+      it.copy(dateDigits = digits, date = ExpiryDateParser.parse(digits), suggestedDurationDays = null)
+    }
+  }
+
+  /** Untouched date = today + the category's usual duration; a category without duration leaves it empty. */
+  private fun AddState.withSuggestedDate(): AddState {
+    if (dateTouched) return this
+    val days = categories.firstOrNull { it.id == categoryId }?.usualDurationDays
+    val suggested = days?.let { today.plus(DatePeriod(days = it)) }
+    val digits = suggested?.let { "%02d%02d%04d".format(it.dayOfMonth, it.monthNumber, it.year) }.orEmpty()
+    return copy(dateDigits = digits, date = suggested, suggestedDurationDays = days)
   }
 }
