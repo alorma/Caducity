@@ -1,2 +1,2 @@
-Versión 1.1.1:
-• Corrección de errores.
+Versión 1.1.2:
+• Pequeñas mejoras y corrección de errores.
