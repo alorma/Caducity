@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.settings.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -78,10 +79,12 @@ fun <T> StyledSettingsButtonGroupCard(
                   else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                 },
               colors = ToggleButtonDefaults.colors(containerColor = CaducityTheme.colorScheme.surfaceContainerHigh),
+              // Narrow padding so a word plus the check fits in a third of the row (e.g. «✓ System»).
+              contentPadding = PaddingValues(horizontal = 8.dp),
             ) {
               if (checked) {
                 Icon(Symbols.Outlined.Check, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(6.dp))
+                Spacer(Modifier.width(4.dp))
               }
               Text(text = itemTitleMap(item), maxLines = 2, textAlign = TextAlign.Center)
             }
