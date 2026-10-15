@@ -20,5 +20,9 @@ When the release is being prepared (the same moment as the release notes), say w
 
 ## What to do
 
-Propose it and ask. Do not generate without agreement. To generate, use the `/baseline-profile` skill (emulator only,
-never Bernat's phone). If the generator no longer matches the app (a new main screen, tabs renamed), say so before.
+Propose it and ask. Do not generate without agreement. To generate: leave an emulator with data using the `/plant-seed` skill
+(never Bernat's phone), then run `ANDROID_SERIAL=<emulator> ./gradlew :app:generateReleaseBaselineProfile`. The generator
+fails if the app is on onboarding or Home has no list; if so, plant the seed again (the AGP uninstalls the app when the
+generation ends). Check that `baseline-prof.txt` changed and has entries for `screen/home/Home`, `screen/pantry` and
+`screen/settings`, run `./gradlew ktlintCheck` and commit the two generated files on their own. If the generator no longer
+matches the app (a new main screen, tabs renamed), say so before.

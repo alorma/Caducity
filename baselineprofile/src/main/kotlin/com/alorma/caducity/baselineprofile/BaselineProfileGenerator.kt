@@ -28,10 +28,10 @@ class BaselineProfileGenerator {
 
       // Sense onboarding i amb dades, o el perfil sortiria fluix: millor fallar que commitejar-lo
       check(device.wait(Until.hasObject(By.desc("Pantry")), UI_TIMEOUT)) {
-        "L'app no és a Home (onboarding en marxa?). Deixa-la amb dades abans de generar: skill baseline-profile"
+        "L'app no és a Home (onboarding en marxa?). Deixa-la amb dades abans de generar: skill plant-seed"
       }
       check(device.wait(Until.hasObject(By.scrollable(true)), UI_TIMEOUT)) {
-        "Home no té llista: l'app no té dades. Deixa-la amb dades abans de generar: skill baseline-profile"
+        "Home no té llista: l'app no té dades. Deixa-la amb dades abans de generar: skill plant-seed"
       }
 
       // Home: fa scroll amb les dades pintades
