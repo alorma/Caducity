@@ -129,20 +129,27 @@ fun App(
       navigation.backStack.last { it !is ItemActions && it !is QuickCategory && it !is TransformIntro }
 
     var introPending by retain { mutableStateOf(transformIntroFlag.isEnabled()) }
+    val onboardingShowing = navigation.backStack.any { it is Onboarding }
+    // The onboarding disables the flag when it finishes: read it again so a new install does not see the modal.
+    LaunchedEffect(onboardingShowing) {
+      if (!onboardingShowing) introPending = transformIntroFlag.isEnabled()
+    }
     val showTransformIntro =
       shouldShowTransformIntro(
         introPending = introPending,
-        onboardingShowing = navigation.backStack.any { it is Onboarding },
+        onboardingShowing = onboardingShowing,
         openedFromOutside = openedFromOutside,
         // Only Home with nothing on top: no other screen, dialog, sheet or selection is open.
         overlayOpen = navigation.current !is Home,
       )
     LaunchedEffect(showTransformIntro) {
       if (showTransformIntro) {
+        // The flag is the truth: the onboarding may have disabled it after `introPending` was read.
+        val pending = transformIntroFlag.isEnabled()
         // Seen as soon as it opens, however it closes (button, outside tap or back).
         introPending = false
         transformIntroFlag.disable()
-        navigation.navigate(TransformIntro)
+        if (pending) navigation.navigate(TransformIntro)
       }
     }
 
