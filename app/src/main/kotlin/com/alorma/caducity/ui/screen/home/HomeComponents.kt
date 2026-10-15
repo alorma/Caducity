@@ -274,11 +274,14 @@ internal fun CookedCard(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val colors = CaducityTheme.colors.fresh
+  val colorScheme = CaducityTheme.colorScheme
   Card(
     onClick = onClick,
     shape = RoundedCornerShape(24.dp),
-    colors = CardDefaults.cardColors(containerColor = colors.container, contentColor = colors.onContainer),
+    colors = CardDefaults.cardColors(
+      containerColor = colorScheme.primaryContainer,
+      contentColor = colorScheme.onPrimaryContainer,
+    ),
     modifier = modifier.fillMaxWidth().padding(top = 16.dp),
   ) {
     Row(
@@ -287,10 +290,15 @@ internal fun CookedCard(
       horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
       Box(
-        modifier = Modifier.size(48.dp).clip(CaducityShapes.chip).background(CaducityTheme.colorScheme.surface),
+        modifier = Modifier.size(48.dp).clip(CaducityShapes.chip).background(colorScheme.surface),
         contentAlignment = Alignment.Center,
       ) {
-        Icon(Symbols.Outlined.SoupKitchen, contentDescription = null, modifier = Modifier.size(28.dp))
+        Icon(
+          Symbols.Outlined.SoupKitchen,
+          contentDescription = null,
+          tint = colorScheme.primary,
+          modifier = Modifier.size(28.dp),
+        )
       }
       Column(modifier = Modifier.weight(1f)) {
         Text(
