@@ -106,12 +106,12 @@
   <string name="add_date_pick">Elegir la fecha</string>
   <string name="add_date_help_expired">ya ha caducado</string>
   <string name="add_date_suggested">Sugerida: %1$s duran %2$s</string>
-  <string name="add_date_help_today">%1$s · hoy</string>
-  <string name="add_date_help_tomorrow">%1$s · mañana</string>
+  <string name="add_date_help_today">%1$s\nhoy</string>
+  <string name="add_date_help_tomorrow">%1$s\nmañana</string>
   <plurals name="add_date_help_days">
-    <item quantity="one">%1$s · dentro de %2$d día</item>
-    <item quantity="many">%1$s · dentro de %2$d días</item>
-    <item quantity="other">%1$s · dentro de %2$d días</item>
+    <item quantity="one">%1$s\ndentro de %2$d día</item>
+    <item quantity="many">%1$s\ndentro de %2$d días</item>
+    <item quantity="other">%1$s\ndentro de %2$d días</item>
   </plurals>
   <string name="add_quick_tomorrow">Mañana</string>
   <string name="add_quick_3_days">+3 días</string>

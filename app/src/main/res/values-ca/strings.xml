@@ -106,12 +106,12 @@
   <string name="add_date_pick">Tria la data</string>
   <string name="add_date_help_expired">ja ha caducat</string>
   <string name="add_date_suggested">Suggerida: %1$s duren %2$s</string>
-  <string name="add_date_help_today">%1$s · avui</string>
-  <string name="add_date_help_tomorrow">%1$s · demà</string>
+  <string name="add_date_help_today">%1$s\navui</string>
+  <string name="add_date_help_tomorrow">%1$s\ndemà</string>
   <plurals name="add_date_help_days">
-    <item quantity="one">%1$s · d\'aquí %2$d dia</item>
-    <item quantity="many">%1$s · d\'aquí %2$d dies</item>
-    <item quantity="other">%1$s · d\'aquí %2$d dies</item>
+    <item quantity="one">%1$s\nd\'aquí %2$d dia</item>
+    <item quantity="many">%1$s\nd\'aquí %2$d dies</item>
+    <item quantity="other">%1$s\nd\'aquí %2$d dies</item>
   </plurals>
   <string name="add_quick_tomorrow">Demà</string>
   <string name="add_quick_3_days">+3 dies</string>
