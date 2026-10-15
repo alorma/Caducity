@@ -1,0 +1,619 @@
+{
+  "version": 4,
+  "exportDate": 1792022400000,
+  "transformations": [],
+  "categories": [
+    {
+      "id": "f6716289-1f90-412b-a815-84c2e36522eb",
+      "name": "Dairy",
+      "description": "",
+      "shape": "COOKIE",
+      "icon": "egg",
+      "sortOrder": 0,
+      "usualDurationDays": null,
+      "products": [
+        {
+          "id": "6d183479-b9d7-4aea-9fe0-6529ee843acb",
+          "categoryId": "f6716289-1f90-412b-a815-84c2e36522eb",
+          "name": "Whole milk",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "2ee1a66c-c35b-40e1-8dcd-e91f42a2f706",
+              "identifier": "",
+              "expirationDate": 1793404800000,
+              "createdAt": 1791763200000
+            },
+            {
+              "id": "0a2929b2-b874-4852-81e7-d4700c8a22ce",
+              "identifier": "",
+              "expirationDate": 1793836800000,
+              "createdAt": 1791936000000
+            },
+            {
+              "id": "614c339f-037b-4fec-b818-75676323ccd9",
+              "identifier": "",
+              "expirationDate": 1792022400000,
+              "createdAt": 1791244800000
+            },
+            {
+              "id": "9945f3e3-2ed7-4982-8f3d-960c80ec0353",
+              "identifier": "",
+              "expirationDate": 1792195200000,
+              "createdAt": 1791504000000
+            }
+          ]
+        },
+        {
+          "id": "56325a52-156a-49fa-b2d0-a878b2c53a81",
+          "categoryId": "f6716289-1f90-412b-a815-84c2e36522eb",
+          "name": "Yogurt",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "d4e5956c-43a9-4186-a63c-dc80dfe7d93b",
+              "identifier": "",
+              "expirationDate": 1794873600000,
+              "createdAt": 1791936000000
+            },
+            {
+              "id": "57a0536d-3fc6-439a-aa32-2ba8769933d8",
+              "identifier": "",
+              "expirationDate": 1794441600000,
+              "createdAt": 1791676800000
+            },
+            {
+              "id": "926ad27e-c8f4-45f5-9234-c74c55693631",
+              "identifier": "",
+              "expirationDate": 1791849600000,
+              "createdAt": 1791849600000
+            },
+            {
+              "id": "af9a6594-24d5-4af2-b8dd-d332d6b138b6",
+              "identifier": "",
+              "expirationDate": 1794009600000,
+              "createdAt": 1791417600000
+            },
+            {
+              "id": "61cd73cc-b4fc-476d-b445-9d2eeeca5952",
+              "identifier": "",
+              "expirationDate": 1792022400000,
+              "createdAt": 1791676800000
+            },
+            {
+              "id": "ec740e38-ad2b-4bda-bcdc-6d9880ae1410",
+              "identifier": "",
+              "expirationDate": 1792108800000,
+              "createdAt": 1791244800000
+            }
+          ]
+        },
+        {
+          "id": "6df3f26f-dd78-4710-8833-03ff6b70aca3",
+          "categoryId": "f6716289-1f90-412b-a815-84c2e36522eb",
+          "name": "Cheese",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "5a6473e8-6a11-4983-adfb-0afa0d9d3c0a",
+              "identifier": "",
+              "expirationDate": 1794009600000,
+              "createdAt": 1791936000000
+            },
+            {
+              "id": "7dbf4d71-936d-45e4-8d88-8ae422cdf619",
+              "identifier": "",
+              "expirationDate": 1794787200000,
+              "createdAt": 1791849600000
+            },
+            {
+              "id": "1535d873-3eaa-42bc-959f-f07784878601",
+              "identifier": "",
+              "expirationDate": 1792886400000,
+              "createdAt": 1791158400000
+            }
+          ]
+        },
+        {
+          "id": "b1089199-509e-43e9-9b61-301c47142c80",
+          "categoryId": "f6716289-1f90-412b-a815-84c2e36522eb",
+          "name": "Butter",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "49df40e6-3251-402b-957f-8ed2d468713d",
+              "identifier": "",
+              "expirationDate": 1791936000000,
+              "createdAt": 1791158400000
+            },
+            {
+              "id": "5f113114-d260-457c-b215-3c031f45bf5b",
+              "identifier": "",
+              "expirationDate": 1794873600000,
+              "createdAt": 1791417600000
+            }
+          ]
+        }
+      ],
+      "standaloneItems": [
+        {
+          "id": "971dda0a-1254-43f2-b691-bc31ea3d592d",
+          "identifier": "Leftover",
+          "expirationDate": 1791849600000,
+          "createdAt": 1791936000000
+        }
+      ]
+    },
+    {
+      "id": "08c07feb-a43a-4c33-ab46-0571be3a5c15",
+      "name": "Fruit & veg",
+      "description": "",
+      "shape": "EXPRESSIVE",
+      "icon": "eco",
+      "sortOrder": 1,
+      "usualDurationDays": null,
+      "products": [
+        {
+          "id": "8d08cb60-abbc-41f0-996d-b5899fa00145",
+          "categoryId": "08c07feb-a43a-4c33-ab46-0571be3a5c15",
+          "name": "Apples",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "10729a2f-4976-4356-b188-15a4bb139b5c",
+              "identifier": "",
+              "expirationDate": 1792886400000,
+              "createdAt": 1791936000000
+            },
+            {
+              "id": "0d5a68b5-c7bc-4e3c-84d7-ebd591b50e55",
+              "identifier": "",
+              "expirationDate": 1794700800000,
+              "createdAt": 1791763200000
+            },
+            {
+              "id": "6f99653f-6dab-4f2a-a0dc-5aa619901f80",
+              "identifier": "",
+              "expirationDate": 1793232000000,
+              "createdAt": 1791417600000
+            },
+            {
+              "id": "7ce29e94-5f56-4ef6-adab-eecd321afc13",
+              "identifier": "",
+              "expirationDate": 1792454400000,
+              "createdAt": 1791244800000
+            },
+            {
+              "id": "eed8c516-98bf-47ec-b435-b8c06b44898d",
+              "identifier": "",
+              "expirationDate": 1792281600000,
+              "createdAt": 1791158400000
+            }
+          ]
+        },
+        {
+          "id": "09f3e309-81dc-4068-9c50-9312207905ad",
+          "categoryId": "08c07feb-a43a-4c33-ab46-0571be3a5c15",
+          "name": "Spinach",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "1363f30a-f49e-43f8-ac92-5ac9662fa90b",
+              "identifier": "",
+              "expirationDate": 1793318400000,
+              "createdAt": 1791244800000
+            },
+            {
+              "id": "0daf2ea6-965f-44c0-92f9-a5099ceac923",
+              "identifier": "",
+              "expirationDate": 1795392000000,
+              "createdAt": 1791763200000
+            },
+            {
+              "id": "68938750-f18a-4e04-b96e-c801138e6b83",
+              "identifier": "",
+              "expirationDate": 1792195200000,
+              "createdAt": 1791158400000
+            },
+            {
+              "id": "0ebf1c07-dfb2-49b2-aa95-df84c0fc0377",
+              "identifier": "",
+              "expirationDate": 1794787200000,
+              "createdAt": 1791676800000
+            }
+          ]
+        },
+        {
+          "id": "4c6654fd-b9dc-4831-86d2-c1e4bceb70b2",
+          "categoryId": "08c07feb-a43a-4c33-ab46-0571be3a5c15",
+          "name": "Tomatoes",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "6f89116b-cfb2-4d06-9850-96657f766fc1",
+              "identifier": "",
+              "expirationDate": 1793664000000,
+              "createdAt": 1791849600000
+            },
+            {
+              "id": "50de83c8-9088-4171-b66b-86775c6116e5",
+              "identifier": "",
+              "expirationDate": 1794700800000,
+              "createdAt": 1791849600000
+            },
+            {
+              "id": "38035fdf-c525-41ba-9053-5eb7ee46c053",
+              "identifier": "",
+              "expirationDate": 1794787200000,
+              "createdAt": 1791936000000
+            },
+            {
+              "id": "59b54c2f-d7e8-4e7e-bc5a-698aad53c85d",
+              "identifier": "",
+              "expirationDate": 1795046400000,
+              "createdAt": 1791676800000
+            },
+            {
+              "id": "3f58928e-a896-4065-9455-11f0df855a45",
+              "identifier": "",
+              "expirationDate": 1794355200000,
+              "createdAt": 1791244800000
+            },
+            {
+              "id": "cfa55e4d-f161-4b80-a31b-835b4bcf4424",
+              "identifier": "",
+              "expirationDate": 1794009600000,
+              "createdAt": 1791504000000
+            }
+          ]
+        },
+        {
+          "id": "a9db98a5-33b4-4dbc-8091-0c74fc73fb98",
+          "categoryId": "08c07feb-a43a-4c33-ab46-0571be3a5c15",
+          "name": "Carrots",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "23e99bf0-c62a-481a-b9fb-7c14da65203d",
+              "identifier": "",
+              "expirationDate": 1794182400000,
+              "createdAt": 1791158400000
+            },
+            {
+              "id": "90988290-1c99-4a40-9053-c6df957534ed",
+              "identifier": "",
+              "expirationDate": 1794182400000,
+              "createdAt": 1791504000000
+            },
+            {
+              "id": "cd32c053-15c9-4735-8752-76bd2094b5c7",
+              "identifier": "",
+              "expirationDate": 1793318400000,
+              "createdAt": 1791676800000
+            }
+          ]
+        }
+      ],
+      "standaloneItems": [
+        {
+          "id": "9d634550-e885-4876-94e5-f2f556a3e38e",
+          "identifier": "Leftover",
+          "expirationDate": 1792886400000,
+          "createdAt": 1791936000000
+        }
+      ]
+    },
+    {
+      "id": "b6f7a43c-fa63-4154-8b34-6e02a1fa1f45",
+      "name": "Meat & fish",
+      "description": "",
+      "shape": "COOKIE",
+      "icon": "set_meal",
+      "sortOrder": 2,
+      "usualDurationDays": null,
+      "products": [
+        {
+          "id": "340f2ac6-ddbf-4d03-a0e2-e878d76bc082",
+          "categoryId": "b6f7a43c-fa63-4154-8b34-6e02a1fa1f45",
+          "name": "Chicken",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "6b1b0d36-57ad-431f-91be-3751b1bcabc9",
+              "identifier": "",
+              "expirationDate": 1792627200000,
+              "createdAt": 1791676800000
+            },
+            {
+              "id": "719b70a5-59fb-455d-89f0-818e7a20f60b",
+              "identifier": "",
+              "expirationDate": 1792108800000,
+              "createdAt": 1791158400000
+            },
+            {
+              "id": "8a33869d-f3d1-4bcd-8086-a6dd0519d362",
+              "identifier": "",
+              "expirationDate": 1793318400000,
+              "createdAt": 1791244800000
+            }
+          ]
+        },
+        {
+          "id": "d449b329-6d11-422a-9e85-d0e89f4b0b58",
+          "categoryId": "b6f7a43c-fa63-4154-8b34-6e02a1fa1f45",
+          "name": "Salmon",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "a0032b70-3b49-40ce-8b3a-7130a971df13",
+              "identifier": "",
+              "expirationDate": 1794355200000,
+              "createdAt": 1791504000000
+            },
+            {
+              "id": "cf83c552-52f2-44cc-b96b-851eedb05ff1",
+              "identifier": "",
+              "expirationDate": 1794096000000,
+              "createdAt": 1791590400000
+            }
+          ]
+        },
+        {
+          "id": "27b864c5-b2e8-43af-863e-1fc653178edb",
+          "categoryId": "b6f7a43c-fa63-4154-8b34-6e02a1fa1f45",
+          "name": "Ham",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "61029c26-1ee1-4427-95ff-fcdd53771282",
+              "identifier": "",
+              "expirationDate": 1794960000000,
+              "createdAt": 1791849600000
+            },
+            {
+              "id": "794b4957-6754-4921-9b37-b34665f38396",
+              "identifier": "",
+              "expirationDate": 1792281600000,
+              "createdAt": 1791244800000
+            },
+            {
+              "id": "9e93e4a5-b95d-4113-a44a-0913a731028a",
+              "identifier": "",
+              "expirationDate": 1793923200000,
+              "createdAt": 1791763200000
+            },
+            {
+              "id": "f7009eca-05c6-4b44-98c0-89a7d7ddc3ff",
+              "identifier": "",
+              "expirationDate": 1793491200000,
+              "createdAt": 1791763200000
+            }
+          ]
+        }
+      ],
+      "standaloneItems": [
+        {
+          "id": "c2af3b18-241a-4b10-a97d-c5558c93c5da",
+          "identifier": "Leftover",
+          "expirationDate": 1792454400000,
+          "createdAt": 1791936000000
+        }
+      ]
+    },
+    {
+      "id": "d84d570c-789a-49bd-8d28-55421ca5aa13",
+      "name": "Dry goods",
+      "description": "",
+      "shape": "COOKIE",
+      "icon": "grain",
+      "sortOrder": 3,
+      "usualDurationDays": null,
+      "products": [
+        {
+          "id": "e5cc0e22-bd1c-4912-bbde-7777fe706b80",
+          "categoryId": "d84d570c-789a-49bd-8d28-55421ca5aa13",
+          "name": "Rice",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "7882314d-5daa-4ce2-9b9c-b10a051f044a",
+              "identifier": "",
+              "expirationDate": 1793923200000,
+              "createdAt": 1791936000000
+            },
+            {
+              "id": "e0c81de8-d8f4-46ad-aba2-1b8ded31f77f",
+              "identifier": "",
+              "expirationDate": 1795305600000,
+              "createdAt": 1791849600000
+            }
+          ]
+        },
+        {
+          "id": "8bf901cd-2298-42ac-ab15-6dd73d3c24ed",
+          "categoryId": "d84d570c-789a-49bd-8d28-55421ca5aa13",
+          "name": "Pasta",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "3a856735-bacc-4380-ae1d-6196ffb9c032",
+              "identifier": "",
+              "expirationDate": 1794700800000,
+              "createdAt": 1791158400000
+            },
+            {
+              "id": "89e0986a-962a-462c-ab5a-ab74e7f82056",
+              "identifier": "",
+              "expirationDate": 1793404800000,
+              "createdAt": 1791504000000
+            },
+            {
+              "id": "0d22096e-9e35-4743-adaa-70625b7f68e8",
+              "identifier": "",
+              "expirationDate": 1795478400000,
+              "createdAt": 1791504000000
+            }
+          ]
+        },
+        {
+          "id": "ef6c57d5-57d7-4592-958c-f8c10a87d556",
+          "categoryId": "d84d570c-789a-49bd-8d28-55421ca5aa13",
+          "name": "Flour",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "59daa12d-c58f-45a9-ae7d-16097e0683ca",
+              "identifier": "",
+              "expirationDate": 1794960000000,
+              "createdAt": 1791331200000
+            },
+            {
+              "id": "d8ebfd38-ed96-416f-b3a7-a4a6b473bb76",
+              "identifier": "",
+              "expirationDate": 1794873600000,
+              "createdAt": 1791331200000
+            }
+          ]
+        }
+      ],
+      "standaloneItems": [
+        {
+          "id": "d4f17a38-b831-4bce-b88b-0cf0313930d5",
+          "identifier": "Leftover",
+          "expirationDate": 1791936000000,
+          "createdAt": 1791936000000
+        }
+      ]
+    },
+    {
+      "id": "b563e213-63d5-4e31-883e-d9e44c0b87a1",
+      "name": "Bakery",
+      "description": "",
+      "shape": "COOKIE",
+      "icon": "bakery_dining",
+      "sortOrder": 4,
+      "usualDurationDays": null,
+      "products": [
+        {
+          "id": "0d28cded-cea2-4586-8b6d-15b8a8b74e0e",
+          "categoryId": "b563e213-63d5-4e31-883e-d9e44c0b87a1",
+          "name": "Bread",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "935dc527-f411-40bf-9e97-1fdb9826952d",
+              "identifier": "",
+              "expirationDate": 1792108800000,
+              "createdAt": 1791590400000
+            },
+            {
+              "id": "fe812f14-4b98-4e0d-9fd7-d6dc990727fe",
+              "identifier": "",
+              "expirationDate": 1794268800000,
+              "createdAt": 1791849600000
+            },
+            {
+              "id": "92ce9a93-e3e8-4243-92a5-e227a8d54016",
+              "identifier": "",
+              "expirationDate": 1791936000000,
+              "createdAt": 1791590400000
+            }
+          ]
+        },
+        {
+          "id": "7447dd79-4427-4184-b6d7-3f5fe477a86f",
+          "categoryId": "b563e213-63d5-4e31-883e-d9e44c0b87a1",
+          "name": "Croissants",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "acaf3bfb-6978-4314-81d3-ee9253f43240",
+              "identifier": "",
+              "expirationDate": 1795219200000,
+              "createdAt": 1791158400000
+            },
+            {
+              "id": "9b727073-e0d4-4a09-9635-896cbc723f47",
+              "identifier": "",
+              "expirationDate": 1795392000000,
+              "createdAt": 1791331200000
+            }
+          ]
+        }
+      ],
+      "standaloneItems": [
+        {
+          "id": "1e0b68d3-8198-4fe6-80e6-94f8bbcc0c9b",
+          "identifier": "Leftover",
+          "expirationDate": 1792195200000,
+          "createdAt": 1791936000000
+        }
+      ]
+    },
+    {
+      "id": "0750bdf4-14d7-4d3b-9d50-67c3fb21083b",
+      "name": "Ready meals",
+      "description": "",
+      "shape": "COOKIE",
+      "icon": "ramen_dining",
+      "sortOrder": 5,
+      "usualDurationDays": null,
+      "products": [
+        {
+          "id": "13eb6a9c-bc56-4df8-ad66-9c8ec0392265",
+          "categoryId": "0750bdf4-14d7-4d3b-9d50-67c3fb21083b",
+          "name": "Lasagna",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "79b1d789-b59d-4bab-b01f-65fba58fcbad",
+              "identifier": "",
+              "expirationDate": 1793750400000,
+              "createdAt": 1791504000000
+            },
+            {
+              "id": "761e6a6b-8de2-4f0b-ac4c-4b00d21e9c17",
+              "identifier": "",
+              "expirationDate": 1791763200000,
+              "createdAt": 1791331200000
+            }
+          ]
+        },
+        {
+          "id": "52ac8b68-148e-4dd6-80e8-1047e0f01d22",
+          "categoryId": "0750bdf4-14d7-4d3b-9d50-67c3fb21083b",
+          "name": "Soup",
+          "createdAt": 1790294400000,
+          "items": [
+            {
+              "id": "97835b23-1696-4339-bafd-2d07a9c6bd93",
+              "identifier": "",
+              "expirationDate": 1793577600000,
+              "createdAt": 1791763200000
+            },
+            {
+              "id": "ee936df0-1cca-4f49-bdef-bd892905f99f",
+              "identifier": "",
+              "expirationDate": 1795046400000,
+              "createdAt": 1791849600000
+            },
+            {
+              "id": "d24d9437-6931-41df-ad1a-85dd9b3749b4",
+              "identifier": "",
+              "expirationDate": 1794355200000,
+              "createdAt": 1791936000000
+            }
+          ]
+        }
+      ],
+      "standaloneItems": [
+        {
+          "id": "e2f0bf51-df54-41b2-8393-2fb3b739cc5f",
+          "identifier": "Leftover",
+          "expirationDate": 1792108800000,
+          "createdAt": 1791936000000
+        }
+      ]
+    }
+  ]
+}

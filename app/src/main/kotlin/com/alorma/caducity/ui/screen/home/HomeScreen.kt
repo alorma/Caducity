@@ -1,5 +1,6 @@
 package com.alorma.caducity.ui.screen.home
 
+import androidx.activity.compose.ReportDrawnWhen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -63,6 +64,7 @@ fun HomeScreen(
 ) {
   TrackScreen(screen = HomeScreenEvent())
   val state by viewModel.state.collectAsStateWithLifecycle()
+  ReportDrawnWhen { state is HomeState.Ready }
 
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->

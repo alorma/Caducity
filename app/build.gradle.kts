@@ -19,6 +19,8 @@ plugins {
   alias(libs.plugins.play.publisher)
 
   alias(libs.plugins.compose.screenshot)
+
+  alias(libs.plugins.androidx.baselineprofile)
 }
 
 android {
@@ -124,6 +126,9 @@ ksp {
 
 dependencies {
   implementation(projects.icons)
+
+  implementation(libs.androidx.profileinstaller)
+  baselineProfile(projects.baselineprofile)
 
   // Compose BOM
   implementation(platform(libs.androidx.compose.bom))
