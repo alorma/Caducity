@@ -3,18 +3,10 @@ package com.alorma.caducity
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.alorma.caducity.ui.components.StatusBadgePreview
 import com.alorma.caducity.ui.components.product.ProductRowPreview
 import com.android.tools.screenshot.PreviewTest
 
 class ComponentsScreenshotTests {
-  @PreviewTest
-  @Preview(name = "Light", locale = "en", widthDp = 411, heightDp = 300)
-  @Composable
-  fun statusBadge() {
-    StatusBadgePreview()
-  }
-
   @PreviewTest
   @Preview(name = "ProductRow Light", locale = "ca", widthDp = 411, heightDp = 380)
   @Composable

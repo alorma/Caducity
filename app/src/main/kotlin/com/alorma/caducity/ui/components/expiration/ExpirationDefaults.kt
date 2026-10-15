@@ -41,14 +41,6 @@ object ExpirationDefaults {
     )
   }
 
-  // TEMP(fase 7): el redisseny no té tons; les pantalles velles usen els colors suaus.
-  @Composable
-  fun getColors(itemStatus: ItemStatus): ContainerColors = getSoftColors(itemStatus)
-
-  // TEMP(fase 7)
-  @Composable
-  fun getInverseColors(itemStatus: ItemStatus): ContainerColors = getVibrantColors(itemStatus)
-
   /** `null` per a Consumed: no és un estat de color. */
   @Composable
   @ReadOnlyComposable
