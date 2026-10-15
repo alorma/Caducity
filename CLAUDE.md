@@ -431,7 +431,7 @@ class BackupViewModel : BaseViewModel<
 ### Components (`base/ui/components/`)
 
 **Reusable Components:**
-- `StatusPill` / `StatusBadge` - Visual indicator for item status (Fresh, ExpiringSoon, Expired, Frozen)
+- `StatusPill` - Visual indicator for item status (Fresh, ExpiringSoon, Expired, Frozen)
 - `ConnectedRow`, `ConnectedButtonGroup` - Connected groups built on `ShapePosition`
 - `AppScaffold` - Standard scaffold with dialog/snackbar/bottom sheet support
 - `WeekStrip` (`ui/components/weekstrip/`) - Rolling 7-day strip; the month view is `ui/screen/calendar/` (own grid, no calendar library)
