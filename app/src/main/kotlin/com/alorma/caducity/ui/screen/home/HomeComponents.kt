@@ -278,10 +278,11 @@ internal fun CookedCard(
   Card(
     onClick = onClick,
     shape = RoundedCornerShape(24.dp),
-    colors = CardDefaults.cardColors(
-      containerColor = colorScheme.primaryContainer,
-      contentColor = colorScheme.onPrimaryContainer,
-    ),
+    colors =
+      CardDefaults.cardColors(
+        containerColor = colorScheme.primaryContainer,
+        contentColor = colorScheme.onPrimaryContainer,
+      ),
     modifier = modifier.fillMaxWidth().padding(top = 16.dp),
   ) {
     Row(
