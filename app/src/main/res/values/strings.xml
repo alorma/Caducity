@@ -105,11 +105,11 @@
   <string name="add_date_pick">Pick a date</string>
   <string name="add_date_help_expired">already expired</string>
   <string name="add_date_suggested">Suggested: %1$s last %2$s</string>
-  <string name="add_date_help_today">%1$s · today</string>
-  <string name="add_date_help_tomorrow">%1$s · tomorrow</string>
+  <string name="add_date_help_today">%1$s\ntoday</string>
+  <string name="add_date_help_tomorrow">%1$s\ntomorrow</string>
   <plurals name="add_date_help_days">
-    <item quantity="one">%1$s · in %2$d day</item>
-    <item quantity="other">%1$s · in %2$d days</item>
+    <item quantity="one">%1$s\nin %2$d day</item>
+    <item quantity="other">%1$s\nin %2$d days</item>
   </plurals>
   <string name="add_quick_tomorrow">Tomorrow</string>
   <string name="add_quick_3_days">+3 days</string>
