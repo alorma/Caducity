@@ -26,8 +26,15 @@ class BaselineProfileGenerator {
       pressHome()
       startActivityAndWait()
 
-      // Home: espera que es pintin les dades i fa scroll
-      device.wait(Until.hasObject(By.scrollable(true)), UI_TIMEOUT)
+      // Sense onboarding i amb dades, o el perfil sortiria fluix: millor fallar que commitejar-lo
+      check(device.wait(Until.hasObject(By.desc("Pantry")), UI_TIMEOUT)) {
+        "L'app no és a Home (onboarding en marxa?). Deixa-la amb dades abans de generar: skill baseline-profile"
+      }
+      check(device.wait(Until.hasObject(By.scrollable(true)), UI_TIMEOUT)) {
+        "Home no té llista: l'app no té dades. Deixa-la amb dades abans de generar: skill baseline-profile"
+      }
+
+      // Home: fa scroll amb les dades pintades
       device.findObject(By.scrollable(true))?.apply {
         setGestureMargin(device.displayWidth / 5)
         fling(Direction.DOWN)
