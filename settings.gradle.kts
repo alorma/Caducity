@@ -28,3 +28,4 @@ dependencyResolutionManagement {
 rootProject.name = "caducity"
 include(":app")
 include(":icons")
+include(":baselineprofile")
