@@ -491,6 +491,43 @@ class PantryUseCasesTest {
       expectThat(unfreeze.proposedDate(id)).isNull()
     }
 
+  @Test
+  fun `unfreeze gives the units today plus three days and undo brings the frozen state back`() =
+    runTest {
+      category("c1")
+      val ids = addProduct.add("Peas", "c1", inDays(30), 2, frozen = true).getOrThrow().itemIds
+      val frozenAt = db.itemDao().getItem(ids.first())!!.pausedDate
+      val snapshots = restore.snapshots(ids)
+
+      expectThat(unfreeze.unfreeze(ids).getOrThrow()).containsExactly(ids)
+
+      ids.forEach {
+        val item = db.itemDao().getItem(it)!!
+        expectThat(item.pausedDate).isNull()
+        expectThat(item.remainingDays).isNull()
+        expectThat(item.expirationDate)
+          .isEqualTo(inDays(UnfreezeItemUseCase.UNFREEZE_DAYS).toExpirationInstant().toEpochMilliseconds())
+      }
+
+      restore.restoreSnapshots(snapshots).getOrThrow()
+      ids.forEach {
+        val item = db.itemDao().getItem(it)!!
+        expectThat(item.pausedDate).isEqualTo(frozenAt)
+        expectThat(item.remainingDays).isNotNull()
+      }
+    }
+
+  @Test
+  fun `unfreeze skips units that are not frozen`() =
+    runTest {
+      category("c1")
+      val fresh = addProduct.add("Milk", "c1", inDays(10), 1).getOrThrow().itemIds.single()
+
+      expectThat(unfreeze.unfreeze(listOf(fresh)).getOrThrow()).isEmpty()
+      expectThat(db.itemDao().getItem(fresh)!!.expirationDate)
+        .isEqualTo(inDays(10).toExpirationInstant().toEpochMilliseconds())
+    }
+
   // endregion
 
   // region Bulk actions

@@ -1,5 +1,7 @@
 package com.alorma.caducity.domain.model
 
+import com.alorma.caducity.config.time.date
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 
@@ -31,10 +33,20 @@ data class ProductRowModel(
   /** Shown as the leading icon when the list mixes categories; null otherwise. */
   val category: Category?,
   val detail: ProductRowDetail,
+  /** Day the unit that has been frozen the longest went into the freezer; null if the row is not frozen. */
+  val frozenSince: LocalDate? = null,
 ) {
   val unitCount: Int get() = itemIds.size
   val nearestItemId: String get() = itemIds.first()
 }
+
+/** Frozen units: the one that has been in the freezer the longest first. */
+private val FROZEN_OLDEST_FIRST =
+  compareBy<PantryEntry> { it.frozenSince ?: Instant.DISTANT_FUTURE }
+    .thenBy { it.createdAt }
+    .thenBy { it.itemId }
+
+private fun List<PantryEntry>.onlyFrozen() = isNotEmpty() && all { it.status == ExpiryStatus.FROZEN }
 
 private val NEAREST_FIRST =
   compareBy<PantryEntry> { it.expiration }
@@ -42,10 +54,12 @@ private val NEAREST_FIRST =
     .thenBy { it.itemId }
 
 /** Units ordered by the one that expires first: `(expiration, createdAt, id)`. */
-fun List<PantryEntry>.sortedNearestFirst(): List<PantryEntry> = sortedWith(NEAREST_FIRST)
+fun List<PantryEntry>.sortedNearestFirst(): List<PantryEntry> =
+  sortedWith(if (onlyFrozen()) FROZEN_OLDEST_FIRST else NEAREST_FIRST)
 
 /** The unit the round buttons act on: the one that expires first. */
-fun List<PantryEntry>.nearestFirst(): PantryEntry = minWith(NEAREST_FIRST)
+fun List<PantryEntry>.nearestFirst(): PantryEntry =
+  minWith(if (onlyFrozen()) FROZEN_OLDEST_FIRST else NEAREST_FIRST)
 
 /** Builds the row of one product from its units; the state and days are those of the nearest one. */
 fun List<PantryEntry>.toProductRow(
@@ -64,5 +78,6 @@ fun List<PantryEntry>.toProductRow(
     remainingDays = if (nearest.status == ExpiryStatus.FROZEN) null else today.daysUntil(nearest.expiration),
     category = category,
     detail = detail,
+    frozenSince = if (nearest.status == ExpiryStatus.FROZEN) nearest.frozenSince?.date() else null,
   )
 }
