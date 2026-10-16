@@ -255,7 +255,6 @@
   <string name="item_pill_frozen">Congelat</string>
   <string name="item_actions_consumed">Consumit</string>
   <string name="item_actions_freeze">Congela</string>
-  <string name="item_actions_unfreeze">Descongela</string>
   <string name="item_actions_change_date">Canvia la data</string>
   <string name="item_actions_plus_1d">+1 dia</string>
   <string name="item_actions_plus_3d">+3 dies</string>

@@ -68,6 +68,7 @@ import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
 import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
 import com.alorma.caducity.base.ui.icons.symbols.MoreHoriz
 import com.alorma.caducity.base.ui.icons.symbols.Remove
+import com.alorma.caducity.base.ui.icons.symbols.Sunny
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.TouchApp
 import com.alorma.caducity.domain.model.Category
@@ -82,6 +83,7 @@ import com.alorma.caducity.ui.components.feedback.dialog.AppDialogHost
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
+import com.alorma.caducity.ui.components.product.shortDateText
 import com.alorma.caducity.ui.components.shape.connectedShape
 import com.alorma.caducity.ui.components.status.StatusPill
 import com.alorma.caducity.ui.components.status.statusPillText
@@ -182,15 +184,17 @@ private fun SingleContent(
   PrimaryActions(
     consumeLabel = stringResource(R.string.item_actions_consumed),
     freezeLabel =
-      stringResource(if (state.frozen) R.string.item_actions_unfreeze else R.string.item_actions_freeze),
+      stringResource(if (state.frozen) R.string.action_unfreeze else R.string.item_actions_freeze),
+    freezeIcon = if (state.frozen) Symbols.Outlined.Sunny else Symbols.Outlined.AcUnit,
     showFreeze = true,
     onConsume = actions::onConsume,
     onFreeze = actions::onFreezeToggle,
   )
+  // A frozen unit has no expiration date to change and cannot be turned into something else yet.
   if (!state.frozen) {
     ChangeDate(onQuick = actions::onQuickReschedule, onPick = actions::onPickDate)
   }
-  SecondaryActions(actions)
+  SecondaryActions(actions, showTransform = !state.frozen)
 }
 
 /** `QuantitatAccions`: several units, a selector and «Més accions» folded. */
@@ -200,9 +204,24 @@ private fun MultipleContent(
   actions: ItemActionsHandlers,
 ) {
   QuantitySelector(state = state, onSelect = actions::onSelect)
+  if (state.frozenOnly) {
+    PrimaryActions(
+      consumeLabel = stringResource(R.string.item_actions_consume_n, state.selected),
+      freezeLabel = stringResource(R.string.action_unfreeze_n, state.selected),
+      freezeIcon = Symbols.Outlined.Sunny,
+      showFreeze = true,
+      onConsume = actions::onConsume,
+      onFreeze = actions::onFreezeToggle,
+    )
+    MoreActions(open = state.moreOpen, onToggle = actions::onToggleMore) {
+      SecondaryActions(actions, showTransform = false)
+    }
+    return
+  }
   PrimaryActions(
     consumeLabel = stringResource(R.string.item_actions_consume_n, state.selected),
     freezeLabel = stringResource(R.string.item_actions_freeze_n, state.freezeCount),
+    freezeIcon = Symbols.Outlined.AcUnit,
     showFreeze = state.freezableCount > 0,
     onConsume = actions::onConsume,
     onFreeze = actions::onFreezeToggle,
@@ -322,6 +341,15 @@ private fun Header(
 
 @Composable
 private fun metaText(state: ItemActionsSheetState.Ready): String {
+  val frozenSince = state.frozenSince.takeIf { state.frozenOnly }
+  if (frozenSince != null) {
+    val day = shortDateText(frozenSince)
+    return if (state.multiple) {
+      stringResource(R.string.item_actions_frozen_many, state.unitCount, day)
+    } else {
+      stringResource(R.string.item_actions_frozen_one, day)
+    }
+  }
   val date = formatDate(state.expiration)
   return when {
     state.multiple && state.expired ->
@@ -401,7 +429,9 @@ private fun QuantitySelector(
     }
     Text(
       text =
-        if (state.expiredCount > 0) {
+        if (state.frozenOnly) {
+          stringResource(R.string.unfreeze_order)
+        } else if (state.expiredCount > 0) {
           stringResource(R.string.item_actions_selector_hint_expired, state.expiredCount)
         } else {
           stringResource(R.string.item_actions_selector_hint)
@@ -447,6 +477,7 @@ private fun StepperButton(
 private fun PrimaryActions(
   consumeLabel: String,
   freezeLabel: String,
+  freezeIcon: ImageVector,
   showFreeze: Boolean,
   onConsume: () -> Unit,
   onFreeze: () -> Unit,
@@ -466,7 +497,7 @@ private fun PrimaryActions(
     if (showFreeze) {
       ActionButton(
         label = freezeLabel,
-        icon = Symbols.Outlined.AcUnit,
+        icon = freezeIcon,
         container = frozen.container,
         content = frozen.onContainer,
         shape = RoundedCornerShape(8.dp, 32.dp, 32.dp, 8.dp),
@@ -575,9 +606,10 @@ private fun ChangeDate(
 private fun SecondaryActions(
   actions: ItemActionsHandlers,
   modifier: Modifier = Modifier,
+  showTransform: Boolean = true,
 ) {
   val expired = CaducityTheme.colors.expired.strong
-  val count = 4
+  val count = if (showTransform) 4 else 3
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing)) {
     ActionRow(
       0,
@@ -593,15 +625,17 @@ private fun SecondaryActions(
       stringResource(R.string.item_actions_move),
       onClick = actions::onMoveClick,
     )
-    ActionRow(
-      2,
-      count,
-      AppIcons.Cooking,
-      stringResource(R.string.item_actions_transform),
-      containerColor = CaducityTheme.colorScheme.primaryContainer,
-      contentColor = CaducityTheme.colorScheme.onPrimaryContainer,
-      onClick = actions::onTransform,
-    )
+    if (showTransform) {
+      ActionRow(
+        2,
+        count,
+        AppIcons.Cooking,
+        stringResource(R.string.item_actions_transform),
+        containerColor = CaducityTheme.colorScheme.primaryContainer,
+        contentColor = CaducityTheme.colorScheme.onPrimaryContainer,
+        onClick = actions::onTransform,
+      )
+    }
     ActionRow(
       count - 1,
       count,

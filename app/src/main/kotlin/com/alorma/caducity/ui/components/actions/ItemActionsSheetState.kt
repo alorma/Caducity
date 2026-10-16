@@ -9,6 +9,8 @@ data class ActionUnit(
   val id: String,
   val expiration: LocalDate,
   val status: ExpiryStatus,
+  /** Day it went into the freezer; null if it is not frozen. */
+  val frozenSince: LocalDate? = null,
 )
 
 sealed interface ItemActionsSheetState {
@@ -40,6 +42,12 @@ sealed interface ItemActionsSheetState {
 
     /** A single frozen unit: «Descongela». */
     val frozen: Boolean get() = !multiple && status == ExpiryStatus.FROZEN
+
+    /** Every unit is frozen: the sheet offers «Descongela» instead of «Congela» and «Canvia la data». */
+    val frozenOnly: Boolean get() = units.all { it.status == ExpiryStatus.FROZEN }
+
+    /** Day the unit frozen the longest went into the freezer. */
+    val frozenSince: LocalDate? get() = nearest.frozenSince
 
     val expiredCount: Int get() = units.count { it.status == ExpiryStatus.EXPIRED }
     val freezableCount: Int

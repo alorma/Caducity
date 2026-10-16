@@ -16,7 +16,8 @@ private fun unit(
   id: String,
   day: Int,
   status: ExpiryStatus,
-) = ActionUnit(id, LocalDate(2026, 10, day), status)
+  frozenSince: LocalDate? = null,
+) = ActionUnit(id, LocalDate(2026, 10, day), status, frozenSince)
 
 private fun ready(
   units: List<ActionUnit>,
@@ -87,6 +88,29 @@ internal fun ItemActionsExpiredSeveralUnitsPreview() {
         ),
       selected = 2,
       daysLeft = -2,
+    ),
+  )
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun ItemActionsFrozenOneUnitPreview() {
+  SheetPreview(
+    ready(
+      units = listOf(unit("a", 28, ExpiryStatus.FROZEN, frozenSince = LocalDate(2026, 9, 28))),
+      daysLeft = 0,
+    ),
+  )
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun ItemActionsFrozenSeveralUnitsPreview() {
+  SheetPreview(
+    ready(
+      units = List(8) { unit("f$it", 28, ExpiryStatus.FROZEN, frozenSince = LocalDate(2026, 10, 4)) },
+      selected = 2,
+      daysLeft = 0,
     ),
   )
 }

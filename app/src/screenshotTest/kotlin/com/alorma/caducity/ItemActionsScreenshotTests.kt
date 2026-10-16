@@ -5,6 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.alorma.caducity.ui.components.actions.ItemActionsExpiredOneUnitPreview
 import com.alorma.caducity.ui.components.actions.ItemActionsExpiredSeveralUnitsPreview
+import com.alorma.caducity.ui.components.actions.ItemActionsFrozenOneUnitPreview
+import com.alorma.caducity.ui.components.actions.ItemActionsFrozenSeveralUnitsPreview
 import com.alorma.caducity.ui.components.actions.ItemActionsOneUnitPreview
 import com.alorma.caducity.ui.components.actions.ItemActionsSeveralUnitsPreview
 import com.android.tools.screenshot.PreviewTest
@@ -44,5 +46,21 @@ class ItemActionsScreenshotTests {
   @Composable
   fun itemActionsExpiredSeveralUnits() {
     ItemActionsExpiredSeveralUnitsPreview()
+  }
+
+  @PreviewTest
+  @Preview(name = "Light", locale = "ca", widthDp = Width, heightDp = Height)
+  @Preview(name = "Dark", locale = "ca", widthDp = Width, heightDp = Height, uiMode = Night)
+  @Composable
+  fun itemActionsFrozenOneUnit() {
+    ItemActionsFrozenOneUnitPreview()
+  }
+
+  @PreviewTest
+  @Preview(name = "Light", locale = "ca", widthDp = Width, heightDp = Height)
+  @Preview(name = "Dark", locale = "ca", widthDp = Width, heightDp = Height, uiMode = Night)
+  @Composable
+  fun itemActionsFrozenSeveralUnits() {
+    ItemActionsFrozenSeveralUnitsPreview()
   }
 }

@@ -28,6 +28,7 @@ import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
+import com.alorma.caducity.domain.usecase.toExpirationInstant
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.components.actions.DatePickerPurpose
 import com.alorma.caducity.ui.components.actions.ItemActionsSheetNavigationSideEffect
@@ -66,6 +67,7 @@ import org.robolectric.annotation.Config
 import strikt.api.expectThat
 import strikt.assertions.contains
 import strikt.assertions.containsExactly
+import strikt.assertions.hasSize
 import strikt.assertions.isEqualTo
 import strikt.assertions.isNotNull
 import strikt.assertions.isNull
@@ -139,7 +141,8 @@ class ItemActionsSheetViewModelTest {
     days: Int,
     categoryId: String = "dairy",
     quantity: Int = 1,
-  ): List<String> = addProduct.add(name, categoryId, inDays(days), quantity, false).getOrThrow().itemIds
+    frozen: Boolean = false,
+  ): List<String> = addProduct.add(name, categoryId, inDays(days), quantity, frozen).getOrThrow().itemIds
 
   private fun viewModel(itemId: String) = viewModel(listOf(itemId))
 
@@ -432,6 +435,35 @@ class ItemActionsSheetViewModelTest {
       val effect = vm.sideEffects.first { it is ItemActionsSheetSideEffect.ShowDatePicker }
       expectThat((effect as ItemActionsSheetSideEffect.ShowDatePicker).purpose).isEqualTo(DatePickerPurpose.Unfreeze)
       expectThat(effect.currentMillis).isEqualTo(inDays(6).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds())
+    }
+
+  @Test
+  fun `frozen units are all frozen, the one frozen the longest on top, and Defrost N brings them to Soon`() =
+    runTest {
+      category("dairy")
+      val ids = add("Peas", days = 30, quantity = 3, frozen = true)
+      val vm = viewModel(ids)
+      keepAlive(vm)
+
+      val state = vm.ready { it.frozenOnly }
+      expectThat(state.multiple).isTrue()
+      expectThat(state.frozenSince).isNotNull()
+
+      vm.onSelect(2)
+      vm.ready { it.selected == 2 }
+      val frozenAt = db.itemDao().getAllItemsSync().map { it.pausedDate }.toSet()
+      vm.onFreezeToggle()
+      val snackbar = nextSnackbar()
+
+      val unfrozen = ids.filter { item(it).pausedDate == null }
+      expectThat(unfrozen).hasSize(2)
+      unfrozen.forEach {
+        expectThat(item(it).expirationDate)
+          .isEqualTo(inDays(UnfreezeItemUseCase.UNFREEZE_DAYS).toExpirationInstant().toEpochMilliseconds())
+      }
+
+      snackbar.onAction!!.invoke()
+      expectThat(db.itemDao().getAllItemsSync().map { it.pausedDate }.toSet()).isEqualTo(frozenAt)
     }
 
   @Test

@@ -247,7 +247,6 @@
   <string name="item_pill_frozen">Frozen</string>
   <string name="item_actions_consumed">Consumed</string>
   <string name="item_actions_freeze">Freeze</string>
-  <string name="item_actions_unfreeze">Unfreeze</string>
   <string name="item_actions_change_date">Change the date</string>
   <string name="item_actions_plus_1d">+1 day</string>
   <string name="item_actions_plus_3d">+3 days</string>

@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.components.actions
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
+import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.ItemSnapshot
 import com.alorma.caducity.domain.model.ItemStatus
@@ -79,7 +80,7 @@ class ItemActionsSheetViewModel(
         if (entries.isNotEmpty() || categories.isNotEmpty()) close()
         ItemActionsSheetState.Loading
       } else {
-        val actionUnits = units.map { ActionUnit(it.itemId, it.expiration, it.status) }
+        val actionUnits = units.map { ActionUnit(it.itemId, it.expiration, it.status, it.frozenSince?.date()) }
         val expiredCount = actionUnits.count { it.status == ExpiryStatus.EXPIRED }
         val expired = actionUnits.first().status == ExpiryStatus.EXPIRED
         val default = if (expired) expiredCount else 1
@@ -169,6 +170,10 @@ class ItemActionsSheetViewModel(
 
   override fun onFreezeToggle() {
     val ready = ready() ?: return
+    if (ready.frozenOnly && ready.multiple) {
+      unfreezeSelected(ready)
+      return
+    }
     if (ready.frozen) {
       eventTracker.trackAction(ItemActionAction("unfreeze"))
       viewModelScope.launch {
@@ -200,6 +205,28 @@ class ItemActionsSheetViewModel(
               name = ready.name,
               type = AppFeedbackType.Status(ItemStatus.Frozen),
               snapshots = snapshots,
+            ),
+          )
+        }.onFailure { failed() }
+    }
+  }
+
+  /** «Descongela N» with the − / + selector: the N units frozen the longest, which get today plus three days. */
+  private fun unfreezeSelected(ready: ItemActionsSheetState.Ready) {
+    eventTracker.trackAction(ItemActionAction("unfreeze_n"))
+    val ids = ready.units.take(ready.selected).map { it.id }
+    viewModelScope.launch {
+      val snapshots = restoreItems.snapshots(ids)
+      unfreezeItem
+        .unfreeze(ids)
+        .onSuccess { unfrozen ->
+          feedback(
+            GlobalSnackbar(
+              message = R.string.snack_unfrozen,
+              messageArgs = listOf(unfrozen.size, ready.name),
+              actionLabel = R.string.add_undo,
+              type = AppFeedbackType.Success,
+              onAction = { restoreItems.restoreSnapshots(snapshots) },
             ),
           )
         }.onFailure { failed() }
@@ -253,6 +280,7 @@ class ItemActionsSheetViewModel(
       }
     viewModelScope.launch {
       if (purpose == DatePickerPurpose.Unfreeze) {
+        val unfrozenSnapshots = restoreItems.snapshots(ids.take(1))
         unfreezeItem
           .unfreezeOn(ids.first(), date)
           .onSuccess {
@@ -260,7 +288,9 @@ class ItemActionsSheetViewModel(
               GlobalSnackbar(
                 message = R.string.item_actions_snackbar_unfrozen,
                 messageArgs = listOf(ready.name),
+                actionLabel = R.string.add_undo,
                 type = AppFeedbackType.Success,
+                onAction = { restoreItems.restoreSnapshots(unfrozenSnapshots) },
               ),
             )
           }.onFailure { failed() }
