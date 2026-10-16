@@ -1,5 +1,5 @@
 [versions]
-versionPlugin = "1.0.3"
+versionPlugin = "1.1.0"
 playPublisher = "4.1.1"
 composeScreenshot = "0.0.1-alpha16"
 
