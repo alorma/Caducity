@@ -176,10 +176,8 @@ class ItemActionsSheetViewModel(
     }
     if (ready.frozen) {
       eventTracker.trackAction(ItemActionAction("unfreeze"))
-      viewModelScope.launch {
-        val proposed = unfreezeItem.proposedDate(ready.units.first().id) ?: ready.expiration
-        emitSideEffect(ItemActionsSheetSideEffect.ShowDatePicker(proposed.toUtcMillis(), DatePickerPurpose.Unfreeze))
-      }
+      val proposed = unfreezeItem.proposedDate()
+      emitSideEffect(ItemActionsSheetSideEffect.ShowDatePicker(proposed.toUtcMillis(), DatePickerPurpose.Unfreeze))
       return
     }
     if (ready.freezableCount == 0) {

@@ -29,11 +29,8 @@ class UnfreezeItemUseCase(
       Result.failure(e)
     }
 
-  /** Date proposed when unfreezing (P4): today plus the days that were left when it was frozen. */
-  suspend fun proposedDate(itemId: String): LocalDate? {
-    val remainingDays = itemDataSource.getItem(itemId)?.remainingDays ?: return null
-    return appClock.nowDate().plus(remainingDays, DateTimeUnit.DAY)
-  }
+  /** Date proposed when unfreezing one unit: the same today plus [UNFREEZE_DAYS] the bulk action applies. */
+  fun proposedDate(): LocalDate = appClock.nowDate().plus(UNFREEZE_DAYS, DateTimeUnit.DAY)
 
   /** Unfreezes the unit giving it the (editable) [newDate]. */
   suspend fun unfreezeOn(

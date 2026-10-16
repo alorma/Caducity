@@ -424,7 +424,7 @@ class ItemActionsSheetViewModelTest {
     }
 
   @Test
-  fun `freeze keeps the remaining days and unfreeze proposes today plus those days`() =
+  fun `freeze keeps the remaining days and unfreeze proposes today plus three days`() =
     runTest {
       category("dairy")
       val id = add("Milk", days = 6).single()
@@ -441,7 +441,7 @@ class ItemActionsSheetViewModelTest {
       vm.onFreezeToggle()
       val effect = vm.sideEffects.first { it is ItemActionsSheetSideEffect.ShowDatePicker }
       expectThat((effect as ItemActionsSheetSideEffect.ShowDatePicker).purpose).isEqualTo(DatePickerPurpose.Unfreeze)
-      expectThat(effect.currentMillis).isEqualTo(inDays(6).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds())
+      expectThat(effect.currentMillis).isEqualTo(inDays(3).atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds())
     }
 
   @Test

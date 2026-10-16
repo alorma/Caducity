@@ -471,7 +471,7 @@ class PantryUseCasesTest {
   // region Unfreeze
 
   @Test
-  fun `unfreeze proposes today plus remaining days and applies the chosen date`() =
+  fun `unfreeze proposes today plus three days and applies the chosen date`() =
     runTest {
       category("c1")
       val id =
@@ -481,14 +481,13 @@ class PantryUseCasesTest {
           .itemIds
           .single()
 
-      expectThat(unfreeze.proposedDate(id)).isEqualTo(inDays(30))
+      expectThat(unfreeze.proposedDate()).isEqualTo(inDays(3))
       unfreeze.unfreezeOn(id, inDays(12)).getOrThrow()
 
       val item = db.itemDao().getItem(id)!!
       expectThat(item.pausedDate).isNull()
       expectThat(item.remainingDays).isNull()
       expectThat(item.expirationDate).isEqualTo(inDays(12).toExpirationInstant().toEpochMilliseconds())
-      expectThat(unfreeze.proposedDate(id)).isNull()
     }
 
   @Test

@@ -66,6 +66,7 @@ import com.alorma.caducity.base.ui.icons.symbols.Error
 import com.alorma.caducity.base.ui.icons.symbols.Event
 import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
 import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
+import com.alorma.caducity.base.ui.icons.symbols.Info
 import com.alorma.caducity.base.ui.icons.symbols.MoreHoriz
 import com.alorma.caducity.base.ui.icons.symbols.Remove
 import com.alorma.caducity.base.ui.icons.symbols.Sunny
@@ -191,10 +192,40 @@ private fun SingleContent(
     onFreeze = actions::onFreezeToggle,
   )
   // A frozen unit has no expiration date to change and cannot be turned into something else yet.
-  if (!state.frozen) {
+  if (state.frozen) {
+    UnfreezeHint()
+  } else {
     ChangeDate(onQuick = actions::onQuickReschedule, onPick = actions::onPickDate)
   }
   SecondaryActions(actions, showTransform = !state.frozen)
+}
+
+/** What «Descongela» does to a single frozen unit; the date picker proposes the same day. */
+@Composable
+private fun UnfreezeHint(modifier: Modifier = Modifier) {
+  Surface(
+    modifier = modifier.fillMaxWidth(),
+    shape = RoundedCornerShape(16.dp),
+    color = CaducityTheme.colorScheme.surfaceContainer,
+  ) {
+    Row(
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+      Icon(
+        Symbols.Outlined.Info,
+        contentDescription = null,
+        modifier = Modifier.size(20.dp),
+        tint = CaducityTheme.colorScheme.onSurfaceVariant,
+      )
+      Text(
+        text = stringResource(R.string.unfreeze_hint),
+        style = CaducityTheme.typography.bodyMedium,
+        color = CaducityTheme.colorScheme.onSurfaceVariant,
+      )
+    }
+  }
 }
 
 /** `QuantitatAccions`: several units, a selector and «Més accions» folded. */
