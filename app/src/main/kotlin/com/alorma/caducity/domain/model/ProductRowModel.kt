@@ -59,8 +59,7 @@ fun List<PantryEntry>.sortedNearestFirst(): List<PantryEntry> =
   sortedWith(if (onlyFrozen()) FROZEN_OLDEST_FIRST else NEAREST_FIRST)
 
 /** The unit the round buttons act on: the one that expires first. */
-fun List<PantryEntry>.nearestFirst(): PantryEntry =
-  minWith(if (onlyFrozen()) FROZEN_OLDEST_FIRST else NEAREST_FIRST)
+fun List<PantryEntry>.nearestFirst(): PantryEntry = minWith(if (onlyFrozen()) FROZEN_OLDEST_FIRST else NEAREST_FIRST)
 
 /** Builds the row of one product from its units; the state and days are those of the nearest one. */
 fun List<PantryEntry>.toProductRow(
