@@ -523,7 +523,7 @@ class PantryUseCasesTest {
       category("c1")
       val fresh =
         addProduct
-          .add("Milk", "c1", inDays(10), 1)
+          .add("Milk", "c1", inDays(10), 1, frozen = false)
           .getOrThrow()
           .itemIds
           .single()
