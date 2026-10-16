@@ -11,6 +11,7 @@ import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoryUseCase
 import com.alorma.caducity.domain.usecase.ObserveWeekStripUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
+import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.feature.tracking.CategoryDeletedAction
 import com.alorma.caducity.feature.tracking.CategoryFilterAction
 import com.alorma.caducity.feature.tracking.EventTracker
@@ -38,6 +39,7 @@ class CategoryViewModel(
   private val deleteCategory: DeleteCategoryUseCase,
   private val consumeItem: ConsumeItemUseCase,
   private val freezeItem: FreezeItemUseCase,
+  private val unfreezeItem: UnfreezeItemUseCase,
   private val discardItems: DiscardItemsUseCase,
   private val restoreItems: RestoreItemsUseCase,
   private val snackbars: GlobalSnackbarEvents,
@@ -110,6 +112,23 @@ class CategoryViewModel(
         )
       },
     ) { freezeItem.freeze(listOf(row.nearestItemId)) }
+  }
+
+  /** ☀ unfreezes **one** unit of the row (the one frozen the longest), with undo. */
+  fun onUnfreeze(row: ProductRowModel) {
+    eventTracker.trackAction(ItemActionAction("unfreeze_category"))
+    undoable(
+      ids = listOf(row.nearestItemId),
+      snackbar = { undo ->
+        GlobalSnackbar(
+          message = R.string.snack_unfrozen,
+          messageArgs = listOf(1, row.name),
+          actionLabel = R.string.add_undo,
+          type = AppFeedbackType.Success,
+          onAction = undo,
+        )
+      },
+    ) { unfreezeItem.unfreeze(listOf(row.nearestItemId)) }
   }
 
   /** Paperera discards **one** unit of the row, with undo. */

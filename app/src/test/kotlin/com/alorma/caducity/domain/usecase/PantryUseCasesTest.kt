@@ -471,7 +471,7 @@ class PantryUseCasesTest {
   // region Unfreeze
 
   @Test
-  fun `unfreeze proposes today plus remaining days and applies the chosen date`() =
+  fun `unfreeze proposes today plus three days and applies the chosen date`() =
     runTest {
       category("c1")
       val id =
@@ -481,14 +481,55 @@ class PantryUseCasesTest {
           .itemIds
           .single()
 
-      expectThat(unfreeze.proposedDate(id)).isEqualTo(inDays(30))
+      expectThat(unfreeze.proposedDate()).isEqualTo(inDays(3))
       unfreeze.unfreezeOn(id, inDays(12)).getOrThrow()
 
       val item = db.itemDao().getItem(id)!!
       expectThat(item.pausedDate).isNull()
       expectThat(item.remainingDays).isNull()
       expectThat(item.expirationDate).isEqualTo(inDays(12).toExpirationInstant().toEpochMilliseconds())
-      expectThat(unfreeze.proposedDate(id)).isNull()
+    }
+
+  @Test
+  fun `unfreeze gives the units today plus three days and undo brings the frozen state back`() =
+    runTest {
+      category("c1")
+      val ids = addProduct.add("Peas", "c1", inDays(30), 2, frozen = true).getOrThrow().itemIds
+      val frozenAt = db.itemDao().getItem(ids.first())!!.pausedDate
+      val snapshots = restore.snapshots(ids)
+
+      expectThat(unfreeze.unfreeze(ids).getOrThrow()).containsExactly(ids)
+
+      ids.forEach {
+        val item = db.itemDao().getItem(it)!!
+        expectThat(item.pausedDate).isNull()
+        expectThat(item.remainingDays).isNull()
+        expectThat(item.expirationDate)
+          .isEqualTo(inDays(UnfreezeItemUseCase.UNFREEZE_DAYS).toExpirationInstant().toEpochMilliseconds())
+      }
+
+      restore.restoreSnapshots(snapshots).getOrThrow()
+      ids.forEach {
+        val item = db.itemDao().getItem(it)!!
+        expectThat(item.pausedDate).isEqualTo(frozenAt)
+        expectThat(item.remainingDays).isNotNull()
+      }
+    }
+
+  @Test
+  fun `unfreeze skips units that are not frozen`() =
+    runTest {
+      category("c1")
+      val fresh =
+        addProduct
+          .add("Milk", "c1", inDays(10), 1, frozen = false)
+          .getOrThrow()
+          .itemIds
+          .single()
+
+      expectThat(unfreeze.unfreeze(listOf(fresh)).getOrThrow()).isEmpty()
+      expectThat(db.itemDao().getItem(fresh)!!.expirationDate)
+        .isEqualTo(inDays(10).toExpirationInstant().toEpochMilliseconds())
     }
 
   // endregion

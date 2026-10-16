@@ -12,6 +12,7 @@ import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsByStatusUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
+import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemActionAction
 import com.alorma.caducity.feature.tracking.NavigateToAddFromStatusListAction
@@ -36,6 +37,7 @@ class StatusListViewModel(
   expirationThresholds: ExpirationThresholds,
   private val consumeItem: ConsumeItemUseCase,
   private val freezeItem: FreezeItemUseCase,
+  private val unfreezeItem: UnfreezeItemUseCase,
   private val discardItems: DiscardItemsUseCase,
   private val restoreItems: RestoreItemsUseCase,
   private val snackbars: GlobalSnackbarEvents,
@@ -69,6 +71,8 @@ class StatusListViewModel(
   fun onConsume(row: StatusRow) = consume(row.nearest.itemId, row.name)
 
   fun onFreeze(row: StatusRow) = freeze(row.nearest.itemId, row.name)
+
+  fun onUnfreeze(row: StatusRow) = unfreeze(row.nearest.itemId, row.name)
 
   fun onDiscard(row: StatusRow) = discard(listOf(row.nearest.itemId), row.name)
 
@@ -129,6 +133,25 @@ class StatusListViewModel(
         )
       },
     ) { freezeItem.freeze(listOf(id)) }
+  }
+
+  private fun unfreeze(
+    id: String,
+    name: String,
+  ) {
+    eventTracker.trackAction(ItemActionAction("unfreeze_status"))
+    undoable(
+      ids = listOf(id),
+      snackbar = { undo ->
+        GlobalSnackbar(
+          message = R.string.snack_unfrozen,
+          messageArgs = listOf(1, name),
+          actionLabel = R.string.add_undo,
+          type = AppFeedbackType.Success,
+          onAction = undo,
+        )
+      },
+    ) { unfreezeItem.unfreeze(listOf(id)) }
   }
 
   private fun discard(

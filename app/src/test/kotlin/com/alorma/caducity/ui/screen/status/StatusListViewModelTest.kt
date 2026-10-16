@@ -24,6 +24,8 @@ import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsByStatusUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
+import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
+import com.alorma.caducity.domain.usecase.toExpirationInstant
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.russhwolf.settings.MapSettings
@@ -118,6 +120,13 @@ class StatusListViewModelTest {
     sortOrder: Int = 0,
   ) = db.categoryDao().insertCategory(CategoryRoomEntity(id, id, "", sortOrder = sortOrder))
 
+  private suspend fun pausedDates() =
+    db
+      .itemDao()
+      .getAllItemsSync()
+      .map { it.pausedDate }
+      .toSet()
+
   private fun inDays(days: Int) = today.plus(days, DateTimeUnit.DAY)
 
   private suspend fun add(
@@ -136,6 +145,7 @@ class StatusListViewModelTest {
       expirationThresholds = thresholds,
       consumeItem = ConsumeItemUseCase(itemDataSource, pantry, clock),
       freezeItem = FreezeItemUseCase(itemDataSource, pantry, clock),
+      unfreezeItem = UnfreezeItemUseCase(itemDataSource, pantry, clock),
       discardItems = DiscardItemsUseCase(pantry, clock),
       restoreItems = RestoreItemsUseCase(pantry),
       snackbars = snackbars,
@@ -216,6 +226,33 @@ class StatusListViewModelTest {
 
       snackbar.onAction!!.invoke()
       expectThat(vm.ready { !it.isEmpty }.totalCount).isEqualTo(1)
+    }
+
+  @Test
+  fun `unfreeze moves one unit to Soon with today plus three days and undo brings it back frozen`() =
+    runTest {
+      category("dairy")
+      add("Peas", days = 20, quantity = 2, frozen = true)
+      val vm = viewModel(ExpiryStatus.FROZEN)
+      val row =
+        vm
+          .ready()
+          .sections
+          .single()
+          .rows
+          .single()
+      val frozenAt = pausedDates()
+
+      vm.onUnfreeze(row)
+      val snackbar = nextSnackbar()
+      expectThat(vm.ready { it.rows.single().unitCount == 1 }.totalCount).isEqualTo(1)
+      val unfrozen = db.itemDao().getAllItemsSync().single { it.pausedDate == null }
+      expectThat(unfrozen.expirationDate)
+        .isEqualTo(inDays(UnfreezeItemUseCase.UNFREEZE_DAYS).toExpirationInstant().toEpochMilliseconds())
+
+      snackbar.onAction!!.invoke()
+      expectThat(vm.ready { it.rows.single().unitCount == 2 }.totalCount).isEqualTo(1)
+      expectThat(pausedDates()).isEqualTo(frozenAt)
     }
 
   @Test

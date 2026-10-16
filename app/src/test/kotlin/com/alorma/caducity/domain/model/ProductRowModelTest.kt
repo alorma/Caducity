@@ -12,6 +12,7 @@ class ProductRowModelTest {
     day: Int,
     createdAt: Long? = null,
     status: ExpiryStatus = ExpiryStatus.FRESH,
+    frozenSince: String? = null,
   ) = PantryEntry(
     itemId = id,
     productId = "p1",
@@ -19,7 +20,7 @@ class ProductRowModelTest {
     categoryId = "c1",
     expiration = LocalDate(2026, 10, day),
     status = status,
-    frozenSince = null,
+    frozenSince = frozenSince?.let { Instant.parse(it) },
     remainingDays = day - 14,
     createdAt = createdAt?.let { Instant.fromEpochMilliseconds(it) },
   )
@@ -29,6 +30,20 @@ class ProductRowModelTest {
     val units = listOf(unit("a", day = 20, createdAt = 1), unit("b", day = 16, createdAt = 2))
 
     expectThat(units.nearestFirst().itemId).isEqualTo("b")
+  }
+
+  @Test
+  fun `frozen units go oldest in the freezer first and the row shows that freezing day`() {
+    val units =
+      listOf(
+        unit("new", day = 16, status = ExpiryStatus.FROZEN, frozenSince = "2026-10-08T10:00:00Z"),
+        unit("old", day = 30, status = ExpiryStatus.FROZEN, frozenSince = "2026-10-04T10:00:00Z"),
+      )
+
+    expectThat(units.nearestFirst().itemId).isEqualTo("old")
+    val row = units.toProductRow(category = null, detail = ProductRowDetail.WithDays, today = LocalDate(2026, 10, 14))
+    expectThat(row.itemIds).isEqualTo(listOf("old", "new"))
+    expectThat(row.frozenSince).isEqualTo(LocalDate(2026, 10, 4))
   }
 
   @Test

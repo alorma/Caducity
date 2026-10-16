@@ -29,6 +29,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.AcUnit
 import com.alorma.caducity.base.ui.icons.symbols.Check
 import com.alorma.caducity.base.ui.icons.symbols.Delete
+import com.alorma.caducity.base.ui.icons.symbols.Sunny
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
@@ -41,6 +42,7 @@ import com.alorma.caducity.ui.components.connected.connectedRowColors
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import kotlinx.datetime.LocalDate
 
 /**
  * The one row of a product in every list. Tapping the bar opens the product's sheet; the round buttons act
@@ -55,6 +57,7 @@ fun ProductRow(
   modifier: Modifier = Modifier,
   onConsume: () -> Unit = {},
   onFreeze: () -> Unit = {},
+  onUnfreeze: () -> Unit = {},
   onDiscard: () -> Unit = {},
 ) {
   val statusColors = model.status.colors()
@@ -89,7 +92,13 @@ fun ProductRow(
       }
     },
     trailingContent = {
-      ProductRowActions(model = model, onConsume = onConsume, onFreeze = onFreeze, onDiscard = onDiscard)
+      ProductRowActions(
+        model = model,
+        onConsume = onConsume,
+        onFreeze = onFreeze,
+        onUnfreeze = onUnfreeze,
+        onDiscard = onDiscard,
+      )
     },
   ) {
     Text(
@@ -106,6 +115,7 @@ private fun ProductRowActions(
   model: ProductRowModel,
   onConsume: () -> Unit,
   onFreeze: () -> Unit,
+  onUnfreeze: () -> Unit,
   onDiscard: () -> Unit,
 ) {
   Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -131,13 +141,20 @@ private fun ProductRowActions(
           onClick = onFreeze,
         )
       }
-      ExpiryStatus.FROZEN ->
+      ExpiryStatus.FROZEN -> {
         RoundButton(
           icon = Symbols.Outlined.Check,
           contentDescription = stringResource(R.string.home_mark_consumed, model.name),
           tint = CaducityTheme.colors.fresh.strong,
           onClick = onConsume,
         )
+        RoundButton(
+          icon = Symbols.Outlined.Sunny,
+          contentDescription = stringResource(R.string.status_action_unfreeze, model.name),
+          tint = CaducityTheme.colors.frozen.strong,
+          onClick = onUnfreeze,
+        )
+      }
     }
   }
 }
@@ -149,7 +166,8 @@ private fun productRowDetailText(model: ProductRowModel): String {
   return when (val detail = model.detail) {
     is ProductRowDetail.InCategory -> "$quantity · ${detail.categoryName}"
     ProductRowDetail.QuantityOnly -> quantity
-    ProductRowDetail.WithDays -> "$quantity · ${productRowDaysText(model.status, model.remainingDays)}"
+    ProductRowDetail.WithDays ->
+      "$quantity · ${productRowDaysText(model.status, model.remainingDays, model.frozenSince)}"
   }
 }
 
@@ -157,8 +175,11 @@ private fun productRowDetailText(model: ProductRowModel): String {
 private fun productRowDaysText(
   status: ExpiryStatus,
   days: Int?,
+  frozenSince: LocalDate? = null,
 ): String =
   when {
+    status == ExpiryStatus.FROZEN && frozenSince != null ->
+      stringResource(R.string.frozen_on, shortDateText(frozenSince))
     status == ExpiryStatus.FROZEN || days == null -> stringResource(R.string.item_pill_frozen)
     days == 0 -> stringResource(R.string.item_pill_today)
     days == 1 -> stringResource(R.string.item_pill_tomorrow)
@@ -199,6 +220,7 @@ private fun previewRow(
   units: Int,
   detail: ProductRowDetail,
   category: Category? = null,
+  frozenSince: LocalDate? = null,
 ) = ProductRowModel(
   key = name,
   name = name,
@@ -207,6 +229,7 @@ private fun previewRow(
   remainingDays = days,
   category = category,
   detail = detail,
+  frozenSince = frozenSince,
 )
 
 @PreviewLightDark
@@ -228,6 +251,7 @@ internal fun ProductRowPreview() {
             days = null,
             units = 2,
             detail = ProductRowDetail.WithDays,
+            frozenSince = LocalDate(2026, 10, 4),
           ),
         )
       rows.forEachIndexed { index, row ->

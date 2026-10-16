@@ -8,6 +8,7 @@ import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObservePantryUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
+import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemActionAction
 import com.alorma.caducity.feature.tracking.NavigateToCategoryFromPantryAction
@@ -31,6 +32,7 @@ class PantryViewModel(
   private val eventTracker: EventTracker,
   private val consumeItem: ConsumeItemUseCase,
   private val freezeItem: FreezeItemUseCase,
+  private val unfreezeItem: UnfreezeItemUseCase,
   private val discardItems: DiscardItemsUseCase,
   private val restoreItems: RestoreItemsUseCase,
   private val snackbars: GlobalSnackbarEvents,
@@ -66,6 +68,18 @@ class PantryViewModel(
     }
   }
 
+  fun onUnfreeze(row: ProductRowModel) {
+    actOnNearest(
+      row,
+      "unfreeze_pantry",
+      R.string.snack_unfrozen,
+      AppFeedbackType.Success,
+      countInMessage = true,
+    ) {
+      unfreezeItem.unfreeze(it)
+    }
+  }
+
   fun onDiscard(row: ProductRowModel) {
     actOnNearest(row, "discard_pantry", R.string.status_snackbar_discarded, AppFeedbackType.Info) {
       discardItems.discard(it)
@@ -78,6 +92,7 @@ class PantryViewModel(
     trackingName: String,
     message: Int,
     type: AppFeedbackType,
+    countInMessage: Boolean = false,
     perform: suspend (List<String>) -> Result<*>,
   ) {
     eventTracker.trackAction(ItemActionAction(trackingName))
@@ -89,7 +104,7 @@ class PantryViewModel(
           snackbars.show(
             GlobalSnackbar(
               message = message,
-              messageArgs = listOf(row.name),
+              messageArgs = if (countInMessage) listOf(1, row.name) else listOf(row.name),
               actionLabel = R.string.add_undo,
               type = type,
               onAction = { restoreItems.restoreSnapshots(snapshots) },

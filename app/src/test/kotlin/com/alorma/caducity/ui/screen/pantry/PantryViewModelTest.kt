@@ -23,6 +23,7 @@ import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.ObservePantryUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
+import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.russhwolf.settings.MapSettings
@@ -131,6 +132,7 @@ class PantryViewModelTest {
       eventTracker = EventTracker(emptyList()),
       consumeItem = ConsumeItemUseCase(itemSource, pantry, clock),
       freezeItem = FreezeItemUseCase(itemSource, pantry, clock),
+      unfreezeItem = UnfreezeItemUseCase(itemSource, pantry, clock),
       discardItems = DiscardItemsUseCase(pantry, clock),
       restoreItems = RestoreItemsUseCase(pantry),
       snackbars = GlobalSnackbarEvents(),

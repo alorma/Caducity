@@ -283,6 +283,21 @@ class RoomPantryDataSource(
     }
   }
 
+  override suspend fun unfreezeAll(
+    itemIds: List<String>,
+    newExpiration: Instant,
+  ): List<String> =
+    database.withTransaction {
+      itemIds.filter { id ->
+        val item = itemDao.getItem(id) ?: return@filter false
+        if (item.pausedDate == null) return@filter false
+        itemDao.updateItem(
+          item.copy(expirationDate = newExpiration.toEpochMilliseconds(), pausedDate = null, remainingDays = null),
+        )
+        true
+      }
+    }
+
   override fun observeActiveItems(): Flow<List<ActiveItem>> =
     itemDao.observeActiveItemRows().map { rows ->
       rows.map { row ->

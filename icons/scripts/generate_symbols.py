@@ -32,6 +32,8 @@ ICONS = [
     "lightbulb", "more_horiz", "remove", "wallpaper",
     # ajustos
     "event_available", "view_week", "contrast",
+    # descongela
+    "sunny",
 ]
 
 

@@ -54,6 +54,12 @@ interface PantryDataSource {
     newExpiration: Instant,
   )
 
+  /** Unfreezes the units in one transaction giving them [newExpiration]; units not frozen are skipped. Returns the ids unfrozen. */
+  suspend fun unfreezeAll(
+    itemIds: List<String>,
+    newExpiration: Instant,
+  ): List<String>
+
   /** Marks the units as consumed in one transaction; a frozen unit is unfrozen. */
   suspend fun consume(
     itemIds: List<String>,

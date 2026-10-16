@@ -170,6 +170,7 @@ fun CategoryScreen(
             onItemClick = { viewModel.navigate(CategoryNavigation.ItemActions(it)) },
             onConsume = viewModel::onConsume,
             onFreeze = viewModel::onFreeze,
+            onUnfreeze = viewModel::onUnfreeze,
             onDiscard = viewModel::onDiscard,
           )
       }
@@ -365,6 +366,7 @@ internal fun CategoryContent(
   onItemClick: (List<String>) -> Unit,
   onConsume: (ProductRowModel) -> Unit,
   onFreeze: (ProductRowModel) -> Unit,
+  onUnfreeze: (ProductRowModel) -> Unit,
   onDiscard: (ProductRowModel) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -440,6 +442,7 @@ internal fun CategoryContent(
               onClick = { onItemClick(item.row.itemIds) },
               onConsume = { onConsume(item.row) },
               onFreeze = { onFreeze(item.row) },
+              onUnfreeze = { onUnfreeze(item.row) },
               onDiscard = { onDiscard(item.row) },
             )
           CategoryItem.Empty ->
@@ -464,6 +467,7 @@ internal fun CategoryContent(
               onClick = { onItemClick(row.itemIds) },
               onConsume = { onConsume(row) },
               onFreeze = { onFreeze(row) },
+              onUnfreeze = { onUnfreeze(row) },
               onDiscard = { onDiscard(row) },
             )
           }

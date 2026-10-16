@@ -82,6 +82,6 @@ internal fun CategoryPreviewContent() {
       onEdit = {},
       onDelete = {},
     )
-    CategoryContent(state, {}, {}, {}, {}, {}, {})
+    CategoryContent(state, {}, {}, {}, {}, {}, {}, {})
   }
 }
