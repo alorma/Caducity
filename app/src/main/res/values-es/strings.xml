@@ -563,4 +563,13 @@
     <item quantity="many">%d meses</item>
     <item quantity="other">%d meses</item>
   </plurals>
+  <string name="action_unfreeze">Descongelar</string>
+  <string name="action_unfreeze_n">Descongelar %d</string>
+  <string name="unfreeze_hint">Al descongelarlo, el producto pasa a Pronto y caduca en 3 días.</string>
+  <string name="unfreeze_order">Primero las congeladas hace más tiempo</string>
+  <string name="snack_unfrozen">%1$d %2$s descongelado</string>
+  <string name="frozen_on">Congelado el %s</string>
+  <string name="status_action_unfreeze">Descongelar %1$s</string>
+  <string name="item_actions_frozen_one">1 unidad · congelado el %1$s</string>
+  <string name="item_actions_frozen_many">%1$d unidades · congeladas el %2$s</string>
 </resources>

@@ -83,6 +83,7 @@ fun StatusListPreview(status: ExpiryStatus) {
       onRowClick = {},
       onConsume = {},
       onFreeze = {},
+      onUnfreeze = {},
       onDiscard = {},
       onAdd = {},
       onDiscardAll = {},

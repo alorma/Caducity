@@ -40,9 +40,10 @@ data class ProductRowModel(
   val nearestItemId: String get() = itemIds.first()
 }
 
-/** Frozen units: the one that has been in the freezer the longest first. */
+/** Frozen units: the one that has been in the freezer the longest first (then the one that was to expire first). */
 private val FROZEN_OLDEST_FIRST =
   compareBy<PantryEntry> { it.frozenSince ?: Instant.DISTANT_FUTURE }
+    .thenBy { it.expiration }
     .thenBy { it.createdAt }
     .thenBy { it.itemId }
 

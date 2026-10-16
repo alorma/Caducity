@@ -100,6 +100,7 @@ fun StatusListScreen(
     onRowClick = { row -> viewModel.navigate(StatusListNavigation.ItemActions(row.itemIds)) },
     onConsume = viewModel::onConsume,
     onFreeze = viewModel::onFreeze,
+    onUnfreeze = viewModel::onUnfreeze,
     onDiscard = viewModel::onDiscard,
     onAdd = { viewModel.navigate(StatusListNavigation.AddFirst) },
     onDiscardAll = viewModel::onDiscardAllClick,
@@ -117,6 +118,7 @@ internal fun StatusListLayout(
   onRowClick: (StatusRow) -> Unit,
   onConsume: (StatusRow) -> Unit,
   onFreeze: (StatusRow) -> Unit,
+  onUnfreeze: (StatusRow) -> Unit,
   onDiscard: (StatusRow) -> Unit,
   onAdd: () -> Unit,
   onDiscardAll: () -> Unit,
@@ -146,6 +148,7 @@ internal fun StatusListLayout(
           onRowClick = onRowClick,
           onConsume = onConsume,
           onFreeze = onFreeze,
+          onUnfreeze = onUnfreeze,
           onDiscard = onDiscard,
           onAdd = onAdd,
         )
@@ -262,6 +265,7 @@ private fun StatusListContent(
   onRowClick: (StatusRow) -> Unit,
   onConsume: (StatusRow) -> Unit,
   onFreeze: (StatusRow) -> Unit,
+  onUnfreeze: (StatusRow) -> Unit,
   onDiscard: (StatusRow) -> Unit,
   onAdd: () -> Unit,
   modifier: Modifier = Modifier,
@@ -289,6 +293,7 @@ private fun StatusListContent(
               onClick = { onRowClick(row) },
               onConsume = { onConsume(row) },
               onFreeze = { onFreeze(row) },
+              onUnfreeze = { onUnfreeze(row) },
               onDiscard = { onDiscard(row) },
             )
           }

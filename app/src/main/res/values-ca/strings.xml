@@ -563,4 +563,13 @@
     <item quantity="many">%d mesos</item>
     <item quantity="other">%d mesos</item>
   </plurals>
+  <string name="action_unfreeze">Descongela</string>
+  <string name="action_unfreeze_n">Descongela %d</string>
+  <string name="unfreeze_hint">En descongelar, el producte passa a Aviat i caduca d\'aquí 3 dies.</string>
+  <string name="unfreeze_order">Primer les congelades fa més temps</string>
+  <string name="snack_unfrozen">%1$d %2$s descongelat</string>
+  <string name="frozen_on">Congelat el %s</string>
+  <string name="status_action_unfreeze">Descongela %1$s</string>
+  <string name="item_actions_frozen_one">1 unitat · congelat el %1$s</string>
+  <string name="item_actions_frozen_many">%1$d unitats · congelades el %2$s</string>
 </resources>

@@ -97,6 +97,7 @@ fun PantryScreen(
         onOpenItemActions = onOpenItemActions,
         onConsume = viewModel::onConsume,
         onFreeze = viewModel::onFreeze,
+        onUnfreeze = viewModel::onUnfreeze,
         onDiscard = viewModel::onDiscard,
         modifier = modifier,
       )
@@ -112,6 +113,7 @@ internal fun PantryContent(
   onOpenItemActions: (List<String>) -> Unit,
   onConsume: (ProductRowModel) -> Unit,
   onFreeze: (ProductRowModel) -> Unit,
+  onUnfreeze: (ProductRowModel) -> Unit,
   onDiscard: (ProductRowModel) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -143,7 +145,7 @@ internal fun PantryContent(
           verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
           if (state.isSearching) {
-            searchResults(state, onOpenItemActions, onConsume, onFreeze, onDiscard)
+            searchResults(state, onOpenItemActions, onConsume, onFreeze, onUnfreeze, onDiscard)
           } else {
             val cells: List<PantryCategory?> = data.categories + null
             items(
@@ -198,6 +200,7 @@ private fun LazyListScope.searchResults(
   onOpenItemActions: (List<String>) -> Unit,
   onConsume: (ProductRowModel) -> Unit,
   onFreeze: (ProductRowModel) -> Unit,
+  onUnfreeze: (ProductRowModel) -> Unit,
   onDiscard: (ProductRowModel) -> Unit,
 ) {
   if (state.results.isEmpty()) {
@@ -229,6 +232,7 @@ private fun LazyListScope.searchResults(
       onClick = { onOpenItemActions(row.itemIds) },
       onConsume = { onConsume(row) },
       onFreeze = { onFreeze(row) },
+      onUnfreeze = { onUnfreeze(row) },
       onDiscard = { onDiscard(row) },
     )
   }
@@ -311,6 +315,7 @@ internal fun PantryPreviewContent() {
     onOpenItemActions = {},
     onConsume = {},
     onFreeze = {},
+    onUnfreeze = {},
     onDiscard = {},
   )
 }

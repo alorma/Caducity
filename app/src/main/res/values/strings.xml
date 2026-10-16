@@ -537,4 +537,13 @@
     <item quantity="one">%d month</item>
     <item quantity="other">%d months</item>
   </plurals>
+  <string name="action_unfreeze">Defrost</string>
+  <string name="action_unfreeze_n">Defrost %d</string>
+  <string name="unfreeze_hint">When defrosted, it moves to Soon and expires in 3 days.</string>
+  <string name="unfreeze_order">Oldest frozen first</string>
+  <string name="snack_unfrozen">%1$d %2$s defrosted</string>
+  <string name="frozen_on">Frozen on %s</string>
+  <string name="status_action_unfreeze">Defrost %1$s</string>
+  <string name="item_actions_frozen_one">1 unit · frozen %1$s</string>
+  <string name="item_actions_frozen_many">%1$d units · frozen %2$s</string>
 </resources>
