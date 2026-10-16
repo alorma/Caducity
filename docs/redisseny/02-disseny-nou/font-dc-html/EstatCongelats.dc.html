@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Congelats</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Figtree:wght@400..700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E6B3B}a:hover{color:#10300F}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'opsz' 24;display:inline-block}
+.msf{font-variation-settings:'FILL' 1,'wght' 400,'opsz' 24}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFAEE; font-family: 'Figtree', sans-serif; color: #2B2418">
+
+  <div role="banner" style="height: 72px; box-sizing: border-box; padding: 12px 16px 12px 4px; border-radius: 0 0 24px 24px; background: #D3E5EA; color: #163F4C; display: flex; align-items: center; gap: 4px">
+    <a href="Main.dc.html" aria-label="Torna" style="width: 48px; height: 48px; flex: none; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #163F4C; text-decoration: none"><span class="ms" style="font-size: 24px">arrow_back</span></a>
+    <div style="flex: 1; min-width: 0">
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 800; font-stretch: 80%; line-height: 1.05">Congelats</h1>
+      <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-top: 2px">3 productes</div>
+    </div>
+  </div>
+
+  <div style="padding: 16px 20px 40px; display: flex; flex-direction: column; gap: 18px">
+    <sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <div style="display: flex; align-items: center; gap: 10px; padding: 0 4px">
+          <span style="position: relative; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center">
+            <svg viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{g.shape}}" fill="#EFD8C0"></path></svg>
+            <span class="ms" style="position: relative; font-size: 16px; color: #2E6B3B">{{g.icon}}</span>
+          </span>
+          <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 18px; font-weight: 700; font-stretch: 85%">{{g.name}}</h2>
+          <span style="font-size: 13px; color: #6A5D45">{{g.count}}</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 2px">
+          <sc-for list="{{g.rows}}" as="r" hint-placeholder-count="2">
+            <a href="Accions.dc.html" style="display: flex; align-items: center; gap: 8px; min-height: 64px; box-sizing: border-box; padding: 8px 6px 8px 16px; background: #F7EEDA; border-radius: {{r.rad}}; color: inherit; text-decoration: none">
+              <div style="flex: 1; min-width: 0">
+                <div style="font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</div>
+                <div style="font-size: 13px; color: #163F4C; margin-top: 2px; font-weight: 600">{{r.when}}</div>
+              </div>
+              <button aria-label="Consumeix" style="width: 44px; height: 44px; border: none; border-radius: 22px; background: #FFFAEE; color: #2E6B3B; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">check</span></button>
+              <button aria-label="Descongela" style="width: 44px; height: 44px; flex: none; border: none; border-radius: 22px; background: #FFFAEE; color: #3F7F92; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px">sunny</span></button>
+            </a>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  blob(n, a, rot) {
+    rot = rot || 0;
+    var p = [];
+    for (var i = 0; i < 120; i++) {
+      var t = i / 120 * Math.PI * 2;
+      var r = 50 - a + a * Math.cos(n * (t + rot));
+      p.push((50 + r * Math.cos(t)).toFixed(1) + " " + (50 + r * Math.sin(t)).toFixed(1));
+    }
+    return "M" + p.join("L") + "Z";
+  }
+  rad(i, n) {
+    if (n === 1) return "24px";
+    if (i === 0) return "24px 24px 6px 6px";
+    if (i === n - 1) return "6px 6px 24px 24px";
+    return "6px";
+  }
+  renderVals() {
+    var self = this;
+    var raw = [
+      ["Plats preparats", "soup_kitchen", this.blob(10, 2.5, 0), [["Croquetes", "8 unitats · Congelat el 4 oct"], ["Brou", "2 unitats · Congelat el 4 oct"]], 2],
+      ["Làctics", "water_full", this.blob(9, 3, 0), [["Parmesà ratllat", "1 unitat · Congelat el 28 set"]], 1]
+    ];
+    var groups = raw.map(function (g) {
+      return {
+        name: g[0], icon: g[1], shape: g[2], count: String(g[4] || g[3].length),
+        rows: g[3].map(function (r, i) { return { name: r[0], when: r[1], rad: self.rad(i, g[3].length) }; })
+      };
+    });
+    return { groups: groups };
+  }
+}
+</script>
+</body>
+</html>
