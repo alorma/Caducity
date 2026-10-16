@@ -521,7 +521,12 @@ class PantryUseCasesTest {
   fun `unfreeze skips units that are not frozen`() =
     runTest {
       category("c1")
-      val fresh = addProduct.add("Milk", "c1", inDays(10), 1).getOrThrow().itemIds.single()
+      val fresh =
+        addProduct
+          .add("Milk", "c1", inDays(10), 1)
+          .getOrThrow()
+          .itemIds
+          .single()
 
       expectThat(unfreeze.unfreeze(listOf(fresh)).getOrThrow()).isEmpty()
       expectThat(db.itemDao().getItem(fresh)!!.expirationDate)

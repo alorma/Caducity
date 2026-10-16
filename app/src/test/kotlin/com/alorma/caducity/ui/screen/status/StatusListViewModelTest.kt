@@ -120,6 +120,13 @@ class StatusListViewModelTest {
     sortOrder: Int = 0,
   ) = db.categoryDao().insertCategory(CategoryRoomEntity(id, id, "", sortOrder = sortOrder))
 
+  private suspend fun pausedDates() =
+    db
+      .itemDao()
+      .getAllItemsSync()
+      .map { it.pausedDate }
+      .toSet()
+
   private fun inDays(days: Int) = today.plus(days, DateTimeUnit.DAY)
 
   private suspend fun add(
@@ -234,7 +241,7 @@ class StatusListViewModelTest {
           .single()
           .rows
           .single()
-      val frozenAt = db.itemDao().getAllItemsSync().map { it.pausedDate }.toSet()
+      val frozenAt = pausedDates()
 
       vm.onUnfreeze(row)
       val snackbar = nextSnackbar()
@@ -245,7 +252,7 @@ class StatusListViewModelTest {
 
       snackbar.onAction!!.invoke()
       expectThat(vm.ready { it.rows.single().unitCount == 2 }.totalCount).isEqualTo(1)
-      expectThat(db.itemDao().getAllItemsSync().map { it.pausedDate }.toSet()).isEqualTo(frozenAt)
+      expectThat(pausedDates()).isEqualTo(frozenAt)
     }
 
   @Test

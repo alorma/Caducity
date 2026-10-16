@@ -184,6 +184,13 @@ class ItemActionsSheetViewModelTest {
       withTimeout(5_000) { snackbars.events.first() }
     }
 
+  private suspend fun pausedDates() =
+    db
+      .itemDao()
+      .getAllItemsSync()
+      .map { it.pausedDate }
+      .toSet()
+
   private suspend fun item(id: String) = db.itemDao().getAllItemsSync().first { it.id == id }
 
   private fun TestScope.keepAlive(vm: ItemActionsSheetViewModel) {
@@ -451,7 +458,7 @@ class ItemActionsSheetViewModelTest {
 
       vm.onSelect(2)
       vm.ready { it.selected == 2 }
-      val frozenAt = db.itemDao().getAllItemsSync().map { it.pausedDate }.toSet()
+      val frozenAt = pausedDates()
       vm.onFreezeToggle()
       val snackbar = nextSnackbar()
 
@@ -463,7 +470,7 @@ class ItemActionsSheetViewModelTest {
       }
 
       snackbar.onAction!!.invoke()
-      expectThat(db.itemDao().getAllItemsSync().map { it.pausedDate }.toSet()).isEqualTo(frozenAt)
+      expectThat(pausedDates()).isEqualTo(frozenAt)
     }
 
   @Test
