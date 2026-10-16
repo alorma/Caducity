@@ -523,6 +523,7 @@ private fun ActionButton(
     modifier = modifier.heightIn(min = 56.dp),
     shape = shape,
     colors = ButtonDefaults.buttonColors(containerColor = container, contentColor = content),
+    contentPadding = PaddingValues(horizontal = 12.dp),
   ) {
     Icon(icon, contentDescription = null, modifier = Modifier.size(22.dp))
     Spacer(Modifier.width(8.dp))
