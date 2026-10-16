@@ -16,17 +16,17 @@ locally; everything below was only checked by reading code. GitHub CI (ktlint, u
 
 ## Tasks
 
-- [x] a. Domain: `PantryDataSource.unfreezeAll`, `UnfreezeItemUseCase.unfreeze(ids)`, undo with snapshots (tests in `PantryUseCasesTest`).
-- [x] b. ☀ button on frozen rows (Congelats, Category, Pantry search) + second line «Congelat el {data}»; ViewModels + tests.
-- [x] c. Modal of 1 frozen unit: «Congelat el …» header, ☀ icon, no «Transforma», undo on the snackbar.
-- [x] d. Modal of several frozen units: selector («Primer les congelades fa més temps»), «Consumeix N» + «Descongela N», «Més accions» without «Canvia la data» / «Transforma».
+- [x] a. Domain: `PantryDataSource.unfreezeAll`, `UnfreezeItemUseCase.unfreeze(ids)`, undo with snapshots (tests in `PantryUseCasesTest`). (09050f90)
+- [x] b. ☀ button on frozen rows (Congelats, Category, Pantry search) + second line «Congelat el {data}»; ViewModels + tests. (00230168)
+- [x] c. Modal of 1 frozen unit: «Congelat el …» header, ☀ icon, no «Transforma», undo on the snackbar. (e148396f)
+- [x] d. Modal of several frozen units: selector («Primer les congelades fa més temps»), «Consumeix N» + «Descongela N», «Més accions» without «Canvia la data» / «Transforma». (e148396f)
 - [x] e. Strings ca/es/en (`action_unfreeze*`, `unfreeze_*`, `snack_unfrozen`, `frozen_on`, `status_action_unfreeze`, `item_actions_frozen_one/many`).
 - [x] Icon `sunny` added to `:icons` (generated with `icons/scripts/generate_symbols.py` data, file `Sunny.kt`).
 
-## Pending on the PC (needs compiler / emulator)
+## Closed on the PC (Pixel 8a)
 
-- [ ] Run `./gradlew ktlintCheck testDebugUnitTest` and fix anything CI did not catch.
-- [ ] Review the screenshot references (`update-screenshots` label): `itemActionsFrozenOneUnit`, `itemActionsFrozenSeveralUnits`, `statusFrozen` against the captures.
-- [ ] Look at it on the emulator: the ☀ row button, the header date format («4 oct»), the Congelats list.
-- [ ] Decide what to do with the info note in the single-unit modal (see above) and whether the picker should propose today + 3.
-- [ ] Release notes: «Ara pots descongelar productes» (ask; not edited).
+- [x] `ktlintCheck testDebugUnitTest` pass (6febb17b, 077567b5).
+- [x] Screenshot references reviewed against the captures; «Descongela N» clipping fixed (6febb17b).
+- [x] Checked on the Pixel 8a by Bernat.
+- [x] Info note shown and date picker proposes today + 3 (077567b5).
+- [x] Release notes 1.1.5 ca/es/en (f870b25e).
