@@ -6,9 +6,9 @@ locally; everything below was only checked by reading code. GitHub CI (ktlint, u
 
 ## Decisions taken with Bernat
 
-- The «Descongela» that already existed in the modal of a single frozen unit (date picker, proposed date = today + days
-  left when frozen) **stays**. Only its snackbar got a «Desfés». Because of that the info note «En descongelar, … 3 dies»
-  is **not** shown in that modal (it would contradict the picker). The string `unfreeze_hint` is added but unused.
+- The «Descongela» that already existed in the modal of a single frozen unit (date picker) **stays**, and its snackbar got
+  a «Desfés». Decided with Bernat: the picker proposes today + 3 days (same as the bulk action), so the info note
+  «En descongelar, … 3 dies» (`unfreeze_hint`) is shown in that modal.
 - Rows and the several-units modal use the spec rule: unfrozen units get today + 3 days (`UnfreezeItemUseCase.UNFREEZE_DAYS`).
 - «Descongela» on a row acts on the unit frozen the longest (`frozenSince`, tie → original date). The whole app now
   sorts an all-frozen list that way (`sortedNearestFirst`).

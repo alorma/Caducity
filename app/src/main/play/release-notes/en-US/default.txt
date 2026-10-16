@@ -1,2 +1,3 @@
-Version 1.1.2:
-• Small improvements and bug fixes.
+Version 1.1.5:
+• You can now defrost frozen products: from the list with one tap, or choose how many units from the product screen. Defrosted products expire in 3 days, and you can undo it.
+• Frozen products show how many units you have and when you froze them.
