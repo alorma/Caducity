@@ -15,9 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import androidx.core.graphics.drawable.toBitmap
 import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
 import com.alorma.caducity.config.resources.StringProvider
@@ -49,11 +47,6 @@ class AndroidExpirationNotificationHelper(
       settings.getBoolean(NotificationConfigDataSource.PREF_DAILY_REMINDER_ENABLED, false) &&
         checkNotificationPermission(),
     )
-
-  // Cache large icon bitmap to avoid repeated conversions
-  private val largeIconBitmap by lazy {
-    ContextCompat.getDrawable(context, R.drawable.ic_launcher_foreground)?.toBitmap()
-  }
 
   private fun checkNotificationPermission(): Boolean = context.hasNotificationPermission()
 
@@ -133,7 +126,6 @@ class AndroidExpirationNotificationHelper(
         .Builder(context, NotificationChannelManager.CHANNEL_ID_DAILY_REMINDER)
         .setSmallIcon(R.drawable.ic_notification)
         .setColor(accentColor().toArgb())
-        .also { b -> largeIconBitmap?.let { b.setLargeIcon(it) } }
         .setContentTitle(stringProvider.getQuantityString(R.plurals.notification_title, content.count, content.count))
         .setContentText(body)
         .setStyle(NotificationCompat.BigTextStyle().bigText(body))
