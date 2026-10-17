@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -16,14 +15,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import androidx.core.graphics.drawable.toBitmap
 import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
 import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.domain.NotificationConfigDataSource
-import com.alorma.caducity.feature.appicon.AndroidAppIconManager
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.alorma.caducity.ui.theme.ColorPalette
 import com.alorma.caducity.ui.theme.ThemePreferences
@@ -51,12 +47,6 @@ class AndroidExpirationNotificationHelper(
       settings.getBoolean(NotificationConfigDataSource.PREF_DAILY_REMINDER_ENABLED, false) &&
         checkNotificationPermission(),
     )
-
-  // The palette can change at any time, so the icon is not cached.
-  private fun largeIconBitmap(): Bitmap? =
-    ContextCompat
-      .getDrawable(context, AndroidAppIconManager.iconFor(themePreferences.colorPalette.value))
-      ?.toBitmap()
 
   private fun checkNotificationPermission(): Boolean = context.hasNotificationPermission()
 
@@ -136,7 +126,6 @@ class AndroidExpirationNotificationHelper(
         .Builder(context, NotificationChannelManager.CHANNEL_ID_DAILY_REMINDER)
         .setSmallIcon(R.drawable.ic_notification)
         .setColor(accentColor().toArgb())
-        .also { b -> largeIconBitmap()?.let { b.setLargeIcon(it) } }
         .setContentTitle(stringProvider.getQuantityString(R.plurals.notification_title, content.count, content.count))
         .setContentText(body)
         .setStyle(NotificationCompat.BigTextStyle().bigText(body))

@@ -3,9 +3,7 @@ package com.alorma.caducity.feature.appicon
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.annotation.DrawableRes
 import com.alorma.caducity.MainActivity
-import com.alorma.caducity.R
 import com.alorma.caducity.ui.theme.ColorPalette
 
 /** Keeps the launcher icon in sync with the chosen color palette. */
@@ -60,18 +58,6 @@ class AndroidAppIconManager(
         ColorPalette.FLECA -> "IconFleca"
         ColorPalette.BESSA -> "IconBessa"
         ColorPalette.CAMP -> "IconCamp"
-      }
-
-    /** Adaptive icon of a palette, the same the launcher shows for [aliasFor]. */
-    @DrawableRes
-    fun iconFor(palette: ColorPalette): Int =
-      when (palette) {
-        ColorPalette.DYNAMIC, ColorPalette.REBOST -> R.drawable.ic_icon_rebost
-        ColorPalette.NEVERA -> R.drawable.ic_icon_nevera
-        ColorPalette.HORT -> R.drawable.ic_icon_hort
-        ColorPalette.FLECA -> R.drawable.ic_icon_fleca
-        ColorPalette.BESSA -> R.drawable.ic_icon_bessa
-        ColorPalette.CAMP -> R.drawable.ic_icon_camp
       }
   }
 }
