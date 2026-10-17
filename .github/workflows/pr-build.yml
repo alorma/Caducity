@@ -58,6 +58,15 @@ jobs:
       - name: Build debug APK
         run: ./gradlew :app:assembleDebug
 
+      # TEMPORAL: només per provar la PR; revertir abans de fer merge (els workflows s'han de mantenir iguals que Converses)
+      - name: Upload APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: caducity-debug
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 3
+
   build-release:
     runs-on: ubuntu-latest
     timeout-minutes: 30
