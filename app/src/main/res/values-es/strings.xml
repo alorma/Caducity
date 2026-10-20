@@ -431,9 +431,34 @@
   <string name="category_editor_delete">Eliminar categoría</string>
   <string name="notification_channel_name">Aviso diario</string>
   <string name="notification_channel_description">Una notificación al día cuando algo está a punto de caducar</string>
-  <string name="notification_highlight_today">%1$s hoy</string>
-  <string name="notification_highlight_tomorrow">%1$s mañana</string>
-  <string name="notification_highlight_days">%1$s en %2$d días</string>
+  <string name="notification_day_today">hoy</string>
+  <string name="notification_day_tomorrow">mañana</string>
+  <string name="notification_title_single">%1$s caduca %2$s</string>
+  <string name="notification_product_day">%1$s %2$s</string>
+  <string name="notification_inbox_line">%1$s — %2$s</string>
+  <string name="notification_list_last">%1$s y %2$s</string>
+  <string name="notification_list_more">%1$s y %2$d más</string>
+  <string name="notification_more">y %d más</string>
+  <plurals name="notification_title_soon">
+    <item quantity="one">%d producto caduca pronto</item>
+    <item quantity="many">%d productos caducan pronto</item>
+    <item quantity="other">%d productos caducan pronto</item>
+  </plurals>
+  <plurals name="notification_title_same_day">
+    <item quantity="one">%1$d producto caduca %2$s</item>
+    <item quantity="many">%1$d productos caducan %2$s</item>
+    <item quantity="other">%1$d productos caducan %2$s</item>
+  </plurals>
+  <plurals name="notification_units">
+    <item quantity="one">%d unidad</item>
+    <item quantity="many">%d unidades</item>
+    <item quantity="other">%d unidades</item>
+  </plurals>
+  <plurals name="notification_units_short">
+    <item quantity="one">%d ud.</item>
+    <item quantity="many">%d ud.</item>
+    <item quantity="other">%d ud.</item>
+  </plurals>
   <string name="settings_section_alerts">Avisos</string>
   <string name="settings_section_appearance">Apariencia</string>
   <string name="settings_section_data">Tus datos</string>
@@ -450,11 +475,6 @@
   <string name="settings_dialog_save">Guardar</string>
   <string name="settings_dialog_cancel">Cancelar</string>
   <string name="settings_notifications_denied">Permite las notificaciones en los ajustes del sistema para recibir el aviso</string>
-  <plurals name="notification_title">
-    <item quantity="one">%d producto caduca pronto</item>
-    <item quantity="many">%d productos caducan pronto</item>
-    <item quantity="other">%d productos caducan pronto</item>
-  </plurals>
 
   <!-- Onboarding (redisseny) -->
   <string name="ob_welcome_title">Sabe qué caduca antes de que pase</string>

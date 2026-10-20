@@ -15,6 +15,6 @@ interface ExpirationNotificationHelper : ComposeNavigator<Any> {
 
   fun changeState(enabled: Boolean)
 
-  /** Shows the one notification of the day. */
-  fun showDailyReminder(content: ReminderContent)
+  /** Shows the reminders of the day (each replaces yesterday's) and removes the ones with nothing to say. */
+  fun showDailyReminders(reminders: DailyReminders)
 }

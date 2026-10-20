@@ -431,9 +431,34 @@
   <string name="category_editor_delete">Eliminar categoria</string>
   <string name="notification_channel_name">Avís diari</string>
   <string name="notification_channel_description">Una notificació al dia quan alguna cosa està a punt de caducar</string>
-  <string name="notification_highlight_today">%1$s avui</string>
-  <string name="notification_highlight_tomorrow">%1$s demà</string>
-  <string name="notification_highlight_days">%1$s d\'aquí a %2$d dies</string>
+  <string name="notification_day_today">avui</string>
+  <string name="notification_day_tomorrow">demà</string>
+  <string name="notification_title_single">%1$s caduca %2$s</string>
+  <string name="notification_product_day">%1$s %2$s</string>
+  <string name="notification_inbox_line">%1$s — %2$s</string>
+  <string name="notification_list_last">%1$s i %2$s</string>
+  <string name="notification_list_more">%1$s i %2$d més</string>
+  <string name="notification_more">i %d més</string>
+  <plurals name="notification_title_soon">
+    <item quantity="one">%d producte caduca aviat</item>
+    <item quantity="many">%d productes caduquen aviat</item>
+    <item quantity="other">%d productes caduquen aviat</item>
+  </plurals>
+  <plurals name="notification_title_same_day">
+    <item quantity="one">%1$d producte caduca %2$s</item>
+    <item quantity="many">%1$d productes caduquen %2$s</item>
+    <item quantity="other">%1$d productes caduquen %2$s</item>
+  </plurals>
+  <plurals name="notification_units">
+    <item quantity="one">%d unitat</item>
+    <item quantity="many">%d unitats</item>
+    <item quantity="other">%d unitats</item>
+  </plurals>
+  <plurals name="notification_units_short">
+    <item quantity="one">%d u.</item>
+    <item quantity="many">%d u.</item>
+    <item quantity="other">%d u.</item>
+  </plurals>
   <string name="settings_section_alerts">Avisos</string>
   <string name="settings_section_appearance">Aparença</string>
   <string name="settings_section_data">Les teves dades</string>
@@ -450,11 +475,6 @@
   <string name="settings_dialog_save">Desa</string>
   <string name="settings_dialog_cancel">Cancel·la</string>
   <string name="settings_notifications_denied">Permet les notificacions als ajustos del sistema per rebre l\'avís</string>
-  <plurals name="notification_title">
-    <item quantity="one">%d producte caduca aviat</item>
-    <item quantity="many">%d productes caduquen aviat</item>
-    <item quantity="other">%d productes caduquen aviat</item>
-  </plurals>
 
   <!-- Onboarding (redisseny) -->
   <string name="ob_welcome_title">Sàpigues què caduca abans que passi</string>
