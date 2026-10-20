@@ -6,46 +6,66 @@ import com.alorma.caducity.domain.model.normalizeForSearch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 
-/** One of the most urgent products named in the body: [daysLeft] is 0 for «avui», 1 for «demà». */
-data class ReminderHighlight(
+/** One product in the reminder: [units] are the ones that expire on [expiration], its nearest date. */
+data class ReminderProduct(
   val name: String,
+  val categoryName: String?,
+  val expiration: LocalDate,
   val daysLeft: Int,
+  val units: Int,
 )
 
-/** What the daily reminder says: [count] units about to expire and the first [highlights], most urgent first. */
+/** Products of one notification, nearest first. Only the first [MAX_SHOWN] are named, the rest are [hiddenCount]. */
 data class ReminderContent(
-  val count: Int,
-  val highlights: List<ReminderHighlight>,
+  val products: List<ReminderProduct>,
+) {
+  val shown: List<ReminderProduct> get() = products.take(MAX_SHOWN)
+  val hiddenCount: Int get() = products.size - shown.size
+  val sameDay: Boolean get() = products.map { it.expiration }.distinct().size == 1
+
+  companion object {
+    const val MAX_SHOWN = 5
+  }
+}
+
+/** [today]: products that expire today, in their own notification. [soon]: the rest of «Aviat». */
+data class DailyReminders(
+  val today: ReminderContent?,
+  val soon: ReminderContent?,
 )
 
-/** Pure: decides whether there is a daily reminder to show and what it says. Texts are built by the notifier. */
+/** Pure: decides which daily reminders there are and what they say. Texts are built by the notifier. */
 object NotificationContentBuilder {
-  const val MAX_HIGHLIGHTS = 3
-
   /**
-   * `null` when there is nothing to say. Only units that enter `SOON` today (first day inside the
-   * global [soonDays] margin) or expire today/tomorrow count, so long margins do not repeat for weeks.
+   * Counts products (never units) in `SOON`, the same set as the «Aviat» card on Home (frozen and expired
+   * are not `SOON`). A product whose nearest unit expires today goes to [DailyReminders.today] instead.
    */
   fun build(
     entries: List<PantryEntry>,
     today: LocalDate,
-    soonDays: Int,
-  ): ReminderContent? {
-    val soon =
+    categoryNames: Map<String, String> = emptyMap(),
+  ): DailyReminders {
+    val products =
       entries
         .filter { it.status == ExpiryStatus.SOON }
-        .filter {
-          val daysLeft = today.daysUntil(it.expiration)
-          daysLeft == soonDays || daysLeft <= 1
-        }.sortedWith(compareBy<PantryEntry> { it.expiration }.thenBy { it.name.normalizeForSearch() })
-    if (soon.isEmpty()) return null
+        .groupBy { it.groupKey }
+        .values
+        .map { units ->
+          val nearest = units.minOf { it.expiration }
+          val first = units.first { it.expiration == nearest }
+          ReminderProduct(
+            name = first.name,
+            categoryName = categoryNames[first.categoryId],
+            expiration = nearest,
+            daysLeft = today.daysUntil(nearest),
+            units = units.count { it.expiration == nearest },
+          )
+        }.sortedWith(compareBy<ReminderProduct> { it.expiration }.thenBy { it.name.normalizeForSearch() })
 
-    val highlights =
-      soon
-        .distinctBy { it.name.normalizeForSearch() }
-        .take(MAX_HIGHLIGHTS)
-        .map { ReminderHighlight(name = it.name, daysLeft = today.daysUntil(it.expiration)) }
-
-    return ReminderContent(count = soon.size, highlights = highlights)
+    val (expiringToday, soon) = products.partition { it.daysLeft <= 0 }
+    return DailyReminders(
+      today = expiringToday.takeIf { it.isNotEmpty() }?.let(::ReminderContent),
+      soon = soon.takeIf { it.isNotEmpty() }?.let(::ReminderContent),
+    )
   }
 }

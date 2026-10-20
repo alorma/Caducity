@@ -409,9 +409,30 @@
   <string name="category_editor_delete">Delete category</string>
   <string name="notification_channel_name">Daily reminder</string>
   <string name="notification_channel_description">One notification a day when something is about to expire</string>
-  <string name="notification_highlight_today">%1$s today</string>
-  <string name="notification_highlight_tomorrow">%1$s tomorrow</string>
-  <string name="notification_highlight_days">%1$s in %2$d days</string>
+  <string name="notification_day_today">today</string>
+  <string name="notification_day_tomorrow">tomorrow</string>
+  <string name="notification_title_single">%1$s expires %2$s</string>
+  <string name="notification_product_day">%1$s %2$s</string>
+  <string name="notification_inbox_line">%1$s — %2$s</string>
+  <string name="notification_list_last">%1$s and %2$s</string>
+  <string name="notification_list_more">%1$s and %2$d more</string>
+  <string name="notification_more">and %d more</string>
+  <plurals name="notification_title_soon">
+    <item quantity="one">%d product expires soon</item>
+    <item quantity="other">%d products expire soon</item>
+  </plurals>
+  <plurals name="notification_title_same_day">
+    <item quantity="one">%1$d product expires %2$s</item>
+    <item quantity="other">%1$d products expire %2$s</item>
+  </plurals>
+  <plurals name="notification_units">
+    <item quantity="one">%d unit</item>
+    <item quantity="other">%d units</item>
+  </plurals>
+  <plurals name="notification_units_short">
+    <item quantity="one">%d pc</item>
+    <item quantity="other">%d pcs</item>
+  </plurals>
   <string name="settings_section_alerts">Alerts</string>
   <string name="settings_section_appearance">Appearance</string>
   <string name="settings_section_data">Your data</string>
@@ -428,10 +449,6 @@
   <string name="settings_dialog_save">Save</string>
   <string name="settings_dialog_cancel">Cancel</string>
   <string name="settings_notifications_denied">Allow notifications in the system settings to get the reminder</string>
-  <plurals name="notification_title">
-    <item quantity="one">%d product expires soon</item>
-    <item quantity="other">%d products expire soon</item>
-  </plurals>
 
   <!-- Onboarding (redisseny) -->
   <string name="ob_welcome_title">Know what expires before it happens</string>
