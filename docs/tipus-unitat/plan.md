@@ -116,3 +116,21 @@ Approved by Bernat on 21 October. Next: phase 1 (unit type) in a new session.
 - Unit tests, migration 6→7 test, backup round trip with `unitType`/`amount`/`level`, `ktlintCheck`: green.
 - Not done: screenshot references of the existing screens (three of them differ on this machine with no change of ours),
   Pixel 8a upgrade with real data, TalkBack. Pending decision: the item actions sheet still says «unitats».
+
+## Phase 3 tasks: Mesurable (Grams, Mil·lilitres) — same branch and PR, no flag
+
+Decisions (Bernat, 21 October): no `RemoteConfig` flag (it goes to production when the feature is done); the rest of the proposal accepted:
+changing the type in Edit leaves one batch with the nearest date and the default amount (500 g / 500 mL) and warns
+«Canviar el tipus reinicia la quantitat»; thawing a partial batch keeps it as its own batch (no merging with the fresh one).
+
+- [ ] 9. Domain of the amount: `amount` through the read models; adding a Mesurable creates one batch; consuming subtracts (0 removes
+  the product); freezing splits the batch (the frozen part is a new row with the chosen amount); Undo restores. Unit tests.
+- [ ] 10. Row text: «500 g», «750 mL», «1,2 kg», «1,5 L» (≥ 1000); formatter + strings ca/es/en. Tests + `ProductRow` screenshot.
+- [ ] 11. `TipusTria` parent tabs (Grapats inactive), Quantitat row of Mesurable in Add (− 500 g +, steps 50 g / 100 mL, chips),
+  warning in Edit when the parent changes. ViewModel tests, screenshots, emulator.
+- [ ] 12. `TipusGrams` modal (header, «Quant n'has fet servir?», stepper, chips, progress bar, «Consumeix N g», «Congela»,
+  «Més accions»); ✓ and ❄ on the row open it. Previews, screenshot vs `TipusGrams.png`, emulator.
+- [ ] 13. Frozen and expired (§3.1): frozen modal with «Consumeix N» / «Descongela N» (thaw → Aviat today + 3 days), expired only
+  «Llença». Tests + emulator.
+- [ ] 14. Transforma: a Mesurable ingredient is consumed whole, no «N de M» selector. ViewModel tests.
+- [ ] 15. Seed and debug fakes with grams / millilitres; final validation on the emulator; release notes.
