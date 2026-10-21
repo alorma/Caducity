@@ -8,10 +8,12 @@ import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.data.datasource.RoomBackupDataSource
 import com.alorma.caducity.domain.backup.BackupDataSource
 import com.alorma.caducity.domain.domainModule
+import com.alorma.caducity.domain.usecase.ConsumeAmountUseCase
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.FindProductUseCase
+import com.alorma.caducity.domain.usecase.FreezeAmountUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.SetProductCanFreezeUseCase
@@ -204,6 +206,8 @@ val appModule =
     singleOf(::CreateCategoryUseCase)
     singleOf(::SetProductCanFreezeUseCase)
     singleOf(::SetProductUnitTypeUseCase)
+    singleOf(::ConsumeAmountUseCase)
+    singleOf(::FreezeAmountUseCase)
     singleOf(::FindProductUseCase)
     viewModel { params ->
       CategoryEditorViewModel(

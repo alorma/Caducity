@@ -44,5 +44,6 @@ class ObserveItemsUseCase(
     createdAt = createdAt,
     canFreeze = canFreeze,
     unitType = unitType,
+    amount = amount,
   )
 }

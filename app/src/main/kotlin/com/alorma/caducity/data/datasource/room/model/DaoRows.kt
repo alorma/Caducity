@@ -34,4 +34,6 @@ data class ActiveItemRow(
   val canFreeze: Boolean,
   /** How the product is counted; a unit without product is always counted in units. */
   val unitType: UnitType,
+  /** Amount of a measured batch (g or mL); null for units. */
+  val amount: Int?,
 )

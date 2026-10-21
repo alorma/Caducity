@@ -29,7 +29,24 @@ enum class UnitType(
   HANDFULS(UnitParent.HANDFULS),
   ;
 
+  /** Amount (g or mL) a measured product starts with; null for the types that are not measured. */
+  val defaultAmount: Int? get() = if (parent == UnitParent.MEASURED) DEFAULT_AMOUNT else null
+
+  /** Step of the − / + selectors, in g or mL; null for the types that are not measured. */
+  val amountStep: Int?
+    get() =
+      when (this) {
+        GRAMS -> 50
+        MILLILITRES -> 100
+        else -> null
+      }
+
   companion object {
     val DEFAULT = UNITS
+
+    const val DEFAULT_AMOUNT = 500
+
+    /** Largest amount of a single batch, in g or mL (100 kg / 100 L). */
+    const val MAX_AMOUNT = 100_000
   }
 }

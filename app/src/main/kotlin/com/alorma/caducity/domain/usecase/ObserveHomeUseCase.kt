@@ -10,6 +10,7 @@ import com.alorma.caducity.domain.model.PantryEntry
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.model.productCount
 import com.alorma.caducity.domain.model.sortedNearestFirst
+import com.alorma.caducity.domain.model.sumAmount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -95,6 +96,7 @@ class ObserveHomeUseCase(
       itemIds = sorted.map { it.itemId },
       canFreeze = nearest.canFreeze,
       unitType = nearest.unitType,
+      amount = sorted.sumAmount(),
     )
   }
 }

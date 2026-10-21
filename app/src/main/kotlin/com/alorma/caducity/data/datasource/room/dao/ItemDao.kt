@@ -26,7 +26,7 @@ interface ItemDao {
       "COALESCE(p.name, i.identifier) AS name, i.expirationDate AS expirationDate, i.pausedDate AS pausedDate, " +
       "i.remainingDays AS remainingDays, i.createdAt AS createdAt, " +
       "COALESCE(p.canFreeze, c.canFreeze, 1) AS canFreeze, " +
-      "COALESCE(p.unitType, 'UNITS') AS unitType " +
+      "COALESCE(p.unitType, 'UNITS') AS unitType, i.amount AS amount " +
       "FROM items i LEFT JOIN products p ON p.id = i.productId " +
       "LEFT JOIN categories c ON c.id = i.categoryId " +
       "WHERE i.consumedDate IS NULL AND i.discardedDate IS NULL AND i.transformedDate IS NULL",
@@ -38,6 +38,12 @@ interface ItemDao {
       "WHERE consumedDate IS NULL AND discardedDate IS NULL AND transformedDate IS NULL GROUP BY categoryId",
   )
   fun getActiveCountByCategory(): Flow<List<CategoryActiveCountRow>>
+
+  @Query(
+    "SELECT * FROM items WHERE productId = :productId " +
+      "AND consumedDate IS NULL AND discardedDate IS NULL AND transformedDate IS NULL",
+  )
+  suspend fun getActiveItemsOfProduct(productId: String): List<ItemRoomEntity>
 
   @Query("SELECT * FROM items WHERE id = :itemId")
   suspend fun getItem(itemId: String): ItemRoomEntity?

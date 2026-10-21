@@ -10,4 +10,6 @@ data class ItemSnapshot(
   val discardedMillis: Long?,
   val transformedMillis: Long?,
   val transformationId: String?,
+  /** Amount of a measured batch (g or mL); null for units. */
+  val amount: Int? = null,
 )
