@@ -131,7 +131,8 @@ changing the type in Edit leaves one batch with the nearest date and the default
   Texts of the Mesurable rule line («Una quantitat · el ✓ et demana quant») and examples are mine: the design only shows Unitats.
 - [x] 12. `TipusGrams` modal (header, «Quant n'has fet servir?», stepper, chips, progress bar, «Consumeix N g», «Congela»,
   «Més accions»); ✓ and ❄ on the row open it. Previews, screenshot vs `TipusGrams.png`, emulator. (d83a5632)
-- [ ] 13. Frozen and expired (§3.1): frozen modal with «Consumeix N» / «Descongela N» (thaw → Aviat today + 3 days), expired only
-  «Llença». Tests + emulator.
+- [x] 13. Frozen and expired (§3.1): frozen modal with «Consumeix N» / «Descongela N» (thaw → Aviat today + 3 days), expired only
+  «Llença». Tests + emulator. (17bf9110)
+  Validated on emulator-5554: freeze from the modal, frozen row, thaw → «D'aquí 3 dies».
 - [ ] 14. Transforma: a Mesurable ingredient is consumed whole, no «N de M» selector. ViewModel tests.
 - [ ] 15. Seed and debug fakes with grams / millilitres; final validation on the emulator; release notes.
