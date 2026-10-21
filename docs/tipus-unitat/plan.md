@@ -129,8 +129,8 @@ changing the type in Edit leaves one batch with the nearest date and the default
 - [x] 11. `TipusTria` parent tabs (Grapats inactive), Quantitat row of Mesurable in Add (− 500 g +, steps 50 g / 100 mL, chips), (f48c72d6)
   warning in Edit when the parent changes. ViewModel tests, screenshots, emulator. (4b7cd34b)
   Texts of the Mesurable rule line («Una quantitat · el ✓ et demana quant») and examples are mine: the design only shows Unitats.
-- [ ] 12. `TipusGrams` modal (header, «Quant n'has fet servir?», stepper, chips, progress bar, «Consumeix N g», «Congela»,
-  «Més accions»); ✓ and ❄ on the row open it. Previews, screenshot vs `TipusGrams.png`, emulator.
+- [x] 12. `TipusGrams` modal (header, «Quant n'has fet servir?», stepper, chips, progress bar, «Consumeix N g», «Congela»,
+  «Més accions»); ✓ and ❄ on the row open it. Previews, screenshot vs `TipusGrams.png`, emulator. (d83a5632)
 - [ ] 13. Frozen and expired (§3.1): frozen modal with «Consumeix N» / «Descongela N» (thaw → Aviat today + 3 days), expired only
   «Llença». Tests + emulator.
 - [ ] 14. Transforma: a Mesurable ingredient is consumed whole, no «N de M» selector. ViewModel tests.
