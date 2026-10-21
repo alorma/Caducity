@@ -160,9 +160,9 @@ Decisions (Bernat, 21 October): go ahead with the proposal. In Transforma a Grap
 picks the level that is left afterwards («Ja no en queda» by default, or Poc / La meitat, only levels below the current one).
 New handful starts at «Molt»; tapping the row opens the modal; release notes later.
 
-- [ ] 19. Data and domain: `HandfulLevel` (Molt / La meitat / Poc) with a `TypeConverter` and explicit codes, `items.level` typed
+- [x] 19. Data and domain: `HandfulLevel` (Molt / La meitat / Poc) with a `TypeConverter` and explicit codes, `items.level` typed
   (no migration: same TEXT column), level through the read models and backup; use cases: lower one level (Poc → consumed), set a
-  level, freeze the whole product keeping its level, undo; changing the type in Edit leaves one batch at «Molt».
+  level, freeze the whole product keeping its level, undo; changing the type in Edit leaves one batch at «Molt». (a75a315c)
 - [ ] 20. Row text «Queda molt / la meitat / poc» (`ProductRow`, Transforma, reminders), strings ca/es/en.
 - [ ] 21. Add / Edit: Grapats tab in `TipusTria` (no subtypes), «Queda» Molt / Meitat / Poc row (default Molt), reset warning.
 - [ ] 22. `TipusAUll` modal («Quant en queda?», three big buttons that change the level at once, «Ja no en queda», «Congela»,
