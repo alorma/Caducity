@@ -123,8 +123,8 @@ Decisions (Bernat, 21 October): no `RemoteConfig` flag (it goes to production wh
 changing the type in Edit leaves one batch with the nearest date and the default amount (500 g / 500 mL) and warns
 «Canviar el tipus reinicia la quantitat»; thawing a partial batch keeps it as its own batch (no merging with the fresh one).
 
-- [ ] 9. Domain of the amount: `amount` through the read models; adding a Mesurable creates one batch; consuming subtracts (0 removes
-  the product); freezing splits the batch (the frozen part is a new row with the chosen amount); Undo restores. Unit tests.
+- [x] 9. Domain of the amount: `amount` through the read models; adding a Mesurable creates one batch; consuming subtracts (0 removes
+  the product); freezing splits the batch (the frozen part is a new row with the chosen amount); Undo restores. Unit tests. (e076d89b)
 - [ ] 10. Row text: «500 g», «750 mL», «1,2 kg», «1,5 L» (≥ 1000); formatter + strings ca/es/en. Tests + `ProductRow` screenshot.
 - [ ] 11. `TipusTria` parent tabs (Grapats inactive), Quantitat row of Mesurable in Add (− 500 g +, steps 50 g / 100 mL, chips),
   warning in Edit when the parent changes. ViewModel tests, screenshots, emulator.
