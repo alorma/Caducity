@@ -661,5 +661,82 @@ class AddViewModelTest {
 
   // endregion
 
+  @Test
+  fun `picking a measured type starts at the default amount and keeps it between grams and millilitres`() =
+    runTest {
+      category("dry")
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      expectThat(vm.state.value.isMeasured).isEqualTo(false)
+
+      vm.onUnitTypeChange(UnitType.GRAMS)
+      expectThat(vm.state.value.isMeasured).isEqualTo(true)
+      expectThat(vm.state.value.amount).isEqualTo(500)
+
+      vm.onAmountChange(750)
+      vm.onUnitTypeChange(UnitType.MILLILITRES)
+      expectThat(vm.state.value.amount).isEqualTo(750)
+
+      vm.onAmountChange(0)
+      expectThat(vm.state.value.amount).isEqualTo(1)
+      vm.onAmountChange(UnitType.MAX_AMOUNT * 2)
+      expectThat(vm.state.value.amount).isEqualTo(UnitType.MAX_AMOUNT)
+    }
+
+  @Test
+  fun `saving a measured product creates one batch with the amount`() =
+    runTest {
+      category("dry")
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.fill(name = "Pasta", categoryId = "dry")
+      vm.onQuantityChange(4)
+      vm.onUnitTypeChange(UnitType.GRAMS)
+      vm.onAmountChange(750)
+
+      vm.navigationSideEffects.test {
+        vm.onSave()
+        expectThat(awaitItem()).isEqualTo(AddNavigationSideEffect.Close)
+      }
+
+      expectThat(items().single().amount).isEqualTo(750)
+      expectThat(products().single().unitType).isEqualTo(UnitType.GRAMS)
+    }
+
+  @Test
+  fun `a type of another parent than the existing product warns that the quantity resets`() =
+    runTest {
+      category("dry")
+      val pasta = addProduct.add("Pasta", "dry", inDays(30), 3, false).getOrThrow()
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.fill(name = "pasta", categoryId = "dry")
+      vm.await { it.productUnitType != null }
+      expectThat(vm.state.value.resetsQuantity).isEqualTo(false)
+
+      vm.onUnitTypeChange(UnitType.PACKS)
+      expectThat(vm.state.value.resetsQuantity).isEqualTo(false)
+      vm.onUnitTypeChange(UnitType.GRAMS)
+      expectThat(vm.state.value.resetsQuantity).isEqualTo(true)
+    }
+
+  @Test
+  fun `editing a unit to a measured type leaves one batch with the default amount`() =
+    runTest {
+      category("dry")
+      val pasta = addProduct.add("Pasta", "dry", inDays(30), 3, false).getOrThrow()
+      val vm = viewModel(itemId = pasta.itemIds.first())
+      vm.await { it.isEditing && it.name == "Pasta" }
+      vm.onUnitTypeChange(UnitType.GRAMS)
+
+      vm.navigationSideEffects.test {
+        vm.onSave()
+        expectThat(awaitItem()).isEqualTo(AddNavigationSideEffect.Close)
+      }
+
+      expectThat(items().single().amount).isEqualTo(500)
+      expectThat(products().single().unitType).isEqualTo(UnitType.GRAMS)
+    }
+
   // endregion
 }

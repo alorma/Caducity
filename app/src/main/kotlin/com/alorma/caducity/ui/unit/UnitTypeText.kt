@@ -10,9 +10,11 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Inventory2
 import com.alorma.caducity.base.ui.icons.symbols.Kitchen
 import com.alorma.caducity.base.ui.icons.symbols.LocalDrink
+import com.alorma.caducity.base.ui.icons.symbols.Scale
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.Tag
 import com.alorma.caducity.base.ui.icons.symbols.TakeoutDining
+import com.alorma.caducity.base.ui.icons.symbols.WaterDrop
 import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
 
@@ -53,10 +55,10 @@ fun UnitType.label(): String =
       UnitType.TUPPERS -> R.string.unit_type_tuppers
       UnitType.PACKS -> R.string.unit_type_packs
       UnitType.CANS -> R.string.unit_type_cans
+      UnitType.GRAMS -> R.string.unit_type_grams
+      UnitType.MILLILITRES -> R.string.unit_type_millilitres
       UnitType.BRICKS -> R.string.unit_type_bricks
       UnitType.UNITS,
-      UnitType.GRAMS,
-      UnitType.MILLILITRES,
       UnitType.HANDFULS,
       -> R.string.unit_type_units
     },
@@ -70,10 +72,10 @@ fun UnitType.example(): String =
       UnitType.TUPPERS -> R.string.unit_type_tuppers_example
       UnitType.PACKS -> R.string.unit_type_packs_example
       UnitType.CANS -> R.string.unit_type_cans_example
+      UnitType.GRAMS -> R.string.unit_type_grams_example
+      UnitType.MILLILITRES -> R.string.unit_type_millilitres_example
       UnitType.BRICKS -> R.string.unit_type_bricks_example
       UnitType.UNITS,
-      UnitType.GRAMS,
-      UnitType.MILLILITRES,
       UnitType.HANDFULS,
       -> R.string.unit_type_units_example
     },
@@ -86,9 +88,39 @@ val UnitType.icon: ImageVector
       UnitType.PACKS -> Symbols.Outlined.Inventory2
       UnitType.CANS -> Symbols.Outlined.Kitchen
       UnitType.BRICKS -> Symbols.Outlined.LocalDrink
+      UnitType.GRAMS -> Symbols.Outlined.Scale
+      UnitType.MILLILITRES -> Symbols.Outlined.WaterDrop
       UnitType.UNITS,
-      UnitType.GRAMS,
-      UnitType.MILLILITRES,
       UnitType.HANDFULS,
       -> Symbols.Outlined.Tag
+    }
+
+/** Name of the parent type in the picker tabs: «Unitats», «Mesurable». */
+@Composable
+fun UnitParent.label(): String =
+  stringResource(
+    when (this) {
+      UnitParent.UNITS -> R.string.unit_parent_units
+      UnitParent.MEASURED -> R.string.unit_parent_measured
+      UnitParent.HANDFULS -> R.string.unit_parent_units
+    },
+  )
+
+/** One line saying how the parent type counts: «D'una en una · el ✓ en gasta una». */
+@Composable
+fun UnitParent.rule(): String =
+  stringResource(
+    when (this) {
+      UnitParent.UNITS -> R.string.unit_parent_units_rule
+      UnitParent.MEASURED -> R.string.unit_parent_measured_rule
+      UnitParent.HANDFULS -> R.string.unit_parent_units_rule
+    },
+  )
+
+val UnitParent.icon: ImageVector
+  get() =
+    when (this) {
+      UnitParent.UNITS -> Symbols.Outlined.Tag
+      UnitParent.MEASURED -> Symbols.Outlined.Scale
+      UnitParent.HANDFULS -> Symbols.Outlined.Tag
     }

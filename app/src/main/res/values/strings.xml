@@ -315,6 +315,7 @@
     <item quantity="other">%d bricks</item>
   </plurals>
   <string name="unit_type_title">How do you count it?</string>
+  <string name="unit_type_subtitle">First the type, then what to call it.</string>
   <string name="unit_type_section">What to call it</string>
   <string name="unit_type_units">Units</string>
   <string name="unit_type_tuppers">Containers</string>
@@ -325,6 +326,15 @@
   <string name="unit_type_tuppers_example">1 container, 2 containers</string>
   <string name="unit_type_packs_example">1 pack, 3 packs</string>
   <string name="unit_type_cans_example">1 can, 4 cans</string>
+  <string name="unit_type_grams">Grams</string>
+  <string name="unit_type_millilitres">Millilitres</string>
+  <string name="unit_type_grams_example">500 g, 1.2 kg</string>
+  <string name="unit_type_millilitres_example">750 mL, 1.5 L</string>
+  <string name="unit_parent_units">Whole</string>
+  <string name="unit_parent_measured">By amount</string>
+  <string name="unit_parent_units_rule">One by one · ✓ uses one</string>
+  <string name="unit_parent_measured_rule">One amount · ✓ asks how much</string>
+  <string name="unit_type_change_warning">Changing the type resets the quantity</string>
   <string name="unit_type_bricks_example">1 brick, 2 bricks</string>
   <string name="home_mark_consumed">Mark %1$s as consumed</string>
   <string name="home_see_pantry">See the pantry</string>

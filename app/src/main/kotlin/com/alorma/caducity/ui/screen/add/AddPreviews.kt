@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.datetime.LocalDate
@@ -46,7 +47,18 @@ private fun AddFormPreview() {
         )
         ExpiryDateField("211026", LocalDate(2026, 10, 21), today, {}, {})
         QuickDateRow(onSelect = {})
+        UnitTypeRow(unitType = UnitType.UNITS, onClick = {})
         QuantityFrozenRow(quantity = 3, frozen = true, onQuantityChange = {}, onFrozenChange = {})
+        UnitTypeRow(unitType = UnitType.GRAMS, onClick = {})
+        QuantityFrozenRow(
+          quantity = 1,
+          unitType = UnitType.GRAMS,
+          amount = 500,
+          frozen = false,
+          onQuantityChange = {},
+          onFrozenChange = {},
+        )
+        AmountChips(unitType = UnitType.GRAMS, amount = 500, onSelect = {})
         CanFreezeCard(
           canFreeze = true,
           categoryName = "Dairy",

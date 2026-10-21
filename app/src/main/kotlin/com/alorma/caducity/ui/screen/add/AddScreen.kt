@@ -144,15 +144,29 @@ fun AddScreen(
               onClick = viewModel::onUnitTypeClick,
               shapePosition = if (state.isEditing) ShapePosition.Single else ShapePosition.Start,
             )
+            if (state.resetsQuantity) {
+              Text(
+                text = stringResource(R.string.unit_type_change_warning),
+                style = CaducityTheme.typography.bodySmall,
+                color = CaducityTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+              )
+            }
             if (!state.isEditing) {
               QuantityFrozenRow(
                 quantity = state.quantity,
+                unitType = state.unitType,
+                amount = state.amount,
+                onAmountChange = viewModel::onAmountChange,
                 frozen = state.frozenEffective,
                 onQuantityChange = viewModel::onQuantityChange,
                 onFrozenChange = viewModel::onFrozenChange,
                 canFreeze = canFreeze != false,
               )
             }
+          }
+          if (!state.isEditing && state.isMeasured) {
+            AmountChips(unitType = state.unitType, amount = state.amount, onSelect = viewModel::onAmountChange)
           }
           if (canFreeze != null && category != null) {
             CanFreezeCard(

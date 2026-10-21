@@ -332,6 +332,7 @@
     <item quantity="other">%d bricks</item>
   </plurals>
   <string name="unit_type_title">Com ho comptes?</string>
+  <string name="unit_type_subtitle">Primer el tipus, després com es diu.</string>
   <string name="unit_type_section">Com es diu</string>
   <string name="unit_type_units">Unitats</string>
   <string name="unit_type_tuppers">Tuppers</string>
@@ -342,6 +343,15 @@
   <string name="unit_type_tuppers_example">1 tupper, 2 tuppers</string>
   <string name="unit_type_packs_example">1 paquet, 3 paquets</string>
   <string name="unit_type_cans_example">1 llauna, 4 llaunes</string>
+  <string name="unit_type_grams">Grams</string>
+  <string name="unit_type_millilitres">Mil·lilitres</string>
+  <string name="unit_type_grams_example">500 g, 1,2 kg</string>
+  <string name="unit_type_millilitres_example">750 mL, 1,5 L</string>
+  <string name="unit_parent_units">Unitats</string>
+  <string name="unit_parent_measured">Mesurable</string>
+  <string name="unit_parent_units_rule">D\'una en una · el ✓ en gasta una</string>
+  <string name="unit_parent_measured_rule">Una quantitat · el ✓ et demana quant</string>
+  <string name="unit_type_change_warning">Canviar el tipus reinicia la quantitat</string>
   <string name="unit_type_bricks_example">1 brick, 2 bricks</string>
   <string name="home_mark_consumed">Marca %1$s com a consumit</string>
   <string name="home_see_pantry">Veure el rebost</string>

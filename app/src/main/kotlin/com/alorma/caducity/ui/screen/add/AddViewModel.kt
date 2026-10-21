@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.add
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.model.PantryError
+import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.AddProductUseCase
@@ -199,7 +200,17 @@ class AddViewModel(
 
   /** The type is a property of the product: it is saved with it, and applies to every unit. */
   fun onUnitTypeChange(unitType: UnitType) {
-    _state.update { it.copy(unitTypeOverride = unitType) }
+    _state.update {
+      val startsMeasured = unitType.parent == UnitParent.MEASURED && it.unitType.parent != UnitParent.MEASURED
+      it.copy(
+        unitTypeOverride = unitType,
+        amount = if (startsMeasured) unitType.defaultAmount ?: it.amount else it.amount,
+      )
+    }
+  }
+
+  fun onAmountChange(amount: Int) {
+    _state.update { it.copy(amount = amount.coerceIn(1, UnitType.MAX_AMOUNT)) }
   }
 
   /** Looks up the override and the unit type of the existing product that matches the typed name in the selected category. */
@@ -251,6 +262,8 @@ class AddViewModel(
               date = date,
               quantity = current.quantity,
               frozen = current.frozenEffective,
+              unitType = current.unitType,
+              amount = current.amount.takeIf { current.isMeasured },
             ).map { it.productId }
         }
       // The overrides apply to the whole product, not only the unit, and is stored only if the user changed it.
