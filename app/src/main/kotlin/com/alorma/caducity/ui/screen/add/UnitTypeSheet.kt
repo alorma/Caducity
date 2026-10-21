@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItemDefaults
@@ -43,8 +45,8 @@ import com.alorma.caducity.ui.unit.icon
 import com.alorma.caducity.ui.unit.label
 import com.alorma.caducity.ui.unit.rule
 
-/** Parents that can be picked today: Grapats arrives with its own phase. */
-private val PICKABLE_PARENTS = listOf(UnitParent.UNITS, UnitParent.MEASURED)
+/** The three parents of the design; Grapats has no subtypes, so picking its tab picks the type. */
+private val PICKABLE_PARENTS = listOf(UnitParent.UNITS, UnitParent.MEASURED, UnitParent.HANDFULS)
 
 /** «Com ho comptes?» sheet: first the parent type (tabs), then the name inside it, each with an example of how it reads. */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -57,7 +59,12 @@ fun UnitTypeSheet(
   var parent by remember { mutableStateOf(selected.parent) }
   val types = UnitType.entries.filter { it.parent == parent }
   Column(
-    modifier = modifier.fillMaxWidth().padding(horizontal = ScreenGutter).padding(bottom = 24.dp),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .verticalScroll(rememberScrollState())
+        .padding(horizontal = ScreenGutter)
+        .padding(bottom = 24.dp),
     verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing),
   ) {
     Text(
@@ -76,7 +83,9 @@ fun UnitTypeSheet(
           parent = option,
           selected = option == parent,
           position = tabPosition(index, PICKABLE_PARENTS.size),
-          onClick = { parent = option },
+          onClick = {
+            if (option == UnitParent.HANDFULS) onSelect(UnitType.HANDFULS) else parent = option
+          },
           modifier = Modifier.weight(1f),
         )
       }
@@ -188,6 +197,16 @@ internal fun UnitTypeSheetTuppersPreview() {
   PreviewTheme {
     Surface(color = CaducityTheme.colorScheme.surfaceContainerLow) {
       UnitTypeSheet(selected = UnitType.TUPPERS, onSelect = {}, modifier = Modifier.padding(top = 24.dp))
+    }
+  }
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun UnitTypeSheetHandfulsPreview() {
+  PreviewTheme {
+    Surface(color = CaducityTheme.colorScheme.surfaceContainerLow) {
+      UnitTypeSheet(selected = UnitType.HANDFULS, onSelect = {}, modifier = Modifier.padding(top = 24.dp))
     }
   }
 }

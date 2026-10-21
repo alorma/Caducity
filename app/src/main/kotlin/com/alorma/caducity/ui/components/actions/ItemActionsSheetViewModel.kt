@@ -5,6 +5,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.ItemSnapshot
 import com.alorma.caducity.domain.model.ItemStatus
 import com.alorma.caducity.domain.model.UnitParent
@@ -20,6 +21,7 @@ import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
+import com.alorma.caducity.domain.usecase.SetHandfulLevelUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.toExpirationInstant
 import com.alorma.caducity.feature.tracking.EventTracker
@@ -56,6 +58,7 @@ class ItemActionsSheetViewModel(
   private val freezeItem: FreezeItemUseCase,
   private val consumeAmount: ConsumeAmountUseCase,
   private val freezeAmount: FreezeAmountUseCase,
+  private val setHandfulLevel: SetHandfulLevelUseCase,
   private val unfreezeItem: UnfreezeItemUseCase,
   private val rescheduleItem: RescheduleItemUseCase,
   private val discardItems: DiscardItemsUseCase,
@@ -95,6 +98,7 @@ class ItemActionsSheetViewModel(
               it.status,
               it.frozenSince?.date(),
               it.amount,
+              it.level,
             )
           }
         val expiredCount = actionUnits.count { it.status == ExpiryStatus.EXPIRED }
@@ -145,6 +149,14 @@ class ItemActionsSheetViewModel(
 
   override fun onAmountSelect(amount: Int) {
     chosenSpend.value = amount
+  }
+
+  /** Tapping a level changes it at once; no confirmation, no snackbar (the modal shows it). */
+  override fun onLevelSelect(level: HandfulLevel) {
+    val ready = ready() ?: return
+    val id = ready.units.firstOrNull()?.id ?: return
+    eventTracker.trackAction(ItemActionAction("set_level"))
+    viewModelScope.launch { setHandfulLevel.set(id, level).onFailure { failed() } }
   }
 
   override fun onToggleMore() {

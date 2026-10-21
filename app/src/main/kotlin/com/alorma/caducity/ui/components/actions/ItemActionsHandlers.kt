@@ -1,11 +1,16 @@
 package com.alorma.caducity.ui.components.actions
 
+import com.alorma.caducity.domain.model.HandfulLevel
+
 /** What the sheet's buttons can ask for; the view model implements it, previews use [NoItemActionsHandlers]. */
 interface ItemActionsHandlers {
   fun onSelect(count: Int)
 
   /** The g or mL a measured product spends (− / + selector and shortcuts). */
   fun onAmountSelect(amount: Int)
+
+  /** The level a handful product takes (the three big buttons). */
+  fun onLevelSelect(level: HandfulLevel)
 
   fun onToggleMore()
 
@@ -42,6 +47,8 @@ object NoItemActionsHandlers : ItemActionsHandlers {
   override fun onSelect(count: Int) = Unit
 
   override fun onAmountSelect(amount: Int) = Unit
+
+  override fun onLevelSelect(level: HandfulLevel) = Unit
 
   override fun onToggleMore() = Unit
 

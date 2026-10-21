@@ -1,12 +1,13 @@
 package com.alorma.caducity.domain.usecase.fakedata
 
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitType
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 /**
  * The pantry of the Play and social screenshots (spec §12): 61 products in 6 categories, most counted in units and
- * eleven measured ones (grams, millilitres), every category with its usual duration. Caducats 7, Aviat 8, Frescos 43, Congelats 3.
+ * eleven measured ones (grams, millilitres) and four handful ones, every category with its usual duration. Caducats 7, Aviat 8, Frescos 43, Congelats 3.
  *
  * Dates are relative to today, which plays the reference day (Sunday 11 October) with «Aviat» = 3 days:
  * the screenshots match when the app's «Aviat» setting is 3 days.
@@ -19,9 +20,12 @@ class FakeShowcaseDataStrategy : FakeDataStrategy {
       units: Int = 1,
       unitType: UnitType = UnitType.DEFAULT,
       amount: Int? = null,
+      level: HandfulLevel? = null,
     ) = ProductConfig(
       name,
-      List(units) { ItemConfig(identifier = "", expirationDate = now.plus(daysAhead.days), amount = amount) },
+      List(
+        units,
+      ) { ItemConfig(identifier = "", expirationDate = now.plus(daysAhead.days), amount = amount, level = level) },
       unitType,
     )
 
@@ -79,10 +83,10 @@ class FakeShowcaseDataStrategy : FakeDataStrategy {
           listOf(
             product("Pastanagues", daysAhead = -2),
             product("Tomàquets", daysAhead = -1),
-            product("Espinacs", daysAhead = 0),
+            product("Espinacs", daysAhead = 0, unitType = UnitType.HANDFULS, level = HandfulLevel.HALF),
             product("Maduixes", daysAhead = 1),
             product("Plàtans", daysAhead = 5, units = 5),
-            product("Enciam", daysAhead = 5),
+            product("Enciam", daysAhead = 5, unitType = UnitType.HANDFULS, level = HandfulLevel.LOTS),
             product("Raïm", daysAhead = 6),
             product("Pebrot vermell", daysAhead = 8),
             product("Carbassó", daysAhead = 10),
@@ -146,8 +150,8 @@ class FakeShowcaseDataStrategy : FakeDataStrategy {
         usualDurationDays = 3,
         products =
           listOf(
-            product("Pa de motlle", daysAhead = 3),
-            product("Pa de pagès", daysAhead = 4),
+            product("Pa de motlle", daysAhead = 3, unitType = UnitType.HANDFULS, level = HandfulLevel.LITTLE),
+            product("Pa de pagès", daysAhead = 4, unitType = UnitType.HANDFULS, level = HandfulLevel.HALF),
             product("Croissants", daysAhead = 5, units = 4),
           ),
       ),

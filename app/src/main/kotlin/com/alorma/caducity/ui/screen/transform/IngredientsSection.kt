@@ -70,6 +70,7 @@ import com.alorma.caducity.base.ui.icons.symbols.Close
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.UnfoldMore
 import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.imageVector
 import com.alorma.caducity.ui.screen.add.ScreenGutter
@@ -105,6 +106,7 @@ fun IngredientsSection(
   onRemove: (key: String) -> Unit,
   onAdd: () -> Unit,
   onAmountChange: (key: String, amount: Int) -> Unit = { _, _ -> },
+  onRemainingChange: (key: String, level: HandfulLevel?) -> Unit = { _, _ -> },
   modifier: Modifier = Modifier,
   /** Opened without ingredients: the section shows a single dashed «Afegeix» row until there is one. */
   optional: Boolean = false,
@@ -168,6 +170,7 @@ fun IngredientsSection(
           onEditingChange = { editingKey = if (it) ingredient.key else null },
           onCountChange = { onCountChange(ingredient.key, it) },
           onAmountChange = { onAmountChange(ingredient.key, it) },
+          onRemainingChange = { onRemainingChange(ingredient.key, it) },
           onRemove = { onRemove(ingredient.key) },
           modifier =
             Modifier.animateItem().semantics {
@@ -269,6 +272,7 @@ private fun IngredientCard(
   onEditingChange: (Boolean) -> Unit,
   onCountChange: (Int) -> Unit,
   onAmountChange: (Int) -> Unit,
+  onRemainingChange: (HandfulLevel?) -> Unit,
   onRemove: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -311,6 +315,12 @@ private fun IngredientCard(
             AmountStepper(ingredient = ingredient, onChange = onAmountChange)
           } else {
             AmountChip(ingredient = ingredient, onClick = { onEditingChange(true) })
+          }
+        } else if (ingredient.handful) {
+          if (editing) {
+            RemainingStepper(ingredient = ingredient, onChange = onRemainingChange)
+          } else {
+            RemainingChip(ingredient = ingredient, onClick = { onEditingChange(true) })
           }
         } else if (ingredient.available > 1) {
           if (editing) {
@@ -516,6 +526,86 @@ private fun AmountStepper(
     StepperButton(
       enabled = amount < total,
       onClick = { onChange(minOf(total, amount + step)) },
+      label = stringResource(R.string.add_quantity_increase),
+    ) {
+      Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+    }
+  }
+}
+
+@Composable
+private fun remainingText(level: HandfulLevel?): String =
+  stringResource(
+    when (level) {
+      null -> R.string.handful_remaining_none
+      HandfulLevel.HALF -> R.string.handful_remaining_half
+      HandfulLevel.LITTLE -> R.string.handful_remaining_little
+      HandfulLevel.LOTS -> R.string.handful_left_lots
+    },
+  )
+
+/** `Queda poc ⇅` or `Ja no en queda ⇅`: what is left of a handful ingredient; tapping it turns it into the stepper. */
+@Composable
+private fun RemainingChip(
+  ingredient: IngredientUi,
+  onClick: () -> Unit,
+) {
+  val text = remainingText(ingredient.remainingLevel)
+  AssistChip(
+    onClick = onClick,
+    shape = CaducityShapes.full,
+    colors = AssistChipDefaults.assistChipColors(containerColor = CaducityTheme.colorScheme.surfaceContainerHigh),
+    border = null,
+    modifier = Modifier.semantics { contentDescription = text },
+    label = { Text(text = text, style = CaducityTheme.typography.labelLarge, maxLines = 1) },
+    trailingIcon = {
+      Icon(Symbols.Outlined.UnfoldMore, contentDescription = null, modifier = Modifier.size(16.dp))
+    },
+  )
+}
+
+/** `− Queda poc +`: moves through what it can be left at, from nothing up to the level just below the current one. */
+@Composable
+private fun RemainingStepper(
+  ingredient: IngredientUi,
+  onChange: (HandfulLevel?) -> Unit,
+) {
+  val pill = CaducityTheme.colorScheme.surface
+  val options = ingredient.remainingOptions
+  val index = options.indexOf(ingredient.remainingLevel).coerceAtLeast(0)
+  Row(
+    modifier =
+      Modifier
+        .fillMaxWidth()
+        .height(48.dp)
+        .drawBehind {
+          val pillHeight = 32.dp.toPx()
+          drawRoundRect(
+            color = pill,
+            topLeft = Offset(0f, (size.height - pillHeight) / 2),
+            size = Size(size.width, pillHeight),
+            cornerRadius = CornerRadius(pillHeight / 2),
+          )
+        },
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    StepperButton(
+      enabled = index > 0,
+      onClick = { onChange(options[index - 1]) },
+      label = stringResource(R.string.add_quantity_decrease),
+    ) {
+      Text("−", style = CaducityTheme.typography.titleMedium)
+    }
+    Text(
+      text = remainingText(options[index]),
+      style = CaducityTheme.typography.labelMedium,
+      textAlign = TextAlign.Center,
+      maxLines = 1,
+      modifier = Modifier.weight(1f).semantics { liveRegion = LiveRegionMode.Polite },
+    )
+    StepperButton(
+      enabled = index < options.lastIndex,
+      onClick = { onChange(options[index + 1]) },
       label = stringResource(R.string.add_quantity_increase),
     ) {
       Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))

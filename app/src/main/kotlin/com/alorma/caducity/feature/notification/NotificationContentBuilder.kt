@@ -1,6 +1,7 @@
 package com.alorma.caducity.feature.notification
 
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.PantryEntry
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.model.normalizeForSearch
@@ -18,6 +19,8 @@ data class ReminderProduct(
   val unitType: UnitType = UnitType.DEFAULT,
   /** Total amount of the batches that expire that day (g or mL); null for units. */
   val amount: Int? = null,
+  /** Level of a handful product; null for the other types. */
+  val level: HandfulLevel? = null,
 )
 
 /** Products of one notification, nearest first. Only the first [MAX_SHOWN] are named, the rest are [hiddenCount]. */
@@ -66,6 +69,7 @@ object NotificationContentBuilder {
             units = units.count { it.expiration == nearest },
             unitType = first.unitType,
             amount = units.filter { it.expiration == nearest }.sumAmount(),
+            level = first.level,
           )
         }.sortedWith(compareBy<ReminderProduct> { it.expiration }.thenBy { it.name.normalizeForSearch() })
 

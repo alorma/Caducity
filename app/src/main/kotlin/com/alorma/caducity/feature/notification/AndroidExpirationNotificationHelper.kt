@@ -29,6 +29,7 @@ import com.alorma.caducity.ui.theme.colors.accent
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import com.alorma.caducity.ui.unit.countPlural
 import com.alorma.caducity.ui.unit.formatAmount
+import com.alorma.caducity.ui.unit.leftRes
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import java.util.Locale
@@ -199,7 +200,9 @@ class AndroidExpirationNotificationHelper(
     product: ReminderProduct,
     short: Boolean,
   ): String? =
-    if (product.amount != null && product.unitType.parent == UnitParent.MEASURED) {
+    if (product.level != null && product.unitType.parent == UnitParent.HANDFULS) {
+      stringProvider.getString(product.level.leftRes)
+    } else if (product.amount != null && product.unitType.parent == UnitParent.MEASURED) {
       formatAmount(product.unitType, product.amount)
     } else {
       product.units.takeIf { it > 1 }?.let {

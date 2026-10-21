@@ -16,6 +16,7 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
@@ -736,6 +737,46 @@ class AddViewModelTest {
 
       expectThat(items().single().amount).isEqualTo(500)
       expectThat(products().single().unitType).isEqualTo(UnitType.GRAMS)
+    }
+
+  @Test
+  fun `saving a handful product creates one batch at the chosen level`() =
+    runTest {
+      category("dry")
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.fill(name = "Peanuts", categoryId = "dry")
+      vm.onQuantityChange(4)
+      vm.onUnitTypeChange(UnitType.HANDFULS)
+      expectThat(vm.state.value.isHandful).isEqualTo(true)
+      expectThat(vm.state.value.level).isEqualTo(HandfulLevel.LOTS)
+      vm.onLevelChange(HandfulLevel.HALF)
+
+      vm.navigationSideEffects.test {
+        vm.onSave()
+        expectThat(awaitItem()).isEqualTo(AddNavigationSideEffect.Close)
+      }
+
+      expectThat(items().single().level).isEqualTo(HandfulLevel.HALF)
+      expectThat(items().single().amount).isNull()
+      expectThat(products().single().unitType).isEqualTo(UnitType.HANDFULS)
+    }
+
+  @Test
+  fun `editing a unit to handfuls leaves one batch at a lot`() =
+    runTest {
+      category("dry")
+      val peanuts = addProduct.add("Peanuts", "dry", inDays(30), 3, false).getOrThrow()
+      val vm = viewModel(itemId = peanuts.itemIds.first())
+      vm.await { it.isEditing && it.name == "Peanuts" }
+      vm.onUnitTypeChange(UnitType.HANDFULS)
+
+      vm.navigationSideEffects.test {
+        vm.onSave()
+        expectThat(awaitItem()).isEqualTo(AddNavigationSideEffect.Close)
+      }
+
+      expectThat(items().single().level).isEqualTo(HandfulLevel.LOTS)
     }
 
   // endregion

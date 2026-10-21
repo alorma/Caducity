@@ -8,6 +8,7 @@ import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.backup.BackupDataSource
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryDefaults
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.IngredientSpend
 import com.alorma.caducity.domain.model.NewItem
 import com.alorma.caducity.domain.model.TransformResult
@@ -77,6 +78,7 @@ class PopulateFakeDataUseCase(
           shouldTransform: Boolean = false,
           frozenDaysAgo: Int = 0,
           amount: Int? = null,
+          level: HandfulLevel? = null,
         ): String? {
           val newItem =
             NewItem(
@@ -84,6 +86,7 @@ class PopulateFakeDataUseCase(
               productId = productIdFor(productName),
               expirationDate = expirationDate,
               amount = amount,
+              level = level,
             )
           val itemId = itemDataSource.addItem(category.id, newItem)
           when {
@@ -107,6 +110,7 @@ class PopulateFakeDataUseCase(
                 item.shouldTransform,
                 item.frozenDaysAgo,
                 item.amount,
+                item.level,
               )
             }
           if (ingredientIds.isNotEmpty()) {

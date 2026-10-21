@@ -2,7 +2,9 @@ package com.alorma.caducity.ui.screen.home
 
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.R
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.HomeRow
+import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.ObserveHomeUseCase
@@ -18,6 +20,7 @@ import com.alorma.caducity.feature.tracking.NavigateToSearchAction
 import com.alorma.caducity.feature.tracking.NavigateToStatusListFromHomeAction
 import com.alorma.caducity.feature.tracking.NavigateToTransformAction
 import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.components.actions.lowerWithSnackbar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.flow.SharingStarted
@@ -78,6 +81,10 @@ class HomeViewModel(
 
   /** ✓ marks **one** unit (the closest to expire) of the row as consumed (P6), with undo. */
   fun onConsume(row: HomeRow) {
+    if (row.unitType.parent == UnitParent.HANDFULS) {
+      lowerHandful(row.nearestItemId, row.name, row.level)
+      return
+    }
     eventTracker.trackAction(ItemActionAction("consume_home"))
     viewModelScope.launch {
       consumeItem
@@ -95,6 +102,20 @@ class HomeViewModel(
         }.onFailure {
           showSnackbar(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
         }
+    }
+  }
+
+  private fun lowerHandful(
+    itemId: String,
+    name: String,
+    level: HandfulLevel?,
+  ) {
+    eventTracker.trackAction(ItemActionAction("lower_level_home"))
+    viewModelScope.launch {
+      consumeItem
+        .lowerWithSnackbar(itemId, name, level, restoreItems)
+        .onSuccess { showSnackbar(it) }
+        .onFailure { showSnackbar(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error)) }
     }
   }
 

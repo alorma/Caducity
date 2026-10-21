@@ -55,6 +55,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Close
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.imageVector
 import com.alorma.caducity.ui.screen.add.ScreenGutter
@@ -76,6 +77,7 @@ class ResultActions(
   val onFrozenCountChange: (Int, Int) -> Unit,
   val onUnitTypeClick: (Int) -> Unit = {},
   val onAmountChange: (Int, Int) -> Unit = { _, _ -> },
+  val onLevelChange: (Int, HandfulLevel) -> Unit = { _, _ -> },
 )
 
 private val ResultCardHeight = 92.dp

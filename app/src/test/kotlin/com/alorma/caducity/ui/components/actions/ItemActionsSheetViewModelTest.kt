@@ -17,6 +17,7 @@ import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
@@ -30,6 +31,7 @@ import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
+import com.alorma.caducity.domain.usecase.SetHandfulLevelUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.toExpirationInstant
 import com.alorma.caducity.feature.tracking.EventTracker
@@ -161,6 +163,7 @@ class ItemActionsSheetViewModelTest {
       freezeItem = FreezeItemUseCase(itemDataSource, pantry, clock),
       consumeAmount = ConsumeAmountUseCase(pantry, clock),
       freezeAmount = FreezeAmountUseCase(pantry, clock),
+      setHandfulLevel = SetHandfulLevelUseCase(pantry),
       unfreezeItem = UnfreezeItemUseCase(itemDataSource, pantry, clock),
       rescheduleItem = RescheduleItemUseCase(itemDataSource, pantry),
       discardItems = DiscardItemsUseCase(pantry, clock),
@@ -404,6 +407,51 @@ class ItemActionsSheetViewModelTest {
 
       expectThat(item(first).discardedDate).isNotNull()
       expectThat(item(second).discardedDate).isNotNull()
+    }
+
+  @Test
+  fun `tapping a level in the modal takes it at once and the buttons act on the product`() =
+    runTest {
+      category("dairy")
+      val id =
+        addProduct
+          .add("Peanuts", "dairy", inDays(20), 1, false, UnitType.HANDFULS, level = HandfulLevel.LOTS)
+          .getOrThrow()
+          .itemIds
+          .single()
+      val vm = viewModel(id)
+      keepAlive(vm)
+      val state = vm.ready()
+      expectThat(state.handful).isEqualTo(true)
+      expectThat(state.level).isEqualTo(HandfulLevel.LOTS)
+
+      vm.onLevelSelect(HandfulLevel.LITTLE)
+      expectThat(vm.ready { it.level == HandfulLevel.LITTLE }.level).isEqualTo(HandfulLevel.LITTLE)
+      expectThat(item(id).level).isEqualTo(HandfulLevel.LITTLE)
+
+      vm.onConsume()
+      nextSnackbar()
+      expectThat(item(id).consumedDate).isNotNull()
+    }
+
+  @Test
+  fun `an expired handful product only discards`() =
+    runTest {
+      category("dairy")
+      val id =
+        addProduct
+          .add("Peanuts", "dairy", inDays(-2), 1, false, UnitType.HANDFULS, level = HandfulLevel.HALF)
+          .getOrThrow()
+          .itemIds
+          .single()
+      val vm = viewModel(id)
+      keepAlive(vm)
+      expectThat(vm.ready().expired).isEqualTo(true)
+
+      vm.onDiscardSelected()
+      nextSnackbar()
+
+      expectThat(item(id).discardedDate).isNotNull()
     }
 
   @Test

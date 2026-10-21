@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.components.actions
 
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
 import kotlinx.datetime.LocalDate
@@ -15,6 +16,8 @@ data class ActionUnit(
   val frozenSince: LocalDate? = null,
   /** Amount of a measured batch (g or mL); null for units. */
   val amount: Int? = null,
+  /** Level of a handful batch; null for the other types. */
+  val level: HandfulLevel? = null,
 )
 
 sealed interface ItemActionsSheetState {
@@ -41,6 +44,12 @@ sealed interface ItemActionsSheetState {
     val amountSpend: Int = 0,
   ) : ItemActionsSheetState {
     private val nearest: ActionUnit get() = units.first()
+
+    /** A handful product (Grapats): one batch with a level instead of units. */
+    val handful: Boolean get() = unitType.parent == UnitParent.HANDFULS
+
+    /** Level of the batch the buttons act on. */
+    val level: HandfulLevel? get() = nearest.level
 
     /** A measured product: one batch with an amount instead of units. */
     val measured: Boolean get() = unitType.parent == UnitParent.MEASURED

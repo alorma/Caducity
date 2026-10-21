@@ -152,7 +152,15 @@ fun AddScreen(
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
               )
             }
-            if (!state.isEditing) {
+            if (!state.isEditing && state.isHandful) {
+              LevelFrozenRow(
+                level = state.level,
+                frozen = state.frozenEffective,
+                onLevelChange = viewModel::onLevelChange,
+                onFrozenChange = viewModel::onFrozenChange,
+                canFreeze = canFreeze != false,
+              )
+            } else if (!state.isEditing) {
               QuantityFrozenRow(
                 quantity = state.quantity,
                 unitType = state.unitType,

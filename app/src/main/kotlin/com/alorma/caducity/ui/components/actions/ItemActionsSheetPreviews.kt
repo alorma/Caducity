@@ -6,6 +6,7 @@ import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
@@ -19,7 +20,8 @@ private fun unit(
   status: ExpiryStatus,
   frozenSince: LocalDate? = null,
   amount: Int? = null,
-) = ActionUnit(id, LocalDate(2026, 10, day), status, frozenSince, amount)
+  level: HandfulLevel? = null,
+) = ActionUnit(id, LocalDate(2026, 10, day), status, frozenSince, amount, level)
 
 private fun ready(
   units: List<ActionUnit>,
@@ -195,6 +197,18 @@ internal fun ItemActionsMeasuredExpiredPreview() {
       daysLeft = -2,
       unitType = UnitType.GRAMS,
       amountSpend = 100,
+    ),
+  )
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun ItemActionsHandfulPreview() {
+  SheetPreview(
+    ready(
+      units = listOf(unit("a", 13, ExpiryStatus.SOON, level = HandfulLevel.HALF)),
+      daysLeft = 2,
+      unitType = UnitType.HANDFULS,
     ),
   )
 }

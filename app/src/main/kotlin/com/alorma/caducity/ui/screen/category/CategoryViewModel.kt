@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.ProductRowModel
+import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
@@ -21,6 +22,7 @@ import com.alorma.caducity.feature.tracking.NavigateToCalendarFromCategoryAction
 import com.alorma.caducity.feature.tracking.NavigateToCategoryEditorAction
 import com.alorma.caducity.feature.tracking.NavigateToItemActionsFromCategoryAction
 import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.components.actions.lowerWithSnackbar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -82,6 +84,16 @@ class CategoryViewModel(
 
   /** ✓ marks **one** unit of the row as consumed, with undo. */
   fun onConsume(row: ProductRowModel) {
+    if (row.unitType.parent == UnitParent.HANDFULS) {
+      eventTracker.trackAction(ItemActionAction("lower_level_category"))
+      viewModelScope.launch {
+        consumeItem
+          .lowerWithSnackbar(row.nearestItemId, row.name, row.level, restoreItems)
+          .onSuccess { showSnackbar(it) }
+          .onFailure { showSnackbar(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error)) }
+      }
+      return
+    }
     eventTracker.trackAction(ItemActionAction("consume_category"))
     undoable(
       ids = listOf(row.nearestItemId),

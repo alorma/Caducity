@@ -6,6 +6,7 @@ import com.alorma.caducity.config.calendar.FirstDayOfWeekPreferences
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.model.ProductRowDetail
 import com.alorma.caducity.domain.model.ProductRowModel
+import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.toProductRow
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
@@ -18,6 +19,7 @@ import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.feature.tracking.ItemActionAction
 import com.alorma.caducity.feature.tracking.NavigateToItemActionsFromCalendarAction
 import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.components.actions.lowerWithSnackbar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -121,6 +123,10 @@ class CalendarViewModel(
   // The round buttons of a row act on **one** unit: the one that expires first (like Home).
 
   fun onConsume(row: ProductRowModel) {
+    if (row.unitType.parent == UnitParent.HANDFULS) {
+      lowerHandful(row)
+      return
+    }
     actOnNearest(row, "consume_calendar", R.string.item_actions_snackbar_consumed, AppFeedbackType.Success) {
       consumeItem.consume(it)
     }
@@ -135,6 +141,16 @@ class CalendarViewModel(
   fun onDiscard(row: ProductRowModel) {
     actOnNearest(row, "discard_calendar", R.string.status_snackbar_discarded, AppFeedbackType.Info) {
       discardItems.discard(it)
+    }
+  }
+
+  private fun lowerHandful(row: ProductRowModel) {
+    eventTracker.trackAction(ItemActionAction("lower_level_calendar"))
+    viewModelScope.launch {
+      consumeItem
+        .lowerWithSnackbar(row.nearestItemId, row.name, row.level, restoreItems)
+        .onSuccess { showSnackbar(it) }
+        .onFailure { showSnackbar(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error)) }
     }
   }
 

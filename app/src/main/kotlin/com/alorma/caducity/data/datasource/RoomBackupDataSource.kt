@@ -8,6 +8,7 @@ import com.alorma.caducity.data.backup.BackupProduct
 import com.alorma.caducity.data.backup.BackupProductItem
 import com.alorma.caducity.data.backup.BackupTransformation
 import com.alorma.caducity.data.datasource.room.AppDatabase
+import com.alorma.caducity.data.datasource.room.HandfulLevelConverters
 import com.alorma.caducity.data.datasource.room.UnitTypeConverters
 import com.alorma.caducity.data.datasource.room.dao.CategoryDao
 import com.alorma.caducity.data.datasource.room.dao.ItemDao
@@ -28,6 +29,7 @@ class RoomBackupDataSource(
   private val appClock: AppClock,
 ) : BackupDataSource {
   private val unitTypeConverters = UnitTypeConverters()
+  private val levelConverters = HandfulLevelConverters()
 
   override suspend fun exportBackup(): BackupData {
     val categories = categoryDao.getCategoriesOrderedSync()
@@ -97,7 +99,7 @@ class RoomBackupDataSource(
       transformationId = item.transformationId,
       originTransformationId = item.originTransformationId,
       amount = item.amount,
-      level = item.level,
+      level = levelConverters.levelToCode(item.level),
     )
 
   override suspend fun importBackup(backup: BackupData) {
@@ -154,7 +156,7 @@ class RoomBackupDataSource(
               transformationId = item.transformationId,
               originTransformationId = item.originTransformationId,
               amount = item.amount,
-              level = item.level,
+              level = levelConverters.codeToLevel(item.level),
             )
           itemDao.insertItem(itemEntity)
         }
@@ -177,7 +179,7 @@ class RoomBackupDataSource(
                 transformationId = item.transformationId,
                 originTransformationId = item.originTransformationId,
                 amount = item.amount,
-                level = item.level,
+                level = levelConverters.codeToLevel(item.level),
               )
             itemDao.insertItem(itemEntity)
           }

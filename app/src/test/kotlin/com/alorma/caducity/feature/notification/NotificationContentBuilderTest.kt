@@ -1,6 +1,7 @@
 package com.alorma.caducity.feature.notification
 
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.PantryEntry
 import com.alorma.caducity.domain.model.UnitType
 import kotlinx.datetime.LocalDate
@@ -65,6 +66,13 @@ class NotificationContentBuilderTest {
     }
     val soon = build(listOf(grams("a", 300), grams("b", 200))).soon
     expectThat(soon!!.products.single().amount).isEqualTo(500)
+  }
+
+  @Test
+  fun `the reminder keeps the level of a handful product`() {
+    val peanuts = entry("Cacauets", 1).copy(unitType = UnitType.HANDFULS, level = HandfulLevel.LITTLE)
+    val soon = build(listOf(peanuts)).soon
+    expectThat(soon!!.products.single().level).isEqualTo(HandfulLevel.LITTLE)
   }
 
   @Test

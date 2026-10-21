@@ -152,4 +152,26 @@ changing the type in Edit leaves one batch with the nearest date and the default
 ## Phase 1 and 3 closed (21 October)
 
 Approved by Bernat («endavant») and opened as one PR from `feature/tipus-unitat`. Pending for later: release-notes bullet for
-Mesurable, phases 4 (Grapats) and 5 is covered by tasks 14 and 17 (Transforma), Pixel 8a upgrade with real data, TalkBack.
+Mesurable and Grapats, Pixel 8a upgrade with real data, TalkBack. (Phase 5, Transforma, was covered by tasks 14, 17, 18 and 24.)
+
+## Phase 4 tasks: Grapats (branch `feature/grapats`, own PR)
+
+Decisions (Bernat, 21 October): go ahead with the proposal. In Transforma a Grapats ingredient is **not** spent whole: the user
+picks the level that is left afterwards («Ja no en queda» by default, or Poc / La meitat, only levels below the current one).
+New handful starts at «Molt»; tapping the row opens the modal; release notes later.
+
+- [x] 19. Data and domain: `HandfulLevel` (Molt / La meitat / Poc) with a `TypeConverter` and explicit codes, `items.level` typed
+  (no migration: same TEXT column), level through the read models and backup; use cases: lower one level (Poc → consumed), set a
+  level, freeze the whole product keeping its level, undo; changing the type in Edit leaves one batch at «Molt». (a75a315c)
+- [x] 20. Row text «Queda molt / la meitat / poc» (`ProductRow`, Transforma, reminders), strings ca/es/en. (eb106881)
+- [x] 21. Add / Edit: Grapats tab in `TipusTria` (no subtypes), «Queda» Molt / Meitat / Poc row (default Molt), reset warning. (bfe0ac2f)
+  Validated on emulator-5554 (Add with Grapats at «Meitat» → «Queda la meitat · D'aquí 7 dies»). The «Congelat» toggle sits under «Queda» (no room side by side).
+- [x] 22. `TipusAUll` modal («Quant en queda?», three big buttons that change the level at once, «Ja no en queda», «Congela»,
+  «Més accions»); the row ✓ lowers a level with a snackbar, ❄ freezes the whole product. ()
+  Validated on emulator-5554: ✓ on the row → «Cacauets: ara en queda poc · Desfés»; tapping «Molt» in the modal changes it at once.
+- [x] 23. Frozen (✓ lowers a level, ☀ thaws everything to today + 3 days) and expired (only «Llença») Grapats (§3.1). ()
+  Behaviour came with tasks 19–22 (✓ keeps it frozen, ☀ thaws, expired only «Llença»); this commit adds the tests. Emulator: frozen Cacauets «Queda molt · Congelat…» then ✓ → «la meitat», still frozen. The modal ☀ keeps the date picker proposing today + 3 days, like a unit.
+- [x] 24. Transforma: Grapats ingredient with a «what is left» level selector; results can be Grapats («Queda» selector). ()
+  Validated on emulator-5554: Cacauets «Queda poc» left, result «Barreja» as Grapats «Queda molt».
+- [x] 25. Seed and debug fakes with handfuls, final validation on the emulator, PR. ()
+  Seed v6 with handfuls imports on emulator-5554 (Spinach «Queda la meitat», Bread «Queda poc»). PR next.

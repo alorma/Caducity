@@ -5,6 +5,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.StatusListData
+import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.sortedNearestFirst
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
@@ -18,6 +19,7 @@ import com.alorma.caducity.feature.tracking.ItemActionAction
 import com.alorma.caducity.feature.tracking.NavigateToAddFromStatusListAction
 import com.alorma.caducity.feature.tracking.NavigateToItemActionsFromStatusListAction
 import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.components.actions.lowerWithSnackbar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.flow.SharingStarted
@@ -68,7 +70,20 @@ class StatusListViewModel(
 
   // region One unit (the row's round buttons)
 
-  fun onConsume(row: StatusRow) = consume(row.nearest.itemId, row.name)
+  fun onConsume(row: StatusRow) {
+    val nearest = row.nearest
+    if (nearest.unitType.parent == UnitParent.HANDFULS) {
+      eventTracker.trackAction(ItemActionAction("lower_level_status"))
+      viewModelScope.launch {
+        consumeItem
+          .lowerWithSnackbar(nearest.itemId, row.name, nearest.level, restoreItems)
+          .onSuccess { showSnackbar(it) }
+          .onFailure { showSnackbar(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error)) }
+      }
+    } else {
+      consume(nearest.itemId, row.name)
+    }
+  }
 
   fun onFreeze(row: StatusRow) = freeze(row.nearest.itemId, row.name)
 

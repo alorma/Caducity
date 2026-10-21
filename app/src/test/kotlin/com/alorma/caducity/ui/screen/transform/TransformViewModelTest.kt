@@ -16,6 +16,7 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
@@ -251,6 +252,72 @@ class TransformViewModelTest {
           .single()
       expectThat(result.measured).isEqualTo(false)
       expectThat(result.unitType).isEqualTo(UnitType.PACKS)
+    }
+
+  @Test
+  fun `a handful ingredient is left at a level below the current one or at nothing`() =
+    runTest {
+      ensureCategories()
+      val added =
+        addProduct
+          .add(
+            "Peanuts",
+            "meat",
+            inDays(20),
+            1,
+            false,
+            UnitType.HANDFULS,
+            level = HandfulLevel.LOTS,
+          ).getOrThrow()
+      val vm = ready(added.itemIds)
+      val ingredient =
+        vm.state.value.ingredients
+          .single()
+
+      expectThat(ingredient.handful).isEqualTo(true)
+      expectThat(ingredient.remainingLevel).isNull()
+      expectThat(ingredient.remainingOptions).isEqualTo(listOf(null, HandfulLevel.LITTLE, HandfulLevel.HALF))
+
+      vm.onIngredientRemainingChange(ingredient.key, HandfulLevel.HALF)
+      expectThat(
+        vm.state.value.ingredients
+          .single()
+          .remainingLevel,
+      ).isEqualTo(HandfulLevel.HALF)
+      vm.onIngredientRemainingChange(ingredient.key, HandfulLevel.LOTS)
+      expectThat(
+        vm.state.value.ingredients
+          .single()
+          .remainingLevel,
+      ).isEqualTo(HandfulLevel.HALF)
+      vm.onIngredientCountChange(ingredient.key, 3)
+      expectThat(
+        vm.state.value.ingredients
+          .single()
+          .count,
+      ).isEqualTo(1)
+    }
+
+  @Test
+  fun `a handful result picks its level and is a single batch`() =
+    runTest {
+      val added = add("Chicken", days = 3, quantity = 1)
+      val vm = ready(added.itemIds)
+      val id =
+        vm.state.value.results
+          .single()
+          .id
+      vm.onServingsChange(id, 4)
+
+      vm.onUnitTypeChange(id, UnitType.HANDFULS)
+      vm.onLevelChange(id, HandfulLevel.LITTLE)
+
+      val result =
+        vm.state.value.results
+          .single()
+      expectThat(result.handful).isEqualTo(true)
+      expectThat(result.servings).isEqualTo(1)
+      expectThat(result.level).isEqualTo(HandfulLevel.LITTLE)
     }
 
   @Test

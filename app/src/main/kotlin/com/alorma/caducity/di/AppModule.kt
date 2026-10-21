@@ -16,6 +16,7 @@ import com.alorma.caducity.domain.usecase.FindProductUseCase
 import com.alorma.caducity.domain.usecase.FreezeAmountUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
+import com.alorma.caducity.domain.usecase.SetHandfulLevelUseCase
 import com.alorma.caducity.domain.usecase.SetProductCanFreezeUseCase
 import com.alorma.caducity.domain.usecase.SetProductUnitTypeUseCase
 import com.alorma.caducity.domain.usecase.TransformItemsUseCase
@@ -207,6 +208,7 @@ val appModule =
     singleOf(::SetProductCanFreezeUseCase)
     singleOf(::SetProductUnitTypeUseCase)
     singleOf(::ConsumeAmountUseCase)
+    singleOf(::SetHandfulLevelUseCase)
     singleOf(::FreezeAmountUseCase)
     singleOf(::FindProductUseCase)
     viewModel { params ->
@@ -270,6 +272,7 @@ val appModule =
         freezeItem = get(),
         consumeAmount = get(),
         freezeAmount = get(),
+        setHandfulLevel = get(),
         unfreezeItem = get(),
         rescheduleItem = get(),
         discardItems = get(),

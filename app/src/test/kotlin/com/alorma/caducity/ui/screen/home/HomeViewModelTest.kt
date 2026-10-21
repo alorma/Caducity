@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import com.alorma.caducity.R
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.config.time.TodayProvider
@@ -16,6 +17,8 @@ import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.HandfulLevel
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
@@ -59,6 +62,8 @@ import strikt.assertions.hasSize
 import strikt.assertions.isEmpty
 import strikt.assertions.isEqualTo
 import strikt.assertions.isFalse
+import strikt.assertions.isNotNull
+import strikt.assertions.isNull
 import strikt.assertions.isTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -130,6 +135,12 @@ class HomeViewModelTest {
     frozen: Boolean = false,
   ): List<String> = addProduct.add(name, "dairy", inDays(days), quantity, frozen).getOrThrow().itemIds
 
+  private suspend fun peanuts(level: HandfulLevel): List<String> =
+    addProduct
+      .add("Peanuts", "dairy", inDays(1), 1, false, UnitType.HANDFULS, level = level)
+      .getOrThrow()
+      .itemIds
+
   private fun viewModel(): HomeViewModel {
     val thresholds = AppExpirationThresholdsImpl(thresholdPreferences)
     val items = ObserveItemsUseCase(pantry, thresholds, todayProvider)
@@ -146,6 +157,85 @@ class HomeViewModelTest {
   private suspend fun HomeViewModel.ready(predicate: (HomeState.Ready) -> Boolean = { true }): HomeState.Ready =
     withContext(Dispatchers.Default) {
       withTimeout(5_000) { state.first { it is HomeState.Ready && predicate(it) } as HomeState.Ready }
+    }
+
+  @Test
+  fun `the check of a handful row lowers its level and says what is left, and undo gives it back`() =
+    runTest {
+      category("dairy")
+      val id = peanuts(HandfulLevel.LOTS).single()
+      val vm = viewModel()
+      val row =
+        vm
+          .ready()
+          .data.sections
+          .single()
+          .rows
+          .single()
+      expectThat(row.level).isEqualTo(HandfulLevel.LOTS)
+
+      vm.onConsume(row)
+      val snackbar =
+        withContext(Dispatchers.Default) {
+          withTimeout(5_000) { vm.sideEffects.first() as HomeSideEffect.ShowSnackbar }.request
+        }
+
+      expectThat(
+        db
+          .itemDao()
+          .getAllItemsSync()
+          .single()
+          .level,
+      ).isEqualTo(HandfulLevel.HALF)
+      expectThat(
+        db
+          .itemDao()
+          .getAllItemsSync()
+          .single()
+          .consumedDate,
+      ).isNull()
+      expectThat(snackbar.message).isEqualTo(R.string.handful_snackbar_half)
+      expectThat(snackbar.messageArgs).containsExactly("Peanuts")
+
+      snackbar.onAction!!.invoke()
+      expectThat(
+        db
+          .itemDao()
+          .getAllItemsSync()
+          .single()
+          .level,
+      ).isEqualTo(HandfulLevel.LOTS)
+      expectThat(id).isEqualTo(row.nearestItemId)
+    }
+
+  @Test
+  fun `the check of a handful at the lowest level consumes it`() =
+    runTest {
+      category("dairy")
+      peanuts(HandfulLevel.LITTLE)
+      val vm = viewModel()
+      val row =
+        vm
+          .ready()
+          .data.sections
+          .single()
+          .rows
+          .single()
+
+      vm.onConsume(row)
+      val snackbar =
+        withContext(Dispatchers.Default) {
+          withTimeout(5_000) { vm.sideEffects.first() as HomeSideEffect.ShowSnackbar }.request
+        }
+
+      expectThat(
+        db
+          .itemDao()
+          .getAllItemsSync()
+          .single()
+          .consumedDate,
+      ).isNotNull()
+      expectThat(snackbar.message).isEqualTo(R.string.handful_snackbar_consumed)
     }
 
   @Test

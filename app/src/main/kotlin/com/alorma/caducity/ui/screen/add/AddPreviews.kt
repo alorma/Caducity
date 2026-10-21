@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
@@ -59,6 +60,8 @@ private fun AddFormPreview() {
           onFrozenChange = {},
         )
         AmountChips(unitType = UnitType.GRAMS, amount = 500, onSelect = {})
+        UnitTypeRow(unitType = UnitType.HANDFULS, onClick = {})
+        LevelFrozenRow(level = HandfulLevel.HALF, frozen = false, onLevelChange = {}, onFrozenChange = {})
         CanFreezeCard(
           canFreeze = true,
           categoryName = "Dairy",
