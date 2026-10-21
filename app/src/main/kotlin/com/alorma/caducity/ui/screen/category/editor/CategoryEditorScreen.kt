@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.category.editor
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.symbols.AcUnit
 import com.alorma.caducity.base.ui.icons.symbols.Close
 import com.alorma.caducity.base.ui.icons.symbols.Delete
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
@@ -51,6 +53,7 @@ import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.switch.CaducitySwitch
 import com.alorma.caducity.ui.components.threshold.ThresholdSlider
 import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
@@ -124,6 +127,7 @@ fun CategoryEditorScreen(
         onShapeChange = viewModel::onShapeChange,
         onIconChange = viewModel::onIconChange,
         onUsualDurationChange = viewModel::onUsualDurationChange,
+        onCanFreezeChange = viewModel::onCanFreezeChange,
         onDelete = viewModel::onDeleteClick,
       )
     }
@@ -138,6 +142,7 @@ internal fun CategoryEditorContent(
   onShapeChange: (CategoryShape) -> Unit,
   onIconChange: (CategoryIcon) -> Unit,
   onUsualDurationChange: (Int) -> Unit,
+  onCanFreezeChange: (Boolean) -> Unit,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -229,6 +234,39 @@ internal fun CategoryEditorContent(
             style = CaducityTheme.typography.bodySmall,
             color = CaducityTheme.colorScheme.onSurfaceVariant,
           )
+        }
+      }
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      FormOverline(stringResource(R.string.category_editor_freeze_section))
+      Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = CaducityTheme.colorScheme.surfaceContainer,
+        modifier = Modifier.fillMaxWidth(),
+      ) {
+        Row(
+          modifier = Modifier.padding(16.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+          Icon(
+            Symbols.Outlined.AcUnit,
+            contentDescription = null,
+            tint = CaducityTheme.colorScheme.onSurfaceVariant,
+          )
+          Column(modifier = Modifier.weight(1f)) {
+            Text(
+              text = stringResource(R.string.category_editor_can_freeze),
+              style = CaducityTheme.typography.bodyLarge,
+              color = CaducityTheme.colorScheme.onSurface,
+            )
+            Text(
+              text = stringResource(R.string.category_editor_can_freeze_help),
+              style = CaducityTheme.typography.bodySmall,
+              color = CaducityTheme.colorScheme.onSurfaceVariant,
+            )
+          }
+          CaducitySwitch(checked = state.canFreeze, onCheckedChange = onCanFreezeChange)
         }
       }
     }

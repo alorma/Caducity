@@ -23,6 +23,7 @@ internal fun CategoryEditorPreviewContent() {
       onShapeChange = {},
       onIconChange = {},
       onUsualDurationChange = {},
+      onCanFreezeChange = {},
       onDelete = {},
     )
   }
