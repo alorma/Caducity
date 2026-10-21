@@ -16,6 +16,7 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
@@ -187,6 +188,69 @@ class TransformViewModelTest {
       expectThat(state.ingredients).hasSize(1)
       expectThat(state.ingredients.single().count).isEqualTo(2)
       expectThat(state.ingredients.single().available).isEqualTo(3)
+    }
+
+  @Test
+  fun `a measured ingredient is spent whole and its count cannot change`() =
+    runTest {
+      ensureCategories()
+      val added =
+        addProduct.add("Pasta", "meat", inDays(20), 1, false, UnitType.GRAMS, 500).getOrThrow()
+      addProduct.add("Pasta", "meat", inDays(30), 1, false, UnitType.GRAMS, 250).getOrThrow()
+      val vm = ready(added.itemIds.take(1))
+      val ingredient =
+        vm.state.value.ingredients
+          .single()
+
+      expectThat(ingredient.measured).isEqualTo(true)
+      expectThat(ingredient.available).isEqualTo(2)
+      expectThat(ingredient.count).isEqualTo(2)
+
+      vm.onIngredientCountChange(ingredient.key, 1)
+      expectThat(
+        vm.state.value.ingredients
+          .single()
+          .count,
+      ).isEqualTo(2)
+    }
+
+  @Test
+  fun `a result picks its unit type and a measured one is a single batch with an amount`() =
+    runTest {
+      val added = add("Chicken", days = 3, quantity = 1)
+      val vm = ready(added.itemIds)
+      val id =
+        vm.state.value.results
+          .single()
+          .id
+      vm.onServingsChange(id, 4)
+
+      vm.sideEffects.test {
+        vm.onUnitTypeClick(id)
+        expectThat(awaitItem()).isEqualTo(TransformSideEffect.ShowUnitTypePicker(id, UnitType.UNITS))
+      }
+
+      vm.onUnitTypeChange(id, UnitType.GRAMS)
+      var result =
+        vm.state.value.results
+          .single()
+      expectThat(result.measured).isEqualTo(true)
+      expectThat(result.servings).isEqualTo(1)
+      expectThat(result.amount).isEqualTo(500)
+
+      vm.onAmountChange(id, 0)
+      expectThat(
+        vm.state.value.results
+          .single()
+          .amount,
+      ).isEqualTo(1)
+
+      vm.onUnitTypeChange(id, UnitType.PACKS)
+      result =
+        vm.state.value.results
+          .single()
+      expectThat(result.measured).isEqualTo(false)
+      expectThat(result.unitType).isEqualTo(UnitType.PACKS)
     }
 
   @Test

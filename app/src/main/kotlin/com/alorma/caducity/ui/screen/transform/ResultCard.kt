@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
@@ -59,13 +60,16 @@ import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
 import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.Widgets
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.TransformItemsUseCase
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.imageVector
 import com.alorma.caducity.ui.screen.add.NameField
 import com.alorma.caducity.ui.screen.add.StepButton
 import com.alorma.caducity.ui.screen.add.SuggestionRow
+import com.alorma.caducity.ui.screen.add.UnitTypeRow
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.unit.formatAmount
 
 private val ChipShape = RoundedCornerShape(22.dp)
 
@@ -108,12 +112,17 @@ fun ResultForm(
         )
       }
     }
-    CounterRow(
-      label = stringResource(R.string.transform_units),
-      value = result.servings,
-      range = 1..TransformItemsUseCase.MAX_SERVINGS,
-      onChange = { actions.onServingsChange(id, it) },
-    )
+    UnitTypeRow(unitType = result.unitType, onClick = { actions.onUnitTypeClick(id) })
+    if (result.measured) {
+      AmountRow(unitType = result.unitType, amount = result.amount, onChange = { actions.onAmountChange(id, it) })
+    } else {
+      CounterRow(
+        label = stringResource(R.string.transform_units),
+        value = result.servings,
+        range = 1..TransformItemsUseCase.MAX_SERVINGS,
+        onChange = { actions.onServingsChange(id, it) },
+      )
+    }
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
       if (category != null) {
         ResultChip(onClick = { pickingCategory = !pickingCategory }) {
@@ -407,4 +416,52 @@ private fun ResultChip(
       }
     },
   )
+}
+
+/** `Quantitat − 500 g +` of a measured result: steps of 50 g / 100 mL, at least one step. */
+@Composable
+private fun AmountRow(
+  unitType: UnitType,
+  amount: Int,
+  onChange: (Int) -> Unit,
+) {
+  val step = unitType.amountStep ?: 1
+  Surface(
+    shape = CaducityTheme.shapes.large,
+    color = CaducityTheme.colorScheme.surfaceContainerHigh,
+    modifier = Modifier.fillMaxWidth().height(64.dp),
+  ) {
+    Row(
+      modifier = Modifier.padding(start = 16.dp, end = 8.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      Text(
+        text = stringResource(R.string.add_quantity),
+        style = CaducityTheme.typography.labelLarge,
+        modifier = Modifier.weight(1f),
+      )
+      StepButton(
+        enabled = amount > step,
+        onClick = { onChange(maxOf(step, amount - step)) },
+        label = stringResource(R.string.add_quantity_decrease),
+      ) {
+        Text("−", style = CaducityTheme.typography.titleMedium)
+      }
+      Text(
+        text = formatAmount(unitType, amount, LocalConfiguration.current.locales[0]),
+        style = CaducityTheme.typography.titleMedium,
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+        modifier = Modifier.width(76.dp).semantics { liveRegion = LiveRegionMode.Polite },
+      )
+      StepButton(
+        enabled = amount < UnitType.MAX_AMOUNT,
+        onClick = { onChange(minOf(UnitType.MAX_AMOUNT, amount + step)) },
+        label = stringResource(R.string.add_quantity_increase),
+      ) {
+        Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+      }
+    }
+  }
 }

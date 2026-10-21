@@ -21,6 +21,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -73,6 +74,7 @@ import com.alorma.caducity.base.ui.icons.symbols.Sunny
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.TouchApp
 import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.ui.components.category.CategoryIcons
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.chips.QuickDateChips
@@ -90,6 +92,7 @@ import com.alorma.caducity.ui.components.status.StatusPill
 import com.alorma.caducity.ui.components.status.statusPillText
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.unit.formatAmount
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.time.Instant
@@ -170,6 +173,7 @@ internal fun ActionsContent(
     Header(state)
     when {
       state.expired -> ExpiredContent(state, actions)
+      state.measured -> MeasuredContent(state, actions)
       state.multiple -> MultipleContent(state, actions)
       else -> SingleContent(state, actions)
     }
@@ -290,10 +294,10 @@ private fun ExpiredContent(
       color = expired.onContainer,
     )
   }
-  if (state.multiple) QuantitySelector(state = state, onSelect = actions::onSelect)
+  if (state.multiple && !state.measured) QuantitySelector(state = state, onSelect = actions::onSelect)
   ActionButton(
     label =
-      if (state.multiple) {
+      if (state.multiple && !state.measured) {
         stringResource(R.string.item_actions_discard_n, state.selected)
       } else {
         stringResource(R.string.item_actions_discard)
@@ -302,7 +306,7 @@ private fun ExpiredContent(
     container = expired.strong,
     content = CaducityTheme.contentOn(expired.strong),
     shape = RoundedCornerShape(32.dp),
-    onClick = actions::onDiscardSelected,
+    onClick = if (state.measured) actions::onDiscardAll else actions::onDiscardSelected,
     modifier = Modifier.fillMaxWidth(),
   )
   MoreActions(open = state.moreOpen, onToggle = actions::onToggleMore) {
@@ -375,6 +379,9 @@ private fun metaText(state: ItemActionsSheetState.Ready): String {
   val frozenSince = state.frozenSince.takeIf { state.frozenOnly }
   if (frozenSince != null) {
     val day = shortDateText(frozenSince)
+    if (state.measured) {
+      return stringResource(R.string.item_actions_amount_frozen, formatAmount(state.unitType, state.batchAmount), day)
+    }
     return if (state.multiple) {
       stringResource(R.string.item_actions_frozen_many, state.unitCount, day)
     } else {
@@ -383,6 +390,12 @@ private fun metaText(state: ItemActionsSheetState.Ready): String {
   }
   val date = formatDate(state.expiration)
   return when {
+    state.measured ->
+      stringResource(
+        R.string.item_actions_amount_left_expires,
+        formatAmount(state.unitType, state.batchAmount),
+        date,
+      )
     state.multiple && state.expired ->
       stringResource(R.string.item_actions_units_first_expired, state.unitCount, date)
     state.multiple -> stringResource(R.string.item_actions_units_first, state.unitCount, date)
@@ -807,5 +820,165 @@ private fun SideEffectHandler(
           }
       }
     }
+  }
+}
+
+/** `TipusGrams`: one batch with an amount; how much of it was used, then «Consumeix» or «Congela» (spec §4). */
+@Composable
+private fun MeasuredContent(
+  state: ItemActionsSheetState.Ready,
+  actions: ItemActionsHandlers,
+) {
+  val locale = LocalLocale.current.platformLocale
+  val step = state.unitType.amountStep ?: 1
+  Text(
+    text = stringResource(R.string.item_actions_amount_title).uppercase(),
+    style = CaducityTheme.typography.labelSmall,
+    color = CaducityTheme.colorScheme.onSurfaceVariant,
+  )
+  AmountSelector(state = state, step = step, locale = locale, onSelect = actions::onAmountSelect)
+  AmountShortcuts(state = state, locale = locale, onSelect = actions::onAmountSelect)
+  AmountLeftBar(state = state, locale = locale)
+  val amountText = formatAmount(state.unitType, state.amountSpend, locale)
+  PrimaryActions(
+    consumeLabel = stringResource(R.string.item_actions_consume_amount, amountText),
+    freezeLabel =
+      if (state.frozenOnly) {
+        stringResource(R.string.action_unfreeze_amount, amountText)
+      } else {
+        stringResource(R.string.item_actions_freeze)
+      },
+    freezeIcon = if (state.frozenOnly) Symbols.Outlined.Sunny else Symbols.Outlined.AcUnit,
+    showFreeze = state.frozenOnly || state.freezableCount > 0,
+    onConsume = actions::onConsume,
+    onFreeze = actions::onFreezeToggle,
+  )
+  MoreActions(open = state.moreOpen, onToggle = actions::onToggleMore) {
+    // A frozen batch has no date to change.
+    if (!state.frozenOnly) ChangeDate(onQuick = actions::onQuickReschedule, onPick = actions::onPickDate)
+    // A measured ingredient goes whole into a Transforma (spec §6); a frozen one cannot, like a unit.
+    SecondaryActions(actions, showTransform = !state.frozenOnly)
+  }
+}
+
+/** − [100 g] +: the amount the buttons below act on, in steps of 50 g / 100 mL. */
+@Composable
+private fun AmountSelector(
+  state: ItemActionsSheetState.Ready,
+  step: Int,
+  locale: Locale,
+  onSelect: (Int) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val container = CaducityTheme.colorScheme.primaryContainer
+  val onContainer = CaducityTheme.colorScheme.onPrimaryContainer
+  Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = modifier.fillMaxWidth()) {
+    StepperButton(
+      icon = Symbols.Outlined.Remove,
+      description = stringResource(R.string.add_quantity_decrease),
+      enabled = state.amountSpend > 1,
+      shape = RoundedCornerShape(36.dp, 8.dp, 8.dp, 36.dp),
+      container = container,
+      content = onContainer,
+      onClick = { onSelect(maxOf(1, state.amountSpend - step)) },
+      modifier = Modifier.weight(1f),
+    )
+    Surface(
+      modifier = Modifier.weight(2.8f).height(72.dp),
+      shape = RoundedCornerShape(8.dp),
+      color = CaducityTheme.colorScheme.surfaceContainer,
+    ) {
+      Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+        Text(
+          text = formatAmount(state.unitType, state.amountSpend, locale),
+          style = CaducityTheme.typography.displaySmall,
+          textAlign = TextAlign.Center,
+          maxLines = 1,
+        )
+      }
+    }
+    StepperButton(
+      icon = Symbols.Outlined.Add,
+      description = stringResource(R.string.add_quantity_increase),
+      enabled = state.amountSpend < state.batchAmount,
+      shape = RoundedCornerShape(8.dp, 36.dp, 36.dp, 8.dp),
+      container = container,
+      content = onContainer,
+      onClick = { onSelect(minOf(state.batchAmount, state.amountSpend + step)) },
+      modifier = Modifier.weight(1f),
+    )
+  }
+}
+
+/** 50 g · 100 g · 250 g · Tot (100 · 250 · 500 · Tot for mL): «Tot» is what is left. */
+@Composable
+private fun AmountShortcuts(
+  state: ItemActionsSheetState.Ready,
+  locale: Locale,
+  onSelect: (Int) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  // Only the shortcuts below what is left: «Tot» covers the rest, so a shortcut equal to it would repeat it.
+  val options =
+    (if (state.unitType == UnitType.MILLILITRES) listOf(100, 250, 500) else listOf(50, 100, 250))
+      .filter { it < state.batchAmount }
+  Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+    options.forEach { option ->
+      FilterChip(
+        selected = state.amountSpend == option,
+        onClick = { onSelect(option) },
+        label = { Text(formatAmount(state.unitType, option, locale)) },
+      )
+    }
+    FilterChip(
+      selected = state.amountSpend == state.batchAmount,
+      onClick = { onSelect(state.batchAmount) },
+      label = { Text(stringResource(R.string.item_actions_amount_all)) },
+    )
+  }
+}
+
+/** What stays (green) and what goes (ochre) of the batch, with «en quedaran 400 g». */
+@Composable
+private fun AmountLeftBar(
+  state: ItemActionsSheetState.Ready,
+  locale: Locale,
+  modifier: Modifier = Modifier,
+) {
+  val total = state.batchAmount.coerceAtLeast(1)
+  val left = (state.batchAmount - state.amountSpend).coerceAtLeast(0)
+  Row(
+    modifier = modifier.fillMaxWidth(),
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(12.dp),
+  ) {
+    Row(
+      modifier = Modifier.weight(1f).height(10.dp).clip(RoundedCornerShape(5.dp)),
+      horizontalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+      if (left >
+        0
+      ) {
+        Box(Modifier.weight(left.toFloat() / total).fillMaxSize().background(CaducityTheme.colorScheme.primary))
+      }
+      if (state.amountSpend > 0) {
+        Box(
+          Modifier
+            .weight(
+              state.amountSpend.toFloat() / total,
+            ).fillMaxSize()
+            .background(CaducityTheme.colors.soon.strong),
+        )
+      }
+    }
+    Text(
+      text =
+        if (left > 0) {
+          stringResource(R.string.item_actions_amount_left, formatAmount(state.unitType, left, locale))
+        } else {
+          stringResource(R.string.item_actions_amount_none_left)
+        },
+      style = CaducityTheme.typography.bodyMedium.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
+    )
   }
 }

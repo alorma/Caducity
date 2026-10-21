@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 6,
   "exportDate": 1792022400000,
   "transformations": [],
   "categories": [
@@ -19,30 +19,14 @@
           "createdAt": 1790294400000,
           "items": [
             {
-              "id": "2ee1a66c-c35b-40e1-8dcd-e91f42a2f706",
-              "identifier": "",
-              "expirationDate": 1793404800000,
-              "createdAt": 1791763200000
-            },
-            {
-              "id": "0a2929b2-b874-4852-81e7-d4700c8a22ce",
-              "identifier": "",
-              "expirationDate": 1793836800000,
-              "createdAt": 1791936000000
-            },
-            {
               "id": "614c339f-037b-4fec-b818-75676323ccd9",
               "identifier": "",
               "expirationDate": 1792022400000,
-              "createdAt": 1791244800000
-            },
-            {
-              "id": "9945f3e3-2ed7-4982-8f3d-960c80ec0353",
-              "identifier": "",
-              "expirationDate": 1792195200000,
-              "createdAt": 1791504000000
+              "createdAt": 1791244800000,
+              "amount": 1000
             }
-          ]
+          ],
+          "unitType": "MILLILITRES"
         },
         {
           "id": "56325a52-156a-49fa-b2d0-a878b2c53a81",
@@ -112,7 +96,8 @@
               "expirationDate": 1792886400000,
               "createdAt": 1791158400000
             }
-          ]
+          ],
+          "unitType": "PACKS"
         },
         {
           "id": "b1089199-509e-43e9-9b61-301c47142c80",
@@ -356,7 +341,8 @@
               "expirationDate": 1794096000000,
               "createdAt": 1791590400000
             }
-          ]
+          ],
+          "unitType": "CANS"
         },
         {
           "id": "27b864c5-b2e8-43af-863e-1fc653178edb",
@@ -427,7 +413,8 @@
               "expirationDate": 1795305600000,
               "createdAt": 1791849600000
             }
-          ]
+          ],
+          "unitType": "PACKS"
         },
         {
           "id": "8bf901cd-2298-42ac-ab15-6dd73d3c24ed",
@@ -453,7 +440,8 @@
               "expirationDate": 1795478400000,
               "createdAt": 1791504000000
             }
-          ]
+          ],
+          "unitType": "PACKS"
         },
         {
           "id": "ef6c57d5-57d7-4592-958c-f8c10a87d556",
@@ -462,18 +450,14 @@
           "createdAt": 1790294400000,
           "items": [
             {
-              "id": "59daa12d-c58f-45a9-ae7d-16097e0683ca",
-              "identifier": "",
-              "expirationDate": 1794960000000,
-              "createdAt": 1791331200000
-            },
-            {
               "id": "d8ebfd38-ed96-416f-b3a7-a4a6b473bb76",
               "identifier": "",
               "expirationDate": 1794873600000,
-              "createdAt": 1791331200000
+              "createdAt": 1791331200000,
+              "amount": 750
             }
-          ]
+          ],
+          "unitType": "GRAMS"
         }
       ],
       "standaloneItems": [
@@ -577,7 +561,8 @@
               "expirationDate": 1791763200000,
               "createdAt": 1791331200000
             }
-          ]
+          ],
+          "unitType": "TUPPERS"
         },
         {
           "id": "52ac8b68-148e-4dd6-80e8-1047e0f01d22",
@@ -603,7 +588,8 @@
               "expirationDate": 1794355200000,
               "createdAt": 1791936000000
             }
-          ]
+          ],
+          "unitType": "TUPPERS"
         }
       ],
       "standaloneItems": [

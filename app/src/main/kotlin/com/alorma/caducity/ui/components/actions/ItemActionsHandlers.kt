@@ -4,6 +4,9 @@ package com.alorma.caducity.ui.components.actions
 interface ItemActionsHandlers {
   fun onSelect(count: Int)
 
+  /** The g or mL a measured product spends (− / + selector and shortcuts). */
+  fun onAmountSelect(amount: Int)
+
   fun onToggleMore()
 
   fun onConsume()
@@ -37,6 +40,8 @@ interface ItemActionsHandlers {
 
 object NoItemActionsHandlers : ItemActionsHandlers {
   override fun onSelect(count: Int) = Unit
+
+  override fun onAmountSelect(amount: Int) = Unit
 
   override fun onToggleMore() = Unit
 

@@ -37,6 +37,9 @@ data class ProductRowModel(
   val frozenSince: LocalDate? = null,
   /** The product can go in the freezer: when false the row has no ❄. */
   val canFreeze: Boolean = true,
+  val unitType: UnitType = UnitType.DEFAULT,
+  /** Total amount of the batches of the row (g or mL); null for units. */
+  val amount: Int? = null,
 ) {
   val unitCount: Int get() = itemIds.size
   val nearestItemId: String get() = itemIds.first()
@@ -63,6 +66,9 @@ fun List<PantryEntry>.sortedNearestFirst(): List<PantryEntry> =
 /** The unit the round buttons act on: the one that expires first. */
 fun List<PantryEntry>.nearestFirst(): PantryEntry = minWith(if (onlyFrozen()) FROZEN_OLDEST_FIRST else NEAREST_FIRST)
 
+/** Total of the batches of a measured product; null for units. */
+fun List<PantryEntry>.sumAmount(): Int? = mapNotNull { it.amount }.takeIf { it.isNotEmpty() }?.sum()
+
 /** Builds the row of one product from its units; the state and days are those of the nearest one. */
 fun List<PantryEntry>.toProductRow(
   category: Category?,
@@ -82,5 +88,7 @@ fun List<PantryEntry>.toProductRow(
     detail = detail,
     frozenSince = if (nearest.status == ExpiryStatus.FROZEN) nearest.frozenSince?.date() else null,
     canFreeze = nearest.canFreeze,
+    unitType = nearest.unitType,
+    amount = sumAmount(),
   )
 }

@@ -2,6 +2,7 @@ package com.alorma.caducity.domain.usecase.fakedata
 
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
+import com.alorma.caducity.domain.model.UnitType
 import kotlin.time.Instant
 
 /**
@@ -36,6 +37,7 @@ data class CategoryConfig(
 data class ProductConfig(
   val name: String,
   val items: List<ItemConfig>,
+  val unitType: UnitType = UnitType.DEFAULT,
 )
 
 /**
@@ -51,6 +53,8 @@ data class ItemConfig(
   val shouldConsume: Boolean = false,
   /** Used as an ingredient of a Transforma: must disappear from every live view. */
   val shouldTransform: Boolean = false,
+  /** g or mL of a measured product (single batch); null for units. */
+  val amount: Int? = null,
 )
 
 /**

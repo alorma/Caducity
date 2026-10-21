@@ -8,13 +8,16 @@ import com.alorma.caducity.data.dataModule
 import com.alorma.caducity.data.datasource.RoomBackupDataSource
 import com.alorma.caducity.domain.backup.BackupDataSource
 import com.alorma.caducity.domain.domainModule
+import com.alorma.caducity.domain.usecase.ConsumeAmountUseCase
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
-import com.alorma.caducity.domain.usecase.FindProductCanFreezeUseCase
+import com.alorma.caducity.domain.usecase.FindProductUseCase
+import com.alorma.caducity.domain.usecase.FreezeAmountUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.SetProductCanFreezeUseCase
+import com.alorma.caducity.domain.usecase.SetProductUnitTypeUseCase
 import com.alorma.caducity.domain.usecase.TransformItemsUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
@@ -188,8 +191,9 @@ val appModule =
         getNameSuggestions = get(),
         getActiveItem = get(),
         updateItem = get(),
-        findProductCanFreeze = get(),
+        findProduct = get(),
         setProductCanFreeze = get(),
+        setProductUnitType = get(),
         observeCategories = get(),
         categoryCreated = get(),
         eventTracker = get(),
@@ -201,7 +205,10 @@ val appModule =
     // Category editor (new and edit)
     singleOf(::CreateCategoryUseCase)
     singleOf(::SetProductCanFreezeUseCase)
-    singleOf(::FindProductCanFreezeUseCase)
+    singleOf(::SetProductUnitTypeUseCase)
+    singleOf(::ConsumeAmountUseCase)
+    singleOf(::FreezeAmountUseCase)
+    singleOf(::FindProductUseCase)
     viewModel { params ->
       CategoryEditorViewModel(
         categoryId = params.getOrNull(),
@@ -261,6 +268,8 @@ val appModule =
         observeCategories = get(),
         consumeItem = get(),
         freezeItem = get(),
+        consumeAmount = get(),
+        freezeAmount = get(),
         unfreezeItem = get(),
         rescheduleItem = get(),
         discardItems = get(),

@@ -11,6 +11,7 @@ import com.alorma.caducity.domain.model.CategoryDefaults
 import com.alorma.caducity.domain.model.IngredientSpend
 import com.alorma.caducity.domain.model.NewItem
 import com.alorma.caducity.domain.model.TransformResult
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.fakedata.FakeDataStrategy
 import java.util.UUID
@@ -59,8 +60,13 @@ class PopulateFakeDataUseCase(
         // Every item belongs to a product; the free-text `identifier` is no longer used by the app.
         val productIdsByName = mutableMapOf<String, String>()
 
-        suspend fun productIdFor(name: String): String =
-          productIdsByName.getOrPut(name.normalizeForSearch()) { productDataSource.createProduct(category.id, name).id }
+        suspend fun productIdFor(
+          name: String,
+          unitType: UnitType = UnitType.DEFAULT,
+        ): String =
+          productIdsByName.getOrPut(name.normalizeForSearch()) {
+            productDataSource.createProduct(category.id, name, unitType).id
+          }
 
         suspend fun addItem(
           productName: String,
@@ -70,12 +76,14 @@ class PopulateFakeDataUseCase(
           shouldConsume: Boolean,
           shouldTransform: Boolean = false,
           frozenDaysAgo: Int = 0,
+          amount: Int? = null,
         ): String? {
           val newItem =
             NewItem(
               identifier = "",
               productId = productIdFor(productName),
               expirationDate = expirationDate,
+              amount = amount,
             )
           val itemId = itemDataSource.addItem(category.id, newItem)
           when {
@@ -87,7 +95,7 @@ class PopulateFakeDataUseCase(
         }
 
         categoryConfig.products.forEach { productConfig ->
-          productIdFor(productConfig.name)
+          productIdFor(productConfig.name, productConfig.unitType)
           val ingredientIds =
             productConfig.items.mapNotNull { item ->
               addItem(
@@ -98,6 +106,7 @@ class PopulateFakeDataUseCase(
                 item.shouldConsume,
                 item.shouldTransform,
                 item.frozenDaysAgo,
+                item.amount,
               )
             }
           if (ingredientIds.isNotEmpty()) {

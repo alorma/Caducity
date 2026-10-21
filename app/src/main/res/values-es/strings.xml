@@ -272,6 +272,17 @@
   <string name="item_actions_snackbar_unfrozen">%1$s descongelado</string>
   <string name="item_actions_snackbar_consumed_n">%1$d %2$s consumidos</string>
   <string name="item_actions_snackbar_frozen_n">%1$d %2$s congelados</string>
+  <string name="item_actions_snackbar_consumed_amount">%2$s: %1$s consumidos</string>
+  <string name="item_actions_snackbar_frozen_amount">%2$s: %1$s congelados</string>
+  <string name="item_actions_amount_left_expires">Quedan %1$s · caduca el %2$s</string>
+  <string name="item_actions_amount_title">¿Cuánto has usado?</string>
+  <string name="item_actions_amount_left">quedarán %1$s</string>
+  <string name="item_actions_amount_none_left">no quedará nada</string>
+  <string name="item_actions_amount_all">Todo</string>
+  <string name="item_actions_consume_amount">Consume %1$s</string>
+  <string name="action_unfreeze_amount">Descongelar %1$s</string>
+  <string name="item_actions_amount_frozen">Quedan %1$s · congelado el %2$s</string>
+  <string name="item_actions_snackbar_unfrozen_amount">%2$s: %1$s descongelados</string>
   <string name="item_actions_snackbar_discarded_n">%1$d %2$s tirados</string>
   <string name="item_actions_snackbar_moved">%1$s movido a %2$s</string>
   <string name="item_actions_error">No se ha podido hacer la acción</string>
@@ -311,6 +322,48 @@
     <item quantity="many">%d unidades</item>
     <item quantity="other">%d unidades</item>
   </plurals>
+  <plurals name="unit_count_tuppers">
+    <item quantity="one">%d tupper</item>
+    <item quantity="many">%d tuppers</item>
+    <item quantity="other">%d tuppers</item>
+  </plurals>
+  <plurals name="unit_count_packs">
+    <item quantity="one">%d paquete</item>
+    <item quantity="many">%d paquetes</item>
+    <item quantity="other">%d paquetes</item>
+  </plurals>
+  <plurals name="unit_count_cans">
+    <item quantity="one">%d lata</item>
+    <item quantity="many">%d latas</item>
+    <item quantity="other">%d latas</item>
+  </plurals>
+  <plurals name="unit_count_bricks">
+    <item quantity="one">%d brick</item>
+    <item quantity="many">%d bricks</item>
+    <item quantity="other">%d bricks</item>
+  </plurals>
+  <string name="unit_type_title">¿Cómo lo cuentas?</string>
+  <string name="unit_type_subtitle">Primero el tipo, luego cómo se llama.</string>
+  <string name="unit_type_section">Cómo se llama</string>
+  <string name="unit_type_units">Unidades</string>
+  <string name="unit_type_tuppers">Tuppers</string>
+  <string name="unit_type_packs">Paquetes</string>
+  <string name="unit_type_cans">Latas</string>
+  <string name="unit_type_bricks">Bricks</string>
+  <string name="unit_type_units_example">1 yogur, 4 huevos</string>
+  <string name="unit_type_tuppers_example">1 tupper, 2 tuppers</string>
+  <string name="unit_type_packs_example">1 paquete, 3 paquetes</string>
+  <string name="unit_type_cans_example">1 lata, 4 latas</string>
+  <string name="unit_type_grams">Gramos</string>
+  <string name="unit_type_millilitres">Mililitros</string>
+  <string name="unit_type_grams_example">500 g, 1,2 kg</string>
+  <string name="unit_type_millilitres_example">750 mL, 1,5 L</string>
+  <string name="unit_parent_units">Entero</string>
+  <string name="unit_parent_measured">Por cantidad</string>
+  <string name="unit_parent_units_rule">De una en una · el ✓ gasta una</string>
+  <string name="unit_parent_measured_rule">Una cantidad · el ✓ te pregunta cuánto</string>
+  <string name="unit_type_change_warning">Cambiar el tipo reinicia la cantidad</string>
+  <string name="unit_type_bricks_example">1 brick, 2 bricks</string>
   <string name="home_mark_consumed">Marcar %1$s como consumido</string>
   <string name="home_see_pantry">Ver la despensa</string>
   <string name="home_more_rows">+%d más</string>

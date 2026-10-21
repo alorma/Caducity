@@ -86,3 +86,70 @@ Strings ca/es/en go with the task that uses them.
 ## Phase 2 closed
 
 Approved by Bernat on 21 October. Next: phase 1 (unit type) in a new session.
+
+## Phase 1 tasks: Unit type, model + dialog (branch `feature/tipus-unitat`, one PR)
+
+- [x] 1. Data: Room v7 (`products.unitType` NOT NULL DEFAULT 'UNITS', `items.amount`, `items.level`), `MIGRATION_6_7`, schema `7.json`, (e181383b)
+  `Migration6To7Test`, backup v6 still reading v4 and v5.
+- [x] 2. Domain: `UnitType` / `UnitParent`, `Product.unitType` through the read models, `setProductUnitType` + `SetProductUnitTypeUseCase`. (b38ae049)
+- [x] 3. Row texts per type («3 paquets», «1 tupper»): `ProductRow`, ingredient picker, notifications; plurals ca/es/en. (84f0ba37)
+- [x] 4. `TipusTria` sheet (parent tabs hidden while only Unitats is active). Built with the subtypes of Unitats, without the subtitle (it only makes sense with the tabs). (1872b613)
+  New icons: `Tag`, `TakeoutDining`, `Inventory2`.
+- [x] 5. Add / Edit: «Com ho comptes?» row, existing product shows its type, Edit changes the product. (87832ded)
+  Validated on emulator-5554: Add, sheet, Edit (no Quantitat) and the Home row. The item actions sheet still says «unitats»
+  (its strings are not per type; spec §3 only names the rows).
+- [x] 6. Seed (`.claude/skills/plant-seed/seed-backup.json`): move it to backup v6 and give some products different unit types
+  (Tuppers, Paquets, Llaunes). Update the skill text if the counts change. (b43097be)
+- [x] 7. Debug fakes (`domain/usecase/fakedata/`: `ProductConfig.unitType`, `FakeShowcaseDataStrategy`, `FakeTestDataStrategy`,
+  `PopulateFakeDataUseCase`): products with different unit types. (d70efd81)
+  `FakeShowcaseDataStrategy` (Play screenshots, «only units») is left as it is.
+- [x] 8. Final validation on the emulator: update from the v6 build with data, import v4/v5 backups, check the rows.
+
+## Phase 1 validation (21 October, emulator-5554, debug build, branch `feature/tipus-unitat`)
+
+- The build upgraded in place from Room v6 with data (Home loads, counts kept).
+- Version 4 seed imports: 6 expired, 9 soon, 20 fresh. Version 6 seed imports: Ready meals shows «1 tupper», «3 tuppers»;
+  Dry goods «3 paquets», «2 paquets».
+- Add: «Com ho comptes? · Unitats» above Quantitat, the sheet lists Unitats, Tuppers, Paquets, Llaunes; picking Tuppers and
+  saving 2 units gives «2 tuppers · Dairy» on Home. Edit: the row shows the product's type, no Quantitat, and changing it to
+  Paquets changes the whole product.
+- Unit tests, migration 6→7 test, backup round trip with `unitType`/`amount`/`level`, `ktlintCheck`: green.
+- Not done: screenshot references of the existing screens (three of them differ on this machine with no change of ours),
+  Pixel 8a upgrade with real data, TalkBack. Pending decision: the item actions sheet still says «unitats».
+
+## Phase 3 tasks: Mesurable (Grams, Mil·lilitres) — same branch and PR, no flag
+
+Decisions (Bernat, 21 October): no `RemoteConfig` flag (it goes to production when the feature is done); the rest of the proposal accepted:
+changing the type in Edit leaves one batch with the nearest date and the default amount (500 g / 500 mL) and warns
+«Canviar el tipus reinicia la quantitat»; thawing a partial batch keeps it as its own batch (no merging with the fresh one).
+
+- [x] 9. Domain of the amount: `amount` through the read models; adding a Mesurable creates one batch; consuming subtracts (0 removes
+  the product); freezing splits the batch (the frozen part is a new row with the chosen amount); Undo restores. Unit tests. (e076d89b)
+- [x] 10. Row text: «500 g», «750 mL», «1,2 kg», «1,5 L» (≥ 1000); formatter + strings ca/es/en. Tests + `ProductRow` screenshot.
+- [x] 11. `TipusTria` parent tabs (Grapats inactive), Quantitat row of Mesurable in Add (− 500 g +, steps 50 g / 100 mL, chips), (f48c72d6)
+  warning in Edit when the parent changes. ViewModel tests, screenshots, emulator. (4b7cd34b)
+  Texts of the Mesurable rule line («Una quantitat · el ✓ et demana quant») and examples are mine: the design only shows Unitats.
+- [x] 12. `TipusGrams` modal (header, «Quant n'has fet servir?», stepper, chips, progress bar, «Consumeix N g», «Congela»,
+  «Més accions»); ✓ and ❄ on the row open it. Previews, screenshot vs `TipusGrams.png`, emulator. (d83a5632)
+- [x] 13. Frozen and expired (§3.1): frozen modal with «Consumeix N» / «Descongela N» (thaw → Aviat today + 3 days), expired only
+  «Llença». Tests + emulator. (17bf9110)
+  Validated on emulator-5554: freeze from the modal, frozen row, thaw → «D'aquí 3 dies».
+- [x] 14. Transforma: a Mesurable ingredient is consumed whole, no «N de M» selector. ViewModel tests. (a7fbe8a6)
+  Unit tests only; not tried on the emulator yet.
+- [x] 15. Seed and debug fakes with grams / millilitres (a25494ca); seed v6 imports on emulator-5554 and Flour reads «750 g».
+  Pending: release-notes bullet for Mesurable (to agree with Bernat) and the final pass on the emulator.
+- [x] 16. (Asked by Bernat, to do at the end) Category screen: the week strip and the status chips (Tots / Caducat / Aviat /
+  Fresc…) must reach the edge of the screen and not be cut at the gutter, like the week strip on Home (`fullBleed`).
+  Check with a screenshot on the emulator, light and dark. Done (3bae5306): the strip runs to the border on emulator-5554 (light only; chips scroll with the same padding).
+- [x] 17. (Bernat, 21 October, after trying Transforma) Measured ingredient in Transforma: the «1 de 2» chip becomes the amount
+  to spend («500 g», − / + in steps of 50 g / 100 mL, shortcuts 50/100/250/Tot like the modal; default: the whole lot).
+  Batches are spent soonest first; a batch spent in part keeps the rest; Undo restores amounts. Replaces spec §6 («sencer»). (; no shortcut chips on the card, only − / +)
+- [x] 18. (Bernat, same day) Results of Transforma can have any unit type (not only units): «Com ho comptes?» row on the result
+  card (same sheet) and, if Mesurable, an amount in g / mL instead of «Unitats − 1 +». Replaces spec §6 («sempre en unitats»).
+  No Grapats until phase 4. ()
+  Validated on emulator-5554: Farina 1 kg → 850 g spent, result «Pasta» in Grams 500 g; Farina left with 150 g.
+
+## Phase 1 and 3 closed (21 October)
+
+Approved by Bernat («endavant») and opened as one PR from `feature/tipus-unitat`. Pending for later: release-notes bullet for
+Mesurable, phases 4 (Grapats) and 5 is covered by tasks 14 and 17 (Transforma), Pixel 8a upgrade with real data, TalkBack.

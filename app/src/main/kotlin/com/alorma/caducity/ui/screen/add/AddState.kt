@@ -2,6 +2,8 @@ package com.alorma.caducity.ui.screen.add
 
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.NameSuggestion
+import com.alorma.caducity.domain.model.UnitParent
+import com.alorma.caducity.domain.model.UnitType
 import kotlinx.datetime.LocalDate
 
 /** What is still needed before the product can be saved. */
@@ -31,6 +33,8 @@ data class AddState(
   /** Usual duration of the category when [date] is the suggestion built from it; null once the user sets the date. */
   val suggestedDurationDays: Int? = null,
   val quantity: Int = 1,
+  /** Amount (g or mL) of a measured product; meaningless for the other types. */
+  val amount: Int = UnitType.DEFAULT_AMOUNT,
   val frozen: Boolean = false,
   val saving: Boolean = false,
   /** Id of the unit being edited; null when adding a new product. */
@@ -39,6 +43,10 @@ data class AddState(
   val canFreezeOverride: Boolean? = null,
   /** Override stored in the existing product that matches the typed name in the selected category; null if none. */
   val productCanFreeze: Boolean? = null,
+  /** Unit type chosen by the user in this session; null while untouched. */
+  val unitTypeOverride: UnitType? = null,
+  /** Unit type of the existing product that matches the typed name in the selected category; null if none. */
+  val productUnitType: UnitType? = null,
 ) {
   val isEditing: Boolean get() = editItemId != null
 
@@ -47,6 +55,14 @@ data class AddState(
 
   /** Effective «es pot congelar»: user's choice, else the existing product's override, else the category's. */
   val canFreeze: Boolean? get() = category?.let { canFreezeOverride ?: productCanFreeze ?: it.canFreeze }
+
+  /** How the product is counted: user's choice, else the existing product's, else units. */
+  val unitType: UnitType get() = unitTypeOverride ?: productUnitType ?: UnitType.DEFAULT
+
+  val isMeasured: Boolean get() = unitType.parent == UnitParent.MEASURED
+
+  /** The type chosen is of another parent than the existing product: saving resets its quantity. */
+  val resetsQuantity: Boolean get() = productUnitType != null && unitType.parent != productUnitType.parent
 
   /** What is saved as [frozen]: a product that cannot be frozen is never added frozen. */
   val frozenEffective: Boolean get() = frozen && canFreeze != false

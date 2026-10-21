@@ -6,6 +6,7 @@ import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.ui.theme.preview.PreviewDynamicLightDark
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
 import kotlinx.datetime.LocalDate
@@ -17,7 +18,8 @@ private fun unit(
   day: Int,
   status: ExpiryStatus,
   frozenSince: LocalDate? = null,
-) = ActionUnit(id, LocalDate(2026, 10, day), status, frozenSince)
+  amount: Int? = null,
+) = ActionUnit(id, LocalDate(2026, 10, day), status, frozenSince, amount)
 
 private fun ready(
   units: List<ActionUnit>,
@@ -25,6 +27,8 @@ private fun ready(
   moreOpen: Boolean = false,
   daysLeft: Int,
   canFreeze: Boolean = true,
+  unitType: UnitType = UnitType.DEFAULT,
+  amountSpend: Int = 0,
 ) = ItemActionsSheetState.Ready(
   name = "Greek yogurt",
   category = dairy,
@@ -34,6 +38,8 @@ private fun ready(
   daysLeft = daysLeft,
   otherCategories = emptyList(),
   canFreeze = canFreeze,
+  unitType = unitType,
+  amountSpend = amountSpend,
 )
 
 @Composable
@@ -137,6 +143,58 @@ internal fun ItemActionsFrozenSeveralUnitsPreview() {
       units = List(8) { unit("f$it", 28, ExpiryStatus.FROZEN, frozenSince = LocalDate(2026, 10, 4)) },
       selected = 2,
       daysLeft = 0,
+    ),
+  )
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun ItemActionsMeasuredPreview() {
+  SheetPreview(
+    ready(
+      units = listOf(unit("a", 13, ExpiryStatus.SOON, amount = 500)),
+      daysLeft = 2,
+      unitType = UnitType.GRAMS,
+      amountSpend = 100,
+    ),
+  )
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun ItemActionsMeasuredWholePreview() {
+  SheetPreview(
+    ready(
+      units = listOf(unit("a", 13, ExpiryStatus.SOON, amount = 750)),
+      daysLeft = 2,
+      unitType = UnitType.MILLILITRES,
+      amountSpend = 750,
+    ),
+  )
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun ItemActionsMeasuredFrozenPreview() {
+  SheetPreview(
+    ready(
+      units = listOf(unit("a", 20, ExpiryStatus.FROZEN, frozenSince = LocalDate(2026, 10, 8), amount = 400)),
+      daysLeft = 9,
+      unitType = UnitType.GRAMS,
+      amountSpend = 150,
+    ),
+  )
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun ItemActionsMeasuredExpiredPreview() {
+  SheetPreview(
+    ready(
+      units = listOf(unit("a", 9, ExpiryStatus.EXPIRED, amount = 500)),
+      daysLeft = -2,
+      unitType = UnitType.GRAMS,
+      amountSpend = 100,
     ),
   )
 }

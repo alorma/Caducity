@@ -79,6 +79,7 @@ import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.StyledLargeTopAppBar
 import com.alorma.caducity.ui.components.weekstrip.WeekStrip
 import com.alorma.caducity.ui.navigation.AddFab
+import com.alorma.caducity.ui.screen.add.fullBleed
 import com.alorma.caducity.ui.screen.home.capitalizeFirst
 import com.alorma.caducity.ui.screen.home.weekdayDayText
 import com.alorma.caducity.ui.theme.CaducityShapes
@@ -392,7 +393,7 @@ internal fun CategoryContent(
     LazyColumn(
       state = listState,
       modifier = Modifier.fillMaxSize(),
-      contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 112.dp),
+      contentPadding = PaddingValues(start = GUTTER, end = GUTTER, bottom = 112.dp),
       verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
       items(items, key = { it.key }, contentType = { it::class }) { item ->
@@ -402,10 +403,12 @@ internal fun CategoryContent(
               data = state.weekStrip,
               selected = state.selectedDay,
               onDayClick = onDayClick,
-              modifier = Modifier.padding(bottom = 12.dp),
+              // Edge to edge, like Home: the strip and the chips run to the screen border, not the gutter.
+              modifier = Modifier.fullBleed(GUTTER).padding(bottom = 12.dp),
+              contentPadding = PaddingValues(horizontal = GUTTER),
             )
           CategoryItem.Filters ->
-            CategoryFilters(state, onFilterSelected, Modifier.padding(bottom = 8.dp))
+            CategoryFilters(state, onFilterSelected, Modifier.fullBleed(GUTTER).padding(bottom = 8.dp))
           CategoryItem.DayFilter ->
             DayFilter(
               day = state.selectedDay!!,
@@ -555,6 +558,7 @@ private fun CategoryFilters(
     selectedIndex = if (state.filter == null) 0 else statuses.indexOf(state.filter) + 1,
     onSelect = { index -> onFilterSelected(if (index == 0) null else statuses[index - 1]) },
     modifier = modifier,
+    contentPadding = PaddingValues(horizontal = GUTTER),
   )
 }
 
@@ -581,3 +585,6 @@ private fun SectionHeader(
     )
   }
 }
+
+/** Side margin of the list; the week strip and the status chips ignore it and reach the screen border. */
+private val GUTTER = 20.dp

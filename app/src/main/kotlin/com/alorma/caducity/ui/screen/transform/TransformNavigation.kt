@@ -1,5 +1,7 @@
 package com.alorma.caducity.ui.screen.transform
 
+import com.alorma.caducity.domain.model.UnitType
+
 sealed interface TransformNavigation {
   data object Close : TransformNavigation
 
@@ -22,6 +24,11 @@ sealed interface TransformSideEffect {
   data class ShowDatePicker(
     val resultId: Int,
     val currentMillis: Long,
+  ) : TransformSideEffect
+
+  data class ShowUnitTypePicker(
+    val resultId: Int,
+    val current: UnitType,
   ) : TransformSideEffect
 
   /** «Resultat esborrat · Desfés»: the removed result is kept by the ViewModel until the snackbar is gone. */

@@ -4,6 +4,8 @@ import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.NameSuggestion
+import com.alorma.caducity.domain.model.UnitParent
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.model.defaultResultExpiration
 import kotlinx.datetime.LocalDate
 
@@ -23,8 +25,18 @@ data class IngredientUi(
   val preferredIds: Set<String> = emptySet(),
   /** Status of each unit, with the margins of its category, so the card is coloured like the rest of the app. */
   val unitStatus: Map<String, ExpiryStatus> = emptyMap(),
+  /** g or mL to spend of a measured product; null for units. */
+  val amount: Int? = null,
 ) {
+  /** Everything a measured product has, in g or mL. */
+  val totalAmount: Int get() = units.sumOf { it.amount ?: 0 }
+
+  val unitType: UnitType get() = units.firstOrNull()?.unitType ?: UnitType.DEFAULT
+
   val available: Int get() = units.size
+
+  /** A measured product (grams, millilitres) has an amount to spend instead of `N de M`. */
+  val measured: Boolean get() = units.firstOrNull()?.unitType?.parent == UnitParent.MEASURED
   val spent: List<ActiveItem>
     get() = units.sortedBy { it.itemId !in preferredIds }.take(count)
 
@@ -46,7 +58,14 @@ data class ResultUi(
   /** `canFreeze` override of the existing products with this exact name, by category (null inherits the category). */
   val productCanFreeze: Map<String, Boolean?> = emptyMap(),
   val suggestion: NameSuggestion? = null,
-)
+  /** Unit type chosen by the user; null while untouched (units for a new product, the existing type otherwise). */
+  val unitTypeOverride: UnitType? = null,
+  /** g or mL of a measured result (a single batch). */
+  val amount: Int = UnitType.DEFAULT_AMOUNT,
+) {
+  val unitType: UnitType get() = unitTypeOverride ?: UnitType.DEFAULT
+  val measured: Boolean get() = unitType.parent == UnitParent.MEASURED
+}
 
 /** `expandedResultId` when every result is folded into a small card. */
 internal const val NONE_EXPANDED = -1

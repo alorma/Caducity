@@ -35,6 +35,8 @@ import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.ProductRowDetail
 import com.alorma.caducity.domain.model.ProductRowModel
+import com.alorma.caducity.domain.model.UnitParent
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.ui.components.category.CategoryIcons
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
@@ -42,6 +44,7 @@ import com.alorma.caducity.ui.components.connected.connectedRowColors
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import com.alorma.caducity.ui.unit.unitCountText
 import kotlinx.datetime.LocalDate
 
 /**
@@ -62,6 +65,8 @@ fun ProductRow(
 ) {
   val statusColors = model.status.colors()
   val detailText = productRowDetailText(model)
+  // A measured product cannot know how much a ✓ or ❄ means: those buttons open its actions (spec §3).
+  val measured = model.unitType.parent == UnitParent.MEASURED
   SegmentedListItem(
     onClick = onClick,
     shapes = ListItemDefaults.segmentedShapes(index, count),
@@ -94,9 +99,9 @@ fun ProductRow(
     trailingContent = {
       ProductRowActions(
         model = model,
-        onConsume = onConsume,
-        onFreeze = onFreeze,
-        onUnfreeze = onUnfreeze,
+        onConsume = if (measured) onClick else onConsume,
+        onFreeze = if (measured) onClick else onFreeze,
+        onUnfreeze = if (measured) onClick else onUnfreeze,
         onDiscard = onDiscard,
       )
     },
@@ -164,7 +169,7 @@ private fun ProductRowActions(
 /** «1 unitat · Làctics», «2 unitats · D'aquí 2 dies» or just «3 unitats». */
 @Composable
 private fun productRowDetailText(model: ProductRowModel): String {
-  val quantity = pluralStringResource(R.plurals.home_unit_count, model.unitCount, model.unitCount)
+  val quantity = unitCountText(model.unitType, model.unitCount, model.amount)
   return when (val detail = model.detail) {
     is ProductRowDetail.InCategory -> "$quantity · ${detail.categoryName}"
     ProductRowDetail.QuantityOnly -> quantity
@@ -224,6 +229,8 @@ private fun previewRow(
   category: Category? = null,
   frozenSince: LocalDate? = null,
   canFreeze: Boolean = true,
+  unitType: UnitType = UnitType.DEFAULT,
+  amount: Int? = null,
 ) = ProductRowModel(
   key = name,
   name = name,
@@ -234,6 +241,8 @@ private fun previewRow(
   detail = detail,
   frozenSince = frozenSince,
   canFreeze = canFreeze,
+  unitType = unitType,
+  amount = amount,
 )
 
 /** A row that can go in the freezer (✓ ❄), one that cannot (only ✓) and a frozen one (✓ ☀). */
@@ -296,3 +305,42 @@ internal fun ProductRowPreview() {
 }
 
 // endregion
+
+/** Rows counted in units, packs, grams and millilitres (the type decides what the second line says). */
+@PreviewLightDark
+@Composable
+internal fun ProductRowUnitTypesPreview() {
+  PreviewTheme {
+    Column(
+      modifier = Modifier.background(CaducityTheme.colorScheme.background).padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing),
+    ) {
+      val rows =
+        listOf(
+          previewRow("Iogurt", ExpiryStatus.SOON, 2, 4, ProductRowDetail.WithDays),
+          previewRow("Arròs", ExpiryStatus.FRESH, 9, 3, ProductRowDetail.WithDays, unitType = UnitType.PACKS),
+          previewRow(
+            "Espaguetis",
+            ExpiryStatus.FRESH,
+            20,
+            1,
+            ProductRowDetail.WithDays,
+            unitType = UnitType.GRAMS,
+            amount = 1200,
+          ),
+          previewRow(
+            "Llet",
+            ExpiryStatus.SOON,
+            3,
+            1,
+            ProductRowDetail.WithDays,
+            unitType = UnitType.MILLILITRES,
+            amount = 750,
+          ),
+        )
+      rows.forEachIndexed { index, row ->
+        ProductRow(model = row, index = index, count = rows.size, onClick = {})
+      }
+    }
+  }
+}

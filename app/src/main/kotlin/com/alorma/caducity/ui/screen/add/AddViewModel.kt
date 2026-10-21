@@ -3,13 +3,16 @@ package com.alorma.caducity.ui.screen.add
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.model.PantryError
+import com.alorma.caducity.domain.model.UnitParent
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.AddProductUseCase
-import com.alorma.caducity.domain.usecase.FindProductCanFreezeUseCase
+import com.alorma.caducity.domain.usecase.FindProductUseCase
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.SetProductCanFreezeUseCase
+import com.alorma.caducity.domain.usecase.SetProductUnitTypeUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
 import com.alorma.caducity.feature.tracking.AddCloseAction
 import com.alorma.caducity.feature.tracking.AddQuickCategoryAction
@@ -35,8 +38,9 @@ class AddViewModel(
   private val getNameSuggestions: GetNameSuggestionsUseCase,
   private val getActiveItem: GetActiveItemUseCase,
   private val updateItem: UpdateItemUseCase,
-  private val findProductCanFreeze: FindProductCanFreezeUseCase,
+  private val findProduct: FindProductUseCase,
   private val setProductCanFreeze: SetProductCanFreezeUseCase,
+  private val setProductUnitType: SetProductUnitTypeUseCase,
   observeCategories: ObserveCategoriesUseCase,
   categoryCreated: CategoryCreatedEvents,
   private val eventTracker: EventTracker,
@@ -190,20 +194,43 @@ class AddViewModel(
     _state.update { it.copy(canFreezeOverride = canFreeze) }
   }
 
-  /** Looks up the override of the existing product that matches the typed name in the selected category. */
+  fun onUnitTypeClick() {
+    emitSideEffect(AddSideEffect.ShowUnitTypePicker(_state.value.unitType))
+  }
+
+  /** The type is a property of the product: it is saved with it, and applies to every unit. */
+  fun onUnitTypeChange(unitType: UnitType) {
+    _state.update {
+      val startsMeasured = unitType.parent == UnitParent.MEASURED && it.unitType.parent != UnitParent.MEASURED
+      it.copy(
+        unitTypeOverride = unitType,
+        amount = if (startsMeasured) unitType.defaultAmount ?: it.amount else it.amount,
+      )
+    }
+  }
+
+  fun onAmountChange(amount: Int) {
+    _state.update { it.copy(amount = amount.coerceIn(1, UnitType.MAX_AMOUNT)) }
+  }
+
+  /** Looks up the override and the unit type of the existing product that matches the typed name in the selected category. */
   private fun refreshProduct() {
     productJob?.cancel()
     val name = _state.value.name.trim()
     val categoryId = _state.value.categoryId
     if (name.isEmpty() || categoryId == null) {
-      _state.update { it.copy(productCanFreeze = null) }
+      _state.update { it.copy(productCanFreeze = null, productUnitType = null) }
       return
     }
     productJob =
       viewModelScope.launch {
-        val found = findProductCanFreeze.find(categoryId, name)
+        val found = findProduct.find(categoryId, name)
         _state.update {
-          if (it.name.trim() == name && it.categoryId == categoryId) it.copy(productCanFreeze = found) else it
+          if (it.name.trim() == name && it.categoryId == categoryId) {
+            it.copy(productCanFreeze = found?.canFreeze, productUnitType = found?.unitType)
+          } else {
+            it
+          }
         }
       }
   }
@@ -235,14 +262,31 @@ class AddViewModel(
               date = date,
               quantity = current.quantity,
               frozen = current.frozenEffective,
+              unitType = current.unitType,
+              amount = current.amount.takeIf { current.isMeasured },
             ).map { it.productId }
         }
-      // The override applies to the whole product, not only the unit, and is stored only if the user changed it.
+      // The overrides apply to the whole product, not only the unit, and is stored only if the user changed it.
       val saved: Result<Unit> =
         product.fold(
           onSuccess = { productId ->
-            val override = current.canFreezeOverride
-            if (override != null) setProductCanFreeze.set(productId, override) else Result.success(Unit)
+            val canFreezeOverride = current.canFreezeOverride
+            val unitTypeOverride = current.unitTypeOverride
+            val freeze =
+              if (canFreezeOverride !=
+                null
+              ) {
+                setProductCanFreeze.set(productId, canFreezeOverride)
+              } else {
+                Result.success(Unit)
+              }
+            if (unitTypeOverride != null &&
+              freeze.isSuccess
+            ) {
+              setProductUnitType.set(productId, unitTypeOverride)
+            } else {
+              freeze
+            }
           },
           onFailure = { Result.failure(it) },
         )

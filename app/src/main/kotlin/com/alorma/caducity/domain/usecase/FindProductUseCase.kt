@@ -1,22 +1,22 @@
 package com.alorma.caducity.domain.usecase
 
 import com.alorma.caducity.domain.PantryDataSource
+import com.alorma.caducity.domain.model.ProductUsage
 import com.alorma.caducity.domain.model.normalizeForSearch
 
-/** The «es pot congelar» override of the product named [name] in a category, if that product already exists. */
-class FindProductCanFreezeUseCase(
+/** The existing product named [name] in a category, with its own «es pot congelar» override and unit type. */
+class FindProductUseCase(
   private val pantryDataSource: PantryDataSource,
 ) {
-  /** `null` when the product does not exist or follows its category. */
+  /** `null` when the product does not exist. */
   suspend fun find(
     categoryId: String,
     name: String,
-  ): Boolean? {
+  ): ProductUsage? {
     val typed = name.normalizeForSearch()
     if (typed.isEmpty()) return null
     return pantryDataSource
       .getProductUsage()
       .firstOrNull { it.categoryId == categoryId && it.name.normalizeForSearch() == typed }
-      ?.canFreeze
   }
 }

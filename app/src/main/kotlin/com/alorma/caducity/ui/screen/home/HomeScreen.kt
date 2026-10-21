@@ -336,6 +336,7 @@ private fun HomeRow.toProductRow(
     category = category,
     detail = ProductRowDetail.InCategory(category.name),
     canFreeze = canFreeze,
+    unitType = unitType,
   )
 
 private val ConnectedGap = 2.dp

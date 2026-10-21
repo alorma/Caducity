@@ -8,6 +8,8 @@ import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.IngredientSpend
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.TransformResult
+import com.alorma.caducity.domain.model.UnitParent
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
@@ -124,6 +126,21 @@ class TransformViewModel(
     }
   }
 
+  /** g or mL a measured ingredient spends: at least 1, at most all it has. */
+  fun onIngredientAmountChange(
+    key: String,
+    amount: Int,
+  ) {
+    _state.update { current ->
+      current.copy(
+        ingredients =
+          current.ingredients.map {
+            if (it.key == key && it.measured) it.copy(amount = amount.coerceIn(1, it.totalAmount)) else it
+          },
+      )
+    }
+  }
+
   fun onIngredientCountChange(
     key: String,
     count: Int,
@@ -132,9 +149,7 @@ class TransformViewModel(
       current.copy(
         ingredients =
           current.ingredients.map {
-            if (it.key ==
-              key
-            ) {
+            if (it.key == key && !it.measured) {
               it.copy(count = count.coerceIn(1, it.available))
             } else {
               it
@@ -267,6 +282,31 @@ class TransformViewModel(
     updateResult(id) { it.copy(servings = clamped, frozenCount = it.frozenCount.coerceAtMost(clamped)) }
   }
 
+  fun onUnitTypeClick(id: Int) {
+    val result = _state.value.results.firstOrNull { it.id == id } ?: return
+    emitSideEffect(TransformSideEffect.ShowUnitTypePicker(id, result.unitType))
+  }
+
+  /** A measured result is a single batch: one serving, with an amount that starts at the default. */
+  fun onUnitTypeChange(
+    id: Int,
+    unitType: UnitType,
+  ) = updateResult(id) {
+    val measured = unitType.parent == UnitParent.MEASURED
+    val servings = if (measured) 1 else it.servings
+    it.copy(
+      unitTypeOverride = unitType,
+      servings = servings,
+      amount = if (measured && !it.measured) unitType.defaultAmount ?: it.amount else it.amount,
+      frozenCount = it.frozenCount.coerceAtMost(servings),
+    )
+  }
+
+  fun onAmountChange(
+    id: Int,
+    amount: Int,
+  ) = updateResult(id) { it.copy(amount = amount.coerceIn(1, UnitType.MAX_AMOUNT)) }
+
   fun onFrozenCountChange(
     id: Int,
     count: Int,
@@ -308,6 +348,7 @@ class TransformViewModel(
           candidateItemIds = it.units.map { unit -> unit.itemId },
           count = it.count,
           preferredItemIds = it.preferredIds,
+          amount = it.amount.takeIf { _ -> it.measured },
         )
       }
     val results =
@@ -318,6 +359,8 @@ class TransformViewModel(
           categoryId = current.categoryOf(it) ?: return,
           expiration = current.expirationToSave(it),
           frozenCount = current.frozenCountOf(it),
+          unitType = it.unitTypeOverride,
+          amount = it.amount.takeIf { _ -> it.measured },
         )
       }
     _state.update { it.copy(saving = true) }
@@ -393,13 +436,16 @@ class TransformViewModel(
   ): List<IngredientUi> =
     groupBy { it.productId ?: it.itemId }.map { (key, picked) ->
       val units = (active.filter { (it.productId ?: it.itemId) == key }).sortedBy { it.expiration }
+      // A measured product is spent whole: every batch, whatever was picked.
+      val whole = units.firstOrNull()?.unitType?.parent == UnitParent.MEASURED
       IngredientUi(
         key = key,
         name = picked.first().name,
         categoryId = picked.first().categoryId,
         units = units,
-        count = picked.size,
-        preferredIds = picked.map { it.itemId }.toSet(),
+        count = if (whole) units.size else picked.size,
+        amount = units.sumOf { it.amount ?: 0 }.takeIf { whole },
+        preferredIds = (if (whole) units else picked).map { it.itemId }.toSet(),
         unitStatus = statuses,
       )
     }

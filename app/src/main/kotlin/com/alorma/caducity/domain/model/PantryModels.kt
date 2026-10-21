@@ -19,6 +19,7 @@ data class ProductUsage(
   val lastUsed: Instant,
   /** The product's own override of `canFreeze`; null inherits its category. */
   val canFreeze: Boolean? = null,
+  val unitType: UnitType = UnitType.DEFAULT,
 )
 
 /** A product name offered while typing in the add screen. */
@@ -43,9 +44,15 @@ sealed class PantryError(
 
   data object ItemNotFound : PantryError("Item not found")
 
+  data class InvalidAmount(
+    val amount: Int,
+  ) : PantryError("Amount out of range: $amount")
+
   data object DuplicateCategoryName : PantryError("A category with that name already exists")
 
   data object CategoryNotFound : PantryError("Category not found")
+
+  data object CannotFreeze : PantryError("The batch cannot be frozen")
 }
 
 /** An active item as stored, with its product name and local expiration date (no status yet). */
@@ -62,4 +69,13 @@ data class ActiveItem(
   val createdAt: Instant?,
   /** Effective value: the product's override, else the category's. */
   val canFreeze: Boolean = true,
+  val unitType: UnitType = UnitType.DEFAULT,
+  /** Amount of a measured batch (g or mL); null for units. */
+  val amount: Int? = null,
+)
+
+/** Result of freezing part of a measured batch: [itemId] is the frozen batch, [created] when it is a new one split off. */
+data class FrozenAmount(
+  val itemId: String,
+  val created: Boolean,
 )

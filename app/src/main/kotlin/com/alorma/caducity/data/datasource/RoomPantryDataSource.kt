@@ -15,12 +15,15 @@ import com.alorma.caducity.domain.PantryDataSource
 import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.AddedItems
 import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.FrozenAmount
 import com.alorma.caducity.domain.model.ItemSnapshot
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.ProductUsage
 import com.alorma.caducity.domain.model.TransformIngredient
 import com.alorma.caducity.domain.model.TransformResult
 import com.alorma.caducity.domain.model.TransformedBatch
+import com.alorma.caducity.domain.model.UnitParent
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.toExpirationInstant
 import java.util.UUID
@@ -42,11 +45,14 @@ class RoomPantryDataSource(
     expiration: Instant,
     quantity: Int,
     frozenRemainingDays: Int?,
+    unitType: UnitType?,
+    amount: Int?,
   ): AddedItems =
     database.withTransaction {
-      val (product, created) = findOrCreateProduct(categoryId, productName)
+      val (found, created) = findOrCreateProduct(categoryId, productName)
+      val product = if (unitType != null) applyUnitType(found, unitType) else found
       val now = appClock.now().toEpochMilliseconds()
-      val ids = List(quantity) { UUID.randomUUID().toString() }
+      val ids = List(if (amount != null) 1 else quantity) { UUID.randomUUID().toString() }
       ids.forEach { id ->
         itemDao.insertItem(
           ItemRoomEntity(
@@ -58,6 +64,7 @@ class RoomPantryDataSource(
             pausedDate = now.takeIf { frozenRemainingDays != null },
             remainingDays = frozenRemainingDays,
             createdAt = now,
+            amount = amount,
           ),
         )
       }
@@ -178,12 +185,14 @@ class RoomPantryDataSource(
         }
 
       val ingredientIds = ingredients.flatMap { it.itemIds }.distinct()
-      val ingredientSnapshots = snapshots(ingredientIds)
+      val partialAmounts = ingredients.flatMap { it.partialAmounts.entries }.associate { it.key to it.value }
+      val ingredientSnapshots = snapshots(ingredientIds + partialAmounts.keys)
 
       val resultItemIds = mutableListOf<String>()
       val createdProductIds = mutableListOf<String>()
       results.forEach { result ->
-        val (product, created) = findOrCreateProduct(result.categoryId, result.name)
+        val (found, created) = findOrCreateProduct(result.categoryId, result.name)
+        val product = result.unitType?.let { applyUnitType(found, it) } ?: found
         if (created) createdProductIds += product.id
         // Frozen results keep the days until their date, like the add-frozen path.
         val remainingDays = (result.expiration.toEpochDays() - today.toEpochDays()).toInt()
@@ -201,6 +210,7 @@ class RoomPantryDataSource(
               remainingDays = remainingDays.takeIf { frozen },
               createdAt = now,
               originTransformationId = transformationId,
+              amount = result.amount,
             ),
           )
           resultItemIds += id
@@ -218,6 +228,10 @@ class RoomPantryDataSource(
             ),
           )
         }
+      }
+      // A batch spent in part keeps the rest; undo gives it back through its snapshot.
+      partialAmounts.forEach { (id, spend) ->
+        itemDao.getItem(id)?.let { item -> itemDao.updateItem(item.copy(amount = (item.amount ?: spend) - spend)) }
       }
       TransformedBatch(transformationId, resultItemIds, createdProductIds, ingredientSnapshots)
     }
@@ -243,6 +257,7 @@ class RoomPantryDataSource(
           discardedMillis = it.discardedDate,
           transformedMillis = it.transformedDate,
           transformationId = it.transformationId,
+          amount = it.amount,
         )
       }
     }
@@ -260,6 +275,7 @@ class RoomPantryDataSource(
               discardedDate = snap.discardedMillis,
               transformedDate = snap.transformedMillis,
               transformationId = snap.transformationId,
+              amount = snap.amount,
             ),
           )
         }
@@ -312,6 +328,8 @@ class RoomPantryDataSource(
           remainingDays = row.remainingDays,
           createdAt = row.createdAt?.let { Instant.fromEpochMilliseconds(it) },
           canFreeze = row.canFreeze,
+          unitType = row.unitType,
+          amount = row.amount,
         )
       }
     }
@@ -328,6 +346,7 @@ class RoomPantryDataSource(
         uses = it.uses,
         lastUsed = Instant.fromEpochMilliseconds(it.lastUsed),
         canFreeze = it.canFreeze,
+        unitType = it.unitType,
       )
     }
 
@@ -353,6 +372,120 @@ class RoomPantryDataSource(
       val inherited = categoryDao.getCategory(product.categoryId)?.canFreeze ?: true
       productDao.updateProduct(product.copy(canFreeze = canFreeze?.takeIf { it != inherited }))
     }
+  }
+
+  override suspend fun setProductUnitType(
+    productId: String,
+    unitType: UnitType,
+  ) {
+    database.withTransaction {
+      val product = productDao.getProduct(productId) ?: return@withTransaction
+      applyUnitType(product, unitType)
+    }
+  }
+
+  override suspend fun consumeAmount(
+    itemId: String,
+    amount: Int,
+    at: Instant,
+  ) {
+    database.withTransaction {
+      val item = itemDao.getItem(itemId) ?: throw PantryError.ItemNotFound
+      val current = item.amount ?: throw PantryError.InvalidAmount(amount)
+      if (amount <= 0) throw PantryError.InvalidAmount(amount)
+      if (amount >= current) {
+        itemDao.updateItem(item.copy(consumedDate = at.toEpochMilliseconds(), pausedDate = null, remainingDays = null))
+      } else {
+        itemDao.updateItem(item.copy(amount = current - amount))
+      }
+    }
+  }
+
+  override suspend fun freezeAmount(
+    itemId: String,
+    amount: Int,
+    at: Instant,
+  ): FrozenAmount? =
+    database.withTransaction {
+      val item = itemDao.getItem(itemId) ?: throw PantryError.ItemNotFound
+      val current = item.amount ?: throw PantryError.InvalidAmount(amount)
+      if (amount <= 0) throw PantryError.InvalidAmount(amount)
+      val days = Instant.fromEpochMilliseconds(item.expirationDate).date().toEpochDays() - at.date().toEpochDays()
+      if (days < 0 || item.pausedDate != null || !canFreeze(item)) return@withTransaction null
+      val frozenAt = at.toEpochMilliseconds()
+      if (amount >= current) {
+        itemDao.updateItem(item.copy(pausedDate = frozenAt, remainingDays = days.toInt()))
+        FrozenAmount(item.id, created = false)
+      } else {
+        val frozen =
+          item.copy(
+            id = UUID.randomUUID().toString(),
+            amount = amount,
+            pausedDate = frozenAt,
+            remainingDays = days.toInt(),
+            createdAt = frozenAt,
+          )
+        itemDao.updateItem(item.copy(amount = current - amount))
+        itemDao.insertItem(frozen)
+        FrozenAmount(frozen.id, created = true)
+      }
+    }
+
+  override suspend fun unfreezeAmount(
+    itemId: String,
+    amount: Int,
+    newExpiration: Instant,
+  ): FrozenAmount? =
+    database.withTransaction {
+      val item = itemDao.getItem(itemId) ?: throw PantryError.ItemNotFound
+      val current = item.amount ?: throw PantryError.InvalidAmount(amount)
+      if (amount <= 0) throw PantryError.InvalidAmount(amount)
+      if (item.pausedDate == null) return@withTransaction null
+      val expiration = newExpiration.toEpochMilliseconds()
+      if (amount >= current) {
+        itemDao.updateItem(item.copy(expirationDate = expiration, pausedDate = null, remainingDays = null))
+        FrozenAmount(item.id, created = false)
+      } else {
+        val thawed =
+          item.copy(
+            id = UUID.randomUUID().toString(),
+            amount = amount,
+            expirationDate = expiration,
+            pausedDate = null,
+            remainingDays = null,
+            createdAt = appClock.now().toEpochMilliseconds(),
+          )
+        itemDao.updateItem(item.copy(amount = current - amount))
+        itemDao.insertItem(thawed)
+        FrozenAmount(thawed.id, created = true)
+      }
+    }
+
+  override suspend fun deleteItems(itemIds: List<String>) {
+    itemDao.deleteItems(itemIds)
+  }
+
+  /**
+   * Gives the product its [unitType]. Changing the parent type resets the quantity: to Mesurable it keeps the batch
+   * that expires first with the default amount (the other units are deleted); from Mesurable every batch becomes a unit.
+   */
+  private suspend fun applyUnitType(
+    product: ProductRoomEntity,
+    unitType: UnitType,
+  ): ProductRoomEntity {
+    if (product.unitType.parent != unitType.parent) {
+      val items = itemDao.getActiveItemsOfProduct(product.id)
+      if (unitType.parent == UnitParent.MEASURED) {
+        val keep = items.minWithOrNull(compareBy<ItemRoomEntity> { it.expirationDate }.thenBy { it.createdAt ?: 0L })
+        itemDao.deleteItems(items.filter { it !== keep }.map { it.id })
+        keep?.let { itemDao.updateItem(it.copy(amount = unitType.defaultAmount)) }
+      } else {
+        items.forEach { itemDao.updateItem(it.copy(amount = null)) }
+      }
+    }
+    val updated = product.copy(unitType = unitType)
+    if (updated != product) productDao.updateProduct(updated)
+    return updated
   }
 
   /** Effective value: the product's override, else the category's; a unit without product follows its category. */

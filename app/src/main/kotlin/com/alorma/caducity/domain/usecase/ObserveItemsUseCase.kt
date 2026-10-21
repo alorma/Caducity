@@ -43,5 +43,7 @@ class ObserveItemsUseCase(
     remainingDays = remainingDays,
     createdAt = createdAt,
     canFreeze = canFreeze,
+    unitType = unitType,
+    amount = amount,
   )
 }

@@ -1,5 +1,6 @@
 package com.alorma.caducity.domain.usecase.fakedata
 
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
@@ -11,6 +12,8 @@ import kotlin.time.Instant
  * - Units: single unit, several units on the same day (one row, «N unitats»), several days, mixed statuses in one product.
  * - Units that must not show up anywhere: consumed and used as an ingredient of a Transforma.
  * - A long name, to check ellipsis.
+ * - Unit types: most products in units, others in tuppers, packs and cans (rows read «3 paquets», «1 tupper»), and
+ *   measured ones in grams and millilitres («750 mL», «1,2 kg»).
  *
  * Dates are relative to today and to the expiration thresholds.
  */
@@ -46,6 +49,7 @@ class FakeTestDataStrategy(
           // Several units long expired on the same day, plus one on another day.
           ProductConfig(
             name = "Formatge cheddar",
+            unitType = UnitType.PACKS,
             items =
               units(now, "Formatge caducat", daysAhead = -6, count = 3) +
                 units(now, "Formatge caducat un altre dia", daysAhead = -9, count = 1),
@@ -53,6 +57,7 @@ class FakeTestDataStrategy(
           // Long name, expires today.
           ProductConfig(
             name = "Iogurt natural amb fruites del bosc i cereals integrals",
+            unitType = UnitType.TUPPERS,
             items = units(now, "Iogurt", daysAhead = 0, count = 1),
           ),
           ProductConfig(
@@ -61,7 +66,14 @@ class FakeTestDataStrategy(
           ),
           ProductConfig(
             name = "Nata",
+            unitType = UnitType.CANS,
             items = units(now, "Nata", daysAhead = freshDays + 4, count = 1),
+          ),
+          // Measured: a single batch with an amount (millilitres).
+          ProductConfig(
+            name = "Llet de civada",
+            unitType = UnitType.MILLILITRES,
+            items = measured(now, "Llet de civada", daysAhead = 2, amount = 750),
           ),
         ),
     )
@@ -83,6 +95,7 @@ class FakeTestDataStrategy(
           ),
           ProductConfig(
             name = "Pastanagues",
+            unitType = UnitType.PACKS,
             items =
               units(now, "Pastanaga aviat", daysAhead = 3, count = 1) +
                 units(now, "Pastanaga fresca", daysAhead = freshDays, count = 1) +
@@ -90,15 +103,28 @@ class FakeTestDataStrategy(
           ),
           ProductConfig(
             name = "Espinacs",
+            unitType = UnitType.TUPPERS,
             items = units(now, "Espinacs", daysAhead = -1, count = 1),
           ),
           // Frozen on different days.
           ProductConfig(
             name = "Pèsols",
+            unitType = UnitType.PACKS,
             items =
               (0L until 3L).flatMap {
                 units(now, "Pèsols congelats", daysAhead = 5 + it, count = 1, frozen = true)
               },
+          ),
+          // Measured in grams: one fresh batch, one frozen.
+          ProductConfig(
+            name = "Ametlles",
+            unitType = UnitType.GRAMS,
+            items = measured(now, "Ametlles", daysAhead = freshDays + 6, amount = 250),
+          ),
+          ProductConfig(
+            name = "Fruits del bosc",
+            unitType = UnitType.GRAMS,
+            items = measured(now, "Fruits del bosc", daysAhead = 20, amount = 1200, frozen = true),
           ),
           // Ingredients of a Transforma next to a fresh unit.
           ProductConfig(
@@ -109,6 +135,15 @@ class FakeTestDataStrategy(
           ),
         ),
     )
+
+  /** A single batch of [amount] g or mL. */
+  private fun measured(
+    now: Instant,
+    label: String,
+    daysAhead: Long,
+    amount: Int,
+    frozen: Boolean = false,
+  ): List<ItemConfig> = units(now, label, daysAhead, count = 1, frozen = frozen).map { it.copy(amount = amount) }
 
   /** [count] units expiring on the same day, [daysAhead] days from [now] (negative = already expired). */
   private fun units(

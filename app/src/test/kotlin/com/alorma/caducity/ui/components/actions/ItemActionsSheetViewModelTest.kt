@@ -17,10 +17,13 @@ import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
+import com.alorma.caducity.domain.usecase.ConsumeAmountUseCase
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
+import com.alorma.caducity.domain.usecase.FreezeAmountUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.MoveItemToCategoryUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
@@ -156,6 +159,8 @@ class ItemActionsSheetViewModelTest {
       observeCategories = ObserveCategoriesUseCase(pantry),
       consumeItem = consume,
       freezeItem = FreezeItemUseCase(itemDataSource, pantry, clock),
+      consumeAmount = ConsumeAmountUseCase(pantry, clock),
+      freezeAmount = FreezeAmountUseCase(pantry, clock),
       unfreezeItem = UnfreezeItemUseCase(itemDataSource, pantry, clock),
       rescheduleItem = RescheduleItemUseCase(itemDataSource, pantry),
       discardItems = DiscardItemsUseCase(pantry, clock),
@@ -237,6 +242,168 @@ class ItemActionsSheetViewModelTest {
 
       expectThat(tomorrow.all { item(it).discardedDate != null }).isTrue()
       expectThat(item(expired.single()).discardedDate).isNull()
+    }
+
+  private suspend fun addMeasured(
+    name: String,
+    days: Int,
+    amount: Int,
+    unitType: UnitType = UnitType.GRAMS,
+  ): String =
+    addProduct
+      .add(name, "dairy", inDays(days), 1, false, unitType, amount)
+      .getOrThrow()
+      .itemIds
+      .single()
+
+  @Test
+  fun `a measured product spends 100 by default and the selector stays inside the batch`() =
+    runTest {
+      category("dairy")
+      val id = addMeasured("Pasta", days = 20, amount = 500)
+      val vm = viewModel(id)
+      keepAlive(vm)
+
+      val state = vm.ready()
+      expectThat(state.measured).isEqualTo(true)
+      expectThat(state.batchAmount).isEqualTo(500)
+      expectThat(state.amountSpend).isEqualTo(100)
+
+      vm.onAmountSelect(9_999)
+      expectThat(vm.ready { it.amountSpend == 500 }.amountSpend).isEqualTo(500)
+      vm.onAmountSelect(0)
+      expectThat(vm.ready { it.amountSpend == 1 }.amountSpend).isEqualTo(1)
+    }
+
+  @Test
+  fun `the default amount is capped by what the batch has`() =
+    runTest {
+      category("dairy")
+      val id = addMeasured("Saffron", days = 20, amount = 30)
+      val vm = viewModel(id)
+      keepAlive(vm)
+
+      expectThat(vm.ready().amountSpend).isEqualTo(30)
+    }
+
+  @Test
+  fun `consume spends the chosen amount, closes and undo gives it back`() =
+    runTest {
+      category("dairy")
+      val id = addMeasured("Pasta", days = 20, amount = 500)
+      val vm = viewModel(id)
+      keepAlive(vm)
+      vm.ready()
+
+      vm.onAmountSelect(150)
+      vm.ready { it.amountSpend == 150 }
+      vm.onConsume()
+
+      val snackbar = nextSnackbar()
+      vm.untilClosed()
+      expectThat(item(id).amount).isEqualTo(350)
+      expectThat(item(id).consumedDate).isNull()
+      expectThat(snackbar.messageArgs.last()).isEqualTo("Pasta")
+
+      snackbar.onAction!!.invoke()
+      expectThat(item(id).amount).isEqualTo(500)
+    }
+
+  @Test
+  fun `consuming the whole batch removes the product and undo brings it back`() =
+    runTest {
+      category("dairy")
+      val id = addMeasured("Pasta", days = 20, amount = 500)
+      val vm = viewModel(id)
+      keepAlive(vm)
+      vm.ready()
+
+      vm.onAmountSelect(500)
+      vm.ready { it.amountSpend == 500 }
+      vm.onConsume()
+
+      val snackbar = nextSnackbar()
+      expectThat(item(id).consumedDate).isNotNull()
+      snackbar.onAction!!.invoke()
+      expectThat(item(id).consumedDate).isNull()
+      expectThat(item(id).amount).isEqualTo(500)
+    }
+
+  @Test
+  fun `freeze splits the chosen amount into a frozen batch and undo joins it back`() =
+    runTest {
+      category("dairy")
+      val id = addMeasured("Pasta", days = 20, amount = 500)
+      val vm = viewModel(id)
+      keepAlive(vm)
+      vm.ready()
+
+      vm.onAmountSelect(200)
+      vm.ready { it.amountSpend == 200 }
+      vm.onFreezeToggle()
+
+      val snackbar = nextSnackbar()
+      val all = db.itemDao().getAllItemsSync()
+      expectThat(all.map { it.amount }.toSet()).isEqualTo(setOf(300, 200))
+      expectThat(all.count { it.pausedDate != null }).isEqualTo(1)
+
+      snackbar.onAction!!.invoke()
+      val back = db.itemDao().getAllItemsSync()
+      expectThat(back.map { it.amount }).containsExactly(500)
+      expectThat(back.single().pausedDate).isNull()
+    }
+
+  @Test
+  fun `a frozen measured batch thaws the chosen amount and undo freezes it again`() =
+    runTest {
+      category("dairy")
+      val id =
+        addProduct
+          .add("Pasta", "dairy", inDays(20), 1, true, UnitType.GRAMS, 500)
+          .getOrThrow()
+          .itemIds
+          .single()
+      val vm = viewModel(id)
+      keepAlive(vm)
+      val state = vm.ready()
+      expectThat(state.frozenOnly).isEqualTo(true)
+
+      vm.onAmountSelect(200)
+      vm.ready { it.amountSpend == 200 }
+      vm.onFreezeToggle()
+
+      val snackbar = nextSnackbar()
+      val all = db.itemDao().getAllItemsSync()
+      expectThat(all.map { it.amount }.toSet()).isEqualTo(setOf(300, 200))
+      expectThat(all.count { it.pausedDate == null }).isEqualTo(1)
+
+      snackbar.onAction!!.invoke()
+      expectThat(db.itemDao().getAllItemsSync().map { it.amount }).containsExactly(500)
+      expectThat(
+        db
+          .itemDao()
+          .getAllItemsSync()
+          .single()
+          .pausedDate,
+      ).isNotNull()
+    }
+
+  @Test
+  fun `an expired measured product only discards, every batch at once`() =
+    runTest {
+      category("dairy")
+      val first = addMeasured("Pasta", days = -3, amount = 500)
+      val second = addMeasured("Pasta", days = -1, amount = 250)
+      val vm = viewModel(listOf(first, second))
+      keepAlive(vm)
+      val state = vm.ready()
+      expectThat(state.expired).isEqualTo(true)
+
+      vm.onDiscardAll()
+      nextSnackbar()
+
+      expectThat(item(first).discardedDate).isNotNull()
+      expectThat(item(second).discardedDate).isNotNull()
     }
 
   @Test

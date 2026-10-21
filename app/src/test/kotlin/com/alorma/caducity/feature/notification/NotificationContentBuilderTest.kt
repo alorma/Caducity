@@ -2,6 +2,7 @@ package com.alorma.caducity.feature.notification
 
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.PantryEntry
+import com.alorma.caducity.domain.model.UnitType
 import kotlinx.datetime.LocalDate
 import org.junit.Test
 import strikt.api.expectThat
@@ -45,6 +46,25 @@ class NotificationContentBuilderTest {
       )
     expectThat(build(entries)).isEqualTo(DailyReminders(today = null, soon = null))
     expectThat(build(emptyList())).isEqualTo(DailyReminders(today = null, soon = null))
+  }
+
+  @Test
+  fun `the reminder keeps the unit type of the product`() {
+    val packs = entry("Arròs", 1).copy(unitType = UnitType.PACKS)
+    val soon = build(listOf(packs)).soon
+    expectThat(soon!!.products.single().unitType).isEqualTo(UnitType.PACKS)
+  }
+
+  @Test
+  fun `the reminder adds up the amounts of the batches of the day`() {
+    val grams = {
+      id: String,
+      amount: Int,
+      ->
+      entry("Arròs", 1, id = id).copy(unitType = UnitType.GRAMS, amount = amount)
+    }
+    val soon = build(listOf(grams("a", 300), grams("b", 200))).soon
+    expectThat(soon!!.products.single().amount).isEqualTo(500)
   }
 
   @Test

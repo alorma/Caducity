@@ -16,6 +16,9 @@ data class PantryEntry(
   val createdAt: Instant?,
   /** Effective «es pot congelar» of the unit's product. */
   val canFreeze: Boolean = true,
+  val unitType: UnitType = UnitType.DEFAULT,
+  /** Amount of a measured batch (g or mL); null for units. */
+  val amount: Int? = null,
 ) {
   /** Stable key of the product this unit belongs to (legacy items without product group by name). */
   val groupKey: String
@@ -66,6 +69,9 @@ data class HomeRow(
   val itemIds: List<String>,
   /** The product can go in the freezer: when false the row has no ❄. */
   val canFreeze: Boolean = true,
+  val unitType: UnitType = UnitType.DEFAULT,
+  /** Amount of a measured batch (g or mL); null for units. */
+  val amount: Int? = null,
 ) {
   val unitCount: Int get() = itemIds.size
 

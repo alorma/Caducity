@@ -74,6 +74,8 @@ class ResultActions(
   val onCategorySelect: (Int, String) -> Unit,
   val onPickDate: (Int) -> Unit,
   val onFrozenCountChange: (Int, Int) -> Unit,
+  val onUnitTypeClick: (Int) -> Unit = {},
+  val onAmountChange: (Int, Int) -> Unit = { _, _ -> },
 )
 
 private val ResultCardHeight = 92.dp
