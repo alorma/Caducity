@@ -1,3 +1,4 @@
 Versión 1.1.7:
 • Ahora puedes marcar las categorías y los productos que no se pueden congelar, como la pasta o las conservas. Ya no muestran el botón de congelar.
 • Ahora puedes elegir cómo cuentas un producto: unidades, tuppers, paquetes, latas o bricks. Las listas muestran «3 paquetes» o «1 tupper» en lugar de siempre «unidades».
+• O contarlo en gramos o mililitros y decir cuánto has usado («500 g»), o a ojo: mucho, la mitad o poco.

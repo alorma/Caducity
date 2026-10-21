@@ -1,3 +1,4 @@
 Version 1.1.7:
 • You can now mark categories and products that cannot be frozen, like pasta or tinned food. They no longer show the freeze button.
 • You can now say how you count a product: units, containers, packs, cans or bricks. Lists show "3 packs" or "1 container" instead of always "units".
+• Or count it in grams or millilitres and say how much you used ("500 g"), or by eye: a lot, half or little left.
