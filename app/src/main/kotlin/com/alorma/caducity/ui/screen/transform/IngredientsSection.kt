@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CollectionInfo
@@ -75,6 +76,7 @@ import com.alorma.caducity.ui.screen.add.ScreenGutter
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
+import com.alorma.caducity.ui.unit.formatAmount
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlinx.coroutines.delay
@@ -102,6 +104,7 @@ fun IngredientsSection(
   onCountChange: (key: String, count: Int) -> Unit,
   onRemove: (key: String) -> Unit,
   onAdd: () -> Unit,
+  onAmountChange: (key: String, amount: Int) -> Unit = { _, _ -> },
   modifier: Modifier = Modifier,
   /** Opened without ingredients: the section shows a single dashed «Afegeix» row until there is one. */
   optional: Boolean = false,
@@ -164,6 +167,7 @@ fun IngredientsSection(
           editing = editingKey == ingredient.key,
           onEditingChange = { editingKey = if (it) ingredient.key else null },
           onCountChange = { onCountChange(ingredient.key, it) },
+          onAmountChange = { onAmountChange(ingredient.key, it) },
           onRemove = { onRemove(ingredient.key) },
           modifier =
             Modifier.animateItem().semantics {
@@ -264,6 +268,7 @@ private fun IngredientCard(
   editing: Boolean,
   onEditingChange: (Boolean) -> Unit,
   onCountChange: (Int) -> Unit,
+  onAmountChange: (Int) -> Unit,
   onRemove: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -301,7 +306,13 @@ private fun IngredientCard(
         }
         Spacer(Modifier.weight(1f))
         // Only products with more than one unit have an amount to change (a measured one is spent whole).
-        if (ingredient.available > 1 && !ingredient.measured) {
+        if (ingredient.measured) {
+          if (editing) {
+            AmountStepper(ingredient = ingredient, onChange = onAmountChange)
+          } else {
+            AmountChip(ingredient = ingredient, onClick = { onEditingChange(true) })
+          }
+        } else if (ingredient.available > 1) {
           if (editing) {
             UnitsStepper(count = ingredient.count, available = ingredient.available, onChange = onCountChange)
           } else {
@@ -436,3 +447,78 @@ internal fun formatDate(
   date: LocalDate,
   locale: Locale,
 ): String = DateTimeFormatter.ofPattern("EEE d MMM", locale).format(date.toJavaLocalDate())
+
+/** `500 g ⇅`: the amount of a measured ingredient; tapping it turns it into the stepper. */
+@Composable
+private fun AmountChip(
+  ingredient: IngredientUi,
+  onClick: () -> Unit,
+) {
+  val text =
+    formatAmount(
+      ingredient.unitType,
+      ingredient.amount ?: ingredient.totalAmount,
+      LocalConfiguration.current.locales[0],
+    )
+  AssistChip(
+    onClick = onClick,
+    shape = CaducityShapes.full,
+    colors = AssistChipDefaults.assistChipColors(containerColor = CaducityTheme.colorScheme.surfaceContainerHigh),
+    border = null,
+    modifier = Modifier.semantics { contentDescription = text },
+    label = { Text(text = text, style = CaducityTheme.typography.labelLarge, maxLines = 1) },
+    trailingIcon = {
+      Icon(Symbols.Outlined.UnfoldMore, contentDescription = null, modifier = Modifier.size(16.dp))
+    },
+  )
+}
+
+/** `− 300 g +`: in steps of 50 g / 100 mL, between that step and everything the product has. */
+@Composable
+private fun AmountStepper(
+  ingredient: IngredientUi,
+  onChange: (Int) -> Unit,
+) {
+  val pill = CaducityTheme.colorScheme.surface
+  val step = ingredient.unitType.amountStep ?: 1
+  val amount = ingredient.amount ?: ingredient.totalAmount
+  val total = ingredient.totalAmount
+  Row(
+    modifier =
+      Modifier
+        .fillMaxWidth()
+        .height(48.dp)
+        .drawBehind {
+          val pillHeight = 32.dp.toPx()
+          drawRoundRect(
+            color = pill,
+            topLeft = Offset(0f, (size.height - pillHeight) / 2),
+            size = Size(size.width, pillHeight),
+            cornerRadius = CornerRadius(pillHeight / 2),
+          )
+        },
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    StepperButton(
+      enabled = amount > 1,
+      onClick = { onChange(maxOf(1, amount - step)) },
+      label = stringResource(R.string.add_quantity_decrease),
+    ) {
+      Text("−", style = CaducityTheme.typography.titleMedium)
+    }
+    Text(
+      text = formatAmount(ingredient.unitType, amount, LocalConfiguration.current.locales[0]),
+      style = CaducityTheme.typography.labelMedium,
+      textAlign = TextAlign.Center,
+      maxLines = 1,
+      modifier = Modifier.weight(1f).semantics { liveRegion = LiveRegionMode.Polite },
+    )
+    StepperButton(
+      enabled = amount < total,
+      onClick = { onChange(minOf(total, amount + step)) },
+      label = stringResource(R.string.add_quantity_increase),
+    ) {
+      Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+    }
+  }
+}

@@ -5,6 +5,7 @@ import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.NameSuggestion
 import com.alorma.caducity.domain.model.UnitParent
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.model.defaultResultExpiration
 import kotlinx.datetime.LocalDate
 
@@ -24,10 +25,17 @@ data class IngredientUi(
   val preferredIds: Set<String> = emptySet(),
   /** Status of each unit, with the margins of its category, so the card is coloured like the rest of the app. */
   val unitStatus: Map<String, ExpiryStatus> = emptyMap(),
+  /** g or mL to spend of a measured product; null for units. */
+  val amount: Int? = null,
 ) {
+  /** Everything a measured product has, in g or mL. */
+  val totalAmount: Int get() = units.sumOf { it.amount ?: 0 }
+
+  val unitType: UnitType get() = units.firstOrNull()?.unitType ?: UnitType.DEFAULT
+
   val available: Int get() = units.size
 
-  /** A measured product (grams, millilitres) is always spent whole: there is no `N de M`. */
+  /** A measured product (grams, millilitres) has an amount to spend instead of `N de M`. */
   val measured: Boolean get() = units.firstOrNull()?.unitType?.parent == UnitParent.MEASURED
   val spent: List<ActiveItem>
     get() = units.sortedBy { it.itemId !in preferredIds }.take(count)

@@ -2,6 +2,7 @@ package com.alorma.caducity.domain.usecase
 
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.PantryDataSource
+import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.IngredientSpend
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.TransformIngredient
@@ -36,6 +37,7 @@ class TransformItemsUseCase(
       val spent = mutableSetOf<String>()
       val chosen =
         ingredients.map { ingredient ->
+          if (ingredient.amount != null) return@map spendAmount(ingredient, active, spent)
           val units =
             ingredient.candidateItemIds
               .mapNotNull { active[it] }
@@ -52,6 +54,36 @@ class TransformItemsUseCase(
     } catch (e: Exception) {
       Result.failure(e)
     }
+  }
+
+  /** Spends [IngredientSpend.amount] g or mL across the batches, soonest to expire first; the last one may be spent in part. */
+  private fun spendAmount(
+    ingredient: IngredientSpend,
+    active: Map<String, ActiveItem>,
+    spent: MutableSet<String>,
+  ): TransformIngredient {
+    var remaining = ingredient.amount ?: throw PantryError.InvalidAmount(0)
+    val batches =
+      ingredient.candidateItemIds
+        .mapNotNull { active[it] }
+        .filter { it.itemId !in spent && it.amount != null }
+        .sortedBy { it.expiration }
+    if (remaining !in 1..batches.sumOf { it.amount ?: 0 }) throw PantryError.InvalidAmount(remaining)
+    val whole = mutableListOf<String>()
+    val partial = mutableMapOf<String, Int>()
+    for (batch in batches) {
+      if (remaining == 0) break
+      val available = batch.amount ?: 0
+      if (remaining >= available) {
+        whole += batch.itemId
+        remaining -= available
+      } else {
+        partial[batch.itemId] = remaining
+        remaining = 0
+      }
+    }
+    spent += whole + partial.keys
+    return TransformIngredient(whole, partial)
   }
 
   suspend fun undo(batch: TransformedBatch): Result<Unit> =

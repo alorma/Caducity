@@ -136,6 +136,7 @@ fun TransformScreen(
             ingredients = state.ingredients,
             categories = state.categories,
             onCountChange = viewModel::onIngredientCountChange,
+            onAmountChange = viewModel::onIngredientAmountChange,
             onRemove = viewModel::onRemoveIngredient,
             onAdd = { viewModel.navigate(TransformNavigation.IngredientPicker) },
             optional = state.freeEntry,

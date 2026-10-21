@@ -125,6 +125,21 @@ class TransformViewModel(
     }
   }
 
+  /** g or mL a measured ingredient spends: at least 1, at most all it has. */
+  fun onIngredientAmountChange(
+    key: String,
+    amount: Int,
+  ) {
+    _state.update { current ->
+      current.copy(
+        ingredients =
+          current.ingredients.map {
+            if (it.key == key && it.measured) it.copy(amount = amount.coerceIn(1, it.totalAmount)) else it
+          },
+      )
+    }
+  }
+
   fun onIngredientCountChange(
     key: String,
     count: Int,
@@ -307,6 +322,7 @@ class TransformViewModel(
           candidateItemIds = it.units.map { unit -> unit.itemId },
           count = it.count,
           preferredItemIds = it.preferredIds,
+          amount = it.amount.takeIf { _ -> it.measured },
         )
       }
     val results =
@@ -400,6 +416,7 @@ class TransformViewModel(
         categoryId = picked.first().categoryId,
         units = units,
         count = if (whole) units.size else picked.size,
+        amount = units.sumOf { it.amount ?: 0 }.takeIf { whole },
         preferredIds = (if (whole) units else picked).map { it.itemId }.toSet(),
         unitStatus = statuses,
       )

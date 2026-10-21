@@ -5,6 +5,8 @@ import kotlinx.datetime.LocalDate
 /** The units of an ingredient that a transformation spends (already chosen, soonest-to-expire first). */
 data class TransformIngredient(
   val itemIds: List<String>,
+  /** Batches of a measured product that are spent only in part: item id to the g or mL taken from it. */
+  val partialAmounts: Map<String, Int> = emptyMap(),
 )
 
 /**
@@ -15,6 +17,8 @@ data class IngredientSpend(
   val candidateItemIds: List<String>,
   val count: Int,
   val preferredItemIds: Set<String> = emptySet(),
+  /** g or mL spent of a measured product (its batches, soonest first); [count] is then ignored. */
+  val amount: Int? = null,
 )
 
 /** One product created by a transformation: [servings] independent items, [frozenCount] of them frozen. */

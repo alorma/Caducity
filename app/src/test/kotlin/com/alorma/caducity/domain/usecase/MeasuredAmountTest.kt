@@ -12,7 +12,9 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
+import com.alorma.caducity.domain.model.IngredientSpend
 import com.alorma.caducity.domain.model.PantryError
+import com.alorma.caducity.domain.model.TransformResult
 import com.alorma.caducity.domain.model.UnitType
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
@@ -309,6 +311,50 @@ class MeasuredAmountTest {
 
       expectThat(items().single().amount).isEqualTo(400)
       expectThat(items().single().pausedDate).isNotNull()
+    }
+
+  // endregion
+
+  // region Transforma
+
+  private fun soup() = TransformResult("Soup", 2, "c1", inDays(3), 0)
+
+  @Test
+  fun `an amount spent in a transformation takes the batches soonest first and undo gives it back`() =
+    runTest {
+      category("c1")
+      val late = pasta(amount = 500, days = 20).itemIds.single()
+      val soon = pasta(amount = 250, days = 10).itemIds.single()
+      val transform = TransformItemsUseCase(pantry, clock)
+
+      val batch =
+        transform
+          .transform(listOf(IngredientSpend(listOf(late, soon), count = 1, amount = 300)), listOf(soup()))
+          .getOrThrow()
+
+      val all = items().associateBy { it.id }
+      expectThat(all.getValue(soon).transformedDate).isNotNull()
+      expectThat(all.getValue(late).transformedDate).isNull()
+      expectThat(all.getValue(late).amount).isEqualTo(450)
+
+      expectThat(transform.undo(batch)).isSuccess()
+      val back = items().associateBy { it.id }
+      expectThat(back.getValue(soon).transformedDate).isNull()
+      expectThat(back.getValue(late).amount).isEqualTo(500)
+    }
+
+  @Test
+  fun `spending more than the product has in a transformation fails`() =
+    runTest {
+      category("c1")
+      val id = pasta(amount = 500).itemIds.single()
+
+      val result =
+        TransformItemsUseCase(pantry, clock)
+          .transform(listOf(IngredientSpend(listOf(id), count = 1, amount = 501)), listOf(soup()))
+
+      expectThat(result).isFailure().isA<PantryError.InvalidAmount>()
+      expectThat(items().single().amount).isEqualTo(500)
     }
 
   // endregion
