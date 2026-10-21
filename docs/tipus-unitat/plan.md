@@ -169,6 +169,7 @@ New handful starts at «Molt»; tapping the row opens the modal; release notes l
 - [x] 22. `TipusAUll` modal («Quant en queda?», three big buttons that change the level at once, «Ja no en queda», «Congela»,
   «Més accions»); the row ✓ lowers a level with a snackbar, ❄ freezes the whole product. ()
   Validated on emulator-5554: ✓ on the row → «Cacauets: ara en queda poc · Desfés»; tapping «Molt» in the modal changes it at once.
-- [ ] 23. Frozen (✓ lowers a level, ☀ thaws everything to today + 3 days) and expired (only «Llença») Grapats (§3.1).
+- [x] 23. Frozen (✓ lowers a level, ☀ thaws everything to today + 3 days) and expired (only «Llença») Grapats (§3.1). ()
+  Behaviour came with tasks 19–22 (✓ keeps it frozen, ☀ thaws, expired only «Llença»); this commit adds the tests. Emulator: frozen Cacauets «Queda molt · Congelat…» then ✓ → «la meitat», still frozen. The modal ☀ keeps the date picker proposing today + 3 days, like a unit.
 - [ ] 24. Transforma: Grapats ingredient with a «what is left» level selector; results can be Grapats («Queda» selector).
 - [ ] 25. Seed and debug fakes with handfuls, final validation on the emulator, PR.
