@@ -24,6 +24,7 @@ private fun ready(
   selected: Int = 1,
   moreOpen: Boolean = false,
   daysLeft: Int,
+  canFreeze: Boolean = true,
 ) = ItemActionsSheetState.Ready(
   name = "Greek yogurt",
   category = dairy,
@@ -32,6 +33,7 @@ private fun ready(
   moreOpen = moreOpen,
   daysLeft = daysLeft,
   otherCategories = emptyList(),
+  canFreeze = canFreeze,
 )
 
 @Composable
@@ -47,6 +49,30 @@ private fun SheetPreview(state: ItemActionsSheetState.Ready) {
 @Composable
 internal fun ItemActionsOneUnitPreview() {
   SheetPreview(ready(units = listOf(unit("a", 13, ExpiryStatus.SOON)), daysLeft = 2))
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun ItemActionsOneUnitCannotFreezePreview() {
+  SheetPreview(ready(units = listOf(unit("a", 13, ExpiryStatus.SOON)), daysLeft = 2, canFreeze = false))
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun ItemActionsSeveralUnitsCannotFreezePreview() {
+  SheetPreview(
+    ready(
+      units =
+        listOf(
+          unit("a", 13, ExpiryStatus.SOON),
+          unit("b", 13, ExpiryStatus.SOON),
+          unit("c", 18, ExpiryStatus.FRESH),
+        ),
+      selected = 2,
+      daysLeft = 2,
+      canFreeze = false,
+    ),
+  )
 }
 
 @PreviewDynamicLightDark

@@ -134,12 +134,14 @@ private fun ProductRowActions(
           tint = CaducityTheme.colors.fresh.strong,
           onClick = onConsume,
         )
-        RoundButton(
-          icon = Symbols.Outlined.AcUnit,
-          contentDescription = stringResource(R.string.status_action_freeze, model.name),
-          tint = CaducityTheme.colors.frozen.strong,
-          onClick = onFreeze,
-        )
+        if (model.canFreeze) {
+          RoundButton(
+            icon = Symbols.Outlined.AcUnit,
+            contentDescription = stringResource(R.string.status_action_freeze, model.name),
+            tint = CaducityTheme.colors.frozen.strong,
+            onClick = onFreeze,
+          )
+        }
       }
       ExpiryStatus.FROZEN -> {
         RoundButton(
@@ -221,6 +223,7 @@ private fun previewRow(
   detail: ProductRowDetail,
   category: Category? = null,
   frozenSince: LocalDate? = null,
+  canFreeze: Boolean = true,
 ) = ProductRowModel(
   key = name,
   name = name,
@@ -230,7 +233,38 @@ private fun previewRow(
   category = category,
   detail = detail,
   frozenSince = frozenSince,
+  canFreeze = canFreeze,
 )
+
+/** A row that can go in the freezer (✓ ❄), one that cannot (only ✓) and a frozen one (✓ ☀). */
+@PreviewLightDark
+@Composable
+internal fun ProductRowFreezePreview() {
+  PreviewTheme {
+    Column(
+      modifier = Modifier.background(CaducityTheme.colorScheme.background).padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(ConnectedListSpacing),
+    ) {
+      val rows =
+        listOf(
+          previewRow("Pernil dolç", ExpiryStatus.SOON, 2, 1, ProductRowDetail.WithDays),
+          previewRow("Fruita fresca", ExpiryStatus.FRESH, 5, 1, ProductRowDetail.WithDays, canFreeze = false),
+          previewRow(
+            name = "Pa de motlle",
+            status = ExpiryStatus.FROZEN,
+            days = null,
+            units = 1,
+            detail = ProductRowDetail.WithDays,
+            frozenSince = LocalDate(2026, 10, 4),
+            canFreeze = false,
+          ),
+        )
+      rows.forEachIndexed { index, row ->
+        ProductRow(model = row, index = index, count = rows.size, onClick = {})
+      }
+    }
+  }
+}
 
 @PreviewLightDark
 @Composable

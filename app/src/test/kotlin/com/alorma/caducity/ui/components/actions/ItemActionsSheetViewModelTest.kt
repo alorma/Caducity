@@ -69,6 +69,7 @@ import strikt.assertions.contains
 import strikt.assertions.containsExactly
 import strikt.assertions.hasSize
 import strikt.assertions.isEqualTo
+import strikt.assertions.isFalse
 import strikt.assertions.isNotNull
 import strikt.assertions.isNull
 import strikt.assertions.isTrue
@@ -471,6 +472,24 @@ class ItemActionsSheetViewModelTest {
 
       snackbar.onAction!!.invoke()
       expectThat(pausedDates()).isEqualTo(frozenAt)
+    }
+
+  @Test
+  fun `a category that cannot be frozen leaves nothing to freeze and freezing does nothing`() =
+    runTest {
+      db.categoryDao().insertCategory(CategoryRoomEntity("fruit", "fruit", "", canFreeze = false))
+      val ids = add("Apple", days = 4, categoryId = "fruit", quantity = 2)
+      val vm = viewModel(ids)
+      keepAlive(vm)
+
+      val state = vm.ready()
+      expectThat(state.canFreeze).isFalse()
+      expectThat(state.freezableCount).isEqualTo(0)
+
+      vm.onFreezeToggle()
+
+      expectThat(item(ids[0]).pausedDate).isNull()
+      expectThat(item(ids[1]).pausedDate).isNull()
     }
 
   @Test

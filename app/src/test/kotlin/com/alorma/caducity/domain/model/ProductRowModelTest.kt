@@ -65,6 +65,16 @@ class ProductRowModelTest {
   }
 
   @Test
+  fun `row can be frozen only when the nearest unit can`() {
+    val today = LocalDate(2026, 10, 14)
+    val cannot = listOf(unit("a", day = 16).copy(canFreeze = false), unit("b", day = 20).copy(canFreeze = true))
+    val can = listOf(unit("a", day = 16))
+
+    expectThat(cannot.toProductRow(null, ProductRowDetail.WithDays, today).canFreeze).isEqualTo(false)
+    expectThat(can.toProductRow(null, ProductRowDetail.WithDays, today).canFreeze).isEqualTo(true)
+  }
+
+  @Test
   fun `row orders the unit ids and takes state and days from the nearest unit`() {
     val units =
       listOf(

@@ -93,6 +93,7 @@ class ObserveHomeUseCase(
       name = nearest.name,
       category = category,
       itemIds = sorted.map { it.itemId },
+      canFreeze = nearest.canFreeze,
     )
   }
 }
