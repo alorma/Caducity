@@ -72,3 +72,13 @@ Strings ca/es/en go with the task that uses them.
    Compose logic.
 3. Claude merges the worktrees (strings.xml conflicts expected), makes one commit per task, runs `ktlintCheck` and the
    tests, and validates on the device.
+
+## Phase 2 validation (21 October, emulator-5554, debug build)
+
+- Update from the 1.1.6 debug build (Room v5, seed imported) to this one: same counts (6 expired, 9 soon, 20 fresh), app runs, categories freezable.
+- Version 4 backup (seed) imports on the new build.
+- Category editor: «Congelació» switch; off → rows of the category lose ❄, the unit sheet only offers «Consumeix» full width.
+- Add / Edit: switch inherits the category («Dry goods: no»); override on Pasta brings ❄ back only for Pasta; «Congelat» hidden in Add when it cannot be frozen.
+- Transforma: result in a non-freezable category has no «Congela'n» chip; switching to Dairy shows it.
+- Release notes 1.1.7 (en-US, ca, es-ES) added.
+- Not tried: Pixel 8a (upgrade with real data), TalkBack.
