@@ -63,3 +63,12 @@ See the chat of 21 October; answers go here as «Decisions taken with Bernat».
 - [ ] g. Transforma: no «Congela'n» for results that cannot be frozen.
 
 Strings ca/es/en go with the task that uses them.
+
+## How phase 2 is run (parallel)
+
+1. Claude alone, in sequence: **a**, then **b** (migration and effective value are the base of everything).
+2. In parallel, one agent per `git worktree`: **c+g**, **d**, **e+f**. Haiku sub-agents only for ca/es/en strings,
+   previews / screenshot tests and unit tests of cases already defined here; never the migration, backup, use cases or
+   Compose logic.
+3. Claude merges the worktrees (strings.xml conflicts expected), makes one commit per task, runs `ktlintCheck` and the
+   tests, and validates on the device.
