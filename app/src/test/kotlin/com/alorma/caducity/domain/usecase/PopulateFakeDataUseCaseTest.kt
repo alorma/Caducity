@@ -123,6 +123,16 @@ class PopulateFakeDataUseCaseTest {
       expectThat(types["Nata"]).isEqualTo(UnitType.CANS)
       expectThat(types["Espinacs"]).isEqualTo(UnitType.TUPPERS)
       expectThat(types["Llet sencera"]).isEqualTo(UnitType.UNITS)
+      expectThat(types["Llet de civada"]).isEqualTo(UnitType.MILLILITRES)
+      expectThat(types["Ametlles"]).isEqualTo(UnitType.GRAMS)
+
+      val amounts =
+        db
+          .itemDao()
+          .getAllItemsSync()
+          .mapNotNull { it.amount }
+          .sorted()
+      expectThat(amounts).isEqualTo(listOf(250, 750, 1200))
     }
 
   @Test

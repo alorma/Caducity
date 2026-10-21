@@ -12,7 +12,8 @@ import kotlin.time.Instant
  * - Units: single unit, several units on the same day (one row, «N unitats»), several days, mixed statuses in one product.
  * - Units that must not show up anywhere: consumed and used as an ingredient of a Transforma.
  * - A long name, to check ellipsis.
- * - Unit types: most products in units, others in tuppers, packs and cans (rows read «3 paquets», «1 tupper»).
+ * - Unit types: most products in units, others in tuppers, packs and cans (rows read «3 paquets», «1 tupper»), and
+ *   measured ones in grams and millilitres («750 mL», «1,2 kg»).
  *
  * Dates are relative to today and to the expiration thresholds.
  */
@@ -68,6 +69,12 @@ class FakeTestDataStrategy(
             unitType = UnitType.CANS,
             items = units(now, "Nata", daysAhead = freshDays + 4, count = 1),
           ),
+          // Measured: a single batch with an amount (millilitres).
+          ProductConfig(
+            name = "Llet de civada",
+            unitType = UnitType.MILLILITRES,
+            items = measured(now, "Llet de civada", daysAhead = 2, amount = 750),
+          ),
         ),
     )
 
@@ -108,6 +115,17 @@ class FakeTestDataStrategy(
                 units(now, "Pèsols congelats", daysAhead = 5 + it, count = 1, frozen = true)
               },
           ),
+          // Measured in grams: one fresh batch, one frozen.
+          ProductConfig(
+            name = "Ametlles",
+            unitType = UnitType.GRAMS,
+            items = measured(now, "Ametlles", daysAhead = freshDays + 6, amount = 250),
+          ),
+          ProductConfig(
+            name = "Gambes",
+            unitType = UnitType.GRAMS,
+            items = measured(now, "Gambes", daysAhead = 20, amount = 1200, frozen = true),
+          ),
           // Ingredients of a Transforma next to a fresh unit.
           ProductConfig(
             name = "Albergínia",
@@ -117,6 +135,15 @@ class FakeTestDataStrategy(
           ),
         ),
     )
+
+  /** A single batch of [amount] g or mL. */
+  private fun measured(
+    now: Instant,
+    label: String,
+    daysAhead: Long,
+    amount: Int,
+    frozen: Boolean = false,
+  ): List<ItemConfig> = units(now, label, daysAhead, count = 1, frozen = frozen).map { it.copy(amount = amount) }
 
   /** [count] units expiring on the same day, [daysAhead] days from [now] (negative = already expired). */
   private fun units(

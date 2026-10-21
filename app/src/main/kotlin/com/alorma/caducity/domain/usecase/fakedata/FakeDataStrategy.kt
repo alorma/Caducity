@@ -53,6 +53,8 @@ data class ItemConfig(
   val shouldConsume: Boolean = false,
   /** Used as an ingredient of a Transforma: must disappear from every live view. */
   val shouldTransform: Boolean = false,
+  /** g or mL of a measured product (single batch); null for units. */
+  val amount: Int? = null,
 )
 
 /**

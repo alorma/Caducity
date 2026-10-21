@@ -76,12 +76,14 @@ class PopulateFakeDataUseCase(
           shouldConsume: Boolean,
           shouldTransform: Boolean = false,
           frozenDaysAgo: Int = 0,
+          amount: Int? = null,
         ): String? {
           val newItem =
             NewItem(
               identifier = "",
               productId = productIdFor(productName),
               expirationDate = expirationDate,
+              amount = amount,
             )
           val itemId = itemDataSource.addItem(category.id, newItem)
           when {
@@ -104,6 +106,7 @@ class PopulateFakeDataUseCase(
                 item.shouldConsume,
                 item.shouldTransform,
                 item.frozenDaysAgo,
+                item.amount,
               )
             }
           if (ingredientIds.isNotEmpty()) {

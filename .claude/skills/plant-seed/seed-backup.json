@@ -19,30 +19,14 @@
           "createdAt": 1790294400000,
           "items": [
             {
-              "id": "2ee1a66c-c35b-40e1-8dcd-e91f42a2f706",
-              "identifier": "",
-              "expirationDate": 1793404800000,
-              "createdAt": 1791763200000
-            },
-            {
-              "id": "0a2929b2-b874-4852-81e7-d4700c8a22ce",
-              "identifier": "",
-              "expirationDate": 1793836800000,
-              "createdAt": 1791936000000
-            },
-            {
               "id": "614c339f-037b-4fec-b818-75676323ccd9",
               "identifier": "",
               "expirationDate": 1792022400000,
-              "createdAt": 1791244800000
-            },
-            {
-              "id": "9945f3e3-2ed7-4982-8f3d-960c80ec0353",
-              "identifier": "",
-              "expirationDate": 1792195200000,
-              "createdAt": 1791504000000
+              "createdAt": 1791244800000,
+              "amount": 1000
             }
-          ]
+          ],
+          "unitType": "MILLILITRES"
         },
         {
           "id": "56325a52-156a-49fa-b2d0-a878b2c53a81",
@@ -466,18 +450,14 @@
           "createdAt": 1790294400000,
           "items": [
             {
-              "id": "59daa12d-c58f-45a9-ae7d-16097e0683ca",
-              "identifier": "",
-              "expirationDate": 1794960000000,
-              "createdAt": 1791331200000
-            },
-            {
               "id": "d8ebfd38-ed96-416f-b3a7-a4a6b473bb76",
               "identifier": "",
               "expirationDate": 1794873600000,
-              "createdAt": 1791331200000
+              "createdAt": 1791331200000,
+              "amount": 750
             }
-          ]
+          ],
+          "unitType": "GRAMS"
         }
       ],
       "standaloneItems": [
