@@ -3,8 +3,10 @@ package com.alorma.caducity.ui.components.chips
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -38,10 +40,11 @@ fun FilterChips(
   selectedIndex: Int?,
   onSelect: (Int) -> Unit,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(),
 ) {
   val scheme = CaducityTheme.colorScheme
   Row(
-    modifier = modifier.horizontalScroll(rememberScrollState()),
+    modifier = modifier.horizontalScroll(rememberScrollState()).padding(contentPadding),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     options.forEachIndexed { index, option ->
