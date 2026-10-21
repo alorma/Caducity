@@ -5,9 +5,11 @@ import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.AddProductUseCase
+import com.alorma.caducity.domain.usecase.FindProductCanFreezeUseCase
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
+import com.alorma.caducity.domain.usecase.SetProductCanFreezeUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
 import com.alorma.caducity.feature.tracking.AddCloseAction
 import com.alorma.caducity.feature.tracking.AddQuickCategoryAction
@@ -33,6 +35,8 @@ class AddViewModel(
   private val getNameSuggestions: GetNameSuggestionsUseCase,
   private val getActiveItem: GetActiveItemUseCase,
   private val updateItem: UpdateItemUseCase,
+  private val findProductCanFreeze: FindProductCanFreezeUseCase,
+  private val setProductCanFreeze: SetProductCanFreezeUseCase,
   observeCategories: ObserveCategoriesUseCase,
   categoryCreated: CategoryCreatedEvents,
   private val eventTracker: EventTracker,
@@ -43,6 +47,7 @@ class AddViewModel(
   /** The category was chosen by the user (or preselected): a known name must not overwrite it. */
   private var categoryPinned = args.categoryId != null
   private var suggestionJob: Job? = null
+  private var productJob: Job? = null
 
   /** The user typed, picked or is editing the date: choosing a category no longer suggests one. */
   private var dateTouched = args.itemId != null
@@ -63,6 +68,7 @@ class AddViewModel(
               categoryId = pending ?: current.categoryId?.takeIf { id -> categories.any { it.id == id } },
             ).withSuggestedDate()
         }
+        refreshProduct()
       }
     }
     viewModelScope.launch { categoryCreated.events.collect(::onCategoryCreated) }
@@ -85,6 +91,7 @@ class AddViewModel(
   fun onNameChange(name: String) {
     _state.update { it.copy(name = name, suggestion = null, isNewProduct = false) }
     suggestionJob?.cancel()
+    refreshProduct()
     if (name.isBlank()) return
 
     suggestionJob =
@@ -105,6 +112,8 @@ class AddViewModel(
                 },
             ).withSuggestedDate()
         }
+        // The exact match may have selected its category.
+        refreshProduct()
       }
   }
 
@@ -122,6 +131,7 @@ class AddViewModel(
           categoryId = suggestion.categoryId.takeIf { id -> it.categories.any { c -> c.id == id } } ?: it.categoryId,
         ).withSuggestedDate()
     }
+    refreshProduct()
   }
 
   fun onClearName() = onNameChange("")
@@ -129,6 +139,7 @@ class AddViewModel(
   fun onCategorySelect(categoryId: String) {
     categoryPinned = true
     _state.update { it.copy(categoryId = categoryId).withSuggestedDate() }
+    refreshProduct()
   }
 
   /** The quick category sheet created [categoryId]: it is left selected. */
@@ -136,6 +147,7 @@ class AddViewModel(
     categoryPinned = true
     if (_state.value.categories.any { it.id == categoryId }) {
       _state.update { it.copy(categoryId = categoryId).withSuggestedDate() }
+      refreshProduct()
     } else {
       pendingCategoryId = categoryId
     }
@@ -169,6 +181,33 @@ class AddViewModel(
     _state.update { it.copy(frozen = frozen) }
   }
 
+  /**
+   * The user flipped «Es pot congelar»: it becomes an override of the product. Choice: the override is kept when the
+   * category or the name change later in the same session, because the user decided it explicitly; only an untouched
+   * switch re-derives its value from the category / existing product.
+   */
+  fun onCanFreezeChange(canFreeze: Boolean) {
+    _state.update { it.copy(canFreezeOverride = canFreeze) }
+  }
+
+  /** Looks up the override of the existing product that matches the typed name in the selected category. */
+  private fun refreshProduct() {
+    productJob?.cancel()
+    val name = _state.value.name.trim()
+    val categoryId = _state.value.categoryId
+    if (name.isEmpty() || categoryId == null) {
+      _state.update { it.copy(productCanFreeze = null) }
+      return
+    }
+    productJob =
+      viewModelScope.launch {
+        val found = findProductCanFreeze.find(categoryId, name)
+        _state.update {
+          if (it.name.trim() == name && it.categoryId == categoryId) it.copy(productCanFreeze = found) else it
+        }
+      }
+  }
+
   /** "Desa": saves and closes. While editing a unit it updates that unit instead. */
   fun onSave() {
     val current = _state.value
@@ -185,9 +224,9 @@ class AddViewModel(
 
     _state.update { it.copy(saving = true) }
     viewModelScope.launch {
-      val saved: Result<Unit> =
+      val product: Result<String> =
         if (editItemId != null) {
-          updateItem.update(editItemId, name, categoryId, date).map { Unit }
+          updateItem.update(editItemId, name, categoryId, date)
         } else {
           addProduct
             .add(
@@ -195,9 +234,18 @@ class AddViewModel(
               categoryId = categoryId,
               date = date,
               quantity = current.quantity,
-              frozen = current.frozen,
-            ).map { Unit }
+              frozen = current.frozenEffective,
+            ).map { it.productId }
         }
+      // The override applies to the whole product, not only the unit, and is stored only if the user changed it.
+      val saved: Result<Unit> =
+        product.fold(
+          onSuccess = { productId ->
+            val override = current.canFreezeOverride
+            if (override != null) setProductCanFreeze.set(productId, override) else Result.success(Unit)
+          },
+          onFailure = { Result.failure(it) },
+        )
       saved
         .onSuccess {
           emitSideEffect(AddSideEffect.Confirm)
@@ -237,6 +285,7 @@ class AddViewModel(
         )
       }
       setDate(date)
+      refreshProduct()
     }
   }
 

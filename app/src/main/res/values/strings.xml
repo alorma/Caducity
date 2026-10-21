@@ -562,4 +562,10 @@
   <string name="status_action_unfreeze">Defrost %1$s</string>
   <string name="item_actions_frozen_one">1 unit · frozen %1$s</string>
   <string name="item_actions_frozen_many">%1$d units · frozen %2$s</string>
+
+  <!-- Es pot congelar: Afegeix -->
+  <string name="add_can_freeze">Can be frozen</string>
+  <string name="add_can_freeze_subtitle">%1$s: %2$s · only this product</string>
+  <string name="add_can_freeze_yes">yes</string>
+  <string name="add_can_freeze_no">no</string>
 </resources>

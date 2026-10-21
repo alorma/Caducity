@@ -591,4 +591,10 @@
   <string name="status_action_unfreeze">Descongela %1$s</string>
   <string name="item_actions_frozen_one">1 unitat · congelat el %1$s</string>
   <string name="item_actions_frozen_many">%1$d unitats · congelades el %2$s</string>
+
+  <!-- Es pot congelar: Afegeix -->
+  <string name="add_can_freeze">Es pot congelar</string>
+  <string name="add_can_freeze_subtitle">%1$s: %2$s · només aquest producte</string>
+  <string name="add_can_freeze_yes">sí</string>
+  <string name="add_can_freeze_no">no</string>
 </resources>

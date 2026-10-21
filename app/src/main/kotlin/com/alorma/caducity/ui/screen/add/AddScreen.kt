@@ -130,13 +130,29 @@ fun AddScreen(
         })
         DateSection(state = state, viewModel = viewModel)
         // Editing a unit has no quantity nor frozen toggle: only its name, category and date can change.
-        if (!state.isEditing) {
-          QuantityFrozenRow(
-            quantity = state.quantity,
-            frozen = state.frozen,
-            onQuantityChange = viewModel::onQuantityChange,
-            onFrozenChange = viewModel::onFrozenChange,
-          )
+        // «Es pot congelar» shows in both modes once a category is selected, and applies to the whole product.
+        val canFreeze = state.canFreeze
+        val category = state.category
+        if (!state.isEditing || (canFreeze != null && category != null)) {
+          Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (!state.isEditing) {
+              QuantityFrozenRow(
+                quantity = state.quantity,
+                frozen = state.frozenEffective,
+                onQuantityChange = viewModel::onQuantityChange,
+                onFrozenChange = viewModel::onFrozenChange,
+                canFreeze = canFreeze != false,
+              )
+            }
+            if (canFreeze != null && category != null) {
+              CanFreezeCard(
+                canFreeze = canFreeze,
+                categoryName = category.name,
+                categoryCanFreeze = category.canFreeze,
+                onCanFreezeChange = viewModel::onCanFreezeChange,
+              )
+            }
+          }
         }
       }
     }

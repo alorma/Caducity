@@ -41,13 +41,15 @@ fun QuantityFrozenRow(
   onQuantityChange: (Int) -> Unit,
   onFrozenChange: (Boolean) -> Unit,
   modifier: Modifier = Modifier,
+  /** False hides the «Congelat» toggle: the product cannot be frozen. */
+  canFreeze: Boolean = true,
 ) {
   Row(
     modifier = modifier.fillMaxWidth().height(64.dp),
     horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
   ) {
     Surface(
-      shape = ButtonGroupDefaults.connectedLeadingButtonShape,
+      shape = if (canFreeze) ButtonGroupDefaults.connectedLeadingButtonShape else CaducityTheme.shapes.large,
       color = CaducityTheme.colorScheme.surfaceContainerHigh,
       modifier = Modifier.weight(2f).height(64.dp),
     ) {
@@ -84,6 +86,7 @@ fun QuantityFrozenRow(
         }
       }
     }
+    if (!canFreeze) return@Row
     val frozenColors = CaducityTheme.colors.frozen
     ToggleButton(
       checked = frozen,

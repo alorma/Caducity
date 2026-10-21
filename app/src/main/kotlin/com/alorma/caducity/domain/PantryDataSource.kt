@@ -25,14 +25,14 @@ interface PantryDataSource {
     frozenRemainingDays: Int?,
   ): AddedItems
 
-  /** Edits a single unit; [frozenRemainingDays] is applied only when the unit is frozen. */
+  /** Edits a single unit; [frozenRemainingDays] is applied only when the unit is frozen. Returns its product id. */
   suspend fun updateItem(
     itemId: String,
     categoryId: String,
     productName: String,
     expiration: Instant,
     frozenRemainingDays: Int?,
-  )
+  ): String
 
   /** Moves a unit to [categoryId], finding or creating the homonymous product there. */
   suspend fun moveItem(
