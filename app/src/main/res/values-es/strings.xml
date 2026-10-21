@@ -363,6 +363,11 @@
   <string name="unit_parent_units_rule">De una en una · el ✓ gasta una</string>
   <string name="unit_parent_measured_rule">Una cantidad · el ✓ te pregunta cuánto</string>
   <string name="unit_type_change_warning">Cambiar el tipo reinicia la cantidad</string>
+  <string name="unit_parent_handfuls">A ojo</string>
+  <string name="unit_parent_handfuls_rule">Un nivel · el ✓ lo baja un nivel</string>
+  <string name="unit_type_handfuls">A ojo</string>
+  <string name="handful_left_label">Queda</string>
+  <string name="handful_level_half_short">Mitad</string>
   <string name="handful_level_lots">Mucho</string>
   <string name="handful_level_half">La mitad</string>
   <string name="handful_level_little">Poco</string>

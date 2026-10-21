@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.add
 
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.time.TodayProvider
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
@@ -209,6 +210,10 @@ class AddViewModel(
     }
   }
 
+  fun onLevelChange(level: HandfulLevel) {
+    _state.update { it.copy(level = level) }
+  }
+
   fun onAmountChange(amount: Int) {
     _state.update { it.copy(amount = amount.coerceIn(1, UnitType.MAX_AMOUNT)) }
   }
@@ -264,6 +269,7 @@ class AddViewModel(
               frozen = current.frozenEffective,
               unitType = current.unitType,
               amount = current.amount.takeIf { current.isMeasured },
+              level = current.level.takeIf { current.isHandful },
             ).map { it.productId }
         }
       // The overrides apply to the whole product, not only the unit, and is stored only if the user changed it.

@@ -346,6 +346,11 @@
   <string name="unit_parent_units_rule">One by one · ✓ uses one</string>
   <string name="unit_parent_measured_rule">One amount · ✓ asks how much</string>
   <string name="unit_type_change_warning">Changing the type resets the quantity</string>
+  <string name="unit_parent_handfuls">By eye</string>
+  <string name="unit_parent_handfuls_rule">One level · ✓ lowers it one level</string>
+  <string name="unit_type_handfuls">By eye</string>
+  <string name="handful_left_label">Left</string>
+  <string name="handful_level_half_short">Half</string>
   <string name="handful_level_lots">A lot</string>
   <string name="handful_level_half">Half</string>
   <string name="handful_level_little">Little</string>

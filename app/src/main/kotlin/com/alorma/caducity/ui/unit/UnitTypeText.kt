@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.alorma.caducity.R
+import com.alorma.caducity.base.ui.icons.symbols.BackHand
 import com.alorma.caducity.base.ui.icons.symbols.Inventory2
 import com.alorma.caducity.base.ui.icons.symbols.Kitchen
 import com.alorma.caducity.base.ui.icons.symbols.LocalDrink
@@ -63,9 +64,8 @@ fun UnitType.label(): String =
       UnitType.GRAMS -> R.string.unit_type_grams
       UnitType.MILLILITRES -> R.string.unit_type_millilitres
       UnitType.BRICKS -> R.string.unit_type_bricks
-      UnitType.UNITS,
-      UnitType.HANDFULS,
-      -> R.string.unit_type_units
+      UnitType.HANDFULS -> R.string.unit_type_handfuls
+      UnitType.UNITS -> R.string.unit_type_units
     },
   )
 
@@ -95,9 +95,8 @@ val UnitType.icon: ImageVector
       UnitType.BRICKS -> Symbols.Outlined.LocalDrink
       UnitType.GRAMS -> Symbols.Outlined.Scale
       UnitType.MILLILITRES -> Symbols.Outlined.WaterDrop
-      UnitType.UNITS,
-      UnitType.HANDFULS,
-      -> Symbols.Outlined.Tag
+      UnitType.HANDFULS -> Symbols.Outlined.BackHand
+      UnitType.UNITS -> Symbols.Outlined.Tag
     }
 
 /** Name of the parent type in the picker tabs: «Unitats», «Mesurable». */
@@ -107,7 +106,7 @@ fun UnitParent.label(): String =
     when (this) {
       UnitParent.UNITS -> R.string.unit_parent_units
       UnitParent.MEASURED -> R.string.unit_parent_measured
-      UnitParent.HANDFULS -> R.string.unit_parent_units
+      UnitParent.HANDFULS -> R.string.unit_parent_handfuls
     },
   )
 
@@ -118,7 +117,7 @@ fun UnitParent.rule(): String =
     when (this) {
       UnitParent.UNITS -> R.string.unit_parent_units_rule
       UnitParent.MEASURED -> R.string.unit_parent_measured_rule
-      UnitParent.HANDFULS -> R.string.unit_parent_units_rule
+      UnitParent.HANDFULS -> R.string.unit_parent_handfuls_rule
     },
   )
 
@@ -127,7 +126,7 @@ val UnitParent.icon: ImageVector
     when (this) {
       UnitParent.UNITS -> Symbols.Outlined.Tag
       UnitParent.MEASURED -> Symbols.Outlined.Scale
-      UnitParent.HANDFULS -> Symbols.Outlined.Tag
+      UnitParent.HANDFULS -> Symbols.Outlined.BackHand
     }
 
 /** Short name of the level: «Molt», «La meitat», «Poc». */

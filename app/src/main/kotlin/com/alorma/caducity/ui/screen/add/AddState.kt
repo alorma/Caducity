@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.add
 
 import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.NameSuggestion
 import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
@@ -35,6 +36,8 @@ data class AddState(
   val quantity: Int = 1,
   /** Amount (g or mL) of a measured product; meaningless for the other types. */
   val amount: Int = UnitType.DEFAULT_AMOUNT,
+  /** Level of a handful product (Grapats). */
+  val level: HandfulLevel = HandfulLevel.DEFAULT,
   val frozen: Boolean = false,
   val saving: Boolean = false,
   /** Id of the unit being edited; null when adding a new product. */
@@ -60,6 +63,8 @@ data class AddState(
   val unitType: UnitType get() = unitTypeOverride ?: productUnitType ?: UnitType.DEFAULT
 
   val isMeasured: Boolean get() = unitType.parent == UnitParent.MEASURED
+
+  val isHandful: Boolean get() = unitType.parent == UnitParent.HANDFULS
 
   /** The type chosen is of another parent than the existing product: saving resets its quantity. */
   val resetsQuantity: Boolean get() = productUnitType != null && unitType.parent != productUnitType.parent
