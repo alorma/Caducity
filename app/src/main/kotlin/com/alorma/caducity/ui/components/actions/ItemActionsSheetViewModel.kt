@@ -98,6 +98,7 @@ class ItemActionsSheetViewModel(
               it.status,
               it.frozenSince?.date(),
               it.amount,
+              it.level,
             )
           }
         val expiredCount = actionUnits.count { it.status == ExpiryStatus.EXPIRED }

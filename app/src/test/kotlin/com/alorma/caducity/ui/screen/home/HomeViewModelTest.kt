@@ -137,7 +137,7 @@ class HomeViewModelTest {
 
   private suspend fun peanuts(level: HandfulLevel): List<String> =
     addProduct
-      .add("Peanuts", "dairy", inDays(10), 1, false, UnitType.HANDFULS, level = level)
+      .add("Peanuts", "dairy", inDays(1), 1, false, UnitType.HANDFULS, level = level)
       .getOrThrow()
       .itemIds
 

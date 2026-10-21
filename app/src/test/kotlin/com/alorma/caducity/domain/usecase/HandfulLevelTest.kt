@@ -15,6 +15,7 @@ import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.IngredientSpend
+import com.alorma.caducity.domain.model.InstanceActionError
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.TransformResult
 import com.alorma.caducity.domain.model.UnitType
@@ -182,7 +183,7 @@ class HandfulLevelTest {
 
       expectThat(consume.lowerLevel(unit)).isFailure().isA<PantryError.NotAHandful>()
       expectThat(setLevel.set(unit, HandfulLevel.HALF)).isFailure().isA<PantryError.NotAHandful>()
-      expectThat(consume.lowerLevel("missing")).isFailure().isA<PantryError.ItemNotFound>()
+      expectThat(consume.lowerLevel("missing")).isFailure().isA<InstanceActionError.InstanceNotFound>()
     }
 
   @Test
