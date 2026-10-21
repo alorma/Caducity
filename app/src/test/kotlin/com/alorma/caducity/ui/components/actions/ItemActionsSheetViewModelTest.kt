@@ -36,13 +36,14 @@ import com.alorma.caducity.ui.components.actions.ItemActionsSheetSideEffect
 import com.alorma.caducity.ui.components.actions.ItemActionsSheetState
 import com.alorma.caducity.ui.components.actions.ItemActionsSheetViewModel
 import com.alorma.caducity.ui.components.actions.QuickReschedule
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.components.feedback.snackbar.ScreenResults
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
@@ -97,7 +98,7 @@ class ItemActionsSheetViewModelTest {
   private lateinit var itemDataSource: RoomItemDataSource
   private lateinit var addProduct: AddProductUseCase
   private lateinit var thresholds: AppExpirationThresholdsImpl
-  private val snackbars = GlobalSnackbarEvents()
+  private val results = ScreenResults()
   private val created = mutableListOf<ItemActionsSheetViewModel>()
 
   @Before
@@ -161,7 +162,7 @@ class ItemActionsSheetViewModelTest {
       moveItem = MoveItemToCategoryUseCase(pantry),
       restoreItems = RestoreItemsUseCase(pantry),
       appClock = clock,
-      snackbars = snackbars,
+      results = results,
       eventTracker = EventTracker(emptyList()),
     ).also { created += it }
   }
@@ -182,7 +183,7 @@ class ItemActionsSheetViewModelTest {
 
   private suspend fun nextSnackbar() =
     withContext(Dispatchers.Default) {
-      withTimeout(5_000) { snackbars.events.first() }
+      withTimeout(5_000) { results.pending.filterNotNull().first() }
     }
 
   private suspend fun pausedDates() =

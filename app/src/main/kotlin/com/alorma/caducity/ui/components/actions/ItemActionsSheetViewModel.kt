@@ -24,7 +24,7 @@ import com.alorma.caducity.feature.tracking.NavigateToEditItemAction
 import com.alorma.caducity.feature.tracking.NavigateToTransformAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.components.feedback.snackbar.ScreenResults
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -55,7 +55,7 @@ class ItemActionsSheetViewModel(
   private val moveItem: MoveItemToCategoryUseCase,
   private val restoreItems: RestoreItemsUseCase,
   private val appClock: AppClock,
-  private val snackbars: GlobalSnackbarEvents,
+  private val results: ScreenResults,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<ItemActionsSheetNavigation, ItemActionsSheetNavigationSideEffect, ItemActionsSheetSideEffect>(),
   ItemActionsHandlers {
@@ -182,7 +182,7 @@ class ItemActionsSheetViewModel(
       return
     }
     if (ready.freezableCount == 0) {
-      snackbars.show(SnackbarRequest(R.string.item_actions_error_freeze_expired, type = AppFeedbackType.Error))
+      results.post(SnackbarRequest(R.string.item_actions_error_freeze_expired, type = AppFeedbackType.Error))
       return
     }
     eventTracker.trackAction(ItemActionAction("freeze"))
@@ -396,12 +396,12 @@ class ItemActionsSheetViewModel(
 
   private fun feedback(snackbar: SnackbarRequest) {
     emitSideEffect(ItemActionsSheetSideEffect.Confirm)
-    snackbars.show(snackbar)
+    results.post(snackbar)
     close()
   }
 
   private fun failed() {
-    snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
+    results.post(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
   }
 
   private fun close() {

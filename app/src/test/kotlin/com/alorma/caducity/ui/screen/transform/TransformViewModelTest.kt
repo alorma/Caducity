@@ -24,7 +24,7 @@ import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.TransformItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.components.feedback.snackbar.ScreenResults
 import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerResults
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
@@ -83,7 +83,7 @@ class TransformViewModelTest {
   private lateinit var pantry: RoomPantryDataSource
   private lateinit var addProduct: AddProductUseCase
   private val created = mutableListOf<TransformViewModel>()
-  private val snackbars = GlobalSnackbarEvents()
+  private val results = ScreenResults()
   private val pickerResults = IngredientPickerResults()
 
   @Before
@@ -155,7 +155,7 @@ class TransformViewModelTest {
       getNameSuggestions = GetNameSuggestionsUseCase(pantry),
       transformItems = TransformItemsUseCase(pantry, clock),
       observeCategories = ObserveCategoriesUseCase(pantry),
-      snackbars = snackbars,
+      screenResults = results,
       eventTracker = EventTracker(emptyList()),
       pickerResults = pickerResults,
     ).also { created += it }
@@ -685,7 +685,8 @@ class TransformViewModelTest {
       vm.onCategorySelect(0, "soup")
       vm.onDatePicked(0, inDays(3))
 
-      snackbars.events.test {
+      results.pending.test {
+        skipItems(1)
         vm.onSave()
         expectNoEvents()
       }
@@ -722,16 +723,18 @@ class TransformViewModelTest {
       val vm = ready(chicken.itemIds.take(1))
       vm.onNameChange(0, "Broth")
 
-      snackbars.events.test {
+      results.pending.test {
+        skipItems(1)
         vm.onSave()
-        expectThat(awaitItem().message).isEqualTo(R.string.transform_done_one_one)
+        expectThat(awaitItem()?.message).isEqualTo(R.string.transform_done_one_one)
       }
 
       val many = ready((chicken.itemIds.drop(1) + carrots.itemIds))
       many.onNameChange(0, "Stew")
-      snackbars.events.test {
+      results.pending.test {
+        skipItems(1)
         many.onSave()
-        val message = awaitItem()
+        val message = awaitItem()!!
         expectThat(message.message).isEqualTo(R.string.transform_done_one_product)
         expectThat(message.messageArgs).isEqualTo(listOf<Any>(3))
       }

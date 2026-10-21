@@ -166,7 +166,7 @@ val appModule =
         getNameSuggestions = get(),
         transformItems = get(),
         observeCategories = get(),
-        snackbars = get(),
+        screenResults = get(),
         eventTracker = get(),
         pickerResults = get(),
       )
@@ -272,7 +272,7 @@ val appModule =
         moveItem = get(),
         restoreItems = get(),
         appClock = get(),
-        snackbars = get(),
+        results = get(),
         eventTracker = get(),
       )
     }

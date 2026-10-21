@@ -19,7 +19,7 @@ import com.alorma.caducity.feature.tracking.NavigateToIngredientPickerAction
 import com.alorma.caducity.feature.tracking.TransformCloseAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.components.feedback.snackbar.ScreenResults
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import com.alorma.caducity.ui.screen.transform.picker.IngredientPickerResults
 import kotlinx.coroutines.Job
@@ -42,7 +42,7 @@ class TransformViewModel(
   private val getNameSuggestions: GetNameSuggestionsUseCase,
   private val transformItems: TransformItemsUseCase,
   observeCategories: ObserveCategoriesUseCase,
-  private val snackbars: GlobalSnackbarEvents,
+  private val screenResults: ScreenResults,
   private val eventTracker: EventTracker,
   private val pickerResults: IngredientPickerResults,
 ) : BaseViewModel<TransformNavigation, TransformNavigationSideEffect, TransformSideEffect>() {
@@ -313,7 +313,7 @@ class TransformViewModel(
         .transform(spends, results)
         .onSuccess { batch ->
           val (message, messageArgs) = doneMessage(current.ingredients.sumOf { it.count }, results.size)
-          snackbars.show(
+          screenResults.post(
             SnackbarRequest(
               message = message,
               messageArgs = messageArgs,
