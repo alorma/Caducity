@@ -152,7 +152,7 @@ changing the type in Edit leaves one batch with the nearest date and the default
 ## Phase 1 and 3 closed (21 October)
 
 Approved by Bernat («endavant») and opened as one PR from `feature/tipus-unitat`. Pending for later: release-notes bullet for
-Mesurable, phases 4 (Grapats) and 5 is covered by tasks 14 and 17 (Transforma), Pixel 8a upgrade with real data, TalkBack.
+Mesurable and Grapats, Pixel 8a upgrade with real data, TalkBack. (Phase 5, Transforma, was covered by tasks 14, 17, 18 and 24.)
 
 ## Phase 4 tasks: Grapats (branch `feature/grapats`, own PR)
 
@@ -173,4 +173,5 @@ New handful starts at «Molt»; tapping the row opens the modal; release notes l
   Behaviour came with tasks 19–22 (✓ keeps it frozen, ☀ thaws, expired only «Llença»); this commit adds the tests. Emulator: frozen Cacauets «Queda molt · Congelat…» then ✓ → «la meitat», still frozen. The modal ☀ keeps the date picker proposing today + 3 days, like a unit.
 - [x] 24. Transforma: Grapats ingredient with a «what is left» level selector; results can be Grapats («Queda» selector). ()
   Validated on emulator-5554: Cacauets «Queda poc» left, result «Barreja» as Grapats «Queda molt».
-- [ ] 25. Seed and debug fakes with handfuls, final validation on the emulator, PR.
+- [x] 25. Seed and debug fakes with handfuls, final validation on the emulator, PR. ()
+  Seed v6 with handfuls imports on emulator-5554 (Spinach «Queda la meitat», Bread «Queda poc»). PR next.
