@@ -136,7 +136,8 @@ changing the type in Edit leaves one batch with the nearest date and the default
   Validated on emulator-5554: freeze from the modal, frozen row, thaw → «D'aquí 3 dies».
 - [x] 14. Transforma: a Mesurable ingredient is consumed whole, no «N de M» selector. ViewModel tests. (a7fbe8a6)
   Unit tests only; not tried on the emulator yet.
-- [ ] 15. Seed and debug fakes with grams / millilitres; final validation on the emulator; release notes.
+- [x] 15. Seed and debug fakes with grams / millilitres (a25494ca); seed v6 imports on emulator-5554 and Flour reads «750 g».
+  Pending: release-notes bullet for Mesurable (to agree with Bernat) and the final pass on the emulator.
 - [ ] 16. (Asked by Bernat, to do at the end) Category screen: the week strip and the status chips (Tots / Caducat / Aviat /
   Fresc…) must reach the edge of the screen and not be cut at the gutter, like the week strip on Home (`fullBleed`).
   Check with a screenshot on the emulator, light and dark.
