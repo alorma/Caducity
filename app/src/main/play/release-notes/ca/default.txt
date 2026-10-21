@@ -1,3 +1,2 @@
-Versió 1.1.5:
-• Ara pots descongelar els productes congelats: des de la llista amb un toc, o triant quantes unitats des de la pantalla del producte. Els productes descongelats caduquen d'aquí 3 dies i ho pots desfer.
-• Els productes congelats mostren quantes unitats tens i quan els vas congelar.
+Versió 1.1.7:
+• Ara pots marcar les categories i els productes que no es poden congelar, com la pasta o les conserves. Ja no mostren el botó de congelar.

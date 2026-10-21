@@ -1,3 +1,2 @@
-Version 1.1.5:
-• You can now defrost frozen products: from the list with one tap, or choose how many units from the product screen. Defrosted products expire in 3 days, and you can undo it.
-• Frozen products show how many units you have and when you froze them.
+Version 1.1.7:
+• You can now mark categories and products that cannot be frozen, like pasta or tinned food. They no longer show the freeze button.

@@ -1,3 +1,2 @@
-Versión 1.1.5:
-• Ahora puedes descongelar los productos congelados: desde la lista con un toque, o eligiendo cuántas unidades desde la pantalla del producto. Los productos descongelados caducan en 3 días y puedes deshacerlo.
-• Los productos congelados muestran cuántas unidades tienes y cuándo los congelaste.
+Versión 1.1.7:
+• Ahora puedes marcar las categorías y los productos que no se pueden congelar, como la pasta o las conservas. Ya no muestran el botón de congelar.
