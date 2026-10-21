@@ -134,7 +134,7 @@ changing the type in Edit leaves one batch with the nearest date and the default
 - [x] 13. Frozen and expired (§3.1): frozen modal with «Consumeix N» / «Descongela N» (thaw → Aviat today + 3 days), expired only
   «Llença». Tests + emulator. (17bf9110)
   Validated on emulator-5554: freeze from the modal, frozen row, thaw → «D'aquí 3 dies».
-- [x] 14. Transforma: a Mesurable ingredient is consumed whole, no «N de M» selector. ViewModel tests. ()
+- [x] 14. Transforma: a Mesurable ingredient is consumed whole, no «N de M» selector. ViewModel tests. (a7fbe8a6)
   Unit tests only; not tried on the emulator yet.
 - [ ] 15. Seed and debug fakes with grams / millilitres; final validation on the emulator; release notes.
 - [ ] 16. (Asked by Bernat, to do at the end) Category screen: the week strip and the status chips (Tots / Caducat / Aviat /
