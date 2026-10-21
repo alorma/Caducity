@@ -300,8 +300,8 @@ private fun IngredientCard(
           )
         }
         Spacer(Modifier.weight(1f))
-        // Only products with more than one unit have an amount to change.
-        if (ingredient.available > 1) {
+        // Only products with more than one unit have an amount to change (a measured one is spent whole).
+        if (ingredient.available > 1 && !ingredient.measured) {
           if (editing) {
             UnitsStepper(count = ingredient.count, available = ingredient.available, onChange = onCountChange)
           } else {

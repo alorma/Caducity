@@ -8,6 +8,7 @@ import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.IngredientSpend
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.TransformResult
+import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
@@ -132,9 +133,7 @@ class TransformViewModel(
       current.copy(
         ingredients =
           current.ingredients.map {
-            if (it.key ==
-              key
-            ) {
+            if (it.key == key && !it.measured) {
               it.copy(count = count.coerceIn(1, it.available))
             } else {
               it
@@ -393,13 +392,15 @@ class TransformViewModel(
   ): List<IngredientUi> =
     groupBy { it.productId ?: it.itemId }.map { (key, picked) ->
       val units = (active.filter { (it.productId ?: it.itemId) == key }).sortedBy { it.expiration }
+      // A measured product is spent whole: every batch, whatever was picked.
+      val whole = units.firstOrNull()?.unitType?.parent == UnitParent.MEASURED
       IngredientUi(
         key = key,
         name = picked.first().name,
         categoryId = picked.first().categoryId,
         units = units,
-        count = picked.size,
-        preferredIds = picked.map { it.itemId }.toSet(),
+        count = if (whole) units.size else picked.size,
+        preferredIds = (if (whole) units else picked).map { it.itemId }.toSet(),
         unitStatus = statuses,
       )
     }

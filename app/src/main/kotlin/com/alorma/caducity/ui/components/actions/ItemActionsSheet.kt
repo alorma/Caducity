@@ -917,12 +917,15 @@ private fun AmountShortcuts(
   onSelect: (Int) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val options = if (state.unitType == UnitType.MILLILITRES) listOf(100, 250, 500) else listOf(50, 100, 250)
+  // Only the shortcuts below what is left: «Tot» covers the rest, so a shortcut equal to it would repeat it.
+  val options =
+    (if (state.unitType == UnitType.MILLILITRES) listOf(100, 250, 500) else listOf(50, 100, 250))
+      .filter { it < state.batchAmount }
   Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
     options.forEach { option ->
       FilterChip(
         selected = state.amountSpend == option,
-        onClick = { onSelect(minOf(option, state.batchAmount)) },
+        onClick = { onSelect(option) },
         label = { Text(formatAmount(state.unitType, option, locale)) },
       )
     }
