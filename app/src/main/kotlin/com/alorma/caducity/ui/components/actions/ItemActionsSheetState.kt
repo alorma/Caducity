@@ -29,6 +29,8 @@ sealed interface ItemActionsSheetState {
     /** Other categories, offered by «Mou». */
     val otherCategories: List<Category>,
     val pickingCategory: Boolean = false,
+    /** The product can go in the freezer; when false the sheet has no «Congela». */
+    val canFreeze: Boolean = true,
   ) : ItemActionsSheetState {
     private val nearest: ActionUnit get() = units.first()
 
@@ -51,7 +53,7 @@ sealed interface ItemActionsSheetState {
 
     val expiredCount: Int get() = units.count { it.status == ExpiryStatus.EXPIRED }
     val freezableCount: Int
-      get() = units.count { it.status == ExpiryStatus.SOON || it.status == ExpiryStatus.FRESH }
+      get() = if (canFreeze) units.count { it.status == ExpiryStatus.SOON || it.status == ExpiryStatus.FRESH } else 0
 
     /** Units «Congela N» freezes: the chosen number, or fewer if not that many can be frozen. */
     val freezeCount: Int get() = minOf(selected, freezableCount)

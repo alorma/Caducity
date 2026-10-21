@@ -93,6 +93,7 @@ class ItemActionsSheetViewModel(
           daysLeft = appClock.nowDate().daysUntil(actionUnits.first().expiration),
           otherCategories = categories.filter { it.id != category.id },
           pickingCategory = picking,
+          canFreeze = focus.canFreeze,
         )
       }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ItemActionsSheetState.Loading)

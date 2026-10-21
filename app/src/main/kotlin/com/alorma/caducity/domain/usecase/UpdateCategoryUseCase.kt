@@ -19,6 +19,8 @@ class UpdateCategoryUseCase(
     usualDurationDays: Int?,
     /** `null` keeps the stored description. */
     description: String? = null,
+    /** `null` keeps the stored value. */
+    canFreeze: Boolean? = null,
   ): Result<Unit> {
     val trimmed = name.trim()
     if (trimmed.isEmpty()) return Result.failure(PantryError.BlankName)
@@ -40,6 +42,7 @@ class UpdateCategoryUseCase(
           icon = icon,
           usualDurationDays = usualDurationDays,
           description = description?.trim() ?: current.description,
+          canFreeze = canFreeze ?: current.canFreeze,
         ),
       )
       Result.success(Unit)

@@ -54,7 +54,7 @@ See the chat of 21 October; answers go here as «Decisions taken with Bernat».
 
 - [x] a. Data: Room v6 (`categories.canFreeze` NOT NULL DEFAULT 1, `products.canFreeze` NULL), `MIGRATION_5_6`,
   schema `6.json`, domain `Category.canFreeze` / `Product.canFreeze`, backup v5 reading v4.
-- [ ] b. Domain: effective value (product ?? category) in the read models (`ProductRowModel`, item actions state) and
+- [x] b. Domain: effective value (product ?? category) in the read models (`ProductRowModel`, item actions state) and
   use cases to set it on category / product; the freeze use case refuses when it cannot be frozen.
 - [ ] c. Category editor: «Congelació» section with the switch (`NovaCategoria`).
 - [ ] d. Add / Edit: «Es pot congelar» row under Quantitat (also in Edit), inherited value + override, hides «Congelat».

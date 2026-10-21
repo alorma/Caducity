@@ -66,7 +66,10 @@ interface PantryDataSource {
     at: Instant,
   )
 
-  /** Freezes the units in one transaction; units already expired are skipped. Returns the ids frozen. */
+  /**
+   * Freezes the units in one transaction; units already expired, or of a product that cannot be frozen, are skipped.
+   * Returns the ids frozen.
+   */
   suspend fun freeze(
     itemIds: List<String>,
     at: Instant,
@@ -112,4 +115,13 @@ interface PantryDataSource {
   suspend fun updateCategory(category: Category)
 
   suspend fun createCategories(categories: List<Category>)
+
+  /**
+   * Sets the product's «es pot congelar» override. `null`, or the same value as its category, stores no override so the
+   * product keeps following the category.
+   */
+  suspend fun setProductCanFreeze(
+    productId: String,
+    canFreeze: Boolean?,
+  )
 }

@@ -25,4 +25,6 @@ data class ActiveItemRow(
   val pausedDate: Long?,
   val remainingDays: Int?,
   val createdAt: Long?,
+  /** Effective value: the product's override, else the category's. */
+  val canFreeze: Boolean,
 )

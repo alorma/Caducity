@@ -139,7 +139,7 @@ class RoomPantryDataSource(
       itemIds.filter { id ->
         val item = itemDao.getItem(id) ?: return@filter false
         val days = Instant.fromEpochMilliseconds(item.expirationDate).date().toEpochDays() - today.toEpochDays()
-        if (days < 0 || item.pausedDate != null) return@filter false
+        if (days < 0 || item.pausedDate != null || !canFreeze(item)) return@filter false
         itemDao.updateItem(item.copy(pausedDate = at.toEpochMilliseconds(), remainingDays = days.toInt()))
         true
       }
@@ -311,6 +311,7 @@ class RoomPantryDataSource(
           frozenSince = row.pausedDate?.let { Instant.fromEpochMilliseconds(it) },
           remainingDays = row.remainingDays,
           createdAt = row.createdAt?.let { Instant.fromEpochMilliseconds(it) },
+          canFreeze = row.canFreeze,
         )
       }
     }
@@ -341,6 +342,23 @@ class RoomPantryDataSource(
   override suspend fun createCategories(categories: List<Category>) {
     categoryDao.insertCategories(categories.map(categoryMapper::toEntity))
   }
+
+  override suspend fun setProductCanFreeze(
+    productId: String,
+    canFreeze: Boolean?,
+  ) {
+    database.withTransaction {
+      val product = productDao.getProduct(productId) ?: return@withTransaction
+      val inherited = categoryDao.getCategory(product.categoryId)?.canFreeze ?: true
+      productDao.updateProduct(product.copy(canFreeze = canFreeze?.takeIf { it != inherited }))
+    }
+  }
+
+  /** Effective value: the product's override, else the category's; a unit without product follows its category. */
+  private suspend fun canFreeze(item: ItemRoomEntity): Boolean =
+    item.productId?.let { productDao.getProduct(it)?.canFreeze }
+      ?: categoryDao.getCategory(item.categoryId)?.canFreeze
+      ?: true
 
   private suspend fun findOrCreateProduct(
     categoryId: String,

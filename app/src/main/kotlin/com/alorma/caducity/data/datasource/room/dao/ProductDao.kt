@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import com.alorma.caducity.data.datasource.room.model.ProductUsageRow
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +20,9 @@ interface ProductDao {
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun insertProduct(product: ProductRoomEntity)
+
+  @Update
+  suspend fun updateProduct(product: ProductRoomEntity)
 
   @Query("SELECT * FROM products")
   suspend fun getAllProductsSync(): List<ProductRoomEntity>

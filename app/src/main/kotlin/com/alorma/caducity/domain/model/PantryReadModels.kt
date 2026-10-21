@@ -14,6 +14,8 @@ data class PantryEntry(
   val frozenSince: Instant?,
   val remainingDays: Int?,
   val createdAt: Instant?,
+  /** Effective «es pot congelar» of the unit's product. */
+  val canFreeze: Boolean = true,
 ) {
   /** Stable key of the product this unit belongs to (legacy items without product group by name). */
   val groupKey: String

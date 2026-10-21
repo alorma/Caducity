@@ -13,6 +13,7 @@ import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
+import com.alorma.caducity.domain.usecase.SetProductCanFreezeUseCase
 import com.alorma.caducity.domain.usecase.TransformItemsUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.backup.ExportBackupUseCase
@@ -199,6 +200,7 @@ val appModule =
 
     // Category editor (new and edit)
     singleOf(::CreateCategoryUseCase)
+    singleOf(::SetProductCanFreezeUseCase)
     viewModel { params ->
       CategoryEditorViewModel(
         categoryId = params.getOrNull(),

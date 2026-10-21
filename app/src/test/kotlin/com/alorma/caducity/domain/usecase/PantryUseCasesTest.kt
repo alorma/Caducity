@@ -21,6 +21,7 @@ import com.alorma.caducity.domain.model.SeedCategory
 import com.alorma.caducity.domain.model.SuggestedCategory
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -70,6 +71,7 @@ class PantryUseCasesTest {
   private lateinit var consume: ConsumeItemUseCase
   private lateinit var freeze: FreezeItemUseCase
   private lateinit var reschedule: RescheduleItemUseCase
+  private lateinit var setProductCanFreeze: SetProductCanFreezeUseCase
 
   @Before
   fun setUp() {
@@ -101,6 +103,7 @@ class PantryUseCasesTest {
     consume = ConsumeItemUseCase(itemDataSource, pantry, clock)
     freeze = FreezeItemUseCase(itemDataSource, pantry, clock)
     reschedule = RescheduleItemUseCase(itemDataSource, pantry)
+    setProductCanFreeze = SetProductCanFreezeUseCase(pantry)
   }
 
   @After
@@ -614,6 +617,77 @@ class PantryUseCasesTest {
       ids.forEach { expectThat(db.itemDao().getItem(it)!!.discardedDate).isNotNull() }
       restore.restoreSnapshots(snapshots).getOrThrow()
       ids.forEach { expectThat(db.itemDao().getItem(it)!!.discardedDate).isNull() }
+    }
+
+  // endregion
+
+  // region Es pot congelar
+
+  private suspend fun canFreezeOf(itemId: String) =
+    pantry
+      .observeActiveItems()
+      .first()
+      .single { it.itemId == itemId }
+      .canFreeze
+
+  private suspend fun categoryCanFreeze(
+    id: String,
+    value: Boolean,
+  ) = updateCategory
+    .update(id, id, CategoryShape.COOKIE, CategoryIcon.DEFAULT, null, canFreeze = value)
+    .getOrThrow()
+
+  @Test
+  fun `a product follows its category until it overrides it`() =
+    runTest {
+      category("c1")
+      val added = addProduct.add("Pasta", "c1", inDays(30), 1, frozen = false).getOrThrow()
+      val itemId = added.itemIds.single()
+      expectThat(canFreezeOf(itemId)).isEqualTo(true)
+
+      categoryCanFreeze("c1", false)
+      expectThat(canFreezeOf(itemId)).isEqualTo(false)
+
+      setProductCanFreeze.set(added.productId, true).getOrThrow()
+      expectThat(canFreezeOf(itemId)).isEqualTo(true)
+      expectThat(products().single().canFreeze).isEqualTo(true)
+    }
+
+  @Test
+  fun `an override equal to the category value is not stored`() =
+    runTest {
+      category("c1")
+      val added = addProduct.add("Pasta", "c1", inDays(30), 1, frozen = false).getOrThrow()
+
+      setProductCanFreeze.set(added.productId, false).getOrThrow()
+      expectThat(products().single().canFreeze).isEqualTo(false)
+
+      setProductCanFreeze.set(added.productId, true).getOrThrow()
+      expectThat(products().single().canFreeze).isNull()
+    }
+
+  @Test
+  fun `updating a category without a value keeps its canFreeze`() =
+    runTest {
+      category("c1")
+      categoryCanFreeze("c1", false)
+      updateCategory.update("c1", "Renamed", CategoryShape.COOKIE, CategoryIcon.DEFAULT, null).getOrThrow()
+
+      expectThat(db.categoryDao().getCategory("c1")!!.canFreeze).isEqualTo(false)
+    }
+
+  @Test
+  fun `freeze skips the units of a product that cannot be frozen`() =
+    runTest {
+      category("c1")
+      val pasta = addProduct.add("Pasta", "c1", inDays(30), 1, frozen = false).getOrThrow()
+      val milk = addProduct.add("Milk", "c1", inDays(5), 1, frozen = false).getOrThrow()
+      setProductCanFreeze.set(pasta.productId, false).getOrThrow()
+
+      val frozen = freeze.freeze(pasta.itemIds + milk.itemIds).getOrThrow()
+
+      expectThat(frozen).isEqualTo(milk.itemIds)
+      expectThat(db.itemDao().getItem(pasta.itemIds.single())!!.pausedDate).isNull()
     }
 
   // endregion

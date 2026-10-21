@@ -24,6 +24,7 @@ class CreateCategoryUseCase(
     sortOrder: Int? = null,
     /** `null` means the category has no usual duration. */
     usualDurationDays: Int? = null,
+    canFreeze: Boolean = true,
   ): Result<String> =
     try {
       val duplicated =
@@ -39,6 +40,7 @@ class CreateCategoryUseCase(
           icon = icon,
           sortOrder = sortOrder ?: pantryDataSource.getNextSortOrder(),
           usualDurationDays = usualDurationDays,
+          canFreeze = canFreeze,
         )
 
       categoryDataSource.createCategory(category, persistentListOf())

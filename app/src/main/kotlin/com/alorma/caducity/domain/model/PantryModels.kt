@@ -56,4 +56,6 @@ data class ActiveItem(
   val frozenSince: Instant?,
   val remainingDays: Int?,
   val createdAt: Instant?,
+  /** Effective value: the product's override, else the category's. */
+  val canFreeze: Boolean = true,
 )
