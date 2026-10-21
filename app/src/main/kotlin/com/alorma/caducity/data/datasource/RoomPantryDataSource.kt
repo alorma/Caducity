@@ -313,7 +313,7 @@ class RoomPantryDataSource(
           remainingDays = row.remainingDays,
           createdAt = row.createdAt?.let { Instant.fromEpochMilliseconds(it) },
           canFreeze = row.canFreeze,
-          unitType = UnitType.of(row.unitType),
+          unitType = row.unitType,
         )
       }
     }
@@ -330,7 +330,7 @@ class RoomPantryDataSource(
         uses = it.uses,
         lastUsed = Instant.fromEpochMilliseconds(it.lastUsed),
         canFreeze = it.canFreeze,
-        unitType = UnitType.of(it.unitType),
+        unitType = it.unitType,
       )
     }
 
@@ -364,7 +364,7 @@ class RoomPantryDataSource(
   ) {
     database.withTransaction {
       val product = productDao.getProduct(productId) ?: return@withTransaction
-      productDao.updateProduct(product.copy(unitType = unitType.name))
+      productDao.updateProduct(product.copy(unitType = unitType))
     }
   }
 

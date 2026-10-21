@@ -707,11 +707,11 @@ class PantryUseCasesTest {
       category("c1")
       val added = addProduct.add("Yogurt", "c1", inDays(30), 1, frozen = false).getOrThrow()
       val itemId = added.itemIds.single()
-      expectThat(products().single().unitType).isEqualTo("UNITS")
+      expectThat(products().single().unitType).isEqualTo(UnitType.UNITS)
       expectThat(unitTypeOf(itemId)).isEqualTo(UnitType.UNITS)
 
       setProductUnitType.set(added.productId, UnitType.TUPPERS).getOrThrow()
-      expectThat(products().single().unitType).isEqualTo("TUPPERS")
+      expectThat(products().single().unitType).isEqualTo(UnitType.TUPPERS)
       expectThat(unitTypeOf(itemId)).isEqualTo(UnitType.TUPPERS)
     }
 

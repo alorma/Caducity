@@ -1,5 +1,7 @@
 package com.alorma.caducity.data.datasource.room.model
 
+import com.alorma.caducity.domain.model.UnitType
+
 /** Number of active (not consumed, not discarded) items of a category. */
 data class CategoryActiveCountRow(
   val categoryId: String,
@@ -15,7 +17,7 @@ data class ProductUsageRow(
   val lastUsed: Long,
   /** The product's own override of `canFreeze`; null inherits its category. */
   val canFreeze: Boolean? = null,
-  val unitType: String = "UNITS",
+  val unitType: UnitType = UnitType.DEFAULT,
 )
 
 /** An active item joined with its product name (falls back to the legacy `identifier`). */
@@ -30,6 +32,6 @@ data class ActiveItemRow(
   val createdAt: Long?,
   /** Effective value: the product's override, else the category's. */
   val canFreeze: Boolean,
-  /** `UnitType` name; a unit without product is always counted in units. */
-  val unitType: String,
+  /** How the product is counted; a unit without product is always counted in units. */
+  val unitType: UnitType,
 )

@@ -13,8 +13,8 @@ enum class UnitParent {
 }
 
 /**
- * The fixed list of unit types of a product; the subtypes of a [parent] only change the name and the icon. Stored by
- * name in the database and the backups: never rename or remove a value.
+ * The fixed list of unit types of a product; the subtypes of a [parent] only change the name and the icon. Persisted
+ * through `UnitTypeConverters`, which owns the stored codes.
  */
 enum class UnitType(
   val parent: UnitParent,
@@ -30,8 +30,5 @@ enum class UnitType(
 
   companion object {
     val DEFAULT = UNITS
-
-    /** The type stored as [name]; [DEFAULT] for anything unknown. */
-    fun of(name: String?): UnitType = entries.firstOrNull { it.name == name } ?: DEFAULT
   }
 }

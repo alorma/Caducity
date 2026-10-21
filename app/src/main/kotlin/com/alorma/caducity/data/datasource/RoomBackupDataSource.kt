@@ -8,6 +8,7 @@ import com.alorma.caducity.data.backup.BackupProduct
 import com.alorma.caducity.data.backup.BackupProductItem
 import com.alorma.caducity.data.backup.BackupTransformation
 import com.alorma.caducity.data.datasource.room.AppDatabase
+import com.alorma.caducity.data.datasource.room.UnitTypeConverters
 import com.alorma.caducity.data.datasource.room.dao.CategoryDao
 import com.alorma.caducity.data.datasource.room.dao.ItemDao
 import com.alorma.caducity.data.datasource.room.dao.ProductDao
@@ -26,6 +27,8 @@ class RoomBackupDataSource(
   private val productDao: ProductDao,
   private val appClock: AppClock,
 ) : BackupDataSource {
+  private val unitTypeConverters = UnitTypeConverters()
+
   override suspend fun exportBackup(): BackupData {
     val categories = categoryDao.getCategoriesOrderedSync()
     val products = productDao.getAllProductsSync()
@@ -44,7 +47,7 @@ class RoomBackupDataSource(
                 name = product.name,
                 createdAt = product.createdAt,
                 canFreeze = product.canFreeze,
-                unitType = product.unitType,
+                unitType = unitTypeConverters.unitTypeToCode(product.unitType),
                 items =
                   items
                     .filter { item -> item.categoryId == category.id }
@@ -129,7 +132,7 @@ class RoomBackupDataSource(
               name = product.name,
               createdAt = product.createdAt,
               canFreeze = product.canFreeze,
-              unitType = product.unitType,
+              unitType = unitTypeConverters.codeToUnitType(product.unitType),
             )
           productDao.insertProduct(productEntity)
         }

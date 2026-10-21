@@ -2,7 +2,6 @@ package com.alorma.caducity.data.datasource.room.mapper
 
 import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import com.alorma.caducity.domain.model.Product
-import com.alorma.caducity.domain.model.UnitType
 import kotlin.time.Instant
 
 /**
@@ -24,7 +23,7 @@ class ProductRoomMapper {
       name = entity.name,
       createdAt = Instant.fromEpochMilliseconds(entity.createdAt),
       canFreeze = entity.canFreeze,
-      unitType = UnitType.of(entity.unitType),
+      unitType = entity.unitType,
     )
 
   /**
@@ -37,6 +36,6 @@ class ProductRoomMapper {
       name = model.name,
       createdAt = model.createdAt.toEpochMilliseconds(),
       canFreeze = model.canFreeze,
-      unitType = model.unitType.name,
+      unitType = model.unitType,
     )
 }
