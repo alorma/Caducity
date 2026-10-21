@@ -351,6 +351,15 @@
   <string name="unit_type_handfuls">By eye</string>
   <string name="handful_left_label">Left</string>
   <string name="handful_level_half_short">Half</string>
+  <string name="handful_snackbar_lots">%1$s: now plenty left</string>
+  <string name="handful_snackbar_half">%1$s: now half left</string>
+  <string name="handful_snackbar_little">%1$s: now little left</string>
+  <string name="handful_snackbar_consumed">%1$s used up</string>
+  <string name="item_actions_level_title">How much is left?</string>
+  <string name="item_actions_level_hint">Tap a level to change it. ✓ in the list lowers it one level.</string>
+  <string name="item_actions_none_left">None left</string>
+  <string name="item_actions_level_frozen">%1$s · frozen on %2$s</string>
+  <string name="item_actions_level_expires">%1$s · expires %2$s</string>
   <string name="handful_level_lots">A lot</string>
   <string name="handful_level_half">Half</string>
   <string name="handful_level_little">Little</string>

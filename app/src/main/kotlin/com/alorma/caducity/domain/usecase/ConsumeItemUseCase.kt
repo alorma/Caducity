@@ -4,6 +4,7 @@ import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.domain.ItemDataSource
 import com.alorma.caducity.domain.PantryDataSource
 import com.alorma.caducity.domain.model.InstanceActionError
+import com.alorma.caducity.domain.model.ItemSnapshot
 import kotlinx.coroutines.CancellationException
 
 class ConsumeItemUseCase(
@@ -16,6 +17,23 @@ class ConsumeItemUseCase(
     try {
       pantryDataSource.consume(itemIds, appClock.now())
       Result.success(Unit)
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      Result.failure(e)
+    }
+
+  /**
+   * The ✓ of a handful product (Grapats): the batch goes down a level, and from the lowest one it is consumed. Returns the
+   * state of the batch before, to undo with `RestoreItemsUseCase.restoreSnapshots`.
+   */
+  suspend fun lowerLevel(itemId: String): Result<ItemSnapshot> =
+    try {
+      val before =
+        pantryDataSource.snapshots(listOf(itemId)).firstOrNull()
+          ?: return Result.failure(InstanceActionError.InstanceNotFound)
+      pantryDataSource.lowerLevel(itemId, appClock.now())
+      Result.success(before)
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {

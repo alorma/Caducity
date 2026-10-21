@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import com.alorma.caducity.config.clock.AppClock
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.config.time.date
+import com.alorma.caducity.data.datasource.RoomItemDataSource
 import com.alorma.caducity.data.datasource.RoomPantryDataSource
 import com.alorma.caducity.data.datasource.room.AppDatabase
 import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
@@ -52,7 +53,7 @@ class HandfulLevelTest {
   private lateinit var db: AppDatabase
   private lateinit var pantry: RoomPantryDataSource
   private lateinit var addProduct: AddProductUseCase
-  private lateinit var lower: LowerHandfulLevelUseCase
+  private lateinit var consume: ConsumeItemUseCase
   private lateinit var setLevel: SetHandfulLevelUseCase
   private lateinit var restore: RestoreItemsUseCase
   private lateinit var setUnitType: SetProductUnitTypeUseCase
@@ -75,7 +76,12 @@ class HandfulLevelTest {
         appClock = clock,
       )
     addProduct = AddProductUseCase(pantry, clock)
-    lower = LowerHandfulLevelUseCase(pantry, clock)
+    consume =
+      ConsumeItemUseCase(
+        RoomItemDataSource(db.itemDao(), clock, itemMapper),
+        pantry,
+        clock,
+      )
     setLevel = SetHandfulLevelUseCase(pantry)
     restore = RestoreItemsUseCase(pantry)
     setUnitType = SetProductUnitTypeUseCase(pantry)
@@ -128,11 +134,11 @@ class HandfulLevelTest {
       category("c1")
       val id = peanuts().itemIds.single()
 
-      val first = lower.lower(id).getOrThrow()
+      val first = consume.lowerLevel(id).getOrThrow()
       expectThat(items().single().level).isEqualTo(HandfulLevel.HALF)
-      val second = lower.lower(id).getOrThrow()
+      val second = consume.lowerLevel(id).getOrThrow()
       expectThat(items().single().level).isEqualTo(HandfulLevel.LITTLE)
-      val third = lower.lower(id).getOrThrow()
+      val third = consume.lowerLevel(id).getOrThrow()
       expectThat(items().single().consumedDate).isNotNull()
 
       restore.restoreSnapshots(listOf(third)).getOrThrow()
@@ -168,9 +174,9 @@ class HandfulLevelTest {
           .itemIds
           .single()
 
-      expectThat(lower.lower(unit)).isFailure().isA<PantryError.NotAHandful>()
+      expectThat(consume.lowerLevel(unit)).isFailure().isA<PantryError.NotAHandful>()
       expectThat(setLevel.set(unit, HandfulLevel.HALF)).isFailure().isA<PantryError.NotAHandful>()
-      expectThat(lower.lower("missing")).isFailure().isA<PantryError.ItemNotFound>()
+      expectThat(consume.lowerLevel("missing")).isFailure().isA<PantryError.ItemNotFound>()
     }
 
   @Test

@@ -7,6 +7,7 @@ import com.alorma.caducity.ui.components.actions.ItemActionsExpiredOneUnitPrevie
 import com.alorma.caducity.ui.components.actions.ItemActionsExpiredSeveralUnitsPreview
 import com.alorma.caducity.ui.components.actions.ItemActionsFrozenOneUnitPreview
 import com.alorma.caducity.ui.components.actions.ItemActionsFrozenSeveralUnitsPreview
+import com.alorma.caducity.ui.components.actions.ItemActionsHandfulPreview
 import com.alorma.caducity.ui.components.actions.ItemActionsMeasuredExpiredPreview
 import com.alorma.caducity.ui.components.actions.ItemActionsMeasuredFrozenPreview
 import com.alorma.caducity.ui.components.actions.ItemActionsMeasuredPreview
@@ -22,6 +23,14 @@ private const val Height = 760
 private const val Night = Configuration.UI_MODE_NIGHT_YES
 
 class ItemActionsScreenshotTests {
+  @PreviewTest
+  @Preview(name = "Light", locale = "ca", widthDp = Width, heightDp = Height)
+  @Preview(name = "Dark", locale = "ca", widthDp = Width, heightDp = Height, uiMode = Night)
+  @Composable
+  fun itemActionsHandful() {
+    ItemActionsHandfulPreview()
+  }
+
   @PreviewTest
   @Preview(name = "Light", locale = "ca", widthDp = Width, heightDp = Height)
   @Preview(name = "Dark", locale = "ca", widthDp = Width, heightDp = Height, uiMode = Night)

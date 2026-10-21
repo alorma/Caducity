@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.pantry
 import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.R
 import com.alorma.caducity.domain.model.ProductRowModel
+import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
@@ -14,6 +15,7 @@ import com.alorma.caducity.feature.tracking.ItemActionAction
 import com.alorma.caducity.feature.tracking.NavigateToCategoryFromPantryAction
 import com.alorma.caducity.feature.tracking.NavigateToNewCategoryFromPantryAction
 import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.components.actions.lowerWithSnackbar
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -57,6 +59,10 @@ class PantryViewModel(
   // The round buttons of a result act on **one** unit: the one that expires first (like Home).
 
   fun onConsume(row: ProductRowModel) {
+    if (row.unitType.parent == UnitParent.HANDFULS) {
+      lowerHandful(row)
+      return
+    }
     actOnNearest(row, "consume_pantry", R.string.item_actions_snackbar_consumed, AppFeedbackType.Success) {
       consumeItem.consume(it)
     }
@@ -83,6 +89,16 @@ class PantryViewModel(
   fun onDiscard(row: ProductRowModel) {
     actOnNearest(row, "discard_pantry", R.string.status_snackbar_discarded, AppFeedbackType.Info) {
       discardItems.discard(it)
+    }
+  }
+
+  private fun lowerHandful(row: ProductRowModel) {
+    eventTracker.trackAction(ItemActionAction("lower_level_pantry"))
+    viewModelScope.launch {
+      consumeItem
+        .lowerWithSnackbar(row.nearestItemId, row.name, row.level, restoreItems)
+        .onSuccess { showSnackbar(it) }
+        .onFailure { showSnackbar(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error)) }
     }
   }
 

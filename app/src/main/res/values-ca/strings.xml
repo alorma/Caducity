@@ -368,6 +368,15 @@
   <string name="unit_type_handfuls">Grapats</string>
   <string name="handful_left_label">Queda</string>
   <string name="handful_level_half_short">Meitat</string>
+  <string name="handful_snackbar_lots">%1$s: ara en queda molt</string>
+  <string name="handful_snackbar_half">%1$s: ara en queda la meitat</string>
+  <string name="handful_snackbar_little">%1$s: ara en queda poc</string>
+  <string name="handful_snackbar_consumed">%1$s consumits</string>
+  <string name="item_actions_level_title">Quant en queda?</string>
+  <string name="item_actions_level_hint">Toca el nivell per canviar-lo. ✓ a la llista baixa un nivell.</string>
+  <string name="item_actions_none_left">Ja no en queda</string>
+  <string name="item_actions_level_frozen">%1$s · congelat el %2$s</string>
+  <string name="item_actions_level_expires">%1$s · caduca el %2$s</string>
   <string name="handful_level_lots">Molt</string>
   <string name="handful_level_half">La meitat</string>
   <string name="handful_level_little">Poc</string>

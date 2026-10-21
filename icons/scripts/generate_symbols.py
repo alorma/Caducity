@@ -35,7 +35,7 @@ ICONS = [
     # descongela
     "sunny",
     # tipus d'unitat
-    "tag", "takeout_dining", "inventory_2", "scale", "back_hand",
+    "tag", "takeout_dining", "inventory_2", "scale", "back_hand", "battery_full", "battery_4_bar", "battery_1_bar",
 ]
 
 

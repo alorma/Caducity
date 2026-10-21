@@ -48,6 +48,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
@@ -58,6 +59,9 @@ import com.alorma.caducity.base.ui.icons.Cooking
 import com.alorma.caducity.base.ui.icons.symbols.AcUnit
 import com.alorma.caducity.base.ui.icons.symbols.Add
 import com.alorma.caducity.base.ui.icons.symbols.ArrowBack
+import com.alorma.caducity.base.ui.icons.symbols.Battery1Bar
+import com.alorma.caducity.base.ui.icons.symbols.Battery4Bar
+import com.alorma.caducity.base.ui.icons.symbols.BatteryFull
 import com.alorma.caducity.base.ui.icons.symbols.CalendarMonth
 import com.alorma.caducity.base.ui.icons.symbols.Check
 import com.alorma.caducity.base.ui.icons.symbols.Delete
@@ -74,6 +78,7 @@ import com.alorma.caducity.base.ui.icons.symbols.Sunny
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.TouchApp
 import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.ui.components.category.CategoryIcons
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
@@ -93,6 +98,8 @@ import com.alorma.caducity.ui.components.status.statusPillText
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.unit.formatAmount
+import com.alorma.caducity.ui.unit.label
+import com.alorma.caducity.ui.unit.leftText
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.time.Instant
@@ -174,6 +181,7 @@ internal fun ActionsContent(
     when {
       state.expired -> ExpiredContent(state, actions)
       state.measured -> MeasuredContent(state, actions)
+      state.handful -> HandfulContent(state, actions)
       state.multiple -> MultipleContent(state, actions)
       else -> SingleContent(state, actions)
     }
@@ -379,6 +387,9 @@ private fun metaText(state: ItemActionsSheetState.Ready): String {
   val frozenSince = state.frozenSince.takeIf { state.frozenOnly }
   if (frozenSince != null) {
     val day = shortDateText(frozenSince)
+    if (state.handful && state.level != null) {
+      return stringResource(R.string.item_actions_level_frozen, state.level!!.leftText(), day)
+    }
     if (state.measured) {
       return stringResource(R.string.item_actions_amount_frozen, formatAmount(state.unitType, state.batchAmount), day)
     }
@@ -390,6 +401,8 @@ private fun metaText(state: ItemActionsSheetState.Ready): String {
   }
   val date = formatDate(state.expiration)
   return when {
+    state.handful && !state.expired && state.level != null ->
+      stringResource(R.string.item_actions_level_expires, state.level!!.leftText(), date)
     state.measured ->
       stringResource(
         R.string.item_actions_amount_left_expires,
@@ -980,5 +993,85 @@ private fun AmountLeftBar(
         },
       style = CaducityTheme.typography.bodyMedium.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold),
     )
+  }
+}
+
+/** `TipusAUll`: how much is left. A tap on a level changes it at once; «Ja no en queda» and «Congela» act on the product. */
+@Composable
+private fun HandfulContent(
+  state: ItemActionsSheetState.Ready,
+  actions: ItemActionsHandlers,
+) {
+  Text(
+    text = stringResource(R.string.item_actions_level_title).uppercase(),
+    style = CaducityTheme.typography.labelSmall,
+    color = CaducityTheme.colorScheme.onSurfaceVariant,
+  )
+  LevelButtons(level = state.level, onSelect = actions::onLevelSelect)
+  Text(
+    text = stringResource(R.string.item_actions_level_hint),
+    style = CaducityTheme.typography.bodyMedium,
+    color = CaducityTheme.colorScheme.onSurfaceVariant,
+    textAlign = TextAlign.Center,
+    modifier = Modifier.fillMaxWidth(),
+  )
+  PrimaryActions(
+    consumeLabel = stringResource(R.string.item_actions_none_left),
+    freezeLabel =
+      if (state.frozenOnly) stringResource(R.string.action_unfreeze) else stringResource(R.string.item_actions_freeze),
+    freezeIcon = if (state.frozenOnly) Symbols.Outlined.Sunny else Symbols.Outlined.AcUnit,
+    showFreeze = state.frozenOnly || state.freezableCount > 0,
+    onConsume = actions::onConsume,
+    onFreeze = actions::onFreezeToggle,
+  )
+  MoreActions(open = state.moreOpen, onToggle = actions::onToggleMore) {
+    // A frozen product has no date to change.
+    if (!state.frozenOnly) ChangeDate(onQuick = actions::onQuickReschedule, onPick = actions::onPickDate)
+    SecondaryActions(actions, showTransform = !state.frozenOnly)
+  }
+}
+
+/** Molt / La meitat / Poc: three big buttons, the current level filled. */
+@Composable
+private fun LevelButtons(
+  level: HandfulLevel?,
+  onSelect: (HandfulLevel) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    HandfulLevel.entries.forEachIndexed { index, option ->
+      val selected = option == level
+      val shape =
+        when (index) {
+          0 -> RoundedCornerShape(36.dp, 8.dp, 8.dp, 36.dp)
+          HandfulLevel.entries.lastIndex -> RoundedCornerShape(8.dp, 36.dp, 36.dp, 8.dp)
+          else -> RoundedCornerShape(8.dp)
+        }
+      Surface(
+        onClick = { onSelect(option) },
+        shape = shape,
+        color = if (selected) CaducityTheme.colorScheme.primary else CaducityTheme.colorScheme.surfaceContainer,
+        contentColor = if (selected) CaducityTheme.colorScheme.onPrimary else CaducityTheme.colorScheme.onSurface,
+        modifier = Modifier.weight(1f).height(84.dp),
+      ) {
+        Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
+          verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
+        ) {
+          Icon(
+            imageVector =
+              when (option) {
+                HandfulLevel.LOTS -> Symbols.Outlined.BatteryFull
+                HandfulLevel.HALF -> Symbols.Outlined.Battery4Bar
+                HandfulLevel.LITTLE -> Symbols.Outlined.Battery1Bar
+              },
+            contentDescription = null,
+            tint = if (selected) CaducityTheme.colorScheme.onPrimary else CaducityTheme.colorScheme.primary,
+            modifier = Modifier.size(28.dp),
+          )
+          Text(option.label(), style = CaducityTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
+        }
+      }
+    }
   }
 }
