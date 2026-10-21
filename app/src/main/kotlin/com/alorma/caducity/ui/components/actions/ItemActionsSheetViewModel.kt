@@ -261,8 +261,33 @@ class ItemActionsSheetViewModel(
     }
   }
 
+  /** «Descongela 100 g»: thaws the chosen amount, which gets today plus three days; undo freezes it again. */
+  private fun unfreezeMeasured(ready: ItemActionsSheetState.Ready) {
+    eventTracker.trackAction(ItemActionAction("unfreeze_amount"))
+    val id = ready.units.first().id
+    viewModelScope.launch {
+      freezeAmount
+        .unfreeze(id, ready.amountSpend)
+        .onSuccess { outcome ->
+          feedback(
+            SnackbarRequest(
+              message = R.string.item_actions_snackbar_unfrozen_amount,
+              messageArgs = listOf(formatAmount(ready.unitType, ready.amountSpend), ready.name),
+              actionLabel = R.string.add_undo,
+              type = AppFeedbackType.Success,
+              onAction = { freezeAmount.undo(outcome) },
+            ),
+          )
+        }.onFailure { failed() }
+    }
+  }
+
   /** «Congela»: freezes the chosen amount of the batch as its own frozen batch; undo joins it back. */
   private fun freezeMeasured(ready: ItemActionsSheetState.Ready) {
+    if (ready.frozenOnly) {
+      unfreezeMeasured(ready)
+      return
+    }
     if (ready.freezableCount == 0) {
       results.post(SnackbarRequest(R.string.item_actions_error_freeze_expired, type = AppFeedbackType.Error))
       return

@@ -354,6 +354,59 @@ class ItemActionsSheetViewModelTest {
     }
 
   @Test
+  fun `a frozen measured batch thaws the chosen amount and undo freezes it again`() =
+    runTest {
+      category("dairy")
+      val id =
+        addProduct
+          .add("Pasta", "dairy", inDays(20), 1, true, UnitType.GRAMS, 500)
+          .getOrThrow()
+          .itemIds
+          .single()
+      val vm = viewModel(id)
+      keepAlive(vm)
+      val state = vm.ready()
+      expectThat(state.frozenOnly).isEqualTo(true)
+
+      vm.onAmountSelect(200)
+      vm.ready { it.amountSpend == 200 }
+      vm.onFreezeToggle()
+
+      val snackbar = nextSnackbar()
+      val all = db.itemDao().getAllItemsSync()
+      expectThat(all.map { it.amount }.toSet()).isEqualTo(setOf(300, 200))
+      expectThat(all.count { it.pausedDate == null }).isEqualTo(1)
+
+      snackbar.onAction!!.invoke()
+      expectThat(db.itemDao().getAllItemsSync().map { it.amount }).containsExactly(500)
+      expectThat(
+        db
+          .itemDao()
+          .getAllItemsSync()
+          .single()
+          .pausedDate,
+      ).isNotNull()
+    }
+
+  @Test
+  fun `an expired measured product only discards, every batch at once`() =
+    runTest {
+      category("dairy")
+      val first = addMeasured("Pasta", days = -3, amount = 500)
+      val second = addMeasured("Pasta", days = -1, amount = 250)
+      val vm = viewModel(listOf(first, second))
+      keepAlive(vm)
+      val state = vm.ready()
+      expectThat(state.expired).isEqualTo(true)
+
+      vm.onDiscardAll()
+      nextSnackbar()
+
+      expectThat(item(first).discardedDate).isNotNull()
+      expectThat(item(second).discardedDate).isNotNull()
+    }
+
+  @Test
   fun `consume N takes the units that expire first and undo brings them back`() =
     runTest {
       category("dairy")

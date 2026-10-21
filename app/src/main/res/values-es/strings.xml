@@ -280,6 +280,9 @@
   <string name="item_actions_amount_none_left">no quedará nada</string>
   <string name="item_actions_amount_all">Todo</string>
   <string name="item_actions_consume_amount">Consume %1$s</string>
+  <string name="action_unfreeze_amount">Descongelar %1$s</string>
+  <string name="item_actions_amount_frozen">Quedan %1$s · congelado el %2$s</string>
+  <string name="item_actions_snackbar_unfrozen_amount">%2$s: %1$s descongelados</string>
   <string name="item_actions_snackbar_discarded_n">%1$d %2$s tirados</string>
   <string name="item_actions_snackbar_moved">%1$s movido a %2$s</string>
   <string name="item_actions_error">No se ha podido hacer la acción</string>

@@ -272,6 +272,9 @@
   <string name="item_actions_amount_none_left">nothing will be left</string>
   <string name="item_actions_amount_all">All</string>
   <string name="item_actions_consume_amount">Eat %1$s</string>
+  <string name="action_unfreeze_amount">Defrost %1$s</string>
+  <string name="item_actions_amount_frozen">%1$s left · frozen on %2$s</string>
+  <string name="item_actions_snackbar_unfrozen_amount">%2$s: %1$s defrosted</string>
   <string name="item_actions_snackbar_discarded_n">%1$d %2$s thrown out</string>
   <string name="item_actions_snackbar_moved">%1$s moved to %2$s</string>
   <string name="item_actions_error">The action couldn\'t be done</string>

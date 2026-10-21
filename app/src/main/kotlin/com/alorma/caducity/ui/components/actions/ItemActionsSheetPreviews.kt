@@ -172,3 +172,29 @@ internal fun ItemActionsMeasuredWholePreview() {
     ),
   )
 }
+
+@PreviewDynamicLightDark
+@Composable
+internal fun ItemActionsMeasuredFrozenPreview() {
+  SheetPreview(
+    ready(
+      units = listOf(unit("a", 20, ExpiryStatus.FROZEN, frozenSince = LocalDate(2026, 10, 8), amount = 400)),
+      daysLeft = 9,
+      unitType = UnitType.GRAMS,
+      amountSpend = 150,
+    ),
+  )
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun ItemActionsMeasuredExpiredPreview() {
+  SheetPreview(
+    ready(
+      units = listOf(unit("a", 9, ExpiryStatus.EXPIRED, amount = 500)),
+      daysLeft = -2,
+      unitType = UnitType.GRAMS,
+      amountSpend = 100,
+    ),
+  )
+}

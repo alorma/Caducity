@@ -424,6 +424,36 @@ class RoomPantryDataSource(
       }
     }
 
+  override suspend fun unfreezeAmount(
+    itemId: String,
+    amount: Int,
+    newExpiration: Instant,
+  ): FrozenAmount? =
+    database.withTransaction {
+      val item = itemDao.getItem(itemId) ?: throw PantryError.ItemNotFound
+      val current = item.amount ?: throw PantryError.InvalidAmount(amount)
+      if (amount <= 0) throw PantryError.InvalidAmount(amount)
+      if (item.pausedDate == null) return@withTransaction null
+      val expiration = newExpiration.toEpochMilliseconds()
+      if (amount >= current) {
+        itemDao.updateItem(item.copy(expirationDate = expiration, pausedDate = null, remainingDays = null))
+        FrozenAmount(item.id, created = false)
+      } else {
+        val thawed =
+          item.copy(
+            id = UUID.randomUUID().toString(),
+            amount = amount,
+            expirationDate = expiration,
+            pausedDate = null,
+            remainingDays = null,
+            createdAt = appClock.now().toEpochMilliseconds(),
+          )
+        itemDao.updateItem(item.copy(amount = current - amount))
+        itemDao.insertItem(thawed)
+        FrozenAmount(thawed.id, created = true)
+      }
+    }
+
   override suspend fun deleteItems(itemIds: List<String>) {
     itemDao.deleteItems(itemIds)
   }

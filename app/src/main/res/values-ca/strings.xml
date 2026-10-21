@@ -280,6 +280,9 @@
   <string name="item_actions_amount_none_left">no en quedarà res</string>
   <string name="item_actions_amount_all">Tot</string>
   <string name="item_actions_consume_amount">Consumeix %1$s</string>
+  <string name="action_unfreeze_amount">Descongela %1$s</string>
+  <string name="item_actions_amount_frozen">Queden %1$s · congelat el %2$s</string>
+  <string name="item_actions_snackbar_unfrozen_amount">%2$s: %1$s descongelats</string>
   <string name="item_actions_snackbar_discarded_n">%1$d %2$s llençats</string>
   <string name="item_actions_snackbar_moved">%1$s mogut a %2$s</string>
   <string name="item_actions_error">No s\'ha pogut fer l\'acció</string>

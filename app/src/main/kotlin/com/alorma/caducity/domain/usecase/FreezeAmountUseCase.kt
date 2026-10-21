@@ -7,6 +7,8 @@ import com.alorma.caducity.domain.model.ItemSnapshot
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.UnitType
 import kotlinx.coroutines.CancellationException
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.plus
 
 /** What [FreezeAmountUseCase.freeze] did, with what [FreezeAmountUseCase.undo] needs. */
 data class FreezeAmountOutcome(
@@ -31,6 +33,33 @@ class FreezeAmountUseCase(
       val frozen =
         pantryDataSource.freezeAmount(itemId, amount, appClock.now()) ?: return Result.failure(PantryError.CannotFreeze)
       Result.success(FreezeAmountOutcome(frozen, before))
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      Result.failure(e)
+    }
+  }
+
+  /** Thaws [amount] of a frozen batch, which gets today plus three days (like the units). Undo it with [undo]. */
+  suspend fun unfreeze(
+    itemId: String,
+    amount: Int,
+  ): Result<FreezeAmountOutcome> {
+    if (amount !in 1..UnitType.MAX_AMOUNT) return Result.failure(PantryError.InvalidAmount(amount))
+    return try {
+      val before =
+        pantryDataSource.snapshots(listOf(itemId)).firstOrNull() ?: return Result.failure(PantryError.ItemNotFound)
+      val newExpiration =
+        appClock
+          .nowDate()
+          .plus(
+            UnfreezeItemUseCase.UNFREEZE_DAYS,
+            DateTimeUnit.DAY,
+          ).toExpirationInstant()
+      val thawed =
+        pantryDataSource.unfreezeAmount(itemId, amount, newExpiration)
+          ?: return Result.failure(PantryError.CannotFreeze)
+      Result.success(FreezeAmountOutcome(thawed, before))
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {

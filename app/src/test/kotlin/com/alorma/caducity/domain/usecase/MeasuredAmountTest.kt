@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import org.junit.After
 import org.junit.Before
@@ -256,6 +257,58 @@ class MeasuredAmountTest {
           .itemIds
           .single()
       expectThat(freezeAmount.freeze(expired, 100)).isFailure().isA<PantryError.CannotFreeze>()
+    }
+
+  @Test
+  fun `thawing part of a frozen batch splits an unfrozen one with today plus three days`() =
+    runTest {
+      category("c1")
+      val id = pasta(days = 12).itemIds.single()
+      freezeAmount.freeze(id, 500).getOrThrow()
+
+      val outcome = freezeAmount.unfreeze(id, 200).getOrThrow()
+
+      expectThat(outcome.frozen.created).isEqualTo(true)
+      val all = items().sortedBy { it.pausedDate != null }
+      expectThat(all).hasSize(2)
+      expectThat(all[0].amount).isEqualTo(200)
+      expectThat(all[0].pausedDate).isNull()
+      expectThat(all[0].expirationDate)
+        .isEqualTo(inDays(3).atStartOfDayIn(TimeZone.currentSystemDefault()).toEpochMilliseconds())
+      expectThat(all[1].amount).isEqualTo(300)
+      expectThat(all[1].pausedDate).isNotNull()
+
+      expectThat(freezeAmount.undo(outcome)).isSuccess()
+      expectThat(items().single().amount).isEqualTo(500)
+      expectThat(items().single().pausedDate).isNotNull()
+    }
+
+  @Test
+  fun `thawing the whole frozen batch thaws it as it is and a batch that is not frozen fails`() =
+    runTest {
+      category("c1")
+      val id = pasta().itemIds.single()
+      expectThat(freezeAmount.unfreeze(id, 100)).isFailure().isA<PantryError.CannotFreeze>()
+
+      freezeAmount.freeze(id, 500).getOrThrow()
+      val outcome = freezeAmount.unfreeze(id, 500).getOrThrow()
+
+      expectThat(outcome.frozen.created).isEqualTo(false)
+      expectThat(items().single().pausedDate).isNull()
+      expectThat(items().single().amount).isEqualTo(500)
+    }
+
+  @Test
+  fun `consuming from a frozen batch leaves it frozen`() =
+    runTest {
+      category("c1")
+      val id = pasta().itemIds.single()
+      freezeAmount.freeze(id, 500).getOrThrow()
+
+      consumeAmount.consume(id, 100).getOrThrow()
+
+      expectThat(items().single().amount).isEqualTo(400)
+      expectThat(items().single().pausedDate).isNotNull()
     }
 
   // endregion

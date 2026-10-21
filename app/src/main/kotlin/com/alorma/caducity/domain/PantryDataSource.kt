@@ -101,6 +101,16 @@ interface PantryDataSource {
     at: Instant,
   ): FrozenAmount?
 
+  /**
+   * Thaws [amount] (g or mL) of a frozen measured batch: the batch keeps the rest frozen and the thawed part is a new
+   * batch with [newExpiration]. When it is the whole batch it is thawed as it is. Returns null when it is not frozen.
+   */
+  suspend fun unfreezeAmount(
+    itemId: String,
+    amount: Int,
+    newExpiration: Instant,
+  ): FrozenAmount?
+
   /** Deletes the items (undo of what created them). */
   suspend fun deleteItems(itemIds: List<String>)
 

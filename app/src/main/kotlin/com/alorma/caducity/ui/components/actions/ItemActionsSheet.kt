@@ -294,10 +294,10 @@ private fun ExpiredContent(
       color = expired.onContainer,
     )
   }
-  if (state.multiple) QuantitySelector(state = state, onSelect = actions::onSelect)
+  if (state.multiple && !state.measured) QuantitySelector(state = state, onSelect = actions::onSelect)
   ActionButton(
     label =
-      if (state.multiple) {
+      if (state.multiple && !state.measured) {
         stringResource(R.string.item_actions_discard_n, state.selected)
       } else {
         stringResource(R.string.item_actions_discard)
@@ -306,7 +306,7 @@ private fun ExpiredContent(
     container = expired.strong,
     content = CaducityTheme.contentOn(expired.strong),
     shape = RoundedCornerShape(32.dp),
-    onClick = actions::onDiscardSelected,
+    onClick = if (state.measured) actions::onDiscardAll else actions::onDiscardSelected,
     modifier = Modifier.fillMaxWidth(),
   )
   MoreActions(open = state.moreOpen, onToggle = actions::onToggleMore) {
@@ -379,6 +379,9 @@ private fun metaText(state: ItemActionsSheetState.Ready): String {
   val frozenSince = state.frozenSince.takeIf { state.frozenOnly }
   if (frozenSince != null) {
     val day = shortDateText(frozenSince)
+    if (state.measured) {
+      return stringResource(R.string.item_actions_amount_frozen, formatAmount(state.unitType, state.batchAmount), day)
+    }
     return if (state.multiple) {
       stringResource(R.string.item_actions_frozen_many, state.unitCount, day)
     } else {
@@ -836,20 +839,23 @@ private fun MeasuredContent(
   AmountSelector(state = state, step = step, locale = locale, onSelect = actions::onAmountSelect)
   AmountShortcuts(state = state, locale = locale, onSelect = actions::onAmountSelect)
   AmountLeftBar(state = state, locale = locale)
+  val amountText = formatAmount(state.unitType, state.amountSpend, locale)
   PrimaryActions(
-    consumeLabel =
-      stringResource(
-        R.string.item_actions_consume_amount,
-        formatAmount(state.unitType, state.amountSpend, locale),
-      ),
-    freezeLabel = stringResource(R.string.item_actions_freeze),
-    freezeIcon = Symbols.Outlined.AcUnit,
-    showFreeze = state.freezableCount > 0,
+    consumeLabel = stringResource(R.string.item_actions_consume_amount, amountText),
+    freezeLabel =
+      if (state.frozenOnly) {
+        stringResource(R.string.action_unfreeze_amount, amountText)
+      } else {
+        stringResource(R.string.item_actions_freeze)
+      },
+    freezeIcon = if (state.frozenOnly) Symbols.Outlined.Sunny else Symbols.Outlined.AcUnit,
+    showFreeze = state.frozenOnly || state.freezableCount > 0,
     onConsume = actions::onConsume,
     onFreeze = actions::onFreezeToggle,
   )
   MoreActions(open = state.moreOpen, onToggle = actions::onToggleMore) {
-    ChangeDate(onQuick = actions::onQuickReschedule, onPick = actions::onPickDate)
+    // A frozen batch has no date to change.
+    if (!state.frozenOnly) ChangeDate(onQuick = actions::onQuickReschedule, onPick = actions::onPickDate)
     SecondaryActions(actions, showTransform = false)
   }
 }
