@@ -15,7 +15,6 @@ import com.alorma.caducity.feature.tracking.NavigateToCategoryFromPantryAction
 import com.alorma.caducity.feature.tracking.NavigateToNewCategoryFromPantryAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,9 +34,10 @@ class PantryViewModel(
   private val unfreezeItem: UnfreezeItemUseCase,
   private val discardItems: DiscardItemsUseCase,
   private val restoreItems: RestoreItemsUseCase,
-  private val snackbars: GlobalSnackbarEvents,
-) : BaseViewModel<PantryNavigation, PantryNavigationSideEffect, Unit>() {
+) : BaseViewModel<PantryNavigation, PantryNavigationSideEffect, PantrySideEffect>() {
   private val query = MutableStateFlow("")
+
+  private fun showSnackbar(request: SnackbarRequest) = emitSideEffect(PantrySideEffect.ShowSnackbar(request))
 
   @OptIn(ExperimentalCoroutinesApi::class)
   private val results =
@@ -101,7 +101,7 @@ class PantryViewModel(
       val snapshots = restoreItems.snapshots(ids)
       perform(ids)
         .onSuccess {
-          snackbars.show(
+          showSnackbar(
             SnackbarRequest(
               message = message,
               messageArgs = if (countInMessage) listOf(1, row.name) else listOf(row.name),
@@ -111,7 +111,7 @@ class PantryViewModel(
             ),
           )
         }.onFailure {
-          snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
+          showSnackbar(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
         }
     }
   }

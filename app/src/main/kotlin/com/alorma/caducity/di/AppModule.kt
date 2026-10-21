@@ -86,7 +86,6 @@ val appModule =
         freezeItem = get(),
         discardItems = get(),
         restoreItems = get(),
-        snackbars = get(),
       )
     }
 
@@ -124,7 +123,6 @@ val appModule =
         unfreezeItem = get(),
         discardItems = get(),
         restoreItems = get(),
-        snackbars = get(),
         eventTracker = get(),
       )
     }
@@ -141,7 +139,6 @@ val appModule =
         unfreezeItem = get(),
         discardItems = get(),
         restoreItems = get(),
-        snackbars = get(),
         eventTracker = get(),
       )
     }

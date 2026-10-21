@@ -22,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,6 +39,9 @@ import com.alorma.caducity.domain.model.ProductRowModel
 import com.alorma.caducity.domain.usecase.WeekStripData
 import com.alorma.caducity.feature.tracking.HomeScreen as HomeScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.show
 import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -66,6 +70,16 @@ fun HomeScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   ReportDrawnWhen { state is HomeState.Ready }
 
+  val snackbarState = rememberAppSnackbarState()
+  val resources = LocalResources.current
+  LaunchedEffect(viewModel) {
+    viewModel.sideEffects.collect { effect ->
+      when (effect) {
+        is HomeSideEffect.ShowSnackbar -> launch { snackbarState.show(effect.request, resources) }
+      }
+    }
+  }
+
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
@@ -89,6 +103,7 @@ fun HomeScreen(
         onConsume = viewModel::onConsume,
         onFreeze = viewModel::onFreeze,
         modifier = modifier,
+        snackbarState = snackbarState,
       )
   }
 }
@@ -163,6 +178,7 @@ internal fun HomeContent(
   onFreeze: (HomeRow) -> Unit,
   modifier: Modifier = Modifier,
   listState: LazyListState = rememberLazyListState(),
+  snackbarState: AppSnackbarState = rememberAppSnackbarState(),
 ) {
   val data = state.data
   val items = state.items()
@@ -173,6 +189,7 @@ internal fun HomeContent(
   // The floating bar overlays the content, so the scaffold reserves no space at the bottom.
   AppScaffold(
     modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    snackbarState = snackbarState,
     contentWindowInsets = WindowInsets(0.dp),
     topBar = {
       ResponsiveCenteredContainer(fillHeight = false) {

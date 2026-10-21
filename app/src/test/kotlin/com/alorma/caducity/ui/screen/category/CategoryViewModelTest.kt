@@ -32,7 +32,6 @@ import com.alorma.caducity.domain.usecase.ObserveWeekStripUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
@@ -88,7 +87,6 @@ class CategoryViewModelTest {
   private lateinit var addProduct: AddProductUseCase
   private lateinit var categoryDataSource: RoomCategoryDataSource
   private lateinit var itemDataSource: RoomItemDataSource
-  private val snackbars = GlobalSnackbarEvents()
   private val created = mutableListOf<CategoryViewModel>()
 
   @Before
@@ -158,7 +156,6 @@ class CategoryViewModelTest {
       unfreezeItem = UnfreezeItemUseCase(itemDataSource, pantry, clock),
       discardItems = DiscardItemsUseCase(pantry, clock),
       restoreItems = RestoreItemsUseCase(pantry),
-      snackbars = snackbars,
       eventTracker = EventTracker(emptyList()),
     ).also { created += it }
   }

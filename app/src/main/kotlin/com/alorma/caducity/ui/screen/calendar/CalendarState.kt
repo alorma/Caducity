@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.calendar
 
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.ProductRowModel
+import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.datetime.LocalDate
 
 /** Arguments of the `Calendar` route. */
@@ -40,4 +41,10 @@ sealed interface CalendarNavigationSideEffect {
   data class OpenItemActions(
     val itemIds: List<String>,
   ) : CalendarNavigationSideEffect
+}
+
+sealed interface CalendarSideEffect {
+  data class ShowSnackbar(
+    val request: SnackbarRequest,
+  ) : CalendarSideEffect
 }

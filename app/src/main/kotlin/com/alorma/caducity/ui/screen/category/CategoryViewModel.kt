@@ -22,7 +22,6 @@ import com.alorma.caducity.feature.tracking.NavigateToCategoryEditorAction
 import com.alorma.caducity.feature.tracking.NavigateToItemActionsFromCategoryAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -42,9 +41,10 @@ class CategoryViewModel(
   private val unfreezeItem: UnfreezeItemUseCase,
   private val discardItems: DiscardItemsUseCase,
   private val restoreItems: RestoreItemsUseCase,
-  private val snackbars: GlobalSnackbarEvents,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<CategoryNavigation, CategoryNavigationSideEffect, CategorySideEffect>() {
+  private fun showSnackbar(request: SnackbarRequest) = emitSideEffect(CategorySideEffect.ShowSnackbar(request))
+
   private val filter = MutableStateFlow(args.filter)
   private val selectedDay = MutableStateFlow<LocalDate?>(null)
 
@@ -157,8 +157,8 @@ class CategoryViewModel(
     viewModelScope.launch {
       val snapshots = restoreItems.snapshots(ids)
       action()
-        .onSuccess { snackbars.show(snackbar { restoreItems.restoreSnapshots(snapshots) }) }
-        .onFailure { snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error)) }
+        .onSuccess { showSnackbar(snackbar { restoreItems.restoreSnapshots(snapshots) }) }
+        .onFailure { showSnackbar(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error)) }
     }
   }
 

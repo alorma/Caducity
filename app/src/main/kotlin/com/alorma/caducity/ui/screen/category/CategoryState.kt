@@ -4,6 +4,7 @@ import com.alorma.caducity.domain.model.CategoryData
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.PantryEntry
 import com.alorma.caducity.domain.usecase.WeekStripData
+import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.datetime.LocalDate
 
 /** What opens a category: the status filter and the product to highlight (old notifications). */
@@ -88,4 +89,8 @@ sealed interface CategorySideEffect {
   ) : CategorySideEffect
 
   data object DeleteFailed : CategorySideEffect
+
+  data class ShowSnackbar(
+    val request: SnackbarRequest,
+  ) : CategorySideEffect
 }

@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.screen.pantry
 
 import com.alorma.caducity.domain.model.PantryData
 import com.alorma.caducity.domain.model.PantrySearchResult
+import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 
 sealed interface PantryState {
   data object Loading : PantryState
@@ -31,4 +32,10 @@ sealed interface PantryNavigationSideEffect {
   ) : PantryNavigationSideEffect
 
   data object OpenNewCategory : PantryNavigationSideEffect
+}
+
+sealed interface PantrySideEffect {
+  data class ShowSnackbar(
+    val request: SnackbarRequest,
+  ) : PantrySideEffect
 }

@@ -27,7 +27,6 @@ import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
@@ -143,7 +142,6 @@ class CalendarViewModelTest {
       freezeItem = FreezeItemUseCase(itemSource, pantry, clock),
       discardItems = DiscardItemsUseCase(pantry, clock),
       restoreItems = RestoreItemsUseCase(pantry),
-      snackbars = GlobalSnackbarEvents(),
     ).also { created += it }
 
   private suspend fun CalendarViewModel.ready(predicate: (CalendarState.Ready) -> Boolean = { true }) =

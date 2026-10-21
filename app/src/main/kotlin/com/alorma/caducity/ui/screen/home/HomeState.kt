@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.home
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.HomeData
 import com.alorma.caducity.domain.usecase.WeekStripData
+import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.datetime.LocalDate
 
 sealed interface HomeState {
@@ -65,4 +66,10 @@ sealed interface HomeNavigationSideEffect {
   data object OpenAdd : HomeNavigationSideEffect
 
   data object OpenTransform : HomeNavigationSideEffect
+}
+
+sealed interface HomeSideEffect {
+  data class ShowSnackbar(
+    val request: SnackbarRequest,
+  ) : HomeSideEffect
 }

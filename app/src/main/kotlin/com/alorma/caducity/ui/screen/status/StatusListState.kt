@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.PantryEntry
+import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.datetime.LocalDate
 
 /** One row of the list: the units of a product that share a date (frozen: the day they were frozen). */
@@ -66,5 +67,9 @@ sealed interface StatusListSideEffect {
   data class ShowDiscardConfirm(
     val itemIds: List<String>,
     val productCount: Int,
+  ) : StatusListSideEffect
+
+  data class ShowSnackbar(
+    val request: SnackbarRequest,
   ) : StatusListSideEffect
 }

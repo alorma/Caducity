@@ -19,7 +19,6 @@ import com.alorma.caducity.feature.tracking.NavigateToAddFromStatusListAction
 import com.alorma.caducity.feature.tracking.NavigateToItemActionsFromStatusListAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -40,9 +39,10 @@ class StatusListViewModel(
   private val unfreezeItem: UnfreezeItemUseCase,
   private val discardItems: DiscardItemsUseCase,
   private val restoreItems: RestoreItemsUseCase,
-  private val snackbars: GlobalSnackbarEvents,
   private val eventTracker: EventTracker,
 ) : BaseViewModel<StatusListNavigation, StatusListNavigationSideEffect, StatusListSideEffect>() {
+  private fun showSnackbar(request: SnackbarRequest) = emitSideEffect(StatusListSideEffect.ShowSnackbar(request))
+
   val state: StateFlow<StatusListState> =
     combine(observeByStatus.observe(status), expirationThresholds.soonThresholdDays) { data, soonDays ->
       StatusListState.Ready(
@@ -193,9 +193,9 @@ class StatusListViewModel(
       val snapshots = restoreItems.snapshots(ids)
       action()
         .onSuccess {
-          snackbars.show(snackbar { restoreItems.restoreSnapshots(snapshots) })
+          showSnackbar(snackbar { restoreItems.restoreSnapshots(snapshots) })
         }.onFailure {
-          snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
+          showSnackbar(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
         }
     }
   }

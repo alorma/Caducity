@@ -36,6 +36,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -65,6 +66,9 @@ import com.alorma.caducity.domain.model.ProductRowModel
 import com.alorma.caducity.feature.tracking.CalendarScreen as CalendarScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.show
 import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -97,7 +101,16 @@ fun CalendarScreen(
 ) {
   TrackScreen(screen = CalendarScreenEvent())
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val snackbarState = rememberAppSnackbarState()
+  val resources = LocalResources.current
 
+  LaunchedEffect(viewModel) {
+    viewModel.sideEffects.collect { effect ->
+      when (effect) {
+        is CalendarSideEffect.ShowSnackbar -> launch { snackbarState.show(effect.request, resources) }
+      }
+    }
+  }
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
@@ -120,6 +133,7 @@ fun CalendarScreen(
         onFreeze = viewModel::onFreeze,
         onDiscard = viewModel::onDiscard,
         modifier = modifier,
+        snackbarState = snackbarState,
       )
   }
 }
@@ -135,6 +149,7 @@ internal fun CalendarContent(
   onFreeze: (ProductRowModel) -> Unit,
   onDiscard: (ProductRowModel) -> Unit,
   modifier: Modifier = Modifier,
+  snackbarState: AppSnackbarState = rememberAppSnackbarState(),
 ) {
   // Page MonthPages is the month the screen opened on; the pager reaches MonthPages months either way.
   val base = remember { state.month.first }
@@ -146,6 +161,7 @@ internal fun CalendarContent(
   }
   AppScaffold(
     modifier = modifier,
+    snackbarState = snackbarState,
     topBar = {
       ResponsiveCenteredContainer(fillHeight = false) {
         CalendarTopBar(

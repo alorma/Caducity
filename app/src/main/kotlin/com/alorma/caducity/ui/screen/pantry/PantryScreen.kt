@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -46,6 +47,9 @@ import com.alorma.caducity.domain.model.ProductRowModel
 import com.alorma.caducity.domain.model.toProductRow
 import com.alorma.caducity.feature.tracking.PantryScreen as PantryScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.show
 import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -53,6 +57,7 @@ import com.alorma.caducity.ui.components.topbar.StyledLargeTopAppBar
 import com.alorma.caducity.ui.navigation.LocalFloatingBarPadding
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -70,7 +75,16 @@ fun PantryScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   val focusRequester = remember { FocusRequester() }
   val keyboard = LocalSoftwareKeyboardController.current
+  val snackbarState = rememberAppSnackbarState()
+  val resources = LocalResources.current
 
+  LaunchedEffect(viewModel) {
+    viewModel.sideEffects.collect { effect ->
+      when (effect) {
+        is PantrySideEffect.ShowSnackbar -> launch { snackbarState.show(effect.request, resources) }
+      }
+    }
+  }
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
@@ -100,6 +114,7 @@ fun PantryScreen(
         onUnfreeze = viewModel::onUnfreeze,
         onDiscard = viewModel::onDiscard,
         modifier = modifier,
+        snackbarState = snackbarState,
       )
   }
 }
@@ -116,6 +131,7 @@ internal fun PantryContent(
   onUnfreeze: (ProductRowModel) -> Unit,
   onDiscard: (ProductRowModel) -> Unit,
   modifier: Modifier = Modifier,
+  snackbarState: AppSnackbarState = rememberAppSnackbarState(),
 ) {
   val data = state.data
   val columns = 2
@@ -124,6 +140,7 @@ internal fun PantryContent(
   // The floating bar overlays the content, so the scaffold reserves no space at the bottom.
   AppScaffold(
     modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    snackbarState = snackbarState,
     contentWindowInsets = WindowInsets(0.dp),
     topBar = {
       ResponsiveCenteredContainer(fillHeight = false) { PantryHeader(data, scrollBehavior) }

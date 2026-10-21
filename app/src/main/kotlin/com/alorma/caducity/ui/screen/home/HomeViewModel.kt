@@ -19,7 +19,6 @@ import com.alorma.caducity.feature.tracking.NavigateToStatusListFromHomeAction
 import com.alorma.caducity.feature.tracking.NavigateToTransformAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,13 +32,14 @@ class HomeViewModel(
   private val consumeItem: ConsumeItemUseCase,
   private val freezeItem: FreezeItemUseCase,
   private val restoreItems: RestoreItemsUseCase,
-  private val snackbars: GlobalSnackbarEvents,
   private val eventTracker: EventTracker,
-) : BaseViewModel<HomeNavigation, HomeNavigationSideEffect, Unit>() {
+) : BaseViewModel<HomeNavigation, HomeNavigationSideEffect, HomeSideEffect>() {
   val state: StateFlow<HomeState> =
     combine(observeHome.observe(), observeWeekStrip.observe()) { data, weekStrip ->
       HomeState.Ready(data = data, weekStrip = weekStrip) as HomeState
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeState.Loading)
+
+  private fun showSnackbar(request: SnackbarRequest) = emitSideEffect(HomeSideEffect.ShowSnackbar(request))
 
   override fun navigate(navigation: HomeNavigation) {
     when (navigation) {
@@ -83,7 +83,7 @@ class HomeViewModel(
       consumeItem
         .consume(row.nearestItemId)
         .onSuccess {
-          snackbars.show(
+          showSnackbar(
             SnackbarRequest(
               message = R.string.item_actions_snackbar_consumed,
               messageArgs = listOf(row.name),
@@ -93,7 +93,7 @@ class HomeViewModel(
             ),
           )
         }.onFailure {
-          snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
+          showSnackbar(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
         }
     }
   }
@@ -106,7 +106,7 @@ class HomeViewModel(
       freezeItem
         .freeze(listOf(row.nearestItemId))
         .onSuccess {
-          snackbars.show(
+          showSnackbar(
             SnackbarRequest(
               message = R.string.item_actions_snackbar_frozen,
               messageArgs = listOf(row.name),
@@ -116,7 +116,7 @@ class HomeViewModel(
             ),
           )
         }.onFailure {
-          snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
+          showSnackbar(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
         }
     }
   }

@@ -27,13 +27,13 @@ import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.domain.usecase.toExpirationInstant
 import com.alorma.caducity.feature.tracking.EventTracker
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -82,7 +82,6 @@ class StatusListViewModelTest {
   private lateinit var itemDataSource: RoomItemDataSource
   private lateinit var addProduct: AddProductUseCase
   private lateinit var thresholdPreferences: SoonThresholdPreferences
-  private val snackbars = GlobalSnackbarEvents()
   private val created = mutableListOf<StatusListViewModel>()
 
   @Before
@@ -148,7 +147,6 @@ class StatusListViewModelTest {
       unfreezeItem = UnfreezeItemUseCase(itemDataSource, pantry, clock),
       discardItems = DiscardItemsUseCase(pantry, clock),
       restoreItems = RestoreItemsUseCase(pantry),
-      snackbars = snackbars,
       eventTracker = EventTracker(emptyList()),
     ).also { created += it }
   }
@@ -160,9 +158,11 @@ class StatusListViewModelTest {
       withTimeout(5_000) { state.first { it is StatusListState.Ready && predicate(it) } as StatusListState.Ready }
     }
 
-  private suspend fun nextSnackbar() =
+  private suspend fun StatusListViewModel.nextSnackbar() =
     withContext(Dispatchers.Default) {
-      withTimeout(5_000) { snackbars.events.first() }
+      withTimeout(5_000) {
+        sideEffects.filterIsInstance<StatusListSideEffect.ShowSnackbar>().first().request
+      }
     }
 
   private suspend fun StatusListViewModel.runUndo() = nextSnackbar().onAction!!.invoke()
@@ -196,7 +196,7 @@ class StatusListViewModelTest {
           .single()
 
       vm.onConsume(row)
-      val snackbar = nextSnackbar()
+      val snackbar = vm.nextSnackbar()
       expectThat(db.itemDao().getAllItemsSync().count { it.consumedDate != null }).isEqualTo(1)
       expectThat(snackbar.messageArgs).containsExactly("Milk")
       vm.ready { it.rows.single().unitCount == 2 }
@@ -221,7 +221,7 @@ class StatusListViewModelTest {
           .single()
 
       vm.onFreeze(row)
-      val snackbar = nextSnackbar()
+      val snackbar = vm.nextSnackbar()
       expectThat(vm.ready { it.isEmpty }.isEmpty).isTrue()
 
       snackbar.onAction!!.invoke()
@@ -244,7 +244,7 @@ class StatusListViewModelTest {
       val frozenAt = pausedDates()
 
       vm.onUnfreeze(row)
-      val snackbar = nextSnackbar()
+      val snackbar = vm.nextSnackbar()
       expectThat(vm.ready { it.rows.single().unitCount == 1 }.totalCount).isEqualTo(1)
       val unfrozen = db.itemDao().getAllItemsSync().single { it.pausedDate == null }
       expectThat(unfrozen.expirationDate)
@@ -270,7 +270,7 @@ class StatusListViewModelTest {
           .single()
 
       vm.onDiscard(row)
-      val snackbar = nextSnackbar()
+      val snackbar = vm.nextSnackbar()
       expectThat(vm.ready { it.isEmpty }.isEmpty).isTrue()
       expectThat(
         db
@@ -331,7 +331,7 @@ class StatusListViewModelTest {
         withContext(Dispatchers.Default) { withTimeout(5_000) { vm.sideEffects.first() } }
           as StatusListSideEffect.ShowDiscardConfirm
       vm.onDiscardConfirmed(effect.itemIds)
-      val snackbar = nextSnackbar()
+      val snackbar = vm.nextSnackbar()
 
       expectThat(vm.ready { it.isEmpty }.isEmpty).isTrue()
       expectThat(db.itemDao().getAllItemsSync().all { it.discardedDate != null }).isTrue()

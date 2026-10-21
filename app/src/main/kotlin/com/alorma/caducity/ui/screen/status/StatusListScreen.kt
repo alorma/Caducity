@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -57,6 +58,9 @@ import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
+import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.show
 import com.alorma.caducity.ui.components.feedback.snackbar.snackbarAnchor
 import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
@@ -81,6 +85,7 @@ fun StatusListScreen(
   TrackScreen(screen = StatusListScreenEvent(status.name.lowercase()))
   val state by viewModel.state.collectAsStateWithLifecycle()
   val dialogState = rememberAppDialogState()
+  val snackbarState = rememberAppSnackbarState()
   LaunchedEffect(viewModel) {
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
@@ -89,13 +94,14 @@ fun StatusListScreen(
       }
     }
   }
-  SideEffectHandler(viewModel, dialogState)
+  SideEffectHandler(viewModel, dialogState, snackbarState)
 
   StatusListLayout(
     status = status,
     ready = state as? StatusListState.Ready,
     today = koinInject<TodayProvider>().today(),
     dialogState = dialogState,
+    snackbarState = snackbarState,
     onBack = onBack,
     onRowClick = { row -> viewModel.navigate(StatusListNavigation.ItemActions(row.itemIds)) },
     onConsume = viewModel::onConsume,
@@ -123,11 +129,13 @@ internal fun StatusListLayout(
   onAdd: () -> Unit,
   onDiscardAll: () -> Unit,
   modifier: Modifier = Modifier,
+  snackbarState: AppSnackbarState = rememberAppSnackbarState(),
 ) {
   val showDiscardAll = status == ExpiryStatus.EXPIRED && ready?.isEmpty == false
   AppScaffold(
     modifier = modifier,
     dialogState = dialogState,
+    snackbarState = snackbarState,
     topBar = {
       StatusTopBar(
         status = status,
@@ -232,7 +240,9 @@ private fun DiscardAllBar(onDiscardAll: () -> Unit) {
 private fun SideEffectHandler(
   viewModel: StatusListViewModel,
   dialogState: AppDialogState,
+  snackbarState: AppSnackbarState,
 ) {
+  val resources = LocalResources.current
   val cancelAction = stringResource(R.string.item_actions_cancel)
   val discardLabel = stringResource(R.string.status_discard_confirm)
   val discardBody = stringResource(R.string.status_discard_body)
@@ -253,6 +263,7 @@ private fun SideEffectHandler(
               )
             if (result == DialogResult.Positive) viewModel.onDiscardConfirmed(effect.itemIds)
           }
+        is StatusListSideEffect.ShowSnackbar -> launch { snackbarState.show(effect.request, resources) }
       }
     }
   }

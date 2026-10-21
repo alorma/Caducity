@@ -19,7 +19,6 @@ import com.alorma.caducity.feature.tracking.ItemActionAction
 import com.alorma.caducity.feature.tracking.NavigateToItemActionsFromCalendarAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,8 +45,9 @@ class CalendarViewModel(
   private val freezeItem: FreezeItemUseCase,
   private val discardItems: DiscardItemsUseCase,
   private val restoreItems: RestoreItemsUseCase,
-  private val snackbars: GlobalSnackbarEvents,
-) : BaseViewModel<CalendarNavigation, CalendarNavigationSideEffect, Unit>() {
+) : BaseViewModel<CalendarNavigation, CalendarNavigationSideEffect, CalendarSideEffect>() {
+  private fun showSnackbar(request: SnackbarRequest) = emitSideEffect(CalendarSideEffect.ShowSnackbar(request))
+
   private val initialSelected = args.date ?: todayProvider.today()
   private val monthStart = MutableStateFlow(initialSelected.firstOfMonth())
   private val selected = MutableStateFlow(initialSelected)
@@ -152,7 +152,7 @@ class CalendarViewModel(
       val snapshots = restoreItems.snapshots(ids)
       perform(ids)
         .onSuccess {
-          snackbars.show(
+          showSnackbar(
             SnackbarRequest(
               message = message,
               messageArgs = listOf(row.name),
@@ -162,7 +162,7 @@ class CalendarViewModel(
             ),
           )
         }.onFailure {
-          snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
+          showSnackbar(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
         }
     }
   }

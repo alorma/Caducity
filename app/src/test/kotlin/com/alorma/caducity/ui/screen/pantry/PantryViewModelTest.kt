@@ -25,7 +25,6 @@ import com.alorma.caducity.domain.usecase.ObservePantryUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.domain.usecase.UnfreezeItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
@@ -135,7 +134,6 @@ class PantryViewModelTest {
       unfreezeItem = UnfreezeItemUseCase(itemSource, pantry, clock),
       discardItems = DiscardItemsUseCase(pantry, clock),
       restoreItems = RestoreItemsUseCase(pantry),
-      snackbars = GlobalSnackbarEvents(),
     ).also { created += it }
   }
 

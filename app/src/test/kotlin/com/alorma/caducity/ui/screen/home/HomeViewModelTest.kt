@@ -26,7 +26,6 @@ import com.alorma.caducity.domain.usecase.ObserveItemsUseCase
 import com.alorma.caducity.domain.usecase.ObserveWeekStripUseCase
 import com.alorma.caducity.domain.usecase.RestoreItemsUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.Dispatchers
@@ -85,7 +84,6 @@ class HomeViewModelTest {
   private lateinit var itemDataSource: RoomItemDataSource
   private lateinit var addProduct: AddProductUseCase
   private lateinit var thresholdPreferences: SoonThresholdPreferences
-  private val snackbars = GlobalSnackbarEvents()
   private val created = mutableListOf<HomeViewModel>()
 
   @Before
@@ -141,7 +139,6 @@ class HomeViewModelTest {
       consumeItem = ConsumeItemUseCase(itemDataSource, pantry, clock),
       freezeItem = FreezeItemUseCase(itemDataSource, pantry, clock),
       restoreItems = RestoreItemsUseCase(pantry),
-      snackbars = snackbars,
       eventTracker = EventTracker(emptyList()),
     ).also { created += it }
   }
@@ -240,7 +237,10 @@ class HomeViewModelTest {
           .single()
 
       vm.onConsume(row)
-      val snackbar = withContext(Dispatchers.Default) { withTimeout(5_000) { snackbars.events.first() } }
+      val snackbar =
+        withContext(Dispatchers.Default) {
+          withTimeout(5_000) { vm.sideEffects.first() as HomeSideEffect.ShowSnackbar }.request
+        }
 
       val consumed = db.itemDao().getAllItemsSync().filter { it.consumedDate != null }
       expectThat(consumed).hasSize(1)
@@ -283,7 +283,10 @@ class HomeViewModelTest {
           .single()
 
       vm.onFreeze(row)
-      val snackbar = withContext(Dispatchers.Default) { withTimeout(5_000) { snackbars.events.first() } }
+      val snackbar =
+        withContext(Dispatchers.Default) {
+          withTimeout(5_000) { vm.sideEffects.first() as HomeSideEffect.ShowSnackbar }.request
+        }
 
       val frozen = db.itemDao().getAllItemsSync().filter { it.pausedDate != null }
       expectThat(frozen.map { it.id }).containsExactly(row.nearestItemId)

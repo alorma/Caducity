@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -71,6 +72,7 @@ import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.show
 import com.alorma.caducity.ui.components.feedback.snackbar.snackbarAnchor
 import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
@@ -184,6 +186,7 @@ private fun SideEffectHandler(
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
 ) {
+  val resources = LocalResources.current
   LaunchedEffect(viewModel) {
     viewModel.sideEffects.collect { effect ->
       when (effect) {
@@ -205,6 +208,7 @@ private fun SideEffectHandler(
           launch {
             snackbarState.showSnackbar(message = R.string.error_delete_category_failed, type = AppFeedbackType.Error)
           }
+        is CategorySideEffect.ShowSnackbar -> launch { snackbarState.show(effect.request, resources) }
       }
     }
   }
