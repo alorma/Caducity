@@ -215,6 +215,45 @@ class TransformViewModelTest {
     }
 
   @Test
+  fun `a result picks its unit type and a measured one is a single batch with an amount`() =
+    runTest {
+      val added = add("Chicken", days = 3, quantity = 1)
+      val vm = ready(added.itemIds)
+      val id =
+        vm.state.value.results
+          .single()
+          .id
+      vm.onServingsChange(id, 4)
+
+      vm.sideEffects.test {
+        vm.onUnitTypeClick(id)
+        expectThat(awaitItem()).isEqualTo(TransformSideEffect.ShowUnitTypePicker(id, UnitType.UNITS))
+      }
+
+      vm.onUnitTypeChange(id, UnitType.GRAMS)
+      var result =
+        vm.state.value.results
+          .single()
+      expectThat(result.measured).isEqualTo(true)
+      expectThat(result.servings).isEqualTo(1)
+      expectThat(result.amount).isEqualTo(500)
+
+      vm.onAmountChange(id, 0)
+      expectThat(
+        vm.state.value.results
+          .single()
+          .amount,
+      ).isEqualTo(1)
+
+      vm.onUnitTypeChange(id, UnitType.PACKS)
+      result =
+        vm.state.value.results
+          .single()
+      expectThat(result.measured).isEqualTo(false)
+      expectThat(result.unitType).isEqualTo(UnitType.PACKS)
+    }
+
+  @Test
   fun `count is limited to the units left and at least one`() =
     runTest {
       val added = add("Chicken", days = 3, quantity = 2)

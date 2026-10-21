@@ -25,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
@@ -38,6 +39,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Close
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
@@ -48,6 +50,7 @@ import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarSt
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.screen.add.ScreenGutter
+import com.alorma.caducity.ui.screen.add.UnitTypeSheet
 import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -84,6 +87,8 @@ fun TransformScreen(
         onCategorySelect = viewModel::onCategorySelect,
         onPickDate = viewModel::onPickDate,
         onFrozenCountChange = viewModel::onFrozenCountChange,
+        onUnitTypeClick = viewModel::onUnitTypeClick,
+        onAmountChange = viewModel::onAmountChange,
       )
     }
 
@@ -101,6 +106,7 @@ fun TransformScreen(
     dialogState = dialogState,
     snackbarState = snackbarState,
     datePickerState = datePickerState,
+    bottomSheetState = bottomSheetState,
   )
 
   AppScaffold(
@@ -221,7 +227,9 @@ private fun SideEffectHandler(
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
   datePickerState: DatePickerState,
+  bottomSheetState: AppBottomSheetState,
 ) {
+  val scope = rememberCoroutineScope()
   LaunchedEffect(viewModel) {
     viewModel.sideEffects.collect { effect ->
       when (effect) {
@@ -254,6 +262,17 @@ private fun SideEffectHandler(
 
         TransformSideEffect.ShowFrozenPastDate ->
           launch { snackbarState.showSnackbar(message = R.string.add_frozen_past_date, type = AppFeedbackType.Error) }
+
+        is TransformSideEffect.ShowUnitTypePicker ->
+          bottomSheetState.show {
+            UnitTypeSheet(
+              selected = effect.current,
+              onSelect = { type ->
+                viewModel.onUnitTypeChange(effect.resultId, type)
+                scope.launch { bottomSheetState.hide() }
+              },
+            )
+          }
 
         is TransformSideEffect.ShowDatePicker ->
           launch {

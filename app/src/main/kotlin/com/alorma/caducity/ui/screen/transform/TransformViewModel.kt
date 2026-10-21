@@ -9,6 +9,7 @@ import com.alorma.caducity.domain.model.IngredientSpend
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.TransformResult
 import com.alorma.caducity.domain.model.UnitParent
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
@@ -281,6 +282,31 @@ class TransformViewModel(
     updateResult(id) { it.copy(servings = clamped, frozenCount = it.frozenCount.coerceAtMost(clamped)) }
   }
 
+  fun onUnitTypeClick(id: Int) {
+    val result = _state.value.results.firstOrNull { it.id == id } ?: return
+    emitSideEffect(TransformSideEffect.ShowUnitTypePicker(id, result.unitType))
+  }
+
+  /** A measured result is a single batch: one serving, with an amount that starts at the default. */
+  fun onUnitTypeChange(
+    id: Int,
+    unitType: UnitType,
+  ) = updateResult(id) {
+    val measured = unitType.parent == UnitParent.MEASURED
+    val servings = if (measured) 1 else it.servings
+    it.copy(
+      unitTypeOverride = unitType,
+      servings = servings,
+      amount = if (measured && !it.measured) unitType.defaultAmount ?: it.amount else it.amount,
+      frozenCount = it.frozenCount.coerceAtMost(servings),
+    )
+  }
+
+  fun onAmountChange(
+    id: Int,
+    amount: Int,
+  ) = updateResult(id) { it.copy(amount = amount.coerceIn(1, UnitType.MAX_AMOUNT)) }
+
   fun onFrozenCountChange(
     id: Int,
     count: Int,
@@ -333,6 +359,8 @@ class TransformViewModel(
           categoryId = current.categoryOf(it) ?: return,
           expiration = current.expirationToSave(it),
           frozenCount = current.frozenCountOf(it),
+          unitType = it.unitTypeOverride,
+          amount = it.amount.takeIf { _ -> it.measured },
         )
       }
     _state.update { it.copy(saving = true) }

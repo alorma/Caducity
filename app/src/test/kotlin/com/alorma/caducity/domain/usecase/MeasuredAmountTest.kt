@@ -357,6 +357,38 @@ class MeasuredAmountTest {
       expectThat(items().single().amount).isEqualTo(500)
     }
 
+  @Test
+  fun `a measured result is one batch with its amount and sets the type of its product`() =
+    runTest {
+      category("c1")
+      val id = pasta().itemIds.single()
+      val result = TransformResult("Broth", 1, "c1", inDays(3), 0, UnitType.MILLILITRES, 750)
+
+      val batch =
+        TransformItemsUseCase(pantry, clock)
+          .transform(listOf(IngredientSpend(listOf(id), count = 1, amount = 100)), listOf(result))
+          .getOrThrow()
+
+      expectThat(batch.resultItemIds).hasSize(1)
+      val created = items().first { it.id in batch.resultItemIds }
+      expectThat(created.amount).isEqualTo(750)
+      val product = db.productDao().getAllProductsSync().first { it.name == "Broth" }
+      expectThat(product.unitType).isEqualTo(UnitType.MILLILITRES)
+    }
+
+  @Test
+  fun `a measured result with several servings or a bad amount fails`() =
+    runTest {
+      category("c1")
+      val transform = TransformItemsUseCase(pantry, clock)
+      val severalServings = TransformResult("Broth", 2, "c1", inDays(3), 0, UnitType.GRAMS, 500)
+      val badAmount = TransformResult("Broth", 1, "c1", inDays(3), 0, UnitType.GRAMS, 0)
+
+      expectThat(transform.transform(emptyList(), listOf(severalServings))).isFailure().isA<PantryError.InvalidAmount>()
+      expectThat(transform.transform(emptyList(), listOf(badAmount))).isFailure().isA<PantryError.InvalidAmount>()
+      expectThat(items()).hasSize(0)
+    }
+
   // endregion
 
   // region Changing the type

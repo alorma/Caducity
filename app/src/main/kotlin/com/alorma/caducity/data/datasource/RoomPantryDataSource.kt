@@ -191,7 +191,8 @@ class RoomPantryDataSource(
       val resultItemIds = mutableListOf<String>()
       val createdProductIds = mutableListOf<String>()
       results.forEach { result ->
-        val (product, created) = findOrCreateProduct(result.categoryId, result.name)
+        val (found, created) = findOrCreateProduct(result.categoryId, result.name)
+        val product = result.unitType?.let { applyUnitType(found, it) } ?: found
         if (created) createdProductIds += product.id
         // Frozen results keep the days until their date, like the add-frozen path.
         val remainingDays = (result.expiration.toEpochDays() - today.toEpochDays()).toInt()
@@ -209,6 +210,7 @@ class RoomPantryDataSource(
               remainingDays = remainingDays.takeIf { frozen },
               createdAt = now,
               originTransformationId = transformationId,
+              amount = result.amount,
             ),
           )
           resultItemIds += id

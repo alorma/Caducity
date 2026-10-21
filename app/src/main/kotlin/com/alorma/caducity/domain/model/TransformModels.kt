@@ -28,6 +28,9 @@ data class TransformResult(
   val categoryId: String,
   val expiration: LocalDate,
   val frozenCount: Int,
+  /** How the product is counted; null leaves an existing product as it is. A measured result is a single batch of [amount] g or mL ([servings] is then 1). */
+  val unitType: UnitType? = null,
+  val amount: Int? = null,
 )
 
 /** What a transformation did, enough to undo it: new items/products and the previous state of the ingredients. */

@@ -58,7 +58,14 @@ data class ResultUi(
   /** `canFreeze` override of the existing products with this exact name, by category (null inherits the category). */
   val productCanFreeze: Map<String, Boolean?> = emptyMap(),
   val suggestion: NameSuggestion? = null,
-)
+  /** Unit type chosen by the user; null while untouched (units for a new product, the existing type otherwise). */
+  val unitTypeOverride: UnitType? = null,
+  /** g or mL of a measured result (a single batch). */
+  val amount: Int = UnitType.DEFAULT_AMOUNT,
+) {
+  val unitType: UnitType get() = unitTypeOverride ?: UnitType.DEFAULT
+  val measured: Boolean get() = unitType.parent == UnitParent.MEASURED
+}
 
 /** `expandedResultId` when every result is folded into a small card. */
 internal const val NONE_EXPANDED = -1

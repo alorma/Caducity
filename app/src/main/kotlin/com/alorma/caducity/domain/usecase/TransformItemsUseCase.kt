@@ -8,6 +8,7 @@ import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.TransformIngredient
 import com.alorma.caducity.domain.model.TransformResult
 import com.alorma.caducity.domain.model.TransformedBatch
+import com.alorma.caducity.domain.model.UnitType
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 
@@ -26,6 +27,9 @@ class TransformItemsUseCase(
     results.forEach { result ->
       if (result.name.isBlank()) return Result.failure(PantryError.BlankName)
       if (result.servings !in 1..MAX_SERVINGS) return Result.failure(PantryError.InvalidQuantity(result.servings))
+      if (result.amount != null && (result.servings != 1 || result.amount !in 1..UnitType.MAX_AMOUNT)) {
+        return Result.failure(PantryError.InvalidAmount(result.amount))
+      }
       if (result.frozenCount !in 0..result.servings) {
         return Result.failure(PantryError.InvalidQuantity(result.frozenCount))
       }
