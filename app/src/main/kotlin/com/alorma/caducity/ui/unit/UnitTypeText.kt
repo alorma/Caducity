@@ -8,6 +8,7 @@ import androidx.compose.ui.res.stringResource
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Inventory2
 import com.alorma.caducity.base.ui.icons.symbols.Kitchen
+import com.alorma.caducity.base.ui.icons.symbols.LocalDrink
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.Tag
 import com.alorma.caducity.base.ui.icons.symbols.TakeoutDining
@@ -21,6 +22,7 @@ val UnitType.countPlural: Int
       UnitType.TUPPERS -> R.plurals.unit_count_tuppers
       UnitType.PACKS -> R.plurals.unit_count_packs
       UnitType.CANS -> R.plurals.unit_count_cans
+      UnitType.BRICKS -> R.plurals.unit_count_bricks
       UnitType.UNITS,
       UnitType.GRAMS,
       UnitType.MILLILITRES,
@@ -42,6 +44,7 @@ fun UnitType.label(): String =
       UnitType.TUPPERS -> R.string.unit_type_tuppers
       UnitType.PACKS -> R.string.unit_type_packs
       UnitType.CANS -> R.string.unit_type_cans
+      UnitType.BRICKS -> R.string.unit_type_bricks
       UnitType.UNITS,
       UnitType.GRAMS,
       UnitType.MILLILITRES,
@@ -58,6 +61,7 @@ fun UnitType.example(): String =
       UnitType.TUPPERS -> R.string.unit_type_tuppers_example
       UnitType.PACKS -> R.string.unit_type_packs_example
       UnitType.CANS -> R.string.unit_type_cans_example
+      UnitType.BRICKS -> R.string.unit_type_bricks_example
       UnitType.UNITS,
       UnitType.GRAMS,
       UnitType.MILLILITRES,
@@ -72,6 +76,7 @@ val UnitType.icon: ImageVector
       UnitType.TUPPERS -> Symbols.Outlined.TakeoutDining
       UnitType.PACKS -> Symbols.Outlined.Inventory2
       UnitType.CANS -> Symbols.Outlined.Kitchen
+      UnitType.BRICKS -> Symbols.Outlined.LocalDrink
       UnitType.UNITS,
       UnitType.GRAMS,
       UnitType.MILLILITRES,

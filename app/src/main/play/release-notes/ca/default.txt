@@ -1,3 +1,3 @@
 Versió 1.1.7:
 • Ara pots marcar les categories i els productes que no es poden congelar, com la pasta o les conserves. Ja no mostren el botó de congelar.
-• Ara pots triar com comptes un producte: unitats, tuppers, paquets o llaunes. Les llistes mostren «3 paquets» o «1 tupper» en lloc de sempre «unitats».
+• Ara pots triar com comptes un producte: unitats, tuppers, paquets, llaunes o bricks. Les llistes mostren «3 paquets» o «1 tupper» en lloc de sempre «unitats».

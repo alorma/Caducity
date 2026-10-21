@@ -15,6 +15,7 @@ class UnitTypeConverters {
       UnitType.TUPPERS -> "TUPPERS"
       UnitType.PACKS -> "PACKS"
       UnitType.CANS -> "CANS"
+      UnitType.BRICKS -> "BRICKS"
       UnitType.GRAMS -> "GRAMS"
       UnitType.MILLILITRES -> "MILLILITRES"
       UnitType.HANDFULS -> "HANDFULS"
@@ -26,6 +27,7 @@ class UnitTypeConverters {
       "TUPPERS" -> UnitType.TUPPERS
       "PACKS" -> UnitType.PACKS
       "CANS" -> UnitType.CANS
+      "BRICKS" -> UnitType.BRICKS
       "GRAMS" -> UnitType.GRAMS
       "MILLILITRES" -> UnitType.MILLILITRES
       "HANDFULS" -> UnitType.HANDFULS

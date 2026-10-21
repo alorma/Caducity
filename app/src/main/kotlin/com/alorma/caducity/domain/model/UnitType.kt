@@ -23,6 +23,7 @@ enum class UnitType(
   TUPPERS(UnitParent.UNITS),
   PACKS(UnitParent.UNITS),
   CANS(UnitParent.UNITS),
+  BRICKS(UnitParent.UNITS),
   GRAMS(UnitParent.MEASURED),
   MILLILITRES(UnitParent.MEASURED),
   HANDFULS(UnitParent.HANDFULS),
