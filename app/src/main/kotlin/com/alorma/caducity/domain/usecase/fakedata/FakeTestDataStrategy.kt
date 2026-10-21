@@ -122,9 +122,9 @@ class FakeTestDataStrategy(
             items = measured(now, "Ametlles", daysAhead = freshDays + 6, amount = 250),
           ),
           ProductConfig(
-            name = "Gambes",
+            name = "Fruits del bosc",
             unitType = UnitType.GRAMS,
-            items = measured(now, "Gambes", daysAhead = 20, amount = 1200, frozen = true),
+            items = measured(now, "Fruits del bosc", daysAhead = 20, amount = 1200, frozen = true),
           ),
           // Ingredients of a Transforma next to a fresh unit.
           ProductConfig(

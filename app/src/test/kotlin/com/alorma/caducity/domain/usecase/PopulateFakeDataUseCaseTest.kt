@@ -16,6 +16,7 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.fakedata.FakeShowcaseDataStrategy
 import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
@@ -172,6 +173,10 @@ class PopulateFakeDataUseCaseTest {
   fun `showcase data is the pantry of spec 12 with soon at 3 days`() =
     runTest {
       expectThat(populate.execute(FakeShowcaseDataStrategy())).isSuccess()
+
+      val measured = db.productDao().getAllProductsSync().filter { it.unitType.parent == UnitParent.MEASURED }
+      expectThat(measured.map { it.unitType }.toSet()).isEqualTo(setOf(UnitType.GRAMS, UnitType.MILLILITRES))
+      expectThat(db.itemDao().getAllItemsSync().count { it.amount != null }).isEqualTo(measured.size)
 
       val categories = db.categoryDao().getCategoriesOrderedSync()
       expectThat(categories.map { it.name }).containsExactly(

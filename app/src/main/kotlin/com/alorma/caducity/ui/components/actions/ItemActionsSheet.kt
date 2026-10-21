@@ -856,7 +856,8 @@ private fun MeasuredContent(
   MoreActions(open = state.moreOpen, onToggle = actions::onToggleMore) {
     // A frozen batch has no date to change.
     if (!state.frozenOnly) ChangeDate(onQuick = actions::onQuickReschedule, onPick = actions::onPickDate)
-    SecondaryActions(actions, showTransform = false)
+    // A measured ingredient goes whole into a Transforma (spec §6); a frozen one cannot, like a unit.
+    SecondaryActions(actions, showTransform = !state.frozenOnly)
   }
 }
 

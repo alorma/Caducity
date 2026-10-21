@@ -1,11 +1,12 @@
 package com.alorma.caducity.domain.usecase.fakedata
 
+import com.alorma.caducity.domain.model.UnitType
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
 
 /**
- * The pantry of the Play and social screenshots (spec §12): 61 products in 6 categories, only units,
- * every category with its usual duration. Caducats 7, Aviat 8, Frescos 43, Congelats 3.
+ * The pantry of the Play and social screenshots (spec §12): 61 products in 6 categories, most counted in units and
+ * eleven measured ones (grams, millilitres), every category with its usual duration. Caducats 7, Aviat 8, Frescos 43, Congelats 3.
  *
  * Dates are relative to today, which plays the reference day (Sunday 11 October) with «Aviat» = 3 days:
  * the screenshots match when the app's «Aviat» setting is 3 days.
@@ -16,13 +17,21 @@ class FakeShowcaseDataStrategy : FakeDataStrategy {
       name: String,
       daysAhead: Int,
       units: Int = 1,
-    ) = ProductConfig(name, List(units) { ItemConfig(identifier = "", expirationDate = now.plus(daysAhead.days)) })
+      unitType: UnitType = UnitType.DEFAULT,
+      amount: Int? = null,
+    ) = ProductConfig(
+      name,
+      List(units) { ItemConfig(identifier = "", expirationDate = now.plus(daysAhead.days), amount = amount) },
+      unitType,
+    )
 
     fun frozen(
       name: String,
       frozenDaysAgo: Int,
       remainingDays: Int,
       units: Int = 1,
+      unitType: UnitType = UnitType.DEFAULT,
+      amount: Int? = null,
     ) = ProductConfig(
       name,
       List(units) {
@@ -32,8 +41,10 @@ class FakeShowcaseDataStrategy : FakeDataStrategy {
           shouldFreeze = true,
           remainingDaysWhenFrozen = remainingDays,
           frozenDaysAgo = frozenDaysAgo,
+          amount = amount,
         )
       },
+      unitType,
     )
 
     return listOf(
@@ -45,18 +56,18 @@ class FakeShowcaseDataStrategy : FakeDataStrategy {
         products =
           listOf(
             product("Iogurt grec", daysAhead = -2, units = 3),
-            product("Llet sencera", daysAhead = 0),
+            product("Llet sencera", daysAhead = 0, unitType = UnitType.MILLILITRES, amount = 1000),
             product("Mozzarella", daysAhead = 1),
             product("Iogurt natural", daysAhead = 2, units = 4),
             product("Formatge fresc", daysAhead = 7),
             product("Llet semidesnatada", daysAhead = 9, units = 2),
             product("Formatge cheddar", daysAhead = 10, units = 3),
-            product("Quefir", daysAhead = 11),
+            product("Quefir", daysAhead = 11, unitType = UnitType.MILLILITRES, amount = 500),
             product("Nata per cuinar", daysAhead = 16),
             product("Ous", daysAhead = 18, units = 12),
-            product("Mantega", daysAhead = 22),
+            product("Mantega", daysAhead = 22, unitType = UnitType.GRAMS, amount = 250),
             product("Formatge manxego", daysAhead = 25),
-            frozen("Parmesà ratllat", frozenDaysAgo = 13, remainingDays = 20),
+            frozen("Parmesà ratllat", frozenDaysAgo = 13, remainingDays = 20, unitType = UnitType.GRAMS, amount = 150),
           ),
       ),
       // 2 / 2 / 14 / 0
@@ -112,20 +123,20 @@ class FakeShowcaseDataStrategy : FakeDataStrategy {
             product("Salsa de tomàquet", daysAhead = -5),
             product("Hummus", daysAhead = 3),
             product("Olives", daysAhead = 40),
-            product("Cereals", daysAhead = 45),
+            product("Cereals", daysAhead = 45, unitType = UnitType.GRAMS, amount = 500),
             product("Galetes", daysAhead = 60),
             product("Xocolata negra", daysAhead = 70),
-            product("Cafè", daysAhead = 90),
+            product("Cafè", daysAhead = 90, unitType = UnitType.GRAMS, amount = 250),
             product("Melmelada", daysAhead = 100),
             product("Tomàquet triturat", daysAhead = 120),
-            product("Farina", daysAhead = 150),
+            product("Farina", daysAhead = 150, unitType = UnitType.GRAMS, amount = 1000),
             product("Llenties cuites", daysAhead = 180),
             product("Cigrons cuits", daysAhead = 200, units = 2),
-            product("Macarrons", daysAhead = 250),
-            product("Arròs", daysAhead = 300),
-            product("Oli d'oliva", daysAhead = 365),
+            product("Macarrons", daysAhead = 250, unitType = UnitType.GRAMS, amount = 500),
+            product("Arròs", daysAhead = 300, unitType = UnitType.GRAMS, amount = 2000),
+            product("Oli d'oliva", daysAhead = 365, unitType = UnitType.MILLILITRES, amount = 1000),
             product("Tonyina en llauna", daysAhead = 400, units = 3),
-            product("Mel", daysAhead = 500),
+            product("Mel", daysAhead = 500, unitType = UnitType.GRAMS, amount = 500),
           ),
       ),
       // 0 / 1 / 2 / 0
