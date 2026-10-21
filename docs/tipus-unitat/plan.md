@@ -95,7 +95,9 @@ Approved by Bernat on 21 October. Next: phase 1 (unit type) in a new session.
 - [x] 3. Row texts per type («3 paquets», «1 tupper»): `ProductRow`, ingredient picker, notifications; plurals ca/es/en. (84f0ba37)
 - [x] 4. `TipusTria` sheet (parent tabs hidden while only Unitats is active). Built with the subtypes of Unitats, without the subtitle (it only makes sense with the tabs). (1872b613)
   New icons: `Tag`, `TakeoutDining`, `Inventory2`.
-- [ ] 5. Add / Edit: «Com ho comptes?» row, existing product shows its type, Edit changes the product.
+- [x] 5. Add / Edit: «Com ho comptes?» row, existing product shows its type, Edit changes the product. (87832ded)
+  Validated on emulator-5554: Add, sheet, Edit (no Quantitat) and the Home row. The item actions sheet still says «unitats»
+  (its strings are not per type; spec §3 only names the rows).
 - [ ] 6. Seed (`.claude/skills/plant-seed/seed-backup.json`): move it to backup v6 and give some products different unit types
   (Tuppers, Paquets, Llaunes). Update the skill text if the counts change.
 - [ ] 7. Debug fakes (`domain/usecase/fakedata/`: `ProductConfig.unitType`, `FakeShowcaseDataStrategy`, `FakeTestDataStrategy`,
