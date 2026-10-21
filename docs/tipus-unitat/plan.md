@@ -98,8 +98,21 @@ Approved by Bernat on 21 October. Next: phase 1 (unit type) in a new session.
 - [x] 5. Add / Edit: «Com ho comptes?» row, existing product shows its type, Edit changes the product. (87832ded)
   Validated on emulator-5554: Add, sheet, Edit (no Quantitat) and the Home row. The item actions sheet still says «unitats»
   (its strings are not per type; spec §3 only names the rows).
-- [ ] 6. Seed (`.claude/skills/plant-seed/seed-backup.json`): move it to backup v6 and give some products different unit types
-  (Tuppers, Paquets, Llaunes). Update the skill text if the counts change.
-- [ ] 7. Debug fakes (`domain/usecase/fakedata/`: `ProductConfig.unitType`, `FakeShowcaseDataStrategy`, `FakeTestDataStrategy`,
-  `PopulateFakeDataUseCase`): products with different unit types.
-- [ ] 8. Final validation on the emulator: update from the v6 build with data, import v4/v5 backups, check the rows.
+- [x] 6. Seed (`.claude/skills/plant-seed/seed-backup.json`): move it to backup v6 and give some products different unit types
+  (Tuppers, Paquets, Llaunes). Update the skill text if the counts change. (b43097be)
+- [x] 7. Debug fakes (`domain/usecase/fakedata/`: `ProductConfig.unitType`, `FakeShowcaseDataStrategy`, `FakeTestDataStrategy`,
+  `PopulateFakeDataUseCase`): products with different unit types. (d70efd81)
+  `FakeShowcaseDataStrategy` (Play screenshots, «only units») is left as it is.
+- [x] 8. Final validation on the emulator: update from the v6 build with data, import v4/v5 backups, check the rows.
+
+## Phase 1 validation (21 October, emulator-5554, debug build, branch `feature/tipus-unitat`)
+
+- The build upgraded in place from Room v6 with data (Home loads, counts kept).
+- Version 4 seed imports: 6 expired, 9 soon, 20 fresh. Version 6 seed imports: Ready meals shows «1 tupper», «3 tuppers»;
+  Dry goods «3 paquets», «2 paquets».
+- Add: «Com ho comptes? · Unitats» above Quantitat, the sheet lists Unitats, Tuppers, Paquets, Llaunes; picking Tuppers and
+  saving 2 units gives «2 tuppers · Dairy» on Home. Edit: the row shows the product's type, no Quantitat, and changing it to
+  Paquets changes the whole product.
+- Unit tests, migration 6→7 test, backup round trip with `unitType`/`amount`/`level`, `ktlintCheck`: green.
+- Not done: screenshot references of the existing screens (three of them differ on this machine with no change of ours),
+  Pixel 8a upgrade with real data, TalkBack. Pending decision: the item actions sheet still says «unitats».
