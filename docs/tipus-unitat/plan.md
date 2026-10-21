@@ -144,6 +144,7 @@ changing the type in Edit leaves one batch with the nearest date and the default
 - [x] 17. (Bernat, 21 October, after trying Transforma) Measured ingredient in Transforma: the «1 de 2» chip becomes the amount
   to spend («500 g», − / + in steps of 50 g / 100 mL, shortcuts 50/100/250/Tot like the modal; default: the whole lot).
   Batches are spent soonest first; a batch spent in part keeps the rest; Undo restores amounts. Replaces spec §6 («sencer»). (; no shortcut chips on the card, only − / +)
-- [ ] 18. (Bernat, same day) Results of Transforma can have any unit type (not only units): «Com ho comptes?» row on the result
+- [x] 18. (Bernat, same day) Results of Transforma can have any unit type (not only units): «Com ho comptes?» row on the result
   card (same sheet) and, if Mesurable, an amount in g / mL instead of «Unitats − 1 +». Replaces spec §6 («sempre en unitats»).
-  No Grapats until phase 4.
+  No Grapats until phase 4. ()
+  Validated on emulator-5554: Farina 1 kg → 850 g spent, result «Pasta» in Grams 500 g; Farina left with 150 g.
