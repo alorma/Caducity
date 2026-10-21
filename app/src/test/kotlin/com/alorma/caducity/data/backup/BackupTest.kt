@@ -13,6 +13,7 @@ import com.alorma.caducity.data.datasource.room.model.ProductRoomEntity
 import com.alorma.caducity.data.datasource.room.model.TransformationRoomEntity
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
+import com.alorma.caducity.domain.model.UnitType
 import kotlin.time.Instant
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -77,8 +78,10 @@ class BackupTest {
       db.categoryDao().insertCategory(
         CategoryRoomEntity("c2", "Other", "", CategoryShape.SUNNY, CategoryIcon("future_icon"), 1),
       )
-      db.productDao().insertProduct(ProductRoomEntity("p1", "c1", "Milk", 100, canFreeze = true))
-      db.itemDao().insertItem(ItemRoomEntity("i1", "c1", "", "p1", 1000, createdAt = 50))
+      db.productDao().insertProduct(
+        ProductRoomEntity("p1", "c1", "Milk", 100, canFreeze = true, unitType = UnitType.TUPPERS),
+      )
+      db.itemDao().insertItem(ItemRoomEntity("i1", "c1", "", "p1", 1000, createdAt = 50, amount = 500, level = "HALF"))
       db.itemDao().insertItem(ItemRoomEntity("i2", "c1", "", "p1", 2000, consumedDate = 60, createdAt = 51))
       db.itemDao().insertItem(ItemRoomEntity("i3", "c1", "", "p1", 3000, discardedDate = 70, createdAt = 52))
       db.itemDao().insertItem(ItemRoomEntity("i4", "c1", "", "p1", 4000, pausedDate = 5, remainingDays = 9))

@@ -1,6 +1,7 @@
 package com.alorma.caducity.domain
 
 import com.alorma.caducity.domain.model.Product
+import com.alorma.caducity.domain.model.UnitType
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 
@@ -10,6 +11,7 @@ interface ProductDataSource {
   suspend fun createProduct(
     categoryId: String,
     name: String,
+    unitType: UnitType = UnitType.DEFAULT,
   ): Product
 
   suspend fun deleteProduct(productId: String)

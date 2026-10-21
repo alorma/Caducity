@@ -1,5 +1,6 @@
 package com.alorma.caducity.domain.usecase.fakedata
 
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Instant
@@ -11,6 +12,7 @@ import kotlin.time.Instant
  * - Units: single unit, several units on the same day (one row, «N unitats»), several days, mixed statuses in one product.
  * - Units that must not show up anywhere: consumed and used as an ingredient of a Transforma.
  * - A long name, to check ellipsis.
+ * - Unit types: most products in units, others in tuppers, packs and cans (rows read «3 paquets», «1 tupper»).
  *
  * Dates are relative to today and to the expiration thresholds.
  */
@@ -46,6 +48,7 @@ class FakeTestDataStrategy(
           // Several units long expired on the same day, plus one on another day.
           ProductConfig(
             name = "Formatge cheddar",
+            unitType = UnitType.PACKS,
             items =
               units(now, "Formatge caducat", daysAhead = -6, count = 3) +
                 units(now, "Formatge caducat un altre dia", daysAhead = -9, count = 1),
@@ -53,6 +56,7 @@ class FakeTestDataStrategy(
           // Long name, expires today.
           ProductConfig(
             name = "Iogurt natural amb fruites del bosc i cereals integrals",
+            unitType = UnitType.TUPPERS,
             items = units(now, "Iogurt", daysAhead = 0, count = 1),
           ),
           ProductConfig(
@@ -61,6 +65,7 @@ class FakeTestDataStrategy(
           ),
           ProductConfig(
             name = "Nata",
+            unitType = UnitType.CANS,
             items = units(now, "Nata", daysAhead = freshDays + 4, count = 1),
           ),
         ),
@@ -83,6 +88,7 @@ class FakeTestDataStrategy(
           ),
           ProductConfig(
             name = "Pastanagues",
+            unitType = UnitType.PACKS,
             items =
               units(now, "Pastanaga aviat", daysAhead = 3, count = 1) +
                 units(now, "Pastanaga fresca", daysAhead = freshDays, count = 1) +
@@ -90,11 +96,13 @@ class FakeTestDataStrategy(
           ),
           ProductConfig(
             name = "Espinacs",
+            unitType = UnitType.TUPPERS,
             items = units(now, "Espinacs", daysAhead = -1, count = 1),
           ),
           // Frozen on different days.
           ProductConfig(
             name = "Pèsols",
+            unitType = UnitType.PACKS,
             items =
               (0L until 3L).flatMap {
                 units(now, "Pèsols congelats", daysAhead = 5 + it, count = 1, frozen = true)

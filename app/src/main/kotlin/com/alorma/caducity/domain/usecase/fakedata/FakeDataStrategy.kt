@@ -2,6 +2,7 @@ package com.alorma.caducity.domain.usecase.fakedata
 
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
+import com.alorma.caducity.domain.model.UnitType
 import kotlin.time.Instant
 
 /**
@@ -36,6 +37,7 @@ data class CategoryConfig(
 data class ProductConfig(
   val name: String,
   val items: List<ItemConfig>,
+  val unitType: UnitType = UnitType.DEFAULT,
 )
 
 /**

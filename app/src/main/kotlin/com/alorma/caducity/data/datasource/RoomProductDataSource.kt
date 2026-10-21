@@ -6,6 +6,7 @@ import com.alorma.caducity.data.datasource.room.dao.ProductDao
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.domain.ProductDataSource
 import com.alorma.caducity.domain.model.Product
+import com.alorma.caducity.domain.model.UnitType
 import java.util.UUID
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -31,6 +32,7 @@ class RoomProductDataSource(
   override suspend fun createProduct(
     categoryId: String,
     name: String,
+    unitType: UnitType,
   ): Product {
     val product =
       Product(
@@ -38,6 +40,7 @@ class RoomProductDataSource(
         categoryId = categoryId,
         name = name,
         createdAt = appClock.now(),
+        unitType = unitType,
       )
     productDao.insertProduct(productMapper.toEntity(product))
     return product

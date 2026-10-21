@@ -16,6 +16,7 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.fakedata.FakeShowcaseDataStrategy
 import com.alorma.caducity.domain.usecase.fakedata.FakeTestDataStrategy
 import com.russhwolf.settings.MapSettings
@@ -110,6 +111,18 @@ class PopulateFakeDataUseCaseTest {
       expectThat(items.map { it.identifier }.distinct()).containsExactly("")
       expectThat(items.all { it.createdAt != null }).isEqualTo(true)
       expectThat(db.productDao().getAllProductsSync()).isNotEmpty()
+    }
+
+  @Test
+  fun `test data has products counted in different unit types`() =
+    runTest {
+      expectThat(populate.execute(FakeTestDataStrategy(thresholds))).isSuccess()
+
+      val types = db.productDao().getAllProductsSync().associate { it.name to it.unitType }
+      expectThat(types["Formatge cheddar"]).isEqualTo(UnitType.PACKS)
+      expectThat(types["Nata"]).isEqualTo(UnitType.CANS)
+      expectThat(types["Espinacs"]).isEqualTo(UnitType.TUPPERS)
+      expectThat(types["Llet sencera"]).isEqualTo(UnitType.UNITS)
     }
 
   @Test
