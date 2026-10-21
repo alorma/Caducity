@@ -204,14 +204,18 @@ class TransformViewModel(
     id: Int,
     name: String,
   ) {
-    updateResult(id) { it.copy(name = name, suggestion = null, historyCategoryId = null) }
+    updateResult(id) {
+      it.copy(name = name, suggestion = null, historyCategoryId = null, productCanFreeze = emptyMap())
+    }
     suggestionJobs.remove(id)?.cancel()
     if (name.isBlank()) return
     suggestionJobs[id] =
       viewModelScope.launch {
         val typed = name.trim().normalizeForSearch()
-        val suggestions = getNameSuggestions.suggest(name)
-        val exact = suggestions.firstOrNull { it.name.normalizeForSearch() == typed }
+        val all = getNameSuggestions.suggest(name, limit = Int.MAX_VALUE)
+        val suggestions = all.take(GetNameSuggestionsUseCase.DEFAULT_LIMIT)
+        val matches = all.filter { it.name.normalizeForSearch() == typed }
+        val exact = suggestions.firstOrNull { it.name.normalizeForSearch() == typed } ?: matches.firstOrNull()
         updateResult(id) {
           it.copy(
             suggestion =
@@ -219,6 +223,7 @@ class TransformViewModel(
                 s !== exact
               },
             historyCategoryId = exact?.categoryId,
+            productCanFreeze = matches.associate { m -> m.categoryId to m.canFreeze },
           )
         }
       }
@@ -231,7 +236,14 @@ class TransformViewModel(
         .firstOrNull { it.id == id }
         ?.suggestion ?: return
     suggestionJobs.remove(id)?.cancel()
-    updateResult(id) { it.copy(name = suggestion.name, suggestion = null, historyCategoryId = suggestion.categoryId) }
+    updateResult(id) {
+      it.copy(
+        name = suggestion.name,
+        suggestion = null,
+        historyCategoryId = suggestion.categoryId,
+        productCanFreeze = mapOf(suggestion.categoryId to suggestion.canFreeze),
+      )
+    }
   }
 
   fun onServingsChange(
@@ -292,7 +304,7 @@ class TransformViewModel(
           servings = it.servings,
           categoryId = current.categoryOf(it) ?: return,
           expiration = current.expirationToSave(it),
-          frozenCount = it.frozenCount,
+          frozenCount = current.frozenCountOf(it),
         )
       }
     _state.update { it.copy(saving = true) }
@@ -347,7 +359,16 @@ class TransformViewModel(
     id: Int,
     transform: (ResultUi) -> ResultUi,
   ) {
-    _state.update { current -> current.copy(results = current.results.map { if (it.id == id) transform(it) else it }) }
+    _state.update { current ->
+      current.copy(
+        results =
+          current.results.map {
+            if (it.id != id) return@map it
+            // A result that cannot be frozen (its category or product says so) keeps nothing in the freezer.
+            transform(it).let { updated -> updated.copy(frozenCount = current.frozenCountOf(updated)) }
+          },
+      )
+    }
   }
 
   /** Units of the same product become one ingredient: the picked ones are spent, the rest of the product is available. */

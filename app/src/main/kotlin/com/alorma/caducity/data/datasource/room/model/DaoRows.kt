@@ -13,6 +13,8 @@ data class ProductUsageRow(
   val categoryId: String,
   val uses: Int,
   val lastUsed: Long,
+  /** The product's own override of `canFreeze`; null inherits its category. */
+  val canFreeze: Boolean? = null,
 )
 
 /** An active item joined with its product name (falls back to the legacy `identifier`). */
