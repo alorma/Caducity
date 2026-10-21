@@ -29,7 +29,6 @@ import com.alorma.caducity.feature.tracking.NavigateToAddAction
 import com.alorma.caducity.feature.tracking.NavigateToTabAction
 import com.alorma.caducity.feature.tracking.NavigateToTransformAction
 import com.alorma.caducity.ui.components.actions.ItemActionsSheet
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.components.feedback.snackbar.ScreenResults
 import com.alorma.caducity.ui.navigation.Add
 import com.alorma.caducity.ui.navigation.AppShell
@@ -101,7 +100,6 @@ fun App(
   transformIntroFlag: TransformIntroFlag = koinInject(),
   disclaimerPreferences: DisclaimerPreferences = koinInject(),
   eventTracker: EventTracker = koinInject(),
-  snackbarEvents: GlobalSnackbarEvents = koinInject(),
   screenResults: ScreenResults = koinInject(),
   searchRequests: PantrySearchRequests = koinInject(),
   versionProvider: AppVersionProvider = koinInject(),
@@ -157,7 +155,6 @@ fun App(
 
     AppShell(
       currentTab = navigation.currentTab,
-      snackbarEvents = snackbarEvents,
       screenResults = screenResults,
       showNavigation = visibleScreen is TopLevelRoute,
       onTabSelected = { tab ->

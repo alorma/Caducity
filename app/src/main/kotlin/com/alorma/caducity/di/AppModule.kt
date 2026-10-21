@@ -25,7 +25,6 @@ import com.alorma.caducity.feature.backup.BackupFileHandler
 import com.alorma.caducity.feature.consent.consentModule
 import com.alorma.caducity.feature.tracking.trackingModule
 import com.alorma.caducity.ui.components.actions.ItemActionsSheetViewModel
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
 import com.alorma.caducity.ui.components.feedback.snackbar.ScreenResults
 import com.alorma.caducity.ui.screen.add.AddViewModel
 import com.alorma.caducity.ui.screen.calendar.CalendarViewModel
@@ -254,7 +253,6 @@ val appModule =
       )
     }
 
-    singleOf(::GlobalSnackbarEvents)
     singleOf(::ScreenResults)
     viewModel { params ->
       ItemActionsSheetViewModel(

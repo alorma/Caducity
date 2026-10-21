@@ -69,6 +69,8 @@ class AppSnackbarState {
    */
   private val mutex = Mutex()
 
+  private var latestTicket = 0
+
   /**
    * The current [AppSnackbarData] being shown by the [AppSnackbarHost], of `null` if none.
    */
@@ -103,22 +105,15 @@ class AppSnackbarState {
     type: AppFeedbackType = AppFeedbackType.Info,
     layout: AppSnackbarLayout = AppSnackbarLayout.ActionLengthBased,
   ): AppSnackbarResult =
-    mutex.withLock {
-      try {
-        return suspendCancellableCoroutine { continuation ->
-          currentAppSnackbarData =
-            AppSnackbarDataImpl(
-              message = AppFeedbackResource.AsString(message),
-              actionLabel = actionLabel?.let { AppFeedbackResource.AsString(it) },
-              duration = duration,
-              type = type,
-              continuation = continuation,
-              layout = layout,
-            )
-        }
-      } finally {
-        currentAppSnackbarData = null
-      }
+    present { continuation ->
+      AppSnackbarDataImpl(
+        message = AppFeedbackResource.AsString(message),
+        actionLabel = actionLabel?.let { AppFeedbackResource.AsString(it) },
+        duration = duration,
+        type = type,
+        continuation = continuation,
+        layout = layout,
+      )
     }
 
   suspend fun showSnackbar(
@@ -128,23 +123,35 @@ class AppSnackbarState {
     type: AppFeedbackType = AppFeedbackType.Info,
     layout: AppSnackbarLayout = AppSnackbarLayout.ActionLengthBased,
   ): AppSnackbarResult =
-    mutex.withLock {
+    present { continuation ->
+      AppSnackbarDataImpl(
+        message = AppFeedbackResource.AsResource(message),
+        actionLabel = actionLabel?.let { AppFeedbackResource.AsResource(it) },
+        duration = duration,
+        type = type,
+        continuation = continuation,
+        layout = layout,
+      )
+    }
+
+  /**
+   * The newest snackbar replaces the one on screen and any waiting behind it: the older callers get
+   * [AppSnackbarResult.Dismissed] without being shown.
+   */
+  private suspend fun present(
+    data: (CancellableContinuation<AppSnackbarResult>) -> AppSnackbarData,
+  ): AppSnackbarResult {
+    val ticket = ++latestTicket
+    currentAppSnackbarData?.dismiss()
+    return mutex.withLock {
+      if (ticket != latestTicket) return AppSnackbarResult.Dismissed
       try {
-        return suspendCancellableCoroutine { continuation ->
-          currentAppSnackbarData =
-            AppSnackbarDataImpl(
-              message = AppFeedbackResource.AsResource(message),
-              actionLabel = actionLabel?.let { AppFeedbackResource.AsResource(it) },
-              duration = duration,
-              type = type,
-              continuation = continuation,
-              layout = layout,
-            )
-        }
+        suspendCancellableCoroutine { continuation -> currentAppSnackbarData = data(continuation) }
       } finally {
         currentAppSnackbarData = null
       }
     }
+  }
 
   @Stable
   private class AppSnackbarDataImpl(

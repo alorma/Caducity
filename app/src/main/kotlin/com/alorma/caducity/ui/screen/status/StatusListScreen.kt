@@ -61,7 +61,6 @@ import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.show
-import com.alorma.caducity.ui.components.feedback.snackbar.snackbarAnchor
 import com.alorma.caducity.ui.components.product.ProductRow
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -214,7 +213,6 @@ private fun DiscardAllBar(onDiscardAll: () -> Unit) {
     modifier =
       Modifier
         .fillMaxWidth()
-        .snackbarAnchor()
         .navigationBarsPadding()
         .padding(horizontal = 20.dp, vertical = 12.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),

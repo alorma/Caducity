@@ -190,6 +190,8 @@ internal fun HomeContent(
   AppScaffold(
     modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     snackbarState = snackbarState,
+    // The floating bar is drawn over the screen: the snackbar goes above it.
+    snackbarPadding = LocalFloatingBarPadding.current,
     contentWindowInsets = WindowInsets(0.dp),
     topBar = {
       ResponsiveCenteredContainer(fillHeight = false) {

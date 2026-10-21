@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -38,6 +39,7 @@ fun AppScaffold(
   bottomSheetState: AppBottomSheetState = rememberAppBottomSheetState(),
   dialogState: AppDialogState = rememberAppDialogState(),
   snackbarState: AppSnackbarState = rememberAppSnackbarState(),
+  snackbarPadding: PaddingValues = PaddingValues(),
   floatingActionButton: @Composable () -> Unit = {},
   floatingActionButtonPosition: FabPosition = FabPosition.End,
   containerColor: Color = MaterialTheme.colorScheme.background,
@@ -55,7 +57,7 @@ fun AppScaffold(
       modifier = modifier,
       topBar = topBar,
       bottomBar = bottomBar,
-      snackbarHost = { AppSnackbarHost(LocalAppSnackbarState.current) },
+      snackbarHost = { AppSnackbarHost(LocalAppSnackbarState.current, modifier = Modifier.padding(snackbarPadding)) },
       floatingActionButton = floatingActionButton,
       floatingActionButtonPosition = floatingActionButtonPosition,
       containerColor = containerColor,
