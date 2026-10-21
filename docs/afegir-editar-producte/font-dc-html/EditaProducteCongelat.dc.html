@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Edita producte · congelat</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Figtree:wght@400..700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E6B3B}a:hover{color:#10300F}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'opsz' 24;display:inline-block}
+.msf{font-variation-settings:'FILL' 1,'wght' 400,'opsz' 24}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFAEE; font-family: 'Figtree', sans-serif; color: #2B2418">
+  <div style="padding: 12px 20px 0; display: flex; flex-direction: column; gap: 22px"><div style="display: flex; align-items: center; gap: 4px; margin-left: -8px"><a href="Main.dc.html" aria-label="Tanca" style="width: 48px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #2B2418; text-decoration: none"><span class="ms" style="font-size: 24px">close</span></a><h1 style="flex: 1; margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 700; font-stretch: 85%">Edita</h1><button aria-label="Elimina el producte" style="width: 48px; height: 48px; border: none; border-radius: 24px; background: transparent; color: #B23F2A; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 24px">delete</span></button><a href="Main.dc.html" style="display: flex; align-items: center; height: 44px; padding: 0 20px; border-radius: 22px; background: #2E6B3B; color: #FFFFFF; text-decoration: none; font-size: 15px; font-weight: 700">Desa</a></div><div style="display: flex; flex-direction: column; gap: 8px"><label for="nom" style="font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #6A5D45; padding: 0 4px">Nom</label><input id="nom" autocomplete="off" value="Croquetes de pollastre" style="width: 100%; box-sizing: border-box; height: 60px; border: none; border-radius: 16px; background: #F0E2CB; padding: 0 18px; font-family: 'Figtree', sans-serif; font-size: 19px; font-weight: 600; color: #2B2418"></div><div style="display: flex; flex-direction: column; gap: 2px"><a href="AfegirCategoria.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 68px; box-sizing: border-box; padding: 8px 14px 8px 10px; border-radius: 24px 24px 6px 6px; background: #F7EEDA; color: #2B2418; text-decoration: none"><span style="position: relative; width: 40px; height: 40px; flex: none; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{plats}}" fill="#EFD8C0"></path></svg><span class="ms" style="position: relative; font-size: 20px; color: #2E6B3B">soup_kitchen</span></span><div style="flex: 1; min-width: 0"><div style="font-size: 16px; font-weight: 600">Categoria</div></div><span style="display: flex; align-items: center; gap: 2px; font-size: 15px; font-weight: 700; color: #1F4D2B; white-space: nowrap">Plats preparats<span class="ms" style="font-size: 22px; color: #6A5D45">chevron_right</span></span></a><a href="AfegirData.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 68px; box-sizing: border-box; padding: 8px 14px 8px 10px; border-radius: 6px; background: #E3EEF1; color: #2B2418; text-decoration: none"><span style="width: 40px; height: 40px; flex: none; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px; color: #3F7F92">ac_unit</span></span><div style="flex: 1; min-width: 0"><div style="font-size: 16px; font-weight: 600">Congelat el</div><div style="font-size: 13px; color: #6A5D45; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">fa 3 setmanes</div></div><span style="display: flex; align-items: center; gap: 2px; font-size: 15px; font-weight: 700; color: #1F4D2B; white-space: nowrap">28 set<span class="ms" style="font-size: 22px; color: #6A5D45">chevron_right</span></span></a><a href="AfegirQuantitat.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 68px; box-sizing: border-box; padding: 8px 14px 8px 10px; border-radius: 6px 6px 24px 24px; background: #F7EEDA; color: #2B2418; text-decoration: none"><span style="width: 40px; height: 40px; flex: none; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px; color: #2E6B3B">tag</span></span><div style="flex: 1; min-width: 0"><div style="font-size: 16px; font-weight: 600">Quantitat</div></div><span style="display: flex; align-items: center; gap: 2px; font-size: 15px; font-weight: 700; color: #1F4D2B; white-space: nowrap">8 unitats<span class="ms" style="font-size: 22px; color: #6A5D45">chevron_right</span></span></a></div><div style="display: flex; align-items: flex-start; gap: 8px; padding: 0 4px; font-size: 13px; color: #6A5D45; line-height: 1.35"><span class="ms" style="font-size: 18px; color: #3F7F92">ac_unit</span>Està congelat. Per descongelar-lo, fes servir ☀ a la llista o a les accions.</div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  blob(n, a, rot) {
+    rot = rot || 0;
+    var p = [];
+    for (var i = 0; i < 120; i++) {
+      var t = i / 120 * Math.PI * 2;
+      var r = 50 - a + a * Math.cos(n * (t + rot));
+      p.push((50 + r * Math.cos(t)).toFixed(1) + " " + (50 + r * Math.sin(t)).toFixed(1));
+    }
+    return "M" + p.join("L") + "Z";
+  }
+  renderVals() {
+    var raw = [
+      ["Làctics", "water_full", this.blob(9, 3, 0)],
+      ["Fruita i verdura", "nutrition", this.blob(5, 4, 0)],
+      ["Carn i peix", "set_meal", this.blob(4, 8, Math.PI / 4)],
+      ["Secs i conserves", "grocery", this.blob(8, 4, 0)],
+      ["Fleca", "bakery_dining", this.blob(4, 2.5, Math.PI / 4)],
+      ["Plats preparats", "soup_kitchen", this.blob(10, 2.5, 0)]
+    ];
+    var SEL = 5;
+    var cats = raw.map(function (c, k) { var on = k === SEL; return { name: c[0], icon: c[1], shape: c[2], sel: on ? "true" : "false", bg: on ? "#DCE9C6" : "transparent", border: on ? "2px solid #2E6B3B" : "1px solid #E0D2B2", fill: on ? "#2E6B3B" : "#EFD8C0", ic: on ? "#FFFFFF" : "#2E6B3B" }; });
+    return { cats: cats, lac: this.blob(9, 3, 0), plats: this.blob(10, 2.5, 0) };
+  }
+}
+</script>
+</body>
+</html>

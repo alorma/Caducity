@@ -5,6 +5,8 @@ What is left to do in Caducity.
 ## Features
 
 - **Unit type + «Es pot congelar»** (in progress): plan in `docs/tipus-unitat/plan.md`. Phase 1 unit type (model + dialog, Unitats only) and phase 2 «Es pot congelar» now; Mesurable, Grapats and Transforma with these types come later.
+- **Category screen redesign** (planned, after unit type): compact create/edit screen with Aspecte / Durada / Descripció sheets; duration leaves Ajustos. Plan in `docs/editar-categoria/plan.md`. Goes before the Add / Edit redesign.
+- **Add / Edit product redesign** (planned, after the category screen): options list with Categoria / Caduca / Quantitat sheets, guided flow, translated default categories. Plan in `docs/afegir-editar-producte/plan.md`.
 - **Fingerprint for actions, free for reading** (configurable): biometric prompt before actions that change data (consume, freeze, reschedule, edit, move, delete); browsing stays open. A setting turns it on or off.
 - **Haptics**: already in the item actions sheet, threshold slider, Add and onboarding. Review what is still missing (for example delete and other confirmations).
 - **Product cost**: optional price on a product, entered per unit or as a total split across the N units created. Lets the app show how much is spent on food and how much is thrown away (expired or discarded items).
