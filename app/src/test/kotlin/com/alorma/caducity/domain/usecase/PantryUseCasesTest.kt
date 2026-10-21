@@ -278,6 +278,31 @@ class PantryUseCasesTest {
     }
 
   @Test
+  fun `update returns the id of the unit's product`() =
+    runTest {
+      category("c1")
+      val milk = addProduct.add("Milk", "c1", inDays(2), 1, false).getOrThrow()
+      val yogurt = addProduct.add("Yogurt", "c1", inDays(2), 1, false).getOrThrow()
+
+      expectThat(updateItem.update(milk.itemIds.single(), "yogurt", "c1", inDays(2)).getOrThrow())
+        .isEqualTo(yogurt.productId)
+    }
+
+  @Test
+  fun `find product can freeze returns the override of a matching product only`() =
+    runTest {
+      category("c1")
+      val milk = addProduct.add("Milk", "c1", inDays(2), 1, false).getOrThrow()
+      val find = FindProductCanFreezeUseCase(pantry)
+      expectThat(find.find("c1", "milk")).isNull()
+
+      SetProductCanFreezeUseCase(pantry).set(milk.productId, false).getOrThrow()
+      expectThat(find.find("c1", " MILK ")).isEqualTo(false)
+      expectThat(find.find("c1", "Yogurt")).isNull()
+      expectThat(find.find("other", "Milk")).isNull()
+    }
+
+  @Test
   fun `update of a frozen unit recomputes remaining days and rejects past dates`() =
     runTest {
       category("c1")

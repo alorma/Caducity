@@ -595,4 +595,10 @@
   <string name="category_editor_freeze_section">Congelación</string>
   <string name="category_editor_can_freeze">Se puede congelar</string>
   <string name="category_editor_can_freeze_help">Si no, los productos no muestran «Congelar»</string>
+
+  <!-- Es pot congelar: Afegeix -->
+  <string name="add_can_freeze">Se puede congelar</string>
+  <string name="add_can_freeze_subtitle">%1$s: %2$s · solo este producto</string>
+  <string name="add_can_freeze_yes">sí</string>
+  <string name="add_can_freeze_no">no</string>
 </resources>

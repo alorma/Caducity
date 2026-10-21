@@ -18,9 +18,11 @@ import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
+import com.alorma.caducity.domain.usecase.FindProductCanFreezeUseCase
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
+import com.alorma.caducity.domain.usecase.SetProductCanFreezeUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.screen.category.quick.CategoryCreatedEvents
@@ -115,8 +117,9 @@ class AddViewModelTest {
     id: String,
     sortOrder: Int = 0,
     usualDurationDays: Int? = null,
+    canFreeze: Boolean = true,
   ) = db.categoryDao().insertCategory(
-    CategoryRoomEntity(id, id, "", sortOrder = sortOrder, usualDurationDays = usualDurationDays),
+    CategoryRoomEntity(id, id, "", sortOrder = sortOrder, usualDurationDays = usualDurationDays, canFreeze = canFreeze),
   )
 
   private val created = mutableListOf<AddViewModel>()
@@ -131,6 +134,8 @@ class AddViewModelTest {
     getNameSuggestions = GetNameSuggestionsUseCase(pantry),
     getActiveItem = GetActiveItemUseCase(pantry),
     updateItem = UpdateItemUseCase(itemDataSource, pantry, clock),
+    findProductCanFreeze = FindProductCanFreezeUseCase(pantry),
+    setProductCanFreeze = SetProductCanFreezeUseCase(pantry),
     observeCategories = ObserveCategoriesUseCase(pantry),
     categoryCreated = createdEvents,
     eventTracker = EventTracker(emptyList()),
@@ -436,4 +441,145 @@ class AddViewModelTest {
       val state = vm.await { it.categoryId == "fresh" }
       expectThat(state.categories.map { it.id }).containsExactly("dairy", "fresh")
     }
+
+  // region Es pot congelar
+
+  @Test
+  fun `can freeze is hidden until a category is selected and then inherits it`() =
+    runTest {
+      category("dairy")
+      category("dry", sortOrder = 1, canFreeze = false)
+      val vm = viewModel()
+      vm.await { it.categories.size == 2 }
+      expectThat(vm.state.value.canFreeze).isNull()
+
+      vm.onCategorySelect("dairy")
+      expectThat(vm.state.value.canFreeze).isEqualTo(true)
+      vm.onCategorySelect("dry")
+      expectThat(vm.state.value.canFreeze).isEqualTo(false)
+    }
+
+  @Test
+  fun `an existing product with an override wins over its category`() =
+    runTest {
+      category("dry", canFreeze = false)
+      val pasta = addProduct.add("Pasta", "dry", inDays(30), 1, false).getOrThrow()
+      SetProductCanFreezeUseCase(pantry).set(pasta.productId, true).getOrThrow()
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+
+      vm.fill(name = "pasta", categoryId = "dry")
+      expectThat(vm.await { it.productCanFreeze != null }.canFreeze).isEqualTo(true)
+
+      vm.onNameChange("Rice")
+      expectThat(vm.await { it.productCanFreeze == null }.canFreeze).isEqualTo(false)
+    }
+
+  @Test
+  fun `flipping the switch overrides the product on save and the override survives a category change`() =
+    runTest {
+      category("dry", canFreeze = false)
+      category("dairy", sortOrder = 1)
+      val vm = viewModel()
+      vm.await { it.categories.size == 2 }
+      vm.fill(name = "Pasta", categoryId = "dry")
+
+      vm.onCanFreezeChange(true)
+      vm.onCategorySelect("dairy")
+      expectThat(vm.state.value.canFreeze).isEqualTo(true)
+      vm.onCategorySelect("dry")
+
+      vm.navigationSideEffects.test {
+        vm.onSave()
+        expectThat(awaitItem()).isEqualTo(AddNavigationSideEffect.Close)
+      }
+
+      expectThat(products().single().canFreeze).isEqualTo(true)
+    }
+
+  @Test
+  fun `saving without touching the switch stores no override`() =
+    runTest {
+      category("dry", canFreeze = false)
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.fill(name = "Pasta", categoryId = "dry")
+
+      vm.navigationSideEffects.test {
+        vm.onSave()
+        expectThat(awaitItem()).isEqualTo(AddNavigationSideEffect.Close)
+      }
+
+      expectThat(products().single().canFreeze).isNull()
+    }
+
+  @Test
+  fun `when it cannot be frozen the frozen flag is forced off`() =
+    runTest {
+      category("dry", canFreeze = false)
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.fill(name = "Pasta", categoryId = "dry")
+      vm.onFrozenChange(true)
+      expectThat(vm.state.value.frozenEffective).isFalse()
+
+      vm.navigationSideEffects.test {
+        vm.onSave()
+        expectThat(awaitItem()).isEqualTo(AddNavigationSideEffect.Close)
+      }
+
+      expectThat(items().single().pausedDate).isNull()
+    }
+
+  @Test
+  fun `a frozen add with a past date is not rejected when it cannot be frozen`() =
+    runTest {
+      category("dry", canFreeze = false)
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.fill(name = "Pasta", categoryId = "dry", days = -2)
+      vm.onFrozenChange(true)
+
+      expectThat(vm.state.value.frozenWithPastDate).isFalse()
+    }
+
+  @Test
+  fun `editing a unit shows the product value and saving the override applies to the whole product`() =
+    runTest {
+      category("dairy")
+      val added = addProduct.add("Milk", "dairy", inDays(5), 2, false).getOrThrow()
+      val vm = viewModel(itemId = added.itemIds.first())
+      vm.await { it.isEditing && it.date != null }
+      expectThat(vm.state.value.canFreeze).isEqualTo(true)
+
+      vm.onCanFreezeChange(false)
+      vm.navigationSideEffects.test {
+        vm.onSave()
+        expectThat(awaitItem()).isEqualTo(AddNavigationSideEffect.Close)
+      }
+
+      expectThat(products().single { it.id == added.productId }.canFreeze).isEqualTo(false)
+      expectThat(items()).hasSize(2)
+    }
+
+  @Test
+  fun `editing a unit into another product applies the override to that product`() =
+    runTest {
+      category("dairy")
+      val added = addProduct.add("Milk", "dairy", inDays(5), 1, false).getOrThrow()
+      val vm = viewModel(itemId = added.itemIds.single())
+      vm.await { it.isEditing && it.date != null }
+
+      vm.onNameChange("Oat milk")
+      vm.onCanFreezeChange(false)
+      vm.navigationSideEffects.test {
+        vm.onSave()
+        expectThat(awaitItem()).isEqualTo(AddNavigationSideEffect.Close)
+      }
+
+      expectThat(products().single { it.name == "Oat milk" }.canFreeze).isEqualTo(false)
+      expectThat(products().single { it.name == "Milk" }.canFreeze).isNull()
+    }
+
+  // endregion
 }

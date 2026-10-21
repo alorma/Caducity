@@ -35,8 +35,21 @@ data class AddState(
   val saving: Boolean = false,
   /** Id of the unit being edited; null when adding a new product. */
   val editItemId: String? = null,
+  /** Override of «es pot congelar» chosen by the user in this session; null while untouched. */
+  val canFreezeOverride: Boolean? = null,
+  /** Override stored in the existing product that matches the typed name in the selected category; null if none. */
+  val productCanFreeze: Boolean? = null,
 ) {
   val isEditing: Boolean get() = editItemId != null
+
+  /** The selected category; null until one is chosen. */
+  val category: Category? get() = categories.firstOrNull { it.id == categoryId }
+
+  /** Effective «es pot congelar»: user's choice, else the existing product's override, else the category's. */
+  val canFreeze: Boolean? get() = category?.let { canFreezeOverride ?: productCanFreeze ?: it.canFreeze }
+
+  /** What is saved as [frozen]: a product that cannot be frozen is never added frozen. */
+  val frozenEffective: Boolean get() = frozen && canFreeze != false
 
   val missing: List<AddMissing>
     get() =
@@ -48,5 +61,5 @@ data class AddState(
 
   val canSave: Boolean get() = missing.isEmpty() && !saving
 
-  val frozenWithPastDate: Boolean get() = frozen && date != null && date < today
+  val frozenWithPastDate: Boolean get() = frozenEffective && date != null && date < today
 }

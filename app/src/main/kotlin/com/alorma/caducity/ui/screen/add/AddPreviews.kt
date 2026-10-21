@@ -47,6 +47,25 @@ private fun AddFormPreview() {
         ExpiryDateField("211026", LocalDate(2026, 10, 21), today, {}, {})
         QuickDateRow(onSelect = {})
         QuantityFrozenRow(quantity = 3, frozen = true, onQuantityChange = {}, onFrozenChange = {})
+        CanFreezeCard(
+          canFreeze = true,
+          categoryName = "Dairy",
+          categoryCanFreeze = true,
+          onCanFreezeChange = {},
+        )
+        QuantityFrozenRow(
+          quantity = 1,
+          frozen = false,
+          onQuantityChange = {},
+          onFrozenChange = {},
+          canFreeze = false,
+        )
+        CanFreezeCard(
+          canFreeze = false,
+          categoryName = "Pantry",
+          categoryCanFreeze = false,
+          onCanFreezeChange = {},
+        )
       }
     }
   }

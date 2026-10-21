@@ -70,7 +70,7 @@ class RoomPantryDataSource(
     productName: String,
     expiration: Instant,
     frozenRemainingDays: Int?,
-  ) {
+  ): String =
     database.withTransaction {
       val item = itemDao.getItem(itemId) ?: throw PantryError.ItemNotFound
       val (product, _) = findOrCreateProduct(categoryId, productName)
@@ -83,8 +83,8 @@ class RoomPantryDataSource(
           remainingDays = if (frozen) frozenRemainingDays ?: item.remainingDays else item.remainingDays,
         ),
       )
+      product.id
     }
-  }
 
   override suspend fun moveItem(
     itemId: String,
