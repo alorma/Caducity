@@ -187,7 +187,7 @@ private fun SingleContent(
     freezeLabel =
       stringResource(if (state.frozen) R.string.action_unfreeze else R.string.item_actions_freeze),
     freezeIcon = if (state.frozen) Symbols.Outlined.Sunny else Symbols.Outlined.AcUnit,
-    showFreeze = true,
+    showFreeze = state.frozen || state.freezableCount > 0,
     onConsume = actions::onConsume,
     onFreeze = actions::onFreezeToggle,
   )

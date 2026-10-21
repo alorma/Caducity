@@ -7,7 +7,9 @@ import com.alorma.caducity.ui.components.actions.ItemActionsExpiredOneUnitPrevie
 import com.alorma.caducity.ui.components.actions.ItemActionsExpiredSeveralUnitsPreview
 import com.alorma.caducity.ui.components.actions.ItemActionsFrozenOneUnitPreview
 import com.alorma.caducity.ui.components.actions.ItemActionsFrozenSeveralUnitsPreview
+import com.alorma.caducity.ui.components.actions.ItemActionsOneUnitCannotFreezePreview
 import com.alorma.caducity.ui.components.actions.ItemActionsOneUnitPreview
+import com.alorma.caducity.ui.components.actions.ItemActionsSeveralUnitsCannotFreezePreview
 import com.alorma.caducity.ui.components.actions.ItemActionsSeveralUnitsPreview
 import com.android.tools.screenshot.PreviewTest
 
@@ -62,5 +64,21 @@ class ItemActionsScreenshotTests {
   @Composable
   fun itemActionsFrozenSeveralUnits() {
     ItemActionsFrozenSeveralUnitsPreview()
+  }
+
+  @PreviewTest
+  @Preview(name = "Light", locale = "ca", widthDp = Width, heightDp = Height)
+  @Preview(name = "Dark", locale = "ca", widthDp = Width, heightDp = Height, uiMode = Night)
+  @Composable
+  fun itemActionsOneUnitCannotFreeze() {
+    ItemActionsOneUnitCannotFreezePreview()
+  }
+
+  @PreviewTest
+  @Preview(name = "Light", locale = "ca", widthDp = Width, heightDp = Height)
+  @Preview(name = "Dark", locale = "ca", widthDp = Width, heightDp = Height, uiMode = Night)
+  @Composable
+  fun itemActionsSeveralUnitsCannotFreeze() {
+    ItemActionsSeveralUnitsCannotFreezePreview()
   }
 }
