@@ -14,7 +14,9 @@ import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.model.HandfulLevel
+import com.alorma.caducity.domain.model.IngredientSpend
 import com.alorma.caducity.domain.model.PantryError
+import com.alorma.caducity.domain.model.TransformResult
 import com.alorma.caducity.domain.model.UnitType
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
@@ -38,6 +40,7 @@ import strikt.assertions.isEqualTo
 import strikt.assertions.isFailure
 import strikt.assertions.isNotNull
 import strikt.assertions.isNull
+import strikt.assertions.isSuccess
 
 /** Handful products (Grapats): one batch with a level that goes down, is set, frozen and reset. */
 @RunWith(RobolectricTestRunner::class)
@@ -104,6 +107,8 @@ class HandfulLevelTest {
     addProduct
       .add("Peanuts", "c1", inDays(30), 4, frozen = false, unitType = UnitType.HANDFULS, level = level)
       .getOrThrow()
+
+  private fun soup() = TransformResult("Soup", 1, "c1", inDays(3), 0)
 
   @Test
   fun `a handful product is one batch with its level and type`() =
@@ -283,5 +288,79 @@ class HandfulLevelTest {
       addProduct.add("Peanuts", "c1", inDays(30), 1, false, UnitType.HANDFULS, level = HandfulLevel.HALF).getOrThrow()
 
       expectThat(items().map { it.level }.toSet()).isEqualTo(setOf(HandfulLevel.LOTS, HandfulLevel.HALF))
+    }
+
+  @Test
+  fun `a handful ingredient spent whole is transformed and undo brings it back`() =
+    runTest {
+      category("c1")
+      val id = peanuts(HandfulLevel.HALF).itemIds.single()
+      val transform = TransformItemsUseCase(pantry, clock)
+
+      val batch =
+        transform
+          .transform(listOf(IngredientSpend(listOf(id), count = 1, handful = true)), listOf(soup()))
+          .getOrThrow()
+
+      expectThat(items().first { it.id == id }.transformedDate).isNotNull()
+      expectThat(transform.undo(batch)).isSuccess()
+      expectThat(items().first { it.id == id }.transformedDate).isNull()
+      expectThat(items().first { it.id == id }.level).isEqualTo(HandfulLevel.HALF)
+    }
+
+  @Test
+  fun `a handful ingredient can be left at a lower level and undo restores it`() =
+    runTest {
+      category("c1")
+      val id = peanuts(HandfulLevel.LOTS).itemIds.single()
+      val transform = TransformItemsUseCase(pantry, clock)
+
+      val batch =
+        transform
+          .transform(
+            listOf(IngredientSpend(listOf(id), count = 1, handful = true, remainingLevel = HandfulLevel.LITTLE)),
+            listOf(soup()),
+          ).getOrThrow()
+
+      expectThat(items().first { it.id == id }.level).isEqualTo(HandfulLevel.LITTLE)
+      expectThat(items().first { it.id == id }.transformedDate).isNull()
+
+      expectThat(transform.undo(batch)).isSuccess()
+      expectThat(items().first { it.id == id }.level).isEqualTo(HandfulLevel.LOTS)
+    }
+
+  @Test
+  fun `a handful cannot be left at the same or a higher level`() =
+    runTest {
+      category("c1")
+      val id = peanuts(HandfulLevel.HALF).itemIds.single()
+
+      val result =
+        TransformItemsUseCase(pantry, clock)
+          .transform(
+            listOf(IngredientSpend(listOf(id), count = 1, handful = true, remainingLevel = HandfulLevel.LOTS)),
+            listOf(soup()),
+          )
+
+      expectThat(result).isFailure()
+      expectThat(items().first { it.id == id }.level).isEqualTo(HandfulLevel.HALF)
+    }
+
+  @Test
+  fun `a handful result is one batch at its level`() =
+    runTest {
+      category("c1")
+      val result = TransformResult("Mix", 1, "c1", inDays(5), 0, UnitType.HANDFULS, level = HandfulLevel.HALF)
+
+      val batch = TransformItemsUseCase(pantry, clock).transform(emptyList(), listOf(result)).getOrThrow()
+
+      expectThat(items().first { it.id in batch.resultItemIds }.level).isEqualTo(HandfulLevel.HALF)
+      expectThat(
+        db
+          .productDao()
+          .getAllProductsSync()
+          .single()
+          .unitType,
+      ).isEqualTo(UnitType.HANDFULS)
     }
 }

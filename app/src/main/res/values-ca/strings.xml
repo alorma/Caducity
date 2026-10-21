@@ -377,6 +377,9 @@
   <string name="item_actions_none_left">Ja no en queda</string>
   <string name="item_actions_level_frozen">%1$s · congelat el %2$s</string>
   <string name="item_actions_level_expires">%1$s · caduca el %2$s</string>
+  <string name="handful_remaining_none">Queda res</string>
+  <string name="handful_remaining_half">Queda meitat</string>
+  <string name="handful_remaining_little">Queda poc</string>
   <string name="handful_level_lots">Molt</string>
   <string name="handful_level_half">La meitat</string>
   <string name="handful_level_little">Poc</string>

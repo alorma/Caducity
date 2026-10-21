@@ -189,7 +189,8 @@ class RoomPantryDataSource(
 
       val ingredientIds = ingredients.flatMap { it.itemIds }.distinct()
       val partialAmounts = ingredients.flatMap { it.partialAmounts.entries }.associate { it.key to it.value }
-      val ingredientSnapshots = snapshots(ingredientIds + partialAmounts.keys)
+      val partialLevels = ingredients.flatMap { it.partialLevels.entries }.associate { it.key to it.value }
+      val ingredientSnapshots = snapshots(ingredientIds + partialAmounts.keys + partialLevels.keys)
 
       val resultItemIds = mutableListOf<String>()
       val createdProductIds = mutableListOf<String>()
@@ -214,6 +215,7 @@ class RoomPantryDataSource(
               createdAt = now,
               originTransformationId = transformationId,
               amount = result.amount,
+              level = result.level,
             ),
           )
           resultItemIds += id
@@ -231,6 +233,9 @@ class RoomPantryDataSource(
             ),
           )
         }
+      }
+      partialLevels.forEach { (id, level) ->
+        itemDao.getItem(id)?.let { item -> itemDao.updateItem(item.copy(level = level)) }
       }
       // A batch spent in part keeps the rest; undo gives it back through its snapshot.
       partialAmounts.forEach { (id, spend) ->

@@ -89,6 +89,7 @@ fun TransformScreen(
         onFrozenCountChange = viewModel::onFrozenCountChange,
         onUnitTypeClick = viewModel::onUnitTypeClick,
         onAmountChange = viewModel::onAmountChange,
+        onLevelChange = viewModel::onLevelChange,
       )
     }
 
@@ -143,6 +144,7 @@ fun TransformScreen(
             categories = state.categories,
             onCountChange = viewModel::onIngredientCountChange,
             onAmountChange = viewModel::onIngredientAmountChange,
+            onRemainingChange = viewModel::onIngredientRemainingChange,
             onRemove = viewModel::onRemoveIngredient,
             onAdd = { viewModel.navigate(TransformNavigation.IngredientPicker) },
             optional = state.freeEntry,

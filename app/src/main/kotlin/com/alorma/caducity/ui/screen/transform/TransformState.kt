@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.screen.transform
 import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.NameSuggestion
 import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
@@ -27,7 +28,22 @@ data class IngredientUi(
   val unitStatus: Map<String, ExpiryStatus> = emptyMap(),
   /** g or mL to spend of a measured product; null for units. */
   val amount: Int? = null,
+  /** Level a handful product is left at after the transformation; null when nothing is left (spent whole). */
+  val remainingLevel: HandfulLevel? = null,
 ) {
+  /** A handful product (Grapats): the user picks what is left of it. */
+  val handful: Boolean get() = units.firstOrNull()?.unitType?.parent == UnitParent.HANDFULS
+
+  /** Level of the batch now. */
+  val currentLevel: HandfulLevel? get() = units.firstOrNull()?.level
+
+  /** What it can be left at: nothing, or any level below the current one (lowest first). */
+  val remainingOptions: List<HandfulLevel?>
+    get() {
+      val current = currentLevel ?: return listOf(null)
+      return listOf<HandfulLevel?>(null) + HandfulLevel.entries.reversed().filter { it.ordinal > current.ordinal }
+    }
+
   /** Everything a measured product has, in g or mL. */
   val totalAmount: Int get() = units.sumOf { it.amount ?: 0 }
 
@@ -60,11 +76,14 @@ data class ResultUi(
   val suggestion: NameSuggestion? = null,
   /** Unit type chosen by the user; null while untouched (units for a new product, the existing type otherwise). */
   val unitTypeOverride: UnitType? = null,
+  /** Level of a handful result. */
+  val level: HandfulLevel = HandfulLevel.DEFAULT,
   /** g or mL of a measured result (a single batch). */
   val amount: Int = UnitType.DEFAULT_AMOUNT,
 ) {
   val unitType: UnitType get() = unitTypeOverride ?: UnitType.DEFAULT
   val measured: Boolean get() = unitType.parent == UnitParent.MEASURED
+  val handful: Boolean get() = unitType.parent == UnitParent.HANDFULS
 }
 
 /** `expandedResultId` when every result is folded into a small card. */

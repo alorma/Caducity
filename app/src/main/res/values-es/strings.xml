@@ -377,6 +377,9 @@
   <string name="item_actions_none_left">Ya no queda</string>
   <string name="item_actions_level_frozen">%1$s · congelado el %2$s</string>
   <string name="item_actions_level_expires">%1$s · caduca el %2$s</string>
+  <string name="handful_remaining_none">No queda</string>
+  <string name="handful_remaining_half">Queda mitad</string>
+  <string name="handful_remaining_little">Queda poco</string>
   <string name="handful_level_lots">Mucho</string>
   <string name="handful_level_half">La mitad</string>
   <string name="handful_level_little">Poco</string>

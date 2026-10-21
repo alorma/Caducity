@@ -92,11 +92,12 @@ fun LevelFrozenRow(
 /** Molt / Meitat / Poc: how much is left of a handful product. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LevelSelector(
+internal fun LevelSelector(
   level: HandfulLevel,
   onChange: (HandfulLevel) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
-  SingleChoiceSegmentedButtonRow {
+  SingleChoiceSegmentedButtonRow(modifier = modifier) {
     HandfulLevel.entries.forEachIndexed { index, option ->
       SegmentedButton(
         selected = option == level,

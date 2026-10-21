@@ -27,6 +27,11 @@ class TransformItemsUseCase(
     results.forEach { result ->
       if (result.name.isBlank()) return Result.failure(PantryError.BlankName)
       if (result.servings !in 1..MAX_SERVINGS) return Result.failure(PantryError.InvalidQuantity(result.servings))
+      if (result.level != null &&
+        result.servings != 1
+      ) {
+        return Result.failure(PantryError.InvalidQuantity(result.servings))
+      }
       if (result.amount != null && (result.servings != 1 || result.amount !in 1..UnitType.MAX_AMOUNT)) {
         return Result.failure(PantryError.InvalidAmount(result.amount))
       }
@@ -42,6 +47,7 @@ class TransformItemsUseCase(
       val chosen =
         ingredients.map { ingredient ->
           if (ingredient.amount != null) return@map spendAmount(ingredient, active, spent)
+          if (ingredient.handful) return@map spendHandful(ingredient, active, spent)
           val units =
             ingredient.candidateItemIds
               .mapNotNull { active[it] }
@@ -58,6 +64,22 @@ class TransformItemsUseCase(
     } catch (e: Exception) {
       Result.failure(e)
     }
+  }
+
+  /** A handful ingredient is spent whole, or left at a lower level (the batch stays). */
+  private fun spendHandful(
+    ingredient: IngredientSpend,
+    active: Map<String, ActiveItem>,
+    spent: MutableSet<String>,
+  ): TransformIngredient {
+    val batch =
+      ingredient.candidateItemIds.mapNotNull { active[it] }.firstOrNull { it.itemId !in spent && it.level != null }
+        ?: throw PantryError.NotAHandful
+    val current = batch.level ?: throw PantryError.NotAHandful
+    spent += batch.itemId
+    val remaining = ingredient.remainingLevel ?: return TransformIngredient(listOf(batch.itemId))
+    if (remaining.ordinal <= current.ordinal) throw PantryError.NotAHandful
+    return TransformIngredient(emptyList(), partialLevels = mapOf(batch.itemId to remaining))
   }
 
   /** Spends [IngredientSpend.amount] g or mL across the batches, soonest to expire first; the last one may be spent in part. */

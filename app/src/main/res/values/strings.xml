@@ -360,6 +360,9 @@
   <string name="item_actions_none_left">None left</string>
   <string name="item_actions_level_frozen">%1$s · frozen on %2$s</string>
   <string name="item_actions_level_expires">%1$s · expires %2$s</string>
+  <string name="handful_remaining_none">None left</string>
+  <string name="handful_remaining_half">Half left</string>
+  <string name="handful_remaining_little">Little left</string>
   <string name="handful_level_lots">A lot</string>
   <string name="handful_level_half">Half</string>
   <string name="handful_level_little">Little</string>

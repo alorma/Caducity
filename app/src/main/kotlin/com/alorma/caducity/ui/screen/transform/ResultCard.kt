@@ -60,10 +60,12 @@ import com.alorma.caducity.base.ui.icons.symbols.ExpandLess
 import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.Widgets
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.TransformItemsUseCase
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.imageVector
+import com.alorma.caducity.ui.screen.add.LevelSelector
 import com.alorma.caducity.ui.screen.add.NameField
 import com.alorma.caducity.ui.screen.add.StepButton
 import com.alorma.caducity.ui.screen.add.SuggestionRow
@@ -115,6 +117,8 @@ fun ResultForm(
     UnitTypeRow(unitType = result.unitType, onClick = { actions.onUnitTypeClick(id) })
     if (result.measured) {
       AmountRow(unitType = result.unitType, amount = result.amount, onChange = { actions.onAmountChange(id, it) })
+    } else if (result.handful) {
+      LevelRow(level = result.level, onChange = { actions.onLevelChange(id, it) })
     } else {
       CounterRow(
         label = stringResource(R.string.transform_units),
@@ -462,6 +466,32 @@ private fun AmountRow(
       ) {
         Icon(Symbols.Outlined.Add, contentDescription = null, modifier = Modifier.size(20.dp))
       }
+    }
+  }
+}
+
+/** `Queda  Molt | Meitat | Poc` of a handful result. */
+@Composable
+private fun LevelRow(
+  level: HandfulLevel,
+  onChange: (HandfulLevel) -> Unit,
+) {
+  Surface(
+    shape = CaducityTheme.shapes.large,
+    color = CaducityTheme.colorScheme.surfaceContainerHigh,
+    modifier = Modifier.fillMaxWidth().height(64.dp),
+  ) {
+    Row(
+      modifier = Modifier.padding(start = 16.dp, end = 12.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+      Text(
+        text = stringResource(R.string.handful_left_label),
+        style = CaducityTheme.typography.labelLarge,
+        softWrap = false,
+      )
+      LevelSelector(level = level, onChange = onChange, modifier = Modifier.weight(1f))
     }
   }
 }
