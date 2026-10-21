@@ -153,3 +153,20 @@ changing the type in Edit leaves one batch with the nearest date and the default
 
 Approved by Bernat («endavant») and opened as one PR from `feature/tipus-unitat`. Pending for later: release-notes bullet for
 Mesurable, phases 4 (Grapats) and 5 is covered by tasks 14 and 17 (Transforma), Pixel 8a upgrade with real data, TalkBack.
+
+## Phase 4 tasks: Grapats (branch `feature/grapats`, own PR)
+
+Decisions (Bernat, 21 October): go ahead with the proposal. In Transforma a Grapats ingredient is **not** spent whole: the user
+picks the level that is left afterwards («Ja no en queda» by default, or Poc / La meitat, only levels below the current one).
+New handful starts at «Molt»; tapping the row opens the modal; release notes later.
+
+- [ ] 19. Data and domain: `HandfulLevel` (Molt / La meitat / Poc) with a `TypeConverter` and explicit codes, `items.level` typed
+  (no migration: same TEXT column), level through the read models and backup; use cases: lower one level (Poc → consumed), set a
+  level, freeze the whole product keeping its level, undo; changing the type in Edit leaves one batch at «Molt».
+- [ ] 20. Row text «Queda molt / la meitat / poc» (`ProductRow`, Transforma, reminders), strings ca/es/en.
+- [ ] 21. Add / Edit: Grapats tab in `TipusTria` (no subtypes), «Queda» Molt / Meitat / Poc row (default Molt), reset warning.
+- [ ] 22. `TipusAUll` modal («Quant en queda?», three big buttons that change the level at once, «Ja no en queda», «Congela»,
+  «Més accions»); the row ✓ lowers a level with a snackbar, ❄ freezes the whole product.
+- [ ] 23. Frozen (✓ lowers a level, ☀ thaws everything to today + 3 days) and expired (only «Llença») Grapats (§3.1).
+- [ ] 24. Transforma: Grapats ingredient with a «what is left» level selector; results can be Grapats («Queda» selector).
+- [ ] 25. Seed and debug fakes with handfuls, final validation on the emulator, PR.
