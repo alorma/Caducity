@@ -56,11 +56,11 @@ See the chat of 21 October; answers go here as «Decisions taken with Bernat».
   schema `6.json`, domain `Category.canFreeze` / `Product.canFreeze`, backup v5 reading v4.
 - [x] b. Domain: effective value (product ?? category) in the read models (`ProductRowModel`, item actions state) and
   use cases to set it on category / product; the freeze use case refuses when it cannot be frozen.
-- [ ] c. Category editor: «Congelació» section with the switch (`NovaCategoria`).
-- [ ] d. Add / Edit: «Es pot congelar» row under Quantitat (also in Edit), inherited value + override, hides «Congelat».
-- [ ] e. Rows: no ❄ when it cannot be frozen (frozen rows keep ☀).
-- [ ] f. Item actions modals: no «Congela», «Consumeix» takes the whole width.
-- [ ] g. Transforma: no «Congela'n» for results that cannot be frozen.
+- [x] c. Category editor: «Congelació» section with the switch (`NovaCategoria`).
+- [x] d. Add / Edit: «Es pot congelar» row under Quantitat (also in Edit), inherited value + override, hides «Congelat».
+- [x] e. Rows: no ❄ when it cannot be frozen (frozen rows keep ☀).
+- [x] f. Item actions modals: no «Congela», «Consumeix» takes the whole width.
+- [x] g. Transforma: no «Congela'n» for results that cannot be frozen.
 
 Strings ca/es/en go with the task that uses them.
 
