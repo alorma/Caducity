@@ -9,4 +9,5 @@ data class Product(
   val createdAt: Instant,
   /** Overrides [Category.canFreeze] for this product; null inherits it. */
   val canFreeze: Boolean? = null,
+  val unitType: UnitType = UnitType.DEFAULT,
 )

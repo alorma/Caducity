@@ -94,6 +94,7 @@ class ItemActionsSheetViewModel(
           otherCategories = categories.filter { it.id != category.id },
           pickingCategory = picking,
           canFreeze = focus.canFreeze,
+          unitType = focus.unitType,
         )
       }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ItemActionsSheetState.Loading)

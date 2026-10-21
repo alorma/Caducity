@@ -37,6 +37,7 @@ data class ProductRowModel(
   val frozenSince: LocalDate? = null,
   /** The product can go in the freezer: when false the row has no ❄. */
   val canFreeze: Boolean = true,
+  val unitType: UnitType = UnitType.DEFAULT,
 ) {
   val unitCount: Int get() = itemIds.size
   val nearestItemId: String get() = itemIds.first()
@@ -82,5 +83,6 @@ fun List<PantryEntry>.toProductRow(
     detail = detail,
     frozenSince = if (nearest.status == ExpiryStatus.FROZEN) nearest.frozenSince?.date() else null,
     canFreeze = nearest.canFreeze,
+    unitType = nearest.unitType,
   )
 }

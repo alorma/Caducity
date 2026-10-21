@@ -21,6 +21,7 @@ import com.alorma.caducity.domain.model.ProductUsage
 import com.alorma.caducity.domain.model.TransformIngredient
 import com.alorma.caducity.domain.model.TransformResult
 import com.alorma.caducity.domain.model.TransformedBatch
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.toExpirationInstant
 import java.util.UUID
@@ -312,6 +313,7 @@ class RoomPantryDataSource(
           remainingDays = row.remainingDays,
           createdAt = row.createdAt?.let { Instant.fromEpochMilliseconds(it) },
           canFreeze = row.canFreeze,
+          unitType = UnitType.of(row.unitType),
         )
       }
     }
@@ -328,6 +330,7 @@ class RoomPantryDataSource(
         uses = it.uses,
         lastUsed = Instant.fromEpochMilliseconds(it.lastUsed),
         canFreeze = it.canFreeze,
+        unitType = UnitType.of(it.unitType),
       )
     }
 
@@ -352,6 +355,16 @@ class RoomPantryDataSource(
       val product = productDao.getProduct(productId) ?: return@withTransaction
       val inherited = categoryDao.getCategory(product.categoryId)?.canFreeze ?: true
       productDao.updateProduct(product.copy(canFreeze = canFreeze?.takeIf { it != inherited }))
+    }
+  }
+
+  override suspend fun setProductUnitType(
+    productId: String,
+    unitType: UnitType,
+  ) {
+    database.withTransaction {
+      val product = productDao.getProduct(productId) ?: return@withTransaction
+      productDao.updateProduct(product.copy(unitType = unitType.name))
     }
   }
 

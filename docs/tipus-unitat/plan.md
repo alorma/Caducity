@@ -86,3 +86,17 @@ Strings ca/es/en go with the task that uses them.
 ## Phase 2 closed
 
 Approved by Bernat on 21 October. Next: phase 1 (unit type) in a new session.
+
+## Phase 1 tasks: Unit type, model + dialog (branch `feature/tipus-unitat`, one PR)
+
+- [x] 1. Data: Room v7 (`products.unitType` NOT NULL DEFAULT 'UNITS', `items.amount`, `items.level`), `MIGRATION_6_7`, schema `7.json`, (e181383b)
+  `Migration6To7Test`, backup v6 still reading v4 and v5.
+- [ ] 2. Domain: `UnitType` / `UnitParent`, `Product.unitType` through the read models, `setProductUnitType` + `SetProductUnitTypeUseCase`.
+- [ ] 3. Row texts per type («3 paquets», «1 tupper»): `ProductRow`, ingredient picker, notifications; plurals ca/es/en.
+- [ ] 4. `TipusTria` sheet (parent tabs hidden while only Unitats is active).
+- [ ] 5. Add / Edit: «Com ho comptes?» row, existing product shows its type, Edit changes the product.
+- [ ] 6. Seed (`.claude/skills/plant-seed/seed-backup.json`): move it to backup v6 and give some products different unit types
+  (Tuppers, Paquets, Llaunes). Update the skill text if the counts change.
+- [ ] 7. Debug fakes (`domain/usecase/fakedata/`: `ProductConfig.unitType`, `FakeShowcaseDataStrategy`, `FakeTestDataStrategy`,
+  `PopulateFakeDataUseCase`): products with different unit types.
+- [ ] 8. Final validation on the emulator: update from the v6 build with data, import v4/v5 backups, check the rows.

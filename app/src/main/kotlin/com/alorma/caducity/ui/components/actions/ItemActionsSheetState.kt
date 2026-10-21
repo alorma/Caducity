@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.components.actions
 
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.UnitType
 import kotlinx.datetime.LocalDate
 
 /** One active unit of the product, as the sheet needs it. */
@@ -31,6 +32,8 @@ sealed interface ItemActionsSheetState {
     val pickingCategory: Boolean = false,
     /** The product can go in the freezer; when false the sheet has no «Congela». */
     val canFreeze: Boolean = true,
+    /** How the product is counted. */
+    val unitType: UnitType = UnitType.DEFAULT,
   ) : ItemActionsSheetState {
     private val nearest: ActionUnit get() = units.first()
 

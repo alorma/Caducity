@@ -8,6 +8,7 @@ import com.alorma.caducity.domain.model.ProductUsage
 import com.alorma.caducity.domain.model.TransformIngredient
 import com.alorma.caducity.domain.model.TransformResult
 import com.alorma.caducity.domain.model.TransformedBatch
+import com.alorma.caducity.domain.model.UnitType
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.Flow
 
@@ -123,5 +124,11 @@ interface PantryDataSource {
   suspend fun setProductCanFreeze(
     productId: String,
     canFreeze: Boolean?,
+  )
+
+  /** Sets how the product is counted. Changing the parent type resets the quantity (not possible while only units exist). */
+  suspend fun setProductUnitType(
+    productId: String,
+    unitType: UnitType,
   )
 }

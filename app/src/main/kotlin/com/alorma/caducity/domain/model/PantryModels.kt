@@ -19,6 +19,7 @@ data class ProductUsage(
   val lastUsed: Instant,
   /** The product's own override of `canFreeze`; null inherits its category. */
   val canFreeze: Boolean? = null,
+  val unitType: UnitType = UnitType.DEFAULT,
 )
 
 /** A product name offered while typing in the add screen. */
@@ -62,4 +63,5 @@ data class ActiveItem(
   val createdAt: Instant?,
   /** Effective value: the product's override, else the category's. */
   val canFreeze: Boolean = true,
+  val unitType: UnitType = UnitType.DEFAULT,
 )

@@ -19,6 +19,7 @@ import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.SeedCategory
 import com.alorma.caducity.domain.model.SuggestedCategory
+import com.alorma.caducity.domain.model.UnitType
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
 import kotlinx.coroutines.flow.first
@@ -72,6 +73,7 @@ class PantryUseCasesTest {
   private lateinit var freeze: FreezeItemUseCase
   private lateinit var reschedule: RescheduleItemUseCase
   private lateinit var setProductCanFreeze: SetProductCanFreezeUseCase
+  private lateinit var setProductUnitType: SetProductUnitTypeUseCase
 
   @Before
   fun setUp() {
@@ -104,6 +106,7 @@ class PantryUseCasesTest {
     freeze = FreezeItemUseCase(itemDataSource, pantry, clock)
     reschedule = RescheduleItemUseCase(itemDataSource, pantry)
     setProductCanFreeze = SetProductCanFreezeUseCase(pantry)
+    setProductUnitType = SetProductUnitTypeUseCase(pantry)
   }
 
   @After
@@ -648,6 +651,13 @@ class PantryUseCasesTest {
 
   // region Es pot congelar
 
+  private suspend fun unitTypeOf(itemId: String) =
+    pantry
+      .observeActiveItems()
+      .first()
+      .single { it.itemId == itemId }
+      .unitType
+
   private suspend fun canFreezeOf(itemId: String) =
     pantry
       .observeActiveItems()
@@ -689,6 +699,20 @@ class PantryUseCasesTest {
 
       setProductCanFreeze.set(added.productId, true).getOrThrow()
       expectThat(products().single().canFreeze).isNull()
+    }
+
+  @Test
+  fun `a product is counted in units until its type is set`() =
+    runTest {
+      category("c1")
+      val added = addProduct.add("Yogurt", "c1", inDays(30), 1, frozen = false).getOrThrow()
+      val itemId = added.itemIds.single()
+      expectThat(products().single().unitType).isEqualTo("UNITS")
+      expectThat(unitTypeOf(itemId)).isEqualTo(UnitType.UNITS)
+
+      setProductUnitType.set(added.productId, UnitType.TUPPERS).getOrThrow()
+      expectThat(products().single().unitType).isEqualTo("TUPPERS")
+      expectThat(unitTypeOf(itemId)).isEqualTo(UnitType.TUPPERS)
     }
 
   @Test
