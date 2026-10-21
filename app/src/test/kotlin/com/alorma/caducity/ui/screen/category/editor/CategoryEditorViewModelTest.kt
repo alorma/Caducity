@@ -148,6 +148,26 @@ class CategoryEditorViewModelTest {
     }
 
   @Test
+  fun `a new category can freeze by default and the switch is saved and loaded back`() =
+    runTest {
+      val vm = viewModel()
+      expectThat(vm.state.value.canFreeze).isTrue()
+      vm.onNameChange("Conserves")
+      vm.onCanFreezeChange(false)
+      vm.onSave()
+      real { vm.navigationSideEffects.first() }
+      val saved = pantry.getCategories().single()
+      expectThat(saved.canFreeze).isFalse()
+
+      val edit = viewModel(saved.id)
+      expectThat(edit.state.value.canFreeze).isFalse()
+      edit.onCanFreezeChange(true)
+      edit.onSave()
+      real { edit.navigationSideEffects.first() }
+      expectThat(pantry.getCategories().single().canFreeze).isTrue()
+    }
+
+  @Test
   fun `editing a category without a usual duration keeps it empty`() =
     runTest {
       val id = create.createCategory("Lactics", "").getOrThrow()

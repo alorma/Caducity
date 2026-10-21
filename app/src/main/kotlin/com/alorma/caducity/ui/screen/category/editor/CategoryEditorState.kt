@@ -21,6 +21,8 @@ data class CategoryEditorState(
   val icon: CategoryIcon = CategoryIcon.DEFAULT,
   /** Usual duration picked by the user (or stored); `null` is saved as `null` (no duration). */
   val usualDurationDays: Int? = null,
+  /** Whether the category's products can be frozen (on by default). */
+  val canFreeze: Boolean = true,
   val error: CategoryEditorError? = null,
   val saving: Boolean = false,
 ) {

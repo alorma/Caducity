@@ -321,7 +321,7 @@ private fun ResultSummaryContent(
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
     )
-    if (result.frozenCount > 0) FrozenChip(result.frozenCount)
+    if (state.frozenCountOf(result) > 0) FrozenChip(state.frozenCountOf(result))
   }
 }
 

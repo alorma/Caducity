@@ -175,11 +175,13 @@ fun ResultForm(
         }
       }
     }
-    FreezeSection(
-      frozenCount = result.frozenCount,
-      servings = result.servings,
-      onChange = { actions.onFrozenCountChange(id, it) },
-    )
+    if (state.canFreezeOf(result)) {
+      FreezeSection(
+        frozenCount = result.frozenCount,
+        servings = result.servings,
+        onChange = { actions.onFrozenCountChange(id, it) },
+      )
+    }
     Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.SpaceBetween,

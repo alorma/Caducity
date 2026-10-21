@@ -52,6 +52,7 @@ class CategoryEditorViewModel(
           it.copy(
             loading = false,
             usualDurationDays = current.usualDurationDays,
+            canFreeze = current.canFreeze,
             name = current.name,
             description = current.description,
             shape = current.shape,
@@ -103,6 +104,10 @@ class CategoryEditorViewModel(
     _state.update { it.copy(usualDurationDays = days) }
   }
 
+  fun onCanFreezeChange(canFreeze: Boolean) {
+    _state.update { it.copy(canFreeze = canFreeze) }
+  }
+
   fun onSave() {
     val current = _state.value
     if (!current.canSave) return
@@ -117,6 +122,7 @@ class CategoryEditorViewModel(
               shape = current.shape,
               icon = current.icon,
               usualDurationDays = current.usualDurationDays,
+              canFreeze = current.canFreeze,
             ).map { id -> CategoryEditorNavigationSideEffect.Created(id) }
         } else {
           updateCategory
@@ -126,6 +132,7 @@ class CategoryEditorViewModel(
               shape = current.shape,
               icon = current.icon,
               usualDurationDays = current.usualDurationDays,
+              canFreeze = current.canFreeze,
               description = current.description,
             ).map { CategoryEditorNavigationSideEffect.Close }
         }

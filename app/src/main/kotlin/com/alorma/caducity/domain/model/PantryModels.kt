@@ -17,6 +17,8 @@ data class ProductUsage(
   val categoryId: String,
   val uses: Int,
   val lastUsed: Instant,
+  /** The product's own override of `canFreeze`; null inherits its category. */
+  val canFreeze: Boolean? = null,
 )
 
 /** A product name offered while typing in the add screen. */
@@ -24,6 +26,8 @@ data class NameSuggestion(
   val productId: String,
   val name: String,
   val categoryId: String,
+  /** The product's own override of `canFreeze`; null inherits its category. */
+  val canFreeze: Boolean? = null,
 )
 
 sealed class PantryError(

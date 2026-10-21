@@ -326,6 +326,91 @@ class TransformViewModelTest {
     }
 
   @Test
+  fun `a result whose category cannot freeze offers no freezer and loses its frozen count`() =
+    runTest {
+      val vm = ready(add("Chicken", days = 3).itemIds)
+      db.categoryDao().insertCategory(CategoryRoomEntity("tins", "tins", "", sortOrder = 1, canFreeze = false))
+      vm.await { state -> state.categories.any { it.id == "tins" } }
+      vm.onServingsChange(0, 4)
+      vm.onFrozenCountChange(0, 3)
+      expectThat(
+        vm.state.value.canFreezeOf(
+          vm.state.value.results
+            .single(),
+        ),
+      ).isTrue()
+
+      vm.onCategorySelect(0, "tins")
+      val result =
+        vm.state.value.results
+          .single()
+      expectThat(vm.state.value.canFreezeOf(result)).isFalse()
+      expectThat(result.frozenCount).isEqualTo(0)
+
+      vm.onFrozenCountChange(0, 2)
+      expectThat(
+        vm.state.value.results
+          .single()
+          .frozenCount,
+      ).isEqualTo(0)
+    }
+
+  @Test
+  fun `an existing product with the same name in the chosen category decides if the result can freeze`() =
+    runTest {
+      val vm = ready(add("Chicken", days = 3).itemIds)
+      db.categoryDao().insertCategory(CategoryRoomEntity("tins", "tins", "", sortOrder = 1, canFreeze = false))
+      vm.await { state -> state.categories.any { it.id == "tins" } }
+      val brothId = add("Broth", days = 3, category = "soup").productId
+      val tinnedId = add("Tuna", days = 3, category = "tins").productId
+      pantry.setProductCanFreeze(brothId, false)
+      pantry.setProductCanFreeze(tinnedId, true)
+
+      vm.onNameChange(0, "Broth")
+      vm.await { state ->
+        state.results
+          .single()
+          .productCanFreeze
+          .isNotEmpty()
+      }
+      vm.onCategorySelect(0, "meat")
+      expectThat(
+        vm.state.value.canFreezeOf(
+          vm.state.value.results
+            .single(),
+        ),
+      ).isTrue()
+      vm.onCategorySelect(0, "soup")
+      expectThat(
+        vm.state.value.canFreezeOf(
+          vm.state.value.results
+            .single(),
+        ),
+      ).isFalse()
+
+      vm.onNameChange(0, "Tuna")
+      vm.await { state ->
+        state.results
+          .single()
+          .productCanFreeze
+          .isNotEmpty()
+      }
+      vm.onCategorySelect(0, "tins")
+      expectThat(
+        vm.state.value.canFreezeOf(
+          vm.state.value.results
+            .single(),
+        ),
+      ).isTrue()
+      vm.onFrozenCountChange(0, 1)
+      expectThat(
+        vm.state.value.results
+          .single()
+          .frozenCount,
+      ).isEqualTo(1)
+    }
+
+  @Test
   fun `results can be added and removed while one is left`() =
     runTest {
       val vm = ready(add("Chicken", days = 3).itemIds)

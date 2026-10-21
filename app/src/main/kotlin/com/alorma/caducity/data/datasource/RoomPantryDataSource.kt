@@ -327,6 +327,7 @@ class RoomPantryDataSource(
         categoryId = it.categoryId,
         uses = it.uses,
         lastUsed = Instant.fromEpochMilliseconds(it.lastUsed),
+        canFreeze = it.canFreeze,
       )
     }
 

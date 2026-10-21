@@ -29,7 +29,7 @@ class GetNameSuggestionsUseCase(
           .thenByDescending { (usage, _) -> usage.lastUsed }
           .thenBy { (_, name) -> name },
       ).take(limit)
-      .map { (usage, _) -> NameSuggestion(usage.productId, usage.name, usage.categoryId) }
+      .map { (usage, _) -> NameSuggestion(usage.productId, usage.name, usage.categoryId, usage.canFreeze) }
   }
 
   companion object {

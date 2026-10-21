@@ -32,7 +32,8 @@ interface ProductDao {
 
   /** Usage stats per product (any item, including consumed and discarded) for name suggestions. */
   @Query(
-    "SELECT p.id AS productId, p.name AS name, p.categoryId AS categoryId, COUNT(i.id) AS uses, " +
+    "SELECT p.id AS productId, p.name AS name, p.categoryId AS categoryId, " +
+      "p.canFreeze AS canFreeze, COUNT(i.id) AS uses, " +
       "COALESCE(MAX(COALESCE(i.createdAt, i.expirationDate)), p.createdAt) AS lastUsed " +
       "FROM products p LEFT JOIN items i ON i.productId = p.id GROUP BY p.id",
   )

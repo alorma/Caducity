@@ -43,6 +43,8 @@ data class ResultUi(
   val historyCategoryId: String? = null,
   val expirationOverride: LocalDate? = null,
   val frozenCount: Int = 0,
+  /** `canFreeze` override of the existing products with this exact name, by category (null inherits the category). */
+  val productCanFreeze: Map<String, Boolean?> = emptyMap(),
   val suggestion: NameSuggestion? = null,
 )
 
@@ -93,9 +95,21 @@ data class TransformState(
   fun expirationOf(result: ResultUi): LocalDate? =
     result.expirationOverride ?: defaultExpiration.takeIf { ingredients.isNotEmpty() }
 
+  /**
+   * Whether the result can go in the freezer: the override of an existing product with its name in the chosen category,
+   * else the category's own value.
+   */
+  fun canFreezeOf(result: ResultUi): Boolean {
+    val category = categories.firstOrNull { it.id == categoryOf(result) } ?: return true
+    return result.productCanFreeze[category.id] ?: category.canFreeze
+  }
+
+  /** How many go to the freezer: none when the result cannot be frozen. */
+  fun frozenCountOf(result: ResultUi): Int = if (canFreezeOf(result)) result.frozenCount else 0
+
   /** A result that is entirely frozen has no date, so it does not need one. */
   private fun hasRequiredDate(result: ResultUi): Boolean =
-    expirationOf(result) != null || result.frozenCount == result.servings
+    expirationOf(result) != null || frozenCountOf(result) == result.servings
 
   /** The date to save: a fully frozen result without one starts today. */
   fun expirationToSave(result: ResultUi): LocalDate = expirationOf(result) ?: today

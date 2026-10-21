@@ -591,4 +591,8 @@
   <string name="status_action_unfreeze">Descongelar %1$s</string>
   <string name="item_actions_frozen_one">1 unidad · congelado el %1$s</string>
   <string name="item_actions_frozen_many">%1$d unidades · congeladas el %2$s</string>
+  <!-- Es pot congelar: categoria/transforma -->
+  <string name="category_editor_freeze_section">Congelación</string>
+  <string name="category_editor_can_freeze">Se puede congelar</string>
+  <string name="category_editor_can_freeze_help">Si no, los productos no muestran «Congelar»</string>
 </resources>
