@@ -126,8 +126,9 @@ changing the type in Edit leaves one batch with the nearest date and the default
 - [x] 9. Domain of the amount: `amount` through the read models; adding a Mesurable creates one batch; consuming subtracts (0 removes
   the product); freezing splits the batch (the frozen part is a new row with the chosen amount); Undo restores. Unit tests. (e076d89b)
 - [x] 10. Row text: «500 g», «750 mL», «1,2 kg», «1,5 L» (≥ 1000); formatter + strings ca/es/en. Tests + `ProductRow` screenshot.
-- [ ] 11. `TipusTria` parent tabs (Grapats inactive), Quantitat row of Mesurable in Add (− 500 g +, steps 50 g / 100 mL, chips), (f48c72d6)
-  warning in Edit when the parent changes. ViewModel tests, screenshots, emulator.
+- [x] 11. `TipusTria` parent tabs (Grapats inactive), Quantitat row of Mesurable in Add (− 500 g +, steps 50 g / 100 mL, chips), (f48c72d6)
+  warning in Edit when the parent changes. ViewModel tests, screenshots, emulator. (4b7cd34b)
+  Texts of the Mesurable rule line («Una quantitat · el ✓ et demana quant») and examples are mine: the design only shows Unitats.
 - [ ] 12. `TipusGrams` modal (header, «Quant n'has fet servir?», stepper, chips, progress bar, «Consumeix N g», «Congela»,
   «Més accions»); ✓ and ❄ on the row open it. Previews, screenshot vs `TipusGrams.png`, emulator.
 - [ ] 13. Frozen and expired (§3.1): frozen modal with «Consumeix N» / «Descongela N» (thaw → Aviat today + 3 days), expired only
