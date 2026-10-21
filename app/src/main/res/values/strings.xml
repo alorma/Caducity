@@ -264,6 +264,14 @@
   <string name="item_actions_snackbar_unfrozen">%1$s unfrozen</string>
   <string name="item_actions_snackbar_consumed_n">%1$d %2$s consumed</string>
   <string name="item_actions_snackbar_frozen_n">%1$d %2$s frozen</string>
+  <string name="item_actions_snackbar_consumed_amount">%2$s: %1$s consumed</string>
+  <string name="item_actions_snackbar_frozen_amount">%2$s: %1$s frozen</string>
+  <string name="item_actions_amount_left_expires">%1$s left · expires %2$s</string>
+  <string name="item_actions_amount_title">How much did you use?</string>
+  <string name="item_actions_amount_left">you will have %1$s left</string>
+  <string name="item_actions_amount_none_left">nothing will be left</string>
+  <string name="item_actions_amount_all">All</string>
+  <string name="item_actions_consume_amount">Eat %1$s</string>
   <string name="item_actions_snackbar_discarded_n">%1$d %2$s thrown out</string>
   <string name="item_actions_snackbar_moved">%1$s moved to %2$s</string>
   <string name="item_actions_error">The action couldn\'t be done</string>

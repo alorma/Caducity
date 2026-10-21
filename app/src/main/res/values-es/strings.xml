@@ -272,6 +272,14 @@
   <string name="item_actions_snackbar_unfrozen">%1$s descongelado</string>
   <string name="item_actions_snackbar_consumed_n">%1$d %2$s consumidos</string>
   <string name="item_actions_snackbar_frozen_n">%1$d %2$s congelados</string>
+  <string name="item_actions_snackbar_consumed_amount">%2$s: %1$s consumidos</string>
+  <string name="item_actions_snackbar_frozen_amount">%2$s: %1$s congelados</string>
+  <string name="item_actions_amount_left_expires">Quedan %1$s · caduca el %2$s</string>
+  <string name="item_actions_amount_title">¿Cuánto has usado?</string>
+  <string name="item_actions_amount_left">quedarán %1$s</string>
+  <string name="item_actions_amount_none_left">no quedará nada</string>
+  <string name="item_actions_amount_all">Todo</string>
+  <string name="item_actions_consume_amount">Consume %1$s</string>
   <string name="item_actions_snackbar_discarded_n">%1$d %2$s tirados</string>
   <string name="item_actions_snackbar_moved">%1$s movido a %2$s</string>
   <string name="item_actions_error">No se ha podido hacer la acción</string>

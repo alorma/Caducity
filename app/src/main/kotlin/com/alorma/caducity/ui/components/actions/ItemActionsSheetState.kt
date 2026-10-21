@@ -2,6 +2,7 @@ package com.alorma.caducity.ui.components.actions
 
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
 import kotlinx.datetime.LocalDate
 
@@ -12,6 +13,8 @@ data class ActionUnit(
   val status: ExpiryStatus,
   /** Day it went into the freezer; null if it is not frozen. */
   val frozenSince: LocalDate? = null,
+  /** Amount of a measured batch (g or mL); null for units. */
+  val amount: Int? = null,
 )
 
 sealed interface ItemActionsSheetState {
@@ -34,8 +37,16 @@ sealed interface ItemActionsSheetState {
     val canFreeze: Boolean = true,
     /** How the product is counted. */
     val unitType: UnitType = UnitType.DEFAULT,
+    /** g or mL the buttons act on, for a measured product (the − / + selector). */
+    val amountSpend: Int = 0,
   ) : ItemActionsSheetState {
     private val nearest: ActionUnit get() = units.first()
+
+    /** A measured product: one batch with an amount instead of units. */
+    val measured: Boolean get() = unitType.parent == UnitParent.MEASURED
+
+    /** Amount of the batch the buttons act on (the one that expires first). */
+    val batchAmount: Int get() = nearest.amount ?: 0
 
     val unitCount: Int get() = units.size
     val multiple: Boolean get() = units.size > 1

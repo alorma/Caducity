@@ -35,6 +35,7 @@ import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.ProductRowDetail
 import com.alorma.caducity.domain.model.ProductRowModel
+import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.ui.components.category.CategoryIcons
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
@@ -64,6 +65,8 @@ fun ProductRow(
 ) {
   val statusColors = model.status.colors()
   val detailText = productRowDetailText(model)
+  // A measured product cannot know how much a ✓ or ❄ means: those buttons open its actions (spec §3).
+  val measured = model.unitType.parent == UnitParent.MEASURED
   SegmentedListItem(
     onClick = onClick,
     shapes = ListItemDefaults.segmentedShapes(index, count),
@@ -96,9 +99,9 @@ fun ProductRow(
     trailingContent = {
       ProductRowActions(
         model = model,
-        onConsume = onConsume,
-        onFreeze = onFreeze,
-        onUnfreeze = onUnfreeze,
+        onConsume = if (measured) onClick else onConsume,
+        onFreeze = if (measured) onClick else onFreeze,
+        onUnfreeze = if (measured) onClick else onUnfreeze,
         onDiscard = onDiscard,
       )
     },

@@ -7,9 +7,13 @@ import com.alorma.caducity.config.time.date
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.ItemSnapshot
 import com.alorma.caducity.domain.model.ItemStatus
+import com.alorma.caducity.domain.model.UnitParent
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.model.sortedNearestFirst
+import com.alorma.caducity.domain.usecase.ConsumeAmountUseCase
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.DiscardItemsUseCase
+import com.alorma.caducity.domain.usecase.FreezeAmountUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.MoveItemToCategoryUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
@@ -26,6 +30,7 @@ import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.snackbar.ScreenResults
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
+import com.alorma.caducity.ui.unit.formatAmount
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -49,6 +54,8 @@ class ItemActionsSheetViewModel(
   observeCategories: ObserveCategoriesUseCase,
   private val consumeItem: ConsumeItemUseCase,
   private val freezeItem: FreezeItemUseCase,
+  private val consumeAmount: ConsumeAmountUseCase,
+  private val freezeAmount: FreezeAmountUseCase,
   private val unfreezeItem: UnfreezeItemUseCase,
   private val rescheduleItem: RescheduleItemUseCase,
   private val discardItems: DiscardItemsUseCase,
@@ -62,16 +69,16 @@ class ItemActionsSheetViewModel(
   private val pickingCategory = MutableStateFlow(false)
   private val moreOpen = MutableStateFlow(false)
   private val chosen = MutableStateFlow<Int?>(null)
+  private val chosenSpend = MutableStateFlow<Int?>(null)
   private var closing = false
 
   val state: StateFlow<ItemActionsSheetState> =
     combine(
       observeItems.observe(),
       observeCategories.observe(),
-      pickingCategory,
-      moreOpen,
-      chosen,
-    ) { entries, categories, picking, more, chosenCount ->
+      combine(pickingCategory, moreOpen, chosen, chosenSpend, ::Controls),
+    ) { entries, categories, controls ->
+      val (picking, more, chosenCount, chosenAmount) = controls
       val units = entries.filter { it.itemId in itemIds }.sortedNearestFirst()
       val focus = units.firstOrNull()
       val category = focus?.let { f -> categories.firstOrNull { it.id == f.categoryId } }
@@ -80,7 +87,16 @@ class ItemActionsSheetViewModel(
         if (entries.isNotEmpty() || categories.isNotEmpty()) close()
         ItemActionsSheetState.Loading
       } else {
-        val actionUnits = units.map { ActionUnit(it.itemId, it.expiration, it.status, it.frozenSince?.date()) }
+        val actionUnits =
+          units.map {
+            ActionUnit(
+              it.itemId,
+              it.expiration,
+              it.status,
+              it.frozenSince?.date(),
+              it.amount,
+            )
+          }
         val expiredCount = actionUnits.count { it.status == ExpiryStatus.EXPIRED }
         val expired = actionUnits.first().status == ExpiryStatus.EXPIRED
         val default = if (expired) expiredCount else 1
@@ -95,6 +111,7 @@ class ItemActionsSheetViewModel(
           pickingCategory = picking,
           canFreeze = focus.canFreeze,
           unitType = focus.unitType,
+          amountSpend = spendFor(focus.unitType, actionUnits.first().amount, chosenAmount),
         )
       }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ItemActionsSheetState.Loading)
@@ -126,12 +143,20 @@ class ItemActionsSheetViewModel(
     chosen.value = count
   }
 
+  override fun onAmountSelect(amount: Int) {
+    chosenSpend.value = amount
+  }
+
   override fun onToggleMore() {
     moreOpen.value = !moreOpen.value
   }
 
   override fun onConsume() {
     val ready = ready() ?: return
+    if (ready.measured) {
+      consumeMeasured(ready)
+      return
+    }
     eventTracker.trackAction(ItemActionAction("consume"))
     consume(ready, ready.units.take(ready.selected).map { it.id })
   }
@@ -172,6 +197,10 @@ class ItemActionsSheetViewModel(
 
   override fun onFreezeToggle() {
     val ready = ready() ?: return
+    if (ready.measured) {
+      freezeMeasured(ready)
+      return
+    }
     if (ready.frozenOnly && ready.multiple) {
       unfreezeSelected(ready)
       return
@@ -205,6 +234,52 @@ class ItemActionsSheetViewModel(
               name = ready.name,
               type = AppFeedbackType.Status(ItemStatus.Frozen),
               snapshots = snapshots,
+            ),
+          )
+        }.onFailure { failed() }
+    }
+  }
+
+  /** «Consumeix 100 g»: spends the chosen amount of the batch; undo puts it back. */
+  private fun consumeMeasured(ready: ItemActionsSheetState.Ready) {
+    eventTracker.trackAction(ItemActionAction("consume_amount"))
+    val id = ready.units.first().id
+    viewModelScope.launch {
+      consumeAmount
+        .consume(id, ready.amountSpend)
+        .onSuccess { before ->
+          feedback(
+            SnackbarRequest(
+              message = R.string.item_actions_snackbar_consumed_amount,
+              messageArgs = listOf(formatAmount(ready.unitType, ready.amountSpend), ready.name),
+              actionLabel = R.string.add_undo,
+              type = AppFeedbackType.Success,
+              onAction = { restoreItems.restoreSnapshots(listOf(before)) },
+            ),
+          )
+        }.onFailure { failed() }
+    }
+  }
+
+  /** «Congela»: freezes the chosen amount of the batch as its own frozen batch; undo joins it back. */
+  private fun freezeMeasured(ready: ItemActionsSheetState.Ready) {
+    if (ready.freezableCount == 0) {
+      results.post(SnackbarRequest(R.string.item_actions_error_freeze_expired, type = AppFeedbackType.Error))
+      return
+    }
+    eventTracker.trackAction(ItemActionAction("freeze_amount"))
+    val id = ready.units.first().id
+    viewModelScope.launch {
+      freezeAmount
+        .freeze(id, ready.amountSpend)
+        .onSuccess { outcome ->
+          feedback(
+            SnackbarRequest(
+              message = R.string.item_actions_snackbar_frozen_amount,
+              messageArgs = listOf(formatAmount(ready.unitType, ready.amountSpend), ready.name),
+              actionLabel = R.string.add_undo,
+              type = AppFeedbackType.Status(ItemStatus.Frozen),
+              onAction = { freezeAmount.undo(outcome) },
             ),
           )
         }.onFailure { failed() }
@@ -414,4 +489,23 @@ class ItemActionsSheetViewModel(
   private fun ready() = state.value as? ItemActionsSheetState.Ready
 
   private fun LocalDate.toUtcMillis(): Long = atStartOfDayIn(TimeZone.UTC).toEpochMilliseconds()
+}
+
+private data class Controls(
+  val picking: Boolean,
+  val more: Boolean,
+  val chosenCount: Int?,
+  val chosenAmount: Int?,
+)
+
+/** g or mL a measured batch spends by default (spec §4); at most what the batch has. */
+private const val DEFAULT_SPEND = 100
+
+private fun spendFor(
+  unitType: UnitType,
+  batchAmount: Int?,
+  chosen: Int?,
+): Int {
+  if (unitType.parent != UnitParent.MEASURED || batchAmount == null) return 0
+  return (chosen ?: DEFAULT_SPEND).coerceIn(1, batchAmount)
 }
