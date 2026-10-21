@@ -42,6 +42,7 @@ import com.alorma.caducity.ui.components.connected.connectedRowColors
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
+import com.alorma.caducity.ui.unit.unitCountText
 import kotlinx.datetime.LocalDate
 
 /**
@@ -164,7 +165,7 @@ private fun ProductRowActions(
 /** «1 unitat · Làctics», «2 unitats · D'aquí 2 dies» or just «3 unitats». */
 @Composable
 private fun productRowDetailText(model: ProductRowModel): String {
-  val quantity = pluralStringResource(R.plurals.home_unit_count, model.unitCount, model.unitCount)
+  val quantity = unitCountText(model.unitType, model.unitCount)
   return when (val detail = model.detail) {
     is ProductRowDetail.InCategory -> "$quantity · ${detail.categoryName}"
     ProductRowDetail.QuantityOnly -> quantity

@@ -77,6 +77,7 @@ import com.alorma.caducity.ui.screen.add.ScreenGutter
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
+import com.alorma.caducity.ui.unit.unitCountText
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -365,7 +366,7 @@ private fun PickerRow(
   onToggle: () -> Unit,
 ) {
   val status = group.nearest.status
-  val units = pluralStringResource(R.plurals.home_unit_count, group.unitCount, group.unitCount)
+  val units = unitCountText(group.nearest.unitType, group.unitCount)
   val statusColors = status.colors()
   val shapes = ListItemDefaults.segmentedShapes(index, count)
   SegmentedListItem(

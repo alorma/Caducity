@@ -20,11 +20,13 @@ import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
 import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.domain.NotificationConfigDataSource
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.alorma.caducity.ui.theme.ColorPalette
 import com.alorma.caducity.ui.theme.ThemePreferences
 import com.alorma.caducity.ui.theme.colors.accent
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
+import com.alorma.caducity.ui.unit.countPlural
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import java.util.Locale
@@ -197,7 +199,7 @@ class AndroidExpirationNotificationHelper(
         val product = shown.first()
         listOfNotNull(
           product.units.takeIf { it > 1 }?.let {
-            stringProvider.getQuantityString(R.plurals.notification_units, it, it)
+            stringProvider.getQuantityString(product.unitType.notificationPlural(short = false), it, it)
           },
           product.categoryName,
         ).joinToString(separator = SEPARATOR)
@@ -243,7 +245,7 @@ class AndroidExpirationNotificationHelper(
           listOfNotNull(
             dayLabel(product),
             product.units.takeIf { it > 1 }?.let {
-              stringProvider.getQuantityString(R.plurals.notification_units_short, it, it)
+              stringProvider.getQuantityString(product.unitType.notificationPlural(short = true), it, it)
             },
           ).joinToString(separator = SEPARATOR)
         style.addLine(stringProvider.getString(R.string.notification_inbox_line, product.name, detail))
@@ -277,3 +279,11 @@ class AndroidExpirationNotificationHelper(
     private const val SEPARATOR = " · "
   }
 }
+
+/** Units keep their own wording («3 units», «3 pcs»); the other types are short enough to say as they are. */
+private fun UnitType.notificationPlural(short: Boolean): Int =
+  if (this == UnitType.UNITS) {
+    if (short) R.plurals.notification_units_short else R.plurals.notification_units
+  } else {
+    countPlural
+  }

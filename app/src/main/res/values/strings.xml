@@ -298,6 +298,18 @@
     <item quantity="one">%d unit</item>
     <item quantity="other">%d units</item>
   </plurals>
+  <plurals name="unit_count_tuppers">
+    <item quantity="one">%d container</item>
+    <item quantity="other">%d containers</item>
+  </plurals>
+  <plurals name="unit_count_packs">
+    <item quantity="one">%d pack</item>
+    <item quantity="other">%d packs</item>
+  </plurals>
+  <plurals name="unit_count_cans">
+    <item quantity="one">%d can</item>
+    <item quantity="other">%d cans</item>
+  </plurals>
   <string name="home_mark_consumed">Mark %1$s as consumed</string>
   <string name="home_see_pantry">See the pantry</string>
   <string name="home_more_rows">+%d more</string>

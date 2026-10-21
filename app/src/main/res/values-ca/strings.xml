@@ -311,6 +311,21 @@
     <item quantity="many">%d unitats</item>
     <item quantity="other">%d unitats</item>
   </plurals>
+  <plurals name="unit_count_tuppers">
+    <item quantity="one">%d tupper</item>
+    <item quantity="many">%d tuppers</item>
+    <item quantity="other">%d tuppers</item>
+  </plurals>
+  <plurals name="unit_count_packs">
+    <item quantity="one">%d paquet</item>
+    <item quantity="many">%d paquets</item>
+    <item quantity="other">%d paquets</item>
+  </plurals>
+  <plurals name="unit_count_cans">
+    <item quantity="one">%d llauna</item>
+    <item quantity="many">%d llaunes</item>
+    <item quantity="other">%d llaunes</item>
+  </plurals>
   <string name="home_mark_consumed">Marca %1$s com a consumit</string>
   <string name="home_see_pantry">Veure el rebost</string>
   <string name="home_more_rows">+%d més</string>
