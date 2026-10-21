@@ -148,3 +148,8 @@ changing the type in Edit leaves one batch with the nearest date and the default
   card (same sheet) and, if Mesurable, an amount in g / mL instead of «Unitats − 1 +». Replaces spec §6 («sempre en unitats»).
   No Grapats until phase 4. ()
   Validated on emulator-5554: Farina 1 kg → 850 g spent, result «Pasta» in Grams 500 g; Farina left with 150 g.
+
+## Phase 1 and 3 closed (21 October)
+
+Approved by Bernat («endavant») and opened as one PR from `feature/tipus-unitat`. Pending for later: release-notes bullet for
+Mesurable, phases 4 (Grapats) and 5 is covered by tasks 14 and 17 (Transforma), Pixel 8a upgrade with real data, TalkBack.
