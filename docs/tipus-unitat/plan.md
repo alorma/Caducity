@@ -91,7 +91,7 @@ Approved by Bernat on 21 October. Next: phase 1 (unit type) in a new session.
 
 - [x] 1. Data: Room v7 (`products.unitType` NOT NULL DEFAULT 'UNITS', `items.amount`, `items.level`), `MIGRATION_6_7`, schema `7.json`, (e181383b)
   `Migration6To7Test`, backup v6 still reading v4 and v5.
-- [ ] 2. Domain: `UnitType` / `UnitParent`, `Product.unitType` through the read models, `setProductUnitType` + `SetProductUnitTypeUseCase`.
+- [x] 2. Domain: `UnitType` / `UnitParent`, `Product.unitType` through the read models, `setProductUnitType` + `SetProductUnitTypeUseCase`. (b38ae049)
 - [ ] 3. Row texts per type («3 paquets», «1 tupper»): `ProductRow`, ingredient picker, notifications; plurals ca/es/en.
 - [ ] 4. `TipusTria` sheet (parent tabs hidden while only Unitats is active).
 - [ ] 5. Add / Edit: «Com ho comptes?» row, existing product shows its type, Edit changes the product.
