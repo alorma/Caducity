@@ -163,7 +163,7 @@ New handful starts at «Molt»; tapping the row opens the modal; release notes l
 - [x] 19. Data and domain: `HandfulLevel` (Molt / La meitat / Poc) with a `TypeConverter` and explicit codes, `items.level` typed
   (no migration: same TEXT column), level through the read models and backup; use cases: lower one level (Poc → consumed), set a
   level, freeze the whole product keeping its level, undo; changing the type in Edit leaves one batch at «Molt». (a75a315c)
-- [ ] 20. Row text «Queda molt / la meitat / poc» (`ProductRow`, Transforma, reminders), strings ca/es/en.
+- [x] 20. Row text «Queda molt / la meitat / poc» (`ProductRow`, Transforma, reminders), strings ca/es/en. ()
 - [ ] 21. Add / Edit: Grapats tab in `TipusTria` (no subtypes), «Queda» Molt / Meitat / Poc row (default Molt), reset warning.
 - [ ] 22. `TipusAUll` modal («Quant en queda?», three big buttons that change the level at once, «Ja no en queda», «Congela»,
   «Més accions»); the row ✓ lowers a level with a snackbar, ❄ freezes the whole product.
