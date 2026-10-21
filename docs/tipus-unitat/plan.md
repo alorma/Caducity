@@ -93,7 +93,7 @@ Approved by Bernat on 21 October. Next: phase 1 (unit type) in a new session.
   `Migration6To7Test`, backup v6 still reading v4 and v5.
 - [x] 2. Domain: `UnitType` / `UnitParent`, `Product.unitType` through the read models, `setProductUnitType` + `SetProductUnitTypeUseCase`. (b38ae049)
 - [x] 3. Row texts per type («3 paquets», «1 tupper»): `ProductRow`, ingredient picker, notifications; plurals ca/es/en. (84f0ba37)
-- [ ] 4. `TipusTria` sheet (parent tabs hidden while only Unitats is active). Built with the subtypes of Unitats, without the subtitle (it only makes sense with the tabs).
+- [x] 4. `TipusTria` sheet (parent tabs hidden while only Unitats is active). Built with the subtypes of Unitats, without the subtitle (it only makes sense with the tabs). (1872b613)
   New icons: `Tag`, `TakeoutDining`, `Inventory2`.
 - [ ] 5. Add / Edit: «Com ho comptes?» row, existing product shows its type, Edit changes the product.
 - [ ] 6. Seed (`.claude/skills/plant-seed/seed-backup.json`): move it to backup v6 and give some products different unit types
