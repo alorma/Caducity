@@ -310,6 +310,16 @@
     <item quantity="one">%d can</item>
     <item quantity="other">%d cans</item>
   </plurals>
+  <string name="unit_type_title">How do you count it?</string>
+  <string name="unit_type_section">What to call it</string>
+  <string name="unit_type_units">Units</string>
+  <string name="unit_type_tuppers">Containers</string>
+  <string name="unit_type_packs">Packs</string>
+  <string name="unit_type_cans">Cans</string>
+  <string name="unit_type_units_example">1 yogurt, 4 eggs</string>
+  <string name="unit_type_tuppers_example">1 container, 2 containers</string>
+  <string name="unit_type_packs_example">1 pack, 3 packs</string>
+  <string name="unit_type_cans_example">1 can, 4 cans</string>
   <string name="home_mark_consumed">Mark %1$s as consumed</string>
   <string name="home_see_pantry">See the pantry</string>
   <string name="home_more_rows">+%d more</string>

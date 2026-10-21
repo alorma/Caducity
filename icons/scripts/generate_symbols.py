@@ -34,6 +34,8 @@ ICONS = [
     "event_available", "view_week", "contrast",
     # descongela
     "sunny",
+    # tipus d'unitat
+    "tag", "takeout_dining", "inventory_2",
 ]
 
 

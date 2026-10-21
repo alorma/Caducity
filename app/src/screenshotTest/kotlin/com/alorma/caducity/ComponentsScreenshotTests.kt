@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.alorma.caducity.ui.components.product.ProductRowFreezePreview
 import com.alorma.caducity.ui.components.product.ProductRowPreview
+import com.alorma.caducity.ui.screen.add.UnitTypeSheetTuppersPreview
 import com.android.tools.screenshot.PreviewTest
 
 class ComponentsScreenshotTests {
@@ -46,5 +47,15 @@ class ComponentsScreenshotTests {
   @Composable
   fun productRowFreezeDark() {
     ProductRowFreezePreview()
+  }
+}
+
+class UnitTypeSheetScreenshotTests {
+  @PreviewTest
+  @Preview(name = "Light", locale = "ca", widthDp = 411, heightDp = 440)
+  @Preview(name = "Dark", locale = "ca", widthDp = 411, heightDp = 440, uiMode = Configuration.UI_MODE_NIGHT_YES)
+  @Composable
+  fun unitTypeSheet() {
+    UnitTypeSheetTuppersPreview()
   }
 }

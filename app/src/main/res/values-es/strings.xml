@@ -326,6 +326,16 @@
     <item quantity="many">%d latas</item>
     <item quantity="other">%d latas</item>
   </plurals>
+  <string name="unit_type_title">¿Cómo lo cuentas?</string>
+  <string name="unit_type_section">Cómo se llama</string>
+  <string name="unit_type_units">Unidades</string>
+  <string name="unit_type_tuppers">Tuppers</string>
+  <string name="unit_type_packs">Paquetes</string>
+  <string name="unit_type_cans">Latas</string>
+  <string name="unit_type_units_example">1 yogur, 4 huevos</string>
+  <string name="unit_type_tuppers_example">1 tupper, 2 tuppers</string>
+  <string name="unit_type_packs_example">1 paquete, 3 paquetes</string>
+  <string name="unit_type_cans_example">1 lata, 4 latas</string>
   <string name="home_mark_consumed">Marcar %1$s como consumido</string>
   <string name="home_see_pantry">Ver la despensa</string>
   <string name="home_more_rows">+%d más</string>

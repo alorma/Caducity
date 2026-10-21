@@ -326,6 +326,16 @@
     <item quantity="many">%d llaunes</item>
     <item quantity="other">%d llaunes</item>
   </plurals>
+  <string name="unit_type_title">Com ho comptes?</string>
+  <string name="unit_type_section">Com es diu</string>
+  <string name="unit_type_units">Unitats</string>
+  <string name="unit_type_tuppers">Tuppers</string>
+  <string name="unit_type_packs">Paquets</string>
+  <string name="unit_type_cans">Llaunes</string>
+  <string name="unit_type_units_example">1 iogurt, 4 ous</string>
+  <string name="unit_type_tuppers_example">1 tupper, 2 tuppers</string>
+  <string name="unit_type_packs_example">1 paquet, 3 paquets</string>
+  <string name="unit_type_cans_example">1 llauna, 4 llaunes</string>
   <string name="home_mark_consumed">Marca %1$s com a consumit</string>
   <string name="home_see_pantry">Veure el rebost</string>
   <string name="home_more_rows">+%d més</string>
