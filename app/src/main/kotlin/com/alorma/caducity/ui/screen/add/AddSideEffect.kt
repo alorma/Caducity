@@ -1,6 +1,12 @@
 package com.alorma.caducity.ui.screen.add
 
+import com.alorma.caducity.domain.model.UnitType
+
 sealed interface AddSideEffect {
+  data class ShowUnitTypePicker(
+    val current: UnitType,
+  ) : AddSideEffect
+
   data class ShowDatePicker(
     val currentMillis: Long,
   ) : AddSideEffect

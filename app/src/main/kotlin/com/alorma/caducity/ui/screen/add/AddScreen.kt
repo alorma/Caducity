@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
@@ -35,6 +36,7 @@ import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Close
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
@@ -43,6 +45,7 @@ import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
+import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlin.time.ExperimentalTime
@@ -84,6 +87,7 @@ fun AddScreen(
     viewModel = viewModel,
     dialogState = dialogState,
     snackbarState = snackbarState,
+    bottomSheetState = bottomSheetState,
     datePickerState = datePickerState,
     onHaptic = { haptics.performHapticFeedback(it) },
   )
@@ -129,12 +133,17 @@ fun AddScreen(
           viewModel.navigate(AddNavigation.QuickCategory)
         })
         DateSection(state = state, viewModel = viewModel)
-        // Editing a unit has no quantity nor frozen toggle: only its name, category and date can change.
-        // «Es pot congelar» shows in both modes once a category is selected, and applies to the whole product.
+        // Editing a unit has no quantity nor frozen toggle: its name, category, date and the product's type can change.
+        // «Com ho comptes?» and «Es pot congelar» apply to the whole product.
         val canFreeze = state.canFreeze
         val category = state.category
-        if (!state.isEditing || (canFreeze != null && category != null)) {
-          Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+          Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            UnitTypeRow(
+              unitType = state.unitType,
+              onClick = viewModel::onUnitTypeClick,
+              shapePosition = if (state.isEditing) ShapePosition.Single else ShapePosition.Start,
+            )
             if (!state.isEditing) {
               QuantityFrozenRow(
                 quantity = state.quantity,
@@ -144,14 +153,14 @@ fun AddScreen(
                 canFreeze = canFreeze != false,
               )
             }
-            if (canFreeze != null && category != null) {
-              CanFreezeCard(
-                canFreeze = canFreeze,
-                categoryName = category.name,
-                categoryCanFreeze = category.canFreeze,
-                onCanFreezeChange = viewModel::onCanFreezeChange,
-              )
-            }
+          }
+          if (canFreeze != null && category != null) {
+            CanFreezeCard(
+              canFreeze = canFreeze,
+              categoryName = category.name,
+              categoryCanFreeze = category.canFreeze,
+              onCanFreezeChange = viewModel::onCanFreezeChange,
+            )
           }
         }
       }
@@ -269,14 +278,27 @@ private fun SideEffectHandler(
   viewModel: AddViewModel,
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
+  bottomSheetState: AppBottomSheetState,
   datePickerState: DatePickerState,
   onHaptic: (HapticFeedbackType) -> Unit,
 ) {
+  val scope = rememberCoroutineScope()
   LaunchedEffect(viewModel) {
     viewModel.sideEffects.collect { effect ->
       when (effect) {
         AddSideEffect.Confirm -> onHaptic(HapticFeedbackType.Confirm)
         AddSideEffect.Reject -> onHaptic(HapticFeedbackType.Reject)
+
+        is AddSideEffect.ShowUnitTypePicker ->
+          bottomSheetState.show {
+            UnitTypeSheet(
+              selected = effect.current,
+              onSelect = { type ->
+                viewModel.onUnitTypeChange(type)
+                scope.launch { bottomSheetState.hide() }
+              },
+            )
+          }
 
         AddSideEffect.ShowSaveFailed ->
           launch {

@@ -292,15 +292,16 @@ class PantryUseCasesTest {
     }
 
   @Test
-  fun `find product can freeze returns the override of a matching product only`() =
+  fun `find product returns a matching product only`() =
     runTest {
       category("c1")
       val milk = addProduct.add("Milk", "c1", inDays(2), 1, false).getOrThrow()
-      val find = FindProductCanFreezeUseCase(pantry)
-      expectThat(find.find("c1", "milk")).isNull()
+      val find = FindProductUseCase(pantry)
+      expectThat(find.find("c1", "milk")?.canFreeze).isNull()
+      expectThat(find.find("c1", "milk")?.unitType).isEqualTo(UnitType.UNITS)
 
       SetProductCanFreezeUseCase(pantry).set(milk.productId, false).getOrThrow()
-      expectThat(find.find("c1", " MILK ")).isEqualTo(false)
+      expectThat(find.find("c1", " MILK ")?.canFreeze).isEqualTo(false)
       expectThat(find.find("c1", "Yogurt")).isNull()
       expectThat(find.find("other", "Milk")).isNull()
     }

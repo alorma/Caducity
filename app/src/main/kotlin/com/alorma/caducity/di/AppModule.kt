@@ -11,7 +11,7 @@ import com.alorma.caducity.domain.domainModule
 import com.alorma.caducity.domain.usecase.ConsumeItemUseCase
 import com.alorma.caducity.domain.usecase.CreateCategoryUseCase
 import com.alorma.caducity.domain.usecase.DeleteCategoryUseCase
-import com.alorma.caducity.domain.usecase.FindProductCanFreezeUseCase
+import com.alorma.caducity.domain.usecase.FindProductUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
 import com.alorma.caducity.domain.usecase.SetProductCanFreezeUseCase
@@ -189,8 +189,9 @@ val appModule =
         getNameSuggestions = get(),
         getActiveItem = get(),
         updateItem = get(),
-        findProductCanFreeze = get(),
+        findProduct = get(),
         setProductCanFreeze = get(),
+        setProductUnitType = get(),
         observeCategories = get(),
         categoryCreated = get(),
         eventTracker = get(),
@@ -203,7 +204,7 @@ val appModule =
     singleOf(::CreateCategoryUseCase)
     singleOf(::SetProductCanFreezeUseCase)
     singleOf(::SetProductUnitTypeUseCase)
-    singleOf(::FindProductCanFreezeUseCase)
+    singleOf(::FindProductUseCase)
     viewModel { params ->
       CategoryEditorViewModel(
         categoryId = params.getOrNull(),

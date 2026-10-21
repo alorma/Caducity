@@ -16,6 +16,7 @@ import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.data.datasource.room.model.CategoryRoomEntity
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.UnitType
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Duration
 import kotlin.time.Instant
@@ -339,6 +340,25 @@ class ObserveUseCasesTest {
       val rows = data.sections.flatMap { it.rows }.associate { it.name to it.canFreeze }
       expectThat(rows["Apple"]).isEqualTo(false)
       expectThat(rows["Milk"]).isEqualTo(true)
+    }
+
+  @Test
+  fun `home row carries the unit type of the product`() =
+    runTest {
+      category("dairy")
+      val yogurt = add("Yogurt", "dairy", 1)
+      add("Milk", "dairy", 1)
+      SetProductUnitTypeUseCase(pantry).set(yogurt.productId, UnitType.TUPPERS).getOrThrow()
+
+      val rows =
+        home
+          .observe()
+          .first()
+          .sections
+          .flatMap { it.rows }
+          .associate { it.name to it.unitType }
+      expectThat(rows["Yogurt"]).isEqualTo(UnitType.TUPPERS)
+      expectThat(rows["Milk"]).isEqualTo(UnitType.UNITS)
     }
 
   @Test
