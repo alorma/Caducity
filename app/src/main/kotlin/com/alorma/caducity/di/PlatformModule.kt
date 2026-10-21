@@ -6,6 +6,7 @@ import com.alorma.caducity.data.datasource.room.MIGRATION_1_2
 import com.alorma.caducity.data.datasource.room.MIGRATION_2_3
 import com.alorma.caducity.data.datasource.room.MIGRATION_3_4
 import com.alorma.caducity.data.datasource.room.MIGRATION_4_5
+import com.alorma.caducity.data.datasource.room.MIGRATION_5_6
 import com.alorma.caducity.feature.debug.AndroidDebugModeProvider
 import com.alorma.caducity.feature.debug.DebugModeProvider
 import com.alorma.caducity.feature.notification.notificationsModule
@@ -25,7 +26,7 @@ val platformModule: Module =
           androidContext(),
           AppDatabase::class.java,
           "caducity_database.db",
-        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
         .build()
     }
 

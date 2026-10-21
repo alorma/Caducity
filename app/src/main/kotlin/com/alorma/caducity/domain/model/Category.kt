@@ -9,4 +9,6 @@ data class Category(
   val sortOrder: Int = 0,
   /** Usual duration of this kind of food, in days; only used to suggest an expiry date. */
   val usualDurationDays: Int? = null,
+  /** Whether the products of this category can go in the freezer; a product can override it. */
+  val canFreeze: Boolean = true,
 )

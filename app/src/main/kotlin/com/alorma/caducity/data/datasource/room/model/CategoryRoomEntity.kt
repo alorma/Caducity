@@ -19,4 +19,6 @@ data class CategoryRoomEntity(
   @ColumnInfo(defaultValue = "0")
   val sortOrder: Int = 0,
   val usualDurationDays: Int? = null,
+  @ColumnInfo(defaultValue = "1")
+  val canFreeze: Boolean = true,
 )

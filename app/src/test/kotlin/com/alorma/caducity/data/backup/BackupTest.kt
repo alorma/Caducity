@@ -71,12 +71,13 @@ class BackupTest {
           CategoryIcon("icecream"),
           3,
           usualDurationDays = 30,
+          canFreeze = false,
         ),
       )
       db.categoryDao().insertCategory(
         CategoryRoomEntity("c2", "Other", "", CategoryShape.SUNNY, CategoryIcon("future_icon"), 1),
       )
-      db.productDao().insertProduct(ProductRoomEntity("p1", "c1", "Milk", 100))
+      db.productDao().insertProduct(ProductRoomEntity("p1", "c1", "Milk", 100, canFreeze = true))
       db.itemDao().insertItem(ItemRoomEntity("i1", "c1", "", "p1", 1000, createdAt = 50))
       db.itemDao().insertItem(ItemRoomEntity("i2", "c1", "", "p1", 2000, consumedDate = 60, createdAt = 51))
       db.itemDao().insertItem(ItemRoomEntity("i3", "c1", "", "p1", 3000, discardedDate = 70, createdAt = 52))
@@ -128,16 +129,33 @@ class BackupTest {
     }
 
   @Test
-  fun `only a backup of the current version validates`() {
+  fun `only a backup of a supported version validates`() {
     val current = emptyBackup()
     expectThat(backup.validateBackup(current)).isSuccess()
+    expectThat(backup.validateBackup(current.copy(version = BackupData.MIN_SUPPORTED_VERSION))).isSuccess()
 
-    listOf(BackupData.CURRENT_VERSION - 1, BackupData.CURRENT_VERSION + 1).forEach { version ->
+    listOf(BackupData.MIN_SUPPORTED_VERSION - 1, BackupData.CURRENT_VERSION + 1).forEach { version ->
       expectThat(backup.validateBackup(current.copy(version = version)))
         .isFailure()
         .isA<IllegalArgumentException>()
     }
   }
+
+  @Test
+  fun `a version 4 backup imports with everything freezable`() =
+    runTest {
+      val v4 =
+        json.decodeFromString<BackupData>(
+          """{"version":4,"exportDate":1,"categories":[{"id":"c1","name":"Dairy","description":"","shape":"COOKIE",
+          "icon":"eco","sortOrder":0,"products":[{"id":"p1","categoryId":"c1","name":"Milk","createdAt":1,"items":[]}],
+          "standaloneItems":[]}],"transformations":[]}""",
+        )
+      expectThat(backup.validateBackup(v4)).isSuccess()
+      backup.importBackup(v4)
+      expectThat(db.categoryDao().getCategory("c1")?.canFreeze).isEqualTo(true)
+      val product = db.productDao().getAllProductsSync().single()
+      expectThat(product.canFreeze).isEqualTo(null)
+    }
 
   @Test
   fun `transformations and transformed items survive an export and import round trip`() =

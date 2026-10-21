@@ -43,6 +43,7 @@ class RoomBackupDataSource(
                 categoryId = product.categoryId,
                 name = product.name,
                 createdAt = product.createdAt,
+                canFreeze = product.canFreeze,
                 items =
                   items
                     .filter { item -> item.categoryId == category.id }
@@ -59,6 +60,7 @@ class RoomBackupDataSource(
           icon = category.icon.id,
           sortOrder = category.sortOrder,
           usualDurationDays = category.usualDurationDays,
+          canFreeze = category.canFreeze,
           products = productsByCategory,
           standaloneItems =
             items
@@ -112,6 +114,7 @@ class RoomBackupDataSource(
             icon = CategoryIcon(category.icon),
             sortOrder = category.sortOrder,
             usualDurationDays = category.usualDurationDays,
+            canFreeze = category.canFreeze,
           )
         categoryDao.insertCategory(categoryEntity)
 
@@ -122,6 +125,7 @@ class RoomBackupDataSource(
               categoryId = product.categoryId,
               name = product.name,
               createdAt = product.createdAt,
+              canFreeze = product.canFreeze,
             )
           productDao.insertProduct(productEntity)
         }
@@ -184,10 +188,10 @@ class RoomBackupDataSource(
   override fun validateBackup(backup: BackupData): Result<Unit> {
     return try {
       // Check version compatibility
-      if (backup.version != BackupData.CURRENT_VERSION) {
+      if (backup.version !in BackupData.MIN_SUPPORTED_VERSION..BackupData.CURRENT_VERSION) {
         return Result.failure(
           IllegalArgumentException(
-            "Backup version ${backup.version} is not supported. Only version ${BackupData.CURRENT_VERSION} can be imported",
+            "Backup version ${backup.version} is not supported. Only versions ${BackupData.MIN_SUPPORTED_VERSION} to ${BackupData.CURRENT_VERSION} can be imported",
           ),
         )
       }

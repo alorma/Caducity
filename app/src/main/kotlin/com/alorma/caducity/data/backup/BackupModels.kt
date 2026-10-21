@@ -3,8 +3,9 @@ package com.alorma.caducity.data.backup
 import kotlinx.serialization.Serializable
 
 /**
- * A backup is importable only if its [version] is [CURRENT_VERSION], i.e. it validates against the current database.
- * Every database migration bumps [CURRENT_VERSION]; older backups are rejected, never upgraded.
+ * A backup is importable if its [version] is between [MIN_SUPPORTED_VERSION] and [CURRENT_VERSION]. A migration that
+ * adds fields without defaults bumps [MIN_SUPPORTED_VERSION] too; one whose fields have defaults only bumps
+ * [CURRENT_VERSION] and older backups still import. Newer backups are rejected.
  */
 @Serializable
 data class BackupData(
@@ -14,7 +15,10 @@ data class BackupData(
   val transformations: List<BackupTransformation>,
 ) {
   companion object {
-    const val CURRENT_VERSION = 4
+    const val CURRENT_VERSION = 5
+
+    /** Version 4 backups lack «Es pot congelar»; its fields have defaults, so they import as they are. */
+    const val MIN_SUPPORTED_VERSION = 4
   }
 }
 
@@ -33,6 +37,7 @@ data class BackupCategory(
   val icon: String,
   val sortOrder: Int,
   val usualDurationDays: Int? = null,
+  val canFreeze: Boolean = true,
   val products: List<BackupProduct>,
   val standaloneItems: List<BackupProductItem>,
 )
@@ -43,6 +48,7 @@ data class BackupProduct(
   val categoryId: String,
   val name: String,
   val createdAt: Long,
+  val canFreeze: Boolean? = null,
   val items: List<BackupProductItem>,
 )
 

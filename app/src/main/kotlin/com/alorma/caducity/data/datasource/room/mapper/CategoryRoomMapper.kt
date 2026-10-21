@@ -30,6 +30,7 @@ class CategoryRoomMapper(
       icon = entity.icon,
       sortOrder = entity.sortOrder,
       usualDurationDays = entity.usualDurationDays,
+      canFreeze = entity.canFreeze,
     )
 
   /**
@@ -44,6 +45,7 @@ class CategoryRoomMapper(
       icon = model.icon,
       sortOrder = model.sortOrder,
       usualDurationDays = model.usualDurationDays,
+      canFreeze = model.canFreeze,
     )
 
   /**

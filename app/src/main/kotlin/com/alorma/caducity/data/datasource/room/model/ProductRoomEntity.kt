@@ -23,4 +23,6 @@ data class ProductRoomEntity(
   val categoryId: String,
   val name: String,
   val createdAt: Long,
+  /** Overrides the category: null inherits [CategoryRoomEntity.canFreeze]. */
+  val canFreeze: Boolean? = null,
 )

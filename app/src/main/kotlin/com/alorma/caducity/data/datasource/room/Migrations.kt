@@ -215,3 +215,15 @@ private const val ITEMS_V5_COLUMNS =
     "`originTransformationId` TEXT, PRIMARY KEY(`id`), " +
     "FOREIGN KEY(`categoryId`) REFERENCES `categories`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
     "FOREIGN KEY(`productId`) REFERENCES `products`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )"
+
+/**
+ * v5 → v6: «Es pot congelar». `categories.canFreeze` defaults to true (nothing changes for existing categories) and
+ * `products.canFreeze` is null, so every product inherits its category.
+ */
+val MIGRATION_5_6 =
+  object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+      db.execSQL("ALTER TABLE categories ADD COLUMN canFreeze INTEGER NOT NULL DEFAULT 1")
+      db.execSQL("ALTER TABLE products ADD COLUMN canFreeze INTEGER")
+    }
+  }

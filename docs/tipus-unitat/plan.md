@@ -52,7 +52,7 @@ See the chat of 21 October; answers go here as «Decisions taken with Bernat».
 
 ## Phase 2 tasks: Es pot congelar
 
-- [ ] a. Data: Room v6 (`categories.canFreeze` NOT NULL DEFAULT 1, `products.canFreeze` NULL), `MIGRATION_5_6`,
+- [x] a. Data: Room v6 (`categories.canFreeze` NOT NULL DEFAULT 1, `products.canFreeze` NULL), `MIGRATION_5_6`,
   schema `6.json`, domain `Category.canFreeze` / `Product.canFreeze`, backup v5 reading v4.
 - [ ] b. Domain: effective value (product ?? category) in the read models (`ProductRowModel`, item actions state) and
   use cases to set it on category / product; the freeze use case refuses when it cannot be frozen.

@@ -22,6 +22,7 @@ class ProductRoomMapper {
       categoryId = entity.categoryId,
       name = entity.name,
       createdAt = Instant.fromEpochMilliseconds(entity.createdAt),
+      canFreeze = entity.canFreeze,
     )
 
   /**
@@ -33,5 +34,6 @@ class ProductRoomMapper {
       categoryId = model.categoryId,
       name = model.name,
       createdAt = model.createdAt.toEpochMilliseconds(),
+      canFreeze = model.canFreeze,
     )
 }
