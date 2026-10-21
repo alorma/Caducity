@@ -27,6 +27,16 @@ class ProductRowModelTest {
   )
 
   @Test
+  fun `a row takes the level of its batch`() {
+    val peanuts = listOf(unit("a", day = 16).copy(unitType = UnitType.HANDFULS, level = HandfulLevel.HALF))
+    expectThat(peanuts.toProductRow(null, ProductRowDetail.WithDays, LocalDate(2026, 10, 14)).level)
+      .isEqualTo(HandfulLevel.HALF)
+    expectThat(
+      listOf(unit("a", day = 16)).toProductRow(null, ProductRowDetail.WithDays, LocalDate(2026, 10, 14)).level,
+    ).isNull()
+  }
+
+  @Test
   fun `a row adds up the amounts of its batches`() {
     val grams =
       listOf(

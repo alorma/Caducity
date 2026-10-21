@@ -367,7 +367,7 @@ private fun PickerRow(
   onToggle: () -> Unit,
 ) {
   val status = group.nearest.status
-  val units = unitCountText(group.nearest.unitType, group.unitCount, group.units.sumAmount())
+  val units = unitCountText(group.nearest.unitType, group.unitCount, group.units.sumAmount(), group.nearest.level)
   val statusColors = status.colors()
   val shapes = ListItemDefaults.segmentedShapes(index, count)
   SegmentedListItem(

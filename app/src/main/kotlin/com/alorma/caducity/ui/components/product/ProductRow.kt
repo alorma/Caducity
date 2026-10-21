@@ -33,6 +33,7 @@ import com.alorma.caducity.base.ui.icons.symbols.Sunny
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.ProductRowDetail
 import com.alorma.caducity.domain.model.ProductRowModel
 import com.alorma.caducity.domain.model.UnitParent
@@ -169,7 +170,7 @@ private fun ProductRowActions(
 /** «1 unitat · Làctics», «2 unitats · D'aquí 2 dies» or just «3 unitats». */
 @Composable
 private fun productRowDetailText(model: ProductRowModel): String {
-  val quantity = unitCountText(model.unitType, model.unitCount, model.amount)
+  val quantity = unitCountText(model.unitType, model.unitCount, model.amount, model.level)
   return when (val detail = model.detail) {
     is ProductRowDetail.InCategory -> "$quantity · ${detail.categoryName}"
     ProductRowDetail.QuantityOnly -> quantity
@@ -231,6 +232,7 @@ private fun previewRow(
   canFreeze: Boolean = true,
   unitType: UnitType = UnitType.DEFAULT,
   amount: Int? = null,
+  level: HandfulLevel? = null,
 ) = ProductRowModel(
   key = name,
   name = name,
@@ -243,6 +245,7 @@ private fun previewRow(
   canFreeze = canFreeze,
   unitType = unitType,
   amount = amount,
+  level = level,
 )
 
 /** A row that can go in the freezer (✓ ❄), one that cannot (only ✓) and a frozen one (✓ ☀). */
@@ -336,6 +339,15 @@ internal fun ProductRowUnitTypesPreview() {
             ProductRowDetail.WithDays,
             unitType = UnitType.MILLILITRES,
             amount = 750,
+          ),
+          previewRow(
+            "Cacauets",
+            ExpiryStatus.FRESH,
+            12,
+            1,
+            ProductRowDetail.WithDays,
+            unitType = UnitType.HANDFULS,
+            level = HandfulLevel.HALF,
           ),
         )
       rows.forEachIndexed { index, row ->

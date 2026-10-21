@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.unit
 
 import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
@@ -15,6 +16,7 @@ import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.Tag
 import com.alorma.caducity.base.ui.icons.symbols.TakeoutDining
 import com.alorma.caducity.base.ui.icons.symbols.WaterDrop
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
 
@@ -40,8 +42,11 @@ fun unitCountText(
   unitType: UnitType,
   count: Int,
   amount: Int? = null,
+  level: HandfulLevel? = null,
 ): String =
-  if (amount != null && unitType.parent == UnitParent.MEASURED) {
+  if (level != null && unitType.parent == UnitParent.HANDFULS) {
+    level.leftText()
+  } else if (amount != null && unitType.parent == UnitParent.MEASURED) {
     formatAmount(unitType, amount, LocalConfiguration.current.locales[0])
   } else {
     pluralStringResource(unitType.countPlural, count, count)
@@ -123,4 +128,29 @@ val UnitParent.icon: ImageVector
       UnitParent.UNITS -> Symbols.Outlined.Tag
       UnitParent.MEASURED -> Symbols.Outlined.Scale
       UnitParent.HANDFULS -> Symbols.Outlined.Tag
+    }
+
+/** Short name of the level: «Molt», «La meitat», «Poc». */
+@Composable
+fun HandfulLevel.label(): String =
+  stringResource(
+    when (this) {
+      HandfulLevel.LOTS -> R.string.handful_level_lots
+      HandfulLevel.HALF -> R.string.handful_level_half
+      HandfulLevel.LITTLE -> R.string.handful_level_little
+    },
+  )
+
+/** What is left, as a row says it: «Queda molt», «Queda la meitat», «Queda poc». */
+@Composable
+fun HandfulLevel.leftText(): String = stringResource(leftRes)
+
+/** Same text outside a composable, for the reminders. */
+@get:StringRes
+val HandfulLevel.leftRes: Int
+  get() =
+    when (this) {
+      HandfulLevel.LOTS -> R.string.handful_left_lots
+      HandfulLevel.HALF -> R.string.handful_left_half
+      HandfulLevel.LITTLE -> R.string.handful_left_little
     }

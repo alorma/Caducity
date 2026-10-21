@@ -363,6 +363,12 @@
   <string name="unit_parent_units_rule">D\'una en una · el ✓ en gasta una</string>
   <string name="unit_parent_measured_rule">Una quantitat · el ✓ et demana quant</string>
   <string name="unit_type_change_warning">Canviar el tipus reinicia la quantitat</string>
+  <string name="handful_level_lots">Molt</string>
+  <string name="handful_level_half">La meitat</string>
+  <string name="handful_level_little">Poc</string>
+  <string name="handful_left_lots">Queda molt</string>
+  <string name="handful_left_half">Queda la meitat</string>
+  <string name="handful_left_little">Queda poc</string>
   <string name="unit_type_bricks_example">1 brick, 2 bricks</string>
   <string name="home_mark_consumed">Marca %1$s com a consumit</string>
   <string name="home_see_pantry">Veure el rebost</string>

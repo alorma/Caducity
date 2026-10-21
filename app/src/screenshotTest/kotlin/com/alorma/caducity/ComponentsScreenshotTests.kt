@@ -54,8 +54,8 @@ class ComponentsScreenshotTests {
 
 class ProductRowUnitTypesScreenshotTests {
   @PreviewTest
-  @Preview(name = "Light", locale = "ca", widthDp = 411, heightDp = 360)
-  @Preview(name = "Dark", locale = "ca", widthDp = 411, heightDp = 360, uiMode = Configuration.UI_MODE_NIGHT_YES)
+  @Preview(name = "Light", locale = "ca", widthDp = 411, heightDp = 440)
+  @Preview(name = "Dark", locale = "ca", widthDp = 411, heightDp = 440, uiMode = Configuration.UI_MODE_NIGHT_YES)
   @Composable
   fun productRowUnitTypes() {
     ProductRowUnitTypesPreview()

@@ -363,6 +363,12 @@
   <string name="unit_parent_units_rule">De una en una · el ✓ gasta una</string>
   <string name="unit_parent_measured_rule">Una cantidad · el ✓ te pregunta cuánto</string>
   <string name="unit_type_change_warning">Cambiar el tipo reinicia la cantidad</string>
+  <string name="handful_level_lots">Mucho</string>
+  <string name="handful_level_half">La mitad</string>
+  <string name="handful_level_little">Poco</string>
+  <string name="handful_left_lots">Queda mucho</string>
+  <string name="handful_left_half">Queda la mitad</string>
+  <string name="handful_left_little">Queda poco</string>
   <string name="unit_type_bricks_example">1 brick, 2 bricks</string>
   <string name="home_mark_consumed">Marcar %1$s como consumido</string>
   <string name="home_see_pantry">Ver la despensa</string>

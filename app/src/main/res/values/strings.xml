@@ -346,6 +346,12 @@
   <string name="unit_parent_units_rule">One by one · ✓ uses one</string>
   <string name="unit_parent_measured_rule">One amount · ✓ asks how much</string>
   <string name="unit_type_change_warning">Changing the type resets the quantity</string>
+  <string name="handful_level_lots">A lot</string>
+  <string name="handful_level_half">Half</string>
+  <string name="handful_level_little">Little</string>
+  <string name="handful_left_lots">A lot left</string>
+  <string name="handful_left_half">Half left</string>
+  <string name="handful_left_little">Little left</string>
   <string name="unit_type_bricks_example">1 brick, 2 bricks</string>
   <string name="home_mark_consumed">Mark %1$s as consumed</string>
   <string name="home_see_pantry">See the pantry</string>
