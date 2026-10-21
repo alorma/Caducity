@@ -183,30 +183,14 @@
           "createdAt": 1790294400000,
           "items": [
             {
-              "id": "1363f30a-f49e-43f8-ac92-5ac9662fa90b",
-              "identifier": "",
-              "expirationDate": 1793318400000,
-              "createdAt": 1791244800000
-            },
-            {
-              "id": "0daf2ea6-965f-44c0-92f9-a5099ceac923",
-              "identifier": "",
-              "expirationDate": 1795392000000,
-              "createdAt": 1791763200000
-            },
-            {
               "id": "68938750-f18a-4e04-b96e-c801138e6b83",
               "identifier": "",
               "expirationDate": 1792195200000,
-              "createdAt": 1791158400000
-            },
-            {
-              "id": "0ebf1c07-dfb2-49b2-aa95-df84c0fc0377",
-              "identifier": "",
-              "expirationDate": 1794787200000,
-              "createdAt": 1791676800000
+              "createdAt": 1791158400000,
+              "level": "HALF"
             }
-          ]
+          ],
+          "unitType": "HANDFULS"
         },
         {
           "id": "4c6654fd-b9dc-4831-86d2-c1e4bceb70b2",
@@ -485,24 +469,14 @@
           "createdAt": 1790294400000,
           "items": [
             {
-              "id": "935dc527-f411-40bf-9e97-1fdb9826952d",
-              "identifier": "",
-              "expirationDate": 1792108800000,
-              "createdAt": 1791590400000
-            },
-            {
-              "id": "fe812f14-4b98-4e0d-9fd7-d6dc990727fe",
-              "identifier": "",
-              "expirationDate": 1794268800000,
-              "createdAt": 1791849600000
-            },
-            {
               "id": "92ce9a93-e3e8-4243-92a5-e227a8d54016",
               "identifier": "",
               "expirationDate": 1791936000000,
-              "createdAt": 1791590400000
+              "createdAt": 1791590400000,
+              "level": "LITTLE"
             }
-          ]
+          ],
+          "unitType": "HANDFULS"
         },
         {
           "id": "7447dd79-4427-4184-b6d7-3f5fe477a86f",

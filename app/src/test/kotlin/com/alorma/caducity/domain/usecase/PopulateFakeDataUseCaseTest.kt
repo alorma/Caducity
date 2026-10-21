@@ -16,6 +16,7 @@ import com.alorma.caducity.data.datasource.room.mapper.CategoryRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ItemRoomMapper
 import com.alorma.caducity.data.datasource.room.mapper.ProductRoomMapper
 import com.alorma.caducity.domain.model.ExpiryStatus
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.fakedata.FakeShowcaseDataStrategy
@@ -126,6 +127,14 @@ class PopulateFakeDataUseCaseTest {
       expectThat(types["Llet sencera"]).isEqualTo(UnitType.UNITS)
       expectThat(types["Llet de civada"]).isEqualTo(UnitType.MILLILITRES)
       expectThat(types["Ametlles"]).isEqualTo(UnitType.GRAMS)
+      expectThat(types["Cacauets"]).isEqualTo(UnitType.HANDFULS)
+      expectThat(
+        db
+          .itemDao()
+          .getAllItemsSync()
+          .mapNotNull { it.level }
+          .sorted(),
+      ).isEqualTo(listOf(HandfulLevel.HALF, HandfulLevel.LITTLE))
 
       val amounts =
         db

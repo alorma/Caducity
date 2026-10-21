@@ -79,6 +79,7 @@ class ItemRoomMapper(
       consumedDate = null,
       createdAt = appClock.now().toEpochMilliseconds(),
       amount = model.amount,
+      level = model.level,
     )
 
   /**

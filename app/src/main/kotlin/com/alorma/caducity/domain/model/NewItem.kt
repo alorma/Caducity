@@ -8,4 +8,6 @@ data class NewItem(
   val expirationDate: Instant,
   /** g or mL of a measured product; null for units. */
   val amount: Int? = null,
+  /** Level of a handful product (a single batch); null for the other types. */
+  val level: HandfulLevel? = null,
 )

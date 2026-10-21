@@ -2,6 +2,7 @@ package com.alorma.caducity.domain.usecase.fakedata
 
 import com.alorma.caducity.domain.model.CategoryIcon
 import com.alorma.caducity.domain.model.CategoryShape
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitType
 import kotlin.time.Instant
 
@@ -55,6 +56,8 @@ data class ItemConfig(
   val shouldTransform: Boolean = false,
   /** g or mL of a measured product (single batch); null for units. */
   val amount: Int? = null,
+  /** Level of a handful product (a single batch); null for the other types. */
+  val level: HandfulLevel? = null,
 )
 
 /**

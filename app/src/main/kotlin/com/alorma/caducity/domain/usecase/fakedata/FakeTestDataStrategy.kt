@@ -1,5 +1,6 @@
 package com.alorma.caducity.domain.usecase.fakedata
 
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.ExpirationThresholds
 import kotlin.time.Duration.Companion.days
@@ -115,6 +116,17 @@ class FakeTestDataStrategy(
                 units(now, "Pèsols congelats", daysAhead = 5 + it, count = 1, frozen = true)
               },
           ),
+          // Handfuls: a single batch with a level.
+          ProductConfig(
+            name = "Cacauets",
+            unitType = UnitType.HANDFULS,
+            items = handful(now, "Cacauets", daysAhead = freshDays + 8, level = HandfulLevel.HALF),
+          ),
+          ProductConfig(
+            name = "Alfàbrega",
+            unitType = UnitType.HANDFULS,
+            items = handful(now, "Alfàbrega", daysAhead = 2, level = HandfulLevel.LITTLE),
+          ),
           // Measured in grams: one fresh batch, one frozen.
           ProductConfig(
             name = "Ametlles",
@@ -135,6 +147,14 @@ class FakeTestDataStrategy(
           ),
         ),
     )
+
+  /** A single batch of a handful product, with how much is left. */
+  private fun handful(
+    now: Instant,
+    label: String,
+    daysAhead: Long,
+    level: HandfulLevel,
+  ): List<ItemConfig> = units(now, label, daysAhead, count = 1).map { it.copy(level = level) }
 
   /** A single batch of [amount] g or mL. */
   private fun measured(

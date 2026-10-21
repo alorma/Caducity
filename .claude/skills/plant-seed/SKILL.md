@@ -36,7 +36,7 @@ dump is not enough, and at the end as evidence.
 2. **Install and wipe.** Install the release-type build signed with the debug key
    (`ANDROID_SERIAL=$S ./gradlew :app:installNonMinifiedRelease`, or the APK the task at hand needs), then
    `adb -s $S shell pm clear com.alorma.caducity`.
-3. **Seed file.** `seed-backup.json` (next to this file) has 6 categories and 61 items (Flour in grams, Whole milk in millilitres, others in packs, tuppers and cans). Move its dates to today and push it:
+3. **Seed file.** `seed-backup.json` (next to this file) has 6 categories and 56 items (Flour in grams, Whole milk in millilitres, Spinach and Bread as handfuls, others in packs, tuppers and cans). Move its dates to today and push it:
 
    ```bash
    NOW=$(( $(date -u +%s) / 86400 * 86400000 ))
