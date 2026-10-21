@@ -164,7 +164,8 @@ New handful starts at «Molt»; tapping the row opens the modal; release notes l
   (no migration: same TEXT column), level through the read models and backup; use cases: lower one level (Poc → consumed), set a
   level, freeze the whole product keeping its level, undo; changing the type in Edit leaves one batch at «Molt». (a75a315c)
 - [x] 20. Row text «Queda molt / la meitat / poc» (`ProductRow`, Transforma, reminders), strings ca/es/en. (eb106881)
-- [ ] 21. Add / Edit: Grapats tab in `TipusTria` (no subtypes), «Queda» Molt / Meitat / Poc row (default Molt), reset warning.
+- [x] 21. Add / Edit: Grapats tab in `TipusTria` (no subtypes), «Queda» Molt / Meitat / Poc row (default Molt), reset warning. (bfe0ac2f)
+  Validated on emulator-5554 (Add with Grapats at «Meitat» → «Queda la meitat · D'aquí 7 dies»). The «Congelat» toggle sits under «Queda» (no room side by side).
 - [ ] 22. `TipusAUll` modal («Quant en queda?», three big buttons that change the level at once, «Ja no en queda», «Congela»,
   «Més accions»); the row ✓ lowers a level with a snackbar, ❄ freezes the whole product.
 - [ ] 23. Frozen (✓ lowers a level, ☀ thaws everything to today + 3 days) and expired (only «Llença») Grapats (§3.1).
