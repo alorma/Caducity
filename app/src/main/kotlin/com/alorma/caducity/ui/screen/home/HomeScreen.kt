@@ -316,6 +316,7 @@ private fun HomeRow.toProductRow(
     remainingDays = today.daysUntil(section.date),
     category = category,
     detail = ProductRowDetail.InCategory(category.name),
+    canFreeze = canFreeze,
   )
 
 private val ConnectedGap = 2.dp

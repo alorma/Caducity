@@ -328,6 +328,20 @@ class ObserveUseCasesTest {
     }
 
   @Test
+  fun `home row carries whether the product can be frozen`() =
+    runTest {
+      db.categoryDao().insertCategory(CategoryRoomEntity("fruit", "fruit", "", canFreeze = false))
+      category("dairy")
+      add("Apple", "fruit", 1)
+      add("Milk", "dairy", 1)
+
+      val data = home.observe().first()
+      val rows = data.sections.flatMap { it.rows }.associate { it.name to it.canFreeze }
+      expectThat(rows["Apple"]).isEqualTo(false)
+      expectThat(rows["Milk"]).isEqualTo(true)
+    }
+
+  @Test
   fun `home reports empty pantry and nothing expiring soon`() =
     runTest {
       category("c1")

@@ -64,6 +64,8 @@ data class HomeRow(
   val category: Category,
   /** Units of this product that expire on the section's day, nearest first (see [sortedNearestFirst]). */
   val itemIds: List<String>,
+  /** The product can go in the freezer: when false the row has no ❄. */
+  val canFreeze: Boolean = true,
 ) {
   val unitCount: Int get() = itemIds.size
 
