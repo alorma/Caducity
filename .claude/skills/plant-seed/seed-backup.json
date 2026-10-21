@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 6,
   "exportDate": 1792022400000,
   "transformations": [],
   "categories": [
@@ -112,7 +112,8 @@
               "expirationDate": 1792886400000,
               "createdAt": 1791158400000
             }
-          ]
+          ],
+          "unitType": "PACKS"
         },
         {
           "id": "b1089199-509e-43e9-9b61-301c47142c80",
@@ -356,7 +357,8 @@
               "expirationDate": 1794096000000,
               "createdAt": 1791590400000
             }
-          ]
+          ],
+          "unitType": "CANS"
         },
         {
           "id": "27b864c5-b2e8-43af-863e-1fc653178edb",
@@ -427,7 +429,8 @@
               "expirationDate": 1795305600000,
               "createdAt": 1791849600000
             }
-          ]
+          ],
+          "unitType": "PACKS"
         },
         {
           "id": "8bf901cd-2298-42ac-ab15-6dd73d3c24ed",
@@ -453,7 +456,8 @@
               "expirationDate": 1795478400000,
               "createdAt": 1791504000000
             }
-          ]
+          ],
+          "unitType": "PACKS"
         },
         {
           "id": "ef6c57d5-57d7-4592-958c-f8c10a87d556",
@@ -577,7 +581,8 @@
               "expirationDate": 1791763200000,
               "createdAt": 1791331200000
             }
-          ]
+          ],
+          "unitType": "TUPPERS"
         },
         {
           "id": "52ac8b68-148e-4dd6-80e8-1047e0f01d22",
@@ -603,7 +608,8 @@
               "expirationDate": 1794355200000,
               "createdAt": 1791936000000
             }
-          ]
+          ],
+          "unitType": "TUPPERS"
         }
       ],
       "standaloneItems": [
