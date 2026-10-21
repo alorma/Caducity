@@ -1,2 +1,3 @@
 Versión 1.1.7:
 • Ahora puedes marcar las categorías y los productos que no se pueden congelar, como la pasta o las conservas. Ya no muestran el botón de congelar.
+• Ahora puedes elegir cómo cuentas un producto: unidades, tuppers, paquetes o latas. Las listas muestran «3 paquetes» o «1 tupper» en lugar de siempre «unidades».
