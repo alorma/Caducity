@@ -1,5 +1,6 @@
 package com.alorma.caducity.data.datasource.room.model
 
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitType
 
 /** Number of active (not consumed, not discarded) items of a category. */
@@ -36,4 +37,5 @@ data class ActiveItemRow(
   val unitType: UnitType,
   /** Amount of a measured batch (g or mL); null for units. */
   val amount: Int?,
+  val level: HandfulLevel?,
 )

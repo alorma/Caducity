@@ -12,4 +12,6 @@ data class ItemSnapshot(
   val transformationId: String?,
   /** Amount of a measured batch (g or mL); null for units. */
   val amount: Int? = null,
+  /** Level of a handful batch; null for the other types. */
+  val level: HandfulLevel? = null,
 )

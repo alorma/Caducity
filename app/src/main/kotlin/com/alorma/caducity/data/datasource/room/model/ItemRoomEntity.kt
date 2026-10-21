@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.alorma.caducity.domain.model.HandfulLevel
 
 @Entity(
   tableName = "items",
@@ -39,5 +40,5 @@ data class ItemRoomEntity(
   val transformationId: String? = null, // Transformation that consumed this ingredient
   val originTransformationId: String? = null, // Transformation that produced this item
   val amount: Int? = null, // Quantity of a measured product (g or mL) - null for the other unit types
-  val level: String? = null, // Level of a handful product - null for the other unit types
+  val level: HandfulLevel? = null, // Level of a handful product - null for the other unit types
 )

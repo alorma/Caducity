@@ -45,5 +45,6 @@ class ObserveItemsUseCase(
     canFreeze = canFreeze,
     unitType = unitType,
     amount = amount,
+    level = level,
   )
 }

@@ -4,6 +4,7 @@ import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.AddedItems
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.FrozenAmount
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.ItemSnapshot
 import com.alorma.caducity.domain.model.ProductUsage
 import com.alorma.caducity.domain.model.TransformIngredient
@@ -19,7 +20,8 @@ interface PantryDataSource {
    * Finds or creates the product named [productName] in [categoryId] and inserts [quantity] independent
    * items with the same expiration. When [frozenRemainingDays] is set the items are created frozen.
    * [unitType] sets how the product is counted (changing the parent type resets its batches, see [setProductUnitType]);
-   * with an [amount] (g or mL) a single measured batch is created and [quantity] is ignored.
+   * with an [amount] (g or mL) a single measured batch is created and [quantity] is ignored; likewise a [level] creates a
+   * single handful batch.
    */
   suspend fun addItems(
     categoryId: String,
@@ -29,6 +31,7 @@ interface PantryDataSource {
     frozenRemainingDays: Int?,
     unitType: UnitType? = null,
     amount: Int? = null,
+    level: HandfulLevel? = null,
   ): AddedItems
 
   /** Edits a single unit; [frozenRemainingDays] is applied only when the unit is frozen. Returns its product id. */
@@ -110,6 +113,21 @@ interface PantryDataSource {
     amount: Int,
     newExpiration: Instant,
   ): FrozenAmount?
+
+  /**
+   * Lowers a handful batch one level; from the lowest it is consumed (nothing left). A frozen batch stays frozen.
+   * Undo it with a snapshot taken before ([snapshots]).
+   */
+  suspend fun lowerLevel(
+    itemId: String,
+    at: Instant,
+  )
+
+  /** Sets the level of a handful batch (undo with a snapshot taken before). */
+  suspend fun setLevel(
+    itemId: String,
+    level: HandfulLevel,
+  )
 
   /** Deletes the items (undo of what created them). */
   suspend fun deleteItems(itemIds: List<String>)

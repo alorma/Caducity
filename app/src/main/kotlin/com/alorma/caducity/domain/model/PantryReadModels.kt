@@ -19,6 +19,8 @@ data class PantryEntry(
   val unitType: UnitType = UnitType.DEFAULT,
   /** Amount of a measured batch (g or mL); null for units. */
   val amount: Int? = null,
+  /** Level of a handful batch; null for the other types. */
+  val level: HandfulLevel? = null,
 ) {
   /** Stable key of the product this unit belongs to (legacy items without product group by name). */
   val groupKey: String
@@ -72,6 +74,8 @@ data class HomeRow(
   val unitType: UnitType = UnitType.DEFAULT,
   /** Amount of a measured batch (g or mL); null for units. */
   val amount: Int? = null,
+  /** Level of a handful batch; null for the other types. */
+  val level: HandfulLevel? = null,
 ) {
   val unitCount: Int get() = itemIds.size
 

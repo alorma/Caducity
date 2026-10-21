@@ -40,6 +40,8 @@ data class ProductRowModel(
   val unitType: UnitType = UnitType.DEFAULT,
   /** Total amount of the batches of the row (g or mL); null for units. */
   val amount: Int? = null,
+  /** Level of the batch that expires first (a handful product has a single batch); null for the other types. */
+  val level: HandfulLevel? = null,
 ) {
   val unitCount: Int get() = itemIds.size
   val nearestItemId: String get() = itemIds.first()
@@ -90,5 +92,6 @@ fun List<PantryEntry>.toProductRow(
     canFreeze = nearest.canFreeze,
     unitType = nearest.unitType,
     amount = sumAmount(),
+    level = nearest.level,
   )
 }

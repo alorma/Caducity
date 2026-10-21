@@ -44,6 +44,9 @@ sealed class PantryError(
 
   data object ItemNotFound : PantryError("Item not found")
 
+  /** A level was asked of a batch that is not a handful. */
+  data object NotAHandful : PantryError("The batch is not a handful product")
+
   data class InvalidAmount(
     val amount: Int,
   ) : PantryError("Amount out of range: $amount")
@@ -72,6 +75,8 @@ data class ActiveItem(
   val unitType: UnitType = UnitType.DEFAULT,
   /** Amount of a measured batch (g or mL); null for units. */
   val amount: Int? = null,
+  /** Level of a handful batch; null for the other types. */
+  val level: HandfulLevel? = null,
 )
 
 /** Result of freezing part of a measured batch: [itemId] is the frozen batch, [created] when it is a new one split off. */

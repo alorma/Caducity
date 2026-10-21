@@ -97,6 +97,7 @@ class ObserveHomeUseCase(
       canFreeze = nearest.canFreeze,
       unitType = nearest.unitType,
       amount = sorted.sumAmount(),
+      level = nearest.level,
     )
   }
 }

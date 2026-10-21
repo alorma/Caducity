@@ -16,6 +16,7 @@ import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.AddedItems
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.FrozenAmount
+import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.ItemSnapshot
 import com.alorma.caducity.domain.model.PantryError
 import com.alorma.caducity.domain.model.ProductUsage
@@ -47,12 +48,13 @@ class RoomPantryDataSource(
     frozenRemainingDays: Int?,
     unitType: UnitType?,
     amount: Int?,
+    level: HandfulLevel?,
   ): AddedItems =
     database.withTransaction {
       val (found, created) = findOrCreateProduct(categoryId, productName)
       val product = if (unitType != null) applyUnitType(found, unitType) else found
       val now = appClock.now().toEpochMilliseconds()
-      val ids = List(if (amount != null) 1 else quantity) { UUID.randomUUID().toString() }
+      val ids = List(if (amount != null || level != null) 1 else quantity) { UUID.randomUUID().toString() }
       ids.forEach { id ->
         itemDao.insertItem(
           ItemRoomEntity(
@@ -65,6 +67,7 @@ class RoomPantryDataSource(
             remainingDays = frozenRemainingDays,
             createdAt = now,
             amount = amount,
+            level = level,
           ),
         )
       }
@@ -258,6 +261,7 @@ class RoomPantryDataSource(
           transformedMillis = it.transformedDate,
           transformationId = it.transformationId,
           amount = it.amount,
+          level = it.level,
         )
       }
     }
@@ -276,6 +280,7 @@ class RoomPantryDataSource(
               transformedDate = snap.transformedMillis,
               transformationId = snap.transformationId,
               amount = snap.amount,
+              level = snap.level,
             ),
           )
         }
@@ -330,6 +335,7 @@ class RoomPantryDataSource(
           canFreeze = row.canFreeze,
           unitType = row.unitType,
           amount = row.amount,
+          level = row.level,
         )
       }
     }
@@ -461,6 +467,33 @@ class RoomPantryDataSource(
       }
     }
 
+  override suspend fun lowerLevel(
+    itemId: String,
+    at: Instant,
+  ) {
+    database.withTransaction {
+      val item = itemDao.getItem(itemId) ?: throw PantryError.ItemNotFound
+      val current = item.level ?: throw PantryError.NotAHandful
+      val lower = current.lower()
+      if (lower == null) {
+        itemDao.updateItem(item.copy(consumedDate = at.toEpochMilliseconds(), pausedDate = null, remainingDays = null))
+      } else {
+        itemDao.updateItem(item.copy(level = lower))
+      }
+    }
+  }
+
+  override suspend fun setLevel(
+    itemId: String,
+    level: HandfulLevel,
+  ) {
+    database.withTransaction {
+      val item = itemDao.getItem(itemId) ?: throw PantryError.ItemNotFound
+      if (item.level == null) throw PantryError.NotAHandful
+      itemDao.updateItem(item.copy(level = level))
+    }
+  }
+
   override suspend fun deleteItems(itemIds: List<String>) {
     itemDao.deleteItems(itemIds)
   }
@@ -475,12 +508,20 @@ class RoomPantryDataSource(
   ): ProductRoomEntity {
     if (product.unitType.parent != unitType.parent) {
       val items = itemDao.getActiveItemsOfProduct(product.id)
-      if (unitType.parent == UnitParent.MEASURED) {
+      if (unitType.parent == UnitParent.MEASURED || unitType.parent == UnitParent.HANDFULS) {
+        // One batch (the one that expires first) with the starting amount or level of the new type.
         val keep = items.minWithOrNull(compareBy<ItemRoomEntity> { it.expirationDate }.thenBy { it.createdAt ?: 0L })
         itemDao.deleteItems(items.filter { it !== keep }.map { it.id })
-        keep?.let { itemDao.updateItem(it.copy(amount = unitType.defaultAmount)) }
+        keep?.let {
+          itemDao.updateItem(
+            it.copy(
+              amount = unitType.defaultAmount,
+              level = HandfulLevel.DEFAULT.takeIf { unitType.parent == UnitParent.HANDFULS },
+            ),
+          )
+        }
       } else {
-        items.forEach { itemDao.updateItem(it.copy(amount = null)) }
+        items.forEach { itemDao.updateItem(it.copy(amount = null, level = null)) }
       }
     }
     val updated = product.copy(unitType = unitType)
