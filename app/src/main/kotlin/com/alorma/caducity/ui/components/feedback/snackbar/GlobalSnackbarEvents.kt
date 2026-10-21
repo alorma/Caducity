@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
  * A snackbar that must outlive the screen (or sheet) that asked for it, e.g. the «Desfés» shown after
  * the actions sheet closes. [onAction] runs when the action is tapped.
  */
-data class GlobalSnackbar(
+data class SnackbarRequest(
   @StringRes val message: Int,
   val messageArgs: List<Any> = emptyList(),
   @StringRes val actionLabel: Int? = null,
@@ -18,12 +18,12 @@ data class GlobalSnackbar(
   val onAction: (suspend () -> Unit)? = null,
 )
 
-/** Hands [GlobalSnackbar]s to the app shell, which owns the host that shows them. */
+/** Hands [SnackbarRequest]s to the app shell, which owns the host that shows them. */
 class GlobalSnackbarEvents {
-  private val channel = Channel<GlobalSnackbar>(Channel.BUFFERED)
-  val events: Flow<GlobalSnackbar> = channel.receiveAsFlow()
+  private val channel = Channel<SnackbarRequest>(Channel.BUFFERED)
+  val events: Flow<SnackbarRequest> = channel.receiveAsFlow()
 
-  fun show(snackbar: GlobalSnackbar) {
+  fun show(snackbar: SnackbarRequest) {
     channel.trySend(snackbar)
   }
 }

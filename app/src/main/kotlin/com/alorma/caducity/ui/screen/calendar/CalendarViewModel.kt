@@ -19,8 +19,8 @@ import com.alorma.caducity.feature.tracking.ItemActionAction
 import com.alorma.caducity.feature.tracking.NavigateToItemActionsFromCalendarAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -153,7 +153,7 @@ class CalendarViewModel(
       perform(ids)
         .onSuccess {
           snackbars.show(
-            GlobalSnackbar(
+            SnackbarRequest(
               message = message,
               messageArgs = listOf(row.name),
               actionLabel = R.string.add_undo,
@@ -162,7 +162,7 @@ class CalendarViewModel(
             ),
           )
         }.onFailure {
-          snackbars.show(GlobalSnackbar(R.string.item_actions_error, type = AppFeedbackType.Error))
+          snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
         }
     }
   }

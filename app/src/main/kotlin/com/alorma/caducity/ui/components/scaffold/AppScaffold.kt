@@ -26,6 +26,7 @@ import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHost
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.LocalAppSnackbarState
+import com.alorma.caducity.ui.components.feedback.snackbar.ScreenResultsEffect
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 
 @Suppress("ModifierTopMost")
@@ -44,6 +45,7 @@ fun AppScaffold(
   contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
   content: @Composable (PaddingValues) -> Unit,
 ) {
+  ScreenResultsEffect(snackbarState)
   CompositionLocalProvider(
     LocalAppSnackbarState provides snackbarState,
     LocalAppDialogState provides dialogState,

@@ -19,8 +19,8 @@ import com.alorma.caducity.feature.tracking.NavigateToStatusListFromHomeAction
 import com.alorma.caducity.feature.tracking.NavigateToTransformAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -84,7 +84,7 @@ class HomeViewModel(
         .consume(row.nearestItemId)
         .onSuccess {
           snackbars.show(
-            GlobalSnackbar(
+            SnackbarRequest(
               message = R.string.item_actions_snackbar_consumed,
               messageArgs = listOf(row.name),
               actionLabel = R.string.add_undo,
@@ -93,7 +93,7 @@ class HomeViewModel(
             ),
           )
         }.onFailure {
-          snackbars.show(GlobalSnackbar(R.string.item_actions_error, type = AppFeedbackType.Error))
+          snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
         }
     }
   }
@@ -107,7 +107,7 @@ class HomeViewModel(
         .freeze(listOf(row.nearestItemId))
         .onSuccess {
           snackbars.show(
-            GlobalSnackbar(
+            SnackbarRequest(
               message = R.string.item_actions_snackbar_frozen,
               messageArgs = listOf(row.name),
               actionLabel = R.string.add_undo,
@@ -116,7 +116,7 @@ class HomeViewModel(
             ),
           )
         }.onFailure {
-          snackbars.show(GlobalSnackbar(R.string.item_actions_error, type = AppFeedbackType.Error))
+          snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
         }
     }
   }

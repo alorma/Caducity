@@ -15,8 +15,8 @@ import com.alorma.caducity.feature.tracking.NavigateToCategoryFromPantryAction
 import com.alorma.caducity.feature.tracking.NavigateToNewCategoryFromPantryAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -102,7 +102,7 @@ class PantryViewModel(
       perform(ids)
         .onSuccess {
           snackbars.show(
-            GlobalSnackbar(
+            SnackbarRequest(
               message = message,
               messageArgs = if (countInMessage) listOf(1, row.name) else listOf(row.name),
               actionLabel = R.string.add_undo,
@@ -111,7 +111,7 @@ class PantryViewModel(
             ),
           )
         }.onFailure {
-          snackbars.show(GlobalSnackbar(R.string.item_actions_error, type = AppFeedbackType.Error))
+          snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
         }
     }
   }

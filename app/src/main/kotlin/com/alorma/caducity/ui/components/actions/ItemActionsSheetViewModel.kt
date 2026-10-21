@@ -24,8 +24,8 @@ import com.alorma.caducity.feature.tracking.NavigateToEditItemAction
 import com.alorma.caducity.feature.tracking.NavigateToTransformAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -182,7 +182,7 @@ class ItemActionsSheetViewModel(
       return
     }
     if (ready.freezableCount == 0) {
-      snackbars.show(GlobalSnackbar(R.string.item_actions_error_freeze_expired, type = AppFeedbackType.Error))
+      snackbars.show(SnackbarRequest(R.string.item_actions_error_freeze_expired, type = AppFeedbackType.Error))
       return
     }
     eventTracker.trackAction(ItemActionAction("freeze"))
@@ -220,7 +220,7 @@ class ItemActionsSheetViewModel(
         .unfreeze(ids)
         .onSuccess { unfrozen ->
           feedback(
-            GlobalSnackbar(
+            SnackbarRequest(
               message = R.string.snack_unfrozen,
               messageArgs = listOf(unfrozen.size, ready.name),
               actionLabel = R.string.add_undo,
@@ -284,7 +284,7 @@ class ItemActionsSheetViewModel(
           .unfreezeOn(ids.first(), date)
           .onSuccess {
             feedback(
-              GlobalSnackbar(
+              SnackbarRequest(
                 message = R.string.item_actions_snackbar_unfrozen,
                 messageArgs = listOf(ready.name),
                 actionLabel = R.string.add_undo,
@@ -359,7 +359,7 @@ class ItemActionsSheetViewModel(
         return@launch
       }
       feedback(
-        GlobalSnackbar(
+        SnackbarRequest(
           message = R.string.item_actions_snackbar_moved,
           messageArgs = listOf(ready.name, target.name),
           actionLabel = R.string.add_undo,
@@ -372,7 +372,7 @@ class ItemActionsSheetViewModel(
   private fun rescheduledSnackbar(
     name: String,
     snapshots: List<ItemSnapshot>,
-  ) = GlobalSnackbar(
+  ) = SnackbarRequest(
     message = R.string.item_actions_snackbar_rescheduled,
     messageArgs = listOf(name),
     actionLabel = R.string.add_undo,
@@ -386,7 +386,7 @@ class ItemActionsSheetViewModel(
     name: String,
     type: AppFeedbackType,
     snapshots: List<ItemSnapshot>,
-  ) = GlobalSnackbar(
+  ) = SnackbarRequest(
     message = if (count == 1) one else many,
     messageArgs = if (count == 1) listOf(name) else listOf(count, name),
     actionLabel = R.string.add_undo,
@@ -394,14 +394,14 @@ class ItemActionsSheetViewModel(
     onAction = { restoreItems.restoreSnapshots(snapshots) },
   )
 
-  private fun feedback(snackbar: GlobalSnackbar) {
+  private fun feedback(snackbar: SnackbarRequest) {
     emitSideEffect(ItemActionsSheetSideEffect.Confirm)
     snackbars.show(snackbar)
     close()
   }
 
   private fun failed() {
-    snackbars.show(GlobalSnackbar(R.string.item_actions_error, type = AppFeedbackType.Error))
+    snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
   }
 
   private fun close() {

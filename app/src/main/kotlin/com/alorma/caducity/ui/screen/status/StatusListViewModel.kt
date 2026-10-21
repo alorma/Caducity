@@ -19,8 +19,8 @@ import com.alorma.caducity.feature.tracking.NavigateToAddFromStatusListAction
 import com.alorma.caducity.feature.tracking.NavigateToItemActionsFromStatusListAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -105,7 +105,7 @@ class StatusListViewModel(
     undoable(
       ids = listOf(id),
       snackbar = { undo ->
-        GlobalSnackbar(
+        SnackbarRequest(
           message = R.string.item_actions_snackbar_consumed,
           messageArgs = listOf(name),
           actionLabel = R.string.add_undo,
@@ -124,7 +124,7 @@ class StatusListViewModel(
     undoable(
       ids = listOf(id),
       snackbar = { undo ->
-        GlobalSnackbar(
+        SnackbarRequest(
           message = R.string.item_actions_snackbar_frozen,
           messageArgs = listOf(name),
           actionLabel = R.string.add_undo,
@@ -143,7 +143,7 @@ class StatusListViewModel(
     undoable(
       ids = listOf(id),
       snackbar = { undo ->
-        GlobalSnackbar(
+        SnackbarRequest(
           message = R.string.snack_unfrozen,
           messageArgs = listOf(1, name),
           actionLabel = R.string.add_undo,
@@ -163,7 +163,7 @@ class StatusListViewModel(
       ids = ids,
       snackbar = { undo ->
         if (ids.size == 1 && name != null) {
-          GlobalSnackbar(
+          SnackbarRequest(
             message = R.string.status_snackbar_discarded,
             messageArgs = listOf(name),
             actionLabel = R.string.add_undo,
@@ -171,7 +171,7 @@ class StatusListViewModel(
             onAction = undo,
           )
         } else {
-          GlobalSnackbar(
+          SnackbarRequest(
             message = R.string.status_snackbar_discarded_many,
             messageArgs = listOf(ids.size),
             actionLabel = R.string.add_undo,
@@ -186,7 +186,7 @@ class StatusListViewModel(
   /** Runs [action] and, if it worked, shows the snackbar whose «Desfés» puts every unit back exactly as it was. */
   private fun undoable(
     ids: List<String>,
-    snackbar: (undo: suspend () -> Unit) -> GlobalSnackbar,
+    snackbar: (undo: suspend () -> Unit) -> SnackbarRequest,
     action: suspend () -> Result<*>,
   ) {
     viewModelScope.launch {
@@ -195,7 +195,7 @@ class StatusListViewModel(
         .onSuccess {
           snackbars.show(snackbar { restoreItems.restoreSnapshots(snapshots) })
         }.onFailure {
-          snackbars.show(GlobalSnackbar(R.string.item_actions_error, type = AppFeedbackType.Error))
+          snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error))
         }
     }
   }

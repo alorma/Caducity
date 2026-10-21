@@ -26,7 +26,9 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarHost
 import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarResult
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.components.feedback.snackbar.LocalScreenResults
 import com.alorma.caducity.ui.components.feedback.snackbar.LocalSnackbarAnchor
+import com.alorma.caducity.ui.components.feedback.snackbar.ScreenResults
 import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarAnchor
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
@@ -55,6 +57,7 @@ fun AppShell(
   onAddClick: () -> Unit,
   onSettingsClick: () -> Unit,
   snackbarEvents: GlobalSnackbarEvents,
+  screenResults: ScreenResults,
   modifier: Modifier = Modifier,
   content: @Composable () -> Unit,
 ) {
@@ -109,6 +112,7 @@ fun AppShell(
     CompositionLocalProvider(
       LocalFloatingBarPadding provides FloatingBarContentPadding,
       LocalSnackbarAnchor provides snackbarAnchor,
+      LocalScreenResults provides screenResults,
     ) {
       content()
     }

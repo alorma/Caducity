@@ -22,8 +22,8 @@ import com.alorma.caducity.feature.tracking.NavigateToCategoryEditorAction
 import com.alorma.caducity.feature.tracking.NavigateToItemActionsFromCategoryAction
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
-import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbar
 import com.alorma.caducity.ui.components.feedback.snackbar.GlobalSnackbarEvents
+import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -86,7 +86,7 @@ class CategoryViewModel(
     undoable(
       ids = listOf(row.nearestItemId),
       snackbar = { undo ->
-        GlobalSnackbar(
+        SnackbarRequest(
           message = R.string.item_actions_snackbar_consumed,
           messageArgs = listOf(row.name),
           actionLabel = R.string.add_undo,
@@ -103,7 +103,7 @@ class CategoryViewModel(
     undoable(
       ids = listOf(row.nearestItemId),
       snackbar = { undo ->
-        GlobalSnackbar(
+        SnackbarRequest(
           message = R.string.item_actions_snackbar_frozen,
           messageArgs = listOf(row.name),
           actionLabel = R.string.add_undo,
@@ -120,7 +120,7 @@ class CategoryViewModel(
     undoable(
       ids = listOf(row.nearestItemId),
       snackbar = { undo ->
-        GlobalSnackbar(
+        SnackbarRequest(
           message = R.string.snack_unfrozen,
           messageArgs = listOf(1, row.name),
           actionLabel = R.string.add_undo,
@@ -137,7 +137,7 @@ class CategoryViewModel(
     undoable(
       ids = listOf(row.nearestItemId),
       snackbar = { undo ->
-        GlobalSnackbar(
+        SnackbarRequest(
           message = R.string.status_snackbar_discarded,
           messageArgs = listOf(row.name),
           actionLabel = R.string.add_undo,
@@ -151,14 +151,14 @@ class CategoryViewModel(
   /** Runs [action] and, if it worked, shows the snackbar whose «Desfés» puts the units back as they were. */
   private fun undoable(
     ids: List<String>,
-    snackbar: (undo: suspend () -> Unit) -> GlobalSnackbar,
+    snackbar: (undo: suspend () -> Unit) -> SnackbarRequest,
     action: suspend () -> Result<*>,
   ) {
     viewModelScope.launch {
       val snapshots = restoreItems.snapshots(ids)
       action()
         .onSuccess { snackbars.show(snackbar { restoreItems.restoreSnapshots(snapshots) }) }
-        .onFailure { snackbars.show(GlobalSnackbar(R.string.item_actions_error, type = AppFeedbackType.Error)) }
+        .onFailure { snackbars.show(SnackbarRequest(R.string.item_actions_error, type = AppFeedbackType.Error)) }
     }
   }
 
