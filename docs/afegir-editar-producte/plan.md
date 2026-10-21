@@ -10,14 +10,14 @@ category screen and the category Durada sheet.
 ## What changes
 
 1. Main screen: «Desa» in the top bar; Name + status line (history / new product); «Opcions» list with Categoria ›, Caduca ›,
-   Quantitat › and the «Ja és congelat» switch.
+   Quantitat ›, «Es pot congelar» (inherited from the category, overridable) and «Ja és congelat» (only if it can be frozen).
 2. Guided flow: new name + ↵ → Categoria sheet → Caduca sheet. From history, everything is filled in.
 3. Sheet **Categoria**: big chips, tap picks and closes; «+ Nova» → new category screen.
 4. Sheet **Caduca**: big date + calendar, 6 shortcuts in a grid, the category's usual duration (or «Posa'n una»).
 5. Sheet **Quantitat**: big − N + and subtype chips; link to the full «Com ho comptes?» sheet (`TipusTria`).
-6. **Edit**: same screen, 🗑 in the bar, no «Ja és congelat»; if frozen, «Congelat el» instead of Caduca.
+6. **Edit**: same screen, 🗑 in the bar, with «Es pot congelar» and no «Ja és congelat»; if frozen, «Congelat el» instead of Caduca.
 7. **Bug**: default categories in English and repeated icons (spec §6).
-8. Strings ca/es/en (spec §7).
+8. Strings ca/es/en (spec §7, now with the «Es pot congelar» texts).
 
 ## What the code has today (to confirm when the plan starts)
 
@@ -27,16 +27,21 @@ category screen and the category Durada sheet.
 
 ## Open questions (to decide with Bernat before the task list)
 
-- **Product's «Es pot congelar» override.** It exists since tipus-unitat phase 2 (`CanFreezeCard`), but the new design has no
-  row for it: its «Ja és congelat» row is the item's frozen state, a different thing. Where does the override live?
 - **Edit and the model.** The spec says «one row = one product with N units and one date; editing changes only that row». Today
   Edit works on one unit. Confirm that nothing changes in the data model.
+- **Spec §5 ends «Si es desactiva en un producte ja congelat, es queda congelat»**: check that the freeze use case (which refuses
+  when it cannot be frozen) does not block ☀ on an already frozen unit.
 - **Default categories bug.** Translated names while the user has not renamed them: check how they are stored (name saved in
   the DB vs resource) before choosing the fix.
 - **Which icons** for the default categories (spec: `nutrition`, `grocery`…).
 
 ## Decisions taken with Bernat (21 October)
 
+- **«Es pot congelar» is a row of the main list** (new spec, `captures/Afegir*`/`Edita*`): switch showing the value inherited from
+  the category, subtitle «Com a {categoria}: sí» / «Només aquest producte» / «Segons la categoria» (no category yet). Changing it
+  creates the product override (`canFreeze: Boolean?`, null = inherits). **«Ja és congelat» only shows when «Es pot congelar» is
+  on.** It also shows in Edit (without «Ja és congelat»); turning it off on an already frozen unit leaves it frozen (☀ keeps
+  working). `CanFreezeCard` is replaced by this row.
 - In the design, **Quantitat and «Ja és congelat» are separate rows** (see captures); the frozen switch stays its own row,
   shown only if the category / product can be frozen.
 - **Quantitat is being worked on by another agent** as part of tipus-unitat (Mesurable, Grapats). **To check when this plan

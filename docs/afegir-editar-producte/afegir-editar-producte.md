@@ -17,7 +17,9 @@ El formulari actual és una columna llarga d'elements de pesos diferents: xips d
   1. **Categoria**: a l'esquerra, la forma i la icona de la categoria triada (o `category` si no n'hi ha); valor «Làctics ›». Sense valor: subtítol «Obligatori» i valor «Tria ›» en `primary`.
   2. **Caduca**: subtítol «diumenge · d'aquí 7 dies»; valor «25 oct ›». Sense valor: «Obligatori» · «Tria ›».
   3. **Quantitat**: valor «1 unitat ›», «3 tuppers ›»…
-  4. **Ja és congelat**: subtítol «Va directe a Congelats», amb interruptor. Només surt si la categoria es pot congelar (si aquesta feature encara no existeix, surt sempre).
+  4. **Es pot congelar**: interruptor amb el valor **heretat de la categoria**. Subtítol: «Com a Làctics: sí» (hereta), «Només aquest producte» (si l'usuari l'ha canviat) o «Segons la categoria» (encara no hi ha categoria). Canviar-lo crea la sobreescriptura del producte (`canFreeze: Boolean?`, null = hereta).
+  5. **Ja és congelat**: subtítol «Va directe a Congelats», amb interruptor. **Només surt si «Es pot congelar» està activat.**
+  Si la feature «Es pot congelar» encara no existeix al codi, les dues files es redueixen a «Ja és congelat», sempre visible.
 - Si falta algun obligatori, sota la llista: «Falten la categoria i la data per desar».
 
 ### Flux guiat
@@ -51,6 +53,7 @@ Bottom sheet «Categoria» · «On el guardes?». Xips grans (52 dp) amb forma +
 Mateixa pantalla, amb els valors plens.
 - Barra: ✕ · «Edita» · 🗑 (vermell; elimina amb snackbar «Desfés») · **Desa** (només actiu si hi ha canvis).
 - Sense línia d'estat ni suggeriments d'historial.
+- Hi ha «Es pot congelar» (mateixa regla d'herència). Si es desactiva en un producte **ja congelat**, es queda congelat (☀ continua funcionant).
 - **Sense «Ja és congelat»**: congelar, consumir i llençar són accions. Nota a sota: «Per congelar-lo, consumir-lo o llençar-lo, fes servir les accions del producte.»
 - **Producte congelat**: la fila Caduca passa a **«Congelat el»** (icona ❄, fons blau clar `#E3EEF1` / el contenidor de l'estat congelat del tema), subtítol «fa 3 setmanes», valor «28 set ›» → el mateix full de data amb el títol «Congelat el» i sense dreceres de futur. Nota: «Està congelat. Per descongelar-lo, fes servir ☀ a la llista o a les accions.»
 - Canviar la categoria mou el producte.
@@ -62,4 +65,4 @@ A la captura actual, les categories per defecte surten **en anglès** («Dairy»
 
 ## 7. Textos (ca / es / en)
 
-Què afegeixes? / ¿Qué añades? / What are you adding? · Del teu historial: categoria i data ja posades / De tu historial: categoría y fecha ya puestas / From your history: category and date already set · Producte nou. Tria'n la categoria i la data. / Producto nuevo. Elige su categoría y fecha. / New item. Pick its category and date. · Obligatori / Obligatorio / Required · Tria / Elegir / Choose · Ja és congelat / Ya está congelado / Already frozen · Va directe a Congelats / Va directo a Congelados / Goes straight to Frozen · On el guardes? / ¿Dónde lo guardas? / Where do you keep it? · Escriu-la o tria una drecera. / Escríbela o elige un atajo. / Type it or pick a shortcut. · Posa'n una / Pon una / Set one · Com ho comptes / Cómo lo cuentas / How you count it · Congelat el / Congelado el / Frozen on · Per congelar-lo, consumir-lo o llençar-lo, fes servir les accions del producte. / Para congelarlo, consumirlo o tirarlo, usa las acciones del producto. / To freeze, use up or throw it out, use the item's actions.
+Què afegeixes? / ¿Qué añades? / What are you adding? · Del teu historial: categoria i data ja posades / De tu historial: categoría y fecha ya puestas / From your history: category and date already set · Producte nou. Tria'n la categoria i la data. / Producto nuevo. Elige su categoría y fecha. / New item. Pick its category and date. · Obligatori / Obligatorio / Required · Tria / Elegir / Choose · Es pot congelar / Se puede congelar / Can be frozen · Com a {categoria}: sí / Como {categoría}: sí / Like {category}: yes · Només aquest producte / Solo este producto / Only this item · Segons la categoria / Según la categoría / Depends on the category · Ja és congelat / Ya está congelado / Already frozen · Va directe a Congelats / Va directo a Congelados / Goes straight to Frozen · On el guardes? / ¿Dónde lo guardas? / Where do you keep it? · Escriu-la o tria una drecera. / Escríbela o elige un atajo. / Type it or pick a shortcut. · Posa'n una / Pon una / Set one · Com ho comptes / Cómo lo cuentas / How you count it · Congelat el / Congelado el / Frozen on · Per congelar-lo, consumir-lo o llençar-lo, fes servir les accions del producte. / Para congelarlo, consumirlo o tirarlo, usa las acciones del producto. / To freeze, use up or throw it out, use the item's actions.
