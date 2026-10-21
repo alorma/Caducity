@@ -52,15 +52,15 @@ See the chat of 21 October; answers go here as «Decisions taken with Bernat».
 
 ## Phase 2 tasks: Es pot congelar
 
-- [x] a. Data: Room v6 (`categories.canFreeze` NOT NULL DEFAULT 1, `products.canFreeze` NULL), `MIGRATION_5_6`,
+- [x] a. Data: Room v6 (`categories.canFreeze` NOT NULL DEFAULT 1, `products.canFreeze` NULL), `MIGRATION_5_6`, (3ec7fad3)
   schema `6.json`, domain `Category.canFreeze` / `Product.canFreeze`, backup v5 reading v4.
-- [x] b. Domain: effective value (product ?? category) in the read models (`ProductRowModel`, item actions state) and
+- [x] b. Domain: effective value (product ?? category) in the read models (`ProductRowModel`, item actions state) and (448d0369)
   use cases to set it on category / product; the freeze use case refuses when it cannot be frozen.
-- [x] c. Category editor: «Congelació» section with the switch (`NovaCategoria`).
-- [x] d. Add / Edit: «Es pot congelar» row under Quantitat (also in Edit), inherited value + override, hides «Congelat».
-- [x] e. Rows: no ❄ when it cannot be frozen (frozen rows keep ☀).
-- [x] f. Item actions modals: no «Congela», «Consumeix» takes the whole width.
-- [x] g. Transforma: no «Congela'n» for results that cannot be frozen.
+- [x] c. Category editor: «Congelació» section with the switch (`NovaCategoria`). (e6834080)
+- [x] d. Add / Edit: «Es pot congelar» row under Quantitat (also in Edit), inherited value + override, hides «Congelat». (0e830aeb)
+- [x] e. Rows: no ❄ when it cannot be frozen (frozen rows keep ☀). (88eb187c)
+- [x] f. Item actions modals: no «Congela», «Consumeix» takes the whole width. (8ef45b5a)
+- [x] g. Transforma: no «Congela'n» for results that cannot be frozen. (8f470a77)
 
 Strings ca/es/en go with the task that uses them.
 
@@ -82,3 +82,7 @@ Strings ca/es/en go with the task that uses them.
 - Transforma: result in a non-freezable category has no «Congela'n» chip; switching to Dairy shows it.
 - Release notes 1.1.7 (en-US, ca, es-ES) added.
 - Not tried: Pixel 8a (upgrade with real data), TalkBack.
+
+## Phase 2 closed
+
+Approved by Bernat on 21 October. Next: phase 1 (unit type) in a new session.
