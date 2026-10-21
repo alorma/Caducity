@@ -46,6 +46,19 @@ class TransformViewModel(
   private val eventTracker: EventTracker,
   private val pickerResults: IngredientPickerResults,
 ) : BaseViewModel<TransformNavigation, TransformNavigationSideEffect, TransformSideEffect>() {
+  // Left for the screen underneath only once this one is gone: while it is still on top, its own scaffold
+  // would take the snackbar and it would leave with it.
+  private var pendingResult: SnackbarRequest? = null
+
+  internal fun flushResult() {
+    pendingResult?.let(screenResults::post)
+    pendingResult = null
+  }
+
+  override fun onCleared() {
+    flushResult()
+  }
+
   private val _state =
     MutableStateFlow(TransformState(today = todayProvider.today(), freeEntry = args.itemIds.isEmpty()))
   val state: StateFlow<TransformState> = _state.asStateFlow()
@@ -313,15 +326,14 @@ class TransformViewModel(
         .transform(spends, results)
         .onSuccess { batch ->
           val (message, messageArgs) = doneMessage(current.ingredients.sumOf { it.count }, results.size)
-          screenResults.post(
+          pendingResult =
             SnackbarRequest(
               message = message,
               messageArgs = messageArgs,
               actionLabel = R.string.add_undo,
               type = AppFeedbackType.Success,
               onAction = { transformItems.undo(batch) },
-            ),
-          )
+            )
           for (row in 1..current.ingredients.size.coerceAtMost(MaxCascadedRows)) {
             delay(CascadeStepMillis)
             _state.update { it.copy(closedRows = row) }

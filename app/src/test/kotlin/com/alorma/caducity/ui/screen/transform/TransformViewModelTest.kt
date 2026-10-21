@@ -160,6 +160,13 @@ class TransformViewModelTest {
       pickerResults = pickerResults,
     ).also { created += it }
 
+  /** Saves, waits for the screen to close and hands the result over, as clearing the view model does. */
+  private suspend fun TransformViewModel.saveAndClose() {
+    onSave()
+    withContext(Dispatchers.Default) { withTimeout(5_000) { navigationSideEffects.first() } }
+    flushResult()
+  }
+
   private suspend fun TransformViewModel.await(predicate: (TransformState) -> Boolean): TransformState =
     withContext(Dispatchers.Default) { withTimeout(5_000) { state.first(predicate) } }
 
@@ -725,7 +732,7 @@ class TransformViewModelTest {
 
       results.pending.test {
         skipItems(1)
-        vm.onSave()
+        vm.saveAndClose()
         expectThat(awaitItem()?.message).isEqualTo(R.string.transform_done_one_one)
       }
 
@@ -733,7 +740,7 @@ class TransformViewModelTest {
       many.onNameChange(0, "Stew")
       results.pending.test {
         skipItems(1)
-        many.onSave()
+        many.saveAndClose()
         val message = awaitItem()!!
         expectThat(message.message).isEqualTo(R.string.transform_done_one_product)
         expectThat(message.messageArgs).isEqualTo(listOf<Any>(3))
