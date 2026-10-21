@@ -56,6 +56,18 @@ class NotificationContentBuilderTest {
   }
 
   @Test
+  fun `the reminder adds up the amounts of the batches of the day`() {
+    val grams = {
+      id: String,
+      amount: Int,
+      ->
+      entry("Arròs", 1, id = id).copy(unitType = UnitType.GRAMS, amount = amount)
+    }
+    val soon = build(listOf(grams("a", 300), grams("b", 200))).soon
+    expectThat(soon!!.products.single().amount).isEqualTo(500)
+  }
+
+  @Test
   fun `one product with one unit`() {
     val soon = build(listOf(entry("Xoriço", 1))).soon
     expectThat(soon).isNotNull()

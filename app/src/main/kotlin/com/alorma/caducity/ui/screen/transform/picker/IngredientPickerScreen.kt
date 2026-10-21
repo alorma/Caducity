@@ -69,6 +69,7 @@ import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.Category
 import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.ProductGroup
+import com.alorma.caducity.domain.model.sumAmount
 import com.alorma.caducity.ui.components.connected.ConnectedListSpacing
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
@@ -366,7 +367,7 @@ private fun PickerRow(
   onToggle: () -> Unit,
 ) {
   val status = group.nearest.status
-  val units = unitCountText(group.nearest.unitType, group.unitCount)
+  val units = unitCountText(group.nearest.unitType, group.unitCount, group.units.sumAmount())
   val statusColors = status.colors()
   val shapes = ListItemDefaults.segmentedShapes(index, count)
   SegmentedListItem(

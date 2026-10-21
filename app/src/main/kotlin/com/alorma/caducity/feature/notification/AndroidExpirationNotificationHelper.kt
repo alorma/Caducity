@@ -20,6 +20,7 @@ import com.alorma.caducity.MainActivity
 import com.alorma.caducity.R
 import com.alorma.caducity.config.resources.StringProvider
 import com.alorma.caducity.domain.NotificationConfigDataSource
+import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.feature.deeplink.DeepLinkAction
 import com.alorma.caducity.ui.theme.ColorPalette
@@ -27,6 +28,7 @@ import com.alorma.caducity.ui.theme.ThemePreferences
 import com.alorma.caducity.ui.theme.colors.accent
 import com.alorma.caducity.ui.theme.colors.supportsDynamicColors
 import com.alorma.caducity.ui.unit.countPlural
+import com.alorma.caducity.ui.unit.formatAmount
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 import java.util.Locale
@@ -192,15 +194,26 @@ class AndroidExpirationNotificationHelper(
     }
   }
 
+  /** «3 units», or the amount of a measured product («500 g»); nothing for a single unit. */
+  private fun quantityText(
+    product: ReminderProduct,
+    short: Boolean,
+  ): String? =
+    if (product.amount != null && product.unitType.parent == UnitParent.MEASURED) {
+      formatAmount(product.unitType, product.amount)
+    } else {
+      product.units.takeIf { it > 1 }?.let {
+        stringProvider.getQuantityString(product.unitType.notificationPlural(short), it, it)
+      }
+    }
+
   private fun buildBody(content: ReminderContent): String {
     val shown = content.shown
     return when {
       content.products.size == 1 -> {
         val product = shown.first()
         listOfNotNull(
-          product.units.takeIf { it > 1 }?.let {
-            stringProvider.getQuantityString(product.unitType.notificationPlural(short = false), it, it)
-          },
+          quantityText(product, short = false),
           product.categoryName,
         ).joinToString(separator = SEPARATOR)
       }
@@ -244,9 +257,7 @@ class AndroidExpirationNotificationHelper(
         val detail =
           listOfNotNull(
             dayLabel(product),
-            product.units.takeIf { it > 1 }?.let {
-              stringProvider.getQuantityString(product.unitType.notificationPlural(short = true), it, it)
-            },
+            quantityText(product, short = true),
           ).joinToString(separator = SEPARATOR)
         style.addLine(stringProvider.getString(R.string.notification_inbox_line, product.name, detail))
       }

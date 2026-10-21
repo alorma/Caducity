@@ -3,6 +3,7 @@ package com.alorma.caducity.ui.unit
 import androidx.annotation.PluralsRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.alorma.caducity.R
@@ -12,6 +13,7 @@ import com.alorma.caducity.base.ui.icons.symbols.LocalDrink
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.base.ui.icons.symbols.Tag
 import com.alorma.caducity.base.ui.icons.symbols.TakeoutDining
+import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
 
 /** «%d unitats», «%d paquets»…: how many of a product are counted. Measured and handful types arrive in later phases. */
@@ -30,11 +32,18 @@ val UnitType.countPlural: Int
       -> R.plurals.home_unit_count
     }
 
+/** The quantity of a row: the amount of a measured batch («500 g»), else how many («3 paquets»). */
 @Composable
 fun unitCountText(
   unitType: UnitType,
   count: Int,
-): String = pluralStringResource(unitType.countPlural, count, count)
+  amount: Int? = null,
+): String =
+  if (amount != null && unitType.parent == UnitParent.MEASURED) {
+    formatAmount(unitType, amount, LocalConfiguration.current.locales[0])
+  } else {
+    pluralStringResource(unitType.countPlural, count, count)
+  }
 
 /** Name of the type in the picker: «Unitats», «Tuppers», «Paquets», «Llaunes». */
 @Composable

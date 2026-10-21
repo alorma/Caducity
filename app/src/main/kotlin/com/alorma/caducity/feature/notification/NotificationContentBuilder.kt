@@ -4,6 +4,7 @@ import com.alorma.caducity.domain.model.ExpiryStatus
 import com.alorma.caducity.domain.model.PantryEntry
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.model.normalizeForSearch
+import com.alorma.caducity.domain.model.sumAmount
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.daysUntil
 
@@ -15,6 +16,8 @@ data class ReminderProduct(
   val daysLeft: Int,
   val units: Int,
   val unitType: UnitType = UnitType.DEFAULT,
+  /** Total amount of the batches that expire that day (g or mL); null for units. */
+  val amount: Int? = null,
 )
 
 /** Products of one notification, nearest first. Only the first [MAX_SHOWN] are named, the rest are [hiddenCount]. */
@@ -62,6 +65,7 @@ object NotificationContentBuilder {
             daysLeft = today.daysUntil(nearest),
             units = units.count { it.expiration == nearest },
             unitType = first.unitType,
+            amount = units.filter { it.expiration == nearest }.sumAmount(),
           )
         }.sortedWith(compareBy<ReminderProduct> { it.expiration }.thenBy { it.name.normalizeForSearch() })
 

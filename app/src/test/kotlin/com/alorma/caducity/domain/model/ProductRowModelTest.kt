@@ -5,6 +5,7 @@ import kotlinx.datetime.LocalDate
 import org.junit.Test
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
+import strikt.assertions.isNull
 
 class ProductRowModelTest {
   private fun unit(
@@ -24,6 +25,19 @@ class ProductRowModelTest {
     remainingDays = day - 14,
     createdAt = createdAt?.let { Instant.fromEpochMilliseconds(it) },
   )
+
+  @Test
+  fun `a row adds up the amounts of its batches`() {
+    val grams =
+      listOf(
+        unit("a", day = 16).copy(unitType = UnitType.GRAMS, amount = 300),
+        unit("b", day = 20).copy(unitType = UnitType.GRAMS, amount = 450),
+      )
+    expectThat(grams.toProductRow(null, ProductRowDetail.WithDays, LocalDate(2026, 10, 14)).amount).isEqualTo(750)
+    expectThat(
+      listOf(unit("a", day = 16)).toProductRow(null, ProductRowDetail.WithDays, LocalDate(2026, 10, 14)).amount,
+    ).isNull()
+  }
 
   @Test
   fun `nearest is the one that expires first, not the first created`() {
