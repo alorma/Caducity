@@ -15,9 +15,9 @@ data class BackupData(
   val transformations: List<BackupTransformation>,
 ) {
   companion object {
-    const val CURRENT_VERSION = 5
+    const val CURRENT_VERSION = 6
 
-    /** Version 4 backups lack «Es pot congelar»; its fields have defaults, so they import as they are. */
+    /** Version 4 and 5 backups lack «Es pot congelar» and the unit type; their fields have defaults, so they import as they are. */
     const val MIN_SUPPORTED_VERSION = 4
   }
 }
@@ -49,6 +49,7 @@ data class BackupProduct(
   val name: String,
   val createdAt: Long,
   val canFreeze: Boolean? = null,
+  val unitType: String = "UNITS",
   val items: List<BackupProductItem>,
 )
 
@@ -65,4 +66,6 @@ data class BackupProductItem(
   val transformedDate: Long? = null,
   val transformationId: String? = null,
   val originTransformationId: String? = null,
+  val amount: Int? = null,
+  val level: String? = null,
 )

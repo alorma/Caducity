@@ -19,7 +19,7 @@ import com.alorma.caducity.data.datasource.room.model.TransformationRoomEntity
     ProductRoomEntity::class,
     TransformationRoomEntity::class,
   ],
-  version = 6,
+  version = 7,
   exportSchema = true,
 )
 @TypeConverters(AvatarConverters::class)

@@ -227,3 +227,16 @@ val MIGRATION_5_6 =
       db.execSQL("ALTER TABLE products ADD COLUMN canFreeze INTEGER")
     }
   }
+
+/**
+ * v6 → v7: unit type. Every product starts as `UNITS`; `items.amount` and `items.level` are for the measured and
+ * handful types and stay null until those arrive.
+ */
+val MIGRATION_6_7 =
+  object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+      db.execSQL("ALTER TABLE products ADD COLUMN unitType TEXT NOT NULL DEFAULT 'UNITS'")
+      db.execSQL("ALTER TABLE items ADD COLUMN amount INTEGER")
+      db.execSQL("ALTER TABLE items ADD COLUMN level TEXT")
+    }
+  }

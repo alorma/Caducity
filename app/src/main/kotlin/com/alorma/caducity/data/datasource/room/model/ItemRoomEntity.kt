@@ -38,4 +38,6 @@ data class ItemRoomEntity(
   val transformedDate: Long? = null, // When used as a transform ingredient - null means not transformed
   val transformationId: String? = null, // Transformation that consumed this ingredient
   val originTransformationId: String? = null, // Transformation that produced this item
+  val amount: Int? = null, // Quantity of a measured product (g or mL) - null for the other unit types
+  val level: String? = null, // Level of a handful product - null for the other unit types
 )

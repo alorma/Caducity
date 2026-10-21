@@ -1,5 +1,6 @@
 package com.alorma.caducity.data.datasource.room.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
@@ -25,4 +26,7 @@ data class ProductRoomEntity(
   val createdAt: Long,
   /** Overrides the category: null inherits [CategoryRoomEntity.canFreeze]. */
   val canFreeze: Boolean? = null,
+  /** `UnitType` name: how the product is counted. */
+  @ColumnInfo(defaultValue = "'UNITS'")
+  val unitType: String = "UNITS",
 )

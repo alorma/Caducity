@@ -44,6 +44,7 @@ class RoomBackupDataSource(
                 name = product.name,
                 createdAt = product.createdAt,
                 canFreeze = product.canFreeze,
+                unitType = product.unitType,
                 items =
                   items
                     .filter { item -> item.categoryId == category.id }
@@ -92,6 +93,8 @@ class RoomBackupDataSource(
       transformedDate = item.transformedDate,
       transformationId = item.transformationId,
       originTransformationId = item.originTransformationId,
+      amount = item.amount,
+      level = item.level,
     )
 
   override suspend fun importBackup(backup: BackupData) {
@@ -126,6 +129,7 @@ class RoomBackupDataSource(
               name = product.name,
               createdAt = product.createdAt,
               canFreeze = product.canFreeze,
+              unitType = product.unitType,
             )
           productDao.insertProduct(productEntity)
         }
@@ -146,6 +150,8 @@ class RoomBackupDataSource(
               transformedDate = item.transformedDate,
               transformationId = item.transformationId,
               originTransformationId = item.originTransformationId,
+              amount = item.amount,
+              level = item.level,
             )
           itemDao.insertItem(itemEntity)
         }
@@ -167,6 +173,8 @@ class RoomBackupDataSource(
                 transformedDate = item.transformedDate,
                 transformationId = item.transformationId,
                 originTransformationId = item.originTransformationId,
+                amount = item.amount,
+                level = item.level,
               )
             itemDao.insertItem(itemEntity)
           }
