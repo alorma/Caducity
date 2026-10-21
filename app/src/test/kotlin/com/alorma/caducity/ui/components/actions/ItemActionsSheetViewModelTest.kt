@@ -435,6 +435,26 @@ class ItemActionsSheetViewModelTest {
     }
 
   @Test
+  fun `an expired handful product only discards`() =
+    runTest {
+      category("dairy")
+      val id =
+        addProduct
+          .add("Peanuts", "dairy", inDays(-2), 1, false, UnitType.HANDFULS, level = HandfulLevel.HALF)
+          .getOrThrow()
+          .itemIds
+          .single()
+      val vm = viewModel(id)
+      keepAlive(vm)
+      expectThat(vm.ready().expired).isEqualTo(true)
+
+      vm.onDiscardSelected()
+      nextSnackbar()
+
+      expectThat(item(id).discardedDate).isNotNull()
+    }
+
+  @Test
   fun `consume N takes the units that expire first and undo brings them back`() =
     runTest {
       category("dairy")

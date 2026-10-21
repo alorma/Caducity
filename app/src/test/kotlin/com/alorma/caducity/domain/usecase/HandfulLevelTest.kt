@@ -23,6 +23,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import org.junit.After
 import org.junit.Before
@@ -201,6 +202,43 @@ class HandfulLevelTest {
       expectThat(items().single().level).isEqualTo(HandfulLevel.HALF)
       restore.restoreSnapshots(before).getOrThrow()
       expectThat(items().single().pausedDate).isNull()
+    }
+
+  @Test
+  fun `lowering a frozen handful keeps it frozen until the last level consumes it`() =
+    runTest {
+      category("c1")
+      val id =
+        addProduct
+          .add("Peanuts", "c1", inDays(30), 1, frozen = true, unitType = UnitType.HANDFULS, level = HandfulLevel.HALF)
+          .getOrThrow()
+          .itemIds
+          .single()
+
+      consume.lowerLevel(id).getOrThrow()
+      expectThat(items().single().level).isEqualTo(HandfulLevel.LITTLE)
+      expectThat(items().single().pausedDate).isNotNull()
+
+      consume.lowerLevel(id).getOrThrow()
+      expectThat(items().single().consumedDate).isNotNull()
+      expectThat(items().single().pausedDate).isNull()
+    }
+
+  @Test
+  fun `thawing a frozen handful gives it today plus three days and keeps its level`() =
+    runTest {
+      category("c1")
+      val id =
+        addProduct
+          .add("Peanuts", "c1", inDays(30), 1, frozen = true, unitType = UnitType.HANDFULS, level = HandfulLevel.HALF)
+          .getOrThrow()
+          .itemIds
+          .single()
+
+      pantry.unfreezeAll(listOf(id), today.plus(3, DateTimeUnit.DAY).atStartOfDayIn(TimeZone.currentSystemDefault()))
+
+      expectThat(items().single().pausedDate).isNull()
+      expectThat(items().single().level).isEqualTo(HandfulLevel.HALF)
     }
 
   @Test
