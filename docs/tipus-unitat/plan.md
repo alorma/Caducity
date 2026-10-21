@@ -141,3 +141,9 @@ changing the type in Edit leaves one batch with the nearest date and the default
 - [x] 16. (Asked by Bernat, to do at the end) Category screen: the week strip and the status chips (Tots / Caducat / Aviat /
   Fresc…) must reach the edge of the screen and not be cut at the gutter, like the week strip on Home (`fullBleed`).
   Check with a screenshot on the emulator, light and dark. Done (3bae5306): the strip runs to the border on emulator-5554 (light only; chips scroll with the same padding).
+- [ ] 17. (Bernat, 21 October, after trying Transforma) Measured ingredient in Transforma: the «1 de 2» chip becomes the amount
+  to spend («500 g», − / + in steps of 50 g / 100 mL, shortcuts 50/100/250/Tot like the modal; default: the whole lot).
+  Batches are spent soonest first; a batch spent in part keeps the rest; Undo restores amounts. Replaces spec §6 («sencer»).
+- [ ] 18. (Bernat, same day) Results of Transforma can have any unit type (not only units): «Com ho comptes?» row on the result
+  card (same sheet) and, if Mesurable, an amount in g / mL instead of «Unitats − 1 +». Replaces spec §6 («sempre en unitats»).
+  No Grapats until phase 4.
