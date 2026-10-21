@@ -27,17 +27,21 @@ category screen and the category Durada sheet.
 
 ## Open questions (to decide with Bernat before the task list)
 
-- **`UnitTypeRow` and `CanFreezeCard` vs the new design.** The spec folds «Com ho comptes» into the Quantitat sheet and puts
-  «Es pot congelar» out of the main list. Does the new design replace both rows? Where does the product's «Es pot congelar»
-  override live (it exists since tipus-unitat phase 2)?
+- **Product's «Es pot congelar» override.** It exists since tipus-unitat phase 2 (`CanFreezeCard`), but the new design has no
+  row for it: its «Ja és congelat» row is the item's frozen state, a different thing. Where does the override live?
 - **Edit and the model.** The spec says «one row = one product with N units and one date; editing changes only that row». Today
   Edit works on one unit. Confirm that nothing changes in the data model.
-- **Quantitat in Edit.** The spec keeps the row in Edit; today it is hidden. Is it editable (adds/removes units) or read-only?
-- **Mesurable / Grapats in the Quantitat sheet.** Amount (grams) and level don't use the − N + control. What does the sheet show
-  for those types? Not covered by the spec.
 - **Default categories bug.** Translated names while the user has not renamed them: check how they are stored (name saved in
   the DB vs resource) before choosing the fix.
 - **Which icons** for the default categories (spec: `nutrition`, `grocery`…).
+
+## Decisions taken with Bernat (21 October)
+
+- In the design, **Quantitat and «Ja és congelat» are separate rows** (see captures); the frozen switch stays its own row,
+  shown only if the category / product can be frozen.
+- **Quantitat is being worked on by another agent** as part of tipus-unitat (Mesurable, Grapats). **To check when this plan
+  starts:** what the Quantitat row and sheet look like by then (− N + for Unitats; grams / level for the other types), whether
+  Edit shows it, and whether it is editable. Do not design it here.
 
 ## Tasks
 

@@ -32,11 +32,14 @@ Order: this plan goes **before** `docs/afegir-editar-producte/plan.md`, because 
 
 ## Open questions (to decide with Bernat before the task list)
 
-- `QuickCategorySheet` (create from Add): stays as it is, or is replaced by the new screen? The product plan's «+ Nova» opens
-  the full «Nova categoria» screen.
 - Does the Aspecte sheet apply on drag-dismiss only, or also with «Fet»? (Spec: both apply; no cancel.)
 - Name of the pantry in the «Com es veu al Rebost» text: use the name the app already uses in each language.
 - Does the description limit already exist in code? If yes, keep it.
+
+## Decisions taken with Bernat (21 October)
+
+- `QuickCategorySheet` (create from Add) **stays as it is for now**; only the editor screen changes. The product plan's «+ Nova»
+  keeps opening what exists.
 
 ## Tasks
 
