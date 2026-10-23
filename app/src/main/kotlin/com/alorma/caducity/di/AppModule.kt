@@ -16,6 +16,7 @@ import com.alorma.caducity.domain.usecase.FindProductUseCase
 import com.alorma.caducity.domain.usecase.FreezeAmountUseCase
 import com.alorma.caducity.domain.usecase.FreezeItemUseCase
 import com.alorma.caducity.domain.usecase.RescheduleItemUseCase
+import com.alorma.caducity.domain.usecase.SetCategoryDurationUseCase
 import com.alorma.caducity.domain.usecase.SetHandfulLevelUseCase
 import com.alorma.caducity.domain.usecase.SetProductCanFreezeUseCase
 import com.alorma.caducity.domain.usecase.SetProductUnitTypeUseCase
@@ -46,7 +47,6 @@ import com.alorma.caducity.ui.screen.settings.SettingsViewModel
 import com.alorma.caducity.ui.screen.settings.backup.BackupViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugRemoteConfigsViewModel
 import com.alorma.caducity.ui.screen.settings.debug.DebugSettingsViewModel
-import com.alorma.caducity.ui.screen.settings.durations.CategoryDurationsViewModel
 import com.alorma.caducity.ui.screen.settings.privacy.PrivacySettingsViewModel
 import com.alorma.caducity.ui.screen.status.StatusListViewModel
 import com.alorma.caducity.ui.screen.transform.TransformViewModel
@@ -195,6 +195,7 @@ val appModule =
         findProduct = get(),
         setProductCanFreeze = get(),
         setProductUnitType = get(),
+        setCategoryDuration = get(),
         observeCategories = get(),
         categoryCreated = get(),
         eventTracker = get(),
@@ -206,6 +207,7 @@ val appModule =
     // Category editor (new and edit)
     singleOf(::CreateCategoryUseCase)
     singleOf(::SetProductCanFreezeUseCase)
+    singleOf(::SetCategoryDurationUseCase)
     singleOf(::SetProductUnitTypeUseCase)
     singleOf(::ConsumeAmountUseCase)
     singleOf(::SetHandfulLevelUseCase)
@@ -239,7 +241,6 @@ val appModule =
     viewModelOf(::BackupViewModel)
 
     // Privacy Settings
-    viewModelOf(::CategoryDurationsViewModel)
     viewModelOf(::PrivacySettingsViewModel)
 
     // Debug Settings

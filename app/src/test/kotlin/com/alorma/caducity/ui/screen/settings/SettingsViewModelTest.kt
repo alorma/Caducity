@@ -4,9 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.calendar.FirstDayOfWeekPreferences
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.data.datasource.SettingsNotificationConfigDataSource
-import com.alorma.caducity.domain.PantryDataSource
-import com.alorma.caducity.domain.model.Category
-import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.feature.consent.ConsentManager
 import com.alorma.caducity.feature.consent.ConsentPreferences
 import com.alorma.caducity.feature.consent.ConsentStatus
@@ -19,7 +16,6 @@ import com.russhwolf.settings.MapSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -31,13 +27,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import strikt.api.expectThat
 import strikt.assertions.containsExactly
 import strikt.assertions.isEmpty
 import strikt.assertions.isEqualTo
-import strikt.assertions.isNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
@@ -64,14 +58,6 @@ class SettingsViewModelTest {
   private val thresholds = SoonThresholdPreferences(settings)
   private val firstDay = FirstDayOfWeekPreferences(settings)
   private val config = SettingsNotificationConfigDataSource(settings)
-  private val categories =
-    MutableStateFlow(
-      listOf(
-        Category("c1", "Rebost", "", usualDurationDays = 30),
-        Category("c2", "Làctics", "", usualDurationDays = null),
-        Category("c3", "Fleca", "", usualDurationDays = 2),
-      ),
-    )
   private val themePreferences = ThemePreferencesImpl(MapSettings())
   private var consent = ConsentPreferences.DEFAULT
   private lateinit var vm: SettingsViewModel
@@ -79,14 +65,12 @@ class SettingsViewModelTest {
   @Before
   fun setUp() {
     Dispatchers.setMain(UnconfinedTestDispatcher())
-    val pantry = mock<PantryDataSource> { on { observeCategories() } doReturn categories }
     val consentManager = mock<ConsentManager> { on { getConsentPreferences() } doAnswer { consent } }
     vm =
       SettingsViewModel(
         config,
         scheduler,
         thresholds,
-        ObserveCategoriesUseCase(pantry),
         themePreferences,
         firstDay,
         EventTracker(emptyList()),
@@ -139,22 +123,6 @@ class SettingsViewModelTest {
       vm.onSoonThresholdChange(7)
       expectThat(thresholds.current()).isEqualTo(7)
       expectThat(vm.state.first { it.soonThresholdDays == 7 }.soonThresholdDays).isEqualTo(7)
-    }
-
-  @Test
-  fun `the usual durations are listed shortest first, categories without one last`() =
-    runTest {
-      val margins = vm.state.first { it.categoryDurations.isNotEmpty() }.categoryDurations
-      expectThat(margins).containsExactly(
-        CategoryDurationSummary("Fleca", 2),
-        CategoryDurationSummary("Rebost", 30),
-        CategoryDurationSummary("Làctics", null),
-      )
-
-      vm.onSoonThresholdChange(7)
-      val updated = vm.state.first { it.soonThresholdDays == 7 }.categoryDurations
-      expectThat(updated.first { it.name == "Làctics" }.days).isNull()
-      expectThat(updated.first { it.name == "Rebost" }.days).isEqualTo(30)
     }
 
   @Test

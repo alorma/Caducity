@@ -201,6 +201,13 @@ class AddQuickCategoryAction :
     parameters = mapOf("source" to "category_chips"),
   )
 
+class ChangeSuggestedDurationAction :
+  NavigationAction(
+    actionName = "category_duration",
+    origin = "add",
+    parameters = mapOf("source" to "suggested_line"),
+  )
+
 class QuickCategoryCloseAction :
   NavigationAction(
     actionName = "close_quick_category",

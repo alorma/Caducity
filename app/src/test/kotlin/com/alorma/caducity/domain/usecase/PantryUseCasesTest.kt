@@ -436,28 +436,6 @@ class PantryUseCasesTest {
     }
 
   @Test
-  fun `the durations screen sets one duration and restores the suggested ones`() =
-    runTest {
-      val durations = CategoryDurationsUseCase(pantry)
-      val dairy = "dairy"
-      val pantryId = "pantry"
-      val own = "own"
-      category(dairy, "Làctics", 0)
-      category(pantryId, "Rebost", 1)
-      category(own, "Snacks", 2)
-
-      durations.set(dairy, 14).getOrThrow()
-      durations.set(own, 60).getOrThrow()
-      expectThat(db.categoryDao().getCategory(dairy)!!.usualDurationDays).isEqualTo(14)
-      expectThat(durations.set("zzz", 3)).isFailure().isA<PantryError.CategoryNotFound>()
-
-      durations.restoreSuggested().getOrThrow()
-      expectThat(db.categoryDao().getCategory(dairy)!!.usualDurationDays).isEqualTo(7)
-      expectThat(db.categoryDao().getCategory(pantryId)!!.usualDurationDays).isEqualTo(90)
-      expectThat(db.categoryDao().getCategory(own)!!.usualDurationDays).isNull()
-    }
-
-  @Test
   fun `updating a category rejects duplicates, blanks and unknown ids`() =
     runTest {
       category("c1", "Dairy", 0)

@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.alorma.caducity.config.calendar.FirstDayOfWeekPreferences
 import com.alorma.caducity.config.preferences.SoonThresholdPreferences
 import com.alorma.caducity.domain.NotificationConfigDataSource
-import com.alorma.caducity.domain.model.normalizeForSearch
-import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
 import com.alorma.caducity.feature.consent.ConsentManager
 import com.alorma.caducity.feature.consent.ConsentStatus
 import com.alorma.caducity.feature.notification.ExpirationWorkScheduler
@@ -34,7 +32,6 @@ class SettingsViewModel(
   private val notificationConfig: NotificationConfigDataSource,
   private val workScheduler: ExpirationWorkScheduler,
   private val soonThreshold: SoonThresholdPreferences,
-  observeCategories: ObserveCategoriesUseCase,
   private val themePreferences: ThemePreferences,
   private val firstDayOfWeekPreferences: FirstDayOfWeekPreferences,
   private val eventTracker: EventTracker,
@@ -53,24 +50,18 @@ class SettingsViewModel(
   val state: StateFlow<SettingsState> =
     combine(
       reminder,
-      combine(soonThreshold.thresholdDays, observeCategories.observe()) { days, categories ->
-        days to categories
-      },
+      soonThreshold.thresholdDays,
       combine(
         snapshotFlow { themePreferences.themeMode.value },
         snapshotFlow { themePreferences.colorPalette.value },
       ) { themeMode, colorPalette -> themeMode to colorPalette },
       firstDayOfWeekPreferences.state,
       analyticsEnabled,
-    ) { reminder, (threshold, categories), (themeMode, colorPalette), calendar, analytics ->
+    ) { reminder, threshold, (themeMode, colorPalette), calendar, analytics ->
       SettingsState(
         reminderEnabled = reminder.enabled,
         reminderTime = reminder.time,
         soonThresholdDays = threshold,
-        categoryDurations =
-          categories
-            .map { CategoryDurationSummary(it.name, it.usualDurationDays) }
-            .sortedWith(compareBy({ it.days ?: Int.MAX_VALUE }, { it.name.normalizeForSearch() })),
         themeMode = themeMode,
         colorPalette = colorPalette,
         firstDayOfWeek = calendar.firstDayOfWeek,
@@ -94,10 +85,6 @@ class SettingsViewModel(
       SettingsNavigation.Backup -> {
         eventTracker.trackAction(NavigateFromSettingsAction("backup"))
         emitNavigationSideEffect(SettingsNavigationSideEffect.OpenBackup)
-      }
-      SettingsNavigation.CategoryDurations -> {
-        eventTracker.trackAction(NavigateFromSettingsAction("category_margins"))
-        emitNavigationSideEffect(SettingsNavigationSideEffect.OpenCategoryDurations)
       }
       SettingsNavigation.Privacy -> {
         eventTracker.trackAction(NavigateFromSettingsAction("privacy"))

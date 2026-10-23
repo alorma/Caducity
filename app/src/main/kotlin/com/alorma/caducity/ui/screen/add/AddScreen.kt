@@ -1,9 +1,12 @@
 package com.alorma.caducity.ui.screen.add
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -23,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
@@ -47,6 +51,7 @@ import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.threshold.thresholdLabel
+import com.alorma.caducity.ui.screen.category.editor.CategoryDurationSheet
 import com.alorma.caducity.ui.theme.CaducityTheme
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
@@ -68,7 +73,8 @@ fun AddScreen(
   val state by viewModel.state.collectAsState()
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarState()
-  val bottomSheetState = rememberAppBottomSheetState()
+  // Skips the half-open stop so the Durada sheet shows its «Fet» button without dragging.
+  val bottomSheetState = rememberAppBottomSheetState(skipHalfExpanded = true)
   val datePickerState = rememberDatePickerState()
   val focusRequester = remember { FocusRequester() }
   val haptics = LocalHapticFeedback.current
@@ -285,11 +291,24 @@ private fun DateSection(
     val suggestedDays = state.suggestedDurationDays
     val categoryName = state.categories.firstOrNull { it.id == state.categoryId }?.name
     if (suggestedDays != null && categoryName != null) {
-      Text(
-        text = stringResource(R.string.add_date_suggested, categoryName, thresholdLabel(suggestedDays)),
-        style = CaducityTheme.typography.bodySmall,
-        color = CaducityTheme.colorScheme.onSurfaceVariant,
-      )
+      Row(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = viewModel::onChangeSuggestedDuration),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+      ) {
+        Text(
+          text = stringResource(R.string.add_date_suggested, categoryName, thresholdLabel(suggestedDays)),
+          style = CaducityTheme.typography.bodySmall,
+          color = CaducityTheme.colorScheme.onSurfaceVariant,
+          modifier = Modifier.weight(1f),
+        )
+        Text(
+          text = stringResource(R.string.add_date_suggested_change),
+          style = CaducityTheme.typography.labelLarge,
+          color = CaducityTheme.colorScheme.primary,
+          modifier = Modifier.padding(start = 12.dp, top = 8.dp, bottom = 8.dp),
+        )
+      }
     }
   }
 }
@@ -319,6 +338,17 @@ private fun SideEffectHandler(
                 viewModel.onUnitTypeChange(type)
                 scope.launch { bottomSheetState.hide() }
               },
+            )
+          }
+
+        is AddSideEffect.ShowCategoryDurationSheet ->
+          bottomSheetState.show {
+            val current by viewModel.state.collectAsState()
+            CategoryDurationSheet(
+              categoryName = effect.categoryName,
+              usualDurationDays = current.category?.usualDurationDays,
+              onDurationChange = viewModel::onCategoryDurationChange,
+              onDone = { scope.launch { bottomSheetState.hide() } },
             )
           }
 

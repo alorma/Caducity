@@ -24,9 +24,6 @@ class BackupScreen : Screen("BackupScreen")
 
 class PrivacySettingsScreen : Screen("PrivacySettingsScreen")
 
-/** «Durada habitual». The event keeps its 1.0 name so analytics stay continuous. */
-class CategoryDurationsScreen : Screen("CategoryMarginsScreen")
-
 class DebugSettingsScreen : Screen("DebugSettingsScreen")
 
 class DebugRemoteConfigsScreen : Screen("DebugRemoteConfigsScreen")
