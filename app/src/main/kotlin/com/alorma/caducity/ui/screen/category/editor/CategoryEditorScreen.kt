@@ -94,7 +94,8 @@ fun CategoryEditorScreen(
       }
     }
   }
-  val bottomSheetState = rememberAppBottomSheetState()
+  // Skips the half-open stop so the sheets show their «Fet» button without dragging.
+  val bottomSheetState = rememberAppBottomSheetState(skipHalfExpanded = true)
   SideEffectHandler(viewModel, dialogState, snackbarState, bottomSheetState)
 
   AppScaffold(
