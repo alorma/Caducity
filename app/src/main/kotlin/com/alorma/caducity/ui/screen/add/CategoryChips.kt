@@ -30,7 +30,7 @@ import com.alorma.caducity.ui.theme.CaducityTheme
 
 private val ChipShape =
   androidx.compose.foundation.shape
-    .RoundedCornerShape(22.dp)
+    .RoundedCornerShape(26.dp)
 
 /** Categories in several lines (no scroll) plus the trailing dashed «+ Nova» chip. */
 @OptIn(ExperimentalLayoutApi::class)
@@ -55,7 +55,7 @@ fun CategoryChips(
         selected = selected,
         onClick = { onSelect(category.id) },
         shape = ChipShape,
-        modifier = Modifier.height(44.dp),
+        modifier = Modifier.height(52.dp),
         border =
           FilterChipDefaults.filterChipBorder(
             enabled = true,
@@ -72,7 +72,7 @@ fun CategoryChips(
             selectedLabelColor = scheme.onPrimaryContainer,
           ),
         leadingIcon = {
-          CategoryShapeIcon(shape = category.shape, icon = category.icon.imageVector, size = 32.dp, selected = selected)
+          CategoryShapeIcon(shape = category.shape, icon = category.icon.imageVector, size = 40.dp, selected = selected)
         },
         label = { Text(category.name, style = CaducityTheme.typography.labelLarge, maxLines = 1) },
       )
@@ -101,11 +101,11 @@ private fun NewCategoryChip(
     border = null,
     modifier =
       Modifier
-        .height(44.dp)
+        .height(52.dp)
         .drawBehind {
           drawRoundRect(
             color = outline,
-            cornerRadius = CornerRadius(22.dp.toPx()),
+            cornerRadius = CornerRadius(26.dp.toPx()),
             style = Stroke(width = 1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 8f))),
           )
         },

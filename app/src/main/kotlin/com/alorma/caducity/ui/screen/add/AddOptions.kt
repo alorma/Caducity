@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -106,6 +107,7 @@ fun AddOptionsList(
           state = state.frozen,
           onCheckedChange = onFrozenChange,
           shapes = ListItemDefaults.segmentedShapes(index = 4, count = count),
+          colors = frozenRowColors(),
           modifier = Modifier.heightIn(min = OptionRowMinHeight),
         )
       }
@@ -115,6 +117,25 @@ fun AddOptionsList(
 
 @Composable
 private fun frozenTint() = CaducityTheme.colors.frozen.onContainer
+
+/** «Ja és congelat» switched on takes the frozen status colors instead of the green of a selected row. */
+@Composable
+private fun frozenRowColors(): ListItemColors {
+  val frozen = CaducityTheme.colors.frozen
+  val scheme = CaducityTheme.colorScheme
+  return ListItemDefaults.colors(
+    containerColor = scheme.surfaceContainer,
+    contentColor = scheme.onSurface,
+    supportingContentColor = scheme.onSurfaceVariant,
+    leadingContentColor = frozen.onContainer,
+    trailingContentColor = scheme.onSurfaceVariant,
+    selectedContainerColor = frozen.container,
+    selectedContentColor = frozen.onContainer,
+    selectedSupportingContentColor = frozen.onContainer,
+    selectedLeadingContentColor = frozen.onContainer,
+    selectedTrailingContentColor = frozen.onContainer,
+  )
+}
 
 @Composable
 private fun CategoryRow(
