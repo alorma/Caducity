@@ -105,8 +105,8 @@ class CategoryEditorViewModel(
     _state.update { it.copy(icon = icon) }
   }
 
-  /** Touching the slider sets the category's usual duration. */
-  fun onUsualDurationChange(days: Int) {
+  /** Picking a button in the Durada sheet sets the category's usual duration; `null` is «Sense». */
+  fun onUsualDurationChange(days: Int?) {
     _state.update { it.copy(usualDurationDays = days) }
   }
 

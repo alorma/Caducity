@@ -514,6 +514,11 @@
   <string name="category_editor_duration_row">Duración habitual</string>
   <string name="category_editor_duration_row_help">Para sugerir la fecha al añadir</string>
   <string name="category_editor_duration_none">Sin</string>
+  <string name="category_editor_duration_days">Días</string>
+  <string name="category_editor_duration_weeks_months">Semanas y meses</string>
+  <string name="category_editor_duration_sheet_help">Al añadir un producto a «%1$s», te propondremos que caduca dentro de %2$s. Siempre puedes cambiarla.</string>
+  <string name="category_editor_duration_sheet_blank">Al añadir un producto a esta categoría, te propondremos que caduca dentro de %1$s. Siempre puedes cambiarla.</string>
+  <string name="category_editor_duration_sheet_none">No te propondremos ninguna fecha; la pones tú.</string>
   <string name="category_editor_description_row">Descripción</string>
   <string name="category_editor_description_optional">Opcional</string>
   <string name="category_editor_description_add">Añadir</string>

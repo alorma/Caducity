@@ -215,7 +215,7 @@ internal fun CategoryEditorContent(
         icon = { Icon(Symbols.Outlined.EventAvailable, contentDescription = null) },
         title = stringResource(R.string.category_editor_duration_row),
         subtitle = stringResource(R.string.category_editor_duration_row_help),
-        subtitleMaxLines = 1,
+        subtitleMaxLines = 2,
         action = {
           OptionValue(
             value =
@@ -356,8 +356,17 @@ private fun SideEffectHandler(
               onDone = { scope.launch { bottomSheetState.hide() } },
             )
           }
-        // The Durada and Descripció sheets arrive in the next tasks.
-        CategoryEditorSideEffect.ShowDurationSheet,
+        CategoryEditorSideEffect.ShowDurationSheet ->
+          bottomSheetState.show {
+            val current by viewModel.state.collectAsStateWithLifecycle()
+            CategoryDurationSheet(
+              categoryName = current.name,
+              usualDurationDays = current.usualDurationDays,
+              onDurationChange = viewModel::onUsualDurationChange,
+              onDone = { scope.launch { bottomSheetState.hide() } },
+            )
+          }
+        // The Descripció sheet arrives in the next task.
         CategoryEditorSideEffect.ShowDescriptionSheet,
         -> Unit
       }

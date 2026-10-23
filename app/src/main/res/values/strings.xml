@@ -488,6 +488,11 @@
   <string name="category_editor_duration_row">Usual duration</string>
   <string name="category_editor_duration_row_help">To suggest the date when adding</string>
   <string name="category_editor_duration_none">None</string>
+  <string name="category_editor_duration_days">Days</string>
+  <string name="category_editor_duration_weeks_months">Weeks and months</string>
+  <string name="category_editor_duration_sheet_help">When you add a product to “%1$s”, we\'ll suggest it expires in %2$s. You can always change it.</string>
+  <string name="category_editor_duration_sheet_blank">When you add a product to this category, we\'ll suggest it expires in %1$s. You can always change it.</string>
+  <string name="category_editor_duration_sheet_none">We won\'t suggest a date; you set it.</string>
   <string name="category_editor_description_row">Description</string>
   <string name="category_editor_description_optional">Optional</string>
   <string name="category_editor_description_add">Add</string>

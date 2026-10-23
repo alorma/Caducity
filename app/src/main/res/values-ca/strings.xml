@@ -514,6 +514,11 @@
   <string name="category_editor_duration_row">Durada habitual</string>
   <string name="category_editor_duration_row_help">Per suggerir la data en afegir</string>
   <string name="category_editor_duration_none">Sense</string>
+  <string name="category_editor_duration_days">Dies</string>
+  <string name="category_editor_duration_weeks_months">Setmanes i mesos</string>
+  <string name="category_editor_duration_sheet_help">En afegir un producte a «%1$s», et proposarem que caduca d\'aquí %2$s. Sempre la pots canviar.</string>
+  <string name="category_editor_duration_sheet_blank">En afegir un producte a aquesta categoria, et proposarem que caduca d\'aquí %1$s. Sempre la pots canviar.</string>
+  <string name="category_editor_duration_sheet_none">No et proposarem cap data; la poses tu.</string>
   <string name="category_editor_description_row">Descripció</string>
   <string name="category_editor_description_optional">Opcional</string>
   <string name="category_editor_description_add">Afegeix</string>

@@ -12,6 +12,9 @@ object ThresholdStops {
 
   /** Index of the stop closest to [value]; ties go to the shorter one. */
   fun nearestIndex(value: Int): Int = days.indices.minBy { abs(days[it] - value) }
+
+  /** The stop a stored duration is shown on; `null` («Sense») stays `null`, so it is never read as a week. */
+  fun selectedStop(value: Int?): Int? = value?.let { days[nearestIndex(it)] }
 }
 
 /** Usual durations suggested for the onboarding categories and for «Torna als valors suggerits». */
