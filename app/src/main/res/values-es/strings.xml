@@ -501,9 +501,7 @@
   <string name="category_editor_title_edit">Editar la categoría</string>
   <string name="category_editor_close">Cerrar</string>
   <string name="category_editor_save">Guardar</string>
-  <string name="category_editor_preview_placeholder">Nombre de la categoría</string>
   <string name="category_editor_error_failed">No se ha podido guardar la categoría</string>
-  <string name="category_editor_description">Descripción · opcional</string>
   <string name="category_editor_description_placeholder">Por ejemplo: refrescos, zumos y bebidas fermentadas</string>
   <string name="category_editor_delete">Eliminar categoría</string>
   <string name="category_editor_appearance">Aspecto</string>
@@ -642,14 +640,7 @@
   <string name="settings_soon_default_sub">Cuándo pasa a amarillo y te avisamos</string>
   <string name="settings_privacy_analytics_on">Estadísticas de uso: activadas</string>
   <string name="settings_privacy_analytics_off">Estadísticas de uso: desactivadas</string>
-  <string name="category_editor_duration">Duración habitual · opcional</string>
-  <string name="category_editor_duration_help">Para sugerir la fecha al añadir un producto a «%1$s»: %2$s.</string>
-  <string name="category_editor_duration_help_blank">Para sugerir la fecha al añadir un producto a esta categoría: %1$s.</string>
-  <string name="category_editor_duration_help_none">Sin duración · la fecha la pones tú.</string>
   <string name="ob_alerts_default_help">Este es el margen de «Pronto» para todos los productos. Puedes cambiarlo luego en Ajustes.</string>
-  <string name="threshold_unit_days">días</string>
-  <string name="threshold_unit_weeks">semanas</string>
-  <string name="threshold_unit_months">meses</string>
   <plurals name="threshold_days">
     <item quantity="one">%d día</item>
     <item quantity="many">%d días</item>
@@ -675,7 +666,6 @@
   <string name="item_actions_frozen_one">1 unidad · congelado el %1$s</string>
   <string name="item_actions_frozen_many">%1$d unidades · congeladas el %2$s</string>
   <!-- Es pot congelar: categoria/transforma -->
-  <string name="category_editor_freeze_section">Congelación</string>
   <string name="category_editor_can_freeze">Se puede congelar</string>
   <string name="category_editor_can_freeze_help">Si no, los productos no muestran «Congelar»</string>
 

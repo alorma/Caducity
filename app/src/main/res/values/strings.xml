@@ -475,9 +475,7 @@
   <string name="category_editor_title_edit">Edit category</string>
   <string name="category_editor_close">Close</string>
   <string name="category_editor_save">Save</string>
-  <string name="category_editor_preview_placeholder">Category name</string>
   <string name="category_editor_error_failed">Could not save the category</string>
-  <string name="category_editor_description">Description · optional</string>
   <string name="category_editor_description_placeholder">For example: soft drinks, juices and fermented drinks</string>
   <string name="category_editor_delete">Delete category</string>
   <string name="category_editor_appearance">Look</string>
@@ -612,14 +610,7 @@
   <string name="settings_soon_default_sub">When it turns yellow and we warn you</string>
   <string name="settings_privacy_analytics_on">Usage statistics: on</string>
   <string name="settings_privacy_analytics_off">Usage statistics: off</string>
-  <string name="category_editor_duration">Usual duration · optional</string>
-  <string name="category_editor_duration_help">To suggest the date when you add a product to “%1$s”: %2$s.</string>
-  <string name="category_editor_duration_help_blank">To suggest the date when you add a product to this category: %1$s.</string>
-  <string name="category_editor_duration_help_none">No duration · you set the date.</string>
   <string name="ob_alerts_default_help">This is the “Soon” margin for every product. You can change it later in Settings.</string>
-  <string name="threshold_unit_days">days</string>
-  <string name="threshold_unit_weeks">weeks</string>
-  <string name="threshold_unit_months">months</string>
   <plurals name="threshold_days">
     <item quantity="one">%d day</item>
     <item quantity="other">%d days</item>
@@ -642,7 +633,6 @@
   <string name="item_actions_frozen_one">1 unit · frozen %1$s</string>
   <string name="item_actions_frozen_many">%1$d units · frozen %2$s</string>
   <!-- Es pot congelar: categoria/transforma -->
-  <string name="category_editor_freeze_section">Freezing</string>
   <string name="category_editor_can_freeze">Can be frozen</string>
   <string name="category_editor_can_freeze_help">If not, products don\'t show “Freeze”</string>
 
