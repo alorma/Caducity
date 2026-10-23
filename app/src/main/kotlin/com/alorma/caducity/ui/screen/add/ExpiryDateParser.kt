@@ -1,5 +1,7 @@
 package com.alorma.caducity.ui.screen.add
 
+import androidx.annotation.StringRes
+import com.alorma.caducity.R
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
@@ -63,12 +65,15 @@ object ExpiryDateParser {
 }
 
 /** Quick date chips, always counted from today. */
-enum class QuickDate {
-  Tomorrow,
-  ThreeDays,
-  OneWeek,
-  TwoWeeks,
-  OneMonth,
+enum class QuickDate(
+  @StringRes val labelRes: Int,
+) {
+  Tomorrow(R.string.add_quick_tomorrow),
+  ThreeDays(R.string.add_quick_3_days),
+  OneWeek(R.string.add_quick_1_week),
+  TwoWeeks(R.string.add_quick_2_weeks),
+  OneMonth(R.string.add_quick_1_month),
+  ThreeMonths(R.string.add_quick_3_months),
   ;
 
   fun from(today: LocalDate): LocalDate =
@@ -78,6 +83,7 @@ enum class QuickDate {
       OneWeek -> today.plus(DatePeriod(days = 7))
       TwoWeeks -> today.plus(DatePeriod(days = 14))
       OneMonth -> today.plus(DatePeriod(months = 1))
+      ThreeMonths -> today.plus(DatePeriod(months = 3))
     }
 }
 

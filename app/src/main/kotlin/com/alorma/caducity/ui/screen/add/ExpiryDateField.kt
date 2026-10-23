@@ -6,7 +6,6 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,8 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,12 +25,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -38,20 +41,14 @@ import androidx.compose.ui.unit.sp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.CalendarMonth
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
-import com.alorma.caducity.ui.components.chips.QuickDateChips
-import com.alorma.caducity.ui.components.chips.QuickDateOption
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.preview.PreviewTheme
-import java.time.format.TextStyle
-import java.util.Locale
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.daysUntil
 
 /**
  * Typed expiration date (`dd/mm/aa`). The state is the raw [digits]; the slashes are inserted here.
- * [date] is the parsed value (null while incomplete) and drives the live help text.
+ * [date] is the parsed value (null while incomplete); a date before [today] says so.
  */
 @Composable
 fun ExpiryDateField(
@@ -71,23 +68,24 @@ fun ExpiryDateField(
     shape = CaducityShapes.field,
     color = CaducityTheme.colorScheme.surfaceContainerHigh,
     border = if (focused) BorderStroke(2.dp, CaducityTheme.colorScheme.primary) else null,
-    modifier = modifier.fillMaxWidth().height(72.dp),
+    modifier = modifier.fillMaxWidth().height(76.dp),
   ) {
     Row(
-      modifier = Modifier.padding(start = 16.dp, end = 8.dp),
+      modifier = Modifier.padding(start = 16.dp, end = 12.dp),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
       Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
         val textStyle =
-          CaducityTheme.typography.headlineMedium.copy(
+          CaducityTheme.typography.bodyLarge.copy(
             fontSize = 32.sp,
+            fontWeight = FontWeight.Medium,
             color = CaducityTheme.colorScheme.onSurface,
           )
         if (formatted.isEmpty()) {
           Text(
             text = stringResource(R.string.add_date_placeholder),
-            style = textStyle.copy(color = CaducityTheme.colorScheme.outline),
+            style = textStyle.copy(color = CaducityTheme.colorScheme.onSurfaceVariant),
           )
         }
         BasicTextField(
@@ -96,19 +94,24 @@ fun ExpiryDateField(
           singleLine = true,
           textStyle = textStyle,
           keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-          cursorBrush =
-            androidx.compose.ui.graphics
-              .SolidColor(CaducityTheme.colorScheme.primary),
+          cursorBrush = SolidColor(CaducityTheme.colorScheme.primary),
           interactionSource = interactionSource,
           modifier = Modifier.fillMaxWidth(),
         )
       }
-      DateHelp(date = date, today = today, expired = expired)
-      IconButton(onClick = onPickerClick, modifier = Modifier.size(48.dp)) {
+      ExpiredHelp(expired = expired)
+      FilledIconButton(
+        onClick = onPickerClick,
+        colors =
+          IconButtonDefaults.filledIconButtonColors(
+            containerColor = CaducityTheme.colorScheme.surface,
+            contentColor = CaducityTheme.colorScheme.primary,
+          ),
+        modifier = Modifier.size(52.dp),
+      ) {
         Icon(
           imageVector = Symbols.Outlined.CalendarMonth,
           contentDescription = stringResource(R.string.add_date_pick),
-          tint = CaducityTheme.colorScheme.primary,
         )
       }
     }
@@ -116,77 +119,87 @@ fun ExpiryDateField(
 }
 
 @Composable
-private fun DateHelp(
-  date: LocalDate?,
-  today: LocalDate,
-  expired: Boolean,
-) {
-  val text =
-    when {
-      date == null -> null
-      expired -> stringResource(R.string.add_date_help_expired)
-      else -> {
-        val days = today.daysUntil(date)
-        val weekday = date.dayOfWeek.localizedName()
-        when (days) {
-          0 -> stringResource(R.string.add_date_help_today, weekday)
-          1 -> stringResource(R.string.add_date_help_tomorrow, weekday)
-          else -> pluralStringResource(R.plurals.add_date_help_days, days, weekday, days)
-        }
-      }
-    }
+private fun ExpiredHelp(expired: Boolean) {
   Column(
     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
     horizontalAlignment = Alignment.End,
   ) {
-    if (text != null) {
+    if (expired) {
       Text(
-        text = text,
+        text = stringResource(R.string.add_date_help_expired),
         style = CaducityTheme.typography.labelMedium,
         textAlign = TextAlign.End,
-        color = if (expired) CaducityTheme.colors.expired.strong else CaducityTheme.colorScheme.onSurfaceVariant,
+        color = CaducityTheme.colors.expired.strong,
         modifier = Modifier.padding(horizontal = 4.dp),
       )
     }
   }
 }
 
-private fun DayOfWeek.localizedName(): String =
-  java.time.DayOfWeek
-    .of(ordinal + 1)
-    .getDisplayName(TextStyle.FULL, Locale.getDefault())
-
-/** Row of quick dates (tomorrow, +3 days, ...) that reports the chosen [QuickDate]. */
+/** Shortcuts in a 3 × 2 grid; the one whose date equals [date] (relative to [today]) is marked. */
 @Composable
-fun QuickDateRow(
+fun QuickDateGrid(
   onSelect: (QuickDate) -> Unit,
   modifier: Modifier = Modifier,
-  contentPadding: PaddingValues = PaddingValues(),
-  /** The chip whose date equals [date] (relative to [today]) is marked. */
   date: LocalDate? = null,
   today: LocalDate? = null,
 ) {
-  val options =
-    QuickDate.entries.map { quick ->
-      QuickDateOption(
-        label =
-          stringResource(
-            when (quick) {
-              QuickDate.Tomorrow -> R.string.add_quick_tomorrow
-              QuickDate.ThreeDays -> R.string.add_quick_3_days
-              QuickDate.OneWeek -> R.string.add_quick_1_week
-              QuickDate.TwoWeeks -> R.string.add_quick_2_weeks
-              QuickDate.OneMonth -> R.string.add_quick_1_month
-            },
-          ),
-        selected = date != null && today != null && quick.from(today) == date,
-      )
+  Column(modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    QuickDate.entries.chunked(GRID_COLUMNS).forEach { rowItems ->
+      Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        rowItems.forEach { quick ->
+          val selected = date != null && today != null && quick.from(today) == date
+          QuickDateChip(
+            label = stringResource(quick.labelRes),
+            selected = selected,
+            onClick = { onSelect(quick) },
+            modifier = Modifier.weight(1f),
+          )
+        }
+      }
     }
-  QuickDateChips(
-    options = options,
-    onClick = { onSelect(QuickDate.entries[it]) },
-    modifier = modifier,
-    contentPadding = contentPadding,
+  }
+}
+
+private const val GRID_COLUMNS = 3
+
+@Composable
+private fun QuickDateChip(
+  label: String,
+  selected: Boolean,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val scheme = CaducityTheme.colorScheme
+  FilterChip(
+    selected = selected,
+    onClick = onClick,
+    shape = CaducityShapes.field,
+    modifier = modifier.height(48.dp),
+    border =
+      FilterChipDefaults.filterChipBorder(
+        enabled = true,
+        selected = selected,
+        borderColor = scheme.outlineVariant,
+        selectedBorderColor = scheme.primary,
+        selectedBorderWidth = 2.dp,
+      ),
+    colors =
+      FilterChipDefaults.filterChipColors(
+        containerColor = scheme.surface,
+        labelColor = scheme.onSurface,
+        selectedContainerColor = scheme.primaryContainer,
+        selectedLabelColor = scheme.onPrimaryContainer,
+      ),
+    label = {
+      Text(
+        text = label,
+        style = CaducityTheme.typography.labelLarge,
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+        modifier = Modifier.fillMaxWidth(),
+      )
+    },
   )
 }
 
@@ -200,7 +213,7 @@ private fun ExpiryDateFieldPreview() {
         ExpiryDateField("", null, today, {}, {})
         ExpiryDateField("211026", LocalDate(2026, 10, 21), today, {}, {})
         ExpiryDateField("011026", LocalDate(2026, 10, 1), today, {}, {})
-        QuickDateRow(onSelect = {})
+        QuickDateGrid(onSelect = {}, date = LocalDate(2026, 10, 18), today = today)
       }
     }
   }

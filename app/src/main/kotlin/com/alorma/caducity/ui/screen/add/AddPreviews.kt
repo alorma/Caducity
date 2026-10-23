@@ -24,6 +24,17 @@ private val produce = Category("produce", "Produce", "", CategoryShape.COOKIE7, 
 private val bakery = Category("bakery", "Bakery", "", CategoryShape.PUFFY, CategoryIcon("bakery_dining"), 2)
 private val categories = listOf(dairy, produce, bakery)
 
+private val complete =
+  AddState(
+    today = today,
+    name = "Whole milk",
+    categories = categories,
+    categoryId = "dairy",
+    date = LocalDate(2026, 10, 18),
+    dateDigits = "18102026",
+    fromHistory = true,
+  )
+
 @PreviewDynamicLightDark
 @Composable
 private fun AddFormPreview() {
@@ -38,16 +49,10 @@ private fun AddFormPreview() {
           focusRequester = remember { FocusRequester() },
         )
         SuggestionRow(suggestion = "Whole milk", typed = "whole", categoryName = "Dairy", onClick = {})
-        NewProductNotice()
-        CategoryChips(
-          categories = categories,
-          selectedId = "dairy",
-          highlightNew = false,
-          onSelect = {},
-          onNew = {},
-        )
+        AddStatusLine(fromHistory = true)
+        AddStatusLine(fromHistory = false)
         ExpiryDateField("211026", LocalDate(2026, 10, 21), today, {}, {})
-        QuickDateRow(onSelect = {})
+        QuickDateGrid(onSelect = {})
         UnitTypeRow(unitType = UnitType.UNITS, onClick = {})
         QuantityFrozenRow(quantity = 3, frozen = true, onQuantityChange = {}, onFrozenChange = {})
         UnitTypeRow(unitType = UnitType.GRAMS, onClick = {})
@@ -62,24 +67,28 @@ private fun AddFormPreview() {
         AmountChips(unitType = UnitType.GRAMS, amount = 500, onSelect = {})
         UnitTypeRow(unitType = UnitType.HANDFULS, onClick = {})
         LevelFrozenRow(level = HandfulLevel.HALF, frozen = false, onLevelChange = {}, onFrozenChange = {})
-        CanFreezeCard(
-          canFreeze = true,
-          categoryName = "Dairy",
-          categoryCanFreeze = true,
-          onCanFreezeChange = {},
-        )
-        QuantityFrozenRow(
-          quantity = 1,
-          frozen = false,
-          onQuantityChange = {},
-          onFrozenChange = {},
-          canFreeze = false,
-        )
-        CanFreezeCard(
-          canFreeze = false,
-          categoryName = "Pantry",
-          categoryCanFreeze = false,
-          onCanFreezeChange = {},
+      }
+    }
+  }
+}
+
+@PreviewDynamicLightDark
+@Composable
+internal fun AddOptionsPreview() {
+  PreviewTheme {
+    Surface {
+      Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
+        AddOptionsList(complete, {}, {}, {}, {}, {})
+        AddOptionsList(complete.copy(canFreezeOverride = false), {}, {}, {}, {}, {})
+        AddOptionsList(AddState(today = today, name = "Whole milk", categories = categories), {}, {}, {}, {}, {})
+        AddOptionsList(complete.copy(editItemId = "item"), {}, {}, {}, {}, {})
+        AddOptionsList(
+          complete.copy(editItemId = "item", frozen = true, frozenOn = LocalDate(2026, 9, 28)),
+          {},
+          {},
+          {},
+          {},
+          {},
         )
       }
     }
@@ -88,22 +97,12 @@ private fun AddFormPreview() {
 
 @PreviewDynamicLightDark
 @Composable
-private fun AddBottomBarPreview() {
+private fun AddMissingNotePreview() {
   PreviewTheme {
     Surface {
       Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        AddBottomBar(
-          state =
-            AddState(
-              today = today,
-              name = "Whole milk",
-              categories = categories,
-              categoryId = "dairy",
-              date = LocalDate(2026, 10, 21),
-            ),
-          onSave = {},
-        )
-        AddBottomBar(state = AddState(today = today, name = "Whole milk"), onSave = {})
+        AddMissingNote(missing = listOf(AddMissing.Category, AddMissing.Date))
+        AddMissingNote(missing = listOf(AddMissing.Date))
       }
     }
   }

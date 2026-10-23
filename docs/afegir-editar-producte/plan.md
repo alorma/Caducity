@@ -27,13 +27,14 @@ category screen and the category Durada sheet.
 
 ## Open questions (to decide with Bernat before the task list)
 
-- **Edit and the model.** The spec says «one row = one product with N units and one date; editing changes only that row». Today
-  Edit works on one unit. Confirm that nothing changes in the data model.
+- **Edit and the model.** Decided (23 October): the data model and the information do not change, only the UI. Edit keeps
+  working on one unit.
 - **Spec §5 ends «Si es desactiva en un producte ja congelat, es queda congelat»**: check that the freeze use case (which refuses
   when it cannot be frozen) does not block ☀ on an already frozen unit.
-- **Default categories bug.** Translated names while the user has not renamed them: check how they are stored (name saved in
-  the DB vs resource) before choosing the fix.
-- **Which icons** for the default categories (spec: `nutrition`, `grocery`…).
+- **Default categories bug.** Not an app bug (23 October): the onboarding already creates them with the translated name
+  (`OnboardingViewModel`, `ob_category_*`) and their own icons (`SuggestedCategory`: `nutrition`, `grocery`…). The English names
+  and repeated leaf in the captures come from `.claude/skills/plant-seed/seed-backup.json`. Categories are only created at the
+  onboarding and there are no migrations.
 
 ## Decisions taken with Bernat (21 October)
 
@@ -50,8 +51,8 @@ category screen and the category Durada sheet.
 
 ## Tasks
 
-- [ ] a. Bug: default categories translated and with their own icons. Validation: unit test + emulator in ca/es/en; a renamed
-  category keeps its name. **Release notes: yes** («Les categories per defecte ja surten en el teu idioma»).
+- [x] a. ~~Bug: default categories translated and with their own icons.~~ Not an app bug: it came from the plant-seed data
+  (see open questions). Nothing to do, no release note.
 - [ ] b. Main screen: top-bar «Desa», Name, status line, «Opcions» list (68 dp rows), «Falten la categoria i la data».
   Validation: previews + screenshot tests; emulator.
 - [ ] c. Sheet Categoria (tap picks and closes, «+ Nova» → category screen, picked on return). Validation: emulator.
@@ -62,6 +63,10 @@ category screen and the category Durada sheet.
 - [ ] g. Edit mode: 🗑 with «Desfés» snackbar, «Desa» only with changes, no «Ja és congelat», «Congelat el» for frozen items.
   Validation: emulator with a frozen and a non-frozen unit.
 - [ ] h. Strings ca/es/en and final review. Validation: `ktlintCheck`, unit tests, screenshot references updated.
+- [ ] i. (asked by Bernat, 23 October) Dark screenshots that do not look dark (e.g. `CategoryScreenshotTests/newCategory_Dark`):
+  they probably lack a `Surface`/background in the preview, so the dark theme shows on a light background. Fix every `*_Dark`
+  screenshot test, regenerate only those references and check each image. Note: `updateDebugScreenshotTest` also rewrites
+  unrelated references (environment drift); commit only the ones touched.
 
 All feedback through side effects and `AppBottomSheetState` (`CLAUDE.md`); navigation through `navigate()` with tracking actions.
 

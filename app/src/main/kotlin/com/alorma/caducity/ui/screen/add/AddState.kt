@@ -20,12 +20,21 @@ data class AddArgs(
   val itemId: String? = null,
 )
 
+/** Name, category and date of the unit as it was loaded to be edited. */
+data class EditOriginal(
+  val name: String,
+  val categoryId: String,
+  val date: LocalDate,
+)
+
 data class AddState(
   val today: LocalDate,
   val name: String = "",
   val suggestion: NameSuggestion? = null,
   /** Name typed and not in the history: the screen asks for category and date. */
   val isNewProduct: Boolean = false,
+  /** The typed name is exactly one in the history: its category and date come from it. */
+  val fromHistory: Boolean = false,
   val categories: List<Category> = emptyList(),
   val categoryId: String? = null,
   val dateDigits: String = "",
@@ -42,6 +51,10 @@ data class AddState(
   val saving: Boolean = false,
   /** Id of the unit being edited; null when adding a new product. */
   val editItemId: String? = null,
+  /** What the unit being edited had when the screen opened; «Desa» only enables once something differs. */
+  val original: EditOriginal? = null,
+  /** Day the unit being edited went into the freezer; null if it is not frozen. */
+  val frozenOn: LocalDate? = null,
   /** Override of «es pot congelar» chosen by the user in this session; null while untouched. */
   val canFreezeOverride: Boolean? = null,
   /** Override stored in the existing product that matches the typed name in the selected category; null if none. */
@@ -80,7 +93,20 @@ data class AddState(
         if (date == null) add(AddMissing.Date)
       }
 
-  val canSave: Boolean get() = missing.isEmpty() && !saving
+  private val unitTypeChanged: Boolean
+    get() = unitTypeOverride != null && unitTypeOverride != (productUnitType ?: UnitType.DEFAULT)
+
+  private val canFreezeChanged: Boolean
+    get() = canFreezeOverride != null && canFreezeOverride != (productCanFreeze ?: category?.canFreeze)
+
+  /** Editing: something differs from what the unit had when the screen opened. */
+  val hasChanges: Boolean
+    get() =
+      original?.let {
+        name.trim() != it.name || categoryId != it.categoryId || date != it.date || unitTypeChanged || canFreezeChanged
+      } ?: false
+
+  val canSave: Boolean get() = missing.isEmpty() && !saving && (!isEditing || hasChanges)
 
   val frozenWithPastDate: Boolean get() = frozenEffective && date != null && date < today
 }

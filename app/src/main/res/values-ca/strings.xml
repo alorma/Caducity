@@ -102,7 +102,7 @@
   <string name="nav_pantry">Rebost</string>
   <string name="nav_settings">Ajustos</string>
   <string name="action_add_product">Afegeix un producte</string>
-  <string name="add_date_placeholder">dd/mm/aa</string>
+  <string name="add_date_placeholder">dd / mm / aa</string>
   <string name="add_date_pick">Tria la data</string>
   <string name="add_date_help_expired">ja ha caducat</string>
   <string name="add_date_suggested">Suggerida: %1$s duren %2$s</string>
@@ -119,6 +119,33 @@
   <string name="add_quick_1_week">+1 setmana</string>
   <string name="add_quick_2_weeks">+2 setmanes</string>
   <string name="add_quick_1_month">+1 mes</string>
+  <string name="add_quick_3_months">+3 mesos</string>
+  <string name="add_date_no_usual">Sense durada habitual per a %1$s</string>
+  <string name="add_date_set_one">Posa\'n una</string>
+  <string name="add_quantity_how">Com ho comptes</string>
+  <string name="add_quantity_more">Grams, mil·lilitres o a grapats</string>
+  <string name="add_delete">Elimina</string>
+  <string name="add_snackbar_deleted">%1$s eliminat</string>
+  <string name="add_frozen_on">Congelat el</string>
+  <string name="add_frozen_today">avui</string>
+  <string name="add_frozen_yesterday">ahir</string>
+  <plurals name="add_frozen_days_ago">
+    <item quantity="one">fa %d dia</item>
+    <item quantity="many">fa %d dies</item>
+    <item quantity="other">fa %d dies</item>
+  </plurals>
+  <plurals name="add_frozen_weeks_ago">
+    <item quantity="one">fa %d setmana</item>
+    <item quantity="many">fa %d setmanes</item>
+    <item quantity="other">fa %d setmanes</item>
+  </plurals>
+  <plurals name="add_frozen_months_ago">
+    <item quantity="one">fa %d mes</item>
+    <item quantity="many">fa %d mesos</item>
+    <item quantity="other">fa %d mesos</item>
+  </plurals>
+  <string name="add_note_frozen">Està congelat. Per descongelar-lo, fes servir ☀ a la llista o a les accions.</string>
+  <string name="add_note_edit">Per congelar-lo, consumir-lo o llençar-lo, fes servir les accions del producte.</string>
   <string name="add_title">Afegeix</string>
   <string name="add_close">Tanca</string>
   <string name="add_name_label">Nom</string>
@@ -671,7 +698,24 @@
 
   <!-- Es pot congelar: Afegeix -->
   <string name="add_can_freeze">Es pot congelar</string>
-  <string name="add_can_freeze_subtitle">%1$s: %2$s · només aquest producte</string>
+  <string name="add_can_freeze_subtitle">Com a %1$s: %2$s</string>
+  <string name="add_can_freeze_only_this">Només aquest producte</string>
+  <string name="add_can_freeze_pending">Segons la categoria</string>
+  <string name="add_already_frozen">Ja és congelat</string>
+  <string name="add_already_frozen_subtitle">Va directe a Congelats</string>
+  <string name="add_category_sheet_subtitle">On el guardes?</string>
+  <string name="add_date_sheet_subtitle">Escriu-la o tria una drecera.</string>
+  <string name="add_status_history">Del teu historial: categoria i data ja posades</string>
+  <string name="add_status_new">Producte nou. Tria\'n la categoria i la data.</string>
+  <string name="add_required">Obligatori</string>
+  <string name="add_choose">Tria</string>
+  <string name="add_date_row_today">%1$s · avui</string>
+  <string name="add_date_row_tomorrow">%1$s · demà</string>
+  <plurals name="add_date_row_days">
+    <item quantity="one">%1$s · d\'aquí %2$d dia</item>
+    <item quantity="many">%1$s · d\'aquí %2$d dies</item>
+    <item quantity="other">%1$s · d\'aquí %2$d dies</item>
+  </plurals>
   <string name="add_can_freeze_yes">sí</string>
   <string name="add_can_freeze_no">no</string>
 </resources>

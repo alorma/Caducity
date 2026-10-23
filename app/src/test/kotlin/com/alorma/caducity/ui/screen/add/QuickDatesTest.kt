@@ -15,6 +15,7 @@ class QuickDatesTest {
     expectThat(QuickDate.OneWeek.from(today)).isEqualTo(LocalDate(2026, 10, 18))
     expectThat(QuickDate.TwoWeeks.from(today)).isEqualTo(LocalDate(2026, 10, 25))
     expectThat(QuickDate.OneMonth.from(today)).isEqualTo(LocalDate(2026, 11, 11))
+    expectThat(QuickDate.ThreeMonths.from(today)).isEqualTo(LocalDate(2027, 1, 11))
   }
 
   @Test

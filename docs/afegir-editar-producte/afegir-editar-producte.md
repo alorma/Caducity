@@ -59,7 +59,9 @@ Mateixa pantalla, amb els valors plens.
 - Canviar la categoria mou el producte.
 - **Model**: una fila = un producte amb N unitats i una sola data. Editar només canvia aquella fila. Dos productes amb el mateix nom continuen sent productes diferents (canviar-ho és una altra feature).
 
-## 6. Bug relacionat
+## 6. Bug relacionat (descartat)
+
+**No és un bug de l'app**: l'onboarding ja crea les categories traduïdes i amb les seves icones; la captura venia de les dades del seed de prova. Text original:
 
 A la captura actual, les categories per defecte surten **en anglès** («Dairy», «Fruit & veg», «Dry goods»…) amb la UI en català, i Fruit & veg i Dry goods comparteixen la mateixa icona de fulla. Les categories per defecte han de mostrar el nom traduït a l'idioma de l'app (mentre l'usuari no les hagi reanomenat) i fer servir les seves icones (`nutrition`, `grocery`…).
 

@@ -3,6 +3,7 @@ package com.alorma.caducity.domain
 import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.AddedItems
 import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.DeletedItem
 import com.alorma.caducity.domain.model.FrozenAmount
 import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.ItemSnapshot
@@ -131,6 +132,12 @@ interface PantryDataSource {
 
   /** Deletes the items (undo of what created them). */
   suspend fun deleteItems(itemIds: List<String>)
+
+  /** Deletes one item and returns it as it was, or null if it does not exist; undo with [restoreDeleted]. */
+  suspend fun deleteItem(itemId: String): DeletedItem?
+
+  /** Puts a deleted item back exactly as it was. */
+  suspend fun restoreDeleted(item: DeletedItem)
 
   /** Gives all the units [newExpiration] in one transaction; frozen units are unfrozen. */
   suspend fun reschedule(

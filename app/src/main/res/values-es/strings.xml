@@ -102,7 +102,7 @@
   <string name="nav_pantry">Despensa</string>
   <string name="nav_settings">Ajustes</string>
   <string name="action_add_product">Añadir un producto</string>
-  <string name="add_date_placeholder">dd/mm/aa</string>
+  <string name="add_date_placeholder">dd / mm / aa</string>
   <string name="add_date_pick">Elegir la fecha</string>
   <string name="add_date_help_expired">ya ha caducado</string>
   <string name="add_date_suggested">Sugerida: %1$s duran %2$s</string>
@@ -119,6 +119,33 @@
   <string name="add_quick_1_week">+1 semana</string>
   <string name="add_quick_2_weeks">+2 semanas</string>
   <string name="add_quick_1_month">+1 mes</string>
+  <string name="add_quick_3_months">+3 meses</string>
+  <string name="add_date_no_usual">Sin duración habitual para %1$s</string>
+  <string name="add_date_set_one">Pon una</string>
+  <string name="add_quantity_how">Cómo lo cuentas</string>
+  <string name="add_quantity_more">Gramos, mililitros o a ojo</string>
+  <string name="add_delete">Eliminar</string>
+  <string name="add_snackbar_deleted">%1$s eliminado</string>
+  <string name="add_frozen_on">Congelado el</string>
+  <string name="add_frozen_today">hoy</string>
+  <string name="add_frozen_yesterday">ayer</string>
+  <plurals name="add_frozen_days_ago">
+    <item quantity="one">hace %d día</item>
+    <item quantity="many">hace %d días</item>
+    <item quantity="other">hace %d días</item>
+  </plurals>
+  <plurals name="add_frozen_weeks_ago">
+    <item quantity="one">hace %d semana</item>
+    <item quantity="many">hace %d semanas</item>
+    <item quantity="other">hace %d semanas</item>
+  </plurals>
+  <plurals name="add_frozen_months_ago">
+    <item quantity="one">hace %d mes</item>
+    <item quantity="many">hace %d meses</item>
+    <item quantity="other">hace %d meses</item>
+  </plurals>
+  <string name="add_note_frozen">Está congelado. Para descongelarlo, usa ☀ en la lista o en las acciones.</string>
+  <string name="add_note_edit">Para congelarlo, consumirlo o tirarlo, usa las acciones del producto.</string>
   <string name="add_title">Añadir</string>
   <string name="add_close">Cerrar</string>
   <string name="add_name_label">Nombre</string>
@@ -671,7 +698,24 @@
 
   <!-- Es pot congelar: Afegeix -->
   <string name="add_can_freeze">Se puede congelar</string>
-  <string name="add_can_freeze_subtitle">%1$s: %2$s · solo este producto</string>
+  <string name="add_can_freeze_subtitle">Como %1$s: %2$s</string>
+  <string name="add_can_freeze_only_this">Solo este producto</string>
+  <string name="add_can_freeze_pending">Según la categoría</string>
+  <string name="add_already_frozen">Ya está congelado</string>
+  <string name="add_already_frozen_subtitle">Va directo a Congelados</string>
+  <string name="add_category_sheet_subtitle">¿Dónde lo guardas?</string>
+  <string name="add_date_sheet_subtitle">Escríbela o elige un atajo.</string>
+  <string name="add_status_history">De tu historial: categoría y fecha ya puestas</string>
+  <string name="add_status_new">Producto nuevo. Elige su categoría y fecha.</string>
+  <string name="add_required">Obligatorio</string>
+  <string name="add_choose">Elegir</string>
+  <string name="add_date_row_today">%1$s · hoy</string>
+  <string name="add_date_row_tomorrow">%1$s · mañana</string>
+  <plurals name="add_date_row_days">
+    <item quantity="one">%1$s · dentro de %2$d día</item>
+    <item quantity="many">%1$s · dentro de %2$d días</item>
+    <item quantity="other">%1$s · dentro de %2$d días</item>
+  </plurals>
   <string name="add_can_freeze_yes">sí</string>
   <string name="add_can_freeze_no">no</string>
 </resources>

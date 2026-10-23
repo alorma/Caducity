@@ -1,24 +1,19 @@
 package com.alorma.caducity.ui.screen.add
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,18 +21,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Close
+import com.alorma.caducity.base.ui.icons.symbols.Delete
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
@@ -49,10 +44,10 @@ import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.shape.ShapePosition
-import com.alorma.caducity.ui.components.threshold.thresholdLabel
+import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.category.editor.CategoryDurationSheet
 import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.colors.colors
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlinx.coroutines.launch
@@ -73,7 +68,7 @@ fun AddScreen(
   val state by viewModel.state.collectAsState()
   val dialogState = rememberAppDialogState()
   val snackbarState = rememberAppSnackbarState()
-  // Skips the half-open stop so the Durada sheet shows its «Fet» button without dragging.
+  // Skips the half-open stop so the sheets show their «Fet» button without dragging.
   val bottomSheetState = rememberAppBottomSheetState(skipHalfExpanded = true)
   val datePickerState = rememberDatePickerState()
   val focusRequester = remember { FocusRequester() }
@@ -103,25 +98,34 @@ fun AddScreen(
     dialogState = dialogState,
     snackbarState = snackbarState,
     bottomSheetState = bottomSheetState,
+    showScreenResults = false,
     topBar = {
-      AddTopBar(editing = state.isEditing, onClose = {
-        viewModel.navigate(AddNavigation.Close)
-      })
-    },
-    bottomBar = {
-      // The bar rides above the keyboard and the navigation bar; the scaffold shrinks the content for it.
-      ResponsiveCenteredContainer(fillHeight = false) {
-        AddBottomBar(
-          state = state,
-          onSave = viewModel::onSave,
-          modifier =
-            Modifier
-              .imePadding()
-              .navigationBarsPadding()
-              .padding(horizontal = 20.dp)
-              .padding(top = 8.dp, bottom = 16.dp),
-        )
-      }
+      StyledTopAppBar(
+        title = { Text(stringResource(if (state.isEditing) R.string.add_edit_title else R.string.add_title)) },
+        navigationIcon = {
+          IconButton(onClick = { viewModel.navigate(AddNavigation.Close) }) {
+            Icon(Symbols.Outlined.Close, contentDescription = stringResource(R.string.add_close))
+          }
+        },
+        actions = {
+          if (state.isEditing) {
+            IconButton(onClick = viewModel::onDeleteClick) {
+              Icon(
+                imageVector = Symbols.Outlined.Delete,
+                contentDescription = stringResource(R.string.add_delete),
+                tint = CaducityTheme.colors.expired.strong,
+              )
+            }
+          }
+          Button(
+            onClick = viewModel::onSave,
+            enabled = state.canSave,
+            modifier = Modifier.padding(end = 8.dp).heightIn(min = 44.dp),
+          ) {
+            Text(stringResource(R.string.add_save), maxLines = 1)
+          }
+        },
+      )
     },
   ) { insets ->
     ResponsiveCenteredContainer {
@@ -130,93 +134,25 @@ fun AddScreen(
           Modifier
             .fillMaxSize()
             .padding(insets)
+            .imePadding()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = ScreenGutter),
+            .padding(horizontal = ScreenGutter)
+            .padding(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp),
       ) {
         NameSection(state = state, viewModel = viewModel, focusRequester = focusRequester)
-        CategorySection(state = state, onSelect = viewModel::onCategorySelect, onNew = {
-          viewModel.navigate(AddNavigation.QuickCategory)
-        })
-        DateSection(state = state, viewModel = viewModel)
-        // Editing a unit has no quantity nor frozen toggle: its name, category, date and the product's type can change.
-        // «Com ho comptes?» and «Es pot congelar» apply to the whole product.
-        val canFreeze = state.canFreeze
-        val category = state.category
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-          Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            UnitTypeRow(
-              unitType = state.unitType,
-              onClick = viewModel::onUnitTypeClick,
-              shapePosition = if (state.isEditing) ShapePosition.Single else ShapePosition.Start,
-            )
-            if (state.resetsQuantity) {
-              Text(
-                text = stringResource(R.string.unit_type_change_warning),
-                style = CaducityTheme.typography.bodySmall,
-                color = CaducityTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-              )
-            }
-            if (!state.isEditing && state.isHandful) {
-              LevelFrozenRow(
-                level = state.level,
-                frozen = state.frozenEffective,
-                onLevelChange = viewModel::onLevelChange,
-                onFrozenChange = viewModel::onFrozenChange,
-                canFreeze = canFreeze != false,
-              )
-            } else if (!state.isEditing) {
-              QuantityFrozenRow(
-                quantity = state.quantity,
-                unitType = state.unitType,
-                amount = state.amount,
-                onAmountChange = viewModel::onAmountChange,
-                frozen = state.frozenEffective,
-                onQuantityChange = viewModel::onQuantityChange,
-                onFrozenChange = viewModel::onFrozenChange,
-                canFreeze = canFreeze != false,
-              )
-            }
-          }
-          if (!state.isEditing && state.isMeasured) {
-            AmountChips(unitType = state.unitType, amount = state.amount, onSelect = viewModel::onAmountChange)
-          }
-          if (canFreeze != null && category != null) {
-            CanFreezeCard(
-              canFreeze = canFreeze,
-              categoryName = category.name,
-              categoryCanFreeze = category.canFreeze,
-              onCanFreezeChange = viewModel::onCanFreezeChange,
-            )
-          }
-        }
+        AddOptionsList(
+          state = state,
+          onCategoryClick = viewModel::onCategoryClick,
+          onDateClick = viewModel::onDateClick,
+          onQuantityClick = viewModel::onQuantityClick,
+          onCanFreezeChange = viewModel::onCanFreezeChange,
+          onFrozenChange = viewModel::onFrozenChange,
+        )
+        if (state.isEditing) AddEditNote(frozen = state.frozen)
+        AddMissingNote(missing = state.missing)
       }
     }
-  }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun AddTopBar(
-  editing: Boolean,
-  onClose: () -> Unit,
-) {
-  ResponsiveCenteredContainer(fillHeight = false) {
-    TopAppBar(
-      title = {
-        Text(
-          text = stringResource(if (editing) R.string.add_edit_title else R.string.add_title),
-          style = CaducityTheme.typography.titleLarge,
-        )
-      },
-      navigationIcon = {
-        IconButton(onClick = onClose) {
-          Icon(Symbols.Outlined.Close, contentDescription = stringResource(R.string.add_close))
-        }
-      },
-      colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-    )
   }
 }
 
@@ -226,6 +162,7 @@ private fun NameSection(
   viewModel: AddViewModel,
   focusRequester: FocusRequester,
 ) {
+  val focusManager = LocalFocusManager.current
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     AddOverline(stringResource(R.string.add_name_label))
     NameField(
@@ -233,6 +170,10 @@ private fun NameSection(
       onNameChange = viewModel::onNameChange,
       onClear = viewModel::onClearName,
       focusRequester = focusRequester,
+      onSubmit = {
+        focusManager.clearFocus()
+        viewModel.onNameSubmit()
+      },
     )
     val suggestion = state.suggestion
     when {
@@ -244,71 +185,8 @@ private fun NameSection(
           onClick = viewModel::onSuggestionClick,
         )
 
-      state.isNewProduct -> NewProductNotice()
-    }
-  }
-}
-
-@Composable
-private fun CategorySection(
-  state: AddState,
-  onSelect: (String) -> Unit,
-  onNew: () -> Unit,
-) {
-  Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-    AddOverline(stringResource(R.string.add_category_label))
-    CategoryChips(
-      categories = state.categories,
-      selectedId = state.categoryId,
-      highlightNew = state.isNewProduct && state.categoryId == null,
-      onSelect = onSelect,
-      onNew = onNew,
-    )
-  }
-}
-
-@Composable
-private fun DateSection(
-  state: AddState,
-  viewModel: AddViewModel,
-) {
-  Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-    AddOverline(stringResource(R.string.add_date_label))
-    ExpiryDateField(
-      digits = state.dateDigits,
-      date = state.date,
-      today = state.today,
-      onDigitsChange = viewModel::onDateTextChange,
-      onPickerClick = viewModel::onPickDate,
-    )
-    QuickDateRow(
-      onSelect = viewModel::onQuickDate,
-      modifier = Modifier.fullBleed(ScreenGutter),
-      contentPadding = PaddingValues(horizontal = ScreenGutter),
-      date = state.date,
-      today = state.today,
-    )
-    val suggestedDays = state.suggestedDurationDays
-    val categoryName = state.categories.firstOrNull { it.id == state.categoryId }?.name
-    if (suggestedDays != null && categoryName != null) {
-      Row(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = viewModel::onChangeSuggestedDuration),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-      ) {
-        Text(
-          text = stringResource(R.string.add_date_suggested, categoryName, thresholdLabel(suggestedDays)),
-          style = CaducityTheme.typography.bodySmall,
-          color = CaducityTheme.colorScheme.onSurfaceVariant,
-          modifier = Modifier.weight(1f),
-        )
-        Text(
-          text = stringResource(R.string.add_date_suggested_change),
-          style = CaducityTheme.typography.labelLarge,
-          color = CaducityTheme.colorScheme.primary,
-          modifier = Modifier.padding(start = 12.dp, top = 8.dp, bottom = 8.dp),
-        )
-      }
+      !state.isEditing && state.name.isNotBlank() && (state.fromHistory || state.isNewProduct) ->
+        AddStatusLine(fromHistory = state.fromHistory)
     }
   }
 }
@@ -329,6 +207,49 @@ private fun SideEffectHandler(
       when (effect) {
         AddSideEffect.Confirm -> onHaptic(HapticFeedbackType.Confirm)
         AddSideEffect.Reject -> onHaptic(HapticFeedbackType.Reject)
+
+        AddSideEffect.ShowCategorySheet ->
+          bottomSheetState.show(onDismissRequest = viewModel::onGuidedFlowDismissed) {
+            val current by viewModel.state.collectAsState()
+            CategorySheet(
+              state = current,
+              onSelect = { id ->
+                // In the guided flow the «Caduca» sheet takes this one's place, so it stays open.
+                if (!viewModel.onCategorySelect(id)) scope.launch { bottomSheetState.hide() }
+              },
+              onNew = {
+                scope.launch { bottomSheetState.hide() }
+                viewModel.navigate(AddNavigation.QuickCategory)
+              },
+            )
+          }
+
+        AddSideEffect.ShowDateSheet ->
+          bottomSheetState.show {
+            val current by viewModel.state.collectAsState()
+            DateSheet(
+              state = current,
+              onDigitsChange = viewModel::onDateTextChange,
+              onPickerClick = viewModel::onPickDate,
+              onQuickDate = viewModel::onQuickDate,
+              onChangeSuggestedDuration = viewModel::onChangeSuggestedDuration,
+              onDone = { scope.launch { bottomSheetState.hide() } },
+            )
+          }
+
+        AddSideEffect.ShowQuantitySheet ->
+          bottomSheetState.show {
+            val current by viewModel.state.collectAsState()
+            QuantitySheet(
+              state = current,
+              onUnitTypeClick = viewModel::onUnitTypeClick,
+              onUnitTypeChange = viewModel::onUnitTypeChange,
+              onQuantityChange = viewModel::onQuantityChange,
+              onAmountChange = viewModel::onAmountChange,
+              onLevelChange = viewModel::onLevelChange,
+              onDone = { scope.launch { bottomSheetState.hide() } },
+            )
+          }
 
         is AddSideEffect.ShowUnitTypePicker ->
           bottomSheetState.show {

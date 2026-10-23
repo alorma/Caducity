@@ -45,9 +45,11 @@ fun AppScaffold(
   containerColor: Color = MaterialTheme.colorScheme.background,
   contentColor: Color = contentColorFor(containerColor),
   contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
+  /** False on a screen that closes leaving a result: the one underneath must show it, not this scaffold. */
+  showScreenResults: Boolean = true,
   content: @Composable (PaddingValues) -> Unit,
 ) {
-  ScreenResultsEffect(snackbarState)
+  if (showScreenResults) ScreenResultsEffect(snackbarState)
   CompositionLocalProvider(
     LocalAppSnackbarState provides snackbarState,
     LocalAppDialogState provides dialogState,

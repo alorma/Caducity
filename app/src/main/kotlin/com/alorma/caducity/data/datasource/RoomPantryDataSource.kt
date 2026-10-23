@@ -15,6 +15,7 @@ import com.alorma.caducity.domain.PantryDataSource
 import com.alorma.caducity.domain.model.ActiveItem
 import com.alorma.caducity.domain.model.AddedItems
 import com.alorma.caducity.domain.model.Category
+import com.alorma.caducity.domain.model.DeletedItem
 import com.alorma.caducity.domain.model.FrozenAmount
 import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.ItemSnapshot
@@ -501,6 +502,52 @@ class RoomPantryDataSource(
 
   override suspend fun deleteItems(itemIds: List<String>) {
     itemDao.deleteItems(itemIds)
+  }
+
+  override suspend fun deleteItem(itemId: String): DeletedItem? =
+    database.withTransaction {
+      itemDao.getItem(itemId)?.let {
+        itemDao.deleteItem(itemId)
+        DeletedItem(
+          id = it.id,
+          categoryId = it.categoryId,
+          identifier = it.identifier,
+          productId = it.productId,
+          expirationMillis = it.expirationDate,
+          pausedMillis = it.pausedDate,
+          remainingDays = it.remainingDays,
+          consumedMillis = it.consumedDate,
+          discardedMillis = it.discardedDate,
+          createdMillis = it.createdAt,
+          transformedMillis = it.transformedDate,
+          transformationId = it.transformationId,
+          originTransformationId = it.originTransformationId,
+          amount = it.amount,
+          level = it.level,
+        )
+      }
+    }
+
+  override suspend fun restoreDeleted(item: DeletedItem) {
+    itemDao.insertItem(
+      ItemRoomEntity(
+        id = item.id,
+        categoryId = item.categoryId,
+        identifier = item.identifier,
+        productId = item.productId,
+        expirationDate = item.expirationMillis,
+        pausedDate = item.pausedMillis,
+        remainingDays = item.remainingDays,
+        consumedDate = item.consumedMillis,
+        discardedDate = item.discardedMillis,
+        createdAt = item.createdMillis,
+        transformedDate = item.transformedMillis,
+        transformationId = item.transformationId,
+        originTransformationId = item.originTransformationId,
+        amount = item.amount,
+        level = item.level,
+      ),
+    )
   }
 
   /**

@@ -6,6 +6,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.alorma.caducity.ui.components.product.ProductRowFreezePreview
 import com.alorma.caducity.ui.components.product.ProductRowPreview
 import com.alorma.caducity.ui.components.product.ProductRowUnitTypesPreview
+import com.alorma.caducity.ui.screen.add.AddOptionsPreview
 import com.alorma.caducity.ui.screen.add.UnitTypeSheetHandfulsPreview
 import com.alorma.caducity.ui.screen.add.UnitTypeSheetMeasurablePreview
 import com.alorma.caducity.ui.screen.add.UnitTypeSheetTuppersPreview
@@ -86,5 +87,15 @@ class UnitTypeSheetScreenshotTests {
   @Composable
   fun unitTypeSheetHandfuls() {
     UnitTypeSheetHandfulsPreview()
+  }
+}
+
+class AddOptionsScreenshotTests {
+  @PreviewTest
+  @Preview(name = "Light", locale = "ca", widthDp = 411, heightDp = 1500)
+  @Preview(name = "Dark", locale = "ca", widthDp = 411, heightDp = 1500, uiMode = Configuration.UI_MODE_NIGHT_YES)
+  @Composable
+  fun addOptions() {
+    AddOptionsPreview()
   }
 }

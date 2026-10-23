@@ -20,6 +20,7 @@ import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.usecase.AddProductUseCase
 import com.alorma.caducity.domain.usecase.AppExpirationThresholdsImpl
+import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FindProductUseCase
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
@@ -29,6 +30,7 @@ import com.alorma.caducity.domain.usecase.SetProductCanFreezeUseCase
 import com.alorma.caducity.domain.usecase.SetProductUnitTypeUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
 import com.alorma.caducity.feature.tracking.EventTracker
+import com.alorma.caducity.ui.components.feedback.snackbar.ScreenResults
 import com.alorma.caducity.ui.screen.category.quick.CategoryCreatedEvents
 import com.russhwolf.settings.MapSettings
 import kotlin.time.Instant
@@ -55,6 +57,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import strikt.api.expectThat
+import strikt.assertions.contains
 import strikt.assertions.containsExactly
 import strikt.assertions.hasSize
 import strikt.assertions.isEmpty
@@ -131,6 +134,7 @@ class AddViewModelTest {
   private fun viewModel(
     initialCategoryId: String? = null,
     itemId: String? = null,
+    results: ScreenResults = ScreenResults(),
   ) = AddViewModel(
     args = AddArgs(categoryId = initialCategoryId, itemId = itemId),
     todayProvider = todayProvider,
@@ -142,6 +146,8 @@ class AddViewModelTest {
     setProductCanFreeze = SetProductCanFreezeUseCase(pantry),
     setProductUnitType = SetProductUnitTypeUseCase(pantry),
     setCategoryDuration = SetCategoryDurationUseCase(pantry),
+    deleteItem = DeleteItemUseCase(pantry),
+    results = results,
     observeCategories = ObserveCategoriesUseCase(pantry),
     categoryCreated = createdEvents,
     eventTracker = EventTracker(emptyList()),
@@ -278,12 +284,71 @@ class AddViewModelTest {
       vm.await { it.categories.isNotEmpty() }
 
       vm.onNameChange("Kefir")
-      vm.await { it.isNewProduct }
+      val unknown = vm.await { it.isNewProduct }
+      expectThat(unknown.fromHistory).isFalse()
 
       vm.onNameChange("milk")
       val exact = vm.await { it.categoryId == "dairy" }
       expectThat(exact.isNewProduct).isFalse()
+      expectThat(exact.fromHistory).isTrue()
       expectThat(exact.suggestion).isNull()
+
+      vm.onNameChange("milky")
+      expectThat(vm.state.value.fromHistory).isFalse()
+    }
+
+  @Test
+  fun `submitting a new name opens Categoria and then Caduca`() =
+    runTest {
+      category("dairy", usualDurationDays = 7)
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.onNameChange("Kefir")
+      vm.await { it.isNewProduct }
+
+      vm.sideEffects.test {
+        vm.onNameSubmit()
+        expectThat(awaitItem()).isEqualTo(AddSideEffect.ShowCategorySheet)
+
+        expectThat(vm.onCategorySelect("dairy")).isTrue()
+        expectThat(awaitItem()).isEqualTo(AddSideEffect.ShowDateSheet)
+        expectThat(vm.state.value.date).isEqualTo(inDays(7))
+      }
+    }
+
+  @Test
+  fun `a dismissed guided flow does not open Caduca after picking a category`() =
+    runTest {
+      category("dairy")
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.onNameChange("Kefir")
+      vm.await { it.isNewProduct }
+
+      vm.sideEffects.test {
+        vm.onNameSubmit()
+        expectThat(awaitItem()).isEqualTo(AddSideEffect.ShowCategorySheet)
+
+        vm.onGuidedFlowDismissed()
+        expectThat(vm.onCategorySelect("dairy")).isFalse()
+        expectNoEvents()
+      }
+    }
+
+  @Test
+  fun `submitting a name from the history opens nothing when it has a date`() =
+    runTest {
+      category("dairy", usualDurationDays = 7)
+      addProduct.add("Milk", "dairy", inDays(3), 1, false)
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.onNameChange("milk")
+      vm.await { it.fromHistory && it.date != null }
+
+      vm.sideEffects.test {
+        vm.onNameSubmit()
+        expectNoEvents()
+      }
     }
 
   @Test
@@ -386,6 +451,48 @@ class AddViewModelTest {
         vm.state.value.categories
           .firstOrNull(),
       ).isNotNull()
+    }
+
+  @Test
+  fun `editing enables Desa only while something differs from the unit`() =
+    runTest {
+      category("dairy")
+      val added = addProduct.add("Milk", "dairy", inDays(5), 1, false).getOrThrow()
+      val vm = viewModel(itemId = added.itemIds.single())
+      vm.await { it.isEditing && it.date != null && it.original != null }
+      expectThat(vm.state.value.canSave).isFalse()
+
+      vm.onNameChange("Oat milk")
+      expectThat(vm.state.value.canSave).isTrue()
+
+      vm.onNameChange("Milk")
+      expectThat(vm.state.value.canSave).isFalse()
+
+      vm.onQuickDate(QuickDate.Tomorrow)
+      expectThat(vm.state.value.canSave).isTrue()
+    }
+
+  @Test
+  fun `deleting a unit removes it, closes, and undo puts it back`() =
+    runTest {
+      category("dairy")
+      val added = addProduct.add("Milk", "dairy", inDays(5), 2, false).getOrThrow()
+      val itemId = added.itemIds.first()
+      val results = ScreenResults()
+      val vm = viewModel(itemId = itemId, results = results)
+      vm.await { it.isEditing && it.date != null }
+
+      vm.navigationSideEffects.test {
+        vm.onDeleteClick()
+        expectThat(awaitItem()).isEqualTo(AddNavigationSideEffect.Close)
+      }
+      expectThat(items()).hasSize(1)
+
+      val request = results.consume()
+      expectThat(request).isNotNull()
+      request?.onAction?.invoke()
+      expectThat(items()).hasSize(2)
+      expectThat(items().map { it.id }).contains(itemId)
     }
 
   @Test

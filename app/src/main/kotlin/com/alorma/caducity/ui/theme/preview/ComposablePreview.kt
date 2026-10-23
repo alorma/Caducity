@@ -14,7 +14,10 @@ import com.alorma.caducity.ui.theme.ThemePreferencesNoOp
 @Suppress("ModifierRequired")
 @Composable
 fun PreviewTheme(block: @Composable () -> Unit) {
-  AppThemeContent(themePreferences = ThemePreferencesNoOp) { block() }
+  // The background matters in dark: without it the capture shows dark content on a white canvas.
+  AppThemeContent(themePreferences = ThemePreferencesNoOp) {
+    Surface(color = MaterialTheme.colorScheme.background) { block() }
+  }
 }
 
 /** Tema amb una paleta concreta, en clar o fosc, per a les previews i captures per paleta. */
