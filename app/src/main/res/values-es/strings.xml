@@ -523,6 +523,9 @@
   <string name="category_editor_description_optional">Opcional</string>
   <string name="category_editor_description_add">Añadir</string>
   <string name="category_editor_description_edit">Editar</string>
+  <string name="category_editor_description_sheet_help">Una pista de lo que va aquí. Opcional.</string>
+  <string name="category_editor_description_counter">%1$d / %2$d</string>
+  <string name="category_editor_description_clear">Borrar</string>
   <string name="notification_channel_name">Aviso diario</string>
   <string name="notification_channel_description">Una notificación al día cuando algo está a punto de caducar</string>
   <string name="notification_day_today">hoy</string>

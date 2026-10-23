@@ -29,5 +29,10 @@ data class CategoryEditorState(
   /** What the slider shows: the stored duration or, when there is none, [DEFAULT_SHOWN_DURATION_DAYS]. */
   val shownDurationDays: Int get() = usualDurationDays ?: DEFAULT_SHOWN_DURATION_DAYS
   val isEditing: Boolean get() = categoryId != null
+
+  companion object {
+    const val DESCRIPTION_MAX_LENGTH = 80
+  }
+
   val canSave: Boolean get() = !loading && name.isNotBlank() && error != CategoryEditorError.Duplicate && !saving
 }

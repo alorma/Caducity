@@ -367,9 +367,15 @@ private fun SideEffectHandler(
               onDone = { scope.launch { bottomSheetState.hide() } },
             )
           }
-        // The Descripció sheet arrives in the next task.
-        CategoryEditorSideEffect.ShowDescriptionSheet,
-        -> Unit
+        CategoryEditorSideEffect.ShowDescriptionSheet ->
+          bottomSheetState.show {
+            val current by viewModel.state.collectAsStateWithLifecycle()
+            CategoryDescriptionSheet(
+              description = current.description,
+              onDescriptionChange = viewModel::onDescriptionChange,
+              onDone = { scope.launch { bottomSheetState.hide() } },
+            )
+          }
       }
     }
   }

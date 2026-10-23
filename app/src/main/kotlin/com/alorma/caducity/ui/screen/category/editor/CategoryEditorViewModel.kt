@@ -92,7 +92,7 @@ class CategoryEditorViewModel(
   fun onDescriptionClick() = emitSideEffect(CategoryEditorSideEffect.ShowDescriptionSheet)
 
   fun onDescriptionChange(description: String) {
-    _state.update { it.copy(description = description) }
+    _state.update { it.copy(description = description.take(CategoryEditorState.DESCRIPTION_MAX_LENGTH)) }
   }
 
   fun onShapeChange(shape: CategoryShape) {
