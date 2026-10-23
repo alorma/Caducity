@@ -292,6 +292,60 @@ class AddViewModelTest {
     }
 
   @Test
+  fun `submitting a new name opens Categoria and then Caduca`() =
+    runTest {
+      category("dairy", usualDurationDays = 7)
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.onNameChange("Kefir")
+      vm.await { it.isNewProduct }
+
+      vm.sideEffects.test {
+        vm.onNameSubmit()
+        expectThat(awaitItem()).isEqualTo(AddSideEffect.ShowCategorySheet)
+
+        expectThat(vm.onCategorySelect("dairy")).isTrue()
+        expectThat(awaitItem()).isEqualTo(AddSideEffect.ShowDateSheet)
+        expectThat(vm.state.value.date).isEqualTo(inDays(7))
+      }
+    }
+
+  @Test
+  fun `a dismissed guided flow does not open Caduca after picking a category`() =
+    runTest {
+      category("dairy")
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.onNameChange("Kefir")
+      vm.await { it.isNewProduct }
+
+      vm.sideEffects.test {
+        vm.onNameSubmit()
+        expectThat(awaitItem()).isEqualTo(AddSideEffect.ShowCategorySheet)
+
+        vm.onGuidedFlowDismissed()
+        expectThat(vm.onCategorySelect("dairy")).isFalse()
+        expectNoEvents()
+      }
+    }
+
+  @Test
+  fun `submitting a name from the history opens nothing when it has a date`() =
+    runTest {
+      category("dairy", usualDurationDays = 7)
+      addProduct.add("Milk", "dairy", inDays(3), 1, false)
+      val vm = viewModel()
+      vm.await { it.categories.isNotEmpty() }
+      vm.onNameChange("milk")
+      vm.await { it.fromHistory && it.date != null }
+
+      vm.sideEffects.test {
+        vm.onNameSubmit()
+        expectNoEvents()
+      }
+    }
+
+  @Test
   fun `exact known name does not overwrite a category picked by the user`() =
     runTest {
       category("dairy")

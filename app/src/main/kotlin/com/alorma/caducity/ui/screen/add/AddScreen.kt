@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -147,6 +148,7 @@ private fun NameSection(
   viewModel: AddViewModel,
   focusRequester: FocusRequester,
 ) {
+  val focusManager = LocalFocusManager.current
   Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
     AddOverline(stringResource(R.string.add_name_label))
     NameField(
@@ -154,6 +156,10 @@ private fun NameSection(
       onNameChange = viewModel::onNameChange,
       onClear = viewModel::onClearName,
       focusRequester = focusRequester,
+      onSubmit = {
+        focusManager.clearFocus()
+        viewModel.onNameSubmit()
+      },
     )
     val suggestion = state.suggestion
     when {
@@ -189,13 +195,13 @@ private fun SideEffectHandler(
         AddSideEffect.Reject -> onHaptic(HapticFeedbackType.Reject)
 
         AddSideEffect.ShowCategorySheet ->
-          bottomSheetState.show {
+          bottomSheetState.show(onDismissRequest = viewModel::onGuidedFlowDismissed) {
             val current by viewModel.state.collectAsState()
             CategorySheet(
               state = current,
               onSelect = { id ->
-                viewModel.onCategorySelect(id)
-                scope.launch { bottomSheetState.hide() }
+                // In the guided flow the «Caduca» sheet takes this one's place, so it stays open.
+                if (!viewModel.onCategorySelect(id)) scope.launch { bottomSheetState.hide() }
               },
               onNew = {
                 scope.launch { bottomSheetState.hide() }

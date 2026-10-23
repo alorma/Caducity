@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +35,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
@@ -67,6 +69,7 @@ fun NameField(
   onNameChange: (String) -> Unit,
   onClear: () -> Unit,
   focusRequester: FocusRequester,
+  onSubmit: () -> Unit = {},
   modifier: Modifier = Modifier,
   hint: String? = null,
 ) {
@@ -106,7 +109,9 @@ fun NameField(
           },
           singleLine = true,
           textStyle = textStyle,
-          keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+          keyboardOptions =
+            KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Next),
+          keyboardActions = KeyboardActions(onNext = { onSubmit() }),
           cursorBrush = SolidColor(CaducityTheme.colorScheme.primary),
           interactionSource = interactionSource,
           modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
