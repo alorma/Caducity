@@ -63,6 +63,10 @@ category screen and the category Durada sheet.
 - [ ] g. Edit mode: 🗑 with «Desfés» snackbar, «Desa» only with changes, no «Ja és congelat», «Congelat el» for frozen items.
   Validation: emulator with a frozen and a non-frozen unit.
 - [ ] h. Strings ca/es/en and final review. Validation: `ktlintCheck`, unit tests, screenshot references updated.
+- [ ] i. (asked by Bernat, 23 October) Dark screenshots that do not look dark (e.g. `CategoryScreenshotTests/newCategory_Dark`):
+  they probably lack a `Surface`/background in the preview, so the dark theme shows on a light background. Fix every `*_Dark`
+  screenshot test, regenerate only those references and check each image. Note: `updateDebugScreenshotTest` also rewrites
+  unrelated references (environment drift); commit only the ones touched.
 
 All feedback through side effects and `AppBottomSheetState` (`CLAUDE.md`); navigation through `navigate()` with tracking actions.
 

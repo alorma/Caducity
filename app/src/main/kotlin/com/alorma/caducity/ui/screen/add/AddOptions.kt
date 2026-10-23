@@ -33,6 +33,7 @@ import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
 import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.unit.icon
+import com.alorma.caducity.ui.unit.label
 import com.alorma.caducity.ui.unit.unitCountText
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
@@ -179,12 +180,16 @@ private fun QuantityRow(
     action = {
       OptionValue(
         value =
-          unitCountText(
-            unitType = state.unitType,
-            count = state.quantity,
-            amount = state.amount.takeIf { state.isMeasured },
-            level = state.level.takeIf { state.isHandful },
-          ),
+          if (state.isEditing) {
+            state.unitType.label()
+          } else {
+            unitCountText(
+              unitType = state.unitType,
+              count = state.quantity,
+              amount = state.amount.takeIf { state.isMeasured },
+              level = state.level.takeIf { state.isHandful },
+            )
+          },
       )
     },
     onClick = onClick,

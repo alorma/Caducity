@@ -74,7 +74,7 @@ private fun AddFormPreview() {
 
 @PreviewDynamicLightDark
 @Composable
-private fun AddOptionsPreview() {
+internal fun AddOptionsPreview() {
   PreviewTheme {
     Surface {
       Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
