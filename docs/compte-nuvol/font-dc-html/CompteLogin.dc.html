@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<title>Compte · inicia sessió</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Figtree:wght@400..700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..500,0..1,0&display=block" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2E6B3B}a:hover{color:#10300F}
+.ms{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'FILL' 0,'wght' 400,'opsz' 24;display:inline-block}
+.msf{font-variation-settings:'FILL' 1,'wght' 400,'opsz' 24}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #FFFAEE; font-family: 'Figtree', sans-serif; color: #2B2418"><div style="padding: 12px 20px 0; display: flex; flex-direction: column; gap: 8px"><div style="margin-left: -8px"><a href="CompteAjustos.dc.html" aria-label="Tanca" style="width: 48px; height: 48px; border-radius: 24px; display: flex; align-items: center; justify-content: center; color: #2B2418; text-decoration: none"><span class="ms" style="font-size: 24px">close</span></a></div><div style="display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 8px 0 10px; text-align: center"><div style="position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center"><svg viewBox="0 0 100 100" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%"><path d="{{sunny}}" fill="#DCE9C6"></path></svg><span class="ms" style="position: relative; font-size: 56px; color: #2E6B3B">cloud_sync</span></div><h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; font-weight: 800; font-stretch: 80%; line-height: 1.05">El teu rebost,<br>a tots els dispositius</h1></div><div style="display: flex; flex-direction: column; gap: 16px; padding: 4px 4px"><div style="display: flex; gap: 14px; align-items: flex-start"><span style="width: 40px; height: 40px; flex: none; border-radius: 20px; background: #F7EEDA; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px; color: #2E6B3B">devices</span></span><div><div style="font-size: 16px; font-weight: 700">Mòbil, tauleta i rellotge</div><div style="font-size: 14px; color: #6A5D45; margin-top: 2px; line-height: 1.35">El mateix rebost a tot arreu, al dia.</div></div></div><div style="display: flex; gap: 14px; align-items: flex-start"><span style="width: 40px; height: 40px; flex: none; border-radius: 20px; background: #F7EEDA; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px; color: #2E6B3B">backup</span></span><div><div style="font-size: 16px; font-weight: 700">Còpia automàtica</div><div style="font-size: 14px; color: #6A5D45; margin-top: 2px; line-height: 1.35">Si canvies de mòbil, no perds res.</div></div></div><div style="display: flex; gap: 14px; align-items: flex-start"><span style="width: 40px; height: 40px; flex: none; border-radius: 20px; background: #F7EEDA; display: flex; align-items: center; justify-content: center"><span class="ms" style="font-size: 22px; color: #2E6B3B">wifi_off</span></span><div><div style="font-size: 16px; font-weight: 700">Funciona sense internet</div><div style="font-size: 14px; color: #6A5D45; margin-top: 2px; line-height: 1.35">Tot es guarda al mòbil i es puja quan hi ha connexió.</div></div></div></div></div><div style="position: absolute; left: 20px; right: 20px; bottom: 24px; display: flex; flex-direction: column; gap: 10px"><a href="CompteFusio.dc.html" style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 56px; border-radius: 28px; background: #2E6B3B; color: #FFFFFF; text-decoration: none; font-size: 17px; font-weight: 700; "><span class="ms" style="font-size: 22px">account_circle</span>Continua amb Google</a><a href="CompteAjustos.dc.html" style="display: flex; align-items: center; justify-content: center; height: 48px; color: #2E6B3B; text-decoration: none; font-size: 16px; font-weight: 700">Ara no</a><div style="font-size: 12px; color: #6A5D45; text-align: center; line-height: 1.4">Els productes es guarden al núvol (Firebase). Pots tancar la sessió o esborrar el compte i les dades quan vulguis.</div></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  blob(n, a, rot) {
+    rot = rot || 0;
+    var p = [];
+    for (var i = 0; i < 120; i++) {
+      var t = i / 120 * Math.PI * 2;
+      var r = 50 - a + a * Math.cos(n * (t + rot));
+      p.push((50 + r * Math.cos(t)).toFixed(1) + " " + (50 + r * Math.sin(t)).toFixed(1));
+    }
+    return "M" + p.join("L") + "Z";
+  }
+  renderVals() {
+    return { sunny: this.blob(8, 4, 0), cookie: this.blob(9, 3, 0) };
+  }
+}
+</script>
+</body>
+</html>

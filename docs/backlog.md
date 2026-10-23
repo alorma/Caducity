@@ -5,6 +5,7 @@ What is left to do in Caducity.
 ## Features
 
 - **Unit type + «Es pot congelar»** (in progress): plan in `docs/tipus-unitat/plan.md`. Phase 1 unit type (model + dialog, Unitats only) and phase 2 «Es pot congelar» now; Mesurable, Grapats and Transforma with these types come later.
+- **Cloud account and sync** (planned, independent): optional Google account + Firestore sync, Room stays the source of truth. Six phases in `docs/compte-nuvol/plan.md`.
 - **Category screen redesign** (planned, after unit type): compact create/edit screen with Aspecte / Durada / Descripció sheets; duration leaves Ajustos. Plan in `docs/editar-categoria/plan.md`. Goes before the Add / Edit redesign.
 - **Add / Edit product redesign** (planned, after the category screen): options list with Categoria / Caduca / Quantitat sheets, guided flow, translated default categories. Plan in `docs/afegir-editar-producte/plan.md`.
 - **Fingerprint for actions, free for reading** (configurable): biometric prompt before actions that change data (consume, freeze, reschedule, edit, move, delete); browsing stays open. A setting turns it on or off.
