@@ -480,6 +480,9 @@
   <string name="category_editor_description_placeholder">For example: soft drinks, juices and fermented drinks</string>
   <string name="category_editor_delete">Delete category</string>
   <string name="category_editor_appearance">Look</string>
+  <string name="category_editor_appearance_pantry">How it looks in the Pantry</string>
+  <string name="category_editor_appearance_named">%1$s · how it looks in the Pantry</string>
+  <string name="category_editor_done">Done</string>
   <string name="category_editor_appearance_hint">Tap to change shape and icon</string>
   <string name="category_editor_options">Options</string>
   <string name="category_editor_duration_row">Usual duration</string>

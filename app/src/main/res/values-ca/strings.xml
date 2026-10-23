@@ -506,6 +506,9 @@
   <string name="category_editor_description_placeholder">Per exemple: refrescos, sucs i begudes fermentades</string>
   <string name="category_editor_delete">Eliminar categoria</string>
   <string name="category_editor_appearance">Aspecte</string>
+  <string name="category_editor_appearance_pantry">Com es veu al Rebost</string>
+  <string name="category_editor_appearance_named">%1$s · com es veu al Rebost</string>
+  <string name="category_editor_done">Fet</string>
   <string name="category_editor_appearance_hint">Toca per canviar la forma i la icona</string>
   <string name="category_editor_options">Opcions</string>
   <string name="category_editor_duration_row">Durada habitual</string>

@@ -506,6 +506,9 @@
   <string name="category_editor_description_placeholder">Por ejemplo: refrescos, zumos y bebidas fermentadas</string>
   <string name="category_editor_delete">Eliminar categoría</string>
   <string name="category_editor_appearance">Aspecto</string>
+  <string name="category_editor_appearance_pantry">Cómo se ve en la Despensa</string>
+  <string name="category_editor_appearance_named">%1$s · cómo se ve en la Despensa</string>
+  <string name="category_editor_done">Hecho</string>
   <string name="category_editor_appearance_hint">Toca para cambiar la forma y el icono</string>
   <string name="category_editor_options">Opciones</string>
   <string name="category_editor_duration_row">Duración habitual</string>

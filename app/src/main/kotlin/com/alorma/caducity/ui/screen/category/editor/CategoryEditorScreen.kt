@@ -48,7 +48,10 @@ import com.alorma.caducity.feature.tracking.CategoryEditorScreen as CategoryEdit
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
 import com.alorma.caducity.ui.components.category.imageVector
+import com.alorma.caducity.ui.components.category.toComposeShape
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
+import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
+import com.alorma.caducity.ui.components.feedback.bottomsheet.rememberAppBottomSheetState
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
 import com.alorma.caducity.ui.components.feedback.dialog.DialogResult
 import com.alorma.caducity.ui.components.feedback.dialog.rememberAppDialogState
@@ -91,12 +94,14 @@ fun CategoryEditorScreen(
       }
     }
   }
-  SideEffectHandler(viewModel, dialogState, snackbarState)
+  val bottomSheetState = rememberAppBottomSheetState()
+  SideEffectHandler(viewModel, dialogState, snackbarState, bottomSheetState)
 
   AppScaffold(
     modifier = modifier,
     dialogState = dialogState,
     snackbarState = snackbarState,
+    bottomSheetState = bottomSheetState,
     topBar = {
       StyledTopAppBar(
         title = {
@@ -271,13 +276,20 @@ private fun AppearancePreview(
   state: CategoryEditorState,
   onClick: () -> Unit,
 ) {
-  Box(modifier = Modifier.size(128.dp).clickable(onClick = onClick)) {
-    CategoryShapeIcon(shape = state.shape, icon = state.icon.imageVector, size = 128.dp, selected = true)
+  Box(modifier = Modifier.size(128.dp)) {
+    CategoryShapeIcon(
+      shape = state.shape,
+      icon = state.icon.imageVector,
+      size = 128.dp,
+      selected = true,
+      modifier = Modifier.clip(state.shape.toComposeShape()).clickable(onClick = onClick),
+    )
     Surface(
+      onClick = onClick,
       shape = CircleShape,
       color = CaducityTheme.colorScheme.secondaryContainer,
       border = BorderStroke(3.dp, CaducityTheme.colorScheme.background),
-      modifier = Modifier.align(Alignment.BottomEnd).size(40.dp).clip(CircleShape),
+      modifier = Modifier.align(Alignment.BottomEnd).size(40.dp),
     ) {
       Box(contentAlignment = Alignment.Center) {
         Icon(
@@ -308,6 +320,7 @@ private fun SideEffectHandler(
   viewModel: CategoryEditorViewModel,
   dialogState: AppDialogState,
   snackbarState: AppSnackbarState,
+  bottomSheetState: AppBottomSheetState,
 ) {
   val scope = rememberCoroutineScope()
   LaunchedEffect(viewModel) {
@@ -331,8 +344,19 @@ private fun SideEffectHandler(
           scope.launch {
             snackbarState.showSnackbar(message = R.string.error_delete_category_failed, type = AppFeedbackType.Error)
           }
-        // The three sheets arrive in the next tasks (Aspecte, Durada, Descripció).
-        CategoryEditorSideEffect.ShowAppearanceSheet,
+        CategoryEditorSideEffect.ShowAppearanceSheet ->
+          bottomSheetState.show {
+            val current by viewModel.state.collectAsStateWithLifecycle()
+            CategoryAppearanceSheet(
+              name = current.name,
+              shape = current.shape,
+              icon = current.icon,
+              onShapeChange = viewModel::onShapeChange,
+              onIconChange = viewModel::onIconChange,
+              onDone = { scope.launch { bottomSheetState.hide() } },
+            )
+          }
+        // The Durada and Descripció sheets arrive in the next tasks.
         CategoryEditorSideEffect.ShowDurationSheet,
         CategoryEditorSideEffect.ShowDescriptionSheet,
         -> Unit
