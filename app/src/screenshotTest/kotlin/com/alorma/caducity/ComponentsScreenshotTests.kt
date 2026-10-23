@@ -92,8 +92,8 @@ class UnitTypeSheetScreenshotTests {
 
 class AddOptionsScreenshotTests {
   @PreviewTest
-  @Preview(name = "Light", locale = "ca", widthDp = 411, heightDp = 1200)
-  @Preview(name = "Dark", locale = "ca", widthDp = 411, heightDp = 1200, uiMode = Configuration.UI_MODE_NIGHT_YES)
+  @Preview(name = "Light", locale = "ca", widthDp = 411, heightDp = 1500)
+  @Preview(name = "Dark", locale = "ca", widthDp = 411, heightDp = 1500, uiMode = Configuration.UI_MODE_NIGHT_YES)
   @Composable
   fun addOptions() {
     AddOptionsPreview()

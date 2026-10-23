@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.Close
+import com.alorma.caducity.base.ui.icons.symbols.Delete
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.bottomsheet.AppBottomSheetState
@@ -45,6 +46,8 @@ import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
 import com.alorma.caducity.ui.screen.category.editor.CategoryDurationSheet
+import com.alorma.caducity.ui.theme.CaducityTheme
+import com.alorma.caducity.ui.theme.colors.colors
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlinx.coroutines.launch
@@ -95,6 +98,7 @@ fun AddScreen(
     dialogState = dialogState,
     snackbarState = snackbarState,
     bottomSheetState = bottomSheetState,
+    showScreenResults = false,
     topBar = {
       StyledTopAppBar(
         title = { Text(stringResource(if (state.isEditing) R.string.add_edit_title else R.string.add_title)) },
@@ -104,6 +108,15 @@ fun AddScreen(
           }
         },
         actions = {
+          if (state.isEditing) {
+            IconButton(onClick = viewModel::onDeleteClick) {
+              Icon(
+                imageVector = Symbols.Outlined.Delete,
+                contentDescription = stringResource(R.string.add_delete),
+                tint = CaducityTheme.colors.expired.strong,
+              )
+            }
+          }
           Button(
             onClick = viewModel::onSave,
             enabled = state.canSave,
@@ -136,6 +149,7 @@ fun AddScreen(
           onCanFreezeChange = viewModel::onCanFreezeChange,
           onFrozenChange = viewModel::onFrozenChange,
         )
+        if (state.isEditing) AddEditNote(frozen = state.frozen)
         AddMissingNote(missing = state.missing)
       }
     }

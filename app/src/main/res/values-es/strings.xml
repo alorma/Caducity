@@ -124,6 +124,28 @@
   <string name="add_date_set_one">Pon una</string>
   <string name="add_quantity_how">Cómo lo cuentas</string>
   <string name="add_quantity_more">Gramos, mililitros o a ojo</string>
+  <string name="add_delete">Eliminar</string>
+  <string name="add_snackbar_deleted">%1$s eliminado</string>
+  <string name="add_frozen_on">Congelado el</string>
+  <string name="add_frozen_today">hoy</string>
+  <string name="add_frozen_yesterday">ayer</string>
+  <plurals name="add_frozen_days_ago">
+    <item quantity="one">hace %d día</item>
+    <item quantity="many">hace %d días</item>
+    <item quantity="other">hace %d días</item>
+  </plurals>
+  <plurals name="add_frozen_weeks_ago">
+    <item quantity="one">hace %d semana</item>
+    <item quantity="many">hace %d semanas</item>
+    <item quantity="other">hace %d semanas</item>
+  </plurals>
+  <plurals name="add_frozen_months_ago">
+    <item quantity="one">hace %d mes</item>
+    <item quantity="many">hace %d meses</item>
+    <item quantity="other">hace %d meses</item>
+  </plurals>
+  <string name="add_note_frozen">Está congelado. Para descongelarlo, usa ☀ en la lista o en las acciones.</string>
+  <string name="add_note_edit">Para congelarlo, consumirlo o tirarlo, usa las acciones del producto.</string>
   <string name="add_title">Añadir</string>
   <string name="add_close">Cerrar</string>
   <string name="add_name_label">Nombre</string>

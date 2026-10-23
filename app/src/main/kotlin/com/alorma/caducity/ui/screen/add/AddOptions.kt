@@ -118,6 +118,69 @@ fun AddOptionsList(
 @Composable
 private fun frozenTint() = CaducityTheme.colors.frozen.onContainer
 
+/** Row of a unit that is already frozen: the frozen container instead of the plain one. */
+@Composable
+private fun frozenContainerColors(): ListItemColors {
+  val frozen = CaducityTheme.colors.frozen
+  val scheme = CaducityTheme.colorScheme
+  return ListItemDefaults.colors(
+    containerColor = frozen.container,
+    contentColor = scheme.onSurface,
+    supportingContentColor = scheme.onSurfaceVariant,
+    leadingContentColor = frozen.onContainer,
+    trailingContentColor = frozen.onContainer,
+  )
+}
+
+/** «fa 3 setmanes»: how long ago [date] was, in days, weeks or months. */
+@Composable
+private fun daysAgoText(
+  date: LocalDate,
+  today: LocalDate,
+): String {
+  val days = date.daysUntil(today).coerceAtLeast(0)
+  return when {
+    days == 0 -> stringResource(R.string.add_frozen_today)
+    days == 1 -> stringResource(R.string.add_frozen_yesterday)
+    days < DAYS_PER_WEEK -> pluralStringResource(R.plurals.add_frozen_days_ago, days, days)
+    days < DAYS_PER_MONTH_RANGE ->
+      (days / DAYS_PER_WEEK).let {
+        pluralStringResource(R.plurals.add_frozen_weeks_ago, it, it)
+      }
+    else -> (days / DAYS_PER_MONTH).let { pluralStringResource(R.plurals.add_frozen_months_ago, it, it) }
+  }
+}
+
+private const val DAYS_PER_WEEK = 7
+private const val DAYS_PER_MONTH = 30
+private const val DAYS_PER_MONTH_RANGE = 60
+
+/** Under the options of an edit: what the actions of the list are for, and how to thaw a frozen unit. */
+@Composable
+fun AddEditNote(
+  frozen: Boolean,
+  modifier: Modifier = Modifier,
+) {
+  Row(
+    modifier = modifier.fillMaxWidth().padding(horizontal = 4.dp),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    if (frozen) {
+      Icon(
+        imageVector = Symbols.Outlined.AcUnit,
+        contentDescription = null,
+        tint = frozenTint(),
+        modifier = Modifier.size(18.dp),
+      )
+    }
+    Text(
+      text = stringResource(if (frozen) R.string.add_note_frozen else R.string.add_note_edit),
+      style = CaducityTheme.typography.bodyMedium,
+      color = CaducityTheme.colorScheme.onSurfaceVariant,
+    )
+  }
+}
+
 /** «Ja és congelat» switched on takes the frozen status colors instead of the green of a selected row. */
 @Composable
 private fun frozenRowColors(): ListItemColors {
@@ -173,6 +236,27 @@ private fun DateRow(
   count: Int,
 ) {
   val date = state.date
+  val frozenOn = state.frozenOn
+  if (state.isEditing && state.frozen && frozenOn != null) {
+    // A frozen unit shows when it went into the freezer; its remaining time is not edited here.
+    StyledSettingsCard(
+      icon = { Icon(Symbols.Outlined.AcUnit, contentDescription = null, tint = frozenTint()) },
+      title = stringResource(R.string.add_frozen_on),
+      subtitle = daysAgoText(frozenOn, state.today),
+      action = {
+        Text(
+          text = shortDate(frozenOn),
+          style = CaducityTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+          color = CaducityTheme.colors.frozen.onContainer,
+        )
+      },
+      onClick = {},
+      shapes = ListItemDefaults.segmentedShapes(index = 1, count = count),
+      colors = frozenContainerColors(),
+      modifier = Modifier.heightIn(min = OptionRowMinHeight),
+    )
+    return
+  }
   StyledSettingsCard(
     icon = { Icon(Symbols.Outlined.CalendarMonth, contentDescription = null) },
     title = stringResource(R.string.add_date_label),

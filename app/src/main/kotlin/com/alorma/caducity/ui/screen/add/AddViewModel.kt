@@ -1,6 +1,7 @@
 package com.alorma.caducity.ui.screen.add
 
 import androidx.lifecycle.viewModelScope
+import com.alorma.caducity.R
 import com.alorma.caducity.config.time.TodayProvider
 import com.alorma.caducity.domain.model.HandfulLevel
 import com.alorma.caducity.domain.model.PantryError
@@ -8,6 +9,7 @@ import com.alorma.caducity.domain.model.UnitParent
 import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.domain.model.normalizeForSearch
 import com.alorma.caducity.domain.usecase.AddProductUseCase
+import com.alorma.caducity.domain.usecase.DeleteItemUseCase
 import com.alorma.caducity.domain.usecase.FindProductUseCase
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
@@ -17,10 +19,13 @@ import com.alorma.caducity.domain.usecase.SetProductCanFreezeUseCase
 import com.alorma.caducity.domain.usecase.SetProductUnitTypeUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
 import com.alorma.caducity.feature.tracking.AddCloseAction
+import com.alorma.caducity.feature.tracking.AddDeleteAction
 import com.alorma.caducity.feature.tracking.AddQuickCategoryAction
 import com.alorma.caducity.feature.tracking.ChangeSuggestedDurationAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.base.BaseViewModel
+import com.alorma.caducity.ui.components.feedback.snackbar.ScreenResults
+import com.alorma.caducity.ui.components.feedback.snackbar.SnackbarRequest
 import com.alorma.caducity.ui.screen.category.quick.CategoryCreatedEvents
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +38,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 
 class AddViewModel(
   args: AddArgs,
@@ -45,6 +51,8 @@ class AddViewModel(
   private val setProductCanFreeze: SetProductCanFreezeUseCase,
   private val setProductUnitType: SetProductUnitTypeUseCase,
   private val setCategoryDuration: SetCategoryDurationUseCase,
+  private val deleteItem: DeleteItemUseCase,
+  private val results: ScreenResults,
   observeCategories: ObserveCategoriesUseCase,
   categoryCreated: CategoryCreatedEvents,
   private val eventTracker: EventTracker,
@@ -371,6 +379,30 @@ class AddViewModel(
     }
   }
 
+  /** 🗑: deletes the unit being edited, closes, and leaves a «Desfés» on the screen underneath. */
+  fun onDeleteClick() {
+    val current = _state.value
+    val itemId = current.editItemId ?: return
+    val name = current.original?.name ?: current.name
+    eventTracker.trackAction(AddDeleteAction())
+    viewModelScope.launch {
+      deleteItem
+        .delete(itemId)
+        .onSuccess { deleted ->
+          results.post(
+            SnackbarRequest(
+              message = R.string.add_snackbar_deleted,
+              messageArgs = listOf(name),
+              actionLabel = R.string.add_undo,
+              onAction = { deleteItem.undo(deleted) },
+            ),
+          )
+          emitSideEffect(AddSideEffect.Confirm)
+          emitNavigationSideEffect(AddNavigationSideEffect.Close)
+        }.onFailure { emitSideEffect(AddSideEffect.ShowSaveFailed) }
+    }
+  }
+
   private fun startEdit(itemId: String) {
     viewModelScope.launch {
       val item = getActiveItem.get(itemId)
@@ -394,6 +426,12 @@ class AddViewModel(
           categoryId = item.categoryId,
           frozen = item.frozen,
           editItemId = itemId,
+          original = EditOriginal(name = item.name, categoryId = item.categoryId, date = date),
+          frozenOn =
+            item.frozenSince
+              ?.takeIf { item.frozen }
+              ?.toLocalDateTime(TimeZone.currentSystemDefault())
+              ?.date,
         )
       }
       setDate(date)

@@ -82,6 +82,14 @@ internal fun AddOptionsPreview() {
         AddOptionsList(complete.copy(canFreezeOverride = false), {}, {}, {}, {}, {})
         AddOptionsList(AddState(today = today, name = "Whole milk", categories = categories), {}, {}, {}, {}, {})
         AddOptionsList(complete.copy(editItemId = "item"), {}, {}, {}, {}, {})
+        AddOptionsList(
+          complete.copy(editItemId = "item", frozen = true, frozenOn = LocalDate(2026, 9, 28)),
+          {},
+          {},
+          {},
+          {},
+          {},
+        )
       }
     }
   }

@@ -157,6 +157,12 @@ class AddCloseAction :
     origin = "add",
   )
 
+class AddDeleteAction :
+  Action(
+    name = "delete_item",
+    parameters = mapOf("origin" to "add"),
+  )
+
 // Transform Screen Actions
 
 /**
