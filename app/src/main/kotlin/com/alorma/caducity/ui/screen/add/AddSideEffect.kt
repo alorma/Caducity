@@ -3,6 +3,12 @@ package com.alorma.caducity.ui.screen.add
 import com.alorma.caducity.domain.model.UnitType
 
 sealed interface AddSideEffect {
+  data object ShowCategorySheet : AddSideEffect
+
+  data object ShowDateSheet : AddSideEffect
+
+  data object ShowQuantitySheet : AddSideEffect
+
   data class ShowUnitTypePicker(
     val current: UnitType,
   ) : AddSideEffect

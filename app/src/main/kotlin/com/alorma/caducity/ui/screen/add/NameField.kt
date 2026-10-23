@@ -3,7 +3,6 @@ package com.alorma.caducity.ui.screen.add
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -42,7 +41,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alorma.caducity.R
-import com.alorma.caducity.base.ui.icons.symbols.AddCircle
 import com.alorma.caducity.base.ui.icons.symbols.Cancel
 import com.alorma.caducity.base.ui.icons.symbols.History
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
@@ -183,32 +181,5 @@ private fun boldMatch(
     append(text.substring(0, start))
     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(text.substring(start, start + query.length)) }
     append(text.substring(start + query.length))
-  }
-}
-
-@Composable
-fun NewProductNotice(modifier: Modifier = Modifier) {
-  Surface(
-    shape = CaducityShapes.field,
-    color = CaducityTheme.colorScheme.primaryContainer,
-    contentColor = CaducityTheme.colorScheme.onPrimaryContainer,
-    modifier = modifier.fillMaxWidth(),
-  ) {
-    Row(
-      modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-      Icon(Symbols.Outlined.AddCircle, contentDescription = null, modifier = Modifier.size(20.dp))
-      Text(
-        text =
-          buildAnnotatedString {
-            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(stringResource(R.string.add_new_product_bold)) }
-            append(" ")
-            append(stringResource(R.string.add_new_product_rest))
-          },
-        style = CaducityTheme.typography.bodyMedium,
-      )
-    }
   }
 }

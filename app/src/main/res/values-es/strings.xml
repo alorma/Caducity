@@ -671,7 +671,24 @@
 
   <!-- Es pot congelar: Afegeix -->
   <string name="add_can_freeze">Se puede congelar</string>
-  <string name="add_can_freeze_subtitle">%1$s: %2$s · solo este producto</string>
+  <string name="add_can_freeze_subtitle">Como %1$s: %2$s</string>
+  <string name="add_can_freeze_only_this">Solo este producto</string>
+  <string name="add_can_freeze_pending">Según la categoría</string>
+  <string name="add_already_frozen">Ya está congelado</string>
+  <string name="add_already_frozen_subtitle">Va directo a Congelados</string>
+  <string name="add_category_sheet_subtitle">¿Dónde lo guardas?</string>
+  <string name="add_date_sheet_subtitle">Escríbela o elige un atajo.</string>
+  <string name="add_status_history">De tu historial: categoría y fecha ya puestas</string>
+  <string name="add_status_new">Producto nuevo. Elige su categoría y fecha.</string>
+  <string name="add_required">Obligatorio</string>
+  <string name="add_choose">Elegir</string>
+  <string name="add_date_row_today">%1$s · hoy</string>
+  <string name="add_date_row_tomorrow">%1$s · mañana</string>
+  <plurals name="add_date_row_days">
+    <item quantity="one">%1$s · dentro de %2$d día</item>
+    <item quantity="many">%1$s · dentro de %2$d días</item>
+    <item quantity="other">%1$s · dentro de %2$d días</item>
+  </plurals>
   <string name="add_can_freeze_yes">sí</string>
   <string name="add_can_freeze_no">no</string>
 </resources>

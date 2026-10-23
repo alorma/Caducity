@@ -638,7 +638,23 @@
 
   <!-- Es pot congelar: Afegeix -->
   <string name="add_can_freeze">Can be frozen</string>
-  <string name="add_can_freeze_subtitle">%1$s: %2$s · only this product</string>
+  <string name="add_can_freeze_subtitle">Like %1$s: %2$s</string>
+  <string name="add_can_freeze_only_this">Only this product</string>
+  <string name="add_can_freeze_pending">Depends on the category</string>
+  <string name="add_already_frozen">Already frozen</string>
+  <string name="add_already_frozen_subtitle">Goes straight to Frozen</string>
+  <string name="add_category_sheet_subtitle">Where do you keep it?</string>
+  <string name="add_date_sheet_subtitle">Type it or pick a shortcut.</string>
+  <string name="add_status_history">From your history: category and date already set</string>
+  <string name="add_status_new">New item. Pick its category and date.</string>
+  <string name="add_required">Required</string>
+  <string name="add_choose">Choose</string>
+  <string name="add_date_row_today">%1$s · today</string>
+  <string name="add_date_row_tomorrow">%1$s · tomorrow</string>
+  <plurals name="add_date_row_days">
+    <item quantity="one">%1$s · in %2$d day</item>
+    <item quantity="other">%1$s · in %2$d days</item>
+  </plurals>
   <string name="add_can_freeze_yes">yes</string>
   <string name="add_can_freeze_no">no</string>
 </resources>

@@ -1,11 +1,6 @@
 package com.alorma.caducity.ui.screen.add
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,30 +9,19 @@ import androidx.compose.ui.unit.dp
 import com.alorma.caducity.R
 import com.alorma.caducity.ui.theme.CaducityTheme
 
-/** The single «Desa» button, full width, below the form. Disabled while something is missing. */
+/** Under the options: what is still missing before «Desa» is enabled. Nothing is shown when the form is complete. */
 @Composable
-fun AddBottomBar(
-  state: AddState,
-  onSave: () -> Unit,
+fun AddMissingNote(
+  missing: List<AddMissing>,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-    if (state.missing.isNotEmpty()) {
-      Text(
-        text = missingMessage(state.missing),
-        style = CaducityTheme.typography.labelMedium,
-        color = CaducityTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = 4.dp),
-      )
-    }
-    Button(
-      onClick = onSave,
-      enabled = state.canSave,
-      modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-    ) {
-      Text(stringResource(R.string.add_save), maxLines = 1)
-    }
-  }
+  if (missing.isEmpty()) return
+  Text(
+    text = missingMessage(missing),
+    style = CaducityTheme.typography.labelMedium,
+    color = CaducityTheme.colorScheme.onSurfaceVariant,
+    modifier = modifier.padding(horizontal = 4.dp),
+  )
 }
 
 @Composable

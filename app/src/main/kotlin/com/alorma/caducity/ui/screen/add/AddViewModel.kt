@@ -97,7 +97,7 @@ class AddViewModel(
   }
 
   fun onNameChange(name: String) {
-    _state.update { it.copy(name = name, suggestion = null, isNewProduct = false) }
+    _state.update { it.copy(name = name, suggestion = null, isNewProduct = false, fromHistory = false) }
     suggestionJob?.cancel()
     refreshProduct()
     if (name.isBlank()) return
@@ -112,6 +112,7 @@ class AddViewModel(
             .copy(
               suggestion = suggestions.firstOrNull { it !== exact },
               isNewProduct = suggestions.isEmpty(),
+              fromHistory = exact != null,
               categoryId =
                 if (exact != null && !categoryPinned && current.categories.any { it.id == exact.categoryId }) {
                   exact.categoryId
@@ -136,6 +137,7 @@ class AddViewModel(
           name = suggestion.name,
           suggestion = null,
           isNewProduct = false,
+          fromHistory = true,
           categoryId = suggestion.categoryId.takeIf { id -> it.categories.any { c -> c.id == id } } ?: it.categoryId,
         ).withSuggestedDate()
     }
@@ -143,6 +145,12 @@ class AddViewModel(
   }
 
   fun onClearName() = onNameChange("")
+
+  fun onCategoryClick() = emitSideEffect(AddSideEffect.ShowCategorySheet)
+
+  fun onDateClick() = emitSideEffect(AddSideEffect.ShowDateSheet)
+
+  fun onQuantityClick() = emitSideEffect(AddSideEffect.ShowQuantitySheet)
 
   /** «Suggerida … · Canvia»: the usual duration is edited in the category's Durada sheet. */
   fun onChangeSuggestedDuration() {

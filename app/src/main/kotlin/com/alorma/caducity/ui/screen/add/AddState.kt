@@ -26,6 +26,8 @@ data class AddState(
   val suggestion: NameSuggestion? = null,
   /** Name typed and not in the history: the screen asks for category and date. */
   val isNewProduct: Boolean = false,
+  /** The typed name is exactly one in the history: its category and date come from it. */
+  val fromHistory: Boolean = false,
   val categories: List<Category> = emptyList(),
   val categoryId: String? = null,
   val dateDigits: String = "",

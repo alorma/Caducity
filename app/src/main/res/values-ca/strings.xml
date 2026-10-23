@@ -671,7 +671,24 @@
 
   <!-- Es pot congelar: Afegeix -->
   <string name="add_can_freeze">Es pot congelar</string>
-  <string name="add_can_freeze_subtitle">%1$s: %2$s · només aquest producte</string>
+  <string name="add_can_freeze_subtitle">Com a %1$s: %2$s</string>
+  <string name="add_can_freeze_only_this">Només aquest producte</string>
+  <string name="add_can_freeze_pending">Segons la categoria</string>
+  <string name="add_already_frozen">Ja és congelat</string>
+  <string name="add_already_frozen_subtitle">Va directe a Congelats</string>
+  <string name="add_category_sheet_subtitle">On el guardes?</string>
+  <string name="add_date_sheet_subtitle">Escriu-la o tria una drecera.</string>
+  <string name="add_status_history">Del teu historial: categoria i data ja posades</string>
+  <string name="add_status_new">Producte nou. Tria\'n la categoria i la data.</string>
+  <string name="add_required">Obligatori</string>
+  <string name="add_choose">Tria</string>
+  <string name="add_date_row_today">%1$s · avui</string>
+  <string name="add_date_row_tomorrow">%1$s · demà</string>
+  <plurals name="add_date_row_days">
+    <item quantity="one">%1$s · d\'aquí %2$d dia</item>
+    <item quantity="many">%1$s · d\'aquí %2$d dies</item>
+    <item quantity="other">%1$s · d\'aquí %2$d dies</item>
+  </plurals>
   <string name="add_can_freeze_yes">sí</string>
   <string name="add_can_freeze_no">no</string>
 </resources>

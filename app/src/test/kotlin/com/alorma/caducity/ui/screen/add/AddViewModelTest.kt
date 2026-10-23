@@ -278,12 +278,17 @@ class AddViewModelTest {
       vm.await { it.categories.isNotEmpty() }
 
       vm.onNameChange("Kefir")
-      vm.await { it.isNewProduct }
+      val unknown = vm.await { it.isNewProduct }
+      expectThat(unknown.fromHistory).isFalse()
 
       vm.onNameChange("milk")
       val exact = vm.await { it.categoryId == "dairy" }
       expectThat(exact.isNewProduct).isFalse()
+      expectThat(exact.fromHistory).isTrue()
       expectThat(exact.suggestion).isNull()
+
+      vm.onNameChange("milky")
+      expectThat(vm.state.value.fromHistory).isFalse()
     }
 
   @Test
