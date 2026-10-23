@@ -85,6 +85,12 @@ class CategoryEditorViewModel(
     }
   }
 
+  fun onAppearanceClick() = emitSideEffect(CategoryEditorSideEffect.ShowAppearanceSheet)
+
+  fun onDurationClick() = emitSideEffect(CategoryEditorSideEffect.ShowDurationSheet)
+
+  fun onDescriptionClick() = emitSideEffect(CategoryEditorSideEffect.ShowDescriptionSheet)
+
   fun onDescriptionChange(description: String) {
     _state.update { it.copy(description = description) }
   }

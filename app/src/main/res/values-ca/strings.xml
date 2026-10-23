@@ -505,6 +505,16 @@
   <string name="category_editor_description">Descripció · opcional</string>
   <string name="category_editor_description_placeholder">Per exemple: refrescos, sucs i begudes fermentades</string>
   <string name="category_editor_delete">Eliminar categoria</string>
+  <string name="category_editor_appearance">Aspecte</string>
+  <string name="category_editor_appearance_hint">Toca per canviar la forma i la icona</string>
+  <string name="category_editor_options">Opcions</string>
+  <string name="category_editor_duration_row">Durada habitual</string>
+  <string name="category_editor_duration_row_help">Per suggerir la data en afegir</string>
+  <string name="category_editor_duration_none">Sense</string>
+  <string name="category_editor_description_row">Descripció</string>
+  <string name="category_editor_description_optional">Opcional</string>
+  <string name="category_editor_description_add">Afegeix</string>
+  <string name="category_editor_description_edit">Edita</string>
   <string name="notification_channel_name">Avís diari</string>
   <string name="notification_channel_description">Una notificació al dia quan alguna cosa està a punt de caducar</string>
   <string name="notification_day_today">avui</string>

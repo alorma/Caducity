@@ -1,20 +1,23 @@
 package com.alorma.caducity.ui.screen.category.editor
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -25,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -33,17 +37,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alorma.caducity.R
 import com.alorma.caducity.base.ui.icons.symbols.AcUnit
+import com.alorma.caducity.base.ui.icons.symbols.ChevronRight
 import com.alorma.caducity.base.ui.icons.symbols.Close
 import com.alorma.caducity.base.ui.icons.symbols.Delete
+import com.alorma.caducity.base.ui.icons.symbols.Edit
+import com.alorma.caducity.base.ui.icons.symbols.EventAvailable
+import com.alorma.caducity.base.ui.icons.symbols.MenuBook
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
-import com.alorma.caducity.domain.model.CategoryIcon
-import com.alorma.caducity.domain.model.CategoryShape
 import com.alorma.caducity.feature.tracking.CategoryEditorScreen as CategoryEditorScreenEvent
 import com.alorma.caducity.feature.tracking.TrackScreen
 import com.alorma.caducity.ui.components.category.CategoryShapeIcon
-import com.alorma.caducity.ui.components.category.FormOverline
-import com.alorma.caducity.ui.components.category.IconPicker
-import com.alorma.caducity.ui.components.category.ShapePicker
 import com.alorma.caducity.ui.components.category.imageVector
 import com.alorma.caducity.ui.components.feedback.AppFeedbackType
 import com.alorma.caducity.ui.components.feedback.dialog.AppDialogState
@@ -53,10 +56,11 @@ import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveCenteredContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.switch.CaducitySwitch
-import com.alorma.caducity.ui.components.threshold.ThresholdSlider
 import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.components.topbar.StyledTopAppBar
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsCard
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsGroup
+import com.alorma.caducity.ui.screen.settings.components.StyledSettingsSwitchCard
 import com.alorma.caducity.ui.theme.CaducityShapes
 import com.alorma.caducity.ui.theme.CaducityTheme
 import com.alorma.caducity.ui.theme.colors.colors
@@ -123,10 +127,9 @@ fun CategoryEditorScreen(
       CategoryEditorContent(
         state = state,
         onNameChange = viewModel::onNameChange,
-        onDescriptionChange = viewModel::onDescriptionChange,
-        onShapeChange = viewModel::onShapeChange,
-        onIconChange = viewModel::onIconChange,
-        onUsualDurationChange = viewModel::onUsualDurationChange,
+        onAppearanceClick = viewModel::onAppearanceClick,
+        onDurationClick = viewModel::onDurationClick,
+        onDescriptionClick = viewModel::onDescriptionClick,
         onCanFreezeChange = viewModel::onCanFreezeChange,
         onDelete = viewModel::onDeleteClick,
       )
@@ -134,14 +137,14 @@ fun CategoryEditorScreen(
   }
 }
 
+/** Everything fits in one screen: preview, name and a list of options that open sheets. */
 @Composable
 internal fun CategoryEditorContent(
   state: CategoryEditorState,
   onNameChange: (String) -> Unit,
-  onDescriptionChange: (String) -> Unit,
-  onShapeChange: (CategoryShape) -> Unit,
-  onIconChange: (CategoryIcon) -> Unit,
-  onUsualDurationChange: (Int) -> Unit,
+  onAppearanceClick: () -> Unit,
+  onDurationClick: () -> Unit,
+  onDescriptionClick: () -> Unit,
   onCanFreezeChange: (Boolean) -> Unit,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
@@ -151,31 +154,28 @@ internal fun CategoryEditorContent(
       modifier
         .fillMaxWidth()
         .imePadding()
-        .verticalScroll(rememberScrollState())
         .padding(horizontal = 24.dp)
-        .padding(bottom = 32.dp),
-    verticalArrangement = Arrangement.spacedBy(24.dp),
+        .padding(bottom = 24.dp),
+    verticalArrangement = Arrangement.spacedBy(20.dp),
   ) {
     Column(
       modifier = Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.spacedBy(12.dp),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-      CategoryShapeIcon(shape = state.shape, icon = state.icon.imageVector, size = 96.dp, selected = true)
+      AppearancePreview(state = state, onClick = onAppearanceClick)
       Text(
-        text = state.name.ifBlank { stringResource(R.string.category_editor_preview_placeholder) },
-        style = CaducityTheme.typography.headlineSmall,
-        color =
-          if (state.name.isBlank()) CaducityTheme.colorScheme.onSurfaceVariant else CaducityTheme.colorScheme.onSurface,
+        text = stringResource(R.string.category_editor_appearance_hint),
+        style = CaducityTheme.typography.bodySmall,
+        color = CaducityTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center,
-        maxLines = 2,
       )
     }
 
     OutlinedTextField(
       value = state.name,
       onValueChange = onNameChange,
-      label = { Text(stringResource(R.string.category_form_name)) },
+      placeholder = { Text(stringResource(R.string.category_form_name)) },
       singleLine = true,
       isError = state.error != null,
       supportingText =
@@ -197,90 +197,57 @@ internal fun CategoryEditorContent(
       modifier = Modifier.fillMaxWidth(),
     )
 
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      FormOverline(stringResource(R.string.category_form_shape))
-      ShapePicker(selected = state.shape, onSelect = onShapeChange)
-    }
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      FormOverline(stringResource(R.string.category_form_icon))
-      IconPicker(selected = state.icon, onSelect = onIconChange)
-    }
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      FormOverline(stringResource(R.string.category_editor_duration))
-      Surface(
-        shape = RoundedCornerShape(20.dp),
-        color = CaducityTheme.colorScheme.surfaceContainer,
-        modifier = Modifier.fillMaxWidth(),
-      ) {
-        Column(
-          modifier = Modifier.padding(16.dp),
-          verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-          ThresholdSlider(days = state.shownDurationDays, onDaysChange = onUsualDurationChange)
-          val categoryName = state.name.trim()
-          Text(
-            text =
-              when {
-                state.usualDurationDays == null -> stringResource(R.string.category_editor_duration_help_none)
-                categoryName.isBlank() ->
-                  stringResource(R.string.category_editor_duration_help_blank, thresholdLabel(state.shownDurationDays))
-                else ->
-                  stringResource(
-                    R.string.category_editor_duration_help,
-                    categoryName,
-                    thresholdLabel(state.shownDurationDays),
-                  )
+    StyledSettingsGroup(
+      title = {
+        Text(
+          text = stringResource(R.string.category_editor_options),
+          style = CaducityTheme.typography.labelLarge,
+          color = CaducityTheme.colorScheme.onSurfaceVariant,
+        )
+      },
+    ) {
+      StyledSettingsCard(
+        icon = { Icon(Symbols.Outlined.EventAvailable, contentDescription = null) },
+        title = stringResource(R.string.category_editor_duration_row),
+        subtitle = stringResource(R.string.category_editor_duration_row_help),
+        subtitleMaxLines = 1,
+        action = {
+          OptionValue(
+            value =
+              if (state.usualDurationDays == null) {
+                stringResource(R.string.category_editor_duration_none)
+              } else {
+                thresholdLabel(state.shownDurationDays)
               },
-            style = CaducityTheme.typography.bodySmall,
-            color = CaducityTheme.colorScheme.onSurfaceVariant,
           )
-        }
-      }
-    }
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      FormOverline(stringResource(R.string.category_editor_freeze_section))
-      Surface(
-        shape = RoundedCornerShape(20.dp),
-        color = CaducityTheme.colorScheme.surfaceContainer,
-        modifier = Modifier.fillMaxWidth(),
-      ) {
-        Row(
-          modifier = Modifier.padding(16.dp),
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-          Icon(
-            Symbols.Outlined.AcUnit,
-            contentDescription = null,
-            tint = CaducityTheme.colorScheme.onSurfaceVariant,
-          )
-          Column(modifier = Modifier.weight(1f)) {
-            Text(
-              text = stringResource(R.string.category_editor_can_freeze),
-              style = CaducityTheme.typography.bodyLarge,
-              color = CaducityTheme.colorScheme.onSurface,
-            )
-            Text(
-              text = stringResource(R.string.category_editor_can_freeze_help),
-              style = CaducityTheme.typography.bodySmall,
-              color = CaducityTheme.colorScheme.onSurfaceVariant,
-            )
-          }
-          CaducitySwitch(checked = state.canFreeze, onCheckedChange = onCanFreezeChange)
-        }
-      }
-    }
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      FormOverline(stringResource(R.string.category_editor_description))
-      OutlinedTextField(
-        value = state.description,
-        onValueChange = onDescriptionChange,
-        placeholder = { Text(stringResource(R.string.category_editor_description_placeholder)) },
-        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
-        shape = CaducityShapes.field,
-        minLines = 3,
-        maxLines = 5,
-        modifier = Modifier.fillMaxWidth().heightIn(min = 80.dp),
+        },
+        onClick = onDurationClick,
+        shapes = ListItemDefaults.segmentedShapes(index = 0, count = 3),
+      )
+      StyledSettingsSwitchCard(
+        icon = { Icon(Symbols.Outlined.AcUnit, contentDescription = null) },
+        title = stringResource(R.string.category_editor_can_freeze),
+        subtitle = stringResource(R.string.category_editor_can_freeze_help),
+        state = state.canFreeze,
+        onCheckedChange = onCanFreezeChange,
+        shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
+      )
+      StyledSettingsCard(
+        icon = { Icon(Symbols.Outlined.MenuBook, contentDescription = null) },
+        title = stringResource(R.string.category_editor_description_row),
+        subtitle = state.description.ifBlank { stringResource(R.string.category_editor_description_optional) },
+        subtitleMaxLines = 1,
+        action = {
+          val actionRes =
+            if (state.description.isBlank()) {
+              R.string.category_editor_description_add
+            } else {
+              R.string.category_editor_description_edit
+            }
+          OptionValue(value = stringResource(actionRes))
+        },
+        onClick = onDescriptionClick,
+        shapes = ListItemDefaults.segmentedShapes(index = 2, count = 3),
       )
     }
 
@@ -295,6 +262,44 @@ internal fun CategoryEditorContent(
         Text(stringResource(R.string.category_editor_delete))
       }
     }
+  }
+}
+
+/** Shape with its icon and a round ✏️ badge: the same pattern as a contact's photo. */
+@Composable
+private fun AppearancePreview(
+  state: CategoryEditorState,
+  onClick: () -> Unit,
+) {
+  Box(modifier = Modifier.size(128.dp).clickable(onClick = onClick)) {
+    CategoryShapeIcon(shape = state.shape, icon = state.icon.imageVector, size = 128.dp, selected = true)
+    Surface(
+      shape = CircleShape,
+      color = CaducityTheme.colorScheme.secondaryContainer,
+      border = BorderStroke(3.dp, CaducityTheme.colorScheme.background),
+      modifier = Modifier.align(Alignment.BottomEnd).size(40.dp).clip(CircleShape),
+    ) {
+      Box(contentAlignment = Alignment.Center) {
+        Icon(
+          Symbols.Outlined.Edit,
+          contentDescription = stringResource(R.string.category_editor_appearance),
+          tint = CaducityTheme.colorScheme.onSecondaryContainer,
+          modifier = Modifier.size(20.dp),
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun OptionValue(value: String) {
+  Row(verticalAlignment = Alignment.CenterVertically) {
+    Text(
+      text = value,
+      style = CaducityTheme.typography.bodyLarge,
+      color = CaducityTheme.colorScheme.onSurfaceVariant,
+    )
+    Icon(Symbols.Outlined.ChevronRight, contentDescription = null)
   }
 }
 
@@ -326,6 +331,11 @@ private fun SideEffectHandler(
           scope.launch {
             snackbarState.showSnackbar(message = R.string.error_delete_category_failed, type = AppFeedbackType.Error)
           }
+        // The three sheets arrive in the next tasks (Aspecte, Durada, Descripció).
+        CategoryEditorSideEffect.ShowAppearanceSheet,
+        CategoryEditorSideEffect.ShowDurationSheet,
+        CategoryEditorSideEffect.ShowDescriptionSheet,
+        -> Unit
       }
     }
   }

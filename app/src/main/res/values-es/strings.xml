@@ -505,6 +505,16 @@
   <string name="category_editor_description">Descripción · opcional</string>
   <string name="category_editor_description_placeholder">Por ejemplo: refrescos, zumos y bebidas fermentadas</string>
   <string name="category_editor_delete">Eliminar categoría</string>
+  <string name="category_editor_appearance">Aspecto</string>
+  <string name="category_editor_appearance_hint">Toca para cambiar la forma y el icono</string>
+  <string name="category_editor_options">Opciones</string>
+  <string name="category_editor_duration_row">Duración habitual</string>
+  <string name="category_editor_duration_row_help">Para sugerir la fecha al añadir</string>
+  <string name="category_editor_duration_none">Sin</string>
+  <string name="category_editor_description_row">Descripción</string>
+  <string name="category_editor_description_optional">Opcional</string>
+  <string name="category_editor_description_add">Añadir</string>
+  <string name="category_editor_description_edit">Editar</string>
   <string name="notification_channel_name">Aviso diario</string>
   <string name="notification_channel_description">Una notificación al día cuando algo está a punto de caducar</string>
   <string name="notification_day_today">hoy</string>

@@ -479,6 +479,16 @@
   <string name="category_editor_description">Description · optional</string>
   <string name="category_editor_description_placeholder">For example: soft drinks, juices and fermented drinks</string>
   <string name="category_editor_delete">Delete category</string>
+  <string name="category_editor_appearance">Look</string>
+  <string name="category_editor_appearance_hint">Tap to change shape and icon</string>
+  <string name="category_editor_options">Options</string>
+  <string name="category_editor_duration_row">Usual duration</string>
+  <string name="category_editor_duration_row_help">To suggest the date when adding</string>
+  <string name="category_editor_duration_none">None</string>
+  <string name="category_editor_description_row">Description</string>
+  <string name="category_editor_description_optional">Optional</string>
+  <string name="category_editor_description_add">Add</string>
+  <string name="category_editor_description_edit">Edit</string>
   <string name="notification_channel_name">Daily reminder</string>
   <string name="notification_channel_description">One notification a day when something is about to expire</string>
   <string name="notification_day_today">today</string>
