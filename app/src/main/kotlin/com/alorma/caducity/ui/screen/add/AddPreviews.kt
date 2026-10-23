@@ -52,7 +52,7 @@ private fun AddFormPreview() {
         AddStatusLine(fromHistory = true)
         AddStatusLine(fromHistory = false)
         ExpiryDateField("211026", LocalDate(2026, 10, 21), today, {}, {})
-        QuickDateRow(onSelect = {})
+        QuickDateGrid(onSelect = {})
         UnitTypeRow(unitType = UnitType.UNITS, onClick = {})
         QuantityFrozenRow(quantity = 3, frozen = true, onQuantityChange = {}, onFrozenChange = {})
         UnitTypeRow(unitType = UnitType.GRAMS, onClick = {})

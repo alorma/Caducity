@@ -102,7 +102,7 @@
   <string name="nav_pantry">Despensa</string>
   <string name="nav_settings">Ajustes</string>
   <string name="action_add_product">Añadir un producto</string>
-  <string name="add_date_placeholder">dd/mm/aa</string>
+  <string name="add_date_placeholder">dd / mm / aa</string>
   <string name="add_date_pick">Elegir la fecha</string>
   <string name="add_date_help_expired">ya ha caducado</string>
   <string name="add_date_suggested">Sugerida: %1$s duran %2$s</string>
@@ -119,6 +119,9 @@
   <string name="add_quick_1_week">+1 semana</string>
   <string name="add_quick_2_weeks">+2 semanas</string>
   <string name="add_quick_1_month">+1 mes</string>
+  <string name="add_quick_3_months">+3 meses</string>
+  <string name="add_date_no_usual">Sin duración habitual para %1$s</string>
+  <string name="add_date_set_one">Pon una</string>
   <string name="add_title">Añadir</string>
   <string name="add_close">Cerrar</string>
   <string name="add_name_label">Nombre</string>
