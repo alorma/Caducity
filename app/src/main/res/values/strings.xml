@@ -120,6 +120,8 @@
   <string name="add_quick_3_months">+3 months</string>
   <string name="add_date_no_usual">No usual duration for %1$s</string>
   <string name="add_date_set_one">Set one</string>
+  <string name="add_quantity_how">How you count it</string>
+  <string name="add_quantity_more">Grams, millilitres or by eye</string>
   <string name="add_title">Add</string>
   <string name="add_close">Close</string>
   <string name="add_name_label">Name</string>

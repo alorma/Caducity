@@ -223,6 +223,7 @@ private fun SideEffectHandler(
             QuantitySheet(
               state = current,
               onUnitTypeClick = viewModel::onUnitTypeClick,
+              onUnitTypeChange = viewModel::onUnitTypeChange,
               onQuantityChange = viewModel::onQuantityChange,
               onAmountChange = viewModel::onAmountChange,
               onLevelChange = viewModel::onLevelChange,

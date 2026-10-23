@@ -122,6 +122,8 @@
   <string name="add_quick_3_months">+3 mesos</string>
   <string name="add_date_no_usual">Sense durada habitual per a %1$s</string>
   <string name="add_date_set_one">Posa\'n una</string>
+  <string name="add_quantity_how">Com ho comptes</string>
+  <string name="add_quantity_more">Grams, mil·lilitres o a grapats</string>
   <string name="add_title">Afegeix</string>
   <string name="add_close">Tanca</string>
   <string name="add_name_label">Nom</string>

@@ -24,6 +24,8 @@ import com.alorma.caducity.base.ui.icons.symbols.Check
 import com.alorma.caducity.base.ui.icons.symbols.HourglassBottom
 import com.alorma.caducity.base.ui.icons.symbols.Symbols
 import com.alorma.caducity.domain.model.HandfulLevel
+import com.alorma.caducity.domain.model.UnitParent
+import com.alorma.caducity.domain.model.UnitType
 import com.alorma.caducity.ui.components.shape.ShapePosition
 import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.theme.CaducityTheme
@@ -157,6 +159,7 @@ internal fun DateSheet(
 internal fun QuantitySheet(
   state: AddState,
   onUnitTypeClick: () -> Unit,
+  onUnitTypeChange: (UnitType) -> Unit,
   onQuantityChange: (Int) -> Unit,
   onAmountChange: (Int) -> Unit,
   onLevelChange: (HandfulLevel) -> Unit,
@@ -164,6 +167,30 @@ internal fun QuantitySheet(
 ) {
   SheetColumn {
     SheetTitle(title = stringResource(R.string.add_quantity))
+    if (state.unitType.parent == UnitParent.UNITS) {
+      UnitsQuantity(
+        state = state,
+        onQuantityChange = onQuantityChange,
+        onUnitTypeChange = onUnitTypeChange,
+        onMoreClick = onUnitTypeClick,
+      )
+    } else {
+      MeasuredOrHandfulQuantity(state, onUnitTypeClick, onQuantityChange, onAmountChange, onLevelChange)
+    }
+    DoneButton(onDone)
+  }
+}
+
+/** Measured (g, mL) and handful products keep their own controls under the row that changes the type. */
+@Composable
+private fun MeasuredOrHandfulQuantity(
+  state: AddState,
+  onUnitTypeClick: () -> Unit,
+  onQuantityChange: (Int) -> Unit,
+  onAmountChange: (Int) -> Unit,
+  onLevelChange: (HandfulLevel) -> Unit,
+) {
+  Column {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         UnitTypeRow(
@@ -204,7 +231,6 @@ internal fun QuantitySheet(
         AmountChips(unitType = state.unitType, amount = state.amount, onSelect = onAmountChange)
       }
     }
-    DoneButton(onDone)
   }
 }
 

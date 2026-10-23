@@ -122,6 +122,8 @@
   <string name="add_quick_3_months">+3 meses</string>
   <string name="add_date_no_usual">Sin duración habitual para %1$s</string>
   <string name="add_date_set_one">Pon una</string>
+  <string name="add_quantity_how">Cómo lo cuentas</string>
+  <string name="add_quantity_more">Gramos, mililitros o a ojo</string>
   <string name="add_title">Añadir</string>
   <string name="add_close">Cerrar</string>
   <string name="add_name_label">Nombre</string>
