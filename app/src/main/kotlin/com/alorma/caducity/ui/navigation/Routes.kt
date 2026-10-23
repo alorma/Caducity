@@ -102,9 +102,6 @@ data object Onboarding : AppRoute
 data object SettingsBackup : AppRoute
 
 @Serializable
-data object SettingsCategoryDurations : AppRoute
-
-@Serializable
 data object SettingsPrivacy : AppRoute
 
 @Serializable

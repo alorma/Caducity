@@ -19,10 +19,9 @@ internal fun CategoryEditorPreviewContent() {
     CategoryEditorContent(
       state = CategoryEditorState(loading = false),
       onNameChange = {},
-      onDescriptionChange = {},
-      onShapeChange = {},
-      onIconChange = {},
-      onUsualDurationChange = {},
+      onAppearanceClick = {},
+      onDurationClick = {},
+      onDescriptionClick = {},
       onCanFreezeChange = {},
       onDelete = {},
     )

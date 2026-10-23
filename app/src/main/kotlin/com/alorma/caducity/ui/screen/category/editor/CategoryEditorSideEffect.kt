@@ -7,4 +7,10 @@ sealed interface CategoryEditorSideEffect {
   ) : CategoryEditorSideEffect
 
   data object DeleteFailed : CategoryEditorSideEffect
+
+  data object ShowAppearanceSheet : CategoryEditorSideEffect
+
+  data object ShowDurationSheet : CategoryEditorSideEffect
+
+  data object ShowDescriptionSheet : CategoryEditorSideEffect
 }

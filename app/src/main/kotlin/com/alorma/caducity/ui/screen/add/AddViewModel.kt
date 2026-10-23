@@ -12,11 +12,13 @@ import com.alorma.caducity.domain.usecase.FindProductUseCase
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
+import com.alorma.caducity.domain.usecase.SetCategoryDurationUseCase
 import com.alorma.caducity.domain.usecase.SetProductCanFreezeUseCase
 import com.alorma.caducity.domain.usecase.SetProductUnitTypeUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
 import com.alorma.caducity.feature.tracking.AddCloseAction
 import com.alorma.caducity.feature.tracking.AddQuickCategoryAction
+import com.alorma.caducity.feature.tracking.ChangeSuggestedDurationAction
 import com.alorma.caducity.feature.tracking.EventTracker
 import com.alorma.caducity.ui.base.BaseViewModel
 import com.alorma.caducity.ui.screen.category.quick.CategoryCreatedEvents
@@ -42,6 +44,7 @@ class AddViewModel(
   private val findProduct: FindProductUseCase,
   private val setProductCanFreeze: SetProductCanFreezeUseCase,
   private val setProductUnitType: SetProductUnitTypeUseCase,
+  private val setCategoryDuration: SetCategoryDurationUseCase,
   observeCategories: ObserveCategoriesUseCase,
   categoryCreated: CategoryCreatedEvents,
   private val eventTracker: EventTracker,
@@ -140,6 +143,21 @@ class AddViewModel(
   }
 
   fun onClearName() = onNameChange("")
+
+  /** «Suggerida … · Canvia»: the usual duration is edited in the category's Durada sheet. */
+  fun onChangeSuggestedDuration() {
+    val category = _state.value.category ?: return
+    eventTracker.trackAction(ChangeSuggestedDurationAction())
+    emitSideEffect(AddSideEffect.ShowCategoryDurationSheet(category.name))
+  }
+
+  /** The category's flow delivers the new value, which recalculates the suggested date while it is untouched. */
+  fun onCategoryDurationChange(days: Int?) {
+    val categoryId = _state.value.categoryId ?: return
+    viewModelScope.launch {
+      setCategoryDuration.set(categoryId, days).onFailure { emitSideEffect(AddSideEffect.ShowSaveFailed) }
+    }
+  }
 
   fun onCategorySelect(categoryId: String) {
     categoryPinned = true

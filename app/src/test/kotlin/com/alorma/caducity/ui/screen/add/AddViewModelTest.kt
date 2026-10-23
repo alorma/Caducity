@@ -24,6 +24,7 @@ import com.alorma.caducity.domain.usecase.FindProductUseCase
 import com.alorma.caducity.domain.usecase.GetActiveItemUseCase
 import com.alorma.caducity.domain.usecase.GetNameSuggestionsUseCase
 import com.alorma.caducity.domain.usecase.ObserveCategoriesUseCase
+import com.alorma.caducity.domain.usecase.SetCategoryDurationUseCase
 import com.alorma.caducity.domain.usecase.SetProductCanFreezeUseCase
 import com.alorma.caducity.domain.usecase.SetProductUnitTypeUseCase
 import com.alorma.caducity.domain.usecase.UpdateItemUseCase
@@ -140,6 +141,7 @@ class AddViewModelTest {
     findProduct = FindProductUseCase(pantry),
     setProductCanFreeze = SetProductCanFreezeUseCase(pantry),
     setProductUnitType = SetProductUnitTypeUseCase(pantry),
+    setCategoryDuration = SetCategoryDurationUseCase(pantry),
     observeCategories = ObserveCategoriesUseCase(pantry),
     categoryCreated = createdEvents,
     eventTracker = EventTracker(emptyList()),

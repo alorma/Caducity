@@ -43,16 +43,15 @@ Order: this plan goes **before** `docs/afegir-editar-producte/plan.md`, because 
 
 ## Tasks
 
-- [ ] a. Main screen: preview with ✏️, Name, «Opcions» list (Durada, Es pot congelar, Descripció) as rows; «Desa» in the top bar.
+- [x] a. Main screen: preview with ✏️, Name, «Opcions» list (Durada, Es pot congelar, Descripció) as rows; «Desa» in the top bar. (620a93fb)
   Validation: previews + screenshot test; emulator, create and edit, no scroll on a 6" screen.
-- [ ] b. Sheet Aspecte (shape ×6 without Flower, icon ×12, instant preview). Validation: emulator; shape/icon persist after save.
-- [ ] c. Sheet Durada with the current values + sentence; fix the «Sense durada» bug. Unit test for the value → text mapping.
+- [x] b. Sheet Aspecte (shape ×6 without Flower, icon ×12, instant preview). Validation: emulator; shape/icon persist after save. (1aa66ab8)
+- [x] c. Sheet Durada with the current values + sentence; fix the «Sense durada» bug. Unit test for the value → text mapping. (ffd2b52c, 9c8fdce7)
   Validation: «1 setmana» selected shows the right sentence; saved value matches the old slider's.
-- [ ] d. Sheet Descripció (80 chars, counter, «Esborra» / «Fet», `imePadding`). Validation: emulator with keyboard open.
-- [ ] e. Remove duration from Ajustos (row, screen, «Torna a les durades suggerides») keeping the stored values;
+- [x] d. Sheet Descripció (80 chars, counter, «Esborra» / «Fet», `imePadding`). Validation: emulator with keyboard open. (0d835c89)
+- [x] e. Remove duration from Ajustos (row, screen, «Torna a les durades suggerides») keeping the stored values; (2bc5d7fd)
   «Suggerida … · Canvia» in Add opens the Durada sheet and recalculates the date; ⋮ › «Edita la categoria».
   Validation: stored durations survive; Add recalculates after changing; tracking actions added (`feature/tracking/Actions.kt`).
-- [ ] f. Strings ca/es/en (go with each task that uses them) and placeholder style. Validation: `ktlintCheck`, unit tests.
+- [x] f. Strings ca/es/en (go with each task that uses them) and placeholder style. Validation: `ktlintCheck`, unit tests. (f1073892)
 
-Release notes: probably one bullet at the end («Pantalla de categoria més senzilla; la durada habitual ara es canvia des de
-cada categoria»). Ask at the end of the plan (`.claude/rules/release-notes.md`).
+Release notes: Bernat decided (23 October) that none are needed for this plan.

@@ -7,6 +7,10 @@ sealed interface AddSideEffect {
     val current: UnitType,
   ) : AddSideEffect
 
+  data class ShowCategoryDurationSheet(
+    val categoryName: String,
+  ) : AddSideEffect
+
   data class ShowDatePicker(
     val currentMillis: Long,
   ) : AddSideEffect

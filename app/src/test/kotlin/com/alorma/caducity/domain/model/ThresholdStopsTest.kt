@@ -30,6 +30,14 @@ class ThresholdStopsTest {
   }
 
   @Test
+  fun `selected stop keeps no duration as none and snaps the rest`() {
+    expectThat(ThresholdStops.selectedStop(null)).isNull()
+    expectThat(ThresholdStops.selectedStop(7)).isEqualTo(7)
+    expectThat(ThresholdStops.selectedStop(10)).isEqualTo(7)
+    expectThat(ThresholdStops.selectedStop(45)).isEqualTo(30)
+  }
+
+  @Test
   fun `daysAt clamps out of range indexes`() {
     expectThat(ThresholdStops.daysAt(-3)).isEqualTo(1)
     expectThat(ThresholdStops.daysAt(99)).isEqualTo(90)

@@ -119,6 +119,18 @@ class CategoryEditorViewModelTest {
     }
 
   @Test
+  fun `the description is cut at 80 characters`() =
+    runTest {
+      val vm = viewModel()
+
+      vm.onDescriptionChange("a".repeat(100))
+      expectThat(vm.state.value.description.length).isEqualTo(80)
+
+      vm.onDescriptionChange("Begudes")
+      expectThat(vm.state.value.description).isEqualTo("Begudes")
+    }
+
+  @Test
   fun `the duration slider starts on 7 and an untouched one is saved as null`() =
     runTest {
       val vm = viewModel()

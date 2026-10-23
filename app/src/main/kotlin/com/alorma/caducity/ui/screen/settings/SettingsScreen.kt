@@ -53,7 +53,6 @@ import com.alorma.caducity.base.ui.icons.symbols.Check
 import com.alorma.caducity.base.ui.icons.symbols.ChevronRight
 import com.alorma.caducity.base.ui.icons.symbols.CloudUpload
 import com.alorma.caducity.base.ui.icons.symbols.Contrast
-import com.alorma.caducity.base.ui.icons.symbols.EventAvailable
 import com.alorma.caducity.base.ui.icons.symbols.ExpandMore
 import com.alorma.caducity.base.ui.icons.symbols.HourglassBottom
 import com.alorma.caducity.base.ui.icons.symbols.Info
@@ -79,7 +78,6 @@ import com.alorma.caducity.ui.components.feedback.snackbar.AppSnackbarState
 import com.alorma.caducity.ui.components.feedback.snackbar.rememberAppSnackbarState
 import com.alorma.caducity.ui.components.responsive.ResponsiveSettingsContainer
 import com.alorma.caducity.ui.components.scaffold.AppScaffold
-import com.alorma.caducity.ui.components.threshold.thresholdLabel
 import com.alorma.caducity.ui.components.topbar.NavigationIcon
 import com.alorma.caducity.ui.components.topbar.StyledLargeTopAppBar
 import com.alorma.caducity.ui.screen.home.capitalizeFirst
@@ -104,7 +102,6 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun SettingsScreen(
   onOpenBackup: () -> Unit,
-  onOpenCategoryDurations: () -> Unit,
   onOpenPrivacy: () -> Unit,
   onOpenAbout: () -> Unit,
   onOpenDebug: () -> Unit,
@@ -128,7 +125,6 @@ fun SettingsScreen(
     viewModel.navigationSideEffects.collect { effect ->
       when (effect) {
         SettingsNavigationSideEffect.OpenBackup -> onOpenBackup()
-        SettingsNavigationSideEffect.OpenCategoryDurations -> onOpenCategoryDurations()
         SettingsNavigationSideEffect.OpenPrivacy -> onOpenPrivacy()
         SettingsNavigationSideEffect.OpenAbout -> onOpenAbout()
         SettingsNavigationSideEffect.OpenDebug -> onOpenDebug()
@@ -244,27 +240,7 @@ internal fun SettingsContent(
     }
 
     item {
-      val durations =
-        state.categoryDurations
-          .mapNotNull { summary -> summary.days?.let { "${summary.name} ${thresholdLabel(it)}" } }
-          .joinToString(" · ")
-      // «Per suggerir la data · Làctics 1 setmana…»: what it is for, then the durations (one line, ellipsized).
-      val durationsSummary =
-        if (durations.isBlank()) {
-          stringResource(R.string.settings_durations_sub_empty)
-        } else {
-          stringResource(R.string.settings_durations_sub, durations)
-        }
       StyledSettingsGroup(title = { GroupTitle(R.string.settings_section_dates) }) {
-        StyledSettingsCard(
-          icon = { Icon(Symbols.Outlined.EventAvailable, contentDescription = null) },
-          title = stringResource(R.string.settings_category_durations),
-          subtitle = durationsSummary,
-          subtitleMaxLines = 1,
-          action = { Icon(Symbols.Outlined.ChevronRight, contentDescription = null) },
-          onClick = { onNavigate(SettingsNavigation.CategoryDurations) },
-          shapes = ListItemDefaults.segmentedShapes(index = 0, count = 2),
-        )
         // A native drop-down menu anchored to the current day, instead of a dialog.
         var weekStartMenuOpen by remember { mutableStateOf(false) }
         StyledSettingsCard(
@@ -299,7 +275,7 @@ internal fun SettingsContent(
             }
           },
           onClick = { weekStartMenuOpen = true },
-          shapes = ListItemDefaults.segmentedShapes(index = 1, count = 2),
+          shapes = ListItemDefaults.segmentedShapes(index = 0, count = 1),
         )
       }
     }
@@ -501,11 +477,6 @@ internal fun SettingsPreviewContent(selectedPalette: ColorPalette = ColorPalette
       SettingsState(
         reminderEnabled = true,
         colorPalette = selectedPalette,
-        categoryDurations =
-          listOf(
-            CategoryDurationSummary("Fruita i verdura", 7),
-            CategoryDurationSummary("Làctics", 3),
-          ),
       ),
     reminderOn = true,
     isDebug = false,
