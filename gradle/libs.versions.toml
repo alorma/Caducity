@@ -59,7 +59,7 @@ kotlinx-coroutines-test = "1.11.0"
 robolectric = "4.17"
 
 # Firebase
-firebase-bom = "35.0.2"
+firebase-bom = "35.1.0"
 adaptive = "1.3.0"
 
 uiToolingPreview = "1.12.1"
