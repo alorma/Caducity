@@ -1,6 +1,6 @@
 [versions]
 versionPlugin = "1.1.0"
-playPublisher = "4.1.1"
+playPublisher = "4.1.2"
 composeScreenshot = "0.0.1-alpha16"
 
 # Compose
