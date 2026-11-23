@@ -57,7 +57,7 @@ turbine = "1.2.1"
 mockito-kotlin = "6.4.0"
 mockito-core = "5.24.0"
 kotlinx-coroutines-test = "1.11.0"
-robolectric = "4.18"
+robolectric = "4.18.1"
 
 # Firebase
 firebase-bom = "35.2.0"
