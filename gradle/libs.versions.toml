@@ -4,7 +4,7 @@ playPublisher = "4.1.2"
 composeScreenshot = "0.0.1-alpha16"
 
 # Compose
-compose-bom = "2026.09.00"
+compose-bom = "2026.11.01"
 
 # Kotlin
 kotlin = "2.4.21"
